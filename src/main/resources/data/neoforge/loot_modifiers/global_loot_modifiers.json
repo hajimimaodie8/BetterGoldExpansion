@@ -1,6 +1,8 @@
 {
   "replace": false,
   "entries": [
-    "bettergold:add_eggplant_seeds"
+    "bettergold:add_eggplant_seeds",
+    "bettergold:add_chaos_coin_string",
+    "bettergold:add_take_gold_food_book"
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        { "condition": "minecraft:survives_explosion" }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "bettergold:sturdygold_chocolate_pie" }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "bettergold:blocks/sturdygold_chocolate_pie"
+}

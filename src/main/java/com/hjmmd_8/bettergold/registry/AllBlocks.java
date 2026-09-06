@@ -238,6 +238,41 @@ public class AllBlocks {
                     () -> AllItems.GOLDEN_EGGPLANT_SEEDS.get(),
                     () -> AllItems.GOLDEN_EGGPLANT.get()));
 
+    // ==================== 新约 1.2：金麦体系 ====================
+
+    /** 金麦块：9 金麦合成；站在上面完全免疫摔落伤害（ModEvents 处理） */
+    public static final DeferredBlock<Block> GOLDEN_WHEAT_BLOCK = BLOCKS.register("golden_wheat_block",
+            () -> new Block(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
+                    .strength(0.5F)
+                    .sound(net.minecraft.world.level.block.SoundType.WOOL)));
+
+    /** 金麦作物：种子=金麦种子，成熟掉金麦（+种子，时运影响），8 阶段 */
+    public static final DeferredBlock<GoldCropBlock> GOLDEN_WHEAT_CROP = BLOCKS.register("golden_wheat_crop",
+            () -> new GoldCropBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT)
+                    .noCollission()
+                    .randomTicks()
+                    .instabreak()
+                    .sound(net.minecraft.world.level.block.SoundType.CROP),
+                    () -> AllItems.GOLDEN_WHEAT_SEEDS.get(),
+                    () -> AllItems.GOLDEN_WHEAT.get()));
+
+    // ==================== 新约 1.2：筐装存储方块（9 同种物品合成 1 筐） ====================
+
+    public static final DeferredBlock<Block> GOLDEN_EGG_CRATE = BLOCKS.register("golden_egg_crate",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final DeferredBlock<Block> GOLDEN_EGGPLANT_CRATE = BLOCKS.register("golden_eggplant_crate",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final DeferredBlock<Block> GOLDEN_COWRIE_CRATE = BLOCKS.register("golden_cowrie_crate",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final DeferredBlock<Block> STURDYGOLD_CARROT_CRATE = BLOCKS.register("sturdygold_carrot_crate",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final DeferredBlock<Block> STURDYGOLD_APPLE_CRATE = BLOCKS.register("sturdygold_apple_crate",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final DeferredBlock<Block> STURDYGOLD_EGGPLANT_CRATE = BLOCKS.register("sturdygold_eggplant_crate",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+
     // ==================== BlockItem ====================
 
     public static final DeferredItem<BlockItem> GOLD_BRICKS_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_bricks", GOLD_BRICKS);
@@ -264,6 +299,17 @@ public class AllBlocks {
 
     public static final DeferredItem<BlockItem> GOLD_INFUSED_DIRT_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_infused_dirt", GOLD_INFUSED_DIRT);
     // 金染耕地：无物品形态（像原版耕地一样只能由锄头转化生成，不能从物品栏获取）
+
+    // ==================== 新约 1.2 BlockItems ====================
+
+    public static final DeferredItem<BlockItem> GOLDEN_WHEAT_BLOCK_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_wheat_block", GOLDEN_WHEAT_BLOCK);
+
+    public static final DeferredItem<BlockItem> GOLDEN_EGG_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_egg_crate", GOLDEN_EGG_CRATE);
+    public static final DeferredItem<BlockItem> GOLDEN_EGGPLANT_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_eggplant_crate", GOLDEN_EGGPLANT_CRATE);
+    public static final DeferredItem<BlockItem> GOLDEN_COWRIE_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_cowrie_crate", GOLDEN_COWRIE_CRATE);
+    public static final DeferredItem<BlockItem> STURDYGOLD_CARROT_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_carrot_crate", STURDYGOLD_CARROT_CRATE);
+    public static final DeferredItem<BlockItem> STURDYGOLD_APPLE_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_apple_crate", STURDYGOLD_APPLE_CRATE);
+    public static final DeferredItem<BlockItem> STURDYGOLD_EGGPLANT_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_eggplant_crate", STURDYGOLD_EGGPLANT_CRATE);
 
     private AllBlocks() {
     }

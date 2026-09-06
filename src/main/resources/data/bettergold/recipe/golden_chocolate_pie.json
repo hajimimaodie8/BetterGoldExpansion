@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "bettergold:golden_pie_crust" },
+    { "item": "bettergold:golden_chocolate_bar" },
+    { "item": "bettergold:golden_chocolate_bar" },
+    { "item": "bettergold:golden_chocolate_bar" },
+    { "tag": "bettergold:drinks/milk" }
+  ],
+  "result": { "id": "bettergold:golden_chocolate_pie", "count": 1 }
+}

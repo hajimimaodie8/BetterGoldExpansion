@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "bettergold:golden_honey_cookie" },
+    { "item": "bettergold:sturdygold_nugget" }
+  ],
+  "result": { "id": "bettergold:sturdygold_honey_cookie", "count": 1 }
+}

@@ -1,0 +1,6 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "bettergold:brewed_hot_cocoa_bucket_to_bottle"
+}

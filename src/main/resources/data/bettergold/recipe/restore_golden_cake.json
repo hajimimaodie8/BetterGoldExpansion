@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "neoforge:conditions": [ { "type": "neoforge:mod_loaded", "modid": "farmersdelight" } ],
+  "ingredients": [
+    { "item": "bettergold:golden_cake_slice" },
+    { "item": "bettergold:golden_cake_slice" },
+    { "item": "bettergold:golden_cake_slice" },
+    { "item": "bettergold:golden_cake_slice" },
+    { "item": "bettergold:golden_cake_slice" },
+    { "item": "bettergold:golden_cake_slice" },
+    { "item": "bettergold:golden_cake_slice" }
+  ],
+  "result": { "id": "bettergold:golden_cake", "count": 1 }
+}

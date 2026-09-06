@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "bettergold:block/sturdygold_carrot_crate_top",
+    "top": "bettergold:block/sturdygold_carrot_crate_top",
+    "side": "bettergold:block/sturdygold_carrot_crate_side"
+  }
+}

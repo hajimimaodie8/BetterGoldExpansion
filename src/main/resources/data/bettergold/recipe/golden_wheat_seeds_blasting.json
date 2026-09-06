@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": { "item": "bettergold:golden_wheat_seeds" },
+  "result": { "id": "minecraft:gold_nugget" },
+  "experience": 0.2,
+  "cookingtime": 100
+}

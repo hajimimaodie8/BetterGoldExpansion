@@ -56,19 +56,38 @@ public class ModEvents {
     /** 附魔金苹果的掉落权重：1% */
     private static final double ENCHANTED_GOLDEN_APPLE_WEIGHT = 0.01;
 
-    /** 手持万坚金工具攻击可掉落的金系物品池（附魔金苹果单独按 1% 权重判定） */
-    private static final List<Item> GOLD_LOOT_POOL = List.of(
-            Items.RAW_GOLD,               // 粗金
-            Items.GOLD_NUGGET,            // 金粒
-            Items.GOLD_INGOT,             // 金锭
-            Items.GOLDEN_APPLE,           // 金苹果
-            Items.GOLDEN_CARROT,          // 金萝卜
-            AllItems.GOLDEN_COWRIE.get(),        // 金钱贝
-            AllItems.GOLDEN_EGGPLANT_SEEDS.get(), // 金钱茄种子
-            AllItems.GOLDEN_EGGPLANT.get(),       // 金钱茄
-            AllItems.GOLDEN_CHOCOLATE_BAR.get(),  // 金钱巧克力棒
+    /**
+     * 白板万坚金工具（无"取其金食"附魔）爆金掉落池：金钱贝 / 金锭 / 金粒 / 粗金。
+     */
+    private static final List<Item> BASE_GOLD_LOOT_POOL = List.of(
+            AllItems.GOLDEN_COWRIE.get(),   // 金钱贝
+            Items.GOLD_INGOT,               // 金锭
+            Items.GOLD_NUGGET,              // 金粒
+            Items.RAW_GOLD                  // 粗金
+    );
+
+    /**
+     * 附魔"取其金食"追加的金食物掉落池：
+     * 金苹果 / 金萝卜 / 金蛋 / 金麦种子 / 金麦 / 金钱茄种子 / 金钱茄 / 金钱巧克力棒 / 金甘蔗棒
+     * （附魔金苹果按 1% 单独判定）
+     */
+    private static final List<Item> GOLD_FOOD_LOOT_POOL = List.of(
+            Items.GOLDEN_APPLE,                    // 金苹果
+            Items.GOLDEN_CARROT,                   // 金萝卜
+            AllItems.GOLDEN_EGG.get(),             // 金蛋
+            AllItems.GOLDEN_WHEAT_SEEDS.get(),     // 金麦种子
+            AllItems.GOLDEN_WHEAT.get(),           // 金麦
+            AllItems.GOLDEN_EGGPLANT_SEEDS.get(),  // 金钱茄种子
+            AllItems.GOLDEN_EGGPLANT.get(),        // 金钱茄
+            AllItems.GOLDEN_CHOCOLATE_BAR.get(),   // 金钱巧克力棒
             AllItems.GOLDEN_SUGAR_CANE_STICK.get() // 金甘蔗棒
     );
+
+    /** 取其金食附魔 id */
+    private static final net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment>
+            TAKE_GOLD_FOOD_KEY = net.minecraft.resources.ResourceKey.create(
+            net.minecraft.core.registries.Registries.ENCHANTMENT,
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("bettergold", "take_gold_food"));
 
     // ==================== 猪灵以物易物：产出翻倍 + 6% 金钱贝 ====================
 
@@ -102,6 +121,34 @@ public class ModEvents {
             cowrie.setDefaultPickUpDelay();
             level.addFreshEntity(cowrie);
         }
+        // 6% 概率额外掉落混沌金币串（猪灵交易获得，独立判定可与金钱贝同时出）
+        if (level.random.nextFloat() < 0.06F) {
+            ItemEntity coinString = new ItemEntity(level,
+                    itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
+                    new ItemStack(AllItems.CHAOS_COIN_STRING.get()));
+            coinString.setDefaultPickUpDelay();
+            level.addFreshEntity(coinString);
+        }
+        // 6% 概率额外掉落"取其金食"附魔书（宝藏附魔，猪灵交易获得）
+        if (level.random.nextFloat() < 0.06F) {
+            try {
+                var enchantLookup = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+                var key = net.minecraft.resources.ResourceKey.create(
+                        net.minecraft.core.registries.Registries.ENCHANTMENT,
+                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("bettergold", "take_gold_food"));
+                var holderOpt = enchantLookup.get(key);
+                if (holderOpt.isPresent()) {
+                    ItemStack book = net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                            new net.minecraft.world.item.enchantment.EnchantmentInstance(holderOpt.get(), 1));
+                    ItemEntity bookEntity = new ItemEntity(level,
+                            itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), book);
+                    bookEntity.setDefaultPickUpDelay();
+                    level.addFreshEntity(bookEntity);
+                }
+            } catch (Exception ignored) {
+                // 注册表未就绪时静默跳过
+            }
+        }
     }
 
     // ==================== 万坚金工具攻击：100% 触发掉落金系物品 ====================
@@ -121,8 +168,8 @@ public class ModEvents {
         if (!isSturdygoldTool(held)) {
             return;
         }
-        // 功能 100% 触发：必定掉落一件金系物品
-        Item loot = rollGoldLoot(player);
+        // 功能 100% 触发：必定掉落一件金系物品（白板掉基础四件；有"取其金食"附魔才掉金食物）
+        Item loot = rollGoldLoot(player, held);
         LivingEntity victim = event.getEntity();
         Level level = victim.level();
         if (level instanceof ServerLevel serverLevel) {
@@ -162,22 +209,45 @@ public class ModEvents {
 
     // ==================== 工具方法 ====================
 
-    /** 按权重掷出金系掉落：附魔金苹果 1%，其余均分 99%（受配置黑/白名单过滤） */
-    private static Item rollGoldLoot(Player player) {
+    /**
+     * 按权重掷出金系掉落：
+     * - 白板（无附魔）：从基础池（金钱贝/金锭/金粒/粗金）随机；
+     * - 有"取其金食"附魔：基础池 + 金食物池，附魔金苹果单独 1%。
+     * 均受配置黑/白名单过滤。
+     */
+    private static Item rollGoldLoot(Player player, ItemStack held) {
         var random = player.getRandom();
-        // 附魔金苹果 1% 特判（若被过滤则跳过）
-        if (random.nextDouble() < ENCHANTED_GOLDEN_APPLE_WEIGHT
+        boolean hasFoodEnchant = hasTakeGoldFood(held);
+        // 附魔金苹果 1% 特判（仅附魔后才有）
+        if (hasFoodEnchant && random.nextDouble() < ENCHANTED_GOLDEN_APPLE_WEIGHT
                 && isAllowedByConfig(Items.ENCHANTED_GOLDEN_APPLE)) {
             return Items.ENCHANTED_GOLDEN_APPLE;
         }
         // 构建按配置过滤后的掉落池
-        List<Item> pool = GOLD_LOOT_POOL.stream()
-                .filter(ModEvents::isAllowedByConfig)
-                .toList();
+        List<Item> pool = new java.util.ArrayList<>(BASE_GOLD_LOOT_POOL.stream()
+                .filter(ModEvents::isAllowedByConfig).toList());
+        if (hasFoodEnchant) {
+            pool.addAll(GOLD_FOOD_LOOT_POOL.stream()
+                    .filter(ModEvents::isAllowedByConfig).toList());
+        }
         if (pool.isEmpty()) {
             return Items.GOLD_NUGGET; // 兜底：全被过滤时掉金粒
         }
         return pool.get(random.nextInt(pool.size()));
+    }
+
+    /** 手持物品是否带有"取其金食"附魔 */
+    private static boolean hasTakeGoldFood(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return false;
+        }
+        for (net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> holder
+                : stack.getEnchantments().keySet()) {
+            if (holder.is(TAKE_GOLD_FOOD_KEY)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** 按配置黑/白名单判断物品是否允许掉落 */
@@ -204,15 +274,10 @@ public class ModEvents {
                 || player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(AllItems.STURDYGOLD_BOOTS.get());
     }
 
-    /** 校验物品是否为万坚金工具（含万坚金小刀，FD 联动——未装 FD 时小刀为 null 不参与判断） */
+    /** 校验物品是否为万坚金工具：材质 tier 为 STURDYGOLD 的任何 TieredItem（剑/镐/斧/锹/锄，含 FD 联动小刀） */
     private static boolean isSturdygoldTool(ItemStack stack) {
-        Item item = stack.getItem();
-        return item == AllItems.STURDYGOLD_SWORD.get()
-                || item == AllItems.STURDYGOLD_PICKAXE.get()
-                || item == AllItems.STURDYGOLD_AXE.get()
-                || item == AllItems.STURDYGOLD_SHOVEL.get()
-                || item == AllItems.STURDYGOLD_HOE.get()
-                || (AllItems.STURDYGOLD_KNIFE != null && item == AllItems.STURDYGOLD_KNIFE.get());
+        return stack.getItem() instanceof net.minecraft.world.item.TieredItem tiered
+                && tiered.getTier() == com.hjmmd_8.bettergold.material.AllTiers.STURDYGOLD;
     }
 
     // ==================== 抗寒性：免疫冰冻伤害 ====================
@@ -263,6 +328,37 @@ public class ModEvents {
         if (item == AllItems.BREWED_HOT_COCOA.get() || item == AllItems.STURDYGOLD_BREWED_HOT_COCOA.get()) {
             clearHarmfulEffects(entity);
             // 抗寒性由 FoodProperties 效果提供（保留不重复添加）
+        }
+
+        // ---- 新约 1.2：曲奇 / 面包 / 三明治 清除状态 ----
+        if (item == AllItems.GOLDEN_CHOCOLATE_COOKIE.get()) {
+            // 金巧克力曲奇：去饥饿
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.HUNGER);
+        } else if (item == AllItems.STURDYGOLD_CHOCOLATE_COOKIE.get()) {
+            // 万坚金巧克力曲奇：去饥饿 + 虚弱
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.HUNGER);
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.WEAKNESS);
+        } else if (item == AllItems.GOLDEN_HONEY_COOKIE.get()) {
+            // 金蜂蜜曲奇：去中毒
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.POISON);
+        } else if (item == AllItems.STURDYGOLD_HONEY_COOKIE.get()) {
+            // 万坚金蜂蜜曲奇：去中毒 + 凋零
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.POISON);
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.WITHER);
+        } else if (item == AllItems.GOLDEN_BREAD.get()) {
+            // 金砖面包：去饥饿 + 反胃
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.HUNGER);
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.CONFUSION);
+        } else if (item == AllItems.STURDYGOLD_BREAD.get()) {
+            // 万坚金砖面包：清除全部负面状态
+            clearHarmfulEffects(entity);
+        } else if (item == AllItems.GOLDEN_EGG_SANDWICH.get()) {
+            // 金蛋三明治：去饥饿 + 反胃
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.HUNGER);
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.CONFUSION);
+        } else if (item == AllItems.STURDYGOLD_EGG_SANDWICH.get()) {
+            // 万坚金蛋三明治：清除全部负面状态
+            clearHarmfulEffects(entity);
         }
     }
 
@@ -361,6 +457,83 @@ public class ModEvents {
                 }
                 event.setCanceled(true);
             }
+        }
+    }
+
+    // ==================== 新约 1.2：金麦块免疫摔落 ====================
+
+    @SubscribeEvent
+    public static void onLivingFall(net.neoforged.neoforge.event.entity.living.LivingFallEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity.level().isClientSide) {
+            return;
+        }
+        // 落在金麦块上（落地位置下方的方块）完全免疫摔落伤害
+        BlockPos below = entity.getOnPos();
+        if (entity.level().getBlockState(below).is(AllBlocks.GOLDEN_WHEAT_BLOCK.get())) {
+            event.setCanceled(true);
+        }
+    }
+
+    // ==================== 新约 1.2：喂食互动（马食 / 金蛋） ====================
+
+    @SubscribeEvent
+    public static void onEntityInteract(net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract event) {
+        if (event.getLevel().isClientSide) {
+            return;
+        }
+        Player player = event.getEntity();
+        ItemStack held = event.getItemStack();
+        net.minecraft.world.entity.Entity target = event.getTarget();
+        if (!(target instanceof LivingEntity living)) {
+            return;
+        }
+
+        // --- 全金马食 / 万坚金马食：喂马/驴/骡/羊驼/行商羊驼 ---
+        boolean isFeed = held.is(AllItems.GOLDEN_HORSE_FEED.get()) || held.is(AllItems.STURDYGOLD_HORSE_FEED.get());
+        boolean isTameableHorse = target.getType() == EntityType.HORSE
+                || target.getType() == EntityType.DONKEY
+                || target.getType() == EntityType.MULE
+                || target.getType() == EntityType.LLAMA
+                || target.getType() == EntityType.TRADER_LLAMA;
+        if (isFeed && isTameableHorse) {
+            // 回满血
+            living.heal(living.getMaxHealth());
+            boolean sturdy = held.is(AllItems.STURDYGOLD_HORSE_FEED.get());
+            if (sturdy) {
+                // 万坚金马食：16 分钟迅捷4(amplifier3) + 跳跃提升3(amplifier2)
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 19200, 3));
+                living.addEffect(new MobEffectInstance(MobEffects.JUMP, 19200, 2));
+            } else {
+                // 全金马食：6 分钟迅捷3(amplifier2) + 跳跃提升2(amplifier1)
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 7200, 2));
+                living.addEffect(new MobEffectInstance(MobEffects.JUMP, 7200, 1));
+            }
+            if (!player.getAbilities().instabuild) {
+                held.shrink(1);
+            }
+            event.setCanceled(true);
+            return;
+        }
+
+        // --- 金蛋：用金麦种子或金钱茄种子喂鸡，36% 概率获得 ---
+        boolean isSeed = held.is(AllItems.GOLDEN_WHEAT_SEEDS.get()) || held.is(AllItems.GOLDEN_EGGPLANT_SEEDS.get());
+        if (isSeed && target.getType() == EntityType.CHICKEN) {
+            if (!player.getAbilities().instabuild) {
+                held.shrink(1);
+            }
+            // 喂食音效
+            event.getLevel().playSound(null, target.blockPosition(), net.minecraft.sounds.SoundEvents.GENERIC_EAT,
+                    net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 1.0F);
+            // 36% 概率产下金蛋实体（模拟原版鸡下蛋：掉落物）
+            if (event.getLevel().random.nextFloat() < 0.36F) {
+                ItemEntity egg = new ItemEntity(event.getLevel(),
+                        target.getX(), target.getY(), target.getZ(),
+                        new ItemStack(AllItems.GOLDEN_EGG.get()));
+                egg.setDefaultPickUpDelay();
+                event.getLevel().addFreshEntity(egg);
+            }
+            event.setCanceled(true);
         }
     }
 }

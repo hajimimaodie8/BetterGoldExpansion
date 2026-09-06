@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [ "NNN", "NCN", "NNN" ],
+  "key": {
+    "N": { "item": "bettergold:sturdygold_nugget" },
+    "C": { "item": "bettergold:golden_horse_feed" }
+  },
+  "result": { "id": "bettergold:sturdygold_horse_feed", "count": 1 }
+}

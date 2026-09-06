@@ -1,0 +1,6 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "bettergold:golden_pie_crust"
+}

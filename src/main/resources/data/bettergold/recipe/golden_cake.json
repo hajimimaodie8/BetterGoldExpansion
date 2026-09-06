@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [ "MMM", "SGS", "WWW" ],
+  "key": {
+    "M": { "item": "minecraft:milk_bucket" },
+    "S": { "item": "bettergold:golden_sugar_cane_stick" },
+    "G": { "item": "bettergold:golden_egg" },
+    "W": { "item": "bettergold:golden_wheat" }
+  },
+  "result": { "id": "bettergold:golden_cake", "count": 1 }
+}

@@ -29,11 +29,11 @@ import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 所有物品注册（不含方块对应的 BlockItem，那些在 {@link AllBlocks} 里）。
@@ -41,6 +41,36 @@ import java.util.List;
 public class AllItems {
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(bettergold.MODID);
+
+    // ==================== 创造模式 tab 分类（本体三个相邻 tab：方块材料 / 食物饮品 / 装备工具） ====================
+    // 判定集中在本类，bettergold.BETTERGOLD_*_TAB 按此把本体物品分进三个相邻标签页。
+    // - 食物饮品：凡可食用（含饮品/碗装）一律归此页；金蛋/金麦/种子/马食无食物属性，单列特例。
+    // - 装备工具：万坚金剑镐斧锹锄（TieredItem）、万坚金盔甲（ArmorItem）、金钥匙（特例）。
+    // - 其余（方块 BlockItem、锭/粒/原料/金钱贝/模具/模板/骨粉等）自动落入"方块与材料"页。
+
+    /** 无食物属性但属于"食物链"的物品（马食 / 金蛋 / 金麦 / 种子） */
+    private static final Set<String> FOOD_CHAIN_ITEM_IDS = Set.of(
+            "golden_horse_feed", "sturdygold_horse_feed",
+            "golden_egg", "golden_wheat", "golden_wheat_seeds", "golden_eggplant_seeds");
+
+    /** 无 tier/盔甲标识但属于"装备工具"的物品（金钥匙） */
+    private static final Set<String> GEAR_CHAIN_ITEM_IDS = Set.of("golden_key");
+
+    /** 是否为"食物与饮品"页物品 */
+    public static boolean isFoodTab(net.minecraft.resources.ResourceLocation id, ItemStack stack) {
+        return stack.has(net.minecraft.core.component.DataComponents.FOOD)
+                || FOOD_CHAIN_ITEM_IDS.contains(id.getPath());
+    }
+
+    /** 是否为"装备工具"页物品 */
+    public static boolean isGearTab(net.minecraft.resources.ResourceLocation id, ItemStack stack) {
+        if (GEAR_CHAIN_ITEM_IDS.contains(id.getPath())) {
+            return true;
+        }
+        Item item = stack.getItem();
+        return item instanceof net.minecraft.world.item.TieredItem
+                || item instanceof ArmorItem;
+    }
 
     // ==================== 材料 ====================
 
@@ -72,9 +102,9 @@ public class AllItems {
             new Item.Properties().food(new FoodProperties.Builder()
                     .nutrition(9).saturationModifier(0.8F).build()));
 
-    /** 金酿热可可：清除全部效果 + 3 分钟抗寒性（饮品，喝完返还玻璃瓶） */
+    /** 金酿热可可：清除全部效果 + 3 分钟抗寒性（饮品，喝完返还玻璃瓶，可堆叠 16） */
     public static final DeferredItem<Item> BREWED_HOT_COCOA = ITEMS.register("brewed_hot_cocoa",
-            () -> new DrinkItem(new Item.Properties().stacksTo(1)
+            () -> new DrinkItem(new Item.Properties().stacksTo(16)
                     .food(new FoodProperties.Builder()
                             .nutrition(6).saturationModifier(0.6F).alwaysEdible()
                             .effect(() -> new MobEffectInstance(AllEffects.COLD_RESISTANCE, 3600), 1.0F)
@@ -165,9 +195,9 @@ public class AllItems {
                     .effect(() -> new MobEffectInstance(AllEffects.COLD_RESISTANCE, 3600, 0), 1.0F)
                     .build()));
 
-    /** 万坚金酿热可可：清除全部效果 + 16 分钟抗寒性（饮品，喝完返还玻璃瓶） */
+    /** 万坚金酿热可可：清除全部效果 + 16 分钟抗寒性（饮品，喝完返还玻璃瓶，可堆叠 16） */
     public static final DeferredItem<Item> STURDYGOLD_BREWED_HOT_COCOA = ITEMS.register("sturdygold_brewed_hot_cocoa",
-            () -> new DrinkItem(new Item.Properties().stacksTo(1).fireResistant()
+            () -> new DrinkItem(new Item.Properties().stacksTo(16).fireResistant()
                     .food(new FoodProperties.Builder()
                             .nutrition(10).saturationModifier(0.9F).alwaysEdible()
                             .effect(() -> new MobEffectInstance(AllEffects.COLD_RESISTANCE, 19200, 0), 1.0F)
@@ -194,6 +224,104 @@ public class AllItems {
                     .nutrition(18).saturationModifier(1.27F).alwaysEdible()
                     .effect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 19200, 2), 1.0F) // 力量 3
                     .build()));
+
+    // ==================== 新约 1.2：材料 ====================
+
+    /** 混沌金币串：用于在制作下界合金锭时替代 1 个下界合金碎片 */
+    public static final DeferredItem<Item> CHAOS_COIN_STRING = ITEMS.registerSimpleItem("chaos_coin_string");
+
+    // ==================== 新约 1.2：金麦体系 ====================
+
+    /** 金麦种子：1 小麦种子 + 3 金粒无序合成；种在金染耕地；可烧成金粒 */
+    public static final DeferredItem<Item> GOLDEN_WHEAT_SEEDS = ITEMS.register("golden_wheat_seeds",
+            () -> new net.minecraft.world.item.ItemNameBlockItem(AllBlocks.GOLDEN_WHEAT_CROP.get(),
+                    new Item.Properties()));
+
+    /** 金麦：金麦作物产物（作物掉落，受时运影响） */
+    public static final DeferredItem<Item> GOLDEN_WHEAT = ITEMS.registerSimpleItem("golden_wheat");
+
+    /** 金蛋：金麦种子/金钱茄种子喂鸡概率产出 */
+    public static final DeferredItem<Item> GOLDEN_EGG = ITEMS.registerSimpleItem("golden_egg");
+
+    // ==================== 新约 1.2：非乐事食物 ====================
+
+    /** 煎金蛋：金蛋熔炉/烟熏产出，3 分钟缓降 */
+    public static final DeferredItem<Item> FRIED_GOLDEN_EGG = ITEMS.registerSimpleItem("fried_golden_egg",
+            new Item.Properties().food(new FoodProperties.Builder()
+                    .nutrition(6).saturationModifier(0.8F).alwaysEdible()
+                    .effect(new MobEffectInstance(MobEffects.SLOW_FALLING, 3600, 0), 1.0F)
+                    .build()));
+
+    /** 金巧克力曲奇：快速食用（16gt），去饥饿状态 */
+    public static final DeferredItem<Item> GOLDEN_CHOCOLATE_COOKIE = ITEMS.register("golden_chocolate_cookie",
+            () -> new net.minecraft.world.item.Item(new Item.Properties().stacksTo(64)
+                    .food(new FoodProperties.Builder()
+                            .nutrition(3).saturationModifier(0.37F).alwaysEdible().fast()
+                            .build())));
+
+    /** 金蜂蜜曲奇：快速食用（16gt），去中毒状态 */
+    public static final DeferredItem<Item> GOLDEN_HONEY_COOKIE = ITEMS.register("golden_honey_cookie",
+            () -> new net.minecraft.world.item.Item(new Item.Properties().stacksTo(64)
+                    .food(new FoodProperties.Builder()
+                            .nutrition(3).saturationModifier(0.37F).alwaysEdible().fast()
+                            .build())));
+
+    /** 金砖面包：去饥饿+反胃（增益型，满饥饿可吃） */
+    public static final DeferredItem<Item> GOLDEN_BREAD = ITEMS.registerSimpleItem("golden_bread",
+            new Item.Properties().food(new FoodProperties.Builder()
+                    .nutrition(7).saturationModifier(1.29F).alwaysEdible()
+                    .build()));
+
+    /** 金蛋三明治：去饥饿+反胃，6 分钟跳跃提升（增益型，满饥饿可吃） */
+    public static final DeferredItem<Item> GOLDEN_EGG_SANDWICH = ITEMS.registerSimpleItem("golden_egg_sandwich",
+            new Item.Properties().food(new FoodProperties.Builder()
+                    .nutrition(13).saturationModifier(1.06F).alwaysEdible()
+                    .effect(new MobEffectInstance(MobEffects.JUMP, 7200, 0), 1.0F)
+                    .build()));
+
+    /** 全金马食：喂马/驴/骡/羊驼/行商羊驼，回满血 + 6 分钟迅捷3+跳跃提升2 */
+    public static final DeferredItem<Item> GOLDEN_HORSE_FEED = ITEMS.register("golden_horse_feed",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+
+    // ==================== 新约 1.2：万坚金食物（1 金食物 + 8 万坚金粒升级） ====================
+
+    /** 万坚金砖面包：去全部负面状态（增益型，满饥饿可吃） */
+    public static final DeferredItem<Item> STURDYGOLD_BREAD = ITEMS.registerSimpleItem("sturdygold_bread",
+            new Item.Properties().fireResistant().food(new FoodProperties.Builder()
+                    .nutrition(15).saturationModifier(1.2F).alwaysEdible()
+                    .build()));
+
+    /** 万坚金煎金蛋：16 分钟缓降 */
+    public static final DeferredItem<Item> STURDYGOLD_FRIED_GOLDEN_EGG = ITEMS.registerSimpleItem("sturdygold_fried_golden_egg",
+            new Item.Properties().fireResistant().food(new FoodProperties.Builder()
+                    .nutrition(12).saturationModifier(0.8F).alwaysEdible()
+                    .effect(new MobEffectInstance(MobEffects.SLOW_FALLING, 19200, 0), 1.0F)
+                    .build()));
+
+    /** 万坚金巧克力曲奇：快速食用，去饥饿+虚弱 */
+    public static final DeferredItem<Item> STURDYGOLD_CHOCOLATE_COOKIE = ITEMS.register("sturdygold_chocolate_cookie",
+            () -> new net.minecraft.world.item.Item(new Item.Properties().fireResistant().stacksTo(64)
+                    .food(new FoodProperties.Builder()
+                            .nutrition(6).saturationModifier(0.37F).alwaysEdible().fast()
+                            .build())));
+
+    /** 万坚金蜂蜜曲奇：快速食用，去中毒+凋零 */
+    public static final DeferredItem<Item> STURDYGOLD_HONEY_COOKIE = ITEMS.register("sturdygold_honey_cookie",
+            () -> new net.minecraft.world.item.Item(new Item.Properties().fireResistant().stacksTo(64)
+                    .food(new FoodProperties.Builder()
+                            .nutrition(6).saturationModifier(0.37F).alwaysEdible().fast()
+                            .build())));
+
+    /** 万坚金蛋三明治：去饥饿+反胃，16 分钟跳跃提升2（增益型，满饥饿可吃） */
+    public static final DeferredItem<Item> STURDYGOLD_EGG_SANDWICH = ITEMS.registerSimpleItem("sturdygold_egg_sandwich",
+            new Item.Properties().fireResistant().food(new FoodProperties.Builder()
+                    .nutrition(26).saturationModifier(1.06F).alwaysEdible()
+                    .effect(new MobEffectInstance(MobEffects.JUMP, 19200, 1), 1.0F)
+                    .build()));
+
+    /** 万坚金马食：喂动物，回满血 + 16 分钟迅捷4+跳跃提升3 */
+    public static final DeferredItem<Item> STURDYGOLD_HORSE_FEED = ITEMS.register("sturdygold_horse_feed",
+            () -> new Item(new Item.Properties().fireResistant().stacksTo(1)));
 
     // ==================== 金钱贝模具 ====================
 
@@ -258,35 +386,6 @@ public class AllItems {
             () -> new HoeItem(AllTiers.STURDYGOLD, new Item.Properties()
                     .fireResistant()
                     .attributes(HoeItem.createAttributes(AllTiers.STURDYGOLD, 1.5F, 0.2F))));
-
-    /**
-     * 万坚金小刀（Farmer's Delight 联动）：继承 FD 的 KnifeItem（切割砧板/收获等功能）。
-     * 耐久 6144 / 破坏能力 14 / 附魔能力 30（继承万坚金器具的爆金技能，见 {@link ModEvents}）。
-     *
-     * FD 是 OPTIONAL 依赖，因此本物品**条件注册**：
-     * - 装了 FD：真正注册 KnifeItem（反射创建，避免字节码硬引用 FD 类导致没装 FD 时
-     *   NoClassDefFoundError——JVM 类加载验证阶段会解析字节码里的类引用，ModList 分支
-     *   是运行时才判断的，来不及阻止）；
-     * - 没装 FD：字段为 null，物品完全不注册——JEI、创造模式物品栏都不会出现小刀。
-     */
-    public static final DeferredItem<Item> STURDYGOLD_KNIFE =
-            ModList.get().isLoaded("farmersdelight")
-                    ? ITEMS.register("sturdygold_knife", () -> createSturdygoldKnife())
-                    : null;
-
-    /** 反射创建 FD 的 KnifeItem；反射失败兜底为普通物品（此时 FD 必然已装，理论上不会失败） */
-    private static Item createSturdygoldKnife() {
-        try {
-            Class<?> knifeClass = Class.forName("vectorwing.farmersdelight.common.item.KnifeItem");
-            var ctor = knifeClass.getConstructor(net.minecraft.world.item.Tier.class, Item.Properties.class);
-            Item.Properties props = new Item.Properties()
-                    .fireResistant()
-                    .attributes(net.minecraft.world.item.DiggerItem.createAttributes(AllTiers.STURDYGOLD, 8.5F, -2.0F));
-            return (Item) ctor.newInstance(AllTiers.STURDYGOLD, props);
-        } catch (ReflectiveOperationException | RuntimeException e) {
-            return new Item(new Item.Properties().fireResistant());
-        }
-    }
 
     // ==================== 万坚金盔甲（防火防爆 + 单件即可让猪灵中立） ====================
     // 耐久：头盔 1221 / 胸甲 1176 / 护腿 1665 / 靴子 1443

@@ -1,9 +1,6 @@
 {
   "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "farmersdelight"
-    }
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
   ],
   "type": "farmersdelight:cooking",
   "cookingtime": 200,
@@ -25,10 +22,10 @@
   "recipe_book_tab": "drinks",
   "container": {
     "count": 1,
-    "id": "minecraft:glass_bottle"
+    "id": "minecraft:bucket"
   },
   "result": {
     "count": 1,
-    "id": "bettergold:brewed_hot_cocoa"
+    "id": "bettergold:brewed_hot_cocoa_bucket"
   }
 }

@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [ "WWW", "WWW", "WWW" ],
+  "key": { "W": { "item": "bettergold:golden_wheat" } },
+  "result": { "id": "bettergold:golden_wheat_block", "count": 1 }
+}

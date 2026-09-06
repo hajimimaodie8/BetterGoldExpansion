@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "bettergold:golden_bread" },
+    { "item": "bettergold:fried_golden_egg" },
+    { "item": "bettergold:fried_golden_egg" }
+  ],
+  "result": { "id": "bettergold:golden_egg_sandwich", "count": 1 }
+}

@@ -1,0 +1,19 @@
+{
+  "textures": {
+    "particle": "bettergold:block/golden_cake_side",
+    "bottom": "bettergold:block/golden_cake_bottom",
+    "top": "bettergold:block/golden_cake_top",
+    "side": "bettergold:block/golden_cake_side",
+    "inside": "bettergold:block/golden_cake_inner"
+  },
+  "elements": [
+    { "from": [13, 0, 1], "to": [15, 8, 15], "faces": {
+      "down": { "texture": "#bottom", "cullface": "down" },
+      "up": { "texture": "#top" },
+      "north": { "texture": "#side" },
+      "south": { "texture": "#side" },
+      "west": { "texture": "#inside" },
+      "east": { "texture": "#side" }
+    } }
+  ]
+}

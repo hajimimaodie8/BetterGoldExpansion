@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [ "WWW", "AAA", "SPS" ],
+  "key": {
+    "W": { "item": "bettergold:golden_wheat" },
+    "A": { "item": "minecraft:golden_apple" },
+    "S": { "item": "bettergold:golden_sugar_cane_stick" },
+    "P": { "item": "bettergold:golden_pie_crust" }
+  },
+  "result": { "id": "bettergold:golden_apple_pie", "count": 1 }
+}

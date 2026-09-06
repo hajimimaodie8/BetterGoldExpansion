@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        { "condition": "minecraft:survives_explosion" }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "bettergold:golden_eggplant_crate" }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "bettergold:blocks/golden_eggplant_crate"
+}

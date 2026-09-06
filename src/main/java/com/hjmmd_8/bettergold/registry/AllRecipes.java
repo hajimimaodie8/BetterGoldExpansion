@@ -3,6 +3,7 @@ package com.hjmmd_8.bettergold.registry;
 import com.hjmmd_8.bettergold.bettergold;
 import com.hjmmd_8.bettergold.recipe.GoldenCowrieMoldRecipe;
 import com.hjmmd_8.bettergold.recipe.GoldenFoodRecipe;
+import com.hjmmd_8.bettergold.recipe.GoldenHoneyCookieRecipe;
 import com.hjmmd_8.bettergold.recipe.RawSturdygoldRecipe;
 
 import net.minecraft.core.registries.Registries;
@@ -12,7 +13,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * 自定义配方注册。
+ * 自定义配方注册（本体部分）。
+ * FD 联动配方（馅饼酥皮、桶装热可可分装）见 {@link com.hjmmd_8.bettergold.fd.FdRecipes}。
  */
 public class AllRecipes {
 
@@ -43,6 +45,11 @@ public class AllRecipes {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GoldenFoodRecipe>> GOLDEN_ICE_CREAM_RECIPE =
             RECIPE_SERIALIZERS.register("golden_ice_cream",
                     () -> new SimpleCraftingRecipeSerializer<>(cat -> new GoldenFoodRecipe(cat, 1)));
+
+    /** 金蜂蜜曲奇配方：返还玻璃瓶 */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GoldenHoneyCookieRecipe>> GOLDEN_HONEY_COOKIE_RECIPE =
+            RECIPE_SERIALIZERS.register("golden_honey_cookie",
+                    () -> new SimpleCraftingRecipeSerializer<>(GoldenHoneyCookieRecipe::new));
 
     private AllRecipes() {
     }

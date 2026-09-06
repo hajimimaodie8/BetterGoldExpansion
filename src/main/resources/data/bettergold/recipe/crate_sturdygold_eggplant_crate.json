@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "key": { "I": { "item": "bettergold:sturdygold_eggplant" } },
+  "result": { "id": "bettergold:sturdygold_eggplant_crate", "count": 1 }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [ " W ", "WCW", " W " ],
+  "key": {
+    "C": { "item": "bettergold:golden_chocolate_bar" },
+    "W": { "item": "bettergold:golden_wheat" }
+  },
+  "result": { "id": "bettergold:golden_chocolate_cookie", "count": 16 }
+}

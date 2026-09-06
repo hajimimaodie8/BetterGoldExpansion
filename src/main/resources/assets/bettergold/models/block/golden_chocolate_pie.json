@@ -1,0 +1,8 @@
+{
+  "parent": "bettergold:block/template_pie",
+  "textures": {
+    "top": "bettergold:block/golden_chocolate_pie_top",
+    "side": "bettergold:block/golden_pie_crust_side",
+    "bottom": "bettergold:block/golden_pie_crust_bottom"
+  }
+}

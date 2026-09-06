@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bettergold:item/fried_golden_egg"
+  }
+}

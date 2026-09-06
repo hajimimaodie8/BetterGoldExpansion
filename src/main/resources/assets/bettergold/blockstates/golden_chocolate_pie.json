@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "bites=0": { "model": "bettergold:block/golden_chocolate_pie" },
+    "bites=1": { "model": "bettergold:block/golden_chocolate_pie_slice1" },
+    "bites=2": { "model": "bettergold:block/golden_chocolate_pie_slice2" },
+    "bites=3": { "model": "bettergold:block/golden_chocolate_pie_slice3" },
+    "bites=4": { "model": "bettergold:block/golden_chocolate_pie_slice3" },
+    "bites=5": { "model": "bettergold:block/golden_chocolate_pie_slice3" },
+    "bites=6": { "model": "bettergold:block/golden_chocolate_pie_slice3" },
+    "bites=7": { "model": "bettergold:block/golden_chocolate_pie_slice3" }
+  }
+}

@@ -1,0 +1,10 @@
+{
+
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "farmersdelight:cutting",
+  "ingredients": [ { "item": "bettergold:golden_apple_pie" } ],
+  "result": [ { "item": { "count": 4, "id": "bettergold:golden_apple_pie_slice" } } ],
+  "tool": [ { "type": "farmersdelight:item_ability", "action": "knife_dig" }, { "tag": "c:tools/knife" } ]
+}

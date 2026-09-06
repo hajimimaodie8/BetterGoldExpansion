@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bettergold:item/golden_chocolate_pie"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "bettergold:add_enchanted_book",
+  "conditions": [],
+  "enchantment": "bettergold:take_gold_food",
+  "chance": 0.06,
+  "tables": [
+    "minecraft:chests/nether_bridge",
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/bastion_bridge",
+    "minecraft:chests/bastion_hoglin_stable",
+    "minecraft:chests/bastion_other",
+    "minecraft:chests/end_city_treasure"
+  ]
+}

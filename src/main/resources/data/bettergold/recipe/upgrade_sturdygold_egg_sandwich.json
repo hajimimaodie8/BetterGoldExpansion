@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NNN",
+    "NCN",
+    "NNN"
+  ],
+  "key": {
+    "N": { "item": "bettergold:sturdygold_nugget" },
+    "C": { "item": "bettergold:golden_egg_sandwich" }
+  },
+  "result": { "id": "bettergold:sturdygold_egg_sandwich", "count": 1 }
+}

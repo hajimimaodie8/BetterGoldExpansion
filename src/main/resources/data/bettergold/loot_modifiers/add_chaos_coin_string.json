@@ -1,0 +1,13 @@
+{
+  "type": "bettergold:add_chest_item",
+  "conditions": [],
+  "item": "bettergold:chaos_coin_string",
+  "chance": 0.06,
+  "tables": [
+    "minecraft:chests/nether_bridge",
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/bastion_bridge",
+    "minecraft:chests/bastion_hoglin_stable",
+    "minecraft:chests/bastion_other"
+  ]
+}

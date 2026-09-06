@@ -34,6 +34,14 @@ public class AllLootModifiers {
     public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<AddEggplantSeedsModifier>> ADD_EGGPLANT_SEEDS =
             GLM.register("add_eggplant_seeds", AddEggplantSeedsModifier.CODEC::get);
 
+    /** 通用：向指定箱子列表按概率添加物品（混沌金币串 6% 等） */
+    public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<AddChestItemModifier>> ADD_CHEST_ITEM =
+            GLM.register("add_chest_item", AddChestItemModifier.CODEC::get);
+
+    /** 通用：向指定箱子列表添加指定附魔的附魔书（取其金食 6% 等） */
+    public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<AddEnchantedBookModifier>> ADD_ENCHANTED_BOOK =
+            GLM.register("add_enchanted_book", AddEnchantedBookModifier.CODEC::get);
+
     /** 箱子 loot table 列表（含藏宝室） */
     private static final List<String> CHEST_TABLES = List.of(
             "minecraft:chests/nether_bridge",
@@ -80,6 +88,102 @@ public class AllLootModifiers {
             float effectiveChance = "minecraft:chests/bastion_treasure".equals(lootTableId.toString()) ? 0.66F : chance;
             if (context.getRandom().nextFloat() < effectiveChance) {
                 generatedLoot.add(new ItemStack(item));
+            }
+            return generatedLoot;
+        }
+
+        @Override
+        public MapCodec<? extends IGlobalLootModifier> codec() {
+            return CODEC.get();
+        }
+    }
+
+    /**
+     * 通用箱子战利品修改器：在指定箱子列表中以给定概率添加单个物品。
+     * JSON 形如 {"type":"bettergold:add_chest_item","item":"...","chance":0.06,"tables":["minecraft:chests/..."]}
+     */
+    public static class AddChestItemModifier extends LootModifier {
+
+        public static final java.util.function.Supplier<MapCodec<AddChestItemModifier>> CODEC =
+                () -> RecordCodecBuilder.mapCodec(inst -> inst.group(
+                        IGlobalLootModifier.LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(l -> l.conditions),
+                        net.minecraft.core.registries.BuiltInRegistries.ITEM
+                                .byNameCodec().fieldOf("item").forGetter(l -> l.item),
+                        net.minecraft.util.ExtraCodecs.POSITIVE_FLOAT.fieldOf("chance").forGetter(l -> l.chance),
+                        com.mojang.serialization.Codec.STRING.listOf().fieldOf("tables").forGetter(l -> l.tables)
+                ).apply(inst, AddChestItemModifier::new));
+
+        private final net.minecraft.world.item.Item item;
+        private final float chance;
+        private final List<String> tables;
+
+        public AddChestItemModifier(LootItemCondition[] conditions, net.minecraft.world.item.Item item,
+                                    float chance, List<String> tables) {
+            super(conditions);
+            this.item = item;
+            this.chance = chance;
+            this.tables = tables;
+        }
+
+        @Override
+        protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+            ResourceLocation lootTableId = context.getQueriedLootTableId();
+            if (lootTableId == null || !tables.contains(lootTableId.toString())) {
+                return generatedLoot;
+            }
+            if (context.getRandom().nextFloat() < chance) {
+                generatedLoot.add(new ItemStack(item));
+            }
+            return generatedLoot;
+        }
+
+        @Override
+        public MapCodec<? extends IGlobalLootModifier> codec() {
+            return CODEC.get();
+        }
+    }
+
+    /**
+     * 通用"箱子中添加指定附魔的附魔书"修改器。
+     * JSON 形如 {"type":"bettergold:add_enchanted_book","enchantment":"bettergold:take_gold_food",
+     * "chance":0.06,"tables":["minecraft:chests/..."]}
+     */
+    public static class AddEnchantedBookModifier extends LootModifier {
+
+        public static final java.util.function.Supplier<MapCodec<AddEnchantedBookModifier>> CODEC =
+                () -> RecordCodecBuilder.mapCodec(inst -> inst.group(
+                        IGlobalLootModifier.LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(l -> l.conditions),
+                        net.minecraft.resources.ResourceLocation.CODEC.fieldOf("enchantment").forGetter(l -> l.enchantmentId),
+                        net.minecraft.util.ExtraCodecs.POSITIVE_FLOAT.fieldOf("chance").forGetter(l -> l.chance),
+                        com.mojang.serialization.Codec.STRING.listOf().fieldOf("tables").forGetter(l -> l.tables)
+                ).apply(inst, AddEnchantedBookModifier::new));
+
+        private final net.minecraft.resources.ResourceLocation enchantmentId;
+        private final float chance;
+        private final List<String> tables;
+
+        public AddEnchantedBookModifier(LootItemCondition[] conditions, net.minecraft.resources.ResourceLocation enchantmentId,
+                                        float chance, List<String> tables) {
+            super(conditions);
+            this.enchantmentId = enchantmentId;
+            this.chance = chance;
+            this.tables = tables;
+        }
+
+        @Override
+        protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+            ResourceLocation lootTableId = context.getQueriedLootTableId();
+            if (lootTableId == null || !tables.contains(lootTableId.toString())) {
+                return generatedLoot;
+            }
+            if (context.getRandom().nextFloat() < chance) {
+                var enchantLookup = context.getResolver().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+                var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ENCHANTMENT, enchantmentId);
+                var holderOpt = enchantLookup.get(key);
+                if (holderOpt.isPresent()) {
+                    generatedLoot.add(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                            new net.minecraft.world.item.enchantment.EnchantmentInstance(holderOpt.get(), 1)));
+                }
             }
             return generatedLoot;
         }

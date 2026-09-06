@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
+  ],
+  "type": "farmersdelight:cooking",
+  "cookingtime": 200,
+  "experience": 0.5,
+  "ingredients": [
+    { "item": "bettergold:golden_chocolate_bar" }
+  ],
+  "recipe_book_tab": "drinks",
+  "container": { "count": 1, "id": "minecraft:bucket" },
+  "result": { "count": 1, "id": "bettergold:brewed_hot_cocoa_bucket" }
+}
