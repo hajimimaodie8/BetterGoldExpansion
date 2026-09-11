@@ -1,0 +1,11 @@
+﻿{
+    "conditions":  [
+
+                   ],
+    "tables":  [
+                   "minecraft:chests/ancient_city"
+               ],
+    "chance":  0.03,
+    "item":  "bettergold:curio_box",
+    "type":  "bettergold:add_chest_item"
+}

@@ -1,9 +1,9 @@
-{
-  "parent": "bettergold:block/template_pie_slice3",
-  "textures": {
-    "top": "bettergold:block/golden_apple_pie_top",
-    "side": "bettergold:block/golden_pie_crust_side",
-    "bottom": "bettergold:block/golden_pie_crust_bottom",
-    "inner": "bettergold:block/golden_apple_pie_side"
-  }
+﻿{
+    "textures":  {
+                     "bottom":  "bettergold:block/golden_pie_crust_bottom",
+                     "top":  "bettergold:block/golden_apple_pie_top",
+                     "side":  "bettergold:block/golden_pie_crust_side",
+                     "inner":  "bettergold:block/golden_apple_pie_side"
+                 },
+    "parent":  "bettergold:block/template_pie_slice3"
 }

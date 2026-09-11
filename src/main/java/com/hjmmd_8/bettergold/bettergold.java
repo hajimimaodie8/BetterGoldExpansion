@@ -123,6 +123,11 @@ public class bettergold {
         AllEffects.EFFECTS.register(modEventBus);
         // Register global loot modifiers
         AllLootModifiers.GLM.register(modEventBus);
+        // 新约 1.3：投掷物实体注册
+        com.hjmmd_8.bettergold.registry.AllEntities.ENTITY_TYPES.register(modEventBus);
+        // 新约 1.3：易金商人的工作站点（兴趣点）与村民职业
+        com.hjmmd_8.bettergold.registry.AllVillagers.POI_TYPES.register(modEventBus);
+        com.hjmmd_8.bettergold.registry.AllVillagers.PROFESSIONS.register(modEventBus);
         // Register brewing recipes on the game event bus (RegisterBrewingRecipesEvent is NOT an IModBusEvent)
         NeoForge.EVENT_BUS.addListener(ModBrewing::registerBrewingRecipes);
 
@@ -132,6 +137,8 @@ public class bettergold {
         NeoForge.EVENT_BUS.register(this);
         // Register the mod's business event handlers (tool loot drops, piglin neutrality, bartering boost, cowrie drops)
         NeoForge.EVENT_BUS.register(ModEvents.class);
+        // 新约 1.3：易金商人交易列表
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.event.VillageTrades.class);
 
         // FD（农夫乐事）联动模块：仅在 FD 已加载时挂载（物品/方块/配方/标签页/事件整体装配）
         if (com.hjmmd_8.bettergold.fd.FdModule.isLoaded()) {

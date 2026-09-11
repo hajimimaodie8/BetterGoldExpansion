@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "bettergold:golden_wheat_block" }
+  ],
+  "result": { "id": "bettergold:golden_wheat", "count": 9 }
+}

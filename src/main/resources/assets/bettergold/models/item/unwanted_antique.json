@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/unwanted_antique"
+                 },
+    "parent":  "minecraft:item/generated"
+}

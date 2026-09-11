@@ -1,9 +1,140 @@
-{
-  "parent": "bettergold:block/template_pie_slice3",
-  "textures": {
-    "top": "bettergold:block/sturdygold_chocolate_pie_top",
-    "side": "bettergold:block/sturdygold_pie_crust_side",
-    "bottom": "bettergold:block/sturdygold_pie_crust_bottom",
-    "inner": "bettergold:block/sturdygold_chocolate_pie_side"
-  }
+﻿{
+    "parent":  "block/block",
+    "elements":  [
+                     {
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                2,
+                                                                12,
+                                                                8,
+                                                                16
+                                                            ],
+                                                     "texture":  "#side"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               2,
+                                                               12,
+                                                               8,
+                                                               16
+                                                           ],
+                                                    "texture":  "#inner"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                8,
+                                                                12,
+                                                                14,
+                                                                16
+                                                            ],
+                                                     "texture":  "#inner"
+                                                 },
+                                       "up":  {
+                                                  "uv":  [
+                                                             8,
+                                                             2,
+                                                             14,
+                                                             8
+                                                         ],
+                                                  "texture":  "#top"
+                                              },
+                                       "east":  {
+                                                    "uv":  [
+                                                               8,
+                                                               12,
+                                                               14,
+                                                               16
+                                                           ],
+                                                    "texture":  "#side"
+                                                },
+                                       "down":  {
+                                                    "cullface":  "down",
+                                                    "texture":  "#bottom",
+                                                    "uv":  [
+                                                               8,
+                                                               8,
+                                                               14,
+                                                               14
+                                                           ]
+                                                }
+                                   },
+                         "from":  [
+                                      8,
+                                      0,
+                                      2
+                                  ],
+                         "to":  [
+                                    14,
+                                    4,
+                                    8
+                                ]
+                     },
+                     {
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                6,
+                                                                11,
+                                                                8,
+                                                                12
+                                                            ],
+                                                     "texture":  "#inner"
+                                                 },
+                                       "south":  {
+                                                     "uv":  [
+                                                                8,
+                                                                11,
+                                                                10,
+                                                                12
+                                                            ],
+                                                     "texture":  "#inner"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               6,
+                                                               11,
+                                                               8,
+                                                               12
+                                                           ],
+                                                    "texture":  "#inner"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             8,
+                                                             7,
+                                                             10,
+                                                             9
+                                                         ],
+                                                  "texture":  "#inner"
+                                              },
+                                       "east":  {
+                                                    "uv":  [
+                                                               8,
+                                                               11,
+                                                               10,
+                                                               12
+                                                           ],
+                                                    "texture":  "#inner"
+                                                }
+                                   },
+                         "from":  [
+                                      8,
+                                      4,
+                                      6
+                                  ],
+                         "to":  [
+                                    10,
+                                    5,
+                                    8
+                                ]
+                     }
+                 ],
+    "textures":  {
+                     "top":  "bettergold:block/sturdygold_chocolate_pie_top",
+                     "bottom":  "bettergold:block/sturdygold_pie_crust_bottom",
+                     "side":  "bettergold:block/sturdygold_pie_crust_side",
+                     "inner":  "bettergold:block/sturdygold_chocolate_pie_side",
+                     "particle":  "bettergold:block/sturdygold_chocolate_pie_top"
+                 }
 }

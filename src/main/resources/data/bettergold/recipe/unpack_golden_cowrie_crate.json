@@ -1,0 +1,13 @@
+﻿{
+    "ingredients":  [
+                        {
+                            "item":  "bettergold:golden_cowrie_crate"
+                        }
+                    ],
+    "category":  "misc",
+    "result":  {
+                   "id":  "bettergold:golden_cowrie",
+                   "count":  9
+               },
+    "type":  "minecraft:crafting_shapeless"
+}

@@ -66,9 +66,9 @@ public class FdItems {
 
     // ==================== 蛋奶沙司 / 苹果酒（厨锅饮品） ====================
 
-    /** 金光浆果蛋奶沙司：10.5 饥饿/12.6 饱和 + 6 分钟发光1（厨锅）（增益型，满饥饿可吃，可堆叠 16） */
+    /** 金光浆果蛋奶沙司：10.5 饥饿/12.6 饱和 + 6 分钟发光1（厨锅）（饮品，喝完返还玻璃瓶，可堆叠 16） */
     public static final DeferredItem<Item> GOLDEN_GLOW_CUSTARD = ITEMS.register("golden_glow_custard",
-            () -> new Item(new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
+            () -> new DrinkItem(new Item.Properties().stacksTo(16).food(new FoodProperties.Builder()
                     .nutrition(10).saturationModifier(1.26F).alwaysEdible()
                     .effect(new MobEffectInstance(MobEffects.GLOWING, 7200, 0), 1.0F)
                     .build())));
@@ -133,7 +133,7 @@ public class FdItems {
                     .build())));
 
     public static final DeferredItem<Item> STURDYGOLD_GLOW_CUSTARD = ITEMS.register("sturdygold_glow_custard",
-            () -> new Item(new Item.Properties().fireResistant().stacksTo(16).food(new FoodProperties.Builder()
+            () -> new DrinkItem(new Item.Properties().fireResistant().stacksTo(16).food(new FoodProperties.Builder()
                     .nutrition(21).saturationModifier(1.18F).alwaysEdible()
                     .effect(new MobEffectInstance(MobEffects.GLOWING, 19200, 0), 1.0F)
                     .build())));
@@ -176,16 +176,30 @@ public class FdItems {
     public static final DeferredItem<Item> STURDYGOLD_KNIFE =
             ITEMS.register("sturdygold_knife", () -> createSturdygoldKnife());
 
+    /** 古董屠刀（新约 1.3）：古董器具的乐事联动刀，伤害 4.5 / 攻速 2 */
+    public static final DeferredItem<Item> ANTIQUE_KNIFE =
+            ITEMS.register("antique_knife", () -> createKnife(AllTiers.ANTIQUE, 3.5F, -2.0F, false));
+
+    /** 幽冥断骸刀（新约 1.3）：下界合金古董器具的乐事联动刀，伤害 6.5 / 攻速 2 */
+    public static final DeferredItem<Item> NETHERITE_ANTIQUE_KNIFE =
+            ITEMS.register("netherite_antique_knife", () -> createKnife(AllTiers.NETHERITE_ANTIQUE, 5.5F, -2.0F, true));
+
     /** 反射创建 FD 的 KnifeItem；反射失败兜底为普通物品（此时 FD 必然已装，理论上不会失败） */
     private static Item createSturdygoldKnife() {
+        return createKnife(AllTiers.STURDYGOLD, 2.0F, -1.8F, true);
+    }
+
+    /** 通用：反射创建指定材质的 FD 小刀（damage/speed 为 createAttributes 参数） */
+    private static Item createKnife(net.minecraft.world.item.Tier tier, float damage, float speed, boolean fireResistant) {
         try {
             Class<?> knifeClass = Class.forName("vectorwing.farmersdelight.common.item.KnifeItem");
             var ctor = knifeClass.getConstructor(net.minecraft.world.item.Tier.class, Item.Properties.class);
-            // 万坚金刀（新约 1.2）：伤害 7.5（1 + 2.0 + 4.5）、攻速 2.2（4.0 - 1.8）
             Item.Properties props = new Item.Properties()
-                    .fireResistant()
-                    .attributes(net.minecraft.world.item.DiggerItem.createAttributes(AllTiers.STURDYGOLD, 2.0F, -1.8F));
-            return (Item) ctor.newInstance(AllTiers.STURDYGOLD, props);
+                    .attributes(net.minecraft.world.item.DiggerItem.createAttributes(tier, damage, speed));
+            if (fireResistant) {
+                props = props.fireResistant();
+            }
+            return (Item) ctor.newInstance(tier, props);
         } catch (ReflectiveOperationException | RuntimeException e) {
             return new Item(new Item.Properties().fireResistant());
         }

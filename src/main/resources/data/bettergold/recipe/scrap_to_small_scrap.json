@@ -1,0 +1,13 @@
+﻿{
+    "ingredients":  [
+                        {
+                            "item":  "minecraft:netherite_scrap"
+                        }
+                    ],
+    "category":  "misc",
+    "result":  {
+                   "id":  "bettergold:small_netherite_scrap",
+                   "count":  9
+               },
+    "type":  "minecraft:crafting_shapeless"
+}

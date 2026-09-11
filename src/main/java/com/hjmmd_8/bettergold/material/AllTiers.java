@@ -11,15 +11,28 @@ import net.minecraft.world.level.block.Block;
 import java.util.function.Supplier;
 
 /**
- * 万坚金(sturdygold)工具材料 SturdyGoldToolMaterial。
- * 数值：耐久 6144 / 挖掘速度 10.0 / 攻击加成 4.5 / 附魔值 30，
- * 修复材料：万坚金锭。挖掘等级：最高级（可挖下界合金级方块）。
+ * 工具材料。
+ * - STURDYGOLD：万坚金，耐久 6144 / 速度 10 / 攻击加成 4.5 / 附魔 30，修复用万坚金锭，下界合金级挖掘。
+ * - ANTIQUE（新约 1.3 古董器具）：耐久 200 / 速度 8 / 附魔 12，修复用"没人要的老古董"，铁级挖掘。
+ * - NETHERITE_ANTIQUE（新约 1.3 下界合金古董器具）：耐久 2031 / 速度 11 / 附魔 15，
+ *   修复用下界合金锭，下界合金级挖掘（可挖远古残骸）。
+ *
+ * 挖掘等级由 incorrectBlocks 决定：INCORRECT_FOR_IRON_TOOL = #needs_diamond_tool（铁级），
+ * INCORRECT_FOR_NETHERITE_TOOL = 空集（下界合金级，可挖一切）。
  */
 public enum AllTiers implements Tier {
 
     STURDYGOLD(6144, 10.0F, 4.5F, 30,
             BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
-            () -> Ingredient.of(AllItems.STURDYGOLD_INGOT.get()));
+            () -> Ingredient.of(AllItems.STURDYGOLD_INGOT.get())),
+
+    ANTIQUE(200, 8.0F, 0.0F, 12,
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            () -> Ingredient.of(AllItems.UNWANTED_ANTIQUE.get())),
+
+    NETHERITE_ANTIQUE(2031, 11.0F, 0.0F, 15,
+            BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
+            () -> Ingredient.of(net.minecraft.world.item.Items.NETHERITE_INGOT));
 
     private final int uses;
     private final float speed;

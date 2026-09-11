@@ -1,0 +1,12 @@
+﻿{
+    "textures":  {
+                     "north":  "bettergold:block/gold_exchange_counter_front",
+                     "west":  "bettergold:block/gold_exchange_counter_side",
+                     "south":  "bettergold:block/gold_exchange_counter_side",
+                     "particle":  "bettergold:block/gold_exchange_counter_side",
+                     "up":  "bettergold:block/gold_exchange_counter_top",
+                     "east":  "bettergold:block/gold_exchange_counter_side",
+                     "down":  "bettergold:block/gold_exchange_counter_side"
+                 },
+    "parent":  "minecraft:block/cube"
+}

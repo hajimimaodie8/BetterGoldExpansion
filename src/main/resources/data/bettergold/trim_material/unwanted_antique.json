@@ -1,0 +1,8 @@
+﻿{
+    "ingredient":  "bettergold:unwanted_antique",
+    "item_model_index":  0.2,
+    "asset_name":  "unwanted_antique",
+    "description":  {
+                        "translate":  "trim_material.bettergold.unwanted_antique"
+                    }
+}

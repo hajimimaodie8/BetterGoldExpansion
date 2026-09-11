@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/treasure_gift_box"
+                 },
+    "parent":  "minecraft:item/generated"
+}

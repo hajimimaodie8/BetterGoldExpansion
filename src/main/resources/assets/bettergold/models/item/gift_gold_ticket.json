@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/gift_gold_ticket"
+                 },
+    "parent":  "minecraft:item/generated"
+}

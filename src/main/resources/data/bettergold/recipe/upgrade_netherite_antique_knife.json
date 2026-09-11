@@ -1,0 +1,22 @@
+﻿{
+    "neoforge:conditions":  [
+                                {
+                                    "type":  "neoforge:mod_loaded",
+                                    "modid":  "farmersdelight"
+                                }
+                            ],
+    "base":  {
+                 "item":  "bettergold:antique_knife"
+             },
+    "result":  {
+                   "id":  "bettergold:netherite_antique_knife"
+               },
+    "type":  "minecraft:smithing_transform",
+    "addition":  {
+                     "item":  "minecraft:netherite_ingot"
+                 },
+    "category":  "equipment",
+    "template":  {
+                     "item":  "bettergold:netherite_antique_upgrade_smithing_template"
+                 }
+}

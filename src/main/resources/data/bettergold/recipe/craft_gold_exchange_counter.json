@@ -1,0 +1,17 @@
+﻿{
+    "key":  {
+                "S":  {
+                          "tag":  "minecraft:wooden_slabs"
+                      }
+            },
+    "category":  "misc",
+    "pattern":  [
+                    "SS",
+                    "SS"
+                ],
+    "result":  {
+                   "id":  "bettergold:gold_exchange_counter",
+                   "count":  1
+               },
+    "type":  "minecraft:crafting_shaped"
+}

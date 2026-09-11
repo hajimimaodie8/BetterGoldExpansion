@@ -34,6 +34,16 @@ public class FdRecipes {
             RECIPE_SERIALIZERS.register("sturdygold_brewed_hot_cocoa_bucket_to_bottle",
                     () -> new SimpleCraftingRecipeSerializer<>(cat -> new BucketToBottleRecipe(cat, 1)));
 
+    /** 炼金贝肉串：2 木棍 + 金胡萝卜 + 金钱茄 + 炼金贝肉 → 2 串（返还金钱贝） */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AlchemicalMeatRecipe>> ALCHEMICAL_MEAT_SKEWER_RECIPE =
+            RECIPE_SERIALIZERS.register("alchemical_meat_skewer",
+                    () -> new SimpleCraftingRecipeSerializer<>(cat -> new AlchemicalMeatRecipe(cat, 0)));
+
+    /** 炼金贝肉三明治：金砖面包 + 炼金贝肉 → 1 个（返还金钱贝） */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AlchemicalMeatRecipe>> ALCHEMICAL_MEAT_SANDWICH_RECIPE =
+            RECIPE_SERIALIZERS.register("alchemical_meat_sandwich",
+                    () -> new SimpleCraftingRecipeSerializer<>(cat -> new AlchemicalMeatRecipe(cat, 1)));
+
     private FdRecipes() {
     }
 }

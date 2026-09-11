@@ -1,0 +1,8 @@
+﻿{
+    "ingredient":  "bettergold:sturdygold_ingot",
+    "item_model_index":  0.1,
+    "asset_name":  "sturdygold",
+    "description":  {
+                        "translate":  "trim_material.bettergold.sturdygold"
+                    }
+}

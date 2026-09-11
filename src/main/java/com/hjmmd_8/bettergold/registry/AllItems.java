@@ -387,14 +387,115 @@ public class AllItems {
                     .fireResistant()
                     .attributes(HoeItem.createAttributes(AllTiers.STURDYGOLD, 1.5F, 0.2F))));
 
+    // ==================== 新约 1.3：材料 ====================
+
+    /** 礼品金票：易金商人的流通凭证；猪灵交易也有 6% 概率掉落（触发"奢华"提示） */
+    public static final DeferredItem<Item> GIFT_GOLD_TICKET = ITEMS.registerSimpleItem("gift_gold_ticket");
+
+    /** 下界合金尘埃：下界合金古董器具挖掘/攻击时产出，9 个可合成 1 个下界合金碎片 */
+    public static final DeferredItem<Item> NETHERITE_DUST = ITEMS.registerSimpleItem("netherite_dust");
+
+    /** 小下界合金碎片：下界合金碎片可拆成 9 个，9 个又能合回 1 个碎片 */
+    public static final DeferredItem<Item> SMALL_NETHERITE_SCRAP = ITEMS.registerSimpleItem("small_netherite_scrap");
+
+    /** 没人要的老古董：投掷物（3 点伤害）+ 盔甲纹饰材料 + 古董器具修复材料 */
+    public static final DeferredItem<com.hjmmd_8.bettergold.item.AntiqueItem> UNWANTED_ANTIQUE =
+            ITEMS.register("unwanted_antique", () -> new com.hjmmd_8.bettergold.item.AntiqueItem(new Item.Properties()));
+
+    // ==================== 新约 1.3：礼品盒（右键开启，无冷却） ====================
+
+    public static final DeferredItem<com.hjmmd_8.bettergold.item.GiftBoxItem> TREASURE_GIFT_BOX =
+            ITEMS.register("treasure_gift_box", () -> new com.hjmmd_8.bettergold.item.GiftBoxItem(
+                    new Item.Properties().stacksTo(16), com.hjmmd_8.bettergold.item.GiftBoxItem.Kind.TREASURE));
+
+    public static final DeferredItem<com.hjmmd_8.bettergold.item.GiftBoxItem> CURIO_BOX =
+            ITEMS.register("curio_box", () -> new com.hjmmd_8.bettergold.item.GiftBoxItem(
+                    new Item.Properties().stacksTo(16), com.hjmmd_8.bettergold.item.GiftBoxItem.Kind.CURIO));
+
+    public static final DeferredItem<com.hjmmd_8.bettergold.item.GiftBoxItem> IDOL_GIFT_BOX =
+            ITEMS.register("idol_gift_box", () -> new com.hjmmd_8.bettergold.item.GiftBoxItem(
+                    new Item.Properties().stacksTo(16), com.hjmmd_8.bettergold.item.GiftBoxItem.Kind.IDOL));
+
+    public static final DeferredItem<com.hjmmd_8.bettergold.item.GiftBoxItem> GOURMET_BOX =
+            ITEMS.register("gourmet_box", () -> new com.hjmmd_8.bettergold.item.GiftBoxItem(
+                    new Item.Properties().stacksTo(16), com.hjmmd_8.bettergold.item.GiftBoxItem.Kind.GOURMET));
+
+    // ==================== 新约 1.3：下界合金古董升级模板 ====================
+
+    public static final DeferredItem<SmithingTemplateItem> NETHERITE_ANTIQUE_UPGRADE_TEMPLATE =
+            ITEMS.register("netherite_antique_upgrade_smithing_template", () -> new SmithingTemplateItem(
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.applies_to"),
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.ingredients"),
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.upgrade_description"),
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.base_slot_description"),
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.additions_slot_description"),
+                    List.of(
+                            ResourceLocation.withDefaultNamespace("item/empty_slot_sword"),
+                            ResourceLocation.withDefaultNamespace("item/empty_slot_pickaxe"),
+                            ResourceLocation.withDefaultNamespace("item/empty_slot_axe"),
+                            ResourceLocation.withDefaultNamespace("item/empty_slot_shovel"),
+                            ResourceLocation.withDefaultNamespace("item/empty_slot_hoe")
+                    ),
+                    List.of(ResourceLocation.withDefaultNamespace("item/empty_slot_ingot"))
+            ));
+
+    // ==================== 新约 1.3：古董器具（耐久 200 / 附魔 12 / 效率 8） ====================
+
+    public static final DeferredItem<SwordItem> ANTIQUE_SWORD = ITEMS.register("antique_sword",
+            () -> new SwordItem(AllTiers.ANTIQUE, new Item.Properties()
+                    .attributes(SwordItem.createAttributes(AllTiers.ANTIQUE, 6.0F, -2.4F)))); // 伤害 7 / 攻速 1.6
+
+    public static final DeferredItem<AxeItem> ANTIQUE_AXE = ITEMS.register("antique_axe",
+            () -> new AxeItem(AllTiers.ANTIQUE, new Item.Properties()
+                    .attributes(AxeItem.createAttributes(AllTiers.ANTIQUE, 8.0F, -3.0F)))); // 伤害 9 / 攻速 1
+
+    public static final DeferredItem<PickaxeItem> ANTIQUE_PICKAXE = ITEMS.register("antique_pickaxe",
+            () -> new PickaxeItem(AllTiers.ANTIQUE, new Item.Properties()
+                    .attributes(PickaxeItem.createAttributes(AllTiers.ANTIQUE, 4.0F, -2.8F)))); // 伤害 5 / 攻速 1.2
+
+    public static final DeferredItem<ShovelItem> ANTIQUE_SHOVEL = ITEMS.register("antique_shovel",
+            () -> new ShovelItem(AllTiers.ANTIQUE, new Item.Properties()
+                    .attributes(ShovelItem.createAttributes(AllTiers.ANTIQUE, 4.5F, -3.0F)))); // 伤害 5.5 / 攻速 1
+
+    public static final DeferredItem<HoeItem> ANTIQUE_HOE = ITEMS.register("antique_hoe",
+            () -> new HoeItem(AllTiers.ANTIQUE, new Item.Properties()
+                    .attributes(HoeItem.createAttributes(AllTiers.ANTIQUE, 3.0F, 0.0F)))); // 伤害 4 / 攻速 4
+
+    // ==================== 新约 1.3：下界合金古董器具（耐久 2031 / 附魔 15 / 效率 11） ====================
+
+    public static final DeferredItem<SwordItem> NETHERITE_ANTIQUE_SWORD = ITEMS.register("netherite_antique_sword",
+            () -> new SwordItem(AllTiers.NETHERITE_ANTIQUE, new Item.Properties()
+                    .fireResistant()
+                    .attributes(SwordItem.createAttributes(AllTiers.NETHERITE_ANTIQUE, 8.0F, -2.4F)))); // 伤害 9 / 攻速 1.6
+
+    public static final DeferredItem<AxeItem> NETHERITE_ANTIQUE_AXE = ITEMS.register("netherite_antique_axe",
+            () -> new AxeItem(AllTiers.NETHERITE_ANTIQUE, new Item.Properties()
+                    .fireResistant()
+                    .attributes(AxeItem.createAttributes(AllTiers.NETHERITE_ANTIQUE, 10.0F, -3.0F)))); // 伤害 11 / 攻速 1
+
+    public static final DeferredItem<PickaxeItem> NETHERITE_ANTIQUE_PICKAXE = ITEMS.register("netherite_antique_pickaxe",
+            () -> new PickaxeItem(AllTiers.NETHERITE_ANTIQUE, new Item.Properties()
+                    .fireResistant()
+                    .attributes(PickaxeItem.createAttributes(AllTiers.NETHERITE_ANTIQUE, 6.0F, -2.8F)))); // 伤害 7 / 攻速 1.2
+
+    public static final DeferredItem<ShovelItem> NETHERITE_ANTIQUE_SHOVEL = ITEMS.register("netherite_antique_shovel",
+            () -> new ShovelItem(AllTiers.NETHERITE_ANTIQUE, new Item.Properties()
+                    .fireResistant()
+                    .attributes(ShovelItem.createAttributes(AllTiers.NETHERITE_ANTIQUE, 6.5F, -3.0F)))); // 伤害 7.5 / 攻速 1
+
+    public static final DeferredItem<HoeItem> NETHERITE_ANTIQUE_HOE = ITEMS.register("netherite_antique_hoe",
+            () -> new HoeItem(AllTiers.NETHERITE_ANTIQUE, new Item.Properties()
+                    .fireResistant()
+                    .attributes(HoeItem.createAttributes(AllTiers.NETHERITE_ANTIQUE, 5.0F, 0.0F)))); // 伤害 6 / 攻速 4
+
     // ==================== 万坚金盔甲（防火防爆 + 单件即可让猪灵中立） ====================
-    // 耐久：头盔 1221 / 胸甲 1176 / 护腿 1665 / 靴子 1443
+    // 耐久：头盔 1221 / 胸甲 1776 / 护腿 1665 / 靴子 1443
 
     public static final DeferredItem<ArmorItem> STURDYGOLD_HELMET = ITEMS.register("sturdygold_helmet",
             () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.HELMET, new Item.Properties().durability(1221).fireResistant()));
 
     public static final DeferredItem<ArmorItem> STURDYGOLD_CHESTPLATE = ITEMS.register("sturdygold_chestplate",
-            () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(1176).fireResistant()));
+            () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(1776).fireResistant()));
 
     public static final DeferredItem<ArmorItem> STURDYGOLD_LEGGINGS = ITEMS.register("sturdygold_leggings",
             () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(1665).fireResistant()));

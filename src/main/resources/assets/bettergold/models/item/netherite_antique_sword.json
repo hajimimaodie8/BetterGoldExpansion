@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/netherite_antique_sword"
+                 },
+    "parent":  "minecraft:item/handheld"
+}

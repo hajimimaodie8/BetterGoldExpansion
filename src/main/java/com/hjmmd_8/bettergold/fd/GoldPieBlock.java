@@ -2,6 +2,8 @@ package com.hjmmd_8.bettergold.fd;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +20,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.Supplier;
@@ -25,11 +28,11 @@ import java.util.function.Supplier;
 /**
  * 金蛋糕 / 金馅饼方块：仿 FD PieBlock（放置后可空手吃一份或持刀切一片）。
  *
- * - 空手右键：吃一份（应用 biteFood 的饥饿/饱和与效果；方块 BITES+1，吃完移除）；
- * - 持小刀右键：切出一片（slice item 落到背包；BITES+1，切完移除）。
+ * - 空手右键：吃一份（应用 biteFood 的饥饿/饱和与效果并播放吃音效；BITES+1，吃完移除）；
+ * - 持小刀右键：切出一片（slice item 落到背包并播放切块音效；BITES+1，切完移除）。
  *
  * BITES 表示已吃/切掉多少份（0 = 完整）。maxBites 份吃完后方块移除。
- * 每个方块实例有自己的 BITES 属性（上限 = maxBites-1），供 blockstate 精确枚举。
+ * 几何完全对齐 blockstate 引用的模型（完整/切片均为 FD 风格造型），因此准心碰撞框与外观一致。
  */
 public class GoldPieBlock extends Block {
 
@@ -42,6 +45,8 @@ public class GoldPieBlock extends Block {
     private final Supplier<Item> sliceItem;
     /** 完整时可吃/切的总份数（蛋糕 7 / 派 4） */
     private final int maxBites;
+    /** 每 bite 后的剩余形状（index = bites 数，与 blockstate 模型一一对应） */
+    private final VoxelShape[] shapesByBites;
 
     public GoldPieBlock(BlockBehaviour.Properties properties, FoodProperties biteFood,
                         Supplier<Item> sliceItem, int maxBites) {
@@ -49,12 +54,45 @@ public class GoldPieBlock extends Block {
         this.biteFood = biteFood;
         this.sliceItem = sliceItem;
         this.maxBites = maxBites;
+        this.shapesByBites = buildShapesByBites(maxBites);
         this.registerDefaultState(this.stateDefinition.any().setValue(BITES, 0));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BITES);
+    }
+
+    /**
+     * 依据份数构建每 bite 剩余形状，几何与 blockstate 模型（bites=0..maxBites-1）逐一对齐：
+     * 完整为一整块；之后每咬一口从模型对应位置消去一块（FD 派：沿 -x/+z 的两段式切片）。
+     * 蛋糕（7 份）沿 x 从西侧逐份消去（剩东侧），保持原版蛋糕碰撞习惯。
+     */
+    private static VoxelShape[] buildShapesByBites(int maxBites) {
+        VoxelShape[] shapes = new VoxelShape[maxBites];
+        if (maxBites >= 7) {
+            // ---- 蛋糕：7 份，整块 1..15 × 高 8，从西往东逐份吃，剩东侧 ----
+            for (int b = 0; b < maxBites; b++) {
+                double fromX = 1.0 + b * (14.0 / maxBites);
+                shapes[b] = Block.box(Math.min(13.0, fromX), 0.0, 1.0, 15.0, 8.0, 15.0);
+            }
+            return shapes;
+        }
+        // ---- 派：4 份，2..14 × 高 4，仿 FD 切片（slice1=剩东北大块+东南条，之后剩东/南小块）----
+        shapes[0] = Block.box(2, 0, 2, 14, 4, 14);
+        if (maxBites >= 2) {
+            // bite1 后：剩 x2..14, z2..8（北横条）＋ x2..8, z8..14（西竖条）
+            shapes[1] = Shapes.or(Block.box(2, 0, 2, 14, 4, 8), Block.box(2, 0, 8, 8, 4, 14));
+        }
+        if (maxBites >= 3) {
+            // bite2 后：剩 x2..14, z2..8（北横条）
+            shapes[2] = Block.box(2, 0, 2, 14, 4, 8);
+        }
+        if (maxBites >= 4) {
+            // bite3 后：剩 x8..14, z2..8（东小块）
+            shapes[3] = Block.box(8, 0, 2, 14, 4, 8);
+        }
+        return shapes;
     }
 
     @Override
@@ -68,21 +106,10 @@ public class GoldPieBlock extends Block {
         return shapeFor(state);
     }
 
-    /** 依据 bites 计算剩余方块形状（与 blockstate 模型方向一致：从西侧被吃，剩余靠东） */
+    /** 依据 bites 返回与模型一致的剩余形状 */
     private VoxelShape shapeFor(BlockState state) {
-        int bites = state.getValue(BITES);
-        if (bites >= this.maxBites) {
-            return Block.box(0, 0, 0, 0, 0, 0); // 已吃完（防御）
-        }
-        if (this.maxBites >= 7) {
-            // 蛋糕：整格 1..15 × 高 8（原版蛋糕尺寸），每 bite 从西侧吃掉 2px，剩东侧
-            double fromX = 1.0 + bites * (14.0 / this.maxBites);
-            return Block.box(Math.min(13.0, fromX), 0.0, 1.0, 15.0, 8.0, 15.0);
-        } else {
-            // 派：2..14 × 高 4（FD 派尺寸），每 bite 从西侧吃掉一块，剩东侧
-            double fromX = 2.0 + bites * (12.0 / this.maxBites);
-            return Block.box(Math.min(12.5, fromX), 0.0, 2.0, 14.0, 4.0, 14.0);
-        }
+        int bites = Math.min(state.getValue(BITES), this.maxBites - 1);
+        return this.shapesByBites[bites];
     }
 
     @Override
@@ -116,9 +143,13 @@ public class GoldPieBlock extends Block {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-    /** 空手吃一份 */
+    /** 空手吃一份：播放吃音效（仿 FD PieBlock，GENERIC_EAT / PLAYERS 声道） */
     private void eatBite(Level level, BlockPos pos, BlockState state, Player player) {
         player.getFoodData().eat(biteFood);
+        // 吃音效：让整个区域玩家都能听到（与 FD 原版一致）
+        level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.PLAYERS, 0.9F, 1.0F);
+        // 吃派嘴部动画/事件
+        level.gameEvent(player, net.minecraft.world.level.gameevent.GameEvent.EAT, pos);
         for (FoodProperties.PossibleEffect possible : biteFood.effects()) {
             if (level.random.nextFloat() < possible.probability()) {
                 var instance = possible.effect();
@@ -130,7 +161,7 @@ public class GoldPieBlock extends Block {
         advanceBites(level, pos, state);
     }
 
-    /** 持刀切一片 */
+    /** 持刀切一片：播放切食物音效（用 FD 的 slicing 通用事件不可行时回退到吃音效），产出 slice */
     private void cutSlice(Level level, BlockPos pos, BlockState state, Player player) {
         ItemStack slice = new ItemStack(this.sliceItem.get());
         if (!player.getInventory().add(slice)) {

@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/antique_knife"
+                 },
+    "parent":  "minecraft:item/handheld"
+}

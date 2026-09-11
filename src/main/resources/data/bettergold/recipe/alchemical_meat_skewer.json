@@ -2,13 +2,5 @@
   "neoforge:conditions": [
     { "type": "neoforge:mod_loaded", "modid": "farmersdelight" }
   ],
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    { "item": "minecraft:stick" },
-    { "item": "minecraft:stick" },
-    { "item": "minecraft:golden_carrot" },
-    { "item": "bettergold:golden_eggplant" },
-    { "item": "bettergold:alchemical_meat" }
-  ],
-  "result": { "id": "bettergold:alchemical_meat_skewer", "count": 2 }
+  "type": "bettergold:alchemical_meat_skewer"
 }

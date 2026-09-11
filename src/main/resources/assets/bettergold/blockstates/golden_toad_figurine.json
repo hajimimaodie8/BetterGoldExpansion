@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "bettergold:block/golden_toad_figurine" },
+    "facing=east": { "model": "bettergold:block/golden_toad_figurine", "y": 90 },
+    "facing=south": { "model": "bettergold:block/golden_toad_figurine", "y": 180 },
+    "facing=west": { "model": "bettergold:block/golden_toad_figurine", "y": 270 }
+  }
+}

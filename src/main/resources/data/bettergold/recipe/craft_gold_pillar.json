@@ -1,0 +1,17 @@
+﻿{
+    "key":  {
+                "B":  {
+                          "item":  "minecraft:gold_block"
+                      }
+            },
+    "category":  "building",
+    "pattern":  [
+                    "B",
+                    "B"
+                ],
+    "result":  {
+                   "id":  "bettergold:gold_pillar",
+                   "count":  2
+               },
+    "type":  "minecraft:crafting_shaped"
+}

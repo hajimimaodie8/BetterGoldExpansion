@@ -3,6 +3,8 @@
   "entries": [
     "bettergold:add_eggplant_seeds",
     "bettergold:add_chaos_coin_string",
-    "bettergold:add_take_gold_food_book"
+    "bettergold:add_take_gold_food_book",
+    "bettergold:add_curio_box",
+    "bettergold:add_unwanted_antique"
   ]
 }

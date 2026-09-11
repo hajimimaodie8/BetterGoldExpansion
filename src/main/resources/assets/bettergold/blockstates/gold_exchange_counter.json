@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"bettergold:block/gold_exchange_counter"},"facing=east":{"model":"bettergold:block/gold_exchange_counter","y":90},"facing=south":{"model":"bettergold:block/gold_exchange_counter","y":180},"facing=west":{"model":"bettergold:block/gold_exchange_counter","y":270}}}

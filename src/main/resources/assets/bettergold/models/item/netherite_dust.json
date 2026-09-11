@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/netherite_dust"
+                 },
+    "parent":  "minecraft:item/generated"
+}

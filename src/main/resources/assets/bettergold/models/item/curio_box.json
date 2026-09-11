@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/curio_box"
+                 },
+    "parent":  "minecraft:item/generated"
+}

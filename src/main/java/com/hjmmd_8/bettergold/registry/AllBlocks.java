@@ -1,6 +1,7 @@
 package com.hjmmd_8.bettergold.registry;
 
 import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.block.FigurineBlock;
 import com.hjmmd_8.bettergold.block.GoldCropBlock;
 import com.hjmmd_8.bettergold.block.GoldInfusedFarmlandBlock;
 
@@ -13,6 +14,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChainBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.LanternBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -201,17 +203,19 @@ public class AllBlocks {
 
     // ==================== 金作物相关方块 ====================
 
-    /** 金染土：用锄头点一下变成金染耕地 */
+    /** 金染土：用锄头点一下变成金染耕地（需要铁质以上锹采集，否则不掉落） */
     public static final DeferredBlock<Block> GOLD_INFUSED_DIRT = BLOCKS.register("gold_infused_dirt",
             () -> new Block(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.DIRT)
+                    .requiresCorrectToolForDrops()
                     .strength(0.5F)
                     .sound(net.minecraft.world.level.block.SoundType.GRAVEL)));
 
-    /** 金染耕地：金作物专用耕地，无需放水湿润 */
+    /** 金染耕地：金作物专用耕地，无需放水湿润（同样需要铁质以上锹采集） */
     public static final DeferredBlock<GoldInfusedFarmlandBlock> GOLD_INFUSED_FARMLAND = BLOCKS.register("gold_infused_farmland",
             () -> new GoldInfusedFarmlandBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.DIRT)
+                    .requiresCorrectToolForDrops()
                     .strength(0.6F)
                     .sound(net.minecraft.world.level.block.SoundType.GRAVEL)
                     .randomTicks()));
@@ -258,20 +262,62 @@ public class AllBlocks {
                     () -> AllItems.GOLDEN_WHEAT_SEEDS.get(),
                     () -> AllItems.GOLDEN_WHEAT.get()));
 
-    // ==================== 新约 1.2：筐装存储方块（9 同种物品合成 1 筐） ====================
+    // ==================== 新约 1.2：筐装存储方块（9 同种物品合成 1 筐；1 筐可拆回 9 材料） ====================
+    // 统一硬度：全部 2.0F（与普通木箱一致），避免各筐间强度不一致。
+    private static BlockBehaviour.Properties crateProps() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(2.0F).sound(net.minecraft.world.level.block.SoundType.WOOD);
+    }
 
-    public static final DeferredBlock<Block> GOLDEN_EGG_CRATE = BLOCKS.register("golden_egg_crate",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
-    public static final DeferredBlock<Block> GOLDEN_EGGPLANT_CRATE = BLOCKS.register("golden_eggplant_crate",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
-    public static final DeferredBlock<Block> GOLDEN_COWRIE_CRATE = BLOCKS.register("golden_cowrie_crate",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
-    public static final DeferredBlock<Block> STURDYGOLD_CARROT_CRATE = BLOCKS.register("sturdygold_carrot_crate",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
-    public static final DeferredBlock<Block> STURDYGOLD_APPLE_CRATE = BLOCKS.register("sturdygold_apple_crate",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
-    public static final DeferredBlock<Block> STURDYGOLD_EGGPLANT_CRATE = BLOCKS.register("sturdygold_eggplant_crate",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final DeferredBlock<Block> GOLDEN_EGG_CRATE = BLOCKS.register("golden_egg_crate", () -> new Block(crateProps()));
+    public static final DeferredBlock<Block> GOLDEN_EGGPLANT_CRATE = BLOCKS.register("golden_eggplant_crate", () -> new Block(crateProps()));
+    public static final DeferredBlock<Block> GOLDEN_COWRIE_CRATE = BLOCKS.register("golden_cowrie_crate", () -> new Block(crateProps()));
+    public static final DeferredBlock<Block> STURDYGOLD_CARROT_CRATE = BLOCKS.register("sturdygold_carrot_crate", () -> new Block(crateProps()));
+    public static final DeferredBlock<Block> STURDYGOLD_APPLE_CRATE = BLOCKS.register("sturdygold_apple_crate", () -> new Block(crateProps()));
+    public static final DeferredBlock<Block> STURDYGOLD_EGGPLANT_CRATE = BLOCKS.register("sturdygold_eggplant_crate", () -> new Block(crateProps()));
+
+    // ==================== 新约 1.3：柱子 / 易金柜台 / 金雕摆件 ====================
+
+    /** 金柱：金质柱形装饰方块（侧面与顶底同为金柱贴图） */
+    public static final DeferredBlock<RotatedPillarBlock> GOLD_PILLAR = BLOCKS.register("gold_pillar",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 6.0F)
+                    .sound(net.minecraft.world.level.block.SoundType.METAL)));
+
+    /** 万坚金柱：顶底套用万坚金块贴图 */
+    public static final DeferredBlock<RotatedPillarBlock> STURDYGOLD_PILLAR = BLOCKS.register("sturdygold_pillar",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .requiresCorrectToolForDrops()
+                    .strength(55.0F, 1500.0F)
+                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK)));
+
+    /** 易金柜台：易金商人的工作站点（正面朝向玩家） */
+    public static final DeferredBlock<com.hjmmd_8.bettergold.block.GoldExchangeCounterBlock> GOLD_EXCHANGE_COUNTER =
+            BLOCKS.register("gold_exchange_counter",
+                    () -> new com.hjmmd_8.bettergold.block.GoldExchangeCounterBlock(BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.GOLD)
+                            .strength(2.5F)
+                            .sound(net.minecraft.world.level.block.SoundType.WOOD)));
+
+    /** 金雕摆件通用属性：装饰用小方块，不遮挡；可四向放置，形状由 {@link FigurineBlock} 按朝向旋转 */
+    private static BlockBehaviour.Properties figurineProps() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.GOLD)
+                .strength(1.0F)
+                .sound(net.minecraft.world.level.block.SoundType.METAL)
+                .noOcclusion();
+    }
+
+    public static final DeferredBlock<Block> GOLDEN_CAT_FIGURINE = BLOCKS.register("golden_cat_figurine",
+            () -> new FigurineBlock(Block.box(4.32, 0.0, 0.0, 11.68, 5.42, 16.0), figurineProps()));
+    public static final DeferredBlock<Block> GOLDEN_TOAD_FIGURINE = BLOCKS.register("golden_toad_figurine",
+            () -> new FigurineBlock(Block.box(4.0, 0.0, 4.0, 12.0, 6.0, 12.0), figurineProps()));
+    public static final DeferredBlock<Block> GOLDEN_ENDERMAN_FIGURINE = BLOCKS.register("golden_enderman_figurine",
+            () -> new FigurineBlock(Block.box(5.58, 0.0, 5.58, 10.42, 16.0, 10.42), figurineProps()));
+    public static final DeferredBlock<Block> GOLDEN_CREEPER_FIGURINE = BLOCKS.register("golden_creeper_figurine",
+            () -> new FigurineBlock(Block.box(4.0, 0.0, 4.0, 12.0, 14.5, 12.0), figurineProps()));
 
     // ==================== BlockItem ====================
 
@@ -310,6 +356,17 @@ public class AllBlocks {
     public static final DeferredItem<BlockItem> STURDYGOLD_CARROT_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_carrot_crate", STURDYGOLD_CARROT_CRATE);
     public static final DeferredItem<BlockItem> STURDYGOLD_APPLE_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_apple_crate", STURDYGOLD_APPLE_CRATE);
     public static final DeferredItem<BlockItem> STURDYGOLD_EGGPLANT_CRATE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_eggplant_crate", STURDYGOLD_EGGPLANT_CRATE);
+
+    // ==================== 新约 1.3 BlockItems ====================
+
+    public static final DeferredItem<BlockItem> GOLD_PILLAR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_pillar", GOLD_PILLAR);
+    public static final DeferredItem<BlockItem> STURDYGOLD_PILLAR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_pillar", STURDYGOLD_PILLAR);
+    public static final DeferredItem<BlockItem> GOLD_EXCHANGE_COUNTER_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_exchange_counter", GOLD_EXCHANGE_COUNTER);
+
+    public static final DeferredItem<BlockItem> GOLDEN_CAT_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_cat_figurine", GOLDEN_CAT_FIGURINE);
+    public static final DeferredItem<BlockItem> GOLDEN_TOAD_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_toad_figurine", GOLDEN_TOAD_FIGURINE);
+    public static final DeferredItem<BlockItem> GOLDEN_ENDERMAN_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_enderman_figurine", GOLDEN_ENDERMAN_FIGURINE);
+    public static final DeferredItem<BlockItem> GOLDEN_CREEPER_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_creeper_figurine", GOLDEN_CREEPER_FIGURINE);
 
     private AllBlocks() {
     }

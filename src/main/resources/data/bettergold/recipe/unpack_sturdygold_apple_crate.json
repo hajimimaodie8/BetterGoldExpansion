@@ -1,0 +1,13 @@
+﻿{
+    "ingredients":  [
+                        {
+                            "item":  "bettergold:sturdygold_apple_crate"
+                        }
+                    ],
+    "category":  "misc",
+    "result":  {
+                   "id":  "bettergold:sturdygold_apple",
+                   "count":  9
+               },
+    "type":  "minecraft:crafting_shapeless"
+}

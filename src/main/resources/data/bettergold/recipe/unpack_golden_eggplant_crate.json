@@ -1,0 +1,13 @@
+﻿{
+    "ingredients":  [
+                        {
+                            "item":  "bettergold:golden_eggplant_crate"
+                        }
+                    ],
+    "category":  "misc",
+    "result":  {
+                   "id":  "bettergold:golden_eggplant",
+                   "count":  9
+               },
+    "type":  "minecraft:crafting_shapeless"
+}

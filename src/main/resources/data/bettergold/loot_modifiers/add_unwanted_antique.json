@@ -1,0 +1,11 @@
+﻿{
+    "conditions":  [
+
+                   ],
+    "tables":  [
+                   "minecraft:chests/ancient_city"
+               ],
+    "chance":  0.06,
+    "item":  "bettergold:unwanted_antique",
+    "type":  "bettergold:add_chest_item"
+}

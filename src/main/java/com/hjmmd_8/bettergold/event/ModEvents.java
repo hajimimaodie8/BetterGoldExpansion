@@ -122,10 +122,12 @@ public class ModEvents {
             level.addFreshEntity(cowrie);
         }
         // 6% 概率额外掉落混沌金币串（猪灵交易获得，独立判定可与金钱贝同时出）
+        // 万坚金甲在场时同样享受翻倍（与上面 barter 主产物翻倍一致）
         if (level.random.nextFloat() < 0.06F) {
+            int count = anyArmorPlayer ? 2 : 1;
             ItemEntity coinString = new ItemEntity(level,
                     itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
-                    new ItemStack(AllItems.CHAOS_COIN_STRING.get()));
+                    new ItemStack(AllItems.CHAOS_COIN_STRING.get(), count));
             coinString.setDefaultPickUpDelay();
             level.addFreshEntity(coinString);
         }
@@ -149,6 +151,26 @@ public class ModEvents {
                 // 注册表未就绪时静默跳过
             }
         }
+        // 6% 概率额外掉落礼品金票（新约 1.3）：同样受万坚金甲翻倍，并向附近玩家提示"奢华"
+        if (level.random.nextFloat() < 0.06F) {
+            int ticketCount = anyArmorPlayer ? 2 : 1;
+            ItemEntity ticket = new ItemEntity(level,
+                    itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
+                    new ItemStack(AllItems.GIFT_GOLD_TICKET.get(), ticketCount));
+            ticket.setDefaultPickUpDelay();
+            level.addFreshEntity(ticket);
+            showLuxuriousMessage(level, itemEntity.position());
+        }
+    }
+
+    /** 向附近玩家在物品栏上方（屏幕中下方）显示"奢华"提示 */
+    private static void showLuxuriousMessage(Level level, net.minecraft.world.phys.Vec3 pos) {
+        var message = net.minecraft.network.chat.Component.translatable("message.bettergold.luxurious");
+        for (Player nearby : level.players()) {
+            if (nearby.distanceToSqr(pos) <= 256.0D) {
+                nearby.displayClientMessage(message, true);
+            }
+        }
     }
 
     // ==================== 万坚金工具攻击：100% 触发掉落金系物品 ====================
@@ -163,8 +185,22 @@ public class ModEvents {
         if (!(attacker instanceof Player player)) {
             return;
         }
-        // 校验手持物品：必须是万坚金工具
         ItemStack held = player.getMainHandItem();
+
+        // ---- 新约 1.3：下界合金古董剑/斧/刀攻击时 6% 掉落下界合金尘埃（受抢夺影响） ----
+        if (isDustOnAttackTool(held)) {
+            int looting = enchantLevel(held, player.level(),
+                    net.minecraft.world.item.enchantment.Enchantments.LOOTING);
+            float chance = 0.06F + 0.06F * looting;
+            if (player.getRandom().nextFloat() < chance) {
+                LivingEntity victim = event.getEntity();
+                int count = 1 + looting / 2;
+                dropItem(victim.level(), victim.getX(), victim.getY() + 0.5D, victim.getZ(),
+                        new ItemStack(AllItems.NETHERITE_DUST.get(), count));
+            }
+        }
+
+        // 校验手持物品：必须是万坚金工具
         if (!isSturdygoldTool(held)) {
             return;
         }
@@ -176,6 +212,90 @@ public class ModEvents {
             ItemEntity drop = new ItemEntity(serverLevel,
                     victim.getX(), victim.getY() + 0.5D, victim.getZ(),
                     new ItemStack(loot));
+            drop.setDefaultPickUpDelay();
+            serverLevel.addFreshEntity(drop);
+        }
+    }
+
+    // ==================== 新约 1.3：下界合金古董器具的挖掘效果 ====================
+
+    /**
+     * 挖掘掉落处理（斧/镐/锹/锄，均为下界合金古董器具时）：
+     * - 镐挖远古残骸：直接掉落 1~3 个下界合金碎片（受时运影响）；
+     * - 其余：6% 概率（受时运影响）把该方块的掉落物替换为 1 个下界合金尘埃。
+     */
+    @SubscribeEvent
+    public static void onBlockDrops(net.neoforged.neoforge.event.level.BlockDropsEvent event) {
+        ItemStack tool = event.getTool();
+        if (!(tool.getItem() instanceof net.minecraft.world.item.TieredItem tiered)
+                || tiered.getTier() != com.hjmmd_8.bettergold.material.AllTiers.NETHERITE_ANTIQUE) {
+            return;
+        }
+        ServerLevel level = event.getLevel();
+        var random = level.getRandom();
+        int fortune = enchantLevel(tool, level, net.minecraft.world.item.enchantment.Enchantments.FORTUNE);
+
+        // 镐 + 远古残骸：1~3 个下界合金碎片（时运每级 +1）
+        if (tool.getItem() instanceof net.minecraft.world.item.PickaxeItem
+                && event.getState().is(net.minecraft.world.level.block.Blocks.ANCIENT_DEBRIS)) {
+            int count = 1 + random.nextInt(3) + fortune;
+            event.getDrops().clear();
+            event.setDroppedExperience(0);
+            dropItem(level, event.getPos().getX() + 0.5D, event.getPos().getY() + 0.5D, event.getPos().getZ() + 0.5D,
+                    new ItemStack(Items.NETHERITE_SCRAP, count));
+            return;
+        }
+
+        // 斧/镐/锹/锄：6%（+时运）概率把掉落物替换成下界合金尘埃
+        if (!isDustOnMineTool(tool)) {
+            return;
+        }
+        float chance = 0.06F + 0.06F * fortune;
+        if (random.nextFloat() < chance && !event.getDrops().isEmpty()) {
+            int count = 1 + fortune / 2;
+            event.getDrops().clear();
+            event.setDroppedExperience(0);
+            dropItem(level, event.getPos().getX() + 0.5D, event.getPos().getY() + 0.5D, event.getPos().getZ() + 0.5D,
+                    new ItemStack(AllItems.NETHERITE_DUST.get(), count));
+        }
+    }
+
+    /** 攻击型：下界合金古董的剑/斧/刀（非镐/锹/锄即视为剑斧刀，含农夫乐事小刀） */
+    private static boolean isDustOnAttackTool(ItemStack stack) {
+        if (!(stack.getItem() instanceof net.minecraft.world.item.TieredItem tiered)
+                || tiered.getTier() != com.hjmmd_8.bettergold.material.AllTiers.NETHERITE_ANTIQUE) {
+            return false;
+        }
+        Item item = stack.getItem();
+        return !(item instanceof net.minecraft.world.item.PickaxeItem)
+                && !(item instanceof net.minecraft.world.item.ShovelItem)
+                && !(item instanceof net.minecraft.world.item.HoeItem);
+    }
+
+    /** 挖掘型：下界合金古董的斧/镐/锹/锄 */
+    private static boolean isDustOnMineTool(ItemStack stack) {
+        Item item = stack.getItem();
+        return item instanceof net.minecraft.world.item.PickaxeItem
+                || item instanceof net.minecraft.world.item.AxeItem
+                || item instanceof net.minecraft.world.item.ShovelItem
+                || item instanceof net.minecraft.world.item.HoeItem;
+    }
+
+    /** 读取物品上某附魔的等级（注册表缺失时返回 0） */
+    private static int enchantLevel(ItemStack stack, Level level,
+                                    net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment> key) {
+        try {
+            var lookup = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+            return lookup.get(key).map(stack::getEnchantmentLevel).orElse(0);
+        } catch (Exception ignored) {
+            return 0;
+        }
+    }
+
+    /** 在指定位置生成一个物品实体 */
+    private static void dropItem(Level level, double x, double y, double z, ItemStack stack) {
+        if (level instanceof ServerLevel serverLevel) {
+            ItemEntity drop = new ItemEntity(serverLevel, x, y, z, stack);
             drop.setDefaultPickUpDelay();
             serverLevel.addFreshEntity(drop);
         }

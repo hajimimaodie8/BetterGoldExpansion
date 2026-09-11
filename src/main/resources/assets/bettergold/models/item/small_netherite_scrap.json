@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "bettergold:item/small_netherite_scrap"
+                 },
+    "parent":  "minecraft:item/generated"
+}
