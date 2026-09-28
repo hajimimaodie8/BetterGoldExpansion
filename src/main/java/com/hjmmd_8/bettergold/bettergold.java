@@ -61,8 +61,9 @@ public class bettergold {
                         }
                     });
                 });
-        // 位置链：方块材料 tab → 食物 tab
-        builder.withTabsBefore(ResourceLocation.fromNamespaceAndPath(MODID, "bettergold_food_tab"));
+        // 位置：排到所有普通原版页之后（刷怪蛋页之后），本页之后依次是食物页、装备页、(FD页)
+        builder.withTabsBefore(CreativeModeTabs.SPAWN_EGGS);
+        builder.withTabsAfter(ResourceLocation.fromNamespaceAndPath(MODID, "bettergold_food_tab"));
         return builder.build();
     });
 
@@ -79,7 +80,8 @@ public class bettergold {
                         }
                     });
                 });
-        builder.withTabsBefore(ResourceLocation.fromNamespaceAndPath(MODID, "bettergold_gear_tab"));
+        // 位置：方块材料页之后，装备页之前
+        builder.withTabsAfter(ResourceLocation.fromNamespaceAndPath(MODID, "bettergold_gear_tab"));
         return builder.build();
     });
 
@@ -96,13 +98,12 @@ public class bettergold {
                         }
                     });
                 });
-        // 位置链：方块材料 → 食物 → 装备 → (FD tab)。
-        // 整条链锚在"管理员用品"页之前，也就是所有原版页之后 —— 原版的食物/原材料/刷怪蛋不会
-        // 被我们挤到第二页，我们自己的几个页才去第二页。
+        // 位置：食物页之后，装了农夫乐事时再排在 FD 页之前；整条链最终落在刷怪蛋页之后。
+        // 语义提醒：withTabsBefore(X) = X 在本页之前；withTabsAfter(X) = X 在本页之后。
+        // 另外不要锚到 HOTBAR/SEARCH/OP_BLOCKS/INVENTORY —— 它们是
+        // CreativeModeTabRegistry 里的 DEFAULT_TABS，被排除在排序图之外，边会把它们重新拉回图里。
         if (com.hjmmd_8.bettergold.fd.FdModule.isLoaded()) {
-            builder.withTabsBefore(com.hjmmd_8.bettergold.fd.FdTabs.TAB_ID);
-        } else {
-            builder.withTabsBefore(CreativeModeTabs.OP_BLOCKS);
+            builder.withTabsAfter(com.hjmmd_8.bettergold.fd.FdTabs.TAB_ID);
         }
         return builder.build();
     });

@@ -25,11 +25,11 @@ public class FdTabs {
     public static final ResourceLocation TAB_ID =
             ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "bettergold_fd_tab");
 
-    /** 农夫乐事联动标签页（排在所有原版页之后，见本体 bettergold.java 里的位置链说明） */
+    /** 农夫乐事联动标签页（排在所有普通原版页之后，见本体 bettergold.java 里的位置链说明） */
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FD_TAB =
             CREATIVE_MODE_TABS.register("bettergold_fd_tab", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.bettergold_fd"))
-                    .withTabsBefore(CreativeModeTabs.OP_BLOCKS)
+                    .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .icon(() -> FdItems.ALCHEMICAL_MEAT.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         FdItems.ITEMS.getEntries().forEach(holder -> output.accept(holder.get()));
