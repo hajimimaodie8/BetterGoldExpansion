@@ -174,7 +174,11 @@ def main():
     else:
         su, sv = args.uv_scale[0], args.uv_scale[1]
     if su <= 0:
-        su = sv = tex.width / 16.0
+        # Java always normalises UVs over the whole texture, so the two axes have
+        # their OWN pixel scale.  Using the width for both silently mis-samples
+        # every non-square texture (it made a 64x32 texture look half-painted).
+        su = tex.width / 16.0
+        sv = tex.height / 16.0
     scale = su
     ox, oy = args.uv_offset
 

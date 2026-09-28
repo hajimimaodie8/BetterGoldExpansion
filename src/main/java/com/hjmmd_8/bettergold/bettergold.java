@@ -96,11 +96,13 @@ public class bettergold {
                         }
                     });
                 });
-        // 位置链：装备 tab → (FD tab | 战斗页)
+        // 位置链：方块材料 → 食物 → 装备 → (FD tab)。
+        // 整条链锚在"管理员用品"页之前，也就是所有原版页之后 —— 原版的食物/原材料/刷怪蛋不会
+        // 被我们挤到第二页，我们自己的几个页才去第二页。
         if (com.hjmmd_8.bettergold.fd.FdModule.isLoaded()) {
             builder.withTabsBefore(com.hjmmd_8.bettergold.fd.FdTabs.TAB_ID);
         } else {
-            builder.withTabsBefore(CreativeModeTabs.COMBAT);
+            builder.withTabsBefore(CreativeModeTabs.OP_BLOCKS);
         }
         return builder.build();
     });

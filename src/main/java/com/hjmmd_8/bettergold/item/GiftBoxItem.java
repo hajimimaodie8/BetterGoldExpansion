@@ -62,6 +62,11 @@ public class GiftBoxItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        // 开盒音效：箱子打开的声音
+        level.playSound(null, player.getX(), player.getY() + 0.5D, player.getZ(),
+                net.minecraft.sounds.SoundEvents.CHEST_OPEN,
+                net.minecraft.sounds.SoundSource.PLAYERS,
+                0.8F, 1.0F + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.1F);
         if (level instanceof ServerLevel serverLevel) {
             List<ItemStack> loot = new ArrayList<>();
             switch (this.kind) {
@@ -119,10 +124,9 @@ public class GiftBoxItem extends Item {
         }
     }
 
-    /** 金雕礼品盒：1 个金雕摆件 */
+    /** 金雕礼品盒：1 个金雕摆件（金猫摆件模型待重做，暂时移出奖池） */
     private void rollIdol(List<ItemStack> loot) {
         Item[] idols = new Item[]{
-                AllBlocks.GOLDEN_CAT_FIGURINE_ITEM.get(),
                 AllBlocks.GOLDEN_TOAD_FIGURINE_ITEM.get(),
                 AllBlocks.GOLDEN_ENDERMAN_FIGURINE_ITEM.get(),
                 AllBlocks.GOLDEN_CREEPER_FIGURINE_ITEM.get()

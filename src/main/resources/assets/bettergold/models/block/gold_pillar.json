@@ -1,7 +1,7 @@
-﻿{
-    "textures":  {
-                     "end":  "bettergold:block/gold_pillar",
-                     "side":  "bettergold:block/gold_pillar"
-                 },
-    "parent":  "minecraft:block/cube_column"
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "bettergold:block/gold_exchange_counter_top",
+    "side": "bettergold:block/gold_pillar"
+  }
 }

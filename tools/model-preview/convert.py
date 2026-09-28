@@ -71,12 +71,22 @@ def rotated_bounds(els):
 
 
 def transform(els, scale, off):
+    """scale / off are 3-element lists (or scalars applied to all axes)."""
+    if not isinstance(scale, (list, tuple)):
+        scale = [scale] * 3
     for e in els:
-        e["lo"] = [e["lo"][i] * scale + off[i] for i in range(3)]
-        e["hi"] = [e["hi"][i] * scale + off[i] for i in range(3)]
+        e["lo"] = [e["lo"][i] * scale[i] + off[i] for i in range(3)]
+        e["hi"] = [e["hi"][i] * scale[i] + off[i] for i in range(3)]
         if e["rot"]:
-            e["rot"]["origin"] = [e["rot"]["origin"][i] * scale + off[i] for i in range(3)]
+            e["rot"]["origin"] = [e["rot"]["origin"][i] * scale[i] + off[i] for i in range(3)]
     return els
+
+
+# Java 面名 -> 旋转 90 度后应该接哪个面的 UV。
+# 推导：面在 Java 里的顶点顺序是 TL/BL/BR/TR，把 (x,z)->(16-z,x) 代进各面顶点即可得到
+# 新 north 面 == 旧 west 面（UV 矩形不变），其余三面同理。
+FACE_AFTER_ROT = {"north": "west", "east": "north", "south": "east", "west": "south",
+                  "up": "up", "down": "down"}
 
 
 def rotate_y(els, turns):
@@ -85,20 +95,61 @@ def rotate_y(els, turns):
     The step (x, z) -> (16 - z, x) is exactly the rotation a blockstate "y": 90
     applies, so a model baked with --rotate-y 90 lines up with facing=east.
     Only valid for models whose element rotations are all around the Y axis.
+
+    IMPORTANT: the geometry AND the per-face UVs must be rotated together.
+    Rotating only the boxes silently re-labels every face (the new north face is
+    the old west surface), which shows up in game as textures that look wildly
+    magnified / stretched.  That is exactly the bug this function used to have.
     """
     for e in els:
         if e["rot"] and e["rot"]["axis"] != "y":
             raise SystemExit("rotate_y only supports models with Y-axis element rotations")
+        faces = e["faces"]
         for _ in range(turns % 4):
             lo, hi = e["lo"], e["hi"]
             e["lo"] = [16 - hi[2], lo[1], lo[0]]
             e["hi"] = [16 - lo[2], hi[1], hi[0]]
+            rotated = {}
+            for new_face, old_face in FACE_AFTER_ROT.items():
+                f = faces.get(old_face)
+                if not f:
+                    continue
+                uv = [float(v) for v in f["uv"]]
+                if new_face == "up":
+                    # 上面顶点错位一位：新 TL 对应旧 TR、新 BR 对应旧 BL
+                    uv = [uv[2], uv[1], uv[0], uv[3]]
+                elif new_face == "down":
+                    # 下面：新 TL 对应旧 BL、新 BR 对应旧 TR
+                    uv = [uv[0], uv[3], uv[2], uv[1]]
+                rotated[new_face] = {**f, "uv": uv}
+            e["faces"] = rotated
         if e["rot"]:
             o = e["rot"]["origin"]
             for _ in range(turns % 4):
                 o = [16 - o[2], o[1], o[0]]
             e["rot"]["origin"] = o
     return els
+
+
+def fit_uv(uv):
+    """Move a UV rect into 0..16 by SHIFTING it, never by squashing it.
+
+    Clamping each value on its own (the old behaviour) silently changed the rect
+    size - e.g. [-1.5, 8, 0.5, 8.5] became [0, 8, 0.5, 8.5], a 0.5-wide strip for
+    a 2-unit-wide face, which renders as a stretched texture.  Shifting keeps the
+    rect's size and direction, so the face still shows the art 1:1.
+    """
+    out = [float(v) for v in uv]
+    for a, b in ((0, 2), (1, 3)):
+        lo, hi = min(out[a], out[b]), max(out[a], out[b])
+        if hi - lo > 16.0:
+            lo, hi = 0.0, 16.0
+            out[a], out[b] = (lo, hi) if out[a] <= out[b] else (hi, lo)
+            continue
+        shift = -lo if lo < 0 else (16.0 - hi if hi > 16.0 else 0.0)
+        out[a] += shift
+        out[b] += shift
+    return [round(v, 5) for v in out]
 
 
 def num(v):
@@ -139,18 +190,31 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--texture-id", default=None)
     ap.add_argument("--rotate-y", type=int, default=0, help="bake an extra 0/90/180/270 rotation so the model fronts north")
+    ap.add_argument("--fit-mode", default="uniform", choices=["uniform", "none", "squash-y"],
+                    help="uniform: 等比缩到 0..16；none: 保持美术原始尺寸（可能伸出方块）；"
+                         "squash-y: 水平保持原始尺寸、只压扁高度塞进方块")
+    ap.add_argument("--keep-x", action="store_true", help="不把模型在 x 上居中（猫的躯干本来就正好占满 0..16）")
     args = ap.parse_args()
 
     src = json.load(open(args.model, encoding="utf-8"))
     els = [read_element(e) for e in src["elements"]]
 
-    # shrink to fit (never enlarge), then re-centre
+    # scale to fit (never enlarge), then re-centre
     mn, mx = rotated_bounds(els)
-    span = max(mx[i] - mn[i] for i in range(3))
-    scale = 1.0 if span <= 16.0 else 16.0 / span
-    els = transform(els, scale, [0.0, 0.0, 0.0])
+    span = [max(mx[i] - mn[i], 1e-6) for i in range(3)]
+    if args.fit_mode == "none":
+        sc = [1.0, 1.0, 1.0]
+    elif args.fit_mode == "squash-y":
+        horizontal = min(1.0, 16.0 / max(span[0], span[2]))
+        sc = [horizontal, min(1.0, 16.0 / span[1]), horizontal]
+    else:
+        uniform = min(1.0, 16.0 / max(span))
+        sc = [uniform, uniform, uniform]
+    els = transform(els, sc, [0.0, 0.0, 0.0])
     mn, mx = rotated_bounds(els)
     off = [8 - (mn[0] + mx[0]) / 2, -mn[1], 8 - (mn[2] + mx[2]) / 2]
+    if args.keep_x:
+        off[0] = 0.0
     els = transform(els, 1.0, off)
     if args.rotate_y:
         els = rotate_y(els, args.rotate_y // 90)
@@ -164,7 +228,7 @@ def main():
             f = e["faces"].get(fn)
             if not f:
                 continue
-            u = [max(0.0, min(16.0, float(v))) for v in f["uv"]]
+            u = fit_uv(f["uv"])
             faces[fn] = {"uv": u, "texture": "#all"}
         el = {
             "from": [round(v, 5) for v in e["lo"]],
@@ -190,8 +254,8 @@ def main():
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(fmt(model) + "\n")
     print(
-        f"{args.id}: scale={scale:.4f} bbox x[{mn[0]:.2f},{mx[0]:.2f}] y[{mn[1]:.2f},{mx[1]:.2f}] "
-        f"z[{mn[2]:.2f},{mx[2]:.2f}] elements={len(elements)}"
+        f"{args.id}: scale={sc[0]:.4f}/{sc[1]:.4f}/{sc[2]:.4f} bbox x[{mn[0]:.2f},{mx[0]:.2f}] "
+        f"y[{mn[1]:.2f},{mx[1]:.2f}] z[{mn[2]:.2f},{mx[2]:.2f}] elements={len(elements)}"
     )
 
 

@@ -11,7 +11,8 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
  * FD（农夫乐事）联动分支的事件处理：FD 物品的特有行为。
  * 由 {@link FdModule} 在农夫乐事加载时注册到 NeoForge.EVENT_BUS。
  *
- * - 炼金贝肉家族食用后施加 FD"滋养"效果（nourishment）。
+ * - 炼金贝肉家族食用后施加 FD"滋养"效果（nourishment）：
+ *   炼金贝肉/肉串 3 分钟、三明治 6 分钟、万坚金系列 16 分钟、万坚金三明治 26 分钟。
  *   滋养是 FD 效果；物品本体不引用 FD 类，这里动态查 registry 施加（FD 未装则本类不会被注册）。
  */
 public class FdEvents {
@@ -29,9 +30,10 @@ public class FdEvents {
             applyNourishment(entity, 3600); // 3 分钟滋养1
         } else if (item == FdItems.ALCHEMICAL_MEAT_SANDWICH.get()) {
             applyNourishment(entity, 7200); // 6 分钟滋养1
+        } else if (item == FdItems.STURDYGOLD_ALCHEMICAL_MEAT_SANDWICH.get()) {
+            applyNourishment(entity, 31200); // 26 分钟滋养1
         } else if (item == FdItems.STURDYGOLD_ALCHEMICAL_MEAT.get()
-                || item == FdItems.STURDYGOLD_ALCHEMICAL_MEAT_SKEWER.get()
-                || item == FdItems.STURDYGOLD_ALCHEMICAL_MEAT_SANDWICH.get()) {
+                || item == FdItems.STURDYGOLD_ALCHEMICAL_MEAT_SKEWER.get()) {
             applyNourishment(entity, 19200); // 16 分钟滋养1
         }
     }

@@ -244,9 +244,9 @@ public class AllBlocks {
 
     // ==================== 新约 1.2：金麦体系 ====================
 
-    /** 金麦块：9 金麦合成；站在上面完全免疫摔落伤害（ModEvents 处理） */
+    /** 金麦块：9 金麦合成；柱状方块，可沿 X/Y/Z 摆放（与金柱同款）；站在上面完全免疫摔落伤害（ModEvents 处理） */
     public static final DeferredBlock<Block> GOLDEN_WHEAT_BLOCK = BLOCKS.register("golden_wheat_block",
-            () -> new Block(BlockBehaviour.Properties.of()
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.GOLD)
                     .strength(0.5F)
                     .sound(net.minecraft.world.level.block.SoundType.WOOL)));
@@ -310,12 +310,14 @@ public class AllBlocks {
                 .noOcclusion();
     }
 
-    public static final DeferredBlock<Block> GOLDEN_CAT_FIGURINE = BLOCKS.register("golden_cat_figurine",
-            () -> new FigurineBlock(Block.box(4.32, 0.0, 0.0, 11.68, 5.42, 16.0), figurineProps()));
+    // 金猫摆件已暂时移除（模型/贴图待重做），恢复时把注册、BlockItem、模型、语言文件和礼品盒奖池一起加回来
     public static final DeferredBlock<Block> GOLDEN_TOAD_FIGURINE = BLOCKS.register("golden_toad_figurine",
             () -> new FigurineBlock(Block.box(4.0, 0.0, 4.0, 12.0, 6.0, 12.0), figurineProps()));
+    // 末影人摆件高 26.5 格（头高出方块），模型里关掉了 AO（ambientocclusion: false）：
+    // MC 的 AO 按"方块自身位置"周围的方块计算，高出去的部分会套用底层的明暗关系而出现暗块。
+    // 碰撞箱照模型实际高度给到 26.5，允许超出 0..16（VoxelShape 不做钳制），否则只有下半截能挡人。
     public static final DeferredBlock<Block> GOLDEN_ENDERMAN_FIGURINE = BLOCKS.register("golden_enderman_figurine",
-            () -> new FigurineBlock(Block.box(5.58, 0.0, 5.58, 10.42, 16.0, 10.42), figurineProps()));
+            () -> new FigurineBlock(Block.box(4.0, 0.0, 4.0, 12.0, 26.5, 12.0), figurineProps()));
     public static final DeferredBlock<Block> GOLDEN_CREEPER_FIGURINE = BLOCKS.register("golden_creeper_figurine",
             () -> new FigurineBlock(Block.box(4.0, 0.0, 4.0, 12.0, 14.5, 12.0), figurineProps()));
 
@@ -363,7 +365,6 @@ public class AllBlocks {
     public static final DeferredItem<BlockItem> STURDYGOLD_PILLAR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_pillar", STURDYGOLD_PILLAR);
     public static final DeferredItem<BlockItem> GOLD_EXCHANGE_COUNTER_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_exchange_counter", GOLD_EXCHANGE_COUNTER);
 
-    public static final DeferredItem<BlockItem> GOLDEN_CAT_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_cat_figurine", GOLDEN_CAT_FIGURINE);
     public static final DeferredItem<BlockItem> GOLDEN_TOAD_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_toad_figurine", GOLDEN_TOAD_FIGURINE);
     public static final DeferredItem<BlockItem> GOLDEN_ENDERMAN_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_enderman_figurine", GOLDEN_ENDERMAN_FIGURINE);
     public static final DeferredItem<BlockItem> GOLDEN_CREEPER_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_creeper_figurine", GOLDEN_CREEPER_FIGURINE);

@@ -61,7 +61,7 @@
   "item.bettergold.sturdygold_axe": "万坚金斧",
   "item.bettergold.sturdygold_shovel": "万坚金锹",
   "item.bettergold.sturdygold_hoe": "万坚金锄",
-  "item.bettergold.sturdygold_knife": "万坚金小刀",
+  "item.bettergold.sturdygold_knife": "万坚金刀",
 
   "item.bettergold.sturdygold_helmet": "万坚金头盔",
   "item.bettergold.sturdygold_chestplate": "万坚金胸甲",
@@ -132,7 +132,6 @@
   "block.bettergold.gold_pillar": "金柱",
   "block.bettergold.sturdygold_pillar": "万坚金柱",
   "block.bettergold.gold_exchange_counter": "易金柜台",
-  "block.bettergold.golden_cat_figurine": "金猫摆件",
   "block.bettergold.golden_toad_figurine": "金蟾摆件",
   "block.bettergold.golden_enderman_figurine": "金雕末影人摆件",
   "block.bettergold.golden_creeper_figurine": "金雕苦力怕摆件",
@@ -163,8 +162,8 @@
   "item.bettergold.smithing_template.netherite_antique_upgrade.base_slot_description": "放入古董武器工具",
   "item.bettergold.smithing_template.netherite_antique_upgrade.additions_slot_description": "放入下界合金锭",
   "message.bettergold.luxurious": "奢华",
-  "trim_material.bettergold.sturdygold": "万坚金",
-  "trim_material.bettergold.unwanted_antique": "没人要的老古董",
+  "trim_material.bettergold.sturdygold": "万坚金质",
+  "trim_material.bettergold.unwanted_antique": "没人要的老古董质",
   "entity.bettergold.thrown_antique": "掷出的老古董",
   "entity.minecraft.villager.bettergold.gold_trader": "易金商人"
 }

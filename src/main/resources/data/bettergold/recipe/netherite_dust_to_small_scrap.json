@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DDD",
+    "DDD",
+    "DDD"
+  ],
+  "key": {
+    "D": { "item": "bettergold:netherite_dust" }
+  },
+  "result": {
+    "id": "bettergold:small_netherite_scrap",
+    "count": 1
+  }
+}

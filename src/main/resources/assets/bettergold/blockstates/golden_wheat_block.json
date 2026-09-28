@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "bettergold:block/golden_wheat_block" }
+    "axis=y": { "model": "bettergold:block/golden_wheat_block" },
+    "axis=z": { "model": "bettergold:block/golden_wheat_block", "x": 90 },
+    "axis=x": { "model": "bettergold:block/golden_wheat_block", "x": 90, "y": 90 }
   }
 }

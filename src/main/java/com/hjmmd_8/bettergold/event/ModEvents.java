@@ -56,6 +56,9 @@ public class ModEvents {
     /** 附魔金苹果的掉落权重：1% */
     private static final double ENCHANTED_GOLDEN_APPLE_WEIGHT = 0.01;
 
+    /** 万坚金六大器具攻击时掉落礼品金票的概率：6% */
+    private static final float GIFT_TICKET_CHANCE = 0.06F;
+
     /**
      * 白板万坚金工具（无"取其金食"附魔）爆金掉落池：金钱贝 / 金锭 / 金粒 / 粗金。
      */
@@ -204,10 +207,15 @@ public class ModEvents {
         if (!isSturdygoldTool(held)) {
             return;
         }
-        // 功能 100% 触发：必定掉落一件金系物品（白板掉基础四件；有"取其金食"附魔才掉金食物）
-        Item loot = rollGoldLoot(player, held);
         LivingEntity victim = event.getEntity();
         Level level = victim.level();
+        // 万坚金六大器具（剑/斧/镐/锹/锄 + 联动小刀）攻击时 6% 额外掉落礼品金票
+        if (player.getRandom().nextFloat() < GIFT_TICKET_CHANCE) {
+            dropItem(level, victim.getX(), victim.getY() + 0.5D, victim.getZ(),
+                    new ItemStack(AllItems.GIFT_GOLD_TICKET.get()));
+        }
+        // 功能 100% 触发：必定掉落一件金系物品（白板掉基础四件；有"取其金食"附魔才掉金食物）
+        Item loot = rollGoldLoot(player, held);
         if (level instanceof ServerLevel serverLevel) {
             ItemEntity drop = new ItemEntity(serverLevel,
                     victim.getX(), victim.getY() + 0.5D, victim.getZ(),

@@ -1,4 +1,4 @@
-﻿{
+{
   "variants": {
     "facing=north": { "model": "bettergold:block/golden_creeper_figurine" },
     "facing=east": { "model": "bettergold:block/golden_creeper_figurine", "y": 90 },

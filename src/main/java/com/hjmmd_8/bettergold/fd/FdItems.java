@@ -127,6 +127,7 @@ public class FdItems {
                             .effect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 9600, 2), 1.0F)
                             .build())));
 
+    /** 万坚金炼金贝肉三明治：39 饥饿/1.47 饱和，食用后 26 分钟滋养1（见 {@link FdEvents}） */
     public static final DeferredItem<Item> STURDYGOLD_ALCHEMICAL_MEAT_SANDWICH = ITEMS.register("sturdygold_alchemical_meat_sandwich",
             () -> new Item(new Item.Properties().fireResistant().food(new FoodProperties.Builder()
                     .nutrition(39).saturationModifier(1.47F).alwaysEdible()
@@ -158,10 +159,11 @@ public class FdItems {
                     .effect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 7200, 1), 1.0F)
                     .build())));
 
+    /** 万坚金蛋糕切片：6 饥饿/0.53 饱和 + 8 分钟迅捷3（增益型，满饥饿可吃） */
     public static final DeferredItem<Item> STURDYGOLD_CAKE_SLICE = ITEMS.register("sturdygold_cake_slice",
             () -> new Item(new Item.Properties().fireResistant().food(new FoodProperties.Builder()
                     .nutrition(6).saturationModifier(0.53F).alwaysEdible()
-                    .effect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 19200, 2), 1.0F)
+                    .effect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 9600, 2), 1.0F)
                     .build())));
 
     // ==================== 万坚金小刀（FD 联动工具） ====================

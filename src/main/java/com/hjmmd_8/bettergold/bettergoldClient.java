@@ -63,7 +63,6 @@ public class bettergoldClient {
 
             // 金雕摆件：贴图有大量透明像素（0,0,0,0），必须走 cutout，
             // 否则 solid 渲染层会把透明区画成一片黑块
-            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_CAT_FIGURINE.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_TOAD_FIGURINE.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_ENDERMAN_FIGURINE.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_CREEPER_FIGURINE.get(), cutout);

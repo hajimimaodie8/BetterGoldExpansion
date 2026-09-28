@@ -1,8 +1,7 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
+  "parent": "minecraft:block/cube_column",
   "textures": {
-    "bottom": "bettergold:block/golden_wheat_block_top",
-    "top": "bettergold:block/golden_wheat_block_top",
+    "end": "bettergold:block/golden_wheat_block_top",
     "side": "bettergold:block/golden_wheat_block_side"
   }
 }

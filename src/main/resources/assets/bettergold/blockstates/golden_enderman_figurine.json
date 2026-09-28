@@ -1,4 +1,4 @@
-﻿{
+{
   "variants": {
     "facing=north": { "model": "bettergold:block/golden_enderman_figurine" },
     "facing=east": { "model": "bettergold:block/golden_enderman_figurine", "y": 90 },

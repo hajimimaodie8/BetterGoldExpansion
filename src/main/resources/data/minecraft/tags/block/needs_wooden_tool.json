@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "bettergold:gold_infused_dirt",
+    "bettergold:gold_infused_farmland",
+    "bettergold:golden_toad_figurine",
+    "bettergold:golden_enderman_figurine",
+    "bettergold:golden_creeper_figurine"
+  ]
+}
