@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "bettergold:sturdygold_block"
+    "bettergold:sturdygold_block",
+    "bettergold:flamegold_block",
+    "bettergold:voodoogold_block",
+    "bettergold:thundergold_block"
   ]
 }

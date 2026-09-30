@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "bettergold:sturdygold_helmet"
+    "bettergold:sturdygold_helmet",
+    "bettergold:flamegold_helmet",
+    "bettergold:voodoogold_helmet",
+    "bettergold:thundergold_helmet"
   ]
 }

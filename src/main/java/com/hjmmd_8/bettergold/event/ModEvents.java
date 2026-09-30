@@ -38,7 +38,7 @@ import java.util.List;
  *
  * 1. 手持万坚金工具攻击生物 → 100% 触发掉落金系物品（附魔金苹果仅 1% 权重）。
  * 2. 万坚金盔甲（任意一件）：
- *    - 猪灵中立由 AllItems.SturdygoldArmorItem 覆写 makesPiglinsNeutral 实现（单件生效），无需事件；
+ *    - 猪灵中立由 MetalFamily.MetalArmorItem 覆写 makesPiglinsNeutral 实现（单件生效），无需事件；
  *    - 猪灵以物易物产出物品数量翻倍（任意一件盔甲即可）。
  * 3. 金钱贝战利品掉落：猪灵蛮兵 50% / 猪灵 15% / 僵尸猪灵 5%。
  * 4. 猪灵以物易物时 6% 概率额外掉落金钱贝。
@@ -402,10 +402,11 @@ public class ModEvents {
                 || player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(AllItems.STURDYGOLD_BOOTS.get());
     }
 
-    /** 校验物品是否为万坚金工具：材质 tier 为 STURDYGOLD 的任何 TieredItem（剑/镐/斧/锹/锄，含 FD 联动小刀） */
+    /** 校验物品是否为万坚金工具：材质为金属族 STURDYGOLD 的 tier 的任何 TieredItem（剑/镐/斧/锹/锄，含 FD 联动小刀） */
     private static boolean isSturdygoldTool(ItemStack stack) {
         return stack.getItem() instanceof net.minecraft.world.item.TieredItem tiered
-                && tiered.getTier() == com.hjmmd_8.bettergold.material.AllTiers.STURDYGOLD;
+                // 1.4：万坚金已迁到金属族，五个器具与 FD 小刀共用 AllMetals.STURDYGOLD.tier 这一个实例
+                && tiered.getTier() == com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD.tier;
     }
 
     // ==================== 抗寒性：免疫冰冻伤害 ====================
@@ -521,16 +522,17 @@ public class ModEvents {
         boolean opened = false;
 
         if (block instanceof net.minecraft.world.level.block.DoorBlock door) {
-            // 铁门 / 万坚金门
-            if (block == net.minecraft.world.level.block.Blocks.IRON_DOOR || block == AllBlocks.STURDYGOLD_DOOR.get()) {
+            // 铁门 / 万坚金门（万坚金已进金属族，1.4 起"万坚金的门"统一由 MetalFamily.of 判定）
+            if (block == net.minecraft.world.level.block.Blocks.IRON_DOOR
+                        || com.hjmmd_8.bettergold.material.MetalFamily.of(block) != null) {
                 boolean open = !door.isOpen(state);
                 door.setOpen(player, level, state, pos, open);
                 level.levelEvent(player, open ? 1005 : 1011, pos, 0); // 门开/关音效
                 opened = true;
             }
         } else if (block instanceof net.minecraft.world.level.block.TrapDoorBlock) {
-            // 铁活板门 / 万坚金活板门
-            if (block == net.minecraft.world.level.block.Blocks.IRON_TRAPDOOR || block == AllBlocks.STURDYGOLD_TRAPDOOR.get()) {
+            // 铁活板门 / 万坚金活板门（同上）
+            if (block == net.minecraft.world.level.block.Blocks.IRON_TRAPDOOR || com.hjmmd_8.bettergold.material.MetalFamily.of(block) != null) {
                 boolean open = !state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN);
                 level.setBlock(pos, state.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN, open), 2);
                 level.levelEvent(player, open ? 1007 : 1008, pos, 0); // 活板门开/关音效

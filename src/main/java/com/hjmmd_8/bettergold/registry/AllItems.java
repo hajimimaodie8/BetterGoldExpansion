@@ -4,21 +4,18 @@ import com.hjmmd_8.bettergold.bettergold;
 import com.hjmmd_8.bettergold.block.GoldCropBlock;
 import com.hjmmd_8.bettergold.item.BowlFoodItem;
 import com.hjmmd_8.bettergold.item.DrinkItem;
-import com.hjmmd_8.bettergold.material.AllArmorMaterials;
 import com.hjmmd_8.bettergold.material.AllTiers;
+import com.hjmmd_8.bettergold.material.MetalAliases;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
@@ -37,6 +34,10 @@ import java.util.Set;
 
 /**
  * 所有物品注册（不含方块对应的 BlockItem，那些在 {@link AllBlocks} 里）。
+ *
+ * <p>新约 1.4：万坚金的材料/器具/盔甲/升级模板已迁到 {@code material/AllMetals.STURDYGOLD}
+ * （金属族）注册，本类只保留原来的 public 字段名做别名（详见 {@link MetalAliases}）；
+ * 万坚金食物、马食、筐装物等不属于金属族的内容留在原地。</p>
  */
 public class AllItems {
 
@@ -73,18 +74,17 @@ public class AllItems {
     }
 
     // ==================== 材料 ====================
+    // 新约 1.4：万坚金的锭/粒/原料/器具/盔甲/升级模板由 metal/AllMetals.STURDYGOLD 注册，
+    // 下面这些字段只是保留旧名字的别名（同一个注册名 → 同一个注册项，见 material/MetalAliases）。
 
     /** 万坚金锭（防火防爆） */
-    public static final DeferredItem<Item> STURDYGOLD_INGOT = ITEMS.registerSimpleItem("sturdygold_ingot",
-            new Item.Properties().fireResistant());
+    public static final DeferredItem<Item> STURDYGOLD_INGOT = MetalAliases.item("sturdygold_ingot");
 
     /** 万坚金粒（防火防爆） */
-    public static final DeferredItem<Item> STURDYGOLD_NUGGET = ITEMS.registerSimpleItem("sturdygold_nugget",
-            new Item.Properties().fireResistant());
+    public static final DeferredItem<Item> STURDYGOLD_NUGGET = MetalAliases.item("sturdygold_nugget");
 
     /** 万坚金原料（防火防爆） */
-    public static final DeferredItem<Item> RAW_STURDYGOLD = ITEMS.registerSimpleItem("raw_sturdygold",
-            new Item.Properties().fireResistant());
+    public static final DeferredItem<Item> RAW_STURDYGOLD = MetalAliases.item("raw_sturdygold");
 
     /** 混合晶石堆 */
     public static final DeferredItem<Item> MIXED_CRYSTAL_PILE = ITEMS.registerSimpleItem("mixed_crystal_pile");
@@ -329,63 +329,25 @@ public class AllItems {
     public static final DeferredItem<Item> GOLDEN_COWRIE_MOLD = ITEMS.register("golden_cowrie_mold",
             () -> new Item(new Item.Properties().durability(64)));
 
-    // ==================== 万坚金升级模板 ====================
+    // ==================== 万坚金升级模板（1.4 起由金属族注册，这里只留旧名字的别名） ====================
 
-    /** 万坚金升级模板：完全参照原版下界合金升级模板（SmithingTemplateItem）注册逻辑 */
-    public static final DeferredItem<SmithingTemplateItem> STURDYGOLD_UPGRADE_TEMPLATE = ITEMS.register("sturdygold_upgrade_template",
-            () -> new SmithingTemplateItem(
-                    // 适用于：金装备
-                    Component.translatable("item.bettergold.smithing_template.sturdygold_upgrade.applies_to"),
-                    // 材料：万坚金锭
-                    Component.translatable("item.bettergold.smithing_template.sturdygold_upgrade.ingredients"),
-                    // 升级描述：万坚金升级
-                    Component.translatable("item.bettergold.smithing_template.sturdygold_upgrade.upgrade_description"),
-                    // 基座槽描述：放入金装备
-                    Component.translatable("item.bettergold.smithing_template.sturdygold_upgrade.base_slot_description"),
-                    // 附加槽描述：放入万坚金锭
-                    Component.translatable("item.bettergold.smithing_template.sturdygold_upgrade.additions_slot_description"),
-                    // 基座槽空图标（可放入的物品：盔甲+工具，同下界合金升级模板）
-                    List.of(
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_helmet"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_chestplate"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_leggings"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_boots"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_sword"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_pickaxe"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_axe"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_shovel"),
-                            ResourceLocation.withDefaultNamespace("item/empty_slot_hoe")
-                    ),
-                    // 附加槽空图标（锭）
-                    List.of(ResourceLocation.withDefaultNamespace("item/empty_slot_ingot"))
-            ));
+    /** 万坚金升级模板：完全参照原版下界合金升级模板（SmithingTemplateItem），语言键与迁移前一致 */
+    public static final DeferredItem<SmithingTemplateItem> STURDYGOLD_UPGRADE_TEMPLATE =
+            MetalAliases.item("sturdygold_upgrade_template");
 
     // ==================== 万坚金工具（等级略高于下界合金，防火防爆） ====================
+    // 1.4 起由 metal/AllMetals.STURDYGOLD 注册（数值逐项照抄迁移前：伤害/攻速 4.5/-2.2、2.5/-2.6、
+    // 6.5/-2.8、3.0/-2.8、1.5/0.2，材质 = 家族 tier、与 ModEvents 的"万坚金工具"判定同一实例）
 
-    public static final DeferredItem<SwordItem> STURDYGOLD_SWORD = ITEMS.register("sturdygold_sword",
-            () -> new SwordItem(AllTiers.STURDYGOLD, new Item.Properties()
-                    .fireResistant()
-                    .attributes(SwordItem.createAttributes(AllTiers.STURDYGOLD, 4.5F, -2.2F))));
+    public static final DeferredItem<SwordItem> STURDYGOLD_SWORD = MetalAliases.item("sturdygold_sword");
 
-    public static final DeferredItem<PickaxeItem> STURDYGOLD_PICKAXE = ITEMS.register("sturdygold_pickaxe",
-            () -> new PickaxeItem(AllTiers.STURDYGOLD, new Item.Properties()
-                    .fireResistant()
-                    .attributes(PickaxeItem.createAttributes(AllTiers.STURDYGOLD, 2.5F, -2.6F))));
+    public static final DeferredItem<PickaxeItem> STURDYGOLD_PICKAXE = MetalAliases.item("sturdygold_pickaxe");
 
-    public static final DeferredItem<AxeItem> STURDYGOLD_AXE = ITEMS.register("sturdygold_axe",
-            () -> new AxeItem(AllTiers.STURDYGOLD, new Item.Properties()
-                    .fireResistant()
-                    .attributes(AxeItem.createAttributes(AllTiers.STURDYGOLD, 6.5F, -2.8F))));
+    public static final DeferredItem<AxeItem> STURDYGOLD_AXE = MetalAliases.item("sturdygold_axe");
 
-    public static final DeferredItem<ShovelItem> STURDYGOLD_SHOVEL = ITEMS.register("sturdygold_shovel",
-            () -> new ShovelItem(AllTiers.STURDYGOLD, new Item.Properties()
-                    .fireResistant()
-                    .attributes(ShovelItem.createAttributes(AllTiers.STURDYGOLD, 3.0F, -2.8F))));
+    public static final DeferredItem<ShovelItem> STURDYGOLD_SHOVEL = MetalAliases.item("sturdygold_shovel");
 
-    public static final DeferredItem<HoeItem> STURDYGOLD_HOE = ITEMS.register("sturdygold_hoe",
-            () -> new HoeItem(AllTiers.STURDYGOLD, new Item.Properties()
-                    .fireResistant()
-                    .attributes(HoeItem.createAttributes(AllTiers.STURDYGOLD, 1.5F, 0.2F))));
+    public static final DeferredItem<HoeItem> STURDYGOLD_HOE = MetalAliases.item("sturdygold_hoe");
 
     // ==================== 新约 1.3：材料 ====================
 
@@ -424,9 +386,9 @@ public class AllItems {
 
     public static final DeferredItem<SmithingTemplateItem> NETHERITE_ANTIQUE_UPGRADE_TEMPLATE =
             ITEMS.register("netherite_antique_upgrade_smithing_template", () -> new SmithingTemplateItem(
-                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.applies_to"),
-                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.ingredients"),
-                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.upgrade_description"),
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.applies_to").withStyle(net.minecraft.ChatFormatting.BLUE),
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.ingredients").withStyle(net.minecraft.ChatFormatting.BLUE),
+                    Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.upgrade_description").withStyle(net.minecraft.ChatFormatting.GRAY),
                     Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.base_slot_description"),
                     Component.translatable("item.bettergold.smithing_template.netherite_antique_upgrade.additions_slot_description"),
                     List.of(
@@ -489,36 +451,17 @@ public class AllItems {
                     .attributes(HoeItem.createAttributes(AllTiers.NETHERITE_ANTIQUE, 5.0F, 0.0F)))); // 伤害 6 / 攻速 4
 
     // ==================== 万坚金盔甲（防火防爆 + 单件即可让猪灵中立） ====================
-    // 耐久：头盔 1221 / 胸甲 1776 / 护腿 1665 / 靴子 1443
+    // 1.4 起由 metal/AllMetals.STURDYGOLD 注册（盔甲材质、耐久 1221/1776/1665/1443、
+    // 单件猪灵中立都由家族统一给出，见 MetalFamily.MetalArmorItem）
 
-    public static final DeferredItem<ArmorItem> STURDYGOLD_HELMET = ITEMS.register("sturdygold_helmet",
-            () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.HELMET, new Item.Properties().durability(1221).fireResistant()));
+    public static final DeferredItem<ArmorItem> STURDYGOLD_HELMET = MetalAliases.item("sturdygold_helmet");
 
-    public static final DeferredItem<ArmorItem> STURDYGOLD_CHESTPLATE = ITEMS.register("sturdygold_chestplate",
-            () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(1776).fireResistant()));
+    public static final DeferredItem<ArmorItem> STURDYGOLD_CHESTPLATE = MetalAliases.item("sturdygold_chestplate");
 
-    public static final DeferredItem<ArmorItem> STURDYGOLD_LEGGINGS = ITEMS.register("sturdygold_leggings",
-            () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(1665).fireResistant()));
+    public static final DeferredItem<ArmorItem> STURDYGOLD_LEGGINGS = MetalAliases.item("sturdygold_leggings");
 
-    public static final DeferredItem<ArmorItem> STURDYGOLD_BOOTS = ITEMS.register("sturdygold_boots",
-            () -> new SturdygoldArmorItem(AllArmorMaterials.STURDYGOLD, ArmorItem.Type.BOOTS, new Item.Properties().durability(1443).fireResistant()));
+    public static final DeferredItem<ArmorItem> STURDYGOLD_BOOTS = MetalAliases.item("sturdygold_boots");
 
     private AllItems() {
-    }
-
-    /**
-     * 万坚金盔甲物品：穿戴任意一件即可让猪灵中立（无需全套）。
-     * 通过覆写 makesPiglinsNeutral 实现（NeoForge 提供的猪灵中立判定钩子）。
-     */
-    public static class SturdygoldArmorItem extends ArmorItem {
-
-        public SturdygoldArmorItem(Holder<ArmorMaterial> material, Type type, Item.Properties properties) {
-            super(material, type, properties);
-        }
-
-        @Override
-        public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
-            return true;
-        }
     }
 }

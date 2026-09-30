@@ -3,6 +3,8 @@ package com.hjmmd_8.bettergold;
 import com.hjmmd_8.bettergold.config.Config;
 import com.hjmmd_8.bettergold.event.ModBrewing;
 import com.hjmmd_8.bettergold.event.ModEvents;
+import com.hjmmd_8.bettergold.material.CreativePageSections;
+import com.hjmmd_8.bettergold.material.SectionedCreativeTab;
 import com.hjmmd_8.bettergold.registry.AllBlocks;
 import com.hjmmd_8.bettergold.registry.AllEffects;
 import com.hjmmd_8.bettergold.registry.AllItems;
@@ -16,10 +18,8 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -42,71 +42,27 @@ public class bettergold {
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "bettergold" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
-    // ==================== 创造模式标签页：本体三个相邻 tab（方块材料 / 食物饮品 / 装备工具） ====================
-    // 仿照航空学 / Create 的"顶部相邻 tab 长带"：本体内容分类成三个 tab 图标紧挨排列，
-    // 装了农夫乐事时 FD 联动 tab（fd.FdTabs）紧随其后，形成 本体→本体→本体→FD 的连续长带。
-    // 分类判定集中见 {@link AllItems#tabCategoryOf}，增删物品时只需在集合里加/删注册名。
+    // ==================== 创造模式标签页：本体只有一个页（页内 5 条横幅分区） ====================
+    // 作者定稿形态：本模组全部内容合并到「一个」创造页里，页内用 5 条横幅把内容分成 5 个分区
+    // （材料 materials.png / 建筑 blocks.png / 食物 food.png / 装备 gear.png / 乐事 fd.png）。
+    // 每个分区是<b>一个连续的物品列表</b>：分区内部的先后（例：材料 = 其他材料 → 交易金商人相关 → 金属）
+    // 只是同一个列表里的次序，<b>不再各占一条横幅、也不插额外空行</b>。
+    // 分区声明集中在 material.CreativePageSections / material.CreativeTabSections：
+    // 金属出场顺序只在那两处维护，以后加金属不用改本文件。
+    // 乐事分区由 FD 模块自己注入（fd.FdModule.register → fd.FdTabs.FD_SECTION），核心代码不引用 FdItems。
 
-    /** 本体 tab 1（方块与材料）：图标 = 万坚金块 */
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BETTERGOLD_BLOCKS_TAB = CREATIVE_MODE_TABS.register("bettergold_tab", () -> {
-        CreativeModeTab.Builder builder = CreativeModeTab.builder()
-                .title(Component.translatable("itemGroup.bettergold_blocks"))
-                .icon(() -> AllBlocks.STURDYGOLD_BLOCK_ITEM.get().getDefaultInstance())
-                .displayItems((parameters, output) -> {
-                    AllItems.ITEMS.getEntries().forEach(holder -> {
-                        ItemStack stack = holder.get().getDefaultInstance();
-                        // 方块与材料：既不是食物也不是装备的，都归本页（方块 BlockItem + 锭/粒/原料/金钱贝/模具等）
-                        if (!AllItems.isFoodTab(holder.getId(), stack) && !AllItems.isGearTab(holder.getId(), stack)) {
-                            output.accept(holder.get());
-                        }
-                    });
-                });
-        // 位置：排到所有普通原版页之后（刷怪蛋页之后），本页之后依次是食物页、装备页、(FD页)
-        builder.withTabsBefore(CreativeModeTabs.SPAWN_EGGS);
-        builder.withTabsAfter(ResourceLocation.fromNamespaceAndPath(MODID, "bettergold_food_tab"));
-        return builder.build();
-    });
-
-    /** 本体 tab 2（食物与饮品）：图标 = 万坚金苹果 */
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BETTERGOLD_FOOD_TAB = CREATIVE_MODE_TABS.register("bettergold_food_tab", () -> {
-        CreativeModeTab.Builder builder = CreativeModeTab.builder()
-                .title(Component.translatable("itemGroup.bettergold_food"))
-                .icon(() -> AllItems.STURDYGOLD_APPLE.get().getDefaultInstance())
-                .displayItems((parameters, output) -> {
-                    AllItems.ITEMS.getEntries().forEach(holder -> {
-                        ItemStack stack = holder.get().getDefaultInstance();
-                        if (AllItems.isFoodTab(holder.getId(), stack)) {
-                            output.accept(holder.get());
-                        }
-                    });
-                });
-        // 位置：方块材料页之后，装备页之前
-        builder.withTabsAfter(ResourceLocation.fromNamespaceAndPath(MODID, "bettergold_gear_tab"));
-        return builder.build();
-    });
-
-    /** 本体 tab 3（装备工具）：图标 = 万坚金剑 */
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BETTERGOLD_GEAR_TAB = CREATIVE_MODE_TABS.register("bettergold_gear_tab", () -> {
-        CreativeModeTab.Builder builder = CreativeModeTab.builder()
-                .title(Component.translatable("itemGroup.bettergold_gear"))
-                .icon(() -> AllItems.STURDYGOLD_SWORD.get().getDefaultInstance())
-                .displayItems((parameters, output) -> {
-                    AllItems.ITEMS.getEntries().forEach(holder -> {
-                        ItemStack stack = holder.get().getDefaultInstance();
-                        if (AllItems.isGearTab(holder.getId(), stack)) {
-                            output.accept(holder.get());
-                        }
-                    });
-                });
-        // 位置：食物页之后，装了农夫乐事时再排在 FD 页之前；整条链最终落在刷怪蛋页之后。
-        // 语义提醒：withTabsBefore(X) = X 在本页之前；withTabsAfter(X) = X 在本页之后。
-        // 另外不要锚到 HOTBAR/SEARCH/OP_BLOCKS/INVENTORY —— 它们是
-        // CreativeModeTabRegistry 里的 DEFAULT_TABS，被排除在排序图之外，边会把它们重新拉回图里。
-        if (com.hjmmd_8.bettergold.fd.FdModule.isLoaded()) {
-            builder.withTabsAfter(com.hjmmd_8.bettergold.fd.FdTabs.TAB_ID);
-        }
-        return builder.build();
-    });
+    /** 本模组唯一创造页（页内 5 个横幅分区：材料 / 建筑 / 食物 / 装备 / 乐事）：图标 = 万坚金锭 */
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BETTERGOLD_TAB =
+            CREATIVE_MODE_TABS.register(CreativePageSections.PAGE_TAB_ID.getPath(), () ->
+                    SectionedCreativeTab.builder()
+                            .title(Component.translatable("itemGroup.bettergold"))
+                            .icon(() -> AllItems.STURDYGOLD_INGOT.get().getDefaultInstance())
+                            // 位置：所有普通原版页之后。语义提醒：withTabsBefore(X) = X 在本页之前。
+                            // 只锚 CreativeModeTabs.SPAWN_EGGS —— 不要锚 HOTBAR/SEARCH/OP_BLOCKS/INVENTORY，
+                            // 它们是 CreativeModeTabRegistry 里的 DEFAULT_TABS，被排除在排序图之外，
+                            // 边会把它们重新拉回图里，把原版页挤乱。
+                            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+                            .build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -118,10 +74,18 @@ public class bettergold {
         AllBlocks.BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         AllItems.ITEMS.register(modEventBus);
+        // 新约 1.4：三套新金属（烈燃金 / 巫毒金 / 结雷金）通过 MetalFamily 一次性注册
+        com.hjmmd_8.bettergold.material.AllMetals.bootstrap();
+        // 新约 1.4：三套金属的专属材料（高燃烈焰棒 / 巫毒羽毛 / 聚紫能晶尘）
+        com.hjmmd_8.bettergold.material.MetalSpecialItems.bootstrap();
+        // 新约 1.4：金属相关的全局事件（巫毒结束结算等）
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.MetalEvents.class);
         // Register the Deferred Register to the mod event bus so creative tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
         // Register custom recipe serializers
         AllRecipes.RECIPE_SERIALIZERS.register(modEventBus);
+        // 新约 1.4：自定义网络通道（结雷金落雷音效 client_payload 档用）
+        modEventBus.addListener(com.hjmmd_8.bettergold.network.BetterGoldNetwork::register);
         // Register custom mob effects
         AllEffects.EFFECTS.register(modEventBus);
         // Register global loot modifiers
@@ -150,11 +114,17 @@ public class bettergold {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        // 启动自证：配置加载时把「版本 + thunderSoundMode + 配置文件里有没有这个键」打进日志
+        modEventBus.addListener(com.hjmmd_8.bettergold.config.StartupSelfCheck::onConfigLoading);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
+
+        // 启动自证：打印「模组版本 + thunderSoundMode 实际取值 + 配置文件里有没有这个键」。
+        // 作者排查「听不到落雷」时，第一件事就是看这行是不是新构建。
+        event.enqueueWork(com.hjmmd_8.bettergold.config.StartupSelfCheck::log);
 
         if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
             LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
@@ -171,4 +141,5 @@ public class bettergold {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
     }
+
 }

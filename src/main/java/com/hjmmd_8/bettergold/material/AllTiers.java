@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 /**
  * 工具材料。
- * - STURDYGOLD：万坚金，耐久 6144 / 速度 10 / 攻击加成 4.5 / 附魔 30，修复用万坚金锭，下界合金级挖掘。
+ * 万坚金（sturdygold）自新约 1.4 起由 metal/AllMetals.STURDYGOLD 家族现场构造 tier，本枚举不再有万坚金常量。
  * - ANTIQUE（新约 1.3 古董器具）：耐久 200 / 速度 8 / 附魔 12，修复用"没人要的老古董"，铁级挖掘。
  * - NETHERITE_ANTIQUE（新约 1.3 下界合金古董器具）：耐久 2031 / 速度 11 / 附魔 15，
  *   修复用下界合金锭，下界合金级挖掘（可挖远古残骸）。
@@ -21,10 +21,6 @@ import java.util.function.Supplier;
  * INCORRECT_FOR_NETHERITE_TOOL = 空集（下界合金级，可挖一切）。
  */
 public enum AllTiers implements Tier {
-
-    STURDYGOLD(6144, 10.0F, 4.5F, 30,
-            BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
-            () -> Ingredient.of(AllItems.STURDYGOLD_INGOT.get())),
 
     ANTIQUE(200, 8.0F, 0.0F, 12,
             BlockTags.INCORRECT_FOR_IRON_TOOL,

@@ -1,0 +1,17 @@
+{
+    "key":  {
+                "B":  {
+                          "item":  "bettergold:flamegold_block"
+                      }
+            },
+    "category":  "building",
+    "pattern":  [
+                    "B",
+                    "B"
+                ],
+    "result":  {
+                   "id":  "bettergold:flamegold_pillar",
+                   "count":  2
+               },
+    "type":  "minecraft:crafting_shaped"
+}

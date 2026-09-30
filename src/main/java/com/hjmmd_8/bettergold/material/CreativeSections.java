@@ -1,0 +1,379 @@
+package com.hjmmd_8.bettergold.material;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * 创造模式「分区横幅」的排序规则。
+ *
+ * <p>设计要点（因为以后金属会非常多）：</p>
+ * <ul>
+ *   <li><b>金属出场顺序只在这里维护一行</b>：{@link #METAL_ORDER}。新金属往后加即可；
+ *       没列进来的金属自动排在最后（按注册顺序），所以忘了加也不会丢物品。</li>
+ *   <li><b>靠物品 id 后缀判定分区与位次，绝不枚举物品</b>：{@code <金属>_ingot} 落在金属材料区、
+ *       {@code <金属>_bricks} 落在金属建材区……加 16 种还是 100 种金属都不用改这里。</li>
+ *   <li>认不出来的一律返回 null，由调用方丢进该页的「其他」分区 —— 永远不会把物品弄丢。</li>
+ * </ul>
+ *
+ * <p>分区横幅素材：{@code assets/bettergold/textures/gui/creative_sections/*.png}（162×18）。
+ * 本模组只有<b>一个</b>创造页，页内共 <b>5 个分区</b>（材料 / 建筑 / 食物 / 装备 / 乐事），
+ * 每个分区一条横幅：分区 key（= 横幅名）→ 横幅贴图 / 释词 / 内部排序规则，
+ * 全部集中在 {@link CreativePageSections}。</p>
+ */
+public final class CreativeSections {
+
+    /**
+     * 金属在创造页里的出场顺序（分区内按金属顺序排列，横幅上只写"金属"）。
+     * 新金属往后加一行；未列出的金属排在最后。
+     */
+    public static final List<String> METAL_ORDER = List.of(
+            "flamegold",    // 烈燃金
+            "sturdygold",   // 万坚金
+            "voodoogold",   // 巫毒金
+            "thundergold"); // 结雷金
+
+    /** 分区种类（枚举顺序 = 显示顺序） */
+    public enum Kind {
+        /** 材料页：金属（核心材料 / 原料 / 锭 / 粒 / 模板） */
+        METAL_MATERIALS,
+        /** 建筑方块页：金属块 */
+        METAL_BLOCKS,
+        /** 建筑方块页：金属建材（砖块…灯笼） */
+        METAL_BUILDING,
+        /** 装备与工具页：金属装备（剑…靴子） */
+        METAL_GEAR
+    }
+
+    /** 一个物品在金属分区中的位置：分区、金属位次、区内位次 */
+    public record Placement(Kind kind, int metalRank, int slot) {
+
+        /** 排序键：先分区，再金属，再区内位次 */
+        public long sortKey() {
+            return ((long) this.kind.ordinal() << 32) | ((long) this.metalRank << 16) | this.slot;
+        }
+    }
+
+    /** 金属 id -> 该金属的「核心材料」物品路径（原料配方里那个被替换掉的主材料） */
+    private static final Map<String, String> CORE_ITEMS = new HashMap<>(Map.of(
+            "sturdygold", "golden_cowrie"));
+
+    /** 材料区区内位次（核心材料 = 0、原料 = 1 单独判定） */
+    private static final Map<String, Integer> MATERIAL_SLOT = Map.ofEntries(
+            Map.entry("ingot", 2),
+            Map.entry("nugget", 3),
+            Map.entry("upgrade_template", 4));
+
+    /**
+     * 「建材类型后缀 → 区内位次」：<b>唯一</b>一张类型顺序表
+     * （砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼）。
+     *
+     * <p>两个分区共用它：金属物品的「金属建材」分区（{@link #classify} 按 {@code <金属>_后缀} 查），
+     * 以及非金属的「其他建筑方块」分区（{@link #suiteRank} 按物品 id 的 {@code _后缀} 查）。
+     * 以后增删建材类型只改这一张表，两个分区同时生效。</p>
+     */
+    public static final Map<String, Integer> BUILDING_SLOT = Map.ofEntries(
+            Map.entry("bricks", 0),
+            Map.entry("pillar", 1),
+            Map.entry("bricks_stairs", 2),
+            Map.entry("bricks_slab", 3),
+            Map.entry("bricks_wall", 4),
+            Map.entry("door", 5),
+            Map.entry("trapdoor", 6),
+            Map.entry("bars", 7),
+            Map.entry("chain", 8),
+            Map.entry("lantern", 9));
+
+    /** 金属装备区区内位次：剑斧镐锹锄 + 四件盔甲 */
+    private static final Map<String, Integer> GEAR_SLOT = Map.ofEntries(
+            Map.entry("sword", 0),
+            Map.entry("axe", 1),
+            Map.entry("pickaxe", 2),
+            Map.entry("shovel", 3),
+            Map.entry("hoe", 4),
+            Map.entry("helmet", 5),
+            Map.entry("chestplate", 6),
+            Map.entry("leggings", 7),
+            Map.entry("boots", 8));
+
+    /**
+     * 物品是不是「某套建材」的一员：是则返回它的类型位次（{@link #BUILDING_SLOT}），否则返回 {@code -1}。
+     *
+     * <p>只看物品 id 的<b>类型后缀</b>（{@code gold_door} → {@code _door} → 5），前缀是哪种材料完全不关心，
+     * 所以「其他的也一样」：以后任何一套建材（普通金、新金属、联动方那 16 色）都自动按同一套类型顺序排，
+     * 这里不需要为某种材料加任何分支。</p>
+     *
+     * <p>匹配规则：{@code path} 等于后缀，或以 {@code "_" + 后缀} 结尾；多个后缀同时命中时取<b>最长</b>的那个
+     * （{@code bricks_stairs} 赢过 {@code bricks}）。带 {@code _} 边界是为了让 {@code gold_trapdoor}
+     * 不被 {@code door} 误判。</p>
+     */
+    public static int suiteRank(String path) {
+        int rank = -1;
+        int longest = -1;
+        for (Map.Entry<String, Integer> entry : BUILDING_SLOT.entrySet()) {
+            String suffix = entry.getKey();
+            if (suffix.length() > longest && (path.equals(suffix) || path.endsWith("_" + suffix))) {
+                rank = entry.getValue();
+                longest = suffix.length();
+            }
+        }
+        return rank;
+    }
+
+    /**
+     * 「其他建筑方块」分区里，<b>套件之后那批杂项的区内位次</b>：表本身就是顺序（索引即位次）。
+     *
+     * <p>作者定稿顺序（写在 {@link CreativeTabSections#BLOCKS} 的兜底段里）：金染土 → 金麦块 →
+     * 筐装方块（一整组）→ 易金柜台 → 金雕（苦力怕 → 末影人 → 青蛙）。
+     * 以 {@code "_"} 开头的条目按<b>后缀</b>匹配（"筐装方块"是一整组，组内继续用次级排序键
+     * = 物品 id 字典序，因此同组多材料的稳定规则与套件段完全一致）；
+     * 其余条目按完整物品路径匹配。金雕的先后由本表给出（作者指定了苦力怕 → 末影人 → 青蛙，
+     * 这不是 id 字典序能表达的，所以只能落在这一张有序表里）。</p>
+     *
+     * <p>没命中这张表的杂项一律取「表长」，因此必然排在这些定稿位置<b>之后</b>
+     * （彼此仍按物品 id 排）；以后新增杂项方块既不会插队、也不会丢物品。</p>
+     */
+    private static final List<String> OTHER_BLOCK_ORDER = List.of(
+            "gold_infused_dirt",        // 金染土
+            "golden_wheat_block",       // 金麦块
+            "_crate",                   // 筐装方块：一整组（组内按物品 id）
+            "gold_exchange_counter",    // 易金柜台
+            "golden_creeper_figurine",  // 金雕：苦力怕
+            "golden_enderman_figurine", // 金雕：末影人
+            "golden_toad_figurine");    // 金雕：青蛙
+
+    /**
+     * 杂项分区（建筑方块页的「其他建筑方块」）里，套件物品用的通用排序。
+     *
+     * <p>排序键 = （分组/建材类型位次, 物品注册名）。第一条按<b>建材类型位次</b>让整区先排套件，
+     * 「砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼」；
+     * 同类型里有多种材料时（例如以后第二套砖块）按 {@code namespace:path} 字典序稳定排列，
+     * 与注册/投放顺序无关，重跑结果一致。</p>
+     *
+     * <p>不属于任何套件的杂项（金染土 / 金麦块 / 筐装物 / 易金柜台 / 金雕……）第一条改取
+     * {@link #otherBlockRank}（+ 一个高位分组标记），所以杂项必然排在全部套件之后，
+     * 且杂项彼此的先后由 {@link #OTHER_BLOCK_ORDER} 这张<b>唯一</b>有序表决定（第二条只做稳定兜底）。</p>
+     */
+    public static final java.util.Comparator<net.minecraft.world.item.ItemStack> SUITE_ORDER = java.util.Comparator
+            .<net.minecraft.world.item.ItemStack>comparingLong(CreativeSections::suiteSortKey)
+            .thenComparing(CreativeSections::itemIdOf);
+
+    /** 排序键高位：0 = 套件（按建材类型），1 = 杂项（按 {@link #OTHER_BLOCK_ORDER}），2 = 空格子（永远最后） */
+    private static final long OTHER_GROUP = 1L << 32;
+    private static final long EMPTY_SORT_KEY = 2L << 32;
+
+    /** 排序主键：套件取建材类型位次；杂项取杂项位次（高位分组保证套件恒在杂项之前）；空格子恒在最后 */
+    private static long suiteSortKey(net.minecraft.world.item.ItemStack stack) {
+        if (stack.isEmpty()) {
+            return EMPTY_SORT_KEY;
+        }
+        String path = itemPath(stack);
+        int suite = suiteRank(path);
+        return suite >= 0 ? suite : (OTHER_GROUP | otherBlockRank(path));
+    }
+
+    /** 杂项位次：{@link #OTHER_BLOCK_ORDER} 的索引；没命中取表长（排在全部定稿杂项之后） */
+    private static int otherBlockRank(String path) {
+        for (int i = 0; i < OTHER_BLOCK_ORDER.size(); i++) {
+            String key = OTHER_BLOCK_ORDER.get(i);
+            if (key.startsWith("_") ? path.endsWith(key) : path.equals(key)) {
+                return i;
+            }
+        }
+        return OTHER_BLOCK_ORDER.size();
+    }
+
+    /**
+     * 乐事分区「小刀」子组的顺序：<b>按所属金属在 {@link #allMetalIds()} 里的出场顺序</b>
+     * （烈燃金刀 → 万坚金刀 → 巫毒金刀 → 结雷金刀），不是金属小刀的（古董刀 / 下界合金古董刀）
+     * 一律排在全部金属小刀之后，同组按物品 id 字典序。
+     *
+     * <p>次级排序规则与 {@link #SUITE_ORDER} 一致：同"类型"（同金属 / 同为非金属）多材料时按
+     * {@code namespace:path} 字典序，稳定可复现。以后加金属小刀只要该金属进了
+     * {@link #METAL_ORDER}（或注册了 {@link MetalFamily}）就自动获得位置，不用改这里。</p>
+     */
+    public static final java.util.Comparator<net.minecraft.world.item.ItemStack> KNIFE_ORDER = java.util.Comparator
+            .<net.minecraft.world.item.ItemStack>comparingInt(CreativeSections::knifeRank)
+            .thenComparing(CreativeSections::itemIdOf);
+
+    /** 小刀位次：金属小刀 = 该金属在 {@link #allMetalIds()} 里的下标；非金属小刀 = 金属总数（排最后） */
+    private static int knifeRank(net.minecraft.world.item.ItemStack stack) {
+        if (stack.isEmpty()) {
+            return Integer.MAX_VALUE;
+        }
+        String path = itemPath(stack);
+        List<String> metals = allMetalIds();
+        for (int i = 0; i < metals.size(); i++) {
+            if (path.equals(metals.get(i) + "_knife")) {
+                return i;
+            }
+        }
+        return metals.size();
+    }
+
+    /** 排序次键：物品注册名（{@code namespace:path}）字典序，保证同一类型内顺序稳定且可复现 */
+    private static String itemIdOf(net.minecraft.world.item.ItemStack stack) {
+        return stack.isEmpty() ? ""
+                : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+    }
+
+    /** 物品注册路径（排序键用；{@code <ns>:<path>} 的 path 部分） */
+    private static String itemPath(net.minecraft.world.item.ItemStack stack) {
+        return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+    }
+
+    /** 登记某金属的核心材料（由 {@link MetalFamily} 注册时自动调用） */
+    public static void registerCoreItem(String metalId, String itemPath) {
+        CORE_ITEMS.put(metalId, itemPath);
+    }
+
+    /** 金属位次；未列入 {@link #METAL_ORDER} 的排在最后 */
+    public static int metalRank(String metalId) {
+        int i = METAL_ORDER.indexOf(metalId);
+        return i >= 0 ? i : METAL_ORDER.size();
+    }
+
+    /** 物品路径属于哪个金属（长 id 优先匹配，避免 gold 之类的前缀误判） */
+    public static @Nullable String metalOf(String path) {
+        String best = null;
+        for (String metal : allMetalIds()) {
+            boolean hit = path.equals("raw_" + metal) || path.equals(metal + "_block")
+                    || path.startsWith(metal + "_");
+            if (hit && (best == null || metal.length() > best.length())) {
+                best = metal;
+            }
+        }
+        return best;
+    }
+
+    /** 参与排布的全部金属 id：显式顺序 + 已注册但未列出的家族金属 */
+    public static List<String> allMetalIds() {
+        java.util.LinkedHashSet<String> ids = new java.util.LinkedHashSet<>(METAL_ORDER);
+        for (MetalFamily family : MetalFamily.all()) {
+            ids.add(family.id);
+        }
+        return List.copyOf(ids);
+    }
+
+    /**
+     * 判定一个物品属于哪个金属分区。
+     *
+     * @param path 物品注册名（如 {@code flamegold_ingot}、{@code raw_sturdygold}）
+     * @return 位置信息；不是金属物品（或暂时没有归属，例如乐事小刀归 FD 页）返回 null
+     */
+    public static @Nullable Placement classify(String path) {
+        // 核心材料没有金属前缀（如 blazing_rod），必须先用"核心材料表"反查
+        for (String candidate : allMetalIds()) {
+            if (path.equals(coreItemOf(candidate))) {
+                return new Placement(Kind.METAL_MATERIALS, metalRank(candidate), 0);
+            }
+        }
+        String metal = metalOf(path);
+        if (metal == null) {
+            return null;
+        }
+        int rank = metalRank(metal);
+
+        if (path.equals(metal + "_block")) {
+            return new Placement(Kind.METAL_BLOCKS, rank, 0);
+        }
+        if (path.equals(CORE_ITEMS.get(metal))) {
+            return new Placement(Kind.METAL_MATERIALS, rank, 0);
+        }
+        if (path.equals("raw_" + metal)) {
+            return new Placement(Kind.METAL_MATERIALS, rank, 1);
+        }
+        String suffix = path.startsWith(metal + "_") ? path.substring(metal.length() + 1) : path;
+
+        Integer material = MATERIAL_SLOT.get(suffix);
+        if (material != null) {
+            return new Placement(Kind.METAL_MATERIALS, rank, material);
+        }
+        Integer building = BUILDING_SLOT.get(suffix);
+        if (building != null) {
+            return new Placement(Kind.METAL_BUILDING, rank, building);
+        }
+        Integer gear = GEAR_SLOT.get(suffix);
+        if (gear != null) {
+            return new Placement(Kind.METAL_GEAR, rank, gear);
+        }
+        return null;
+    }
+
+    /** 取某金属的核心材料路径；未登记时按需从家族解析并缓存 */
+    private static @Nullable String coreItemOf(String metalId) {
+        String cached = CORE_ITEMS.get(metalId);
+        if (cached != null) {
+            return cached;
+        }
+        MetalFamily family = MetalFamily.byId(metalId);
+        if (family == null || family.coreItem == null) {
+            return null;
+        }
+        String path = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(family.coreItem.get()).getPath();
+        CORE_ITEMS.put(metalId, path);
+        return path;
+    }
+
+    /** 每行物品数（原版创造界面的列数） */
+    public static final int ITEMS_PER_ROW = 9;
+
+    /**
+     * 每个分区<b>首个物品所在行</b>的行号：<b>key = 分区 key</b>（{@link CreativePageSections.Section#key()}，
+     * 例如 {@code materials}）。横幅画在它上面那一行（= 记录值 − 1，必定整行空格子）上，
+     * 渲染端按此约定取用，并用这个 key 去 {@link CreativePageSections#byKey(String)} 取该分区的横幅与释词。
+     *
+     * <p>本模组只有<b>一个</b>创造页、页内只有 <b>5 个分区</b>（材料 / 建筑 / 食物 / 装备 / 乐事），
+     * 所以这张表恒为 5 条记录（没装农夫乐事时 4 条）—— 分区内部的先后（其他材料→交易金商人相关→金属……）
+     * 只是同一个连续列表里的次序，不会再各占一条记录。</p>
+     */
+    public static final Map<String, Integer> SECTION_ROWS = new java.util.LinkedHashMap<>();
+
+    /** 一个分区：分区 key + 横幅释词 + 该分区<b>连续</b>排好序的物品（中间不插横幅、不插空行） */
+    public record Bucket(String key, String label, List<net.minecraft.world.item.ItemStack> items) {
+    }
+
+    /**
+     * 把整页的分区排成"物品 + 空行分隔"的最终列表，并记录每个分区的<b>首个物品行号</b>。
+     *
+     * <p>规则与航空学一致：每个分区之后补满当前行，<b>再空一整行</b>给横幅，
+     * 因此下一分区必定从新行开始；最后一个分区之后不补（避免尾部空一大片）。
+     * 分区<b>内部</b>不再有任何分隔 —— 一个分区就是一个连续列表，横幅只有分区这一级。</p>
+     *
+     * <p><b>列表开头先补一整行空格子</b>：横幅画在每个分区物品的<b>上面那一整行空格子</b>上
+     * （= {@link #SECTION_ROWS} 记录值 − 1），第一个分区上方本来没有空行，
+     * 没有这一行它就没地方画（渲染端约定，勿删）。
+     * 于是本页第一个分区的记录值恒为 1（0 是它的横幅行），其余分区同理"横幅行 = 记录值 − 1"。</p>
+     *
+     * <p>本模组只有这一页，所以进入时<b>整表清空</b>再重记（重复调用结果一致，可幂等重算）。</p>
+     */
+    public static List<net.minecraft.world.item.ItemStack> layout(List<Bucket> buckets) {
+        List<net.minecraft.world.item.ItemStack> out = new java.util.ArrayList<>();
+        SECTION_ROWS.clear();
+        // 页顶的一整行空格子：给第一个分区的横幅留位置
+        for (int i = 0; i < ITEMS_PER_ROW; i++) {
+            out.add(net.minecraft.world.item.ItemStack.EMPTY);
+        }
+        for (int b = 0; b < buckets.size(); b++) {
+            Bucket bucket = buckets.get(b);
+            // 记录"首个物品行"；横幅行 = 这个值 − 1（上一整行必为空，见上面的补行规则）
+            SECTION_ROWS.put(bucket.key(), out.size() / ITEMS_PER_ROW);
+            out.addAll(bucket.items());
+            boolean last = b == buckets.size() - 1;
+            if (last) {
+                break;
+            }
+            int used = bucket.items().size() % ITEMS_PER_ROW;
+            int pad = (ITEMS_PER_ROW - used) % ITEMS_PER_ROW + ITEMS_PER_ROW;
+            for (int i = 0; i < pad; i++) {
+                out.add(net.minecraft.world.item.ItemStack.EMPTY);
+            }
+        }
+        return out;
+    }
+
+    private CreativeSections() {
+    }
+}

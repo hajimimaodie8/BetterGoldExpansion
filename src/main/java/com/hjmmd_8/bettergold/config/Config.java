@@ -51,6 +51,69 @@ public class Config {
                     "可填 minecraft: 或 bettergold: 开头的任意金系物品注册名。")
             .defineListAllowEmpty("goldLootItems", List.of(), () -> "", Config::validateItemName);
 
+    // ==================== 巫毒：累积伤害模型（1.4 作者拍板） ====================
+
+    /**
+     * 巫毒（voodoo）「累积伤害模型」的<b>存储比例</b>，默认 0.8（= 受到伤害的 80% 被存储）。
+     *
+     * <p>巫毒窗口内，目标<b>受到的每一次伤害</b>（玩家、摔落、其它来源……都算）都会按本比例累加为
+     * 「存储伤害」。取的是护甲 / 抗性 / 吸收减免之后的<b>最终掉血值</b>
+     * （{@code LivingDamageEvent.Post#getNewDamage()}），避免被护甲干扰。
+     * 巫毒结算自身造成的伤害会被显式排除，不参与累积（防止自反馈）。</p>
+     */
+    public static final ModConfigSpec.DoubleValue VOODOO_STORE_RATIO = BUILDER
+            .comment("巫毒（voodoo）累积伤害模型的「存储比例」。",
+                    "公式：存储伤害 += 本次实际掉血值 × 本比例（窗口内每一次受到伤害都累加）。",
+                    "实际掉血值 = 护甲 / 抗性 / 吸收减免之后的最终值（LivingDamageEvent.Post 的 newDamage）。",
+                    "巫毒结算自身造成的伤害不计入累积（显式排除，避免自反馈）。",
+                    "默认 0.8 = 受到伤害的 80% 被存储起来。")
+            .defineInRange("voodooStoreRatio", 0.8D, 0.0D, 100.0D);
+
+    /**
+     * 巫毒（voodoo）「累积伤害模型」的<b>每级释放比例</b>，默认 0.8（= 每级 +80% 存储伤害）。
+     *
+     * <p>效果<b>自然到期</b>（{@code MobEffectEvent.Expired}）时一次性结算：
+     * {@code 结算伤害 = 存储伤害 × (1 + 本比例 × 效果等级)}，其中 {@code 效果等级 = amplifier + 1}。</p>
+     */
+    public static final ModConfigSpec.DoubleValue VOODOO_RELEASE_PER_LEVEL = BUILDER
+            .comment("巫毒（voodoo）累积伤害模型的「每级释放比例」。",
+                    "公式：结算伤害 = 存储伤害 × (1 + 本比例 × 效果等级)，效果等级 = amplifier + 1。",
+                    "默认 0.8：1 级 ×1.8、2 级 ×2.6、3 级 ×3.4 ……",
+                    "只在效果「自然到期」时结算一次；提前移除 / 目标死亡 / 更高等级替换 / 读档 都不结算，并清空存储。")
+            .defineInRange("voodooReleasePerLevel", 0.8D, 0.0D, 100.0D);
+
+    // ==================== 结雷金落雷音效机制 ====================
+
+    /**
+     * 结雷金落雷的音效机制。
+     *
+     * <ul>
+     *   <li>{@code client_payload}（默认，最可靠）：服务端发一条自定义 payload 告诉客户端「在这里播雷声」，
+     *       客户端用与原版逐字相同的 {@code ClientLevel.playLocalSound(...)} 播放
+     *       （THUNDER 音量 10000 / IMPACT 音量 2.0，均为 {@code SoundSource.WEATHER}）。
+     *       这条路径<b>不依赖</b>「客户端那颗雷实体是否收到、是否 tick 到 life == 2」，
+     *       因此客户端收不到实体时也照样出声。</li>
+     *   <li>{@code vanilla_local}：与原版逐字一致 —— 服务端只生成雷实体，
+     *       音效由客户端那颗雷实体自己在 {@code LightningBolt.tick()} 里用
+     *       {@code level.playLocalSound(LIGHTNING_BOLT_THUNDER / LIGHTNING_BOLT_IMPACT, WEATHER)} 播放。</li>
+     *   <li>{@code server_broadcast}：服务端再用 {@code ServerLevel.playSound} 广播一次
+     *       （走原版 {@code ClientboundSoundPacket}，与原版打雷参数相同）。</li>
+     * </ul>
+     *
+     * <p>注意：客户端最终音量 = {@code clamp(音量 × 设置里该音源的音量, 0, 1)}
+     * （{@code SoundEngine.calculateVolume}），所以「设置 → 音乐和声音 → 天气」为 0 时以上三档都听不到，
+     * 这和原版打雷一样。</p>
+     *
+     * <p>{@code client_payload} 档的 payload 是<b>非 optional</b> 注册的：客户端与服务端的模组版本必须一致，
+     * 否则连接会被 NeoForge 直接拒绝并给出明确报错（这也是最快的「版本不一致」自证方式）。</p>
+     */
+    public static final ModConfigSpec.ConfigValue<String> THUNDER_SOUND_MODE = BUILDER
+            .comment("结雷金落雷的音效机制。",
+                    "client_payload（默认）: 服务端发自定义 payload，客户端用原版同一条 playLocalSound 播放（不依赖客户端雷实体）",
+                    "vanilla_local: 服务端只生成雷实体，音效由客户端雷实体自己播放（与原版打雷完全一致）",
+                    "server_broadcast: 额外再由服务端 ServerLevel.playSound 广播一次")
+            .define("thunderSoundMode", "client_payload");
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

@@ -43,7 +43,10 @@
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
         "sturdygold": "bettergold:trims/color_palettes/sturdygold",
-        "unwanted_antique": "bettergold:trims/color_palettes/unwanted_antique"
+        "unwanted_antique": "bettergold:trims/color_palettes/unwanted_antique",
+        "flamegold": "bettergold:trims/color_palettes/flamegold",
+        "voodoogold": "bettergold:trims/color_palettes/voodoogold",
+        "thundergold": "bettergold:trims/color_palettes/thundergold"
       }
     }
   ]

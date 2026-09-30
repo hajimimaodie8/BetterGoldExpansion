@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top_right",
+  "textures": {
+    "bottom": "bettergold:block/flamegold_door_bottom",
+    "top": "bettergold:block/flamegold_door_top"
+  }
+}

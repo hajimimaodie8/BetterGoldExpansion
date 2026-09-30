@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "bettergold:sturdygold_chestplate"
+    "bettergold:sturdygold_chestplate",
+    "bettergold:flamegold_chestplate",
+    "bettergold:voodoogold_chestplate",
+    "bettergold:thundergold_chestplate"
   ]
 }

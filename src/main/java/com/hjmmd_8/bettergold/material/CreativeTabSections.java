@@ -1,0 +1,262 @@
+package com.hjmmd_8.bettergold.material;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.hjmmd_8.bettergold.registry.AllItems;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+
+/**
+ * 各创造页「分区内部排列规则」的声明。
+ *
+ * <p>这里是<b>唯一</b>描述"某个分区里物品按什么先后排"的地方：规则顺序 = 段先后，
+ * 段内的金属物品自动按 {@link CreativeSections} 的规则排序（金属顺序 → 段内位次），
+ * 非金属物品默认保持投放顺序；需要「套件按类型排」的段（建筑的「其他建筑方块」）
+ * 给 {@link Slot#order} 传 {@link CreativeSections#SUITE_ORDER} 即可，类型表仍然只有一张。
+ * 以后新增金属不需要改这个文件。</p>
+ *
+ * <p><b>注意（1.4 定稿）</b>：这些规则<b>不再各自画横幅、也不再插空行</b> ——
+ * 它们只是同一个分区里物品的<b>先后次序</b>（例：材料 = 其他材料 → 交易金商人相关 → 金属），
+ * 由 {@link #ordered} 首尾相接成该分区唯一的连续列表。横幅只有「分区」这一级
+ * （材料 / 建筑 / 食物 / 装备 / 乐事，见 {@link CreativePageSections}）。</p>
+ *
+ * <p>内置 4 个分区（材料 / 建筑 / 食物 / 装备）的规则在本类；
+ * 乐事分区的规则归 FD 模块自己（{@code fd.FdTabs.RULES}），核心代码不引用它。</p>
+ */
+public final class CreativeTabSections {
+
+    /**
+     * 分区内的一段排列规则：标签 + 归属判定 +（可选的）段内排序。
+     *
+     * @param title 这一段的标签（<b>只用于日志/自检，不再画到横幅上</b>；横幅释词在
+     *              {@link CreativePageSections.Section#label()}）
+     * @param test  归属判定
+     * @param order 段内排序；{@code null}（绝大多数段）＝沿用默认规则：能分类的金属物品按
+     *              {@link CreativeSections#classify} 的排序键排、其余保持投放顺序，且后者在前。
+     *              传 {@link CreativeSections#SUITE_ORDER} 则整段按建材类型位次排、杂项排最后。
+     */
+    public record Slot(String title, Predicate<ItemStack> test, @Nullable Comparator<ItemStack> order) {
+
+        /** 不带自定义段内排序的规则（默认规则） */
+        public Slot(String title, Predicate<ItemStack> test) {
+            this(title, test, null);
+        }
+    }
+
+    /**
+     * 按规则顺序把<b>本分区</b>物品排成<b>一条连续列表</b>（先到先得：每件物品只进第一个命中的段）。
+     *
+     * <p>段内顺序与旧实现完全一致：声明了 {@link Slot#order} 的段整段用那个比较器排
+     * （建材类型 → 物品 id），其余段是「非金属按投放顺序在前、能分类的金属按排序键在后」。
+     * 段与段之间<b>不加任何空行</b>。</p>
+     *
+     * <p>兜底：万一某件物品没有被任何规则命中（规则漏写），它会被追加在末尾而不是被丢掉 ——
+     * 「物品一个都不能丢」优先于顺序；真出现这种情况，自检里的逐元素比对会暴露出来。</p>
+     */
+    public static List<ItemStack> ordered(List<Slot> slots, List<ItemStack> items) {
+        List<ItemStack> out = new ArrayList<>();
+        boolean[] taken = new boolean[items.size()];
+        for (Slot slot : slots) {
+            List<ItemStack> plain = new ArrayList<>();
+            List<long[]> keys = new ArrayList<>();
+            List<ItemStack> metals = new ArrayList<>();
+            for (int i = 0; i < items.size(); i++) {
+                if (taken[i]) {
+                    continue;
+                }
+                ItemStack stack = items.get(i);
+                if (!slot.test().test(stack)) {
+                    continue;
+                }
+                taken[i] = true;
+                if (slot.order() != null) {
+                    // 自定义排序的段：整段一起排，不区分"金属 / 非金属"
+                    plain.add(stack);
+                    continue;
+                }
+                String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+                CreativeSections.Placement place = CreativeSections.classify(path);
+                if (place == null) {
+                    plain.add(stack);
+                } else {
+                    keys.add(new long[] { place.sortKey(), metals.size() });
+                    metals.add(stack);
+                }
+            }
+            if (slot.order() != null) {
+                plain.sort(slot.order());
+                out.addAll(plain);
+                continue;
+            }
+            keys.sort((a, b) -> Long.compare(a[0], b[0]));
+            out.addAll(plain);
+            for (long[] key : keys) {
+                out.add(metals.get((int) key[1]));
+            }
+        }
+        for (int i = 0; i < items.size(); i++) {
+            if (!taken[i]) {
+                out.add(items.get(i));
+            }
+        }
+        return out;
+    }
+
+    /** 由物品 id / 路径判定的小工具 */
+    private static boolean pathIs(ItemStack stack, String... paths) {
+        String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+        for (String candidate : paths) {
+            if (path.equals(candidate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 物品 id 后缀判定（公开：FD 模块自己的分区规则要用，见 {@code fd.FdTabs.RULES}） */
+    public static boolean pathEndsWith(ItemStack stack, String... suffixes) {
+        String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+        for (String suffix : suffixes) {
+            if (path.endsWith(suffix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ==================== 内置 4 个分区的内部规则（分区 key / 横幅 / 释词见 CreativePageSections） ====================
+
+    /**
+     * 材料分区内部顺序：其他材料 → 交易金商人相关 → 金属
+     * （作者定稿原话：其他材料排最前、交易金商人相关物排中、特殊金属排后）。
+     *
+     * <p>注意：规则是"先到先得"（每件物品只进第一个命中的段），所以「其他材料」排在第一位时
+     * 不能再写成 {@code stack -> true} 的兜底判定 —— 那会把整个分区都吃进第一段。
+     * 这里改成正面判定"既不是交易金商人相关物、也不是金属物品"，三段合起来仍然恰好覆盖全部物品，
+     * 一件都不会丢。</p>
+     */
+    public static final List<Slot> MATERIALS = List.of(
+            new Slot("其他材料", stack -> !isTraderRelated(stack) && !isMetal(stack)),
+            new Slot("交易金商人相关", CreativeTabSections::isTraderRelated),
+            new Slot("金属", CreativeTabSections::isMetal));
+
+    /**
+     * 建筑分区内部顺序：金属块 → 金属建材 → 其他建筑方块。
+     *
+     * <p>「其他建筑方块」是兜底段，装的是「既不是金属块、也不是金属建材」的方块：普通金那一套建材
+     * （金砖块 / 金柱 / …… / 金灯笼）加上金染土、筐装物、易金柜台、金雕这类杂项。</p>
+     *
+     * <p>它复用 {@link CreativeSections#SUITE_ORDER}：整段先按<b>同一张</b>建材类型表排
+     * （砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼，与「金属建材」一致），
+     * 同类型按物品 id 稳定排序；不属于任何套件的杂项排在全部套件之后，并按
+     * {@link CreativeSections} 里的那张杂项有序表排：<b>金染土 → 金麦块 → 筐装方块（一整组，
+     * 组内按物品 id）→ 易金柜台 → 金雕（苦力怕 → 末影人 → 青蛙）</b>，
+     * 之后再是没命中该表的其它杂项（仍按物品 id）。</p>
+     */
+    public static final List<Slot> BLOCKS = List.of(
+            new Slot("金属块", stack -> kindOf(stack) == CreativeSections.Kind.METAL_BLOCKS),
+            new Slot("金属建材", stack -> kindOf(stack) == CreativeSections.Kind.METAL_BUILDING),
+            new Slot("其他建筑方块", stack -> true, CreativeSections.SUITE_ORDER));
+
+    /** 装备分区内部顺序：金属装备 → 其他工具 */
+    public static final List<Slot> GEAR = List.of(
+            new Slot("金属装备", stack -> kindOf(stack) == CreativeSections.Kind.METAL_GEAR),
+            new Slot("其他工具", stack -> true));
+
+    /** 食物分区内部顺序：种子 → 普通金食物 → 万坚金食物 */
+    public static final List<Slot> FOOD = List.of(
+            new Slot("种子", stack -> pathEndsWith(stack, "_seeds")),
+            new Slot("普通金食物", stack -> !isSturdygold(stack)),
+            new Slot("万坚金食物", stack -> true));
+
+    private static CreativeSections.Kind kindOf(ItemStack stack) {
+        String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+        CreativeSections.Placement place = CreativeSections.classify(path);
+        return place == null ? null : place.kind();
+    }
+
+    /** 供调用方快速判断：这个物品是不是方块（材料分区要排除方块，建筑分区只要方块） */
+    public static boolean isBlockItem(ItemStack stack) {
+        return stack.getItem() instanceof BlockItem;
+    }
+
+    /** 物品注册路径（如 {@code flamegold_ingot}） */
+    private static String pathOf(ItemStack stack) {
+        return BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+    }
+
+    /** 交易金商人相关物：礼品金票 + 四种礼盒（材料分区的判定，与段标签一一对应） */
+    private static boolean isTraderRelated(ItemStack stack) {
+        return pathEndsWith(stack, "_gift_box") || pathIs(stack, "curio_box", "gourmet_box", "gift_gold_ticket");
+    }
+
+    /** 金属物品：规则引擎（{@link CreativeSections#classify}）认得出来的那些（核心材料/原料/锭/粒/模板/建材/器具/盔甲） */
+    private static boolean isMetal(ItemStack stack) {
+        return CreativeSections.classify(pathOf(stack)) != null;
+    }
+
+    /** 是不是万坚金系物品（按 id 前缀判定，非枚举；公开：FD 模块的分区规则要用） */
+    public static boolean isSturdygold(ItemStack stack) {
+        return pathOf(stack).startsWith("sturdygold_");
+    }
+
+    /** 本体物品里是不是"食物链"那一类的（判定沿用 {@link AllItems#isFoodTab}） */
+    private static boolean isFood(ItemStack stack) {
+        return AllItems.isFoodTab(BuiltInRegistries.ITEM.getKey(stack.getItem()), stack);
+    }
+
+    /** 本体物品里是不是"装备工具"那一类的（判定沿用 {@link AllItems#isGearTab}） */
+    private static boolean isGear(ItemStack stack) {
+        return AllItems.isGearTab(BuiltInRegistries.ITEM.getKey(stack.getItem()), stack);
+    }
+
+    /** 收集本体注册表里满足条件的物品（每个注册项一份默认 ItemStack，保持注册顺序） */
+    private static List<ItemStack> ownItems(Predicate<ItemStack> filter) {
+        List<ItemStack> out = new ArrayList<>();
+        for (var holder : AllItems.ITEMS.getEntries()) {
+            ItemStack stack = holder.get().getDefaultInstance();
+            if (filter.test(stack)) {
+                out.add(stack);
+            }
+        }
+        return out;
+    }
+
+    /** 材料分区候选：本体物品里既不是食物、也不是装备、并且不是方块的（方块归建筑分区） */
+    public static List<ItemStack> materialsCandidates() {
+        List<ItemStack> out = ownItems(stack -> !isFood(stack) && !isGear(stack) && !isBlockItem(stack));
+        // 分区内顺序（作者确认）：礼品金票 + 四种礼盒 → 把金票提到最前，其余保持注册顺序
+        for (int i = 0; i < out.size(); i++) {
+            if (pathOf(out.get(i)).equals("gift_gold_ticket")) {
+                out.add(0, out.remove(i));
+                break;
+            }
+        }
+        return out;
+    }
+
+    /** 建筑分区候选：本体物品里的方块（种子那类"食物方块"不会落进来） */
+    public static List<ItemStack> blockCandidates() {
+        return ownItems(stack -> isBlockItem(stack) && !isFood(stack) && !isGear(stack));
+    }
+
+    /** 装备分区候选 */
+    public static List<ItemStack> gearCandidates() {
+        return ownItems(CreativeTabSections::isGear);
+    }
+
+    /** 食物分区候选 */
+    public static List<ItemStack> foodCandidates() {
+        return ownItems(CreativeTabSections::isFood);
+    }
+
+    private CreativeTabSections() {
+    }
+}

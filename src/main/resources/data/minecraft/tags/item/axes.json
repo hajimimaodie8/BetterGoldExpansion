@@ -3,6 +3,9 @@
   "values": [
     "bettergold:sturdygold_axe",
     "bettergold:antique_axe",
-    "bettergold:netherite_antique_axe"
+    "bettergold:netherite_antique_axe",
+    "bettergold:flamegold_axe",
+    "bettergold:voodoogold_axe",
+    "bettergold:thundergold_axe"
   ]
 }

@@ -1,39 +1,66 @@
 package com.hjmmd_8.bettergold.fd;
 
-import com.hjmmd_8.bettergold.bettergold;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.hjmmd_8.bettergold.material.CreativePageSections;
+import com.hjmmd_8.bettergold.material.CreativeSections;
+import com.hjmmd_8.bettergold.material.CreativeTabSections;
+
+import net.minecraft.world.item.ItemStack;
 
 /**
- * FD（农夫乐事）联动分支的创造模式标签页。
- * 独立 DeferredRegister（namespace 仍是 bettergold，tab id = bettergold_fd_tab），
- * 由 {@link FdModule} 在农夫乐事加载时挂载；FD 未装则本 tab 不出现。
- * 只展示 {@link FdItems#ITEMS}（含 {@link FdBlocks} 注册进其物品表的派/蛋糕 BlockItem）。
+ * FD（农夫乐事）联动分支在<b>本模组唯一创造页</b>里的「乐事分区」。
+ *
+ * <p>本模组只有一个创造页（{@link CreativePageSections#PAGE_TAB_ID}），页内共 5 个分区、
+ * 每个分区一条横幅；乐事分区用的就是 {@code fd.png}。本类负责把这一分区
+ * <b>内部排列规则 + 候选物品</b>打包好，由 {@link FdModule#register} 在 FD 已加载时
+ * 登记进 {@link CreativePageSections}（核心代码不认识本类，架构红线见该类的类注释）。</p>
+ *
+ * <p>乐事分区内部顺序（一个连续列表，不插横幅/空行）：
+ * 小刀 → 普通金食物 → 金放置食物 → 万坚金食物 → 万坚金放置食物。</p>
+ *
+ * <p><b>「小刀」子组内部的先后</b>由 {@link CreativeSections#KNIFE_ORDER} 在唯一真相处
+ * （{@code material.CreativeSections}）统一维护：金属小刀按金属出场顺序
+ * （烈燃金刀 → 万坚金刀 → 巫毒金刀 → 结雷金刀），非金属小刀（古董刀 → 下界合金古董刀）
+ * 排在全部金属小刀之后，同组按物品 id 字典序；本类只负责"哪些是刀"，不另写一套顺序。</p>
+ *
+ * <p>"放置食物"= 派 / 蛋糕的 BlockItem（{@link FdBlocks} 里注册进 {@link FdItems} 的那些），
+ * 靠 {@link CreativeTabSections#isBlockItem} 判定，不枚举具体物品，以后加派/蛋糕不用改这里。</p>
  */
-public class FdTabs {
+public final class FdTabs {
 
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
-            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, bettergold.MODID);
+    /** 乐事分区的内部排列规则（段标签只用于日志/自检，不再画到横幅上） */
+    public static final List<CreativeTabSections.Slot> RULES = List.of(
+            new CreativeTabSections.Slot("小刀",
+                    stack -> CreativeTabSections.pathEndsWith(stack, "_knife"), CreativeSections.KNIFE_ORDER),
+            new CreativeTabSections.Slot("普通金食物",
+                    stack -> !CreativeTabSections.isSturdygold(stack) && !CreativeTabSections.isBlockItem(stack)),
+            new CreativeTabSections.Slot("金放置食物",
+                    stack -> CreativeTabSections.isBlockItem(stack) && !CreativeTabSections.isSturdygold(stack)),
+            new CreativeTabSections.Slot("万坚金食物",
+                    stack -> CreativeTabSections.isSturdygold(stack) && !CreativeTabSections.isBlockItem(stack)),
+            new CreativeTabSections.Slot("万坚金放置食物", stack -> true));
 
-    /** 本标签页的注册名（本体主标签页以 withTabsBefore 引用它，保证本体 tab 在前） */
-    public static final ResourceLocation TAB_ID =
-            ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "bettergold_fd_tab");
+    /**
+     * 乐事分区：横幅 {@code fd.png}、释词「乐事」，候选物品 = 本模块注册的全部物品
+     * （含派/蛋糕的 BlockItem）。order 取 {@link CreativePageSections#CORE_SECTION_COUNT}
+     * ⇒ 排在内置 4 个分区（材料/建筑/食物/装备）之后，即页尾。
+     */
+    public static final CreativePageSections.Section FD_SECTION = new CreativePageSections.Section(
+            "fd",
+            CreativePageSections.CORE_SECTION_COUNT,
+            "乐事",
+            CreativePageSections.bannerTexture("fd"),
+            RULES,
+            FdTabs::candidates);
 
-    /** 农夫乐事联动标签页（排在所有普通原版页之后，见本体 bettergold.java 里的位置链说明） */
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FD_TAB =
-            CREATIVE_MODE_TABS.register("bettergold_fd_tab", () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.bettergold_fd"))
-                    .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-                    .icon(() -> FdItems.ALCHEMICAL_MEAT.get().getDefaultInstance())
-                    .displayItems((parameters, output) -> {
-                        FdItems.ITEMS.getEntries().forEach(holder -> output.accept(holder.get()));
-                    }).build());
+    /** 乐事分区候选：本模块注册的全部物品，保持注册顺序 */
+    private static List<ItemStack> candidates() {
+        List<ItemStack> out = new ArrayList<>();
+        FdItems.ITEMS.getEntries().forEach(holder -> out.add(holder.get().getDefaultInstance()));
+        return out;
+    }
 
     private FdTabs() {
     }

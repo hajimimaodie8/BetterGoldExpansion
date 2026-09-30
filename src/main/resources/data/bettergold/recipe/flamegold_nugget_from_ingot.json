@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [ { "item": "bettergold:flamegold_ingot" } ],
+  "result": { "id": "bettergold:flamegold_nugget", "count": 9 }
+}

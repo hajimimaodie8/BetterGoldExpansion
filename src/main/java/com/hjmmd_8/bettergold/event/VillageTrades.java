@@ -1,5 +1,6 @@
 package com.hjmmd_8.bettergold.event;
 
+import com.hjmmd_8.bettergold.material.MetalSpecialItems;
 import com.hjmmd_8.bettergold.registry.AllItems;
 import com.hjmmd_8.bettergold.registry.AllVillagers;
 
@@ -17,13 +18,24 @@ import java.util.List;
  * 新约 1.3：易金商人交易列表。
  *
  * 等级：新手 1 / 学徒 2 / 老手 3。交易次数上限按作者要求"能拉多大拉多大"（999）。
- * - 新手：6 绿宝石 → 1 金锭（5 经验）；45 金钱贝 → 1 礼品金票（20 经验）
+ * - 新手：6 绿宝石 → 1 金锭（5 经验）；45 金钱贝 → 1 礼品金票（20 经验）；
+ *         6 巫毒羽毛 → 1 礼品金票（10 经验，1.4 新增）
  * - 学徒：3 礼品金票 → 万宝礼物盒；4 礼品金票 → 珍品古董盒
  * - 老手：5 礼品金票 → 金雕礼品盒；6 礼品金票 → 金享珍味盒
+ *
+ * <p><b>为什么 maxUses 取 {@link #MAX_USES}=999 就是"可选上限内的最大值"</b>：
+ * {@code BasicItemListing.maxTrades}、{@code MerchantOffer.maxUses} 都是普通 {@code int}，
+ * 没有任何游戏侧上限（{@code MerchantOffer.CODEC} 用 {@code Codec.INT}、
+ * 网络用 {@code buffer.writeInt(getMaxUses())}，都能到 {@code Integer.MAX_VALUE}；
+ * 源码见 {@code net.minecraft.world.item.trading.MerchantOffer} 第 19 / 154 / 237 行）。
+ * 也就是说 999 不是引擎硬上限，而是<b>本项目可选范围内的最大值</b>：
+ * 它是本文件既有的、也是全部 6 条交易共用的那个上限，已远大于任何玩家的实际交易次数；
+ * 再往上写只会引入一个没有意义的更大魔数（并且会让 demand 折扣算得更极端），
+ * 所以"能设多大就设多大"在这里 = 沿用本文件最大的既有值 999。</p>
  */
 public class VillageTrades {
 
-    /** 交易次数上限（作者要求尽量大） */
+    /** 交易次数上限（作者要求尽量大；本文件全部交易的统一上限） */
     private static final int MAX_USES = 999;
 
     @SubscribeEvent
@@ -38,6 +50,9 @@ public class VillageTrades {
                 new ItemStack(Items.GOLD_INGOT), MAX_USES, 5, 0.05F));
         trades.get(1).add(new BasicItemListing(new ItemStack(AllItems.GOLDEN_COWRIE.get(), 45),
                 new ItemStack(AllItems.GIFT_GOLD_TICKET.get()), MAX_USES, 20, 0.05F));
+        // 1.4 新增：6 巫毒羽毛 → 1 礼品金票（10 经验）
+        trades.get(1).add(new BasicItemListing(new ItemStack(MetalSpecialItems.VOODOO_FEATHER.get(), 6),
+                new ItemStack(AllItems.GIFT_GOLD_TICKET.get()), MAX_USES, 10, 0.05F));
 
         // ---- 学徒 ----
         trades.get(2).add(new BasicItemListing(new ItemStack(AllItems.GIFT_GOLD_TICKET.get(), 3),

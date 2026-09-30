@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "bettergold:sturdygold_ingot",
-    "bettergold:unwanted_antique"
+    "bettergold:unwanted_antique",
+    "bettergold:flamegold_ingot",
+    "bettergold:voodoogold_ingot",
+    "bettergold:thundergold_ingot"
   ]
 }

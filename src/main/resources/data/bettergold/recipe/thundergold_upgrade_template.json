@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GIG",
+    "GTG",
+    "GCG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_block" },
+    "I": { "item": "bettergold:thundergold_ingot" },
+    "T": { "item": "minecraft:netherite_upgrade_smithing_template" },
+    "C": { "item": "bettergold:amethyst_energy_dust" }
+  },
+  "result": { "id": "bettergold:thundergold_upgrade_template" }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BB",
+    "BB"
+  ],
+  "key": {
+    "B": { "item": "bettergold:voodoogold_block" }
+  },
+  "result": {
+    "id": "bettergold:voodoogold_bricks",
+    "count": 4
+  }
+}

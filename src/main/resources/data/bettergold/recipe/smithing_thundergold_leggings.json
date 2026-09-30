@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bettergold:thundergold_upgrade_template" },
+  "base": { "item": "minecraft:golden_leggings" },
+  "addition": { "item": "bettergold:thundergold_ingot" },
+  "result": { "id": "bettergold:thundergold_leggings", "count": 1 }
+}

@@ -4,6 +4,7 @@ import com.hjmmd_8.bettergold.bettergold;
 import com.hjmmd_8.bettergold.block.FigurineBlock;
 import com.hjmmd_8.bettergold.block.GoldCropBlock;
 import com.hjmmd_8.bettergold.block.GoldInfusedFarmlandBlock;
+import com.hjmmd_8.bettergold.material.MetalAliases;
 
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.BlockItem;
@@ -35,6 +36,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * - 万坚金系方块（sturdygold_*）requiresTool，挖掘等级钻石镐（needs_diamond_tool）；
  * - 金砖块/万坚金块/万坚金砖块 同时加入 beacon_base_blocks tag 并实现 BeaconBeamBlock，
  *   可作为信标金字塔基座；光束颜色为黄色。
+ *
+ * <p>新约 1.4：万坚金系方块已迁到 {@code material/AllMetals.STURDYGOLD}（金属族）注册，
+ * 本类只保留原来的 public 字段名做别名（详见 {@link MetalAliases} 里的类初始化说明）。</p>
  */
 public class AllBlocks {
 
@@ -111,24 +115,15 @@ public class AllBlocks {
                     .noOcclusion()));
 
     // ==================== 万坚金系方块（钻石镐） ====================
+    // 新约 1.4：万坚金的注册已交给 metal/AllMetals.STURDYGOLD（金属族），
+    // 这里只保留原来的 public 字段名做别名（按注册名懒绑定，见 material/MetalAliases），
+    // 注册名与迁移前逐字相同，因此数据文件 / 标签 / 语言 / 其它 40+ 处引用都不用动。
 
     /** 万坚金块：硬度/爆炸抗性略高于下界合金块，钻石镐，信标基座 */
-    public static final DeferredBlock<Block> STURDYGOLD_BLOCK = BLOCKS.register("sturdygold_block",
-            () -> new BeaconBaseBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_BLACK)
-                    .requiresCorrectToolForDrops()
-                    .strength(55.0F, 1500.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK),
-                    DyeColor.YELLOW));
+    public static final DeferredBlock<Block> STURDYGOLD_BLOCK = MetalAliases.block("sturdygold_block");
 
     /** 万坚金砖块：属性与万坚金块一致，钻石镐，信标基座 */
-    public static final DeferredBlock<Block> STURDYGOLD_BRICKS = BLOCKS.register("sturdygold_bricks",
-            () -> new BeaconBaseBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_BLACK)
-                    .requiresCorrectToolForDrops()
-                    .strength(55.0F, 1500.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK),
-                    DyeColor.YELLOW));
+    public static final DeferredBlock<Block> STURDYGOLD_BRICKS = MetalAliases.block("sturdygold_bricks");
 
     // ==================== 砖块变种：楼梯 / 台阶 / 墙 ====================
 
@@ -145,61 +140,28 @@ public class AllBlocks {
             () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(GOLD_BRICKS.get())));
 
     /** 万坚金砖楼梯 */
-    public static final DeferredBlock<StairBlock> STURDYGOLD_BRICKS_STAIRS = BLOCKS.register("sturdygold_bricks_stairs",
-            () -> new StairBlock(STURDYGOLD_BRICKS.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(STURDYGOLD_BRICKS.get())));
+    public static final DeferredBlock<StairBlock> STURDYGOLD_BRICKS_STAIRS = MetalAliases.block("sturdygold_bricks_stairs");
 
     /** 万坚金砖台阶 */
-    public static final DeferredBlock<SlabBlock> STURDYGOLD_BRICKS_SLAB = BLOCKS.register("sturdygold_bricks_slab",
-            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(STURDYGOLD_BRICKS.get())));
+    public static final DeferredBlock<SlabBlock> STURDYGOLD_BRICKS_SLAB = MetalAliases.block("sturdygold_bricks_slab");
 
     /** 万坚金砖墙 */
-    public static final DeferredBlock<WallBlock> STURDYGOLD_BRICKS_WALL = BLOCKS.register("sturdygold_bricks_wall",
-            () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(STURDYGOLD_BRICKS.get())));
+    public static final DeferredBlock<WallBlock> STURDYGOLD_BRICKS_WALL = MetalAliases.block("sturdygold_bricks_wall");
 
     /** 万坚金栏杆：继承 IronBarsBlock，钻石镐 */
-    public static final DeferredBlock<IronBarsBlock> STURDYGOLD_BARS = BLOCKS.register("sturdygold_bars",
-            () -> new IronBarsBlock(BlockBehaviour.Properties.of()
-                    .requiresCorrectToolForDrops()
-                    .strength(8.0F, 12.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK)
-                    .noOcclusion()));
+    public static final DeferredBlock<IronBarsBlock> STURDYGOLD_BARS = MetalAliases.block("sturdygold_bars");
 
     /** 万坚金门：继承 DoorBlock，红石控制，钻石镐 */
-    public static final DeferredBlock<DoorBlock> STURDYGOLD_DOOR = BLOCKS.register("sturdygold_door",
-            () -> new DoorBlock(BlockSetType.IRON, BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_BLACK)
-                    .requiresCorrectToolForDrops()
-                    .strength(8.0F, 12.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK)
-                    .noOcclusion()));
+    public static final DeferredBlock<DoorBlock> STURDYGOLD_DOOR = MetalAliases.block("sturdygold_door");
 
     /** 万坚金活板门：继承 TrapDoorBlock，红石控制，钻石镐 */
-    public static final DeferredBlock<TrapDoorBlock> STURDYGOLD_TRAPDOOR = BLOCKS.register("sturdygold_trapdoor",
-            () -> new TrapDoorBlock(BlockSetType.IRON, BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_BLACK)
-                    .requiresCorrectToolForDrops()
-                    .strength(8.0F, 12.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK)
-                    .noOcclusion()));
+    public static final DeferredBlock<TrapDoorBlock> STURDYGOLD_TRAPDOOR = MetalAliases.block("sturdygold_trapdoor");
 
     /** 万坚金灯笼：继承 LanternBlock，钻石镐 */
-    public static final DeferredBlock<LanternBlock> STURDYGOLD_LANTERN = BLOCKS.register("sturdygold_lantern",
-            () -> new LanternBlock(BlockBehaviour.Properties.of()
-                    .forceSolidOn()
-                    .requiresCorrectToolForDrops()
-                    .strength(8.0F, 12.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK)
-                    .lightLevel(state -> 15)
-                    .noOcclusion()));
+    public static final DeferredBlock<LanternBlock> STURDYGOLD_LANTERN = MetalAliases.block("sturdygold_lantern");
 
     /** 万坚金链：继承 ChainBlock，钻石镐 */
-    public static final DeferredBlock<ChainBlock> STURDYGOLD_CHAIN = BLOCKS.register("sturdygold_chain",
-            () -> new ChainBlock(BlockBehaviour.Properties.of()
-                    .forceSolidOn()
-                    .requiresCorrectToolForDrops()
-                    .strength(8.0F, 12.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK)
-                    .noOcclusion()));
+    public static final DeferredBlock<ChainBlock> STURDYGOLD_CHAIN = MetalAliases.block("sturdygold_chain");
 
     // ==================== 金作物相关方块 ====================
 
@@ -286,12 +248,7 @@ public class AllBlocks {
                     .sound(net.minecraft.world.level.block.SoundType.METAL)));
 
     /** 万坚金柱：顶底套用万坚金块贴图 */
-    public static final DeferredBlock<RotatedPillarBlock> STURDYGOLD_PILLAR = BLOCKS.register("sturdygold_pillar",
-            () -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_BLACK)
-                    .requiresCorrectToolForDrops()
-                    .strength(55.0F, 1500.0F)
-                    .sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK)));
+    public static final DeferredBlock<RotatedPillarBlock> STURDYGOLD_PILLAR = MetalAliases.block("sturdygold_pillar");
 
     /** 易金柜台：易金商人的工作站点（正面朝向玩家） */
     public static final DeferredBlock<com.hjmmd_8.bettergold.block.GoldExchangeCounterBlock> GOLD_EXCHANGE_COUNTER =
@@ -330,20 +287,20 @@ public class AllBlocks {
     public static final DeferredItem<BlockItem> GOLD_LANTERN_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_lantern", GOLD_LANTERN);
     public static final DeferredItem<BlockItem> GOLD_CHAIN_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_chain", GOLD_CHAIN);
 
-    public static final DeferredItem<BlockItem> STURDYGOLD_BLOCK_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_block", STURDYGOLD_BLOCK);
-    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_bricks", STURDYGOLD_BRICKS);
+    public static final DeferredItem<BlockItem> STURDYGOLD_BLOCK_ITEM = MetalAliases.item("sturdygold_block");
+    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_ITEM = MetalAliases.item("sturdygold_bricks");
 
     public static final DeferredItem<BlockItem> GOLD_BRICKS_STAIRS_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_bricks_stairs", GOLD_BRICKS_STAIRS);
     public static final DeferredItem<BlockItem> GOLD_BRICKS_SLAB_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_bricks_slab", GOLD_BRICKS_SLAB);
     public static final DeferredItem<BlockItem> GOLD_BRICKS_WALL_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_bricks_wall", GOLD_BRICKS_WALL);
-    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_STAIRS_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_bricks_stairs", STURDYGOLD_BRICKS_STAIRS);
-    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_SLAB_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_bricks_slab", STURDYGOLD_BRICKS_SLAB);
-    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_WALL_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_bricks_wall", STURDYGOLD_BRICKS_WALL);
-    public static final DeferredItem<BlockItem> STURDYGOLD_BARS_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_bars", STURDYGOLD_BARS);
-    public static final DeferredItem<BlockItem> STURDYGOLD_DOOR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_door", STURDYGOLD_DOOR);
-    public static final DeferredItem<BlockItem> STURDYGOLD_TRAPDOOR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_trapdoor", STURDYGOLD_TRAPDOOR);
-    public static final DeferredItem<BlockItem> STURDYGOLD_LANTERN_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_lantern", STURDYGOLD_LANTERN);
-    public static final DeferredItem<BlockItem> STURDYGOLD_CHAIN_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_chain", STURDYGOLD_CHAIN);
+    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_STAIRS_ITEM = MetalAliases.item("sturdygold_bricks_stairs");
+    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_SLAB_ITEM = MetalAliases.item("sturdygold_bricks_slab");
+    public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_WALL_ITEM = MetalAliases.item("sturdygold_bricks_wall");
+    public static final DeferredItem<BlockItem> STURDYGOLD_BARS_ITEM = MetalAliases.item("sturdygold_bars");
+    public static final DeferredItem<BlockItem> STURDYGOLD_DOOR_ITEM = MetalAliases.item("sturdygold_door");
+    public static final DeferredItem<BlockItem> STURDYGOLD_TRAPDOOR_ITEM = MetalAliases.item("sturdygold_trapdoor");
+    public static final DeferredItem<BlockItem> STURDYGOLD_LANTERN_ITEM = MetalAliases.item("sturdygold_lantern");
+    public static final DeferredItem<BlockItem> STURDYGOLD_CHAIN_ITEM = MetalAliases.item("sturdygold_chain");
 
     public static final DeferredItem<BlockItem> GOLD_INFUSED_DIRT_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_infused_dirt", GOLD_INFUSED_DIRT);
     // 金染耕地：无物品形态（像原版耕地一样只能由锄头转化生成，不能从物品栏获取）
@@ -362,7 +319,7 @@ public class AllBlocks {
     // ==================== 新约 1.3 BlockItems ====================
 
     public static final DeferredItem<BlockItem> GOLD_PILLAR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_pillar", GOLD_PILLAR);
-    public static final DeferredItem<BlockItem> STURDYGOLD_PILLAR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("sturdygold_pillar", STURDYGOLD_PILLAR);
+    public static final DeferredItem<BlockItem> STURDYGOLD_PILLAR_ITEM = MetalAliases.item("sturdygold_pillar");
     public static final DeferredItem<BlockItem> GOLD_EXCHANGE_COUNTER_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_exchange_counter", GOLD_EXCHANGE_COUNTER);
 
     public static final DeferredItem<BlockItem> GOLDEN_TOAD_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_toad_figurine", GOLDEN_TOAD_FIGURINE);

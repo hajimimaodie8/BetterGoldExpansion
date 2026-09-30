@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bettergold:flamegold_upgrade_template" },
+  "base": { "item": "minecraft:golden_sword" },
+  "addition": { "item": "bettergold:flamegold_ingot" },
+  "result": { "id": "bettergold:flamegold_sword", "count": 1 }
+}

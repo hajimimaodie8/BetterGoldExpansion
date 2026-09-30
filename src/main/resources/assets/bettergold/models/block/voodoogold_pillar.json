@@ -1,0 +1,7 @@
+{
+    "textures":  {
+                     "end":  "bettergold:block/voodoogold_block",
+                     "side":  "bettergold:block/voodoogold_pillar"
+                 },
+    "parent":  "minecraft:block/cube_column"
+}

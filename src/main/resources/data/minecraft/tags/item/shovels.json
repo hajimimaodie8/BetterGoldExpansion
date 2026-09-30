@@ -3,6 +3,9 @@
   "values": [
     "bettergold:sturdygold_shovel",
     "bettergold:antique_shovel",
-    "bettergold:netherite_antique_shovel"
+    "bettergold:netherite_antique_shovel",
+    "bettergold:flamegold_shovel",
+    "bettergold:voodoogold_shovel",
+    "bettergold:thundergold_shovel"
   ]
 }

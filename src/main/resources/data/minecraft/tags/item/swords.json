@@ -3,6 +3,9 @@
   "values": [
     "bettergold:sturdygold_sword",
     "bettergold:antique_sword",
-    "bettergold:netherite_antique_sword"
+    "bettergold:netherite_antique_sword",
+    "bettergold:flamegold_sword",
+    "bettergold:voodoogold_sword",
+    "bettergold:thundergold_sword"
   ]
 }

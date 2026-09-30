@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "bettergold:sturdygold_nugget"
+    "bettergold:sturdygold_nugget",
+    "bettergold:flamegold_nugget",
+    "bettergold:voodoogold_nugget",
+    "bettergold:thundergold_nugget"
   ]
 }

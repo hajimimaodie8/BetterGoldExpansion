@@ -1,0 +1,17 @@
+{
+    "key":  {
+                "B":  {
+                          "item":  "bettergold:voodoogold_block"
+                      }
+            },
+    "category":  "building",
+    "pattern":  [
+                    "B",
+                    "B"
+                ],
+    "result":  {
+                   "id":  "bettergold:voodoogold_pillar",
+                   "count":  2
+               },
+    "type":  "minecraft:crafting_shaped"
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "bettergold:block/voodoogold_bricks",
+    "top": "bettergold:block/voodoogold_bricks",
+    "side": "bettergold:block/voodoogold_bricks"
+  }
+}

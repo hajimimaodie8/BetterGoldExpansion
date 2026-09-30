@@ -3,6 +3,9 @@
   "values": [
     "bettergold:sturdygold_knife",
     "bettergold:antique_knife",
-    "bettergold:netherite_antique_knife"
+    "bettergold:netherite_antique_knife",
+    "bettergold:flamegold_knife",
+    "bettergold:voodoogold_knife",
+    "bettergold:thundergold_knife"
   ]
 }

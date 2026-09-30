@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "bettergold:raw_sturdygold"
+    "bettergold:raw_sturdygold",
+    "bettergold:raw_flamegold",
+    "bettergold:raw_voodoogold",
+    "bettergold:raw_thundergold"
   ]
 }

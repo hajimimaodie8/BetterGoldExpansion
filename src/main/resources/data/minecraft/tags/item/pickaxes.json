@@ -3,6 +3,9 @@
   "values": [
     "bettergold:sturdygold_pickaxe",
     "bettergold:antique_pickaxe",
-    "bettergold:netherite_antique_pickaxe"
+    "bettergold:netherite_antique_pickaxe",
+    "bettergold:flamegold_pickaxe",
+    "bettergold:voodoogold_pickaxe",
+    "bettergold:thundergold_pickaxe"
   ]
 }

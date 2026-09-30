@@ -44,17 +44,21 @@ public class bettergoldClient {
         event.enqueueWork(() -> {
             RenderType cutout = RenderType.cutout();
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_LANTERN.get(), cutout);
-            ItemBlockRenderTypes.setRenderLayer(AllBlocks.STURDYGOLD_LANTERN.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_DOOR.get(), cutout);
-            ItemBlockRenderTypes.setRenderLayer(AllBlocks.STURDYGOLD_DOOR.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_TRAPDOOR.get(), cutout);
-            ItemBlockRenderTypes.setRenderLayer(AllBlocks.STURDYGOLD_TRAPDOOR.get(), cutout);
 
             RenderType cutoutMipped = RenderType.cutoutMipped();
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_BARS.get(), cutoutMipped);
-            ItemBlockRenderTypes.setRenderLayer(AllBlocks.STURDYGOLD_BARS.get(), cutoutMipped);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_CHAIN.get(), cutoutMipped);
-            ItemBlockRenderTypes.setRenderLayer(AllBlocks.STURDYGOLD_CHAIN.get(), cutoutMipped);
+            // 全部金属（含万坚金：1.4 起它是金属族的一员）的同类方块都要注册透明层，
+            // 否则透明像素会被渲染成黑块。万坚金原来在这里的 5 行显式注册已由本循环覆盖。
+            for (var family : com.hjmmd_8.bettergold.material.MetalFamily.all()) {
+                ItemBlockRenderTypes.setRenderLayer(family.lantern.get(), cutout);
+                ItemBlockRenderTypes.setRenderLayer(family.door.get(), cutout);
+                ItemBlockRenderTypes.setRenderLayer(family.trapdoor.get(), cutout);
+                ItemBlockRenderTypes.setRenderLayer(family.bars.get(), cutoutMipped);
+                ItemBlockRenderTypes.setRenderLayer(family.chain.get(), cutoutMipped);
+            }
 
             // 作物方块：cross 模型需要 cutout
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_CARROT_CROP.get(), cutout);

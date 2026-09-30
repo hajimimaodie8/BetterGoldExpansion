@@ -3,6 +3,17 @@
   "values": [
     "bettergold:gold_bricks",
     "bettergold:sturdygold_block",
-    "bettergold:sturdygold_bricks"
+    "bettergold:sturdygold_bricks",
+    "bettergold:flamegold_block",
+    "bettergold:flamegold_bricks",
+    "bettergold:voodoogold_block",
+    "bettergold:voodoogold_bricks",
+    "bettergold:thundergold_block",
+    "bettergold:thundergold_bricks",
+    "bettergold:gold_pillar",
+    "bettergold:sturdygold_pillar",
+    "bettergold:flamegold_pillar",
+    "bettergold:voodoogold_pillar",
+    "bettergold:thundergold_pillar"
   ]
 }

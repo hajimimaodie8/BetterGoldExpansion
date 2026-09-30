@@ -22,7 +22,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * 因此这里的字段可以**直接注册**（不需要 fdLoaded() ? register : null 的三元判断）。
  *
  * 所有注册 id 仍属 bettergold 命名空间（与本体物品不冲突），data 配方/loot 均按 id 引用，无需改动。
- * 本包内的物品只进"农夫乐事联动"创造标签页 {@link FdTabs}。
+ * 本包内的物品只进本模组唯一创造页里的「乐事分区」（横幅 fd.png），
+ * 由 {@link FdModule#register} 通过 {@link FdTabs#FD_SECTION} 注入。
  */
 public class FdItems {
 
@@ -170,13 +171,21 @@ public class FdItems {
 
     /**
      * 万坚金小刀：继承 FD 的 KnifeItem（切割砧板/收获等功能）。
-     * 耐久 6144 / 破坏能力 14 / 附魔能力 30（继承万坚金器具的爆金技能，见 {@link FdEvents}/ModEvents 工具判定）。
+     * 材质取金属族的 tier（{@code AllMetals.STURDYGOLD.tier}，数值与迁移前的旧万坚金套装完全一致），
+     * 因此 {@code ModEvents} 的"万坚金工具"判定（比较材质实例）依旧命中。
      *
-     * FD 是 OPTIONAL 依赖，因此本物品只在本模块被挂载（FD 已装）时注册；
-     * 反射创建 KnifeItem 避免字节码硬引用 FD 类导致没装 FD 时 NoClassDefFoundError。
+     * <p>FD 是 OPTIONAL 依赖，因此本物品只在本模块被挂载（FD 已装）时注册；
+     * 反射创建 KnifeItem 避免字节码硬引用 FD 类导致没装 FD 时 NoClassDefFoundError。</p>
+     *
+     * <p>新约 1.4：万坚金本体已交给金属族注册，但小刀只能在 FD 模块里注册
+     * （KnifeItem 属可选依赖）；与另外三套新金属一样，注册后通过 {@code addExtraItem} 登记进家族。
+     * 这里保持显式注册，是为了让物品注册顺序与 1.3 完全一致（创造页"小刀"分区按注册顺序排）。</p>
      */
     public static final DeferredItem<Item> STURDYGOLD_KNIFE =
-            ITEMS.register("sturdygold_knife", () -> createSturdygoldKnife());
+            ITEMS.register("sturdygold_knife", () -> createKnife(
+                    com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD.tier,
+                    com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_DMG,
+                    com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_SPD, true));
 
     /** 古董屠刀（新约 1.3）：古董器具的乐事联动刀，伤害 4.5 / 攻速 2 */
     public static final DeferredItem<Item> ANTIQUE_KNIFE =
@@ -187,8 +196,25 @@ public class FdItems {
             ITEMS.register("netherite_antique_knife", () -> createKnife(AllTiers.NETHERITE_ANTIQUE, 5.5F, -2.0F, true));
 
     /** 反射创建 FD 的 KnifeItem；反射失败兜底为普通物品（此时 FD 必然已装，理论上不会失败） */
-    private static Item createSturdygoldKnife() {
-        return createKnife(AllTiers.STURDYGOLD, 2.0F, -1.8F, true);
+    /** 新约 1.4：另三套新金属的小刀（刀属乐事联动，只能在这里注册）；万坚金小刀见上方显式注册 */
+    public static final java.util.List<DeferredItem<Item>> METAL_KNIVES = registerMetalKnives();
+
+    private static java.util.List<DeferredItem<Item>> registerMetalKnives() {
+        var list = new java.util.ArrayList<DeferredItem<Item>>();
+        for (var family : com.hjmmd_8.bettergold.material.MetalFamily.all()) {
+            if (family.id.equals("sturdygold")) {
+                // 万坚金小刀已在上方显式注册（保持 1.3 的物品注册顺序），这里只把它登记进家族
+                family.addExtraItem(STURDYGOLD_KNIFE::get);
+                list.add(STURDYGOLD_KNIFE);
+                continue;
+            }
+            var holder = ITEMS.register(family.id + "_knife",
+                    () -> createKnife(family.tier, com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_DMG,
+                            com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_SPD, family.fireResistant));
+            family.addExtraItem(holder::get);
+            list.add(holder);
+        }
+        return java.util.List.copyOf(list);
     }
 
     /** 通用：反射创建指定材质的 FD 小刀（damage/speed 为 createAttributes 参数） */
