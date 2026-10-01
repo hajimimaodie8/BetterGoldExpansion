@@ -139,7 +139,45 @@ public final class MetalEvents {
 
     // ==================== 建材互动：踩踏 / 紧贴 / 破坏 / 右键 → 6 秒 debuff ====================
 
-    /** 给实体上这个建材对应的 debuff（燃烧或效果），持续 6 秒 */
+    /**
+     * 给实体上这个建材对应的 debuff（燃烧或效果），持续 6 秒。
+     *
+     * <p><b>已经挂着同名效果时绝不刷新时长</b>：让它自然走完；走完后如果还在接触范围内，
+     * 由下一次扫描（{@link #scanContact}，每 10 tick 一次）重新挂一份新的 6 秒。</p>
+     *
+     * <h2>为什么要这么改（源码级）</h2>
+     * <ol>
+     *   <li>中毒的伤害刻判定在 {@code PoisonMobEffect#shouldApplyEffectTickThisTick}
+     *       （neoforge sources {@code net/minecraft/world/effect/PoisonMobEffect.java:24-28}）：
+     *       {@code int i = 25 >> amplifier; return i > 0 ? duration % i == 0 : true;}
+     *       —— 1 级中毒只在 {@code duration % 25 == 0} 时掉血（{@code applyEffectTick} 里
+     *       {@code getHealth() > 1.0F} 才扣 1 点）。</li>
+     *   <li>{@code MobEffectInstance#tick}（同 sources
+     *       {@code net/minecraft/world/effect/MobEffectInstance.java:223-240}）是
+     *       <b>先用当前 duration 判伤害、再扣 1</b>（226 行判定、230 行 {@code tickDownDuration()}），
+     *       且 duration 为 0 时根本不再 tick（{@code hasRemainingDuration()}，242-244 行）。
+     *       所以 6 秒（{@value MetalFamily#CONTACT_EFFECT_TICKS} tick）的中毒真正掉血的 duration 是
+     *       <b>100 / 75 / 50 / 25</b>，一共 4 次。</li>
+     *   <li>接触扫描每 10 tick 跑一次（{@link #onPlayerTick} / {@link #onEntityTick}）。
+     *       旧代码每次都无条件 {@code addEffect(120)}，而
+     *       {@code MobEffectInstance#update} 在等级相同时会把新时长直接写回去
+     *       （同文件 154-157 行 {@code this.duration = other.duration}），
+     *       于是 duration 只在 <b>120 ↔ 110</b> 之间来回，永远到不了 100/75/50/25 ⇒
+     *       <b>身上一直挂着中毒，却一次伤害都不结算</b>。
+     *       （2026-10 dev 服务器实测：站在巫毒金方块上 420 tick，中毒时长 41 次被刷新回 120、
+     *       最小只到 111，掉血 0 次。）</li>
+     * </ol>
+     *
+     * <h2>语义</h2>
+     * <ul>
+     *   <li>玩家与生物共用这一个方法（{@link #onPlayerTick} / {@link #onEntityTick}），规则只有一份。</li>
+     *   <li>只对「已经有效果」的情况收手，并且<b>不改动已有实例的等级与时长</b>：别的来源
+     *       （洞穴蜘蛛、药水、命令）挂的中毒，以及巫毒金武器挂的 {@code bettergold:voodoo}
+     *       （那是另一个效果，走 {@link #stackVoodoo}）都不受影响 —— 它们的时长照常自己倒计时，
+     *       不会被这里重置，也不会因为我们"已经有效果"就永远轮不到 6 秒接触中毒
+     *       （它们一旦走完，下一次扫描就会按接触语义重新挂上）。</li>
+     * </ul>
+     */
     public static void applyContact(net.minecraft.world.entity.LivingEntity entity,
             net.minecraft.world.level.block.Block block) {
         MetalFamily family = MetalFamily.of(block);
@@ -147,11 +185,24 @@ public final class MetalEvents {
             return;
         }
         if (family.contactFire) {
+            // 火焰<b>刻意不</b>做"已有就不刷新"：刷新火焰不会导致不掉血 ——
+            // 火焰伤害判定在 Entity#baseTick（neoforge sources
+            // net/minecraft/world/entity/Entity.java:460-472）：
+            // `if (this.remainingFireTicks % 20 == 0 && !this.isInLava()) hurt(onFire, 1.0F);`
+            // 而刷新用的值就是 120，120 % 20 == 0，所以刷新之后下一 tick 必定结算 1 点火焰伤害。
+            // 2026-10 实测：站在烈燃金方块上的牛 420 tick 掉血 42 次、间隔恒为 10 tick（每次 -1.0 HP，
+            // 即 2 点/秒；不刷新的原版燃烧是 1 点/秒）。也就是说火焰的问题不是"不掉血"，
+            // 而是"刷新让它烧得更久、而且频率翻倍"（这是另一个话题，本次刻意不动）。
             entity.setRemainingFireTicks(MetalFamily.CONTACT_EFFECT_TICKS);
         }
         if (family.contactEffect != null) {
+            net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect = family.contactEffect.get();
+            if (entity.hasEffect(effect)) {
+                // 已经挂着（不管是本方块挂的还是别的来源挂的）→ 不刷新时长，等它自然走完
+                return;
+            }
             entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                    family.contactEffect.get(), MetalFamily.CONTACT_EFFECT_TICKS, 0));
+                    effect, MetalFamily.CONTACT_EFFECT_TICKS, 0));
         }
     }
 

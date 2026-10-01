@@ -55,7 +55,10 @@ public final class CreativeTabSections {
      *
      * <p>段内顺序与旧实现完全一致：声明了 {@link Slot#order} 的段整段用那个比较器排
      * （建材类型 → 物品 id），其余段是「非金属按投放顺序在前、能分类的金属按排序键在后」。
-     * 段与段之间<b>不加任何空行</b>。</p>
+     * 金属那部分的排序键是
+     * (分区, 金属位次, 类型位次, 物品 id) —— 前三位来自 {@link CreativeSections.Placement#sortKey()}，
+     * 最后一位是 {@link CreativeSections#itemIdOf} 兜底，因此同一金属的各类型严格连排、
+     * 同键时也与注册 / 投放顺序无关。段与段之间<b>不加任何空行</b>。</p>
      *
      * <p>兜底：万一某件物品没有被任何规则命中（规则漏写），它会被追加在末尾而不是被丢掉 ——
      * 「物品一个都不能丢」优先于顺序；真出现这种情况，自检里的逐元素比对会暴露出来。</p>
@@ -65,7 +68,7 @@ public final class CreativeTabSections {
         boolean[] taken = new boolean[items.size()];
         for (Slot slot : slots) {
             List<ItemStack> plain = new ArrayList<>();
-            List<long[]> keys = new ArrayList<>();
+            List<Long> keys = new ArrayList<>();
             List<ItemStack> metals = new ArrayList<>();
             for (int i = 0; i < items.size(); i++) {
                 if (taken[i]) {
@@ -86,7 +89,7 @@ public final class CreativeTabSections {
                 if (place == null) {
                     plain.add(stack);
                 } else {
-                    keys.add(new long[] { place.sortKey(), metals.size() });
+                    keys.add(place.sortKey());
                     metals.add(stack);
                 }
             }
@@ -95,10 +98,16 @@ public final class CreativeTabSections {
                 out.addAll(plain);
                 continue;
             }
-            keys.sort((a, b) -> Long.compare(a[0], b[0]));
+            // 排序键 = (分区, 金属位次, 类型位次) 后按物品 id 兜底；下标排序以保留原始下标备用
+            List<Integer> order = new ArrayList<>(keys.size());
+            for (int i = 0; i < keys.size(); i++) {
+                order.add(i);
+            }
+            order.sort(Comparator.comparingLong((Integer i) -> keys.get(i))
+                    .thenComparing(i -> CreativeSections.itemIdOf(metals.get(i))));
             out.addAll(plain);
-            for (long[] key : keys) {
-                out.add(metals.get((int) key[1]));
+            for (int i : order) {
+                out.add(metals.get(i));
             }
         }
         for (int i = 0; i < items.size(); i++) {
@@ -148,20 +157,26 @@ public final class CreativeTabSections {
             new Slot("金属", CreativeTabSections::isMetal));
 
     /**
-     * 建筑分区内部顺序：金属块 → 金属建材 → 其他建筑方块。
+     * 建筑分区内部顺序：金属建材（金属块 + 那套建材）→ 其他建筑方块。
      *
-     * <p>「其他建筑方块」是兜底段，装的是「既不是金属块、也不是金属建材」的方块：普通金那一套建材
+     * <p><b>金属块不是独立的一段</b>（作者 1.4 定稿）：它是这套金属建材的
+     * {@link CreativeSections#BUILDING_SLOT 类型位次 0}，所以这一段的排序键是
+     * (金属位次, 类型位次) = 每种金属的 11 件严格连排、且以自己的 {@code <金属>_block} 开头，
+     * 金属之间按 {@link CreativeSections#METAL_ORDER}：
+     * 块 → 砖 → 柱 → 砖楼梯 → 砖台阶 → 砖墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼。
+     * 以前这里分两段（先 4 个金属块、再每种金属 10 件）是错的，别再拆开。</p>
+     *
+     * <p>「其他建筑方块」是兜底段，装的是「不是金属物品」的方块：普通金那一套建材
      * （金砖块 / 金柱 / …… / 金灯笼）加上金染土、筐装物、易金柜台、金雕这类杂项。</p>
      *
      * <p>它复用 {@link CreativeSections#SUITE_ORDER}：整段先按<b>同一张</b>建材类型表排
-     * （砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼，与「金属建材」一致），
+     * （块 → 砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼，与「金属建材」一致），
      * 同类型按物品 id 稳定排序；不属于任何套件的杂项排在全部套件之后，并按
      * {@link CreativeSections} 里的那张杂项有序表排：<b>金染土 → 金麦块 → 筐装方块（一整组，
      * 组内按物品 id）→ 易金柜台 → 金雕（苦力怕 → 末影人 → 青蛙）</b>，
      * 之后再是没命中该表的其它杂项（仍按物品 id）。</p>
      */
     public static final List<Slot> BLOCKS = List.of(
-            new Slot("金属块", stack -> kindOf(stack) == CreativeSections.Kind.METAL_BLOCKS),
             new Slot("金属建材", stack -> kindOf(stack) == CreativeSections.Kind.METAL_BUILDING),
             new Slot("其他建筑方块", stack -> true, CreativeSections.SUITE_ORDER));
 

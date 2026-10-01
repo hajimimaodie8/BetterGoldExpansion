@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
  *       没列进来的金属自动排在最后（按注册顺序），所以忘了加也不会丢物品。</li>
  *   <li><b>靠物品 id 后缀判定分区与位次，绝不枚举物品</b>：{@code <金属>_ingot} 落在金属材料区、
  *       {@code <金属>_bricks} 落在金属建材区……加 16 种还是 100 种金属都不用改这里。</li>
+ *   <li><b>金属分区的排序键恒为 (金属位次, 类型位次, 物品 id)</b>，金属位次来自 {@link #METAL_ORDER}、
+ *       类型位次来自 {@link #BUILDING_SLOT}（{@code <金属>_block} = 0）；
+ *       所以「建筑」分区里每种金属的 11 件建材严格连排、以自己的金属块开头。</li>
  *   <li>认不出来的一律返回 null，由调用方丢进该页的「其他」分区 —— 永远不会把物品弄丢。</li>
  * </ul>
  *
@@ -39,18 +42,26 @@ public final class CreativeSections {
     public enum Kind {
         /** 材料页：金属（核心材料 / 原料 / 锭 / 粒 / 模板） */
         METAL_MATERIALS,
-        /** 建筑方块页：金属块 */
-        METAL_BLOCKS,
-        /** 建筑方块页：金属建材（砖块…灯笼） */
+        /**
+         * 建筑分区：金属建材 = <b>金属块</b> + 砖块 / 柱 / 楼梯 / 台阶 / 墙 / 门 / 活板门 / 栏杆 / 链 / 灯笼。
+         *
+         * <p>金属块（{@code <金属>_block}）<b>不是独立分组</b>，它就是这套建材的
+         * {@link CreativeSections#BUILDING_SLOT 类型位次 0}，所以每种金属的 11 件必然以"块"开头、
+         * 严格连排，同一金属内不会插进别的金属的方块（作者 1.4 定稿）。</p>
+         */
         METAL_BUILDING,
         /** 装备与工具页：金属装备（剑…靴子） */
         METAL_GEAR
     }
 
-    /** 一个物品在金属分区中的位置：分区、金属位次、区内位次 */
+    /** 一个物品在金属分区中的位置：分区、金属位次、类型位次 */
     public record Placement(Kind kind, int metalRank, int slot) {
 
-        /** 排序键：先分区，再金属，再区内位次 */
+        /**
+         * 排序键：先分区，再金属位次，再类型位次（{@link #slot}）。
+         * 同一键内由<b>物品 id</b> 兜底（{@code CreativeTabSections#ordered}），
+         * 所以完整排序键是 (分区, 金属位次, 类型位次, 物品 id)。
+         */
         public long sortKey() {
             return ((long) this.kind.ordinal() << 32) | ((long) this.metalRank << 16) | this.slot;
         }
@@ -67,24 +78,33 @@ public final class CreativeSections {
             Map.entry("upgrade_template", 4));
 
     /**
-     * 「建材类型后缀 → 区内位次」：<b>唯一</b>一张类型顺序表
-     * （砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼）。
+     * 「建材类型后缀 → 类型位次」：<b>唯一</b>一张类型顺序表
+     * （块 → 砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼）。
+     *
+     * <p><b>块是 0 号位，不是分组</b>（作者 1.4 定稿）：{@code <金属>_block} 与这套金属的
+     * 砖块…灯笼<b>同属一个金属组</b>，所以整组的排序键是
+     * (金属位次, 类型位次) = (0, 0)…(0, 10)，必然连排且以"块"开头。</p>
      *
      * <p>两个分区共用它：金属物品的「金属建材」分区（{@link #classify} 按 {@code <金属>_后缀} 查），
-     * 以及非金属的「其他建筑方块」分区（{@link #suiteRank} 按物品 id 的 {@code _后缀} 查）。
+     * 以及非金属的「其他建筑方块」分区（{@link #suiteRank} 按物品 id 的 {@code _后缀} 查，
+     * 于是普通金那套也是"块在最前"的同一规则）。
      * 以后增删建材类型只改这一张表，两个分区同时生效。</p>
+     *
+     * <p>匹配规则是<b>后缀</b>，所以 {@code golden_wheat_block} 这种"名字里带 block 的杂项"
+     * 会被误判成套件的块；由 {@link #suiteSortKey} 里"显式杂项表优先"兜住（见 {@link #OTHER_BLOCK_ORDER}）。</p>
      */
     public static final Map<String, Integer> BUILDING_SLOT = Map.ofEntries(
-            Map.entry("bricks", 0),
-            Map.entry("pillar", 1),
-            Map.entry("bricks_stairs", 2),
-            Map.entry("bricks_slab", 3),
-            Map.entry("bricks_wall", 4),
-            Map.entry("door", 5),
-            Map.entry("trapdoor", 6),
-            Map.entry("bars", 7),
-            Map.entry("chain", 8),
-            Map.entry("lantern", 9));
+            Map.entry("block", 0),
+            Map.entry("bricks", 1),
+            Map.entry("pillar", 2),
+            Map.entry("bricks_stairs", 3),
+            Map.entry("bricks_slab", 4),
+            Map.entry("bricks_wall", 5),
+            Map.entry("door", 6),
+            Map.entry("trapdoor", 7),
+            Map.entry("bars", 8),
+            Map.entry("chain", 9),
+            Map.entry("lantern", 10));
 
     /** 金属装备区区内位次：剑斧镐锹锄 + 四件盔甲 */
     private static final Map<String, Integer> GEAR_SLOT = Map.ofEntries(
@@ -101,13 +121,17 @@ public final class CreativeSections {
     /**
      * 物品是不是「某套建材」的一员：是则返回它的类型位次（{@link #BUILDING_SLOT}），否则返回 {@code -1}。
      *
-     * <p>只看物品 id 的<b>类型后缀</b>（{@code gold_door} → {@code _door} → 5），前缀是哪种材料完全不关心，
+     * <p>只看物品 id 的<b>类型后缀</b>（{@code gold_door} → {@code _door} → 6），前缀是哪种材料完全不关心，
      * 所以「其他的也一样」：以后任何一套建材（普通金、新金属、联动方那 16 色）都自动按同一套类型顺序排，
      * 这里不需要为某种材料加任何分支。</p>
      *
      * <p>匹配规则：{@code path} 等于后缀，或以 {@code "_" + 后缀} 结尾；多个后缀同时命中时取<b>最长</b>的那个
      * （{@code bricks_stairs} 赢过 {@code bricks}）。带 {@code _} 边界是为了让 {@code gold_trapdoor}
      * 不被 {@code door} 误判。</p>
+     *
+     * <p>注意 {@code block} 也在这张表里（类型位次 0），所以 {@code golden_wheat_block} 这类
+     * 「名字里带 block 的杂项」也会命中；它们的定稿位置由 {@link #OTHER_BLOCK_ORDER} 显式给出，
+     * {@link #suiteSortKey} 会优先采用那张表，不会把它们算进套件。</p>
      */
     public static int suiteRank(String path) {
         int rank = -1;
@@ -134,6 +158,10 @@ public final class CreativeSections {
      *
      * <p>没命中这张表的杂项一律取「表长」，因此必然排在这些定稿位置<b>之后</b>
      * （彼此仍按物品 id 排）；以后新增杂项方块既不会插队、也不会丢物品。</p>
+     *
+     * <p><b>这张表优先级高于套件的类型后缀表</b>（{@link #suiteSortKey}）：例如"金麦块"
+     * （{@code golden_wheat_block}）名字里带 {@code _block}，若不先查本表就会被当成"套件的块"
+     * 排到全部套件前面 —— 作者要的是它在杂项段、就在金染土之后。</p>
      */
     private static final List<String> OTHER_BLOCK_ORDER = List.of(
             "gold_infused_dirt",        // 金染土
@@ -145,16 +173,18 @@ public final class CreativeSections {
             "golden_toad_figurine");    // 金雕：青蛙
 
     /**
-     * 杂项分区（建筑方块页的「其他建筑方块」）里，套件物品用的通用排序。
+     * 杂项分区（建筑分区的「其他建筑方块」）里，套件物品用的通用排序。
      *
      * <p>排序键 = （分组/建材类型位次, 物品注册名）。第一条按<b>建材类型位次</b>让整区先排套件，
-     * 「砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼」；
+     * 「块 → 砖块 → 柱 → 楼梯 → 台阶 → 墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼」
+     * （与金属建材同一张表，块同样是最前）；
      * 同类型里有多种材料时（例如以后第二套砖块）按 {@code namespace:path} 字典序稳定排列，
      * 与注册/投放顺序无关，重跑结果一致。</p>
      *
      * <p>不属于任何套件的杂项（金染土 / 金麦块 / 筐装物 / 易金柜台 / 金雕……）第一条改取
-     * {@link #otherBlockRank}（+ 一个高位分组标记），所以杂项必然排在全部套件之后，
-     * 且杂项彼此的先后由 {@link #OTHER_BLOCK_ORDER} 这张<b>唯一</b>有序表决定（第二条只做稳定兜底）。</p>
+     * {@link #explicitOtherRank}（+ 一个高位分组标记），所以杂项必然排在全部套件之后，
+     * 且杂项彼此的先后由 {@link #OTHER_BLOCK_ORDER} 这张<b>唯一</b>有序表决定（第二条只做稳定兜底）；
+     * 该表也<b>优先于</b>套件类型表，避免 {@code golden_wheat_block} 被抢进套件段。</p>
      */
     public static final java.util.Comparator<net.minecraft.world.item.ItemStack> SUITE_ORDER = java.util.Comparator
             .<net.minecraft.world.item.ItemStack>comparingLong(CreativeSections::suiteSortKey)
@@ -170,19 +200,25 @@ public final class CreativeSections {
             return EMPTY_SORT_KEY;
         }
         String path = itemPath(stack);
+        // 显式列进 OTHER_BLOCK_ORDER 的杂项优先落"杂项组"：否则 golden_wheat_block 这种
+        // 名字里带 _block 的杂项会被上面那张通用后缀表当成"套件的块"，插到全部套件最前面。
+        int explicitOther = explicitOtherRank(path);
+        if (explicitOther >= 0) {
+            return OTHER_GROUP | explicitOther;
+        }
         int suite = suiteRank(path);
-        return suite >= 0 ? suite : (OTHER_GROUP | otherBlockRank(path));
+        return suite >= 0 ? suite : (OTHER_GROUP | OTHER_BLOCK_ORDER.size());
     }
 
-    /** 杂项位次：{@link #OTHER_BLOCK_ORDER} 的索引；没命中取表长（排在全部定稿杂项之后） */
-    private static int otherBlockRank(String path) {
+    /** 命中 {@link #OTHER_BLOCK_ORDER} 则返回其索引（定稿杂项），否则返回 {@code -1} */
+    private static int explicitOtherRank(String path) {
         for (int i = 0; i < OTHER_BLOCK_ORDER.size(); i++) {
             String key = OTHER_BLOCK_ORDER.get(i);
             if (key.startsWith("_") ? path.endsWith(key) : path.equals(key)) {
                 return i;
             }
         }
-        return OTHER_BLOCK_ORDER.size();
+        return -1;
     }
 
     /**
@@ -213,8 +249,14 @@ public final class CreativeSections {
         return metals.size();
     }
 
-    /** 排序次键：物品注册名（{@code namespace:path}）字典序，保证同一类型内顺序稳定且可复现 */
-    private static String itemIdOf(net.minecraft.world.item.ItemStack stack) {
+    /**
+     * 排序次键：物品注册名（{@code namespace:path}）字典序，保证同一类型内顺序稳定且可复现。
+     *
+     * <p>它同时是金属分区完整排序键的<b>最后一位</b>：{@link Placement#sortKey()} 相同时按本键兜底
+     * （见 {@code CreativeTabSections#ordered}），所以排序键恒为
+     * (分区, 金属位次, 类型位次, 物品 id)，与注册 / 投放顺序无关。</p>
+     */
+    public static String itemIdOf(net.minecraft.world.item.ItemStack stack) {
         return stack.isEmpty() ? ""
                 : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
     }
@@ -276,9 +318,6 @@ public final class CreativeSections {
         }
         int rank = metalRank(metal);
 
-        if (path.equals(metal + "_block")) {
-            return new Placement(Kind.METAL_BLOCKS, rank, 0);
-        }
         if (path.equals(CORE_ITEMS.get(metal))) {
             return new Placement(Kind.METAL_MATERIALS, rank, 0);
         }

@@ -3,3 +3,7 @@
 # are changed when only line endings change.
 src/generated/**/.cache/* text eol=lf
 src/generated/**/*.json text eol=lf
+
+# 参考实现文档约定用 LF（见 docs/创造页分区栏目-参考实现/02-关键坑与对策.md §10.4）。
+# 本仓库 core.autocrlf=true，不锁的话全新 checkout 会把它们转成 CRLF。
+docs/创造页分区栏目-参考实现/** text eol=lf

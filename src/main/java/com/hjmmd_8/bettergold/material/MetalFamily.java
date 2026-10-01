@@ -212,6 +212,19 @@ public final class MetalFamily {
         return cache;
     }
 
+    /**
+     * 解析一个 {@link Supplier}，注册期还没绑定（{@code DeferredItem.get()} 会抛
+     * {@code IllegalStateException}）时返回 {@code null} —— 索引宁可少登记一个额外部件，
+     * 也绝不能让整个家族索引建不起来。
+     */
+    private static @Nullable Item resolve(Supplier<Item> supplier) {
+        try {
+            return supplier.get();
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
     /** 四件盔甲 */
     public List<Item> armorPieces() {
         List<Item> cache = this.armorCache;
@@ -239,7 +252,14 @@ public final class MetalFamily {
 
     private static volatile boolean indexBuilt;
 
-    /** 注册完成后才能把 DeferredHolder 解析成真实对象，所以索引要等到都绑定好再建 */
+    /**
+     * 注册完成后才能把 DeferredHolder 解析成真实对象，所以索引要等到都绑定好再建。
+     *
+     * <p><b>这里同时收本体物品与「外部登记的额外部件」</b>（{@link #addExtraItem}，例如农夫乐事
+     * 联动那几把刀：它们的 {@code KnifeItem} 只能在 FD 模块里注册，不在 {@link #allItems} 里）。
+     * 以前只登记 {@code allItems}，于是工厂创建的器具在 {@link #of(Item)} 里恒为 {@code null} ——
+     * 「攻击特性查不到家族」的根因就在这一处。索引只在这里写，别在别处另开一条路。</p>
+     */
     private static void ensureIndex() {
         if (indexBuilt) {
             return;
@@ -258,6 +278,13 @@ public final class MetalFamily {
             }
             family.allItems.forEach(holder -> BY_ITEM.put(holder.get(), family));
             family.allBlocks.forEach(holder -> BY_BLOCK.put(holder.get(), family));
+            // 额外部件（乐事联动小刀等）也进索引：解析不到就跳过，绝不让索引卡住
+            for (Supplier<Item> extra : family.extraItems) {
+                Item resolved = resolve(extra);
+                if (resolved != null) {
+                    BY_ITEM.put(resolved, family);
+                }
+            }
         }
         indexBuilt = true;
     }
@@ -533,15 +560,23 @@ public final class MetalFamily {
         return family;
     }
 
-    /** 供外部（例如乐事联动的小刀）把这个物品登记到本家族名下，便于反查与创造页归类 */
-    /** 供外部（例如乐事联动的小刀）登记额外部件；用 Supplier 避免注册期就取实例 */
+    /**
+     * 供外部（例如农夫乐事联动的小刀）把这个物品登记到本家族名下：登记后它既属于
+     * {@link #tools()}，也会进家族索引 {@code BY_ITEM}，因此 {@link #of(Item)} 能反查到本家族。
+     *
+     * <p>必须用 {@link Supplier}：注册期还取不到实例。索引建立时（{@link #ensureIndex()}）
+     * 会把本体物品与全部额外部件<b>一起</b>写进 {@code BY_ITEM}；若索引已经建好才登记
+     * （运行期注册），这里会就地补一条。</p>
+     */
     public void addExtraItem(Supplier<Item> item) {
         this.extraItems.add(item);
-    }
-
-    /** 供外部把这个物品登记到本家族名下，便于反查与创造页归类 */
-    public void mapExtraItem(Item item) {
-        BY_ITEM.put(item, this);
+        this.toolsCache = null;   // 器具清单变了，缓存作废
+        if (indexBuilt) {
+            Item resolved = resolve(item);
+            if (resolved != null) {
+                BY_ITEM.put(resolved, this);
+            }
+        }
     }
 
     /** 穿戴任意一件即让猪灵中立 */
