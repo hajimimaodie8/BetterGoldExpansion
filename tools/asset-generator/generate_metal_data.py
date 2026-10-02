@@ -29,6 +29,8 @@ METALS = {
     "flamegold":   {"cn": "烈燃金", "en": "Flamegold",   "special_cn": "高燃烈焰棒", "special_en": "Blazing Rod",        "special_id": "blazing_rod"},
     "voodoogold":  {"cn": "巫毒金", "en": "Voodoogold",  "special_cn": "巫毒羽毛",   "special_en": "Voodoo Feather",     "special_id": "voodoo_feather"},
     "thundergold": {"cn": "结雷金", "en": "Thundergold", "special_cn": "聚紫能晶尘", "special_en": "Amethyst Energy Dust", "special_id": "amethyst_energy_dust"},
+    "indigoseagold": {"cn": "靛海金", "en": "Indigoseagold", "special_cn": "靛蓝海洋之心", "special_en": "Indigo Ocean Heart",  "special_id": "indigo_ocean_heart"},
+    "illusiongold":  {"cn": "幻惑金", "en": "Illusiongold",  "special_cn": "紫颂樱花枝",   "special_en": "Chorus Cherry Branch", "special_id": "chorus_cherry_branch"},
 }
 
 # 物品 id 后缀 -> (中文模板, 英文模板)
@@ -66,6 +68,8 @@ EFFECT_NAMES = {
     "high_burn": ("高燃", "High Burn"),
     "voodoo": ("巫毒", "Voodoo"),
     "tremble": ("颤栗", "Tremble"),
+    "sediment": ("沉淀", "Sediment"),
+    "soothe": ("安抚", "Soothe"),
 }
 
 
@@ -119,6 +123,11 @@ def main() -> None:
         en[base + "base_slot_description"] = "Put golden armor, weapons or tools"
         zh[base + "additions_slot_description"] = f"放入{cn}锭"
         en[base + "additions_slot_description"] = f"Put a {en_name} Ingot"
+
+        # 盔甲纹饰材料名（generate_metal_trims.py 生成的 trim_material JSON 的 description 用它；
+        # 1.4 的三条是手写的，这里补上自动化：已有的会被 insert_lang 跳过）
+        zh[f"trim_material.bettergold.{mid}"] = f"{cn}质"
+        en[f"trim_material.bettergold.{mid}"] = en_name
 
         # ---------- 战利品表：复制万坚金的 11 张 ----------
         for suffix in BLOCK_SUFFIXES:

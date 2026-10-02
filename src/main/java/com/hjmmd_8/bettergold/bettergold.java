@@ -78,6 +78,9 @@ public class bettergold {
         com.hjmmd_8.bettergold.material.AllMetals.bootstrap();
         // 新约 1.4：三套金属的专属材料（高燃烈焰棒 / 巫毒羽毛 / 聚紫能晶尘）
         com.hjmmd_8.bettergold.material.MetalSpecialItems.bootstrap();
+        // 新约 1.5：5 件「胚底」（纯合成中间物，作者澄清：没有金制系列工具！
+        // 它们只在合成链里：5 条工作台配方产出胚底 → 30 条锻造升级把胚底升级成六套金属武器）
+        com.hjmmd_8.bettergold.material.MetalBlanks.bootstrap();
         // 新约 1.4：金属相关的全局事件（巫毒结束结算等）
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.MetalEvents.class);
         // Register the Deferred Register to the mod event bus so creative tabs get registered
@@ -92,6 +95,8 @@ public class bettergold {
         AllLootModifiers.GLM.register(modEventBus);
         // 新约 1.3：投掷物实体注册
         com.hjmmd_8.bettergold.registry.AllEntities.ENTITY_TYPES.register(modEventBus);
+        // bg-15w：数据附件（掷出的三叉戟的金属 id，需要同步到客户端供实体渲染器取贴图）
+        com.hjmmd_8.bettergold.registry.AllAttachments.ATTACHMENT_TYPES.register(modEventBus);
         // 新约 1.3：易金商人的工作站点（兴趣点）与村民职业
         com.hjmmd_8.bettergold.registry.AllVillagers.POI_TYPES.register(modEventBus);
         com.hjmmd_8.bettergold.registry.AllVillagers.PROFESSIONS.register(modEventBus);

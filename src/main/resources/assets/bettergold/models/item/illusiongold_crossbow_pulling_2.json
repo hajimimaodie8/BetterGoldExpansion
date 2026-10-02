@@ -1,0 +1,6 @@
+{
+  "parent": "bettergold:item/illusiongold_crossbow",
+  "textures": {
+    "layer0": "bettergold:item/illusiongold_crossbow_pulling_2"
+  }
+}

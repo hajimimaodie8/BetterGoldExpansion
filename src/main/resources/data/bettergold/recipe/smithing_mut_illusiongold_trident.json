@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mut"
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:illusiongold_upgrade_template"
+  },
+  "base": {
+    "item": "mut:golden_trident"
+  },
+  "addition": {
+    "item": "bettergold:illusiongold_ingot"
+  },
+  "result": {
+    "id": "bettergold:illusiongold_trident",
+    "count": 1
+  }
+}

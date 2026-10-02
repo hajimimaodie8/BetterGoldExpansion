@@ -22,10 +22,15 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * <ul>
  *   <li>抗寒性（cold_resistance）：免疫冰冻伤害，规避逻辑在伤害事件里。</li>
  *   <li>高燃（high_burn）：目标持续燃烧，等级每 +1 点燃烧伤害 +1 点，可无限叠加（新约 1.4 烈燃金）。</li>
- *   <li>巫毒（voodoo）：被对应器具攻击会叠加等级；窗口内目标受到的伤害按配置比例累积，
- *       效果<b>自然到期</b>时按 {@code 存储伤害 × (1 + 0.8 × 等级)} 造成魔法伤害
- *       （累积与结算都在 {@code MetalEvents} + {@code material.VoodooAccumulator}）。</li>
+ *   <li>巫毒（voodoo）：被对应器具攻击会叠加等级；窗口内目标受到的伤害按配置比例提取，
+ *       效果<b>自然到期</b>时按 {@code 提取值 + 每级固定伤害 × 等级}
+ *       （默认 = {@code 窗口内伤害总量 × 36% + buff 等级}）造成魔法伤害
+ *       （提取与结算都在 {@code MetalEvents} + {@code material.VoodooAccumulator}）。</li>
  *   <li>颤栗（tremble）：每级 −1 点伤害、−0.1 攻速（新约 1.4 结雷金）。</li>
+ *   <li>沉淀（sediment）：持续窒息伤害（等级 + 1 点 / 秒，伤害类型 {@code in_wall}）+ 每级 −1% 移速
+ *       （{@code ADD_MULTIPLIED_TOTAL}）（新约 1.5 靛海金）。</li>
+ *   <li>安抚（soothe）：目标暂时失去 AI；原始 NoAI / 目标由 {@code material.SootheState} 保存并还原，
+ *       不叠加、时长取 max（新约 1.5 幻惑金）。</li>
  * </ul>
  */
 public class AllEffects {
@@ -97,6 +102,68 @@ public class AllEffects {
                             ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "tremble_speed"),
                             AttributeModifier.Operation.ADD_VALUE,
                             amplifier -> -0.1D * (amplifier + 1));
+                }
+            });
+
+    /**
+     * 沉淀（sediment，1.5 靛海金）：「持续受窒息伤害 + 每级降 1% 移动速度」。
+     *
+     * <ul>
+     *   <li><b>伤害 = 等级 + 1</b>（1 级 2 点、2 级 3 点）。代码口径与 1.4 的
+     *       {@link #HIGH_BURN 高燃} 逐字同构：每秒（{@code duration % 20 == 0}）结算
+     *       {@code amplifier + 2} 点 —— {@code amplifier + 1} 是「等级」，再加 1 就是「等级 + 1」。</li>
+     *   <li>伤害类型用 <b>{@code minecraft:in_wall}</b>（方块内窒息），与规格第七节第 3 条一致：
+     *       {@code drown} 带 {@code DamageEffects.DROWNING}（会附溺水表现），{@code in_wall} 无附加效果，
+     *       作持续掉血更干净；靛海金盔甲的「窒息 / 溺水抗性」正好覆盖它（第七节第 7 条：覆盖）。</li>
+     *   <li>移速：<b>每级 1%</b>，必须用 {@link AttributeModifier.Operation#ADD_MULTIPLIED_TOTAL}
+     *       （{@code -0.01 × (amplifier + 1)}）。玩家基础移速是 0.1，用 {@code ADD_VALUE} 加 −0.01
+     *       实际是 −10%，差一个数量级。</li>
+     *   <li>无等级上限：靛海金器具每次命中 +1 级（上限只受效果等级上限 255 限制）。</li>
+     * </ul>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> SEDIMENT =
+            EFFECTS.register("sediment", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x4B0082) {
+                {
+                    this.addAttributeModifier(Attributes.MOVEMENT_SPEED,
+                            ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "sediment_speed"),
+                            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL,
+                            amplifier -> -0.01D * (amplifier + 1));
+                }
+
+                @Override
+                public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+                    if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                        entity.hurt(serverLevel.damageSources().inWall(), amplifier + 2);
+                    }
+                    return true;
+                }
+
+                @Override
+                public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+                    return duration % 20 == 0;
+                }
+            });
+
+    /**
+     * 安抚（soothe，1.5 幻惑金）：目标<b>暂时失去 AI</b>，无法做出任何行动。
+     *
+     * <p>实现是 {@code Mob#setNoAi(true)} + {@code setTarget(null)}；<b>原始的 NoAI 与目标</b>由
+     * {@link com.hjmmd_8.bettergold.material.SootheState} 保存，并在
+     * 到期 / 提前移除 / 目标死亡 / 实体离开世界 / 读档时<b>还原</b> ——
+     * 不还原就会把生物永久变傻（这是本效果唯一容易搞砸的地方，见那个类的注释）。</p>
+     *
+     * <p>重复施加<b>不叠加</b>：时长取 {@code max(剩余, 20)}（施加方在
+     * {@code MetalEvents#applySoothe} 里算好再交过来），所以 1 秒安抚不会被无限续成永久控制。</p>
+     *
+     * <p>状态的登记在 {@link #onEffectStarted}：{@code LivingEntity#addEffect} 在「新挂上」与
+     * 「升级/续时」两条路径的末尾都会调用它，而 {@code SootheState.begin} 对「已经在安抚中」的实体
+     * 只保证 AI 仍是关的、<b>不覆盖</b>已保存的原始状态。</p>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> SOOTHE =
+            EFFECTS.register("soothe", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xC8A2E8) {
+                @Override
+                public void onEffectStarted(LivingEntity entity, int amplifier) {
+                    com.hjmmd_8.bettergold.material.SootheState.begin(entity);
                 }
             });
 

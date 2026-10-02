@@ -1,0 +1,35 @@
+# 只改一张贴图：全资源哈希清单（bg-15w 续工轮 §7.3）
+
+范围：src/main/resources/assets/** + data/bettergold/trim_material/**
+文件数：before=1194  after=1200
+
+## 变更的文件（15）
+  M src\main\resources\assets\bettergold\lang\en_us.json  0AC2B4EE643E -> A40C0C435E52
+  M src\main\resources\assets\bettergold\lang\zh_cn.json  AA5AD03B118E -> 7322039D2E74
+  M src\main\resources\assets\bettergold\models\item\flamegold_trident.json  18003FAE7D3C -> 5A1DCFBDC0CC
+  M src\main\resources\assets\bettergold\models\item\flamegold_trident_in_hand.json  4BE5096022CC -> E966BA5E3212
+  M src\main\resources\assets\bettergold\models\item\illusiongold_trident.json  487771DCFC70 -> 3D50B9B40287
+  M src\main\resources\assets\bettergold\models\item\illusiongold_trident_in_hand.json  185D3F7E0233 -> 8CCF58667B6A
+  M src\main\resources\assets\bettergold\models\item\indigoseagold_trident.json  4F5906CF9260 -> 77E70E509B78
+  M src\main\resources\assets\bettergold\models\item\indigoseagold_trident_in_hand.json  9BAE053DA846 -> 38C6533485FD
+  M src\main\resources\assets\bettergold\models\item\sturdygold_trident.json  1C8B777DEF99 -> D2E3E8FE35FB
+  M src\main\resources\assets\bettergold\models\item\sturdygold_trident_in_hand.json  DF1D6E8A29DA -> D1D70DE3EAF5
+  M src\main\resources\assets\bettergold\models\item\thundergold_trident.json  454863C350FC -> 8BAB9DDAB010
+  M src\main\resources\assets\bettergold\models\item\thundergold_trident_in_hand.json  06BF5FD1986E -> 2522A6364D94
+  M src\main\resources\assets\bettergold\models\item\voodoogold_trident.json  1C87F8C8F8FE -> 709B8E78DF4A
+  M src\main\resources\assets\bettergold\models\item\voodoogold_trident_in_hand.json  86A1F3741D88 -> 560B11F93B91
+  M src\main\resources\assets\bettergold\textures\trims\color_palettes\indigoseagold.png  9C966B7F80C2 -> 360B62970F90
+## 新增（6）
+  A src\main\resources\assets\bettergold\models\item\flamegold_trident_throwing.json  4BE5096022CC
+  A src\main\resources\assets\bettergold\models\item\illusiongold_trident_throwing.json  185D3F7E0233
+  A src\main\resources\assets\bettergold\models\item\indigoseagold_trident_throwing.json  9BAE053DA846
+  A src\main\resources\assets\bettergold\models\item\sturdygold_trident_throwing.json  DF1D6E8A29DA
+  A src\main\resources\assets\bettergold\models\item\thundergold_trident_throwing.json  06BF5FD1986E
+  A src\main\resources\assets\bettergold\models\item\voodoogold_trident_throwing.json  86A1F3741D88
+## 删除（0）
+
+## 结论：变更的 PNG = 1 个，新增 = 0，删除 = 0
+  src\main\resources\assets\bettergold\textures\trims\color_palettes\indigoseagold.png
+变更的色卡 = 1 个：['src\\main\\resources\\assets\\bettergold\\textures\\trims\\color_palettes\\indigoseagold.png']
+
+（其余变更全部是三叉戟模型 JSON 与两个 lang 文件：12 个改写 + 6 个新增 `*_trident_throwing.json`）

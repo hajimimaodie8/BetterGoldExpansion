@@ -1,0 +1,6 @@
+{
+  "parent": "bettergold:item/flamegold_bow",
+  "textures": {
+    "layer0": "bettergold:item/flamegold_bow_pulling_1"
+  }
+}

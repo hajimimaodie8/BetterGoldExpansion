@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "mut"
+      }
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:voodoogold_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:golden_mace_blank"
+  },
+  "addition": {
+    "item": "bettergold:voodoogold_ingot"
+  },
+  "result": {
+    "id": "bettergold:voodoogold_mace",
+    "count": 1
+  }
+}

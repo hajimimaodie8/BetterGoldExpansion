@@ -9,7 +9,17 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
 DATA = REPO / "src" / "main" / "resources" / "data"
-METALS = ["flamegold", "voodoogold", "thundergold"]
+METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]
+ALL_METALS = ["sturdygold", *METALS]
+# 1.5 武器轮：五类武器的 wid（武器 id 前缀）= 六套金属（金制武器不存在，见 1.5 修正轮）
+WEAPON_WIDS = ALL_METALS
+# 1.5 修正轮：五件「胚底」= 最普通的 item/generated 单层模型（没有任何 override），
+# 贴图沿用作者素材里的 16×16「胚底」图。
+BLANK_WIDS = [f"golden_{w}_blank" for w in ("mace", "bow", "crossbow", "trident", "shield")]
+# 各金属的专属材料（走 SPECIAL_TEXTURES，不在金属模板集里）：必须有贴图 + 物品模型，
+# 否则客户端会刷「Unable to load model ... FileNotFoundException」并渲染成紫黑格。
+SPECIAL_ITEMS = ["blazing_rod", "voodoo_feather", "amethyst_energy_dust",
+                 "indigo_ocean_heart", "chorus_cherry_branch"]
 
 bad_json, missing_tex, checked = [], [], 0
 tex_roots = [ASSETS / "textures"]
@@ -49,6 +59,198 @@ print(f"贴图缺失: {len(missing_tex)}")
 for m in sorted(set(missing_tex))[:20]:
     print("   ", m)
 
+# 专属材料：贴图 + models/item/<id>.json（layer0 的贴图也要在）
+missing_special = []
+for special in SPECIAL_ITEMS:
+    tex = ASSETS / "textures" / "item" / f"{special}.png"
+    model = ASSETS / "models" / "item" / f"{special}.json"
+    if not tex.is_file():
+        missing_special.append(f"贴图 textures/item/{special}.png")
+    if not model.is_file():
+        missing_special.append(f"模型 models/item/{special}.json")
+        continue
+    try:
+        obj = json.loads(model.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        missing_special.append(f"模型 {special}.json 解析失败: {e}")
+        continue
+    layer0 = (obj.get("textures") or {}).get("layer0")
+    if not layer0 or not tex_exists(layer0):
+        missing_special.append(f"{special}.json 的 layer0={layer0} 贴图不存在")
+print(f"专属材料缺件: {len(missing_special)}")
+for m in missing_special[:10]:
+    print("   ", m)
+
+# ==================== 1.5 武器轮：五类武器的贴图 + 模型 ====================
+# 每一件武器要有的东西（缺一个客户端就刷「Unable to load model」或紫黑格）：
+#   贴图：item/<wid>_mace / _bow(+3 帧) / _crossbow(+5 帧) / _trident；
+#         entity/shield_<wid>（64×64 实体）/ entity/trident_<wid>（32×32 投掷实体）
+#   模型：models/item/<wid>_*（弓 4、弩 6、三叉戟 3、盾牌 2、重锤 1 = 16 个）
+#         ⚠ 三叉戟是 **3 个**（bg-15w 续工轮 §7.1 按原版 1:1 落成：
+#           平面 `<w>_trident` / 手持 `<w>_trident_in_hand` / 蓄力 `<w>_trident_throwing`）
+WEAPON_TEXTURES = [
+    "textures/item/{w}_mace.png",
+    "textures/item/{w}_bow.png",
+    "textures/item/{w}_bow_pulling_0.png",
+    "textures/item/{w}_bow_pulling_1.png",
+    "textures/item/{w}_bow_pulling_2.png",
+    "textures/item/{w}_crossbow.png",
+    "textures/item/{w}_crossbow_pulling_0.png",
+    "textures/item/{w}_crossbow_pulling_1.png",
+    "textures/item/{w}_crossbow_pulling_2.png",
+    "textures/item/{w}_crossbow_arrow.png",
+    "textures/item/{w}_crossbow_firework.png",
+    "textures/item/{w}_trident.png",
+    "textures/entity/shield_{w}.png",
+    "textures/entity/trident_{w}.png",
+]
+WEAPON_MODELS = [
+    "models/item/{w}_mace.json",
+    "models/item/{w}_bow.json",
+    "models/item/{w}_bow_pulling_0.json",
+    "models/item/{w}_bow_pulling_1.json",
+    "models/item/{w}_bow_pulling_2.json",
+    "models/item/{w}_crossbow.json",
+    "models/item/{w}_crossbow_pulling_0.json",
+    "models/item/{w}_crossbow_pulling_1.json",
+    "models/item/{w}_crossbow_pulling_2.json",
+    "models/item/{w}_crossbow_arrow.json",
+    "models/item/{w}_crossbow_firework.json",
+    "models/item/{w}_trident.json",
+    "models/item/{w}_trident_in_hand.json",
+    # bg-15w 续工轮 §7.1：蓄力姿态那一档（原版 `trident_throwing` 的同构件）
+    "models/item/{w}_trident_throwing.json",
+    "models/item/{w}_shield.json",
+    "models/item/{w}_shield_blocking.json",
+]
+missing_weapon_assets = []
+for wid in WEAPON_WIDS:
+    for tpl in WEAPON_TEXTURES:
+        rel = tpl.format(w=wid)
+        if not (ASSETS / rel).is_file():
+            missing_weapon_assets.append(rel)
+    for tpl in WEAPON_MODELS:
+        rel = tpl.format(w=wid)
+        if not (ASSETS / rel).is_file():
+            missing_weapon_assets.append(rel)
+print(f"武器贴图/模型缺件: {len(missing_weapon_assets)} {missing_weapon_assets[:8]}")
+
+# ==================== 1.5 修正轮：五件「胚底」的贴图与模型 ====================
+# 胚底只有「一张 16×16 贴图 + 一个最简单的 item/generated 模型」，
+# **不许有任何 override 谓词**（上一轮给它们做的拉弓 / 蓄力 / 投掷 / 格挡变体与 entity 贴图全部撤掉了）。
+missing_blank_assets = []
+for wid in BLANK_WIDS:
+    tex = ASSETS / "textures" / "item" / f"{wid}.png"
+    model = ASSETS / "models" / "item" / f"{wid}.json"
+    if not tex.is_file():
+        missing_blank_assets.append(f"贴图 textures/item/{wid}.png")
+    if not model.is_file():
+        missing_blank_assets.append(f"模型 models/item/{wid}.json")
+        continue
+    try:
+        obj = json.loads(model.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        missing_blank_assets.append(f"模型 {wid}.json 解析失败: {e}")
+        continue
+    if obj.get("parent") != "minecraft:item/generated":
+        missing_blank_assets.append(f"{wid}.json 的 parent 不是 minecraft:item/generated（{obj.get('parent')}）")
+    layer0 = (obj.get("textures") or {}).get("layer0")
+    if layer0 != f"bettergold:item/{wid}":
+        missing_blank_assets.append(f"{wid}.json 的 layer0 不是 bettergold:item/{wid}（{layer0}）")
+    elif not tex_exists(layer0):
+        missing_blank_assets.append(f"{wid}.json 的 layer0 贴图不存在: {layer0}")
+    if obj.get("overrides"):
+        missing_blank_assets.append(f"{wid}.json 还带着 override 谓词（胚底不该有）：{len(obj['overrides'])} 条")
+print(f"胚底贴图/模型问题: {len(missing_blank_assets)} {missing_blank_assets[:8]}")
+
+# 尺寸不变量：六套金属的盾牌必须是 64×64（原版 entity/shield_base_nopattern 的构图）、
+# 三叉戟投掷实体必须是 32×32（原版 entity/trident.png 的构图）。
+# 1.5 修正轮：金制盾牌 / 金制三叉戟与它们的 entity 贴图已删除（作者澄清没有金制系列工具），
+# 所以这里不再有「已知缺口」的例外打印。
+def png_size(path):
+    import struct as _s
+    with open(path, "rb") as fh:
+        data = fh.read(24)
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    return _s.unpack(">II", data[16:24])
+
+
+size_bad = []
+for metal in ALL_METALS:
+    p = ASSETS / f"textures/entity/shield_{metal}.png"
+    if p.is_file() and png_size(p) != (64, 64):
+        size_bad.append(f"shield_{metal}.png = {png_size(p)}（期望 64×64）")
+    p = ASSETS / f"textures/entity/trident_{metal}.png"
+    if p.is_file() and png_size(p) != (32, 32):
+        size_bad.append(f"trident_{metal}.png = {png_size(p)}（期望 32×32）")
+print(f"盾牌/三叉戟实体贴图尺寸不符: {len(size_bad)} {size_bad[:4]}")
+# 1.5 修正轮：entity/shield_golden.png 与 entity/trident_golden.png 必须**不存在**（金制武器已撤）
+stale_golden = [f"textures/entity/{n}" for n in ("shield_golden.png", "trident_golden.png")
+                if (ASSETS / f"textures/entity/{n}").exists()]
+if stale_golden:
+    size_bad.append(f"残留金制实体贴图: {stale_golden}")
+
+# ==================== bg-15w 续工轮 §7.1：三叉戟「三模型」结构 + mixin 接线 ====================
+# 这一类的失败方式**全是静默的**：平面那份多带 / 少带一个 override、in_hand 指错蓄力模型、
+# mixin 配置没接进 toml —— 客户端只会"看起来还是平面图标"或"拿到 missing model"，不报错。
+trident_problems = []
+for wid in WEAPON_WIDS:
+    try:
+        flat = json.loads((ASSETS / f"models/item/{wid}_trident.json").read_text(encoding="utf-8"))
+        in_hand = json.loads((ASSETS / f"models/item/{wid}_trident_in_hand.json").read_text(encoding="utf-8"))
+        throwing = json.loads((ASSETS / f"models/item/{wid}_trident_throwing.json").read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        trident_problems.append(f"{wid}: 三个三叉戟模型读取失败 {e}")
+        continue
+    # 平面那份：与原版 trident.json 同构 —— item/generated + 单层，**没有 overrides**
+    if flat.get("parent") != "minecraft:item/generated":
+        trident_problems.append(f"{wid}_trident.json 的 parent 不是 minecraft:item/generated")
+    if flat.get("overrides"):
+        trident_problems.append(f"{wid}_trident.json 不该有 overrides（原版 trident.json 没有）")
+    # 手持那份：builtin/entity + throwing override -> _trident_throwing
+    if in_hand.get("parent") != "builtin/entity":
+        trident_problems.append(f"{wid}_trident_in_hand.json 的 parent 不是 builtin/entity")
+    want_override = [{"predicate": {"throwing": 1}, "model": f"bettergold:item/{wid}_trident_throwing"}]
+    if in_hand.get("overrides") != want_override:
+        trident_problems.append(f"{wid}_trident_in_hand.json 的 overrides 不是 {want_override}")
+    # 蓄力那份：builtin/entity + 原版 trident_throwing 的第三人称姿态
+    if throwing.get("parent") != "builtin/entity":
+        trident_problems.append(f"{wid}_trident_throwing.json 的 parent 不是 builtin/entity")
+    display = throwing.get("display") or {}
+    if (display.get("thirdperson_righthand") or {}).get("rotation") != [0, 90, 180]:
+        trident_problems.append(f"{wid}_trident_throwing.json 的第三人称姿态不是原版的 [0,90,180]")
+    if (display.get("thirdperson_lefthand") or {}).get("rotation") != [0, 90, 180]:
+        trident_problems.append(f"{wid}_trident_throwing.json 的左持第三人称姿态不是原版的 [0,90,180]")
+    # 手持那份是**正常持握**姿态（原版 trident_in_hand 的 [0,60,0]）
+    if ((in_hand.get("display") or {}).get("thirdperson_righthand") or {}).get("rotation") != [0, 60, 0]:
+        trident_problems.append(f"{wid}_trident_in_hand.json 的第三人称姿态不是原版的 [0,60,0]")
+print(f"三叉戟三模型结构问题: {len(trident_problems)} {trident_problems[:6]}")
+
+mixin_problems = []
+MIXIN_JSON = REPO / "src/main/resources/bettergold.mixins.json"
+TOML = REPO / "src/main/resources/META-INF/neoforge.mods.toml"
+MIXIN_JAVA = REPO / "src/main/java/com/hjmmd_8/bettergold/mixin/ItemRendererTridentMixin.java"
+if not MIXIN_JSON.is_file():
+    mixin_problems.append("缺 bettergold.mixins.json")
+else:
+    cfg = json.loads(MIXIN_JSON.read_text(encoding="utf-8"))
+    if "ItemRendererTridentMixin" not in (cfg.get("client") or []):
+        mixin_problems.append("bettergold.mixins.json 的 client 列表里没有 ItemRendererTridentMixin")
+    if not cfg.get("package"):
+        mixin_problems.append("bettergold.mixins.json 缺 package")
+if not MIXIN_JAVA.is_file():
+    mixin_problems.append("缺 mixin/ItemRendererTridentMixin.java")
+if not TOML.is_file():
+    mixin_problems.append("缺 META-INF/neoforge.mods.toml")
+else:
+    toml_text = TOML.read_text(encoding="utf-8")
+    if 'config="${mod_id}.mixins.json"' not in toml_text:
+        mixin_problems.append("neoforge.mods.toml 没有启用 [[mixins]] config=${mod_id}.mixins.json")
+    elif "#config=\"${mod_id}.mixins.json\"" in toml_text:
+        mixin_problems.append("neoforge.mods.toml 里那一行仍是注释态")
+print(f"mixin 接线问题: {len(mixin_problems)} {mixin_problems[:6]}")
+
 # 贴图文件计数
 for metal in METALS:
     items = list((ASSETS / "textures/item").glob(f"*{metal}*"))
@@ -56,4 +258,5 @@ for metal in METALS:
     armor = list((ASSETS / "textures/models/armor").glob(f"*{metal}*"))
     print(f"{metal:<12} item={len(items):<3} block={len(blocks):<3} armor={len(armor)}")
 
-sys.exit(1 if (bad_json or missing_tex) else 0)
+sys.exit(1 if (bad_json or missing_tex or missing_special or missing_weapon_assets
+               or missing_blank_assets or size_bad or trident_problems or mixin_problems) else 0)

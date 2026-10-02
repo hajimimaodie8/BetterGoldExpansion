@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "mut"
+      }
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:thundergold_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:golden_trident_blank"
+  },
+  "addition": {
+    "item": "bettergold:thundergold_ingot"
+  },
+  "result": {
+    "id": "bettergold:thundergold_trident",
+    "count": 1
+  }
+}

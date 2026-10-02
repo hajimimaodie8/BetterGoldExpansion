@@ -4,6 +4,8 @@
     "bettergold:sturdygold_block",
     "bettergold:flamegold_block",
     "bettergold:voodoogold_block",
-    "bettergold:thundergold_block"
+    "bettergold:thundergold_block",
+    "bettergold:indigoseagold_block",
+    "bettergold:illusiongold_block"
   ]
 }

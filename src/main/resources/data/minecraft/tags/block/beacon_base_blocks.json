@@ -14,6 +14,10 @@
     "bettergold:sturdygold_pillar",
     "bettergold:flamegold_pillar",
     "bettergold:voodoogold_pillar",
-    "bettergold:thundergold_pillar"
+    "bettergold:thundergold_pillar",
+    "bettergold:indigoseagold_block",
+    "bettergold:indigoseagold_bricks",
+    "bettergold:illusiongold_block",
+    "bettergold:illusiongold_bricks"
   ]
 }

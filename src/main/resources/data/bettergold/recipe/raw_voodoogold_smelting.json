@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smelting",
   "category": "misc",
-  "ingredient": { "item": "bettergold:raw_sturdygold" },
+  "ingredient": { "item": "bettergold:raw_voodoogold" },
   "result": { "id": "bettergold:voodoogold_ingot" },
   "experience": 1.0,
   "cookingtime": 200

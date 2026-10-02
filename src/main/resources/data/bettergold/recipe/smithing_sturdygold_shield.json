@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "mut"
+      }
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:sturdygold_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:golden_shield_blank"
+  },
+  "addition": {
+    "item": "bettergold:sturdygold_ingot"
+  },
+  "result": {
+    "id": "bettergold:sturdygold_shield",
+    "count": 1
+  }
+}

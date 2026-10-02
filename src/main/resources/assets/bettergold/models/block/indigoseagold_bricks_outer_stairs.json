@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "bettergold:block/indigoseagold_bricks",
+    "top": "bettergold:block/indigoseagold_bricks",
+    "side": "bettergold:block/indigoseagold_bricks"
+  }
+}

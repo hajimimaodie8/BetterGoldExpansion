@@ -1,0 +1,7 @@
+{
+    "textures":  {
+                     "end":  "bettergold:block/indigoseagold_block",
+                     "side":  "bettergold:block/indigoseagold_pillar"
+                 },
+    "parent":  "minecraft:block/cube_column"
+}

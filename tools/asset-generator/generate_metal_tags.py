@@ -22,7 +22,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 DATA = REPO / "src" / "main" / "resources" / "data"
 
-METALS = ["flamegold", "voodoogold", "thundergold"]
+METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]
 BLOCKS = ["block", "bricks", "bricks_slab", "bricks_stairs", "bricks_wall",
           "pillar", "door", "trapdoor", "bars", "chain", "lantern"]
 TOOLS = {"swords": "sword", "pickaxes": "pickaxe", "axes": "axe", "shovels": "shovel", "hoes": "hoe"}

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "bettergold:sturdygold_trident",
+    "bettergold:flamegold_trident",
+    "bettergold:voodoogold_trident",
+    "bettergold:thundergold_trident",
+    "bettergold:indigoseagold_trident",
+    "bettergold:illusiongold_trident"
+  ]
+}

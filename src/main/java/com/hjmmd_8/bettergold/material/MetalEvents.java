@@ -19,7 +19,7 @@ public final class MetalEvents {
     // ==================== 巫毒：累积伤害模型（Delayed Execution / 秋后问斩） ====================
 
     /**
-     * 巫毒窗口内<b>受到伤害</b>就按存储比例累积。
+     * 巫毒窗口内<b>受到伤害</b>就按提取比例（默认 36%）提取。
      *
      * <p>用 {@code LivingDamageEvent.Post} 而不是 {@code Pre} / {@code LivingIncomingDamageEvent}：
      * Post 的 {@code getNewDamage()} 是「护甲、抗性、吸收全部结算完之后，真正从生命里扣掉的数字」，
@@ -46,10 +46,15 @@ public final class MetalEvents {
 
     /**
      * 巫毒<b>自然到期</b>才结算（{@code MobEffectEvent.Expired} 只在这一条路径上触发）：
-     * {@code 结算伤害 = 存储伤害 × (1 + 每级释放比例 × 效果等级)}，效果等级 = {@code amplifier + 1}。
+     * {@code 结算伤害 = 提取值 + 每级固定伤害 × 效果等级}
+     * （默认即 {@code 窗口内伤害总量 × 36% + buff 等级}），效果等级 = {@code amplifier + 1}。
      *
-     * <p>与旧实现（等级 × 0.6% × 最大生命）的区别：现在打得多、窗口内挨得多，结算就痛，
-     * 和「累积伤害」这个模型一致。</p>
+     * <p>公式只在 {@link VoodooAccumulator#settleDamage(double, int)} 里实现一处，这里不自己算。
+     * 1.5 作者 2026-09-30 拍板「字面运算顺序：先乘除、后加减」，因此是
+     * {@code 总量 × 36% + 等级}，而不是 {@code (总量 + 等级) × 36%}。</p>
+     *
+     * <p>注意：字面公式下「窗口内一次伤害都没挨到」也会结算 {@code 等级 × 每级固定伤害} 点
+     * （旧实现是提取值为 0 就直接返回）。这是作者定稿公式的必然结果，已在 1.5 规格文档里写明。</p>
      */
     @SubscribeEvent
     public static void onVoodooExpired(MobEffectEvent.Expired event) {
@@ -59,12 +64,9 @@ public final class MetalEvents {
         }
         LivingEntity entity = event.getEntity();
         UUID id = entity.getUUID();
-        double stored = VoodooAccumulator.take(id);
-        if (stored <= 0.0D) {
-            return;
-        }
+        double extracted = VoodooAccumulator.take(id);
         int level = instance.getAmplifier() + 1;
-        double damage = stored * (1.0D + VoodooAccumulator.releasePerLevel() * level);
+        double damage = VoodooAccumulator.settleDamage(extracted, level);
         if (damage <= 0.0D) {
             return;
         }
@@ -87,20 +89,46 @@ public final class MetalEvents {
         }
     }
 
-    /** 窗口内目标<b>死亡</b>：不结算，清空累积 */
+    /** 窗口内目标<b>死亡</b>：不结算，清空累积；安抚则只丢掉原状态条目（实体即将消失） */
     @SubscribeEvent
     public static void onAnyDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
         VoodooAccumulator.clear(event.getEntity().getUUID());
+        SootheState.clear(event.getEntity());
     }
 
     /**
      * 实体<b>离开世界</b>（卸载区块、切换维度、被移除……）：
      * 清空累积，避免 {@code Map<UUID, Double>} 里留下永远回不来的条目（内存泄漏）。
+     *
+     * <p>安抚这里<b>只丢内存条目、绝不动实体持久数据</b>：卸载区块的实体会把
+     * {@code NoAI=true} 与「原状态」一起存盘，清掉持久数据就等于亲手销毁下次还原的唯一线索 ——
+     * 那正是「被安抚过的生物永久变傻」的来源。真正还原发生在效果到期/被移除时
+     * （{@link #onSootheExpired} / {@link #onSootheRemoved}，它们能从持久数据把原状态读回来），
+     * 以及下次进世界时的兜底 {@link #onEntityJoinLevel}。</p>
      */
     @SubscribeEvent
     public static void onEntityLeaveLevel(net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent event) {
         if (event.getEntity() instanceof LivingEntity living) {
             VoodooAccumulator.clear(living.getUUID());
+            SootheState.forget(living.getUUID());
+        }
+    }
+
+    /** 实体进世界：持久数据里还留着安抚的原状态、但身上已经没有安抚效果 → 立即原地还原（读档后的兜底） */
+    @SubscribeEvent
+    public static void onEntityJoinLevel(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof LivingEntity living) {
+            SootheState.recoverIfStale(living);
+        }
+        // bg-15w 第 1 项 (b)：掷出的三叉戟「在投掷时写入」金属 id。
+        // 必须在这里写（服务端实体刚进世界 = 物品栈还在）：
+        // 原版 AbstractArrow 的 pickupItemStack 是**不同步**的普通字段
+        // （AbstractArrow.java:71，客户端恒为 getDefaultPickupItem() = 原版三叉戟），
+        // 客户端渲染器读不到金属，只能靠这个 sync 附件同步过去。
+        if (event.getLevel() instanceof net.minecraft.server.level.ServerLevel
+                && event.getEntity() instanceof net.minecraft.world.entity.projectile.ThrownTrident trident) {
+            com.hjmmd_8.bettergold.registry.AllAttachments.markMetal(
+                    trident, MetalFamily.of(trident.getWeaponItem()));
         }
     }
 
@@ -108,19 +136,54 @@ public final class MetalEvents {
      * 世界卸载（<b>读档 / 退档 / 服务器停止</b>）：整表清空。
      * 读档后 {@code MobEffectInstance} 会从实体 NBT 里恢复，但累积值<b>不会</b>——
      * 这正是模型要的语义：窗口没走完就消失 → 不结算、不残留。
+     *
+     * <p>安抚同 {@link #onEntityLeaveLevel}：只丢内存条目。世界卸载时存盘<b>早已完成</b>
+     * （{@code MinecraftServer#stopServer} 先 {@code saveAllChunks} 再发本事件），
+     * 在这里改内存里的实体既写不回盘、清持久数据还会毁掉还原线索。</p>
      */
     @SubscribeEvent
     public static void onLevelUnload(net.neoforged.neoforge.event.level.LevelEvent.Unload event) {
         if (event.getLevel() instanceof net.minecraft.server.level.ServerLevel) {
             VoodooAccumulator.clearAll();
+            SootheState.forgetAll();
         }
     }
 
-    /** 兜底扫描：每 600 tick 清掉「已经不在任何维度里、或已不带巫毒效果」的残留条目 */
+    /** 兜底扫描：每 600 tick 清掉「已经不在任何维度里、或已不带效果」的残留条目 */
     @SubscribeEvent
     public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
         if (event.getServer().getTickCount() % 600 == 0) {
             VoodooAccumulator.prune(event.getServer());
+            SootheState.prune(event.getServer());
+        }
+    }
+
+    // ==================== 安抚（soothe）：AI 的保存与还原 ====================
+
+    /**
+     * 安抚<b>自然到期</b>：还原生物原本的 NoAI 与目标。
+     *
+     * <p>内存表里没有条目时（跨存盘的那条路）会回落到实体持久数据 —— 见 {@link SootheState} 的类注释。</p>
+     */
+    @SubscribeEvent
+    public static void onSootheExpired(MobEffectEvent.Expired event) {
+        var instance = event.getEffectInstance();
+        if (instance != null && instance.getEffect().is(AllEffects.SOOTHE)) {
+            SootheState.restore(event.getEntity());
+        }
+    }
+
+    /**
+     * 安抚被<b>提前移除</b>（牛奶 / 指令 / 别的模组清除）：同样要还原，否则生物永久变傻。
+     *
+     * <p>注意 {@code EventHooks.onEffectRemoved} 在 {@code removeEffect(Holder)} 里
+     * <b>先发事件再查有没有这个效果</b>，所以本方法对「根本没挂着安抚」的调用也会进来 ——
+     * {@code SootheState.restore} 是幂等的（没有原状态就直接返回），重复触发无副作用。</p>
+     */
+    @SubscribeEvent
+    public static void onSootheRemoved(MobEffectEvent.Remove event) {
+        if (event.getEffect().is(AllEffects.SOOTHE)) {
+            SootheState.restore(event.getEntity());
         }
     }
 
@@ -184,6 +247,34 @@ public final class MetalEvents {
         if (family == null) {
             return;
         }
+        // ---------- 1.5 靛海金建材：对特定生物的「接触伤害」 ----------
+        // 末影人 / 烈焰人 / 雪傀儡 / 炽足兽 在踩踏或紧贴该系列方块时每次判定 4 点伤害，
+        // 同一生物每 10 tick 最多一次（规格第七节第 1 条作者默认值）。
+        // 放在 debuff 之前：下面那段 debuff 逻辑在「已经有效果」时会 return，绝不能顺手把接触伤害也跳掉。
+        if (!family.contactDamageTargets.isEmpty()
+                && family.contactDamageTargets.contains(entity.getType())) {
+            contactDamage(entity, family);
+        }
+        // ---------- 1.5 幻惑金建材：给玩家与友善生物的「正面效果」 ----------
+        // 踩踏 / 紧贴 / 破坏 / 右键互动 → 6 秒生命恢复 I（MobEffects.REGENERATION 120 tick）。
+        // 与 debuff 那条不同：这里**要**刷新时长（站在块上就应当一直回血），所以不加「已有就不管」的门闩。
+        // 「友善生物」= !(entity instanceof Enemy)（玩家 + 被动 + 中立，规格第七节第 4 条）。
+        if (family.contactBenefit != null && isFriendly(entity)) {
+            entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    family.contactBenefit.get(), family.contactBenefitTicks,
+                    family.contactBenefitAmplifier, false, true));
+        }
+        // ---------- 1.5 修正③ 靛海金建材：补满美西螈的空气值（= 恢复氧气 + 保持湿润） ----------
+        // 源码依据：Axolotl#handleAirSupply（neoforge sources
+        // net/minecraft/world/entity/animal/axolotl/Axolotl.java:192-200）在 !isInWaterRainOrBubble() 时
+        // 每 tick setAirSupply(air - 1)，到 −20 就 hurt(dryOut, 2.0F)（1.21.1 的「干死」）。
+        // 这里是同一条 applyContact 路径（玩家走 onPlayerTick、生物走 onEntityTick），
+        // 每 10 tick 接触判定一次就把空气写回 getMaxAirSupply()（= 300），干死计时永远到不了 −20。
+        // 注意：只对美西螈生效（别的生物没有这套「离水干死」机制，写空气值没有意义）。
+        if (family.contactRestoreAxolotlAir
+                && entity instanceof net.minecraft.world.entity.animal.axolotl.Axolotl axolotl) {
+            axolotl.setAirSupply(axolotl.getMaxAirSupply());
+        }
         if (family.contactFire) {
             // 火焰<b>刻意不</b>做"已有就不刷新"：刷新火焰不会导致不掉血 ——
             // 火焰伤害判定在 Entity#baseTick（neoforge sources
@@ -204,6 +295,56 @@ public final class MetalEvents {
             entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                     effect, MetalFamily.CONTACT_EFFECT_TICKS, 0));
         }
+    }
+
+    /** 接触伤害的「上次结算 tick」在实体持久数据里的键（跟着实体走，不会泄漏、也不怕卸载重载） */
+    private static final String CONTACT_DAMAGE_TICK_KEY = "bettergold_contact_damage_tick";
+
+    /**
+     * 靛海金建材的接触伤害：每次 {@code family.contactDamageAmount} 点，同一生物每
+     * {@code family.contactDamageCooldown} tick 最多一次。
+     *
+     * <p>节流表刻意放在<b>实体自己的持久数据</b>里（{@code Entity#getPersistentData()}），
+     * 不用 {@code Map<UUID, Long>}：后者要额外接四五条清理事件才不会泄漏，而这里天然跟着实体生灭。</p>
+     *
+     * <p>伤害类型用 {@code minecraft:in_wall}（方块内窒息）——与沉淀的持续伤害同一类型，
+     * 因此靛海金盔甲的「窒息 / 溺水抗性」对<b>自家建材</b>的接触伤害同样生效（全套 = 完全免疫），
+     * 语义自洽：靛海金这一族的关键词就是「窒息 / 挤压」。<b>规格没有指定伤害类型，这一条是推断值。</b></p>
+     */
+    private static void contactDamage(net.minecraft.world.entity.LivingEntity entity, MetalFamily family) {
+        if (entity.level().isClientSide() || !entity.isAlive()) {
+            return;
+        }
+        net.minecraft.nbt.CompoundTag data = entity.getPersistentData();
+        long now = entity.level().getGameTime();
+        if (data.contains(CONTACT_DAMAGE_TICK_KEY)) {
+            long last = data.getLong(CONTACT_DAMAGE_TICK_KEY);
+            if (now - last < family.contactDamageCooldown) {
+                return;   // 冷却中：每 10 tick 最多一次
+            }
+        }
+        data.putLong(CONTACT_DAMAGE_TICK_KEY, now);
+        entity.hurt(entity.damageSources().inWall(), family.contactDamageAmount);
+    }
+
+    /** 「友善生物」= 玩家 + 被动 + 中立 = {@code !(entity instanceof Enemy)}（规格第七节第 4 条） */
+    private static boolean isFriendly(net.minecraft.world.entity.LivingEntity entity) {
+        return !(entity instanceof net.minecraft.world.entity.monster.Enemy);
+    }
+
+    /**
+     * 施加安抚：<b>不叠加、时长取 max(剩余, ticks)</b>（规格第七节第 8 条）。
+     *
+     * <p>为什么必须显式写成 {@code max}：原版 {@code MobEffectInstance#update(other)} 在等级相同时
+     * 会把新实例的 duration 直接写进旧实例，所以传常数就是「每刀重置 1 秒」，
+     * 连续命中会把 1 秒安抚无限续成永久控制。传 {@code max(剩余, 20)} 后：
+     * 剩余更短 → 续到 20；剩余更长 → 传进去的就是它自己的剩余值（自赋值，原地不动）。</p>
+     */
+    public static void applySoothe(net.minecraft.world.entity.LivingEntity target, int ticks) {
+        var effect = com.hjmmd_8.bettergold.registry.AllEffects.SOOTHE;
+        var current = target.getEffect(effect);
+        int duration = current == null ? ticks : Math.max(current.getDuration(), ticks);
+        target.addEffect(new net.minecraft.world.effect.MobEffectInstance(effect, duration, 0, false, true));
     }
 
     /** 破坏该系列建材 */
@@ -392,7 +533,7 @@ public final class MetalEvents {
         for (var victim : level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,
                 target.getBoundingBox().inflate(1.5D), e -> e != attacker && e.isAlive())) {
             victim.hurt(level.damageSources().lightningBolt(), 6.0F);
-            stackEffect(victim, com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE, 16 * 20);
+            stackEffect(victim, com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE, MetalFamily.TREMBLE_TICKS);
             if (bolt != null) {
                 // 用原版落雷转化逻辑：猪→僵尸猪灵、苦力怕→闪电苦力怕、哞菇互换、村民→女巫
                 victim.thunderHit(level, bolt);
@@ -400,7 +541,29 @@ public final class MetalEvents {
         }
     }
 
-    /** 器具命中：按所属金属族给目标附加/叠加对应 buff，并触发结雷金落雷 */
+    /**
+     * 器具 / 武器命中：按所属金属族给目标附加/叠加对应 buff，并触发结雷金落雷。
+     *
+     * <h2>1.5 武器轮：近战与远程共用这一条派发链（规格 12.4 第 1 条）</h2>
+     * <p>以前判据是 {@code attacker.getMainHandItem()}。那条路在<b>远程</b>上是断的：</p>
+     * <ul>
+     *   <li>弓箭 / 弩箭命中时伤害来自 {@code AbstractArrow}，命中瞬间射手可能已经换手 / 换物品；</li>
+     *   <li>投掷三叉戟命中时武器<b>已经离手</b>
+     *       （{@code TridentItem#releaseUsing} 里 {@code player.getInventory().removeItem(stack)}），
+     *       主手是空的 —— 用主手判定必漏。</li>
+     * </ul>
+     * <p>正确的钥匙是 {@code DamageSource#getWeaponItem()}
+     * （neoforge sources {@code net/minecraft/world/damagesource/DamageSource.java:71-72}）：
+     * {@code directEntity != null ? directEntity.getWeaponItem() : null}。</p>
+     * <ul>
+     *   <li>近战：{@code directEntity} = 攻击者本体，{@code LivingEntity#getWeaponItem()} = 主手物品（与原逻辑等价）；</li>
+     *   <li>弓箭 / 弩箭：{@code directEntity} = {@code AbstractArrow}，
+     *       它的 {@code getWeaponItem()} 返回 {@code firedFromWeapon}（也就是那把弓 / 弩）；</li>
+     *   <li>三叉戟：{@code ThrownTrident#getWeaponItem()} 返回那把三叉戟本身。</li>
+     * </ul>
+     * <p>取不到（{@code null}）时回落到 {@code source.getEntity()} 的主手，
+     * 于是 1.4 / 1.5 既有器具的行为<b>一个字节都没变</b>（回归见 1.5 修正轮的 A2/A4 与 11.4 的 ⑪）。</p>
+     */
     @SubscribeEvent
     public static void onLivingDamaged(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Post event) {
         var target = event.getEntity();
@@ -408,19 +571,493 @@ public final class MetalEvents {
         if (!(source.getEntity() instanceof net.minecraft.world.entity.LivingEntity attacker)) {
             return;
         }
-        var stack = attacker.getMainHandItem();
-        MetalFamily family = MetalFamily.of(stack);
-        if (family == null || !family.isTool(stack.getItem())) {
+        dispatchWeaponHit(attacker, weaponOf(source, attacker), target);
+    }
+
+    /**
+     * 取出这次伤害的「武器」：优先 {@code DamageSource#getWeaponItem()}（覆盖箭 / 弩箭 / 投掷三叉戟），
+     * 取不到再回落到攻击者主手（覆盖近战与一切把武器拿在手上的路径）。
+     */
+    public static net.minecraft.world.item.ItemStack weaponOf(
+            net.minecraft.world.damagesource.DamageSource source,
+            net.minecraft.world.entity.LivingEntity attacker) {
+        net.minecraft.world.item.ItemStack weapon = source.getWeaponItem();
+        if (weapon != null && !weapon.isEmpty()) {
+            return weapon;
+        }
+        return attacker.getMainHandItem();
+    }
+
+    /**
+     * <b>近战与远程唯一的武器功能派发点</b>（规格 12.4 第 1 条要求抽出来的那个方法）。
+     *
+     * <p>判据是 {@link MetalFamily#isWeapon(Item)}（器具 6 件 + 重锤 / 弓 / 弩 / 三叉戟）
+     * <b>或本族的盾牌</b>：bg-15w 第 3 项①要求「用盾牌左键打怪也要给该金属的 buff」，
+     * 且明确要求「走同一条统一派发链，不要另开一路」——所以盾牌在这里放行，
+     * 而不是新写一条事件。</p>
+     *
+     * <p>⚠ 盾牌<b>不进</b> {@link MetalFamily#weapons()}：那个列表是
+     * 「谁算武器」的全局判据，还有别的调用点（例如 {@link #onDoubleDamagePre} 的靛海金双倍伤害）。
+     * 需求只要求盾牌享有「命中派发 buff」这一项，所以只在<b>本方法</b>放行，
+     * 不改变其它任何判据 —— 避免「顺手也加上」把靛海金盾也变成双倍伤害武器。</p>
+     */
+    public static void dispatchWeaponHit(net.minecraft.world.entity.LivingEntity attacker,
+            net.minecraft.world.item.ItemStack stack, net.minecraft.world.entity.LivingEntity target) {
+        if (stack.isEmpty() || target == null) {
             return;
         }
-        if (family.autoSmelt) { // 烈燃金：1 级 36 秒高燃，可无限叠加
-            stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN, 36 * 20);
+        MetalFamily family = MetalFamily.of(stack);
+        if (family == null) {
+            return;
+        }
+        if (!family.isWeapon(stack.getItem()) && !family.isShield(stack.getItem())) {
+            return;
+        }
+        applyFamilyWeaponEffect(family, attacker, target);
+    }
+
+    /**
+     * 一个家族「攻击命中」的功能本体：近战、弓箭、弩箭、投掷三叉戟走的都是它。
+     *
+     * <p>与 1.5 修正轮逐字同构（只是从 {@code onLivingDamaged} 里抽出来），
+     * 六套金属的分支顺序与判据一个都没改：</p>
+     * <ul>
+     *   <li>烈燃金 {@code autoSmelt} → 高燃 1 级 16 秒（可叠加）；</li>
+     *   <li>结雷金 {@code thunderStrike} → 落雷 + 3×3 6 点 + 颤栗 16 秒；</li>
+     *   <li>巫毒金 → {@code stackVoodoo}（窗口 6 秒、等级 +1）；</li>
+     *   <li>靛海金 {@code sedimentOnAttack} → 沉淀 1 级 16 秒（叠加无上限）；</li>
+     *   <li>幻惑金 {@code sootheOnAttackChance} → 16% 概率 1 秒安抚；</li>
+     *   <li>万坚金 → 武器本身没有附加 buff（只有重锤 ×1.2 那条通用规则）。</li>
+     * </ul>
+     */
+    public static void applyFamilyWeaponEffect(MetalFamily family,
+            net.minecraft.world.entity.LivingEntity attacker, net.minecraft.world.entity.LivingEntity target) {
+        if (family.autoSmelt) { // 烈燃金：1 级 16 秒高燃，可无限叠加（1.5 修正②：36 秒 → 16 秒）
+            stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN,
+                    MetalFamily.HIGH_BURN_TICKS);
         } else if (family.thunderStrike) { // 结雷金：落雷 + 3×3 + 颤栗
             thunderStrike(attacker, target);
         } else if (family == MetalFamily.byId("voodoogold")) { // 巫毒金：1 级 6 秒巫毒，可叠加
             stackVoodoo(target);
+        } else if (family.sedimentOnAttack) { // 靛海金：每次命中叠加 1 级沉淀，16 秒，叠加无上限
+            stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.SEDIMENT,
+                    MetalFamily.SEDIMENT_TICKS);
+        } else if (family.sootheOnAttackChance > 0.0F) { // 幻惑金：16% 概率施加 1 秒安抚
+            if (attacker.getRandom().nextFloat() < family.sootheOnAttackChance) {
+                applySoothe(target, MetalFamily.SOOTHE_TICKS);
+            }
         }
     }
+
+    /** 反查「这个物品属于哪一族、且它是该族的武器」；不是则返回 {@code null} */
+    public static MetalFamily weaponFamilyOf(net.minecraft.world.item.ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return null;
+        }
+        MetalFamily family = MetalFamily.of(stack);
+        return family != null && family.isWeapon(stack.getItem()) ? family : null;
+    }
+
+
+    // ==================== 靛海金器具：对四种生物双倍伤害（1.5 修正④） ====================
+
+    /**
+     * <b>靛海金器具</b>攻击末影人 / 烈焰人 / 雪傀儡 / 炽足兽时，最终伤害 ×2。
+     *
+     * <p>与 {@link #contactDamage} 的区别（作者特意要求区分）：
+     * 那条是<b>建材的方块接触伤害</b>——站在靛海金方块上每 10 tick 固定 4 点；
+     * 这条是<b>器具攻击加成</b>——拿靛海金剑/斧/镐/锹/锄/刀打出命中时把本次伤害乘 2，
+     * 倍率随武器本身的伤害一起放大，也不限频率（每次攻击都算）。</p>
+     *
+     * <p>为什么放在 {@code LivingDamageEvent.Pre} 的 {@code setNewDamage} 上：
+     * 这个事件拿到的是「护甲 / 抗性 / 附魔保护都算完之后、真正要从生命里扣的那个数字」
+     * （与 {@code VoodooAccumulator} 用 {@code Post} 的 {@code getNewDamage()} 同一口径），
+     * 从这里乘 2 就是玩家理解的「这次攻击打了两倍」。放到 {@code LivingIncomingDamageEvent}
+     * 会被护甲再削一遍，效果不是整数倍；放到 {@code Post} 又已经扣完血了、改不动。</p>
+     *
+     * <p>只在<b>主手</b>是该族器具时生效（与 {@link #onLivingDamaged} 的判定一致），
+     * 因此「拿靛海金剑打末影人」与「空手打」是两种结果，不会因为身上穿着靛海金盔甲而误触发。</p>
+     */
+    @SubscribeEvent
+    public static void onDoubleDamagePre(
+            net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Pre event) {
+        var target = event.getEntity();
+        if (target.level().isClientSide()) {
+            return;
+        }
+        var source = event.getSource();
+        if (!(source.getEntity() instanceof net.minecraft.world.entity.LivingEntity attacker)) {
+            return;
+        }
+        var stack = weaponOf(source, attacker);
+        MetalFamily family = MetalFamily.of(stack);
+        if (family == null || !family.doubleDamageOnTargets || !family.isWeapon(stack.getItem())) {
+            return;
+        }
+        if (!family.contactDamageTargets.contains(target.getType())) {
+            return;
+        }
+        event.setNewDamage(event.getNewDamage() * 2.0F);
+    }
+
+    // ==================== 1.5 武器轮：重锤 ×1.2 与三叉戟投掷伤害 15 ====================
+
+    /**
+     * <b>重锤最终伤害 ×1.2</b>（规格 12.2：重锤 9 / 0.8 / 最终 ×1.2）。
+     *
+     * <h2>落点为什么在 {@code LivingDamageEvent.Pre}</h2>
+     * <p>这个事件拿到的是「护甲 / 抗性 / 附魔保护都算完之后、真正要扣掉的那个数字」
+     * （{@code LivingDamageEvent.Pre#getNewDamage}），从它乘 1.2 才是玩家理解的「最终伤害 ×1.2」。
+     * 放到 {@code LivingIncomingDamageEvent}（护甲之前）会被护甲再削一遍，不是整数倍。</p>
+     *
+     * <h2>与靛海金 ×2 的叠加（规格 12.7 第 4 条，本轮决定：<b>叠加</b>）</h2>
+     * <p>两条规则都在 Pre 层乘系数、乘法的可交换性决定了先后无关，所以它们<b>同时生效</b>：
+     * 靛海金重锤打末影人 / 烈焰人 / 雪傀儡 / 炽足兽 = {@code 1.2 × 2 = 2.4 倍}
+     * （见 {@link #onDoubleDamagePre}）。理由是两条规则的作用域完全正交
+     * （「是不是重锤」× 「目标类型在不在靛海金名单里」），规格也没有任何一条说二者互斥。</p>
+     *
+     * <p>判据是<b>武器本身是不是重锤</b>（{@code MetalMaceItem} / {@code MaceItem} 的实例）
+     * 而不是家族，所以六套金属的重锤自动走同一条链。
+     * 远程（弓 / 弩 / 三叉戟）不可能是重锤，因此这里天然只作用于近战与猛砸。</p>
+     */
+    @SubscribeEvent
+    public static void onMaceFinalDamage(
+            net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Pre event) {
+        var target = event.getEntity();
+        if (target.level().isClientSide()) {
+            return;
+        }
+        var source = event.getSource();
+        if (!(source.getEntity() instanceof net.minecraft.world.entity.LivingEntity attacker)) {
+            return;
+        }
+        var stack = weaponOf(source, attacker);
+        if (stack.getItem() instanceof net.minecraft.world.item.MaceItem) {
+            event.setNewDamage(event.getNewDamage() * MetalWeapons.MACE_FINAL_DAMAGE_MULTIPLIER);
+        }
+    }
+
+    /** 原版投掷三叉戟的固定命中伤害（{@code ThrownTrident#onHitEntity} 里的 {@code float f = 8.0F}） */
+    private static final float VANILLA_THROWN_TRIDENT_DAMAGE = 8.0F;
+    /** 规格要的投掷伤害 */
+    private static final float OUR_THROWN_TRIDENT_DAMAGE = 15.0F;
+
+    /**
+     * <b>三叉戟投掷伤害 15</b>（规格 12.2）。
+     *
+     * <h2>为什么只能在这里改写（规格 12.7 第 2 条的取舍）</h2>
+     * <p>{@code ThrownTrident#onHitEntity} 把 {@code float f = 8.0F} 写死在方法体里
+     * （neoforge sources {@code net/minecraft/world/entity/projectile/ThrownTrident.java:116}），
+     * 既不是字段、也没有 getter/setter，整个类没有任何可覆写的数值入口。
+     * 两条路可选：</p>
+     * <ol>
+     *   <li><b>自定义 {@code ThrownTrident} 子类</b>：得整段重写 {@code onHitEntity}
+     *       （含忠诚回旋、末影人免伤、击退、附魔后效、着地判定），风险远大于收益；</li>
+     *   <li><b>命中事件里改写</b>（本轮选择）：<b>放在 {@code LivingDamageEvent.Pre}</b>，
+     *       与重锤 ×1.2 同一层、同一口径。</li>
+     * </ol>
+     * <p>缩放系数是 {@code 15 / 8}，也就是说「附魔 / 暴击 / 护甲之后的最终值」整体等比放大 ——
+     * 原版裸命中 8.0 会变成 15.0，与被其它模组附魔改过的值也保持同比例。</p>
+     *
+     * <p><b>只作用于投掷</b>：近战命中时 {@code directEntity == attacker}，
+     * 而 {@code DamageSource#getDirectEntity()} 与 {@code getEntity()} 不同才是投掷物
+     * （{@code ThrownTrident} 的 {@code directEntity} 是飞行的三叉戟本身）。
+     * 近战数值由物品属性表给出（13 / 1.3），不走这里。</p>
+     */
+    @SubscribeEvent
+    public static void onTridentThrownDamage(
+            net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Pre event) {
+        var target = event.getEntity();
+        if (target.level().isClientSide()) {
+            return;
+        }
+        var source = event.getSource();
+        if (source.getDirectEntity() == null || source.getDirectEntity() == source.getEntity()) {
+            return;   // 近战（或任何非投掷物路径）：不归本方法管
+        }
+        if (!(source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.ThrownTrident)) {
+            return;
+        }
+        var stack = source.getWeaponItem();
+        if (stack == null) {
+            return;
+        }
+        // 三叉戟本体必须属于本模组（六套金属之一）：
+        // 用家族索引反查，而不是直接引用物品注册处的字段 —— 那会在类初始化期
+        // 变成「MetalEvents → 物品注册 → AllItems.ITEMS」的循环引用。
+        // 1.5 修正轮：五件「胚底」不属于任何家族（作者澄清它们没有实用途），
+        // 所以这里天然把它们排除在外，投掷伤害 15 不会作用在胚底上。
+        MetalFamily family = MetalFamily.of(stack);
+        if (family == null || !family.isWeapon(stack.getItem())) {
+            return;
+        }
+        event.setNewDamage(event.getNewDamage() * (OUR_THROWN_TRIDENT_DAMAGE / VANILLA_THROWN_TRIDENT_DAMAGE));
+    }
+
+
+    // ==================== 万坚金盔甲：每 16 秒 1 颗伤害吸收黄心（1.5 修正⑥） ====================
+
+    /**
+     * 万坚金盔甲：每 {@code family.absorptionIntervalTicks}（320 tick = 16 秒）给穿戴者
+     * 1 颗伤害吸收黄心（{@value MetalFamily#ABSORPTION_PER_GRANT} 点），
+     * 上限 = {@value MetalFamily#ABSORPTION_CAP_PER_PIECE} 点 × 穿戴件数
+     * （单件 4 点、四件 16 点）<b>再加上</b>主/副手万坚金盾牌的
+     * {@value MetalFamily#SHIELD_ABSORPTION_CAP} 点 ⇒ <b>穿 4 件 + 拿盾 = 20</b>
+     * （bg-15w 第 4 项，作者裁定「盔甲与盾牌的效果相结合，金心上限 20」；
+     * 1.5 武器轮第一版的 {@code max} 口径**已被推翻**，对照表见需求 §3.3）。
+     *
+     * <p><b>为什么必须自己挂一个 {@code MAX_ABSORPTION} 属性修饰符</b>（1.5 修正轮探针实测抓到的坑）：
+     * {@code LivingEntity#setAbsorptionAmount(float)}（neoforge sources
+     * {@code net/minecraft/world/entity/LivingEntity.java:3109-3111}）是
+     * {@code internalSetAbsorptionAmount(Mth.clamp(amount, 0.0F, this.getMaxAbsorption()))}，
+     * 而 {@code MAX_ABSORPTION} 的默认值是 <b>0</b>（只有原版「伤害吸收」效果会临时给它加上
+     * {@code 4 × (amplifier+1)}，见 {@code AbsorptionMobEffect.java:23}）。
+     * 所以「不挂效果、直接写吸收值」会被原版自己夹成 0 —— 第一次实测时两个用例的吸收值全程都是 0.00。
+     * 正确做法：按件数给 {@code MAX_ABSORPTION} 加一个我们自己的临时修饰符（{@value #ABSORPTION_CAP_ID}），
+     * 上限就是「4 点 × 件数」；脱掉盔甲后件数归零，修饰符被移除，
+     * 原版 {@code LivingEntity#onAttributeUpdated}（同文件 1106-1110 行）会自动把超出新上限的吸收值夹回去。</p>
+     *
+     * <p>用 {@code EntityTickEvent.Post} 覆盖<b>所有生物</b>（含玩家：它由
+     * {@code LivingEntity#tick()} 尾部发出，见 {@code EventHooks.fireEntityTickPost}），
+     * 盔甲本来就不限于玩家穿。判据是「身上实际穿了几件」。</p>
+     */
+    @SubscribeEvent
+    public static void onAbsorptionTick(net.neoforged.neoforge.event.tick.EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof net.minecraft.world.entity.LivingEntity entity)) {
+            return;
+        }
+        if (entity.level().isClientSide() || !entity.isAlive()) {
+            return;
+        }
+        for (var family : MetalFamily.all()) {
+            if (family.absorptionIntervalTicks <= 0) {
+                continue;
+            }
+            var instance = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_ABSORPTION);
+            if (instance == null) {
+                continue;
+            }
+            int pieces = wornPieces(entity, family);
+            // 1.5 武器轮：万坚金盾牌也算一份来源（规格 12.3 的第三条规则）。
+            //
+            // ⚠ 口径变更（bg-15w 第 4 项；作者 2026-10-02 裁定）——**上一轮的 max 决定已被推翻**：
+            //   旧口径（1.5 武器轮第一版，原样留档以说明为何改）：`cap = max(armorCap, shieldCap)`，
+            //   理由是「上限 4 点」这句话写死了总数、相加会让「只拿盾」变成 8 点；
+            //   新口径：`cap = armorCap + shieldCap`（**相加**），作者要的是
+            //   「万坚金盔甲与万坚金盾牌相结合，使金心的最大容量为 20」
+            //   ⇒ 穿 4 件 + 拿盾 = 16 + 4 = **20**；只拿盾 = 4；只穿 1 件 = 4；穿 2 件 + 拿盾 = 12。
+            //   （需求 §3.3 的对照表就是这五行。）
+            boolean shield = family.isShield(heldShield(entity).getItem());
+            float armorCap = MetalFamily.ABSORPTION_CAP_PER_PIECE * Math.min(pieces, 4);
+            float shieldCap = shield ? MetalFamily.SHIELD_ABSORPTION_CAP : 0.0F;
+            float cap = armorCap + shieldCap;
+            // 两个来源**共用一个**上限修饰符 id（ABSORPTION_CAP_ID），值 = 相加后的合成值。
+            // 属性修饰符按 id 去重：拆成两个 id 在「只想要一个上限」时反而会互相覆盖。
+            // ⚠ 旧代码里还有第二个 id（SHIELD_ABSORPTION_CAP_ID，1.5 武器轮第一版为 max 口径引入），
+            //   bg-15w 改成相加后它已无用，**整个常量已删除**（不是改值）。
+            instance.removeModifier(ABSORPTION_CAP_ID);
+            if (cap <= 0.0F) {
+                continue;
+            }
+            instance.addOrUpdateTransientModifier(
+                    new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                            ABSORPTION_CAP_ID, cap,
+                            net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
+            // 错峰：用实体 id 抖动，避免同一 tick 上所有穿戴者一起结算
+            if ((entity.tickCount + entity.getId()) % family.absorptionIntervalTicks != 0) {
+                continue;
+            }
+            float now = entity.getAbsorptionAmount();
+            if (now >= cap) {
+                continue;
+            }
+            entity.setAbsorptionAmount(Math.min(now + MetalFamily.ABSORPTION_PER_GRANT, cap));
+        }
+    }
+
+    /** 万坚金盔甲 + 盾牌给出的「吸收上限」属性修饰符 id（值 = 4 点 × 件数 + 拿盾的 4 点） */
+    private static final net.minecraft.resources.ResourceLocation ABSORPTION_CAP_ID =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    com.hjmmd_8.bettergold.bettergold.MODID, "absorption_cap");
+
+    // ⚠ 已删除：SHIELD_ABSORPTION_CAP_ID（bettergold:shield_absorption_cap）。
+    //   它是 1.5 武器轮第一版为「上限取较大者（max）」口径引入的第二个 id（盔甲 16 / 盾牌 4 各挂一个）。
+    //   bg-15w 第 4 项把口径改成**相加**（穿 4 件 + 拿盾 = 20），上限只需要一个合成值，
+    //   因此该常量与它的 removeModifier 调用整块删除 —— **旧口径已被作者推翻，这里不是漏写**。
+
+    // ==================== 1.5 武器轮：盾牌的三条机制 ====================
+
+    // ⚠ bg-15w 续工轮（2026-10-02）：这里的 `onShieldKnockbackTick` **整块删除**，不是漏写。
+    //
+    //   上一轮的实现是「EntityTickEvent.Post 里每 tick 给实体维护一个 transient 修饰符
+    //   （`bettergold:shield_knockback_resistance`，ADD_VALUE 0.10）」。本轮用**真实玩家**
+    //   （runClient + 整合服务端，不是 FakePlayer）实测了它的三种可见性：
+    //     ① 服务端：**有效** —— value=0.1000、修饰符 id 正确、`knockback()` 真实位移
+    //        0.4000 → 0.3600（比值 0.9000）；两手各拿仍只有一份；
+    //     ② 客户端：**恒为 0.0000 / 无修饰符**。根因是 `Attributes.KNOCKBACK_RESISTANCE` 在
+    //        NeoForge 里注册时**没有** `.setSyncable(true)`
+    //        （neoforge sources `Attributes.java:86-89`，而 `Attribute.syncable` 字段默认 false，
+    //        见 `Attribute.java:26,42-43`）⇒ `AttributeMap#getSyncableAttributes()` 把它排除在外，
+    //        服务端运行时挂的修饰符**永远不会同步给客户端**；
+    //     ③ 物品 tooltip：**没有那一行**（`lines=1`，只有物品名）。
+    //   作者的原话是「盾牌们……都没有**自带**主副手持的 10% 的击退抗性」——「自带」正是
+    //   物品自身属性表 / tooltip 的说法。所以本轮把口径落成**物品自带**：
+    //   `MetalWeapons#shieldKnockbackModifiers()`（MAINHAND + OFFHAND 两条、**同一个 id**）
+    //   写进 `MetalShieldItem` 的 `Item.Properties#attributes(...)`。
+    //   好处：tooltip 里看得见（改前 lines=1、改后两行 +10%）、服务端行为与旧实现等价
+    //   （真实玩家 `knockback()` 位移 0.4000 → 0.3600）、换手/丢弃/死亡由原版装备变更逻辑
+    //   自动移除、不再有每 tick 开销。
+    //   ⚠ **不要**指望客户端属性实例上能看见它：`KNOCKBACK_RESISTANCE` 没有 `setSyncable(true)`
+    //   （`Attributes.java:86-89`），而装备属性本身也只在服务端应用
+    //   （`LivingEntity#tick()` 的 `detectEquipmentUpdates()` 位于 `if (!isClientSide)` 内，
+    //   `LivingEntity.java:2457,2482`）—— 拿铁剑做阳性对照，客户端 `attack_damage` 同样是
+    //   `{v=1.0,ids=[]}`，所以这是**原版行为**而不是缺陷；决定击退的是服务端，那里生效。
+    //
+    //   共用一个 id 不会抛 `IllegalArgumentException`（这是本轮更正的一处旧结论，见
+    //   `mcmod_experience` §4 第 26 条）：`LivingEntity.java:2628-2633` 应用物品属性时
+    //   **先 `removeModifier(id)` 再 `addTransientModifier(...)`** ⇒ 同 id 是覆盖、净效果一份。
+
+    /** 主手或副手拿着的本模组盾牌（没有则返回空栈）。盔甲槽里的盾牌不算「佩戴」。 */
+    public static net.minecraft.world.item.ItemStack heldShield(net.minecraft.world.entity.LivingEntity entity) {
+        var main = entity.getMainHandItem();
+        if (main.getItem() instanceof MetalWeapons.MetalShieldItem) {
+            return main;
+        }
+        var off = entity.getOffhandItem();
+        if (off.getItem() instanceof MetalWeapons.MetalShieldItem) {
+            return off;
+        }
+        return net.minecraft.world.item.ItemStack.EMPTY;
+    }
+
+    /**
+     * <b>本模组六种金属的盾牌全部免疫「破盾」</b>（bg-15w 续工轮的新口径，规格 12.3 / 12.4）。
+     *
+     * <h2>原版「破盾」的源码链（三段）</h2>
+     * <ol>
+     *   <li>{@code Player#blockUsingShield}（{@code Player.java:958-961}）：
+     *       {@code if (entity.canDisableShield()) this.disableShield();}</li>
+     *   <li>{@code LivingEntity#canDisableShield()}（{@code LivingEntity.java:3727-3728}，NeoForge 改写过）：
+     *       {@code this.getMainHandItem().canDisableShield(this.useItem, this, this)} →
+     *       NeoForge 默认 {@code return this instanceof AxeItem;}
+     *       （{@code IItemExtension.java:608-610}）⇒ <b>原版「破盾」= 攻击者主手是斧</b>。</li>
+     *   <li>{@code Player#disableShield()}（{@code Player.java:1428-1432}）：
+     *       {@code getCooldowns().addCooldown(this.getUseItem().getItem(), 100); stopUsingItem();
+     *       broadcastEntityEvent(this, (byte)30);} ⇒ 实际效果 = <b>给盾牌上 100 tick 冷却 + 停止格挡 + 动画包</b>。</li>
+     * </ol>
+     * <p><b>判定点在攻击者的物品上，盾牌自己没有否决点，也没有对应事件</b>，
+     * 所以免疫只能在「冷却被加上之后」把它抹掉 —— 也就是规格 12.4 推荐的方案 A（纯事件、无 mixin）。</p>
+     *
+     * <p>做法：每 tick 检查主 / 副手，若拿着本模组的盾牌（{@link MetalWeapons.MetalShieldItem#isBreakImmune()}）
+     * 且该物品正处于冷却中，就 {@code ItemCooldowns#removeCooldown(Item)}。冷却被抹掉 = 下一 tick 就能重新举盾，
+     * 观感上「没被破盾」。代价是动画包 30（盾牌抖动）仍会播一次 —— 这是不引入 mixin 的必然边界，
+     * 已写在报告里。</p>
+     *
+     * <p><b>⚠ 旧口径已被作者推翻（2026-10-02，bg-15w 续工轮）</b>：这里原来判的是
+     * {@code metalShield.isSpecialMetal()}（即「免疫只给五套特殊金属，万坚金按字面不免疫」，
+     * 规格 12.3 / 12.4 的原文）。作者原话「哦对了万坚金盾牌没有免疫破盾」⇒ 新口径是
+     * <b>六种金属全部免疫</b>，判据换成 {@code isBreakImmune()}；
+     * 而 {@code isSpecialMetal()} 保留它另一件用途（格挡反 buff），两者不再混用。</p>
+     */
+    @SubscribeEvent
+    public static void onPlayerTickShieldImmunity(
+            net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
+        var player = event.getEntity();
+        if (player.level().isClientSide()) {
+            return;
+        }
+        var shield = heldShield(player);
+        if (shield.isEmpty()) {
+            return;
+        }
+        if (!(shield.getItem() instanceof MetalWeapons.MetalShieldItem metalShield) || !metalShield.isBreakImmune()) {
+            return;
+        }
+        var cooldowns = player.getCooldowns();
+        if (cooldowns.isOnCooldown(shield.getItem())) {
+            cooldowns.removeCooldown(shield.getItem());
+        }
+    }
+
+    /**
+     * <b>举盾格挡 → 给攻击者施加该金属对应的 buff</b>（规格 12.3「盾牌」列 + 12.4 第 2 条）。
+     *
+     * <p>落点是 NeoForge 现成事件 {@code LivingShieldBlockEvent}（由
+     * {@code LivingEntity.java:1162-1167} 的 {@code CommonHooks.onDamageBlock(...)} 发出）：
+     * {@code getBlocked()} 为真时取举盾者主 / 副手的本模组盾牌 → 家族 →
+     * 对 {@code getDamageSource().getEntity()}（攻击者）走<b>与器具同一个</b>
+     * {@link #applyFamilyWeaponEffect}。于是「格挡反给攻击者高燃 / 巫毒 / 颤栗 / 沉淀 / 安抚」
+     * 与「武器命中给目标叠 buff」是同一份实现，规则只有一处。</p>
+     *
+     * <p><b>节流（规格 12.7 第 11 条，本轮决定：要节流）</b>：同一 tick 可能有多段伤害
+     * （多方块伤害 / 多实体），不节流会在同一瞬间把同一攻击者叠好几级。
+     * 这里按「(举盾者, 攻击者) 每 10 tick 最多反一次」节流，节流表放在攻击者的实体持久数据里
+     * （跟着实体生灭，不需要额外的清理事件）。</p>
+     *
+     * <p>万坚金盾<b>不</b>反 buff（万坚金改用吸收黄心，见
+     * {@link #onAbsorptionTick}）。</p>
+     */
+    @SubscribeEvent
+    public static void onShieldBlock(
+            net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent event) {
+        if (!event.getBlocked()) {
+            return;
+        }
+        if (event.getBlockedDamage() <= 0.0F) {
+            return;
+        }
+        var blocker = event.getEntity();
+        if (blocker.level().isClientSide()) {
+            return;
+        }
+        var shield = heldShield(blocker);
+        if (shield.isEmpty()) {
+            return;
+        }
+        MetalFamily family = MetalFamily.of(shield);
+        if (family == null || !family.isShield(shield.getItem())) {
+            return;
+        }
+        // 只有「特殊金属」盾牌反 buff；万坚金盾不反（规格 12.3）
+        if (!(shield.getItem() instanceof MetalWeapons.MetalShieldItem metalShield) || !metalShield.isSpecialMetal()) {
+            return;
+        }
+        if (!(event.getDamageSource().getEntity() instanceof net.minecraft.world.entity.LivingEntity attacker)) {
+            return;
+        }
+        if (attacker == blocker) {
+            return;
+        }
+        if (shieldReflectThrottled(blocker, attacker)) {
+            return;
+        }
+        applyFamilyWeaponEffect(family, blocker, attacker);
+    }
+
+    /** 格挡反 buff 的节流间隔（tick）：同一 (举盾者, 攻击者) 每这么多 tick 最多反一次 */
+    public static final int SHIELD_REFLECT_INTERVAL_TICKS = 10;
+
+    /** 节流键前缀（写在攻击者的实体持久数据里，随实体生灭） */
+    private static final String SHIELD_REFLECT_KEY_PREFIX = "bettergold_shield_reflect_";
+
+    /**
+     * 返回 {@code true} 表示这次要跳过（还在节流窗口内）。
+     *
+     * <p>节流表放在<b>攻击者</b>的持久数据里、键里带举盾者 id：
+     * 一个攻击者被多个举盾者同时挡下时互不影响，而攻击者消失时记录自动消失。</p>
+     */
+    private static boolean shieldReflectThrottled(net.minecraft.world.entity.LivingEntity blocker,
+            net.minecraft.world.entity.LivingEntity attacker) {
+        String key = SHIELD_REFLECT_KEY_PREFIX + blocker.getId();
+        var data = attacker.getPersistentData();
+        long now = attacker.level().getGameTime();
+        if (data.contains(key) && now - data.getLong(key) < SHIELD_REFLECT_INTERVAL_TICKS) {
+            return true;
+        }
+        data.putLong(key, now);
+        return false;
+    }
+
 
     // ==================== 盔甲：单件 25% 抗性 / 25% 反制，全套 100% ====================
 
@@ -453,8 +1090,20 @@ public final class MetalEvents {
     }
 
     /**
+     * 「窒息与溺水」的伤害类型映射（规格第七节第 3 条）：<b>{@code minecraft:in_wall}
+     * （方块内窒息）+ {@code #minecraft:is_drowning}（溺水）</b>。
+     *
+     * <p>沉淀的持续伤害用的是 {@code in_wall}，所以靛海金盔甲的抗性<b>天然覆盖沉淀造成的伤害</b>
+     * （规格第七节第 7 条的「覆盖」），「全套完全免疫」也才没有缺口。</p>
+     */
+    private static boolean isSuffocation(net.minecraft.world.damagesource.DamageSource source) {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.IN_WALL)
+                || source.is(net.minecraft.tags.DamageTypeTags.IS_DROWNING);
+    }
+
+    /**
      * 抗性：每件烈燃金盔甲减免 25% 燃烧伤害，每件巫毒金盔甲减免 25% 魔法伤害，
-     * 穿满四件即完全免疫（1 − 4 × 25% = 0）。
+     * 每件靛海金盔甲减免 25% 窒息 / 溺水伤害（1.5），穿满四件即完全免疫（1 − 4 × 25% = 0）。
      */
     @SubscribeEvent
     public static void onDamagePre(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Pre event) {
@@ -465,7 +1114,8 @@ public final class MetalEvents {
                 continue;
             }
             boolean applies = (FLAME_ID.equals(family.id) && isFire(event.getSource()))
-                    || (VOODOO_ID.equals(family.id) && isMagic(event.getSource()));
+                    || (VOODOO_ID.equals(family.id) && isMagic(event.getSource()))
+                    || (family.suffocationResist && isSuffocation(event.getSource()));
             if (applies) {
                 event.setNewDamage(event.getNewDamage() * (1.0F - Math.min(pieces, 4) * 0.25F));
             }
@@ -473,8 +1123,28 @@ public final class MetalEvents {
     }
 
     /**
-     * 反制：每件对应盔甲提供 25% 几率把 1 级 buff 还给攻击者（穿满即 100%）；
-     * 结雷金另有每件 25% 几率清除自身一次虚弱与颤栗。
+     * 一个家族「被攻击后的反制几率」（按穿戴件数算）：
+     * 烈燃金 / 巫毒金 / 结雷金 / 靛海金 = 每件 25%（四件 100%）；幻惑金 = 每件 4%（四件 16%）；其余 0。
+     */
+    private static float counterChance(MetalFamily family, int pieces) {
+        int capped = Math.min(pieces, 4);
+        if (family.sootheReflectPerPiece > 0.0F) {
+            return capped * family.sootheReflectPerPiece;   // 幻惑金：每件 4%
+        }
+        if (FLAME_ID.equals(family.id) || VOODOO_ID.equals(family.id)
+                || THUNDER_ID.equals(family.id) || family.sedimentReflect) {
+            return capped * 0.25F;                          // 其余反制家族：每件 25%
+        }
+        return 0.0F;
+    }
+
+    /**
+     * 反制：每件对应盔甲提供几率把 1 级 buff 还给攻击者
+     * （烈燃/巫毒/结雷/靛海 = 每件 25%、穿满 100%；幻惑 = 每件 4%、穿满 16%）。
+     *
+     * <p><b>随机数消耗与 1.4 逐字一致</b>：每个「穿戴中的家族」固定消耗一次 {@code nextFloat()}，
+     * 顺序就是 {@link MetalFamily#all()} 的顺序 —— 新金属排在最后，所以 1.4 已有三套的判定结果
+     * 不会因为这次改动而漂移。没穿该家族（{@code pieces == 0}）时与 1.4 一样短路、不消耗随机数。</p>
      */
     @SubscribeEvent
     public static void onDamagePost(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Post event) {
@@ -488,15 +1158,27 @@ public final class MetalEvents {
         var random = wearer.level().getRandom();
         for (var family : MetalFamily.all()) {
             int pieces = wornPieces(wearer, family);
-            if (pieces == 0 || random.nextFloat() >= pieces * 0.25F) {
+            if (pieces == 0) {
+                continue;
+            }
+            float roll = random.nextFloat();   // 与 1.4 相同：每个穿戴中的家族消耗一次
+            float chance = counterChance(family, pieces);
+            if (chance <= 0.0F || roll >= chance) {
                 continue;
             }
             if (FLAME_ID.equals(family.id)) {
-                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN, 36 * 20);
+                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN,
+                        MetalFamily.HIGH_BURN_TICKS);   // 1.5 修正②：36 秒 → 16 秒
             } else if (VOODOO_ID.equals(family.id)) {
                 stackVoodoo(attacker);
             } else if (THUNDER_ID.equals(family.id)) {
-                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE, 16 * 20);
+                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE,
+                        MetalFamily.TREMBLE_TICKS);
+            } else if (family.sedimentReflect) {   // 靛海金：给攻击者叠 1 级沉淀
+                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.SEDIMENT,
+                        MetalFamily.SEDIMENT_TICKS);
+            } else if (family.sootheReflectPerPiece > 0.0F) {   // 幻惑金：给攻击者 1 秒安抚
+                applySoothe(attacker, MetalFamily.SOOTHE_TICKS);
             }
         }
         // 结雷金：每件 25% 几率清除自身一次虚弱与颤栗

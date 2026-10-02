@@ -1,0 +1,9 @@
+{
+  "asset_name": "indigoseagold",
+  "description": {
+    "color": "#E8B93A",
+    "translate": "trim_material.bettergold.indigoseagold"
+  },
+  "ingredient": "bettergold:indigoseagold_ingot",
+  "item_model_index": 0.06
+}

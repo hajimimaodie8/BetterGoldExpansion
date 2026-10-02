@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "II",
+    "II",
+    "II"
+  ],
+  "key": {
+    "I": { "item": "bettergold:illusiongold_ingot" }
+  },
+  "result": {
+    "id": "bettergold:illusiongold_door",
+    "count": 3
+  }
+}

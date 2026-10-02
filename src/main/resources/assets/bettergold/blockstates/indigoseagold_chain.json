@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "axis=x": { "model": "bettergold:block/indigoseagold_chain", "x": 90, "y": 90 },
+    "axis=y": { "model": "bettergold:block/indigoseagold_chain" },
+    "axis=z": { "model": "bettergold:block/indigoseagold_chain", "x": 90 }
+  }
+}

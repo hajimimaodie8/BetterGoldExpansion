@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BB",
+    "BB"
+  ],
+  "key": {
+    "B": { "item": "bettergold:indigoseagold_block" }
+  },
+  "result": {
+    "id": "bettergold:indigoseagold_bricks",
+    "count": 4
+  }
+}

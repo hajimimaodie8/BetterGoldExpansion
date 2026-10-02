@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "bettergold:sturdygold_bow",
+    "bettergold:flamegold_bow",
+    "bettergold:voodoogold_bow",
+    "bettergold:thundergold_bow",
+    "bettergold:indigoseagold_bow",
+    "bettergold:illusiongold_bow"
+  ]
+}

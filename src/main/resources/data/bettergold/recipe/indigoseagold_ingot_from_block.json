@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [ { "item": "bettergold:indigoseagold_block" } ],
+  "result": { "id": "bettergold:indigoseagold_ingot", "count": 9 }
+}

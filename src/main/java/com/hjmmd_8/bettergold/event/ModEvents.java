@@ -188,11 +188,19 @@ public class ModEvents {
         if (!(attacker instanceof Player player)) {
             return;
         }
-        ItemStack held = player.getMainHandItem();
+        // 本方法里**两条分支共用同一把钥匙**取武器：
+        // **DamageSource#getWeaponItem()**（= 真正造成这次伤害的那把武器），
+        // 不再用主手物品 —— 远程（弓 / 弩）与投掷（三叉戟离手）时主手可能已经换成别的东西。
+        // 与武器 buff 派发共用同一个 helper（MetalEvents.weaponOf，取不到再回落主手）。
+        // - bg-15w 第 5 项：万坚金「攻击掉落金物品」改用它（已落地）；
+        // - bg-15x：**「古董器具掉下界合金尘埃」也改用它**（作者裁定；此前只按主手判定，
+        //   投掷/远程命中时手上已空 ⇒ 静默漏判）。近战等价性：`directEntity` = 攻击者本体 ⇒
+        //   `LivingEntity#getWeaponItem()` 就是主手物品，行为与改前一致（规格 12.4 / §14 回归要求）。
+        ItemStack weapon = com.hjmmd_8.bettergold.material.MetalEvents.weaponOf(event.getSource(), player);
 
         // ---- 新约 1.3：下界合金古董剑/斧/刀攻击时 6% 掉落下界合金尘埃（受抢夺影响） ----
-        if (isDustOnAttackTool(held)) {
-            int looting = enchantLevel(held, player.level(),
+        if (isDustOnAttackTool(weapon)) {
+            int looting = enchantLevel(weapon, player.level(),
                     net.minecraft.world.item.enchantment.Enchantments.LOOTING);
             float chance = 0.06F + 0.06F * looting;
             if (player.getRandom().nextFloat() < chance) {
@@ -203,8 +211,8 @@ public class ModEvents {
             }
         }
 
-        // 校验手持物品：必须是万坚金工具
-        if (!isSturdygoldTool(held)) {
+        // 校验武器：必须是万坚金武器（既有六件器具 + bg-15w 纳入的重锤/弓/弩/三叉戟/盾牌）
+        if (!isSturdygoldAttackWeapon(weapon)) {
             return;
         }
         LivingEntity victim = event.getEntity();
@@ -215,7 +223,7 @@ public class ModEvents {
                     new ItemStack(AllItems.GIFT_GOLD_TICKET.get()));
         }
         // 功能 100% 触发：必定掉落一件金系物品（白板掉基础四件；有"取其金食"附魔才掉金食物）
-        Item loot = rollGoldLoot(player, held);
+        Item loot = rollGoldLoot(player, weapon);
         if (level instanceof ServerLevel serverLevel) {
             ItemEntity drop = new ItemEntity(serverLevel,
                     victim.getX(), victim.getY() + 0.5D, victim.getZ(),
@@ -407,6 +415,33 @@ public class ModEvents {
         return stack.getItem() instanceof net.minecraft.world.item.TieredItem tiered
                 // 1.4：万坚金已迁到金属族，五个器具与 FD 小刀共用 AllMetals.STURDYGOLD.tier 这一个实例
                 && tiered.getTier() == com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD.tier;
+    }
+
+    /**
+     * <b>万坚金「攻击掉落金物品」的武器判据</b>（bg-15w 第 5 项）。
+     *
+     * <p>旧判据 {@link #isSturdygoldTool} 只认 {@code TieredItem} + 万坚金 tier
+     * ⇒ 1.5 新增的 5 类武器（重锤 / 弓 / 弩 / 三叉戟 / 盾牌）全都不是 {@code TieredItem}，
+     * 一件都不触发。这里把它们一起纳入。</p>
+     *
+     * <p>金属范围按需求 §六 推断值 #3 取<b>只给万坚金</b>（与既有 {@code isSturdygoldTool} 一致；
+     * 特殊金属不参与）。盾牌也算 —— 需求 §3.4 第 2 条明确「盾牌也要走这条」。</p>
+     *
+     * <p>⚠ 判据是「这件物品是不是万坚金族的武器/盾牌」，<b>不是</b>「是不是拿在手上」
+     * —— 取武器的方式已经在调用点换成 {@code DamageSource#getWeaponItem()}
+     * （见 {@link com.hjmmd_8.bettergold.material.MetalEvents#weaponOf}）。</p>
+     */
+    private static boolean isSturdygoldAttackWeapon(ItemStack stack) {
+        if (isSturdygoldTool(stack)) {
+            return true;
+        }
+        com.hjmmd_8.bettergold.material.MetalFamily family =
+                com.hjmmd_8.bettergold.material.MetalFamily.of(stack);
+        if (family != com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD) {
+            return false;
+        }
+        // 重锤 / 弓 / 弩 / 三叉戟走 isWeapon；盾牌不在 weapons() 里，单独放行
+        return family.isWeapon(stack.getItem()) || family.isShield(stack.getItem());
     }
 
     // ==================== 抗寒性：免疫冰冻伤害 ====================

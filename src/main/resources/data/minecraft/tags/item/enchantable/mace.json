@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "bettergold:sturdygold_mace",
+    "bettergold:flamegold_mace",
+    "bettergold:voodoogold_mace",
+    "bettergold:thundergold_mace",
+    "bettergold:indigoseagold_mace",
+    "bettergold:illusiongold_mace"
+  ]
+}

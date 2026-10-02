@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " L ",
+    "LHL",
+    " L "
+  ],
+  "key": {
+    "H": {
+      "item": "minecraft:heart_of_the_sea"
+    },
+    "L": {
+      "item": "minecraft:lapis_block"
+    }
+  },
+  "result": {
+    "id": "bettergold:indigo_ocean_heart",
+    "count": 1
+  }
+}

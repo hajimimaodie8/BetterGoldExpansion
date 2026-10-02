@@ -68,9 +68,24 @@ public class AllItems {
         if (GEAR_CHAIN_ITEM_IDS.contains(id.getPath())) {
             return true;
         }
+        // 1.5 武器轮：重锤 / 弓 / 弩 / 三叉戟 / 盾牌既不是 TieredItem 也不是 ArmorItem，
+        // 显式承认它们属于「装备」页（否则会落进材料页）。
+        if (isMetalWeapon(stack)) {
+            return true;
+        }
         Item item = stack.getItem();
         return item instanceof net.minecraft.world.item.TieredItem
                 || item instanceof ArmorItem;
+    }
+
+    /** 是不是 1.5 的五类武器之一（六套金属的重锤 / 弓 / 弩 / 三叉戟 / 盾牌） */
+    public static boolean isMetalWeapon(ItemStack stack) {
+        Item item = stack.getItem();
+        return item instanceof com.hjmmd_8.bettergold.material.MetalWeapons.MetalMaceItem
+                || item instanceof com.hjmmd_8.bettergold.material.MetalWeapons.MetalBowItem
+                || item instanceof com.hjmmd_8.bettergold.material.MetalWeapons.MetalCrossbowItem
+                || item instanceof com.hjmmd_8.bettergold.material.MetalWeapons.MetalTridentItem
+                || item instanceof com.hjmmd_8.bettergold.material.MetalWeapons.MetalShieldItem;
     }
 
     // ==================== 材料 ====================

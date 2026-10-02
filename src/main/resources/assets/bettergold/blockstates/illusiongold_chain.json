@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "axis=x": { "model": "bettergold:block/illusiongold_chain", "x": 90, "y": 90 },
+    "axis=y": { "model": "bettergold:block/illusiongold_chain" },
+    "axis=z": { "model": "bettergold:block/illusiongold_chain", "x": 90 }
+  }
+}

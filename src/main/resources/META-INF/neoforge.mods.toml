@@ -54,8 +54,10 @@ All textures are original hand-drawn assets created for this project.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
-#[[mixins]]
-#config="${mod_id}.mixins.json"
+# bg-15w 续工轮 §7.1 起**启用**（本模组第一个 mixin）：三叉戟手持 3D 需要改原版
+# `ItemRenderer` 里三处写死的 `stack.is(Items.TRIDENT)`（见 config 里的那个 mixin 类）。
+[[mixins]]
+config="${mod_id}.mixins.json"
 
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg

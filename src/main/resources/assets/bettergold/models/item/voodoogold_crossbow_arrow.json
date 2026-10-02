@@ -1,0 +1,6 @@
+{
+  "parent": "bettergold:item/voodoogold_crossbow",
+  "textures": {
+    "layer0": "bettergold:item/voodoogold_crossbow_arrow"
+  }
+}

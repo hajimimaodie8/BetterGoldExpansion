@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "mut"
+      }
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:indigoseagold_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:golden_crossbow_blank"
+  },
+  "addition": {
+    "item": "bettergold:indigoseagold_ingot"
+  },
+  "result": {
+    "id": "bettergold:indigoseagold_crossbow",
+    "count": 1
+  }
+}

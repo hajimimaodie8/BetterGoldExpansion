@@ -5,7 +5,6 @@ import com.hjmmd_8.bettergold.recipe.GoldenCowrieMoldRecipe;
 import com.hjmmd_8.bettergold.recipe.GoldenFoodRecipe;
 import com.hjmmd_8.bettergold.recipe.GoldenHoneyCookieRecipe;
 import com.hjmmd_8.bettergold.recipe.RawSturdygoldRecipe;
-
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
@@ -26,15 +25,25 @@ public class AllRecipes {
             RECIPE_SERIALIZERS.register("golden_cowrie_mold",
                     () -> new SimpleCraftingRecipeSerializer<>(GoldenCowrieMoldRecipe::new));
 
-    /** 万坚金原料配方（金钱贝版）：炼金燃油合成后返还玻璃瓶 */
+    /**
+     * 原料配方（金钱贝版，{@code variant = 0}）：炼金燃油合成后返还玻璃瓶。
+     *
+     * <p>1.5 起兑换物与产物都是<b>数据驱动</b>的：JSON 可以写 {@code "exchange"} / {@code "result"}
+     * 两个可选字段，缺省时回落到这里的默认值（金钱贝 / 万坚金原料）。
+     * 三套 1.4 新金属（烈燃金 / 巫毒金 / 结雷金）与 1.5 两套新金属的原料配方都复用这一个序列化器，
+     * 各自在 JSON 里声明自己的兑换物与产物 —— 1.4 那个「四条配方产物全是万坚金原料」的 bug
+     * 就是在这里修掉的（详见 {@link RawSturdygoldRecipe}）。</p>
+     */
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RawSturdygoldRecipe>> RAW_STURDYGOLD_RECIPE =
             RECIPE_SERIALIZERS.register("raw_sturdygold",
-                    () -> new SimpleCraftingRecipeSerializer<>(cat -> new RawSturdygoldRecipe(cat, 0)));
+                    () -> new RawSturdygoldRecipe.Serializer(0,
+                            () -> AllItems.GOLDEN_COWRIE.get(), () -> AllItems.RAW_STURDYGOLD.get()));
 
-    /** 万坚金原料配方（金钱茄版，易金台设定）：金钱贝换成金钱茄 */
+    /** 原料配方（金钱茄版，易金台设定，{@code variant = 1}）：缺省兑换物是金钱茄、产物仍是万坚金原料 */
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RawSturdygoldRecipe>> RAW_STURDYGOLD_EGGPLANT_RECIPE =
             RECIPE_SERIALIZERS.register("raw_sturdygold_eggplant",
-                    () -> new SimpleCraftingRecipeSerializer<>(cat -> new RawSturdygoldRecipe(cat, 1)));
+                    () -> new RawSturdygoldRecipe.Serializer(1,
+                            () -> AllItems.GOLDEN_EGGPLANT.get(), () -> AllItems.RAW_STURDYGOLD.get()));
 
     /** 金钱巧克力棒配方：返还铁桶 */
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GoldenFoodRecipe>> GOLDEN_CHOCOLATE_BAR_RECIPE =

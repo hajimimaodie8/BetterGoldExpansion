@@ -33,9 +33,17 @@ METALS = {
     "flamegold":    {"cn": "烈燃金", "folder": "烈燃金"},
     "voodoogold":   {"cn": "巫毒金", "folder": "巫毒金"},
     "thundergold":  {"cn": "结雷金", "folder": "结雷金"},
+    "indigoseagold": {"cn": "靛海金", "folder": "靛海金"},
+    "illusiongold": {"cn": "幻惑金", "folder": "幻惑金"},
 }
 
 # 中文名后缀 -> 目标路径(相对 assets/bettergold)。{id} 会替换成英文 id
+#
+# 命名坑（作者素材的写法不统一，两种都得列上）：
+#   * 「门 物品」在靛海金里**有空格**（靛海金门 物品.png）、在幻惑金里**没空格**（幻惑金门物品.png）；
+#   * 「链 物品」「灯笼 物品」两套都有空格；
+#   * 新约7 的「纹饰色卡」放在各金属文件夹里（<中文名>纹饰色卡.png），
+#     老压缩包里它在顶级目录「盔甲纹饰材料色卡/<中文名>.png」（两条路都留着）。
 SUFFIX_MAP = {
     "锭":            "textures/item/{id}_ingot.png",
     "粒":            "textures/item/{id}_nugget.png",
@@ -46,6 +54,7 @@ SUFFIX_MAP = {
     "门 上":         "textures/block/{id}_door_top.png",
     "门 下":         "textures/block/{id}_door_bottom.png",
     "门 物品":       "textures/item/{id}_door.png",
+    "门物品":        "textures/item/{id}_door.png",
     "活板门":        "textures/block/{id}_trapdoor.png",
     "栏杆":          "textures/block/{id}_bars.png",
     "链":            "textures/block/{id}_chain.png",
@@ -65,6 +74,7 @@ SUFFIX_MAP = {
     "盔甲1":         "textures/models/armor/{id}_layer_1.png",
     "盔甲2":         "textures/models/armor/{id}_layer_2.png",
     "升级锻造模板":  "textures/item/{id}_upgrade_template.png",
+    "纹饰色卡":      "textures/trims/color_palettes/{id}.png",
 }
 
 # 各金属独有的材料与 buff 图标（zip 里没有金属名前缀）
@@ -75,10 +85,17 @@ SPECIAL_TEXTURES = {
                     "巫毒": "textures/mob_effect/voodoo.png"},
     "thundergold": {"聚紫能晶尘": "textures/item/amethyst_energy_dust.png",
                     "颤栗": "textures/mob_effect/tremble.png"},
+    "indigoseagold": {"靛蓝海洋之心": "textures/item/indigo_ocean_heart.png",
+                      "沉淀": "textures/mob_effect/sediment.png"},
+    "illusiongold": {"紫颂樱花枝": "textures/item/chorus_cherry_branch.png",
+                     "安抚": "textures/mob_effect/soothe.png"},
 }
 
 # 纹饰色卡目录
 PALETTE_DIR = "盔甲纹饰材料色卡"
+
+# 灯笼贴图（16×48 动画帧序列）必须配的 .mcmeta，内容与 1.4 四套金属逐字一致
+LANTERN_MCMETA = '{\n  "animation": {\n    "frametime": 8\n  }\n}\n'
 
 # 只搬运"金属族"该有的资产，万坚金那些派/蛋糕/箱子之类的装饰不在此列
 BLOCKSTATE_TEMPLATES = [
@@ -159,6 +176,7 @@ def main() -> None:
         folder = meta["folder"]
         prefix = f"{folder}/"
         entries = {k[len(prefix):]: v for k, v in textures.items() if k.startswith(prefix)}
+        lantern = False
 
         # 1) 贴图：按中文名后缀映射
         for name, data in sorted(entries.items()):
@@ -173,6 +191,31 @@ def main() -> None:
                 unknown.append(f"{folder}/{name}")
                 continue
             write(ASSETS / rel, data, args.apply, written, rel)
+            if str(rel).endswith("_lantern.png"):
+                lantern = True
+
+        # 1b) 灯笼贴图是 **16×48 的动画帧序列**（作者素材与 1.4 四套金属一致），
+        #     必须配一份 .mcmeta 才会被图集当作动画；缺了它整张 16×48 会被静态采样，渲染纵向拉长。
+        #     已存在（1.4 生成过的）就不动，避免无谓改写。
+        lantern_rel = Path(f"textures/block/{metal_id}_lantern.png")
+        lantern_mcmeta = Path(str(lantern_rel) + ".mcmeta")
+        if (lantern or (ASSETS / lantern_rel).is_file()) and not (ASSETS / lantern_mcmeta).is_file():
+            write(ASSETS / lantern_mcmeta, LANTERN_MCMETA, args.apply, written, lantern_mcmeta)
+
+        # 1c) 专属材料的物品模型：1.4 的 blazing_rod / voodoo_feather / amethyst_energy_dust
+        #     是手写的 models/item/<id>.json，忘了给新金属补就会在客户端刷
+        #     「Unable to load model: bettergold:item/indigo_ocean_heart」并把物品渲染成紫黑格。
+        #     这里按 SPECIAL_TEXTURES 里落在 textures/item/ 的那几条自动补标准 generated 模型；
+        #     已存在的（1.4 手写的三条）原样不动。
+        for special_name in [Path(p).stem for p in SPECIAL_TEXTURES.get(metal_id, {}).values()
+                             if p.startswith("textures/item/")]:
+            model_rel = Path("models/item") / f"{special_name}.json"
+            if not (ASSETS / model_rel).is_file():
+                text = ('{\n    "parent": "minecraft:item/generated",\n'
+                        '    "textures": {\n'
+                        f'        "layer0": "bettergold:item/{special_name}"\n'
+                        '    }\n}\n')
+                write(ASSETS / model_rel, text, args.apply, written, model_rel)
 
         # 2) 模板类 JSON：文件名与内容里的 sturdygold 整体替换
         for bucket, templates in (
@@ -191,8 +234,14 @@ def main() -> None:
                 text = text.replace(BASE_METAL, metal_id)
                 write(ASSETS / dst_rel, text, args.apply, written, dst_rel)
 
-    # 3) 纹饰色卡
+    # 3) 纹饰色卡（两条路，缺一不生效的那四样之一）
+    #    新约7 起色卡在各金属文件夹里（<中文名>纹饰色卡.png）→ 上面 SUFFIX_MAP 的「纹饰色卡」已经搬走；
+    #    老压缩包把它放在顶级目录「盔甲纹饰材料色卡/<中文名>.png」→ 这里兼容。
     for metal_id, meta in METALS.items():
+        if f"{meta['folder']}/{meta['cn']}纹饰色卡.png" in textures:
+            continue                      # 新约7 起：色卡在金属文件夹里，SUFFIX_MAP 已经搬走
+        if (ASSETS / f"textures/trims/color_palettes/{metal_id}.png").is_file():
+            continue                      # 仓库里已经有这张色卡（1.4 生成的），不必再从包里取
         entry = f"{PALETTE_DIR}/{meta['cn']}.png"
         if entry in textures:
             rel = Path(f"textures/trims/color_palettes/{metal_id}.png")

@@ -46,7 +46,9 @@
         "unwanted_antique": "bettergold:trims/color_palettes/unwanted_antique",
         "flamegold": "bettergold:trims/color_palettes/flamegold",
         "voodoogold": "bettergold:trims/color_palettes/voodoogold",
-        "thundergold": "bettergold:trims/color_palettes/thundergold"
+        "thundergold": "bettergold:trims/color_palettes/thundergold",
+        "indigoseagold": "bettergold:trims/color_palettes/indigoseagold",
+        "illusiongold": "bettergold:trims/color_palettes/illusiongold"
       }
     }
   ]

@@ -1,0 +1,23 @@
+{
+  "sources": [
+    {
+      "type": "paletted_permutations",
+      "textures": [
+        "trims/items/helmet_trim",
+        "trims/items/chestplate_trim",
+        "trims/items/leggings_trim",
+        "trims/items/boots_trim"
+      ],
+      "palette_key": "trims/color_palettes/trim_palette",
+      "permutations": {
+        "sturdygold": "bettergold:trims/color_palettes/sturdygold",
+        "unwanted_antique": "bettergold:trims/color_palettes/unwanted_antique",
+        "flamegold": "bettergold:trims/color_palettes/flamegold",
+        "voodoogold": "bettergold:trims/color_palettes/voodoogold",
+        "thundergold": "bettergold:trims/color_palettes/thundergold",
+        "indigoseagold": "bettergold:trims/color_palettes/indigoseagold",
+        "illusiongold": "bettergold:trims/color_palettes/illusiongold"
+      }
+    }
+  ]
+}

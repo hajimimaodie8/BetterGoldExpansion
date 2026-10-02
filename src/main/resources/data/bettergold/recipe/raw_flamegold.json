@@ -1,3 +1,5 @@
 {
-  "type": "bettergold:raw_sturdygold"
+  "type": "bettergold:raw_sturdygold",
+  "exchange": "bettergold:blazing_rod",
+  "result": "bettergold:raw_flamegold"
 }

@@ -129,6 +129,17 @@ public final class CreativeTabSections {
         return false;
     }
 
+    /**
+     * 是不是「金属装备」：{@link CreativeSections#classify} 认得出来的金属物品
+     * （剑斧镐锹锄 + 四件盔甲 + 1.5 的五类武器，见 {@link CreativeSections} 的 {@code GEAR_SLOT}）。
+     *
+     * <p>1.5 修正轮：五件「胚底」不是装备（作者澄清它们是纯合成材料），
+     * 因此这里不再有「金制基础武器」的特例；胚底由材料分区的兜底段接住，落在「材料」分区。</p>
+     */
+    private static boolean isMetalGear(ItemStack stack) {
+        return kindOf(stack) == CreativeSections.Kind.METAL_GEAR;
+    }
+
     /** 物品 id 后缀判定（公开：FD 模块自己的分区规则要用，见 {@code fd.FdTabs.RULES}） */
     public static boolean pathEndsWith(ItemStack stack, String... suffixes) {
         String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
@@ -182,7 +193,7 @@ public final class CreativeTabSections {
 
     /** 装备分区内部顺序：金属装备 → 其他工具 */
     public static final List<Slot> GEAR = List.of(
-            new Slot("金属装备", stack -> kindOf(stack) == CreativeSections.Kind.METAL_GEAR),
+            new Slot("金属装备", CreativeTabSections::isMetalGear),
             new Slot("其他工具", stack -> true));
 
     /** 食物分区内部顺序：种子 → 普通金食物 → 万坚金食物 */
@@ -244,9 +255,23 @@ public final class CreativeTabSections {
         return out;
     }
 
-    /** 材料分区候选：本体物品里既不是食物、也不是装备、并且不是方块的（方块归建筑分区） */
+    /**
+     * 材料分区候选：本体物品里既不是食物、也不是装备、并且不是方块的（方块归建筑分区）。
+     *
+     * <p><b>bg-15w 第 8 项 + 续工轮 §3.8 的口径改正</b>：五件「胚底」（{@code golden_<武器>_blank}）
+     * <b>只在检测到装了 `mut`（MoreUpgradeTemplate，更多锻造模板重生）时才排除</b>。</p>
+     *
+     * <p>作者原话：「我是让你检测有没有装更多锻造模板重生才自动隐藏胚底，而不是直接进游戏就直接把胚底隐藏」。
+     * ⇒ <b>没装 mut 时一切照旧</b>：五件胚底可见、可用工作台配方合成、可以当 30 条锻造升级的基底；
+     * 装了 mut 时它们让位给 MUT 自带的五件金武器（30 条以 {@code mut:golden_*} 为 base 的条件配方）。</p>
+     *
+     * <p>物品注册 / lang / 模型<b>两种情况都保留</b>（老存档里已有的胚底不会变成未知物品）。</p>
+     */
     public static List<ItemStack> materialsCandidates() {
-        List<ItemStack> out = ownItems(stack -> !isFood(stack) && !isGear(stack) && !isBlockItem(stack));
+        // 装没装 mut 是**运行期**才知道的事实，所以这里每次进来判一次（创造页重建时求值）
+        boolean hideBlanks = net.neoforged.fml.ModList.get().isLoaded("mut");
+        List<ItemStack> out = ownItems(stack -> !isFood(stack) && !isGear(stack) && !isBlockItem(stack)
+                && !(hideBlanks && MetalBlanks.isBlank(pathOf(stack))));
         // 分区内顺序（作者确认）：礼品金票 + 四种礼盒 → 把金票提到最前，其余保持注册顺序
         for (int i = 0; i < out.size(); i++) {
             if (pathOf(out.get(i)).equals("gift_gold_ticket")) {

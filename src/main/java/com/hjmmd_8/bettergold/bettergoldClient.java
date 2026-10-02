@@ -24,6 +24,44 @@ public class bettergoldClient {
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+
+        // bg-15w 续工轮 §7.2：靛海金盔甲的 tooltip **后处理**（把原版蓝字那行的 0.25 显示成 25%）。
+        // 上一轮那个「补一行白字」的 SwimSpeedTooltip 已按作者要求整块删除
+        // （类 / 这里的注册 / lang 键 tooltip.bettergold.swim_speed_per_piece 一起删）。
+        // ItemTooltipEvent 是**游戏总线**（NeoForge.EVENT_BUS）事件、只在客户端有意义，
+        // 所以显式挂在这里（本类只在 Dist.CLIENT 加载），不去动双端的 bettergold 主类。
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                com.hjmmd_8.bettergold.client.WaterMovementTooltip::onItemTooltip);
+    }
+
+    /**
+     * bg-15w 续工轮 §7.1：把六套金属的**三叉戟手持 / 蓄力模型**登记成 additional model。
+     *
+     * <p>为什么必须登记（这是静默失效）：原版 {@code ModelBakery} 只把**原版那两个**
+     * resource location 当成 special model 加载（构造器里逐字
+     * {@code loadSpecialItemModelAndDependencies(ItemRenderer.TRIDENT_IN_HAND_MODEL)}），
+     * 我们自己那 12 个（6 金属 × {@code _trident_in_hand} / {@code _trident_throwing}）
+     * **不在**那份列表里 ⇒ 不登记的话 {@code ModelManager#getModel(...)} 只能拿到 missing model
+     * （表现是空 / 黑模型，且不一定报错）。</p>
+     *
+     * <p>登记形态必须是 {@code ModelResourceLocation.standalone(...)}（NeoForge 的
+     * {@code RegisterAdditional#register} 会断言 variant == standalone），
+     * 而且 {@code id} 要写成**完整模型路径** {@code bettergold:item/<金属>_trident_in_hand}
+     * —— NeoForge 那段是 {@code this.getModel(rl.id())}，不像原版 special 模型那样自动补
+     * {@code item/} 前缀。</p>
+     */
+    @SubscribeEvent
+    static void onRegisterAdditionalModels(net.neoforged.neoforge.client.event.ModelEvent.RegisterAdditional event) {
+        int count = 0;
+        for (var family : com.hjmmd_8.bettergold.material.MetalFamily.all()) {
+            for (String suffix : new String[] { "_trident_in_hand", "_trident_throwing" }) {
+                event.register(net.minecraft.client.resources.model.ModelResourceLocation.standalone(
+                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                                bettergold.MODID, "item/" + family.id + suffix)));
+                count++;
+            }
+        }
+        bettergold.LOGGER.info("1.5 武器轮：已登记 {} 个三叉戟 additional model（6 金属 × 手持/蓄力）", count);
     }
 
     @SubscribeEvent
@@ -32,6 +70,30 @@ public class bettergoldClient {
         event.registerEntityRenderer(
                 com.hjmmd_8.bettergold.registry.AllEntities.THROWN_ANTIQUE.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+
+        // bg-15w 第 1 项 (b)：掷出的三叉戟必须单独换渲染器。
+        // 物品侧（IClientItemExtensions / BlockEntityWithoutLevelRenderer）与实体侧
+        // （EntityRenderer）是两条完全不同的路，改好物品侧不代表扔出去是对的
+        // —— 原版 ThrownTridentRenderer 把贴图写死成 minecraft:textures/entity/trident.png。
+        // 这里整体替换 EntityType.TRIDENT 的渲染器：非本模组的三叉戟会回落原版贴图，
+        // 所以对原版 / 其它模组无副作用。
+        event.registerEntityRenderer(
+                net.minecraft.world.entity.EntityType.TRIDENT,
+                com.hjmmd_8.bettergold.client.MetalThrownTridentRenderer::new);
+    }
+
+    /**
+     * 1.5 武器轮：给本模组的盾牌 / 三叉戟挂上自定义物品渲染器。
+     *
+     * <p>原版 {@code BlockEntityWithoutLevelRenderer} 里盾牌 / 三叉戟两段是写死的
+     * {@code stack.is(Items.SHIELD)} / {@code stack.is(Items.TRIDENT)}，
+     * 我们的物品都进不去，拿 {@code builtin/entity} 模型时会<b>什么都不画</b>。
+     * 见 {@code client/MetalWeaponItemRenderer} 的类注释。</p>
+     */
+    @SubscribeEvent
+    static void onRegisterClientExtensions(
+            net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {
+        com.hjmmd_8.bettergold.client.MetalWeaponItemProperties.onRegisterClientExtensions(event);
     }
 
     @SubscribeEvent
@@ -39,6 +101,12 @@ public class bettergoldClient {
         // Some client setup code
         bettergold.LOGGER.info("HELLO FROM CLIENT SETUP");
         bettergold.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+
+        // 1.5 武器轮：弓 / 弩 / 三叉戟 / 盾牌 的物品模型谓词
+        // （pulling / pull / charged / firework / throwing / blocking）。
+        // 必须做：1.21 的谓词按物品实例存在 Map<Item, ...> 里，子类不继承父类登记过的谓词，
+        // 不登记的话照搬原版的模型 override 永远取不到值（见 client/MetalWeaponItemProperties 的类注释）。
+        event.enqueueWork(com.hjmmd_8.bettergold.client.MetalWeaponItemProperties::register);
 
         // 注册透明渲染层：带透明像素的方块若不注册 cutout，透明区域会被 solid 渲染成黑色
         event.enqueueWork(() -> {

@@ -51,36 +51,43 @@ public class Config {
                     "可填 minecraft: 或 bettergold: 开头的任意金系物品注册名。")
             .defineListAllowEmpty("goldLootItems", List.of(), () -> "", Config::validateItemName);
 
-    // ==================== 巫毒：累积伤害模型（1.4 作者拍板） ====================
+    // ==================== 巫毒：累积伤害模型（1.5 作者定稿：36% 提取 + 等级） ====================
 
     /**
-     * 巫毒（voodoo）「累积伤害模型」的<b>存储比例</b>，默认 0.8（= 受到伤害的 80% 被存储）。
+     * 巫毒（voodoo）窗口内伤害的<b>提取比例</b>，默认 0.36（= 36%）。
      *
      * <p>巫毒窗口内，目标<b>受到的每一次伤害</b>（玩家、摔落、其它来源……都算）都会按本比例累加为
-     * 「存储伤害」。取的是护甲 / 抗性 / 吸收减免之后的<b>最终掉血值</b>
+     * 「窗口内伤害提取值」。取的是护甲 / 抗性 / 吸收减免之后的<b>最终掉血值</b>
      * （{@code LivingDamageEvent.Post#getNewDamage()}），避免被护甲干扰。
-     * 巫毒结算自身造成的伤害会被显式排除，不参与累积（防止自反馈）。</p>
+     * 巫毒结算自身造成的伤害会被显式排除，不参与提取（防止自反馈）。</p>
+     *
+     * <p>1.5 变更：旧键 {@code voodooStoreRatio}（默认 0.8）已被本键取代 ——
+     * 作者 2026-09-30 拍板新公式「字面运算顺序：先乘除、后加减」，
+     * 提取比例从 0.8 改为规格里的 <b>36%</b>。</p>
      */
-    public static final ModConfigSpec.DoubleValue VOODOO_STORE_RATIO = BUILDER
-            .comment("巫毒（voodoo）累积伤害模型的「存储比例」。",
-                    "公式：存储伤害 += 本次实际掉血值 × 本比例（窗口内每一次受到伤害都累加）。",
+    public static final ModConfigSpec.DoubleValue VOODOO_EXTRACT_RATIO = BUILDER
+            .comment("巫毒（voodoo）窗口内伤害的「提取比例」。",
+                    "公式：提取值 += 本次实际掉血值 × 本比例（窗口内每一次受到伤害都累加）。",
                     "实际掉血值 = 护甲 / 抗性 / 吸收减免之后的最终值（LivingDamageEvent.Post 的 newDamage）。",
-                    "巫毒结算自身造成的伤害不计入累积（显式排除，避免自反馈）。",
-                    "默认 0.8 = 受到伤害的 80% 被存储起来。")
-            .defineInRange("voodooStoreRatio", 0.8D, 0.0D, 100.0D);
+                    "巫毒结算自身造成的伤害不计入提取（显式排除，避免自反馈）。",
+                    "默认 0.36 = 提取窗口内伤害总量的 36%。",
+                    "1.5 起取代旧的 voodooStoreRatio（默认 0.8）。")
+            .defineInRange("voodooExtractRatio", 0.36D, 0.0D, 100.0D);
 
     /**
-     * 巫毒（voodoo）「累积伤害模型」的<b>每级释放比例</b>，默认 0.8（= 每级 +80% 存储伤害）。
+     * 巫毒的<b>每级固定伤害</b>，默认 1.0（= 1 级 1 点、2 级 2 点……）。
      *
-     * <p>效果<b>自然到期</b>（{@code MobEffectEvent.Expired}）时一次性结算：
-     * {@code 结算伤害 = 存储伤害 × (1 + 本比例 × 效果等级)}，其中 {@code 效果等级 = amplifier + 1}。</p>
+     * <p>作者 2026-09-30 拍板的最终公式（字面运算顺序：先乘除、后加减）：
+     * {@code 结算伤害 = 提取值 + 本系数 × 效果等级}，其中 {@code 效果等级 = amplifier + 1}。
+     * 默认即规格里的 {@code 伤害总量 × 36% + buff 等级}。</p>
      */
-    public static final ModConfigSpec.DoubleValue VOODOO_RELEASE_PER_LEVEL = BUILDER
-            .comment("巫毒（voodoo）累积伤害模型的「每级释放比例」。",
-                    "公式：结算伤害 = 存储伤害 × (1 + 本比例 × 效果等级)，效果等级 = amplifier + 1。",
-                    "默认 0.8：1 级 ×1.8、2 级 ×2.6、3 级 ×3.4 ……",
-                    "只在效果「自然到期」时结算一次；提前移除 / 目标死亡 / 更高等级替换 / 读档 都不结算，并清空存储。")
-            .defineInRange("voodooReleasePerLevel", 0.8D, 0.0D, 100.0D);
+    public static final ModConfigSpec.DoubleValue VOODOO_FLAT_PER_LEVEL = BUILDER
+            .comment("巫毒的「每级固定伤害」（公式里加在 36% 提取值后面的那一项）。",
+                    "公式：结算伤害 = 提取值 + 本系数 × 效果等级，效果等级 = amplifier + 1。",
+                    "默认 1.0：1 级 +1、2 级 +2、3 级 +3 …… 即规格里的「×36% + buff 等级」。",
+                    "注意（字面公式的必然结果）：窗口内一次伤害都没挨到时，结算仍为 等级 × 本系数 点。",
+                    "只在效果「自然到期」时结算一次；提前移除 / 目标死亡 / 实体离开世界 / 读档 都不结算，并清空提取值。")
+            .defineInRange("voodooFlatPerLevel", 1.0D, 0.0D, 100.0D);
 
     // ==================== 结雷金落雷音效机制 ====================
 

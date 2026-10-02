@@ -1,3 +1,5 @@
 {
-  "type": "bettergold:raw_sturdygold"
+  "type": "bettergold:raw_sturdygold",
+  "exchange": "bettergold:amethyst_energy_dust",
+  "result": "bettergold:raw_thundergold"
 }

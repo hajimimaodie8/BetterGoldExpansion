@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "mut"
+      }
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:illusiongold_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:golden_bow_blank"
+  },
+  "addition": {
+    "item": "bettergold:illusiongold_ingot"
+  },
+  "result": {
+    "id": "bettergold:illusiongold_bow",
+    "count": 1
+  }
+}

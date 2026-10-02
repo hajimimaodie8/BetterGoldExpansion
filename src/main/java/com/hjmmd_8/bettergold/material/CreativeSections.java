@@ -33,10 +33,12 @@ public final class CreativeSections {
      * 新金属往后加一行；未列出的金属排在最后。
      */
     public static final List<String> METAL_ORDER = List.of(
-            "flamegold",    // 烈燃金
-            "sturdygold",   // 万坚金
-            "voodoogold",   // 巫毒金
-            "thundergold"); // 结雷金
+            "flamegold",      // 烈燃金
+            "sturdygold",     // 万坚金
+            "indigoseagold",  // 靛海金（1.5，作者指定：在万坚金与巫毒金之间）
+            "voodoogold",     // 巫毒金
+            "thundergold",    // 结雷金
+            "illusiongold");  // 幻惑金（1.5）
 
     /** 分区种类（枚举顺序 = 显示顺序） */
     public enum Kind {
@@ -106,17 +108,35 @@ public final class CreativeSections {
             Map.entry("chain", 9),
             Map.entry("lantern", 10));
 
-    /** 金属装备区区内位次：剑斧镐锹锄 + 四件盔甲 */
+    /**
+     * 金属装备区区内位次：剑斧镐锹锄 + 1.5 的五类武器 + 四件盔甲。
+     *
+     * <p><b>作者定稿顺序（bg-15w 第 7 项，2026-10-02 裁定）</b>：
+     * <b>剑 斧 镐 锹 锄 重锤 三叉戟 弓 弩 盾牌 头盔 胸甲 护腿 靴子</b>。</p>
+     *
+     * <p>⚠ 上一版（1.5 武器轮第一版）是「五类武器接在盔甲之后、内部顺序 重锤 → 弓 → 弩 → 三叉戟 → 盾牌」，
+     * <b>该顺序已被作者推翻</b>（留档以便对照）：本轮改成「5 类新武器整体<b>前移</b>到盔甲之前」，
+     * 且内部顺序改为 <b>重锤 → 三叉戟 → 弓 → 弩 → 盾牌</b>
+     * （即三叉戟与弓 / 弩互换）。于是创造页「装备」分区里，每种金属固定是上面那 14 件连续排布。</p>
+     *
+     * <p>1.5 修正轮：五件「胚底」（{@code golden_<武器>_blank}）<b>不在</b>这张表里 ——
+     * 它们是合成材料，落在「材料」分区（见 {@code material.MetalBlanks}）。</p>
+     */
     private static final Map<String, Integer> GEAR_SLOT = Map.ofEntries(
             Map.entry("sword", 0),
             Map.entry("axe", 1),
             Map.entry("pickaxe", 2),
             Map.entry("shovel", 3),
             Map.entry("hoe", 4),
-            Map.entry("helmet", 5),
-            Map.entry("chestplate", 6),
-            Map.entry("leggings", 7),
-            Map.entry("boots", 8));
+            Map.entry("mace", 5),
+            Map.entry("trident", 6),
+            Map.entry("bow", 7),
+            Map.entry("crossbow", 8),
+            Map.entry("shield", 9),
+            Map.entry("helmet", 10),
+            Map.entry("chestplate", 11),
+            Map.entry("leggings", 12),
+            Map.entry("boots", 13));
 
     /**
      * 物品是不是「某套建材」的一员：是则返回它的类型位次（{@link #BUILDING_SLOT}），否则返回 {@code -1}。

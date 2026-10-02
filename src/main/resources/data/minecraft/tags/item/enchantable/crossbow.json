@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "bettergold:sturdygold_crossbow",
+    "bettergold:flamegold_crossbow",
+    "bettergold:voodoogold_crossbow",
+    "bettergold:thundergold_crossbow",
+    "bettergold:indigoseagold_crossbow",
+    "bettergold:illusiongold_crossbow"
+  ]
+}

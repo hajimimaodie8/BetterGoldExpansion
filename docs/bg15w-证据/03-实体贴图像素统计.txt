@@ -1,0 +1,14 @@
+﻿file | w x h | pixels | opaque | opaque%% | mean R,G,B(opaque) | maxAlpha | opaquePureBlack | uniqueColors | sha256[:16]
+shield_flamegold.png | 64x64 | 4096 | 716 | 17.48% | 182.63,113.99,33.31 | 255 | 32 | 20 | d985da5181fa1cf4
+shield_illusiongold.png | 64x64 | 4096 | 716 | 17.48% | 204.35,132.27,144.98 | 255 | 32 | 18 | 7f46503fac92d9ee
+shield_indigoseagold.png | 64x64 | 4096 | 716 | 17.48% | 84.78,111.56,139.3 | 255 | 32 | 17 | 8482b9e81f3d3da3
+shield_sturdygold.png | 64x64 | 4096 | 716 | 17.48% | 180.6,117.86,24.24 | 255 | 32 | 11 | fcce054ea93303bc
+shield_thundergold.png | 64x64 | 4096 | 716 | 17.48% | 157.36,100.7,133.3 | 255 | 32 | 17 | c86e6d7117cc1095
+shield_voodoogold.png | 64x64 | 4096 | 716 | 17.48% | 120.07,103.27,137.48 | 255 | 32 | 18 | f3cc390e2415062c
+trident_flamegold.png | 32x32 | 1024 | 209 | 20.41% | 174.8,103.55,24.53 | 255 | 0 | 10 | 82ae6211c43a541a
+trident_illusiongold.png | 32x32 | 1024 | 209 | 20.41% | 194.91,121.57,134.3 | 255 | 0 | 10 | e7a99fcad5108f63
+trident_indigoseagold.png | 32x32 | 1024 | 209 | 20.41% | 78.32,103.1,132.3 | 255 | 0 | 10 | 4f300968016ecd9d
+trident_sturdygold.png | 32x32 | 1024 | 209 | 20.41% | 167.94,106.15,21.42 | 255 | 0 | 10 | be917f48f7d48073
+trident_thundergold.png | 32x32 | 1024 | 209 | 20.41% | 151.02,92.31,125.0 | 255 | 0 | 10 | 913d3aa4849236fb
+trident_voodoogold.png | 32x32 | 1024 | 209 | 20.41% | 114.35,94.44,129.5 | 255 | 0 | 10 | c26065448b2882a1
+totalFiles=12  anyFullyTransparent=False  anyFullyBlack=False

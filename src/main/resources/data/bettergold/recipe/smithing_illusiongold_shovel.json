@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bettergold:illusiongold_upgrade_template" },
+  "base": { "item": "minecraft:golden_shovel" },
+  "addition": { "item": "bettergold:illusiongold_ingot" },
+  "result": { "id": "bettergold:illusiongold_shovel", "count": 1 }
+}

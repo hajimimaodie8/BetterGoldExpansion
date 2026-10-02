@@ -1,3 +1,5 @@
 {
-  "type": "bettergold:raw_sturdygold"
+  "type": "bettergold:raw_sturdygold",
+  "exchange": "bettergold:voodoo_feather",
+  "result": "bettergold:raw_voodoogold"
 }

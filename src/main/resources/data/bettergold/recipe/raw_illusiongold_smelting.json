@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": { "item": "bettergold:raw_illusiongold" },
+  "result": { "id": "bettergold:illusiongold_ingot" },
+  "experience": 1.0,
+  "cookingtime": 200
+}

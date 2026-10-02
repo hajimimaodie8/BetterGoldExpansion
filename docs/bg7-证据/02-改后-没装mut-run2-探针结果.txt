@@ -1,0 +1,180 @@
+# bg-15w 续工轮临时探针结果（runClient + 整合服务端 + 真实玩家）
+# mut loaded = false
+INFO client_tick_alive :: clientClock=1 level=null player=null
+INFO opening_probe_world :: bg7probe（作者世界副本）
+INFO real_server_player_present :: Dev uuid=380df991-f603-344c-a090-369bad2a924a
+INFO plan_start :: difficulty=PEACEFUL gameMode=CREATIVE kbInstancePresent=true
+INFO player_tick_post_sample_1 :: serverTick=0 main=bettergold:indigoseagold_trident
+INFO player_tick_post_sample_2 :: serverTick=1 main=minecraft:air
+INFO shield_kb_same_tick_after_equip :: value=0.0000 modifiers=[] main=bettergold:sturdygold_shield off=minecraft:air
+PASS shield_knockback_main_hand :: value=0.1000 modifiers=[bettergold:shield_knockback_resistance] main=bettergold:sturdygold_shield off=minecraft:air
+INFO kb_main_client :: client value=0.0000 ids=[] main=bettergold:sturdygold_shield off=minecraft:air
+FAIL kb_main_client_synced_to_client :: expect=0.1 got=0.0000 hasOurs=false
+PASS shield_knockback_off_hand :: value=0.1000 modifiers=[bettergold:shield_knockback_resistance] main=minecraft:air off=bettergold:sturdygold_shield
+INFO kb_off_client :: client value=0.0000 ids=[] main=minecraft:air off=bettergold:sturdygold_shield
+FAIL kb_off_client_synced_to_client :: expect=0.1 got=0.0000 hasOurs=false
+PASS shield_knockback_both_hands_still_10pct :: value=0.1000 modifiers=[bettergold:shield_knockback_resistance] main=bettergold:sturdygold_shield off=bettergold:sturdygold_shield
+PASS shield_kb_modifier_single_id :: our modifier count on instance = 1
+INFO kb_both_client :: client value=0.0000 ids=[] main=bettergold:sturdygold_shield off=bettergold:sturdygold_shield
+FAIL kb_both_client_synced_to_client :: expect=0.1 got=0.0000 hasOurs=false
+PASS shield_knockback_removed_when_no_shield :: value=0.0000 modifiers=[] main=minecraft:air off=minecraft:air
+INFO kb_none_client :: client value=0.0000 ids=[] main=minecraft:air off=minecraft:air
+PASS kb_none_client_synced_to_client :: expect=0.0 got=0.0000 hasOurs=false
+INFO knockback_delta_no_shield :: |dx|=0.4000 (裸值 0.4)
+INFO knockback_delta_with_shield :: |dx|=0.3600 (期望 0.4 x 0.9 = 0.36)
+PASS knockback_ratio_is_0p9_with_shield :: ratio=0.9000 noShield=0.4000 withShield=0.3600
+INFO shield_is_special_sturdygold :: isSpecialMetal=false
+PASS shield_break_setup_sturdygold :: canDisableShield=true useItem=bettergold:sturdygold_shield
+INFO shield_break_cooldown_right_after_disable_sturdygold :: isOnCooldown=true
+PASS shield_break_immune_sturdygold :: shield=bettergold:sturdygold_shield isOnCooldown=false (原版破盾 = 100 tick 冷却，免疫 = 被抹掉)
+INFO shield_is_special_flamegold :: isSpecialMetal=true
+PASS shield_break_setup_flamegold :: canDisableShield=true useItem=bettergold:flamegold_shield
+INFO shield_break_cooldown_right_after_disable_flamegold :: isOnCooldown=true
+PASS shield_break_immune_flamegold :: shield=bettergold:flamegold_shield isOnCooldown=false (原版破盾 = 100 tick 冷却，免疫 = 被抹掉)
+INFO shield_is_special_voodoogold :: isSpecialMetal=true
+PASS shield_break_setup_voodoogold :: canDisableShield=true useItem=bettergold:voodoogold_shield
+INFO shield_break_cooldown_right_after_disable_voodoogold :: isOnCooldown=true
+PASS shield_break_immune_voodoogold :: shield=bettergold:voodoogold_shield isOnCooldown=false (原版破盾 = 100 tick 冷却，免疫 = 被抹掉)
+INFO shield_is_special_thundergold :: isSpecialMetal=true
+PASS shield_break_setup_thundergold :: canDisableShield=true useItem=bettergold:thundergold_shield
+INFO shield_break_cooldown_right_after_disable_thundergold :: isOnCooldown=true
+PASS shield_break_immune_thundergold :: shield=bettergold:thundergold_shield isOnCooldown=false (原版破盾 = 100 tick 冷却，免疫 = 被抹掉)
+INFO shield_is_special_indigoseagold :: isSpecialMetal=true
+PASS shield_break_setup_indigoseagold :: canDisableShield=true useItem=bettergold:indigoseagold_shield
+INFO shield_break_cooldown_right_after_disable_indigoseagold :: isOnCooldown=true
+PASS shield_break_immune_indigoseagold :: shield=bettergold:indigoseagold_shield isOnCooldown=false (原版破盾 = 100 tick 冷却，免疫 = 被抹掉)
+INFO shield_is_special_illusiongold :: isSpecialMetal=true
+PASS shield_break_setup_illusiongold :: canDisableShield=true useItem=bettergold:illusiongold_shield
+INFO shield_break_cooldown_right_after_disable_illusiongold :: isOnCooldown=true
+PASS shield_break_immune_illusiongold :: shield=bettergold:illusiongold_shield isOnCooldown=false (原版破盾 = 100 tick 冷却，免疫 = 被抹掉)
+INFO mut_loaded :: false
+INFO recipe_total :: 1920
+INFO mut_golden_mace_item :: <absent>
+PASS recipe_blank_crafting_present_without_mut_mace :: present=true
+PASS recipe_blank_crafting_present_without_mut_bow :: present=true
+PASS recipe_blank_crafting_present_without_mut_crossbow :: present=true
+PASS recipe_blank_crafting_present_without_mut_trident :: present=true
+PASS recipe_blank_crafting_present_without_mut_shield :: present=true
+INFO blank_crafting_present_count :: 5/5
+PASS recipe_smithing_blank_present_without_mut_sturdygold_mace :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_sturdygold_mace :: present=false
+PASS recipe_smithing_blank_present_without_mut_sturdygold_bow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_sturdygold_bow :: present=false
+PASS recipe_smithing_blank_present_without_mut_sturdygold_crossbow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_sturdygold_crossbow :: present=false
+PASS recipe_smithing_blank_present_without_mut_sturdygold_trident :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_sturdygold_trident :: present=false
+PASS recipe_smithing_blank_present_without_mut_sturdygold_shield :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_sturdygold_shield :: present=false
+PASS recipe_smithing_blank_present_without_mut_flamegold_mace :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_flamegold_mace :: present=false
+PASS recipe_smithing_blank_present_without_mut_flamegold_bow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_flamegold_bow :: present=false
+PASS recipe_smithing_blank_present_without_mut_flamegold_crossbow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_flamegold_crossbow :: present=false
+PASS recipe_smithing_blank_present_without_mut_flamegold_trident :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_flamegold_trident :: present=false
+PASS recipe_smithing_blank_present_without_mut_flamegold_shield :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_flamegold_shield :: present=false
+PASS recipe_smithing_blank_present_without_mut_voodoogold_mace :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_voodoogold_mace :: present=false
+PASS recipe_smithing_blank_present_without_mut_voodoogold_bow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_voodoogold_bow :: present=false
+PASS recipe_smithing_blank_present_without_mut_voodoogold_crossbow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_voodoogold_crossbow :: present=false
+PASS recipe_smithing_blank_present_without_mut_voodoogold_trident :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_voodoogold_trident :: present=false
+PASS recipe_smithing_blank_present_without_mut_voodoogold_shield :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_voodoogold_shield :: present=false
+PASS recipe_smithing_blank_present_without_mut_thundergold_mace :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_thundergold_mace :: present=false
+PASS recipe_smithing_blank_present_without_mut_thundergold_bow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_thundergold_bow :: present=false
+PASS recipe_smithing_blank_present_without_mut_thundergold_crossbow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_thundergold_crossbow :: present=false
+PASS recipe_smithing_blank_present_without_mut_thundergold_trident :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_thundergold_trident :: present=false
+PASS recipe_smithing_blank_present_without_mut_thundergold_shield :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_thundergold_shield :: present=false
+PASS recipe_smithing_blank_present_without_mut_indigoseagold_mace :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_indigoseagold_mace :: present=false
+PASS recipe_smithing_blank_present_without_mut_indigoseagold_bow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_indigoseagold_bow :: present=false
+PASS recipe_smithing_blank_present_without_mut_indigoseagold_crossbow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_indigoseagold_crossbow :: present=false
+PASS recipe_smithing_blank_present_without_mut_indigoseagold_trident :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_indigoseagold_trident :: present=false
+PASS recipe_smithing_blank_present_without_mut_indigoseagold_shield :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_indigoseagold_shield :: present=false
+PASS recipe_smithing_blank_present_without_mut_illusiongold_mace :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_illusiongold_mace :: present=false
+PASS recipe_smithing_blank_present_without_mut_illusiongold_bow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_illusiongold_bow :: present=false
+PASS recipe_smithing_blank_present_without_mut_illusiongold_crossbow :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_illusiongold_crossbow :: present=false
+PASS recipe_smithing_blank_present_without_mut_illusiongold_trident :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_illusiongold_trident :: present=false
+PASS recipe_smithing_blank_present_without_mut_illusiongold_shield :: present=true baseIsBlank=true
+PASS recipe_smithing_mut_absent_without_mut_illusiongold_shield :: present=false
+INFO blank_smithing_present_count :: 30/30
+INFO mut_smithing_present_count :: 0/30
+INFO indigo_helmet_tooltip_raw :: [empty[style={color=white}, siblings=[translation{key='item.bettergold.indigoseagold_helmet', args=[]}]], empty, translation{key='item.modifiers.head', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.flat', args=[5]}, translation{key='attribute.name.generic.armor', args=[]}]}[style={color=blue}, siblings=[empty]], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.flat', args=[6]}, translation{key='attribute.name.generic.armor_toughness', args=[]}]}[style={color=blue}, siblings=[empty]], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[15]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]], translation{key='tooltip.bettergold.water_movement_efficiency', args=[]}]
+PASS tooltip_white_line_removed :: has tooltip.bettergold.swim_speed_per_piece = false
+PASS tooltip_attribute_line_shows_25pct :: newKey=true flatAttrLineStillThere=false renderedHas25pct=true
+PASS tooltip_other_metal_unaffected :: sturdygold helmet has water line = false
+INFO shield_tooltip_raw_flamegold :: [empty[style={color=white}, siblings=[translation{key='item.bettergold.flamegold_shield', args=[]}]], empty, translation{key='item.modifiers.mainhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]], empty, translation{key='item.modifiers.offhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]]]
+PASS shield_tooltip_shows_knockback_flamegold :: lines=7 hasKnockbackLine=true
+INFO shield_tooltip_raw_voodoogold :: [empty[style={color=white}, siblings=[translation{key='item.bettergold.voodoogold_shield', args=[]}]], empty, translation{key='item.modifiers.mainhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]], empty, translation{key='item.modifiers.offhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]]]
+PASS shield_tooltip_shows_knockback_voodoogold :: lines=7 hasKnockbackLine=true
+INFO shield_tooltip_raw_thundergold :: [empty[style={color=white}, siblings=[translation{key='item.bettergold.thundergold_shield', args=[]}]], empty, translation{key='item.modifiers.mainhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]], empty, translation{key='item.modifiers.offhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]]]
+PASS shield_tooltip_shows_knockback_thundergold :: lines=7 hasKnockbackLine=true
+INFO shield_tooltip_raw_indigoseagold :: [empty[style={color=white}, siblings=[translation{key='item.bettergold.indigoseagold_shield', args=[]}]], empty, translation{key='item.modifiers.mainhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]], empty, translation{key='item.modifiers.offhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]]]
+PASS shield_tooltip_shows_knockback_indigoseagold :: lines=7 hasKnockbackLine=true
+INFO shield_tooltip_raw_illusiongold :: [empty[style={color=white}, siblings=[translation{key='item.bettergold.illusiongold_shield', args=[]}]], empty, translation{key='item.modifiers.mainhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]], empty, translation{key='item.modifiers.offhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]]]
+PASS shield_tooltip_shows_knockback_illusiongold :: lines=7 hasKnockbackLine=true
+INFO shield_tooltip_raw_sturdygold :: [empty[style={color=white}, siblings=[translation{key='item.bettergold.sturdygold_shield', args=[]}]], empty, translation{key='item.modifiers.mainhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]], empty, translation{key='item.modifiers.offhand', args=[]}[style={color=gray}], translation{key='neoforge.modifier.plus', args=[translation{key='neoforge.value.percent', args=[10]}, translation{key='attribute.name.generic.knockback_resistance', args=[]}]}[style={color=blue}, siblings=[empty]]]
+PASS shield_tooltip_shows_knockback_sturdygold :: lines=7 hasKnockbackLine=true
+INFO entitytick_post_samples :: 166 samples; playerTickPost=166
+INFO entitytick_post_sample_0 :: serverTick=0 main=bettergold:indigoseagold_trident value=0.0000 ids=[]
+INFO entitytick_post_sample_1 :: serverTick=1 main=minecraft:air value=0.0000 ids=[]
+INFO entitytick_post_sample_2 :: serverTick=2 main=bettergold:sturdygold_shield value=0.0000 ids=[]
+INFO entitytick_post_sample_3 :: serverTick=3 main=bettergold:sturdygold_shield value=0.1000 ids=[bettergold:shield_knockback_resistance]
+INFO entitytick_post_sample_4 :: serverTick=4 main=bettergold:sturdygold_shield value=0.1000 ids=[bettergold:shield_knockback_resistance]
+INFO entitytick_post_sample_5 :: serverTick=5 main=bettergold:sturdygold_shield value=0.1000 ids=[bettergold:shield_knockback_resistance]
+INFO entitytick_post_sample_6 :: serverTick=6 main=bettergold:sturdygold_shield value=0.1000 ids=[bettergold:shield_knockback_resistance]
+INFO entitytick_post_sample_7 :: serverTick=7 main=bettergold:sturdygold_shield value=0.1000 ids=[bettergold:shield_knockback_resistance]
+INFO vanilla_trident_hand_model :: class=BuiltInModel custom=true | flagContext=FLAT
+PASS vanilla_trident_hand_is_custom_renderer :: class=BuiltInModel
+PASS trident_inhand_model_loaded_flamegold :: class=BuiltInModel isMissing=false
+PASS trident_throwing_model_loaded_flamegold :: class=BuiltInModel isMissing=false
+PASS trident_in_hand_uses_custom_renderer_flamegold :: ours=BuiltInModel custom=true | vanilla custom=true
+PASS trident_gui_icon_is_flat_flamegold :: icon=SimpleBakedModel custom=false isMissing=false
+PASS trident_flag_context_model_is_flat_flamegold :: flagContext(GUI/GROUND/FIXED)=FLAT | vanilla=FLAT
+PASS trident_inhand_model_loaded_voodoogold :: class=BuiltInModel isMissing=false
+PASS trident_throwing_model_loaded_voodoogold :: class=BuiltInModel isMissing=false
+PASS trident_in_hand_uses_custom_renderer_voodoogold :: ours=BuiltInModel custom=true | vanilla custom=true
+PASS trident_gui_icon_is_flat_voodoogold :: icon=SimpleBakedModel custom=false isMissing=false
+PASS trident_flag_context_model_is_flat_voodoogold :: flagContext(GUI/GROUND/FIXED)=FLAT | vanilla=FLAT
+PASS trident_inhand_model_loaded_thundergold :: class=BuiltInModel isMissing=false
+PASS trident_throwing_model_loaded_thundergold :: class=BuiltInModel isMissing=false
+PASS trident_in_hand_uses_custom_renderer_thundergold :: ours=BuiltInModel custom=true | vanilla custom=true
+PASS trident_gui_icon_is_flat_thundergold :: icon=SimpleBakedModel custom=false isMissing=false
+PASS trident_flag_context_model_is_flat_thundergold :: flagContext(GUI/GROUND/FIXED)=FLAT | vanilla=FLAT
+PASS trident_inhand_model_loaded_indigoseagold :: class=BuiltInModel isMissing=false
+PASS trident_throwing_model_loaded_indigoseagold :: class=BuiltInModel isMissing=false
+PASS trident_in_hand_uses_custom_renderer_indigoseagold :: ours=BuiltInModel custom=true | vanilla custom=true
+PASS trident_gui_icon_is_flat_indigoseagold :: icon=SimpleBakedModel custom=false isMissing=false
+PASS trident_flag_context_model_is_flat_indigoseagold :: flagContext(GUI/GROUND/FIXED)=FLAT | vanilla=FLAT
+PASS trident_inhand_model_loaded_illusiongold :: class=BuiltInModel isMissing=false
+PASS trident_throwing_model_loaded_illusiongold :: class=BuiltInModel isMissing=false
+PASS trident_in_hand_uses_custom_renderer_illusiongold :: ours=BuiltInModel custom=true | vanilla custom=true
+PASS trident_gui_icon_is_flat_illusiongold :: icon=SimpleBakedModel custom=false isMissing=false
+PASS trident_flag_context_model_is_flat_illusiongold :: flagContext(GUI/GROUND/FIXED)=FLAT | vanilla=FLAT
+PASS trident_inhand_model_loaded_sturdygold :: class=BuiltInModel isMissing=false
+PASS trident_throwing_model_loaded_sturdygold :: class=BuiltInModel isMissing=false
+PASS trident_in_hand_uses_custom_renderer_sturdygold :: ours=BuiltInModel custom=true | vanilla custom=true
+PASS trident_gui_icon_is_flat_sturdygold :: icon=SimpleBakedModel custom=false isMissing=false
+PASS trident_flag_context_model_is_flat_sturdygold :: flagContext(GUI/GROUND/FIXED)=FLAT | vanilla=FLAT
+INFO probe_finished :: clientClock=272 serverClock=177
+PASS player_tick_post_fires_for_real_player :: count=177
+PASS entity_tick_post_fires_for_real_player :: count=177

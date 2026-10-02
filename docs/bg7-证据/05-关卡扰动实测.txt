@@ -1,0 +1,9 @@
+OK    baseline validate_metal_assets                 exit=0
+OK    baseline validate_metal_data                   exit=0
+OK    A 三叉戟 in_hand 丢掉 throwing override             exit=1 期望子串命中=True  (的 overrides 不是)
+OK    B mixins 配置行改回注释态                              exit=1 期望子串命中=True  (仍是注释态)
+OK    C mixins.json 少写一个 mixin 类                     exit=1 期望子串命中=True  (client 列表里没有)
+OK    D 胚底工作台配方丢条件(无条件可见)                            exit=1 期望子串命中=True  (的条件不是 not(mod_loaded(mut)))
+OK    E MUT 配方丢 mod_loaded 条件                        exit=1 期望子串命中=True  (缺 neoforge:mod_loaded:mut 条件)
+OK    F 以胚底为 base 的锻造配方被改成 mut 版                     exit=1 期望子串命中=True  (的 base 不是 bettergold:golden_mace_blank)
+OK    G 旧白字行语言键被加回来                                  exit=1 期望子串命中=True  (仍在（作者要求整块删除）)
