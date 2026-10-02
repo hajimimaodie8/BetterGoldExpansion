@@ -3,10 +3,12 @@
 """校验：MetalFamily 会注册出来的每个物品/方块，在 zh_cn / en_us 里是否都有语言条目。"""
 from __future__ import annotations
 import json
+import re
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+JAVA = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold"
 LANG = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
 
 METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]
@@ -213,5 +215,127 @@ for p in RECIPE_DIR.glob("*.json"):
 
 print(f"bg-15w 续工轮（tooltip 键 + 双向条件配方 + 胚底条件可见）问题: {len(bg15w_problems)} {bg15w_problems[:8]}")
 
+# ==================== bg-15w §八 追加轮②（17:44）：装备顺序 + 水中游泳速度 ====================
+# 这两类的失败方式也都是静默的：
+#   ① §8.1 装备分区顺序 —— 表在 `CreativeSections.GEAR_SLOT`，**一表两用**（既定顺序、又判
+#      「是不是金属装备」）。作者两次报「顺序变回去了」而代码是对的 ⇒ 顺序本身就是验收项；
+#      并且**斧镐锹锄不许从表里删掉**（删了它们连槽位都进不去 = 静默掉出装备分区）。
+#   ② §8.3 水中游泳速度 —— 修饰符**只能一个 id**（多个 id = 双倍；同一件多挂 = 只算一件），
+#      且**不许**塞进 `getDefaultAttributeModifiers()`（那会变成陆地也加速）。
+bg8_problems = []
+
+# --- ① 装备分区顺序（作者 17:44 字面：剑 重锤 三叉戟 弓 弩 盾牌 头胸腿靴，斧镐锹锄排最后） ---
+GEAR_SLOT_EXPECTED = ["sword", "mace", "trident", "bow", "crossbow", "shield",
+                       "helmet", "chestplate", "leggings", "boots",
+                       "axe", "pickaxe", "shovel", "hoe"]
+# 作者列表里**没有**的四件：必须仍在表里（§8.1 的保守做法），只是位次最后
+OMITTED_BUT_KEPT = ["axe", "pickaxe", "shovel", "hoe"]
+
+creative = (JAVA / "material" / "CreativeSections.java").read_text(encoding="utf-8")
+g_start = creative.find("GEAR_SLOT = Map.ofEntries(")
+g_end = creative.find(");", g_start) if g_start >= 0 else -1
+if g_start < 0 or g_end < 0:
+    bg8_problems.append("CreativeSections.java 里找不到 GEAR_SLOT = Map.ofEntries(...)（反空转守护）")
+    gear_pairs = []
+else:
+    gear_pairs = re.findall(r'Map\.entry\("([a-z_]+)",\s*(\d+)\)', creative[g_start:g_end])
+if len(gear_pairs) != len(GEAR_SLOT_EXPECTED):
+    bg8_problems.append(f"GEAR_SLOT 条目数 {len(gear_pairs)} != {len(GEAR_SLOT_EXPECTED)}（反空转守护 / 表被动过）")
+else:
+    gear = {name: int(rank) for name, rank in gear_pairs}
+    by_rank = [name for name, _ in sorted(gear.items(), key=lambda kv: kv[1])]
+    if by_rank != GEAR_SLOT_EXPECTED:
+        bg8_problems.append(f"GEAR_SLOT 顺序不是作者字面：{by_rank}")
+    if sorted(gear.values()) != list(range(len(GEAR_SLOT_EXPECTED))):
+        bg8_problems.append(f"GEAR_SLOT 位次不是 0..{len(GEAR_SLOT_EXPECTED) - 1} 各一次：{sorted(gear.values())}")
+    for item in OMITTED_BUT_KEPT:
+        if item not in gear:
+            bg8_problems.append(
+                f"GEAR_SLOT 里少了 {item} —— 作者列表没提它不等于要删（删了它会静默掉出装备分区）")
+    # 那四件必须排在被描述的那 10 件之后
+    described_max = max(gear[n] for n in GEAR_SLOT_EXPECTED[:10] if n in gear)
+    for item in OMITTED_BUT_KEPT:
+        if item in gear and gear[item] <= described_max:
+            bg8_problems.append(f"{item} 的位次 {gear[item]} 不在那 10 件之后（期望 > {described_max}）")
+print(f"装备分区顺序（§8.1）问题: {len(bg8_problems)} {bg8_problems[:8]}")
+
+# --- ② 水中游泳速度（§8.3）：一个 id、MOVEMENT_SPEED + ADD_MULTIPLIED_TOTAL、值与件数挂钩 ---
+swim_problems = []
+metal_events = (JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8")
+metal_family = (JAVA / "material" / "MetalFamily.java").read_text(encoding="utf-8")
+
+# 反空转守护：id 字面量必须**恰好出现一次**（多一个 id = 同一个效果挂两份 = 双倍）
+id_literal = '"swim_speed_water"'
+id_hits = sum(f.read_text(encoding="utf-8").count(id_literal)
+              for f in (REPO / "src" / "main" / "java").rglob("*.java"))
+if id_hits != 1:
+    swim_problems.append(f"{id_literal} 在 src/main/java 里出现 {id_hits} 次（必须恰好 1 次：只许一个修饰符 id）")
+
+if "SWIM_SPEED_WATER_PER_PIECE = 0.25F" not in metal_events:
+    swim_problems.append("MetalEvents 里 SWIM_SPEED_WATER_PER_PIECE 不是 0.25F（每件 +25% 的值被改过）")
+
+# 处理器方法体：截出 onSwimSpeedTick 到下一个顶层方法结束（按花括号配平）
+def strip_comments(source: str) -> str:
+    """去掉块注释与行注释 —— 判据必须在**代码**上成立。
+
+    ⚠ 本关卡自己的教训（`mcmod_experience` §3.4）：注释里提到被禁的写法会让断言**假绿**。
+    本轮实测：把 `Operation.ADD_MULTIPLIED_TOTAL` 扰动成 `ADD_VALUE` 后关卡仍然 `exit 0`，
+    因为方法体里那句内联注释还写着「必须 ADD_MULTIPLIED_TOTAL」。去注释后才会真红。
+    """
+    source = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+    source = re.sub(r"//[^\n]*", "", source)
+    return source
+
+
+def method_body(source: str, signature: str) -> str:
+    i = source.find(signature)
+    if i < 0:
+        return ""
+    j = source.find("{", i)
+    if j < 0:
+        return ""
+    depth = 0
+    for k in range(j, len(source)):
+        if source[k] == "{":
+            depth += 1
+        elif source[k] == "}":
+            depth -= 1
+            if depth == 0:
+                return strip_comments(source[j:k + 1])
+    return ""
+
+body = method_body(metal_events, "public static void onSwimSpeedTick(")
+if not body:
+    swim_problems.append("MetalEvents 里找不到 onSwimSpeedTick 方法体（反空转守护）")
+else:
+    for needle, why in [
+        ("Attributes.MOVEMENT_SPEED", "用的是 MOVEMENT_SPEED 属性"),
+        ("ADD_MULTIPLIED_TOTAL", "必须用 ADD_MULTIPLIED_TOTAL（ADD_VALUE 会变成 +0.25 点 = ×3.5）"),
+        ("entity.isInWater()", "必须只在 isInWater() 时生效"),
+        ("SWIM_SPEED_WATER_ID", "必须用那个唯一 id"),
+        ("removeModifier(SWIM_SPEED_WATER_ID)", "必须先无条件移除（出水/脱甲/死亡都要回到原速度）"),
+        ("SWIM_SPEED_WATER_PER_PIECE", "值必须来自 0.25 × 件数"),
+        ("Math.min(pieces, 4)", "件数必须钳在 0..4"),
+    ]:
+        if needle not in body:
+            swim_problems.append(f"onSwimSpeedTick 缺「{needle}」（{why}）")
+
+# ★ 负向断言（§8.3 最容易写歪的地方）：常驻属性表里**不许**出现 MOVEMENT_SPEED
+armor_body = method_body(metal_family, "public ItemAttributeModifiers getDefaultAttributeModifiers()")
+if not armor_body:
+    swim_problems.append("MetalFamily 里找不到 getDefaultAttributeModifiers 方法体（反空转守护）")
+else:
+    if "MOVEMENT_SPEED" in armor_body:
+        swim_problems.append("getDefaultAttributeModifiers 里出现了 MOVEMENT_SPEED（会变成陆地也加速）")
+    if "WATER_MOVEMENT_EFFICIENCY" not in armor_body:
+        swim_problems.append("getDefaultAttributeModifiers 里没有 WATER_MOVEMENT_EFFICIENCY（浅水那条被删了？）")
+    # 既有那条的四部位 id 一个字都不许动（1.5 修正⑤ 修过的 bug）
+    if '"swim_speed_" + this.getType().getName()' not in armor_body:
+        swim_problems.append("四部位各自的 id swim_speed_<部位> 不见了（1.5 修正⑤ 修过的 bug 被回退）")
+
+bg8_problems.extend(swim_problems)
+print(f"水中游泳速度（§8.3）问题: {len(swim_problems)} {swim_problems[:8]}")
+print(f"bg-15w §八 追加轮② 问题合计: {len(bg8_problems)} {bg8_problems[:8]}")
+
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
-               or bg15w_problems) else 0)
+               or bg15w_problems or bg8_problems) else 0)

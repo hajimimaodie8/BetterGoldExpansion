@@ -1,0 +1,8 @@
+OK    baseline validate_metal_data                 exit=0
+OK    A GEAR_SLOT mace/axe ranks swapped back              exit=1 expect_hit=True (GEAR_SLOT)
+OK    B GEAR_SLOT hoe dropped (renamed to shears)          exit=1 expect_hit=True (GEAR_SLOT)
+OK    C swim id literal duplicated (two ids = double)      exit=1 expect_hit=True (2)
+OK    D ADD_MULTIPLIED_TOTAL reverted to ADD_VALUE         exit=1 expect_hit=True (ADD_MULTIPLIED_TOTAL)
+OK    E MOVEMENT_SPEED added into getDefaultAttributeModifiers exit=1 expect_hit=True (getDefaultAttributeModifiers)
+OK    F SWIM_SPEED_WATER_PER_PIECE 0.25F -> 0.5F           exit=1 expect_hit=True (0.25F)
+OK    baseline after restore validate_metal_data   exit=0

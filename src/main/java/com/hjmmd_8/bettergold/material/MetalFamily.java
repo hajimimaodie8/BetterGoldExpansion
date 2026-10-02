@@ -123,6 +123,13 @@ public final class MetalFamily {
     /**
      * 靛海金盔甲每件提供的游泳速度（{@link net.minecraft.world.entity.ai.attributes.Attributes#WATER_MOVEMENT_EFFICIENCY}）：
      * 25% = 0.25，四件叠加正好 1.0（该属性是 {@code RangedAttribute(0.0, 0.0, 1.0)}，上限就是 1.0）。
+     *
+     * <p>⚠ <b>这一个值只管「浅水 / 贴水面移动效率」那一半</b>（原版 Depth Strider 那条）。
+     * bg-15w §8.3 之后还有<b>第二条</b>加成 —— 真正的水中游泳速度，它<b>不在这里</b>：
+     * 那条是运行期条件修饰符（水中才挂，{@code MOVEMENT_SPEED + ADD_MULTIPLIED_TOTAL}，
+     * 值 = {@code MetalEvents.SWIM_SPEED_WATER_PER_PIECE × 件数}，一个 id
+     * {@code bettergold:swim_speed_water}），见 {@code MetalEvents#onSwimSpeedTick}。
+     * 两条并存；这个常量与四个 {@code swim_speed_<部位>} 的 id 一个字都没动。</p>
      */
     public static final float SWIM_SPEED_PER_PIECE = 0.25F;
 

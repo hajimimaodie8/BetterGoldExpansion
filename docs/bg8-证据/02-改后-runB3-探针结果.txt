@@ -1,0 +1,205 @@
+# bg-15w §八 追加轮② 临时探针结果（runClient + 整合服务端 + 真实玩家）
+# gear order + trim evidence + swim speed (real LocalPlayer, real key input)
+INFO opening_probe_world :: bg8probe（作者存档的副本）
+INFO pool_built :: arena=48 origin=48,-48 waterY=200 landY=220
+INFO creative_page_raw_size :: items=357
+INFO creative_page_flat_size :: nonEmpty=293 paddingEmpty=64
+PASS gear_order_flamegold :: actual=[flamegold_sword, flamegold_mace, flamegold_trident, flamegold_bow, flamegold_crossbow, flamegold_shield, flamegold_helmet, flamegold_chestplate, flamegold_leggings, flamegold_boots, flamegold_axe, flamegold_pickaxe, flamegold_shovel, flamegold_hoe]
+PASS gear_contiguous_count_flamegold :: want=14 got=14
+PASS gear_order_sturdygold :: actual=[sturdygold_sword, sturdygold_mace, sturdygold_trident, sturdygold_bow, sturdygold_crossbow, sturdygold_shield, sturdygold_helmet, sturdygold_chestplate, sturdygold_leggings, sturdygold_boots, sturdygold_axe, sturdygold_pickaxe, sturdygold_shovel, sturdygold_hoe]
+PASS gear_contiguous_count_sturdygold :: want=14 got=14
+PASS gear_order_indigoseagold :: actual=[indigoseagold_sword, indigoseagold_mace, indigoseagold_trident, indigoseagold_bow, indigoseagold_crossbow, indigoseagold_shield, indigoseagold_helmet, indigoseagold_chestplate, indigoseagold_leggings, indigoseagold_boots, indigoseagold_axe, indigoseagold_pickaxe, indigoseagold_shovel, indigoseagold_hoe]
+PASS gear_contiguous_count_indigoseagold :: want=14 got=14
+PASS gear_order_voodoogold :: actual=[voodoogold_sword, voodoogold_mace, voodoogold_trident, voodoogold_bow, voodoogold_crossbow, voodoogold_shield, voodoogold_helmet, voodoogold_chestplate, voodoogold_leggings, voodoogold_boots, voodoogold_axe, voodoogold_pickaxe, voodoogold_shovel, voodoogold_hoe]
+PASS gear_contiguous_count_voodoogold :: want=14 got=14
+PASS gear_order_thundergold :: actual=[thundergold_sword, thundergold_mace, thundergold_trident, thundergold_bow, thundergold_crossbow, thundergold_shield, thundergold_helmet, thundergold_chestplate, thundergold_leggings, thundergold_boots, thundergold_axe, thundergold_pickaxe, thundergold_shovel, thundergold_hoe]
+PASS gear_contiguous_count_thundergold :: want=14 got=14
+PASS gear_order_illusiongold :: actual=[illusiongold_sword, illusiongold_mace, illusiongold_trident, illusiongold_bow, illusiongold_crossbow, illusiongold_shield, illusiongold_helmet, illusiongold_chestplate, illusiongold_leggings, illusiongold_boots, illusiongold_axe, illusiongold_pickaxe, illusiongold_shovel, illusiongold_hoe]
+PASS gear_contiguous_count_illusiongold :: want=14 got=14
+PASS palette_pixels_sturdygold :: actual=[95F2FF 40DBFC 25B7EF 0691D8 0574BF 0358A6 023B8D 001F74] expected=[95F2FF 40DBFC 25B7EF 0691D8 0574BF 0358A6 023B8D 001F74]
+PASS palette_pixels_unwanted_antique :: actual=[6E837C 657769 576657 4A5645 3C4835 2E3A26 26291A 181A15] expected=[6E837C 657769 576657 4A5645 3C4835 2E3A26 26291A 181A15]
+PASS palette_pixels_flamegold :: actual=[95F2FF 6ACFF4 3FACEA 1A89DD 0064CA 004BAF 003E91 003274] expected=[95F2FF 6ACFF4 3FACEA 1A89DD 0064CA 004BAF 003E91 003274]
+PASS palette_pixels_voodoogold :: actual=[95F2FF A9C4D9 B096B3 B87491 A35C74 904457 6D3640 4A2829] expected=[95F2FF A9C4D9 B096B3 B87491 A35C74 904457 6D3640 4A2829]
+PASS palette_pixels_thundergold :: actual=[95F2FF A9CAEE BEA2DD AF81C3 A35EA9 85408A 66216B 48174C] expected=[95F2FF A9CAEE BEA2DD AF81C3 A35EA9 85408A 66216B 48174C]
+PASS palette_pixels_indigoseagold :: actual=[EDEFF2 DFEAF6 C4DBE3 96ADB6 808E90 566165 3C4345 22282A] expected=[EDEFF2 DFEAF6 C4DBE3 96ADB6 808E90 566165 3C4345 22282A]
+PASS palette_pixels_illusiongold :: actual=[95F2FF ABDBFC AEBBF5 B19CEE A482DE 9869CF 8653B8 6C4395] expected=[95F2FF ABDBFC AEBBF5 B19CEE A482DE 9869CF 8653B8 6C4395]
+PASS palette_indigoseagold_equals_vanilla_quartz :: 逐像素比对
+PASS trim_item_sprite_helmet_sturdygold :: item form (blocks atlas) trims/items/helmet_trim_sturdygold size=16x16 distinctRgb=[023B8D 25B7EF 40DBFC 95F2FF]
+PASS trim_item_sprite_chestplate_sturdygold :: item form (blocks atlas) trims/items/chestplate_trim_sturdygold size=16x16 distinctRgb=[023B8D 25B7EF 40DBFC 95F2FF]
+PASS trim_item_sprite_leggings_sturdygold :: item form (blocks atlas) trims/items/leggings_trim_sturdygold size=16x16 distinctRgb=[001F74 023B8D 25B7EF 40DBFC]
+PASS trim_item_sprite_boots_sturdygold :: item form (blocks atlas) trims/items/boots_trim_sturdygold size=16x16 distinctRgb=[001F74 023B8D 25B7EF 40DBFC]
+PASS trim_item_sprite_not_gray_sturdygold :: distinctRgb=[023B8D 25B7EF 40DBFC 95F2FF] grayPalette=false
+PASS trim_item_sprite_helmet_unwanted_antique :: item form (blocks atlas) trims/items/helmet_trim_unwanted_antique size=16x16 distinctRgb=[26291A 576657 657769 6E837C]
+PASS trim_item_sprite_chestplate_unwanted_antique :: item form (blocks atlas) trims/items/chestplate_trim_unwanted_antique size=16x16 distinctRgb=[26291A 576657 657769 6E837C]
+PASS trim_item_sprite_leggings_unwanted_antique :: item form (blocks atlas) trims/items/leggings_trim_unwanted_antique size=16x16 distinctRgb=[181A15 26291A 576657 657769]
+PASS trim_item_sprite_boots_unwanted_antique :: item form (blocks atlas) trims/items/boots_trim_unwanted_antique size=16x16 distinctRgb=[181A15 26291A 576657 657769]
+PASS trim_item_sprite_not_gray_unwanted_antique :: distinctRgb=[26291A 576657 657769 6E837C] grayPalette=false
+PASS trim_item_sprite_helmet_flamegold :: item form (blocks atlas) trims/items/helmet_trim_flamegold size=16x16 distinctRgb=[003E91 3FACEA 6ACFF4 95F2FF]
+PASS trim_item_sprite_chestplate_flamegold :: item form (blocks atlas) trims/items/chestplate_trim_flamegold size=16x16 distinctRgb=[003E91 3FACEA 6ACFF4 95F2FF]
+PASS trim_item_sprite_leggings_flamegold :: item form (blocks atlas) trims/items/leggings_trim_flamegold size=16x16 distinctRgb=[003274 003E91 3FACEA 6ACFF4]
+PASS trim_item_sprite_boots_flamegold :: item form (blocks atlas) trims/items/boots_trim_flamegold size=16x16 distinctRgb=[003274 003E91 3FACEA 6ACFF4]
+PASS trim_item_sprite_not_gray_flamegold :: distinctRgb=[003E91 3FACEA 6ACFF4 95F2FF] grayPalette=false
+PASS trim_item_sprite_helmet_voodoogold :: item form (blocks atlas) trims/items/helmet_trim_voodoogold size=16x16 distinctRgb=[6D3640 95F2FF A9C4D9 B096B3]
+PASS trim_item_sprite_chestplate_voodoogold :: item form (blocks atlas) trims/items/chestplate_trim_voodoogold size=16x16 distinctRgb=[6D3640 95F2FF A9C4D9 B096B3]
+PASS trim_item_sprite_leggings_voodoogold :: item form (blocks atlas) trims/items/leggings_trim_voodoogold size=16x16 distinctRgb=[4A2829 6D3640 A9C4D9 B096B3]
+PASS trim_item_sprite_boots_voodoogold :: item form (blocks atlas) trims/items/boots_trim_voodoogold size=16x16 distinctRgb=[4A2829 6D3640 A9C4D9 B096B3]
+PASS trim_item_sprite_not_gray_voodoogold :: distinctRgb=[6D3640 95F2FF A9C4D9 B096B3] grayPalette=false
+PASS trim_item_sprite_helmet_thundergold :: item form (blocks atlas) trims/items/helmet_trim_thundergold size=16x16 distinctRgb=[66216B 95F2FF A9CAEE BEA2DD]
+PASS trim_item_sprite_chestplate_thundergold :: item form (blocks atlas) trims/items/chestplate_trim_thundergold size=16x16 distinctRgb=[66216B 95F2FF A9CAEE BEA2DD]
+PASS trim_item_sprite_leggings_thundergold :: item form (blocks atlas) trims/items/leggings_trim_thundergold size=16x16 distinctRgb=[48174C 66216B A9CAEE BEA2DD]
+PASS trim_item_sprite_boots_thundergold :: item form (blocks atlas) trims/items/boots_trim_thundergold size=16x16 distinctRgb=[48174C 66216B A9CAEE BEA2DD]
+PASS trim_item_sprite_not_gray_thundergold :: distinctRgb=[66216B 95F2FF A9CAEE BEA2DD] grayPalette=false
+PASS trim_item_sprite_helmet_indigoseagold :: item form (blocks atlas) trims/items/helmet_trim_indigoseagold size=16x16 distinctRgb=[3C4345 C4DBE3 DFEAF6 EDEFF2]
+PASS trim_item_sprite_chestplate_indigoseagold :: item form (blocks atlas) trims/items/chestplate_trim_indigoseagold size=16x16 distinctRgb=[3C4345 C4DBE3 DFEAF6 EDEFF2]
+PASS trim_item_sprite_leggings_indigoseagold :: item form (blocks atlas) trims/items/leggings_trim_indigoseagold size=16x16 distinctRgb=[22282A 3C4345 C4DBE3 DFEAF6]
+PASS trim_item_sprite_boots_indigoseagold :: item form (blocks atlas) trims/items/boots_trim_indigoseagold size=16x16 distinctRgb=[22282A 3C4345 C4DBE3 DFEAF6]
+PASS trim_item_sprite_helmet_illusiongold :: item form (blocks atlas) trims/items/helmet_trim_illusiongold size=16x16 distinctRgb=[8653B8 95F2FF ABDBFC AEBBF5]
+PASS trim_item_sprite_chestplate_illusiongold :: item form (blocks atlas) trims/items/chestplate_trim_illusiongold size=16x16 distinctRgb=[8653B8 95F2FF ABDBFC AEBBF5]
+PASS trim_item_sprite_leggings_illusiongold :: item form (blocks atlas) trims/items/leggings_trim_illusiongold size=16x16 distinctRgb=[6C4395 8653B8 ABDBFC AEBBF5]
+PASS trim_item_sprite_boots_illusiongold :: item form (blocks atlas) trims/items/boots_trim_illusiongold size=16x16 distinctRgb=[6C4395 8653B8 ABDBFC AEBBF5]
+PASS trim_item_sprite_not_gray_illusiongold :: distinctRgb=[8653B8 95F2FF ABDBFC AEBBF5] grayPalette=false
+PASS trim_worn_sprites_all_present :: present=36 want=36
+PASS trim_worn_sprites_colors_are_palette :: outside-palette count=0 distinctRgb=[22282A 3C4345 566165 808E90 96ADB6 C4DBE3 DFEAF6 EDEFF2]
+PASS trim_worn_sprite_is_gray :: worn distinctRgb=[22282A 3C4345 566165 808E90 96ADB6 C4DBE3 DFEAF6 EDEFF2]
+PASS trim_item_model_layer_helmet_sturdygold :: sprites=[bettergold:item/indigoseagold_helmet, minecraft:trims/items/helmet_trim_sturdygold] wantContains=minecraft:trims/items/helmet_trim_sturdygold
+PASS trim_item_model_layer_chestplate_sturdygold :: sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_sturdygold] wantContains=minecraft:trims/items/chestplate_trim_sturdygold
+PASS trim_item_model_layer_leggings_sturdygold :: sprites=[bettergold:item/indigoseagold_leggings, minecraft:trims/items/leggings_trim_sturdygold] wantContains=minecraft:trims/items/leggings_trim_sturdygold
+PASS trim_item_model_layer_boots_sturdygold :: sprites=[bettergold:item/indigoseagold_boots, minecraft:trims/items/boots_trim_sturdygold] wantContains=minecraft:trims/items/boots_trim_sturdygold
+PASS trim_item_model_layer_helmet_unwanted_antique :: sprites=[bettergold:item/indigoseagold_helmet, minecraft:trims/items/helmet_trim_unwanted_antique] wantContains=minecraft:trims/items/helmet_trim_unwanted_antique
+PASS trim_item_model_layer_chestplate_unwanted_antique :: sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_unwanted_antique] wantContains=minecraft:trims/items/chestplate_trim_unwanted_antique
+PASS trim_item_model_layer_leggings_unwanted_antique :: sprites=[bettergold:item/indigoseagold_leggings, minecraft:trims/items/leggings_trim_unwanted_antique] wantContains=minecraft:trims/items/leggings_trim_unwanted_antique
+PASS trim_item_model_layer_boots_unwanted_antique :: sprites=[bettergold:item/indigoseagold_boots, minecraft:trims/items/boots_trim_unwanted_antique] wantContains=minecraft:trims/items/boots_trim_unwanted_antique
+PASS trim_item_model_layer_helmet_flamegold :: sprites=[bettergold:item/indigoseagold_helmet, minecraft:trims/items/helmet_trim_flamegold] wantContains=minecraft:trims/items/helmet_trim_flamegold
+PASS trim_item_model_layer_chestplate_flamegold :: sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_flamegold] wantContains=minecraft:trims/items/chestplate_trim_flamegold
+PASS trim_item_model_layer_leggings_flamegold :: sprites=[bettergold:item/indigoseagold_leggings, minecraft:trims/items/leggings_trim_flamegold] wantContains=minecraft:trims/items/leggings_trim_flamegold
+PASS trim_item_model_layer_boots_flamegold :: sprites=[bettergold:item/indigoseagold_boots, minecraft:trims/items/boots_trim_flamegold] wantContains=minecraft:trims/items/boots_trim_flamegold
+PASS trim_item_model_layer_helmet_voodoogold :: sprites=[bettergold:item/indigoseagold_helmet, minecraft:trims/items/helmet_trim_voodoogold] wantContains=minecraft:trims/items/helmet_trim_voodoogold
+PASS trim_item_model_layer_chestplate_voodoogold :: sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_voodoogold] wantContains=minecraft:trims/items/chestplate_trim_voodoogold
+PASS trim_item_model_layer_leggings_voodoogold :: sprites=[bettergold:item/indigoseagold_leggings, minecraft:trims/items/leggings_trim_voodoogold] wantContains=minecraft:trims/items/leggings_trim_voodoogold
+PASS trim_item_model_layer_boots_voodoogold :: sprites=[bettergold:item/indigoseagold_boots, minecraft:trims/items/boots_trim_voodoogold] wantContains=minecraft:trims/items/boots_trim_voodoogold
+PASS trim_item_model_layer_helmet_thundergold :: sprites=[bettergold:item/indigoseagold_helmet, minecraft:trims/items/helmet_trim_thundergold] wantContains=minecraft:trims/items/helmet_trim_thundergold
+PASS trim_item_model_layer_chestplate_thundergold :: sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_thundergold] wantContains=minecraft:trims/items/chestplate_trim_thundergold
+PASS trim_item_model_layer_leggings_thundergold :: sprites=[bettergold:item/indigoseagold_leggings, minecraft:trims/items/leggings_trim_thundergold] wantContains=minecraft:trims/items/leggings_trim_thundergold
+PASS trim_item_model_layer_boots_thundergold :: sprites=[bettergold:item/indigoseagold_boots, minecraft:trims/items/boots_trim_thundergold] wantContains=minecraft:trims/items/boots_trim_thundergold
+PASS trim_item_model_layer_helmet_indigoseagold :: sprites=[bettergold:item/indigoseagold_helmet, minecraft:trims/items/helmet_trim_indigoseagold] wantContains=minecraft:trims/items/helmet_trim_indigoseagold
+PASS trim_item_model_layer_chestplate_indigoseagold :: sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_indigoseagold] wantContains=minecraft:trims/items/chestplate_trim_indigoseagold
+PASS trim_item_model_layer_leggings_indigoseagold :: sprites=[bettergold:item/indigoseagold_leggings, minecraft:trims/items/leggings_trim_indigoseagold] wantContains=minecraft:trims/items/leggings_trim_indigoseagold
+PASS trim_item_model_layer_boots_indigoseagold :: sprites=[bettergold:item/indigoseagold_boots, minecraft:trims/items/boots_trim_indigoseagold] wantContains=minecraft:trims/items/boots_trim_indigoseagold
+PASS trim_item_model_layer_helmet_illusiongold :: sprites=[bettergold:item/indigoseagold_helmet, minecraft:trims/items/helmet_trim_illusiongold] wantContains=minecraft:trims/items/helmet_trim_illusiongold
+PASS trim_item_model_layer_chestplate_illusiongold :: sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_illusiongold] wantContains=minecraft:trims/items/chestplate_trim_illusiongold
+PASS trim_item_model_layer_leggings_illusiongold :: sprites=[bettergold:item/indigoseagold_leggings, minecraft:trims/items/leggings_trim_illusiongold] wantContains=minecraft:trims/items/leggings_trim_illusiongold
+PASS trim_item_model_layer_boots_illusiongold :: sprites=[bettergold:item/indigoseagold_boots, minecraft:trims/items/boots_trim_illusiongold] wantContains=minecraft:trims/items/boots_trim_illusiongold
+INFO case_applied :: idx=0 water=true pieces=0 pos=72.50,200.00,-45.50
+INFO sample_water_p0 :: inWater=true msValue=0.100000 weValue=0.000000 ourModifiers=0 ids=[] base=0.100000
+PASS env_matches_water_p0 :: isInWater=true want=true
+PASS water_efficiency_unchanged_water_p0 :: weValue=0.000000 want=0.000000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_absent_water_p0 :: ourModifiers=0 ids=[]（出水 / 没穿甲 ⇒ 必须被移除）
+PASS movement_speed_unchanged_water_p0 :: msValue=0.100000 base=0.100000
+PASS move_not_clipped_water_p0 :: localEndZ=7.89 limit=44.00
+INFO move_water_p0 :: distance=3.9144 (40 ticks) clientMsValue=0.100000 clientOurModifiers=0
+INFO case_applied :: idx=1 water=true pieces=1 pos=72.50,200.00,-45.50
+INFO sample_water_p1 :: inWater=true msValue=0.125000 weValue=0.250000 ourModifiers=1 ids=[bettergold:swim_speed_water] base=0.100000
+PASS env_matches_water_p1 :: isInWater=true want=true
+PASS water_efficiency_unchanged_water_p1 :: weValue=0.250000 want=0.250000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_single_id_water_p1 :: ourModifiers=1（必须恒为 1：一个 id、值是 0.25 x 件数）
+PASS swim_modifier_value_water_p1 :: msValue=0.125000 want=0.125000 (base 0.100000 x 1.25)
+PASS move_not_clipped_water_p1 :: localEndZ=12.17 limit=44.00
+INFO move_water_p1 :: distance=6.8790 (40 ticks) clientMsValue=0.125000 clientOurModifiers=1
+INFO case_applied :: idx=2 water=true pieces=2 pos=72.50,200.00,-45.50
+INFO sample_water_p2 :: inWater=true msValue=0.150000 weValue=0.500000 ourModifiers=1 ids=[bettergold:swim_speed_water] base=0.100000
+PASS env_matches_water_p2 :: isInWater=true want=true
+PASS water_efficiency_unchanged_water_p2 :: weValue=0.500000 want=0.500000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_single_id_water_p2 :: ourModifiers=1（必须恒为 1：一个 id、值是 0.25 x 件数）
+PASS swim_modifier_value_water_p2 :: msValue=0.150000 want=0.150000 (base 0.100000 x 1.50)
+PASS move_not_clipped_water_p2 :: localEndZ=17.01 limit=44.00
+INFO move_water_p2 :: distance=10.1893 (40 ticks) clientMsValue=0.150000 clientOurModifiers=1
+INFO case_applied :: idx=3 water=true pieces=3 pos=72.50,200.00,-45.50
+INFO sample_water_p3 :: inWater=true msValue=0.175000 weValue=0.750000 ourModifiers=1 ids=[bettergold:swim_speed_water] base=0.100000
+PASS env_matches_water_p3 :: isInWater=true want=true
+PASS water_efficiency_unchanged_water_p3 :: weValue=0.750000 want=0.750000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_single_id_water_p3 :: ourModifiers=1（必须恒为 1：一个 id、值是 0.25 x 件数）
+PASS swim_modifier_value_water_p3 :: msValue=0.175000 want=0.175000 (base 0.100000 x 1.75)
+PASS move_not_clipped_water_p3 :: localEndZ=22.14 limit=44.00
+INFO move_water_p3 :: distance=13.6773 (40 ticks) clientMsValue=0.175000 clientOurModifiers=1
+INFO case_applied :: idx=4 water=true pieces=4 pos=72.50,200.00,-45.50
+INFO sample_water_p4 :: inWater=true msValue=0.200000 weValue=1.000000 ourModifiers=1 ids=[bettergold:swim_speed_water] base=0.100000
+PASS env_matches_water_p4 :: isInWater=true want=true
+PASS water_efficiency_unchanged_water_p4 :: weValue=1.000000 want=1.000000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_single_id_water_p4 :: ourModifiers=1（必须恒为 1：一个 id、值是 0.25 x 件数）
+PASS swim_modifier_value_water_p4 :: msValue=0.200000 want=0.200000 (base 0.100000 x 2.00)
+PASS move_not_clipped_water_p4 :: localEndZ=27.45 limit=44.00
+INFO move_water_p4 :: distance=17.2687 (40 ticks) clientMsValue=0.200000 clientOurModifiers=1
+INFO case_applied :: idx=5 water=false pieces=0 pos=72.50,220.00,-45.50
+INFO sample_land_p0 :: inWater=false msValue=0.100000 weValue=0.000000 ourModifiers=0 ids=[] base=0.100000
+PASS env_matches_land_p0 :: isInWater=false want=false
+PASS water_efficiency_unchanged_land_p0 :: weValue=0.000000 want=0.000000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_absent_land_p0 :: ourModifiers=0 ids=[]（出水 / 没穿甲 ⇒ 必须被移除）
+PASS movement_speed_unchanged_land_p0 :: msValue=0.100000 base=0.100000
+PASS move_not_clipped_land_p0 :: localEndZ=14.98 limit=44.00
+INFO move_land_p0 :: distance=8.6344 (40 ticks) clientMsValue=0.100000 clientOurModifiers=0
+INFO case_applied :: idx=6 water=false pieces=1 pos=72.50,220.00,-45.50
+INFO sample_land_p1 :: inWater=false msValue=0.100000 weValue=0.250000 ourModifiers=0 ids=[] base=0.100000
+PASS env_matches_land_p1 :: isInWater=false want=false
+PASS water_efficiency_unchanged_land_p1 :: weValue=0.250000 want=0.250000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_absent_land_p1 :: ourModifiers=0 ids=[]（出水 / 没穿甲 ⇒ 必须被移除）
+PASS movement_speed_unchanged_land_p1 :: msValue=0.100000 base=0.100000
+PASS move_not_clipped_land_p1 :: localEndZ=14.98 limit=44.00
+INFO move_land_p1 :: distance=8.6344 (40 ticks) clientMsValue=0.100000 clientOurModifiers=0
+INFO case_applied :: idx=7 water=false pieces=2 pos=72.50,220.00,-45.50
+INFO sample_land_p2 :: inWater=false msValue=0.100000 weValue=0.500000 ourModifiers=0 ids=[] base=0.100000
+PASS env_matches_land_p2 :: isInWater=false want=false
+PASS water_efficiency_unchanged_land_p2 :: weValue=0.500000 want=0.500000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_absent_land_p2 :: ourModifiers=0 ids=[]（出水 / 没穿甲 ⇒ 必须被移除）
+PASS movement_speed_unchanged_land_p2 :: msValue=0.100000 base=0.100000
+PASS move_not_clipped_land_p2 :: localEndZ=14.98 limit=44.00
+INFO move_land_p2 :: distance=8.6344 (40 ticks) clientMsValue=0.100000 clientOurModifiers=0
+INFO case_applied :: idx=8 water=false pieces=3 pos=72.50,220.00,-45.50
+INFO sample_land_p3 :: inWater=false msValue=0.100000 weValue=0.750000 ourModifiers=0 ids=[] base=0.100000
+PASS env_matches_land_p3 :: isInWater=false want=false
+PASS water_efficiency_unchanged_land_p3 :: weValue=0.750000 want=0.750000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_absent_land_p3 :: ourModifiers=0 ids=[]（出水 / 没穿甲 ⇒ 必须被移除）
+PASS movement_speed_unchanged_land_p3 :: msValue=0.100000 base=0.100000
+PASS move_not_clipped_land_p3 :: localEndZ=14.98 limit=44.00
+INFO move_land_p3 :: distance=8.6344 (40 ticks) clientMsValue=0.100000 clientOurModifiers=0
+INFO case_applied :: idx=9 water=false pieces=4 pos=72.50,220.00,-45.50
+INFO sample_land_p4 :: inWater=false msValue=0.100000 weValue=1.000000 ourModifiers=0 ids=[] base=0.100000
+PASS env_matches_land_p4 :: isInWater=false want=false
+PASS water_efficiency_unchanged_land_p4 :: weValue=1.000000 want=1.000000（既有浅水那条：四部位各自 id，不许动）
+PASS swim_modifier_absent_land_p4 :: ourModifiers=0 ids=[]（出水 / 没穿甲 ⇒ 必须被移除）
+PASS movement_speed_unchanged_land_p4 :: msValue=0.100000 base=0.100000
+INFO server_cases_done :: sampled=10
+PASS forceload_released :: stillForced=0 levelForcedCount=0
+PASS move_not_clipped_land_p4 :: localEndZ=14.98 limit=44.00
+INFO move_land_p4 :: distance=8.6344 (40 ticks) clientMsValue=0.100000 clientOurModifiers=0
+PASS client_swim_modifier_single_id_water_p0 :: clientOurModifiers=0
+PASS move_land_ratio_is_1_p1 :: land ratio=1.0000 (8.6344 / 8.6344)
+PASS client_swim_modifier_absent_land_p1 :: clientOurModifiers=0
+PASS client_move_speed_unchanged_land_p1 :: clientMs 0.100000 vs base 0.100000
+PASS client_swim_modifier_single_id_water_p1 :: clientOurModifiers=1
+INFO move_water_ratio_p1 :: attrRatio=1.2500 moveRatio=1.7574 move_n=6.8790 move_0=3.9144 (attr 0.125000 / 0.100000)
+PASS client_attr_ratio_is_1p25n_water_p1 :: attrRatio=1.250000 want=1.25
+FAIL move_water_ratio_equals_attr_ratio_p1 :: moveRatio=1.7574 want=1.25（端到端位移；既有 WATER_MOVEMENT_EFFICIENCY 也参与，见 docs §17）
+PASS move_land_ratio_is_1_p2 :: land ratio=1.0000 (8.6344 / 8.6344)
+PASS client_swim_modifier_absent_land_p2 :: clientOurModifiers=0
+PASS client_move_speed_unchanged_land_p2 :: clientMs 0.100000 vs base 0.100000
+PASS client_swim_modifier_single_id_water_p2 :: clientOurModifiers=1
+INFO move_water_ratio_p2 :: attrRatio=1.5000 moveRatio=2.6031 move_n=10.1893 move_0=3.9144 (attr 0.150000 / 0.100000)
+PASS client_attr_ratio_is_1p25n_water_p2 :: attrRatio=1.500000 want=1.50
+FAIL move_water_ratio_equals_attr_ratio_p2 :: moveRatio=2.6031 want=1.50（端到端位移；既有 WATER_MOVEMENT_EFFICIENCY 也参与，见 docs §17）
+PASS move_land_ratio_is_1_p3 :: land ratio=1.0000 (8.6344 / 8.6344)
+PASS client_swim_modifier_absent_land_p3 :: clientOurModifiers=0
+PASS client_move_speed_unchanged_land_p3 :: clientMs 0.100000 vs base 0.100000
+PASS client_swim_modifier_single_id_water_p3 :: clientOurModifiers=1
+INFO move_water_ratio_p3 :: attrRatio=1.7500 moveRatio=3.4941 move_n=13.6773 move_0=3.9144 (attr 0.175000 / 0.100000)
+PASS client_attr_ratio_is_1p25n_water_p3 :: attrRatio=1.750000 want=1.75
+FAIL move_water_ratio_equals_attr_ratio_p3 :: moveRatio=3.4941 want=1.75（端到端位移；既有 WATER_MOVEMENT_EFFICIENCY 也参与，见 docs §17）
+PASS move_land_ratio_is_1_p4 :: land ratio=1.0000 (8.6344 / 8.6344)
+PASS client_swim_modifier_absent_land_p4 :: clientOurModifiers=0
+PASS client_move_speed_unchanged_land_p4 :: clientMs 0.100000 vs base 0.100000
+PASS client_swim_modifier_single_id_water_p4 :: clientOurModifiers=1
+INFO move_water_ratio_p4 :: attrRatio=2.0000 moveRatio=4.4116 move_n=17.2687 move_0=3.9144 (attr 0.200000 / 0.100000)
+PASS client_attr_ratio_is_1p25n_water_p4 :: attrRatio=2.000000 want=2.00
+FAIL move_water_ratio_equals_attr_ratio_p4 :: moveRatio=4.4116 want=2.00（端到端位移；既有 WATER_MOVEMENT_EFFICIENCY 也参与，见 docs §17）
+PASS move_water_baseline_nonzero :: waterMove0=3.9144（真按键输入确实推动了真实玩家）
+PASS move_land_baseline_nonzero :: landMove0=8.6344
+SUMMARY :: pass=159 fail=4 skip=0

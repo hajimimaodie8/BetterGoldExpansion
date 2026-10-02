@@ -50,7 +50,10 @@ public final class AllMetals {
      *       对上述四种生物<b>双倍伤害</b>（1.5 修正④，{@code LivingDamageEvent.Pre} 里乘 2）。</li>
      *   <li>盔甲：护甲 5·10·8·5、耐久 814·1184·1110·962、附魔 24、韧性 6、击退抗性 15%、
      *       单件即猪灵中立；每件 25% 窒息 / 溺水抗性 + 每件 25% 给攻击者叠沉淀，四件全套完全免疫 + 100%；
-     *       另外<b>每件 +25% 游泳速度</b>（1.5 修正⑤：{@code WATER_MOVEMENT_EFFICIENCY}，四件打满 100%）。</li>
+     *       另外<b>每件 +25% 游泳速度</b>（1.5 修正⑤：{@code WATER_MOVEMENT_EFFICIENCY}，四件打满 100%）；
+     *       <b>再新增一条</b>「真正的水中游泳速度」（bg-15w §8.3：水中时挂 {@code MOVEMENT_SPEED}
+     *       {@code ADD_MULTIPLIED_TOTAL}，值 = 0.25 × 件数、一个 id {@code bettergold:swim_speed_water}，
+     *       出水 / 脱甲即移除；见 {@code MetalEvents#onSwimSpeedTick}）。两条<b>并存、不合并</b>。</li>
      * </ul>
      */
     public static final MetalFamily INDIGOSEAGOLD = MetalFamily.register(

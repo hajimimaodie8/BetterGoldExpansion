@@ -55,6 +55,15 @@
 - 「1% 移速」必须用 **`ADD_MULTIPLIED_TOTAL`**；用 `ADD_VALUE` 会因为基础移速 0.1 变成 **−10%** `【实测】docs/1.5-规格.md:462`。
 - 吸收值会被原版 `MAX_ABSORPTION`（默认 0）夹住，**必须自己挂属性修饰符** `【实测】docs/1.5-规格.md:823`。
 - 远程武器的命中派发要用 **`DamageSource#getWeaponItem()`**，不能用主手物品（换手/投掷离手会漏判）。
+- **`MOVEMENT_SPEED` 在水里不是最终乘数**：`LivingEntity#travel` 的水中分支里它只以
+  `f5 += (getSpeed() - f5) * f6` 参与（`f6` = `WATER_MOVEMENT_EFFICIENCY`，`!onGround()` 时还会 ×0.5）
+  ⇒ 「水中 +25%/件」的属性值精确，但**端到端位移比值会超线性**（实测 1.76/2.60/3.49/4.41）。
+  要**位移**严格 ×1.25/件，那一层该落在 **`neoforge:swim_speed`**（`f5 *= getAttributeValue(SWIM_SPEED)`，
+  只在水里那一段被读、`setSyncable(true)`）。详见 `docs/1.5-规格.md` §17.3 / §17.4。
+- **属性是否 `setSyncable(true)` 决定客户端看不看得见**：`MOVEMENT_SPEED` 是（客户端逐值相同），
+  `KNOCKBACK_RESISTANCE` **不是**（客户端恒 0，那是原版行为）——见 `docs/1.5-规格.md` §16.2 / §17.3。
+- **`GEAR_SLOT` 一表两用**（既定装备顺序、又判"是不是金属装备"）：作者给的清单漏项时
+  **只许重排、不许删项**（删了 = 那件物品静默掉出装备分区）。见 §17.1。
 
 **5）验证与探针（照 `docs/构建与跑测注意事项.md`）**
 - **只读 JSON / 只读源码不算验证**；结论分 A 实机 / B 仅编译 / C 仅读源码三级汇报。

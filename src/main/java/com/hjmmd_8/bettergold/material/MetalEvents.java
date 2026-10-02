@@ -880,6 +880,107 @@ public final class MetalEvents {
             net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
                     com.hjmmd_8.bettergold.bettergold.MODID, "absorption_cap");
 
+    // ==================== 靛海金：真正的「游泳速度」（bg-15w §八 8.3，与浅水那条并存） ====================
+
+    /**
+     * 靛海金盔甲<b>每件</b>在水中提供的游泳速度（{@code ADD_MULTIPLIED_TOTAL} ⇒ 4 件 = ×2.0）。
+     *
+     * <p>2/2 与既有那条的关系（<b>并存，不许合并</b>）：
+     * <ul>
+     *   <li>既有那条 = 物品自带的 {@code Attributes.WATER_MOVEMENT_EFFICIENCY}（每部位一个 id
+     *       {@code swim_speed_<部位>}，见 {@link MetalFamily.MetalArmorItem#getDefaultAttributeModifiers()}）——
+     *       那是 {@code metalFamily.swimSpeedPerPiece}，<b>本轮一个字都没动</b>；</li>
+     *   <li>本条 = <b>新增</b>的 {@code Attributes.MOVEMENT_SPEED} 条件修饰符，只在
+     *       {@code entity.isInWater()} 时挂上。</li>
+     * </ul>
+     * 作者 2026-10-02 17:44 的原话：「这次更新所提供的水中移速率指的是提供于<b>一格高的水面上移动加快</b>，
+     * 而不是<b>游泳加快</b>，所以请你<b>再新增</b>一下每件 25% 的游泳速度」。</p>
+     *
+     * <p><b>为什么不能用 {@code getDefaultAttributeModifiers()}</b>（这是本轮最容易写歪的地方）：
+     * 那个覆写点给的是物品<b>常驻</b>属性，<b>没有任何「仅在水中」的表达能力</b> ——
+     * 往那里加 {@code MOVEMENT_SPEED} 会变成「陆地也 +100%」。
+     * 条件性属性只能由运行时按 {@code isInWater()} 维护（本仓现成范式 = {@link #onAbsorptionTick}）。</p>
+     */
+    public static final float SWIM_SPEED_WATER_PER_PIECE = 0.25F;
+
+    /**
+     * 水中游泳速度的修饰符 id —— <b>全仓唯一一个</b>（值 = {@code 0.25 × 件数}）。
+     *
+     * <p>⚠ <b>为什么只能一个 id</b>（本仓真实事故，{@code docs/1.5-规格.md} §13.5）：
+     * 属性修饰符<b>按 id 去重</b> —— 四件盔甲若各挂一个同 id 的修饰符，后面的会覆盖前面的，
+     * 结果是「穿 4 件也只算 1 件」；反过来，同一个效果若起了多个 id，就会<b>叠加成双倍</b>。
+     * 这里要的是「按件数算一次总值」，所以是<b>一个 id、值是 0.25 × 件数</b>，
+     * <b>不是</b>每件各挂一个 id（那条路已经有 {@code swim_speed_<部位>} 在用了）。</p>
+     */
+    private static final net.minecraft.resources.ResourceLocation SWIM_SPEED_WATER_ID =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    com.hjmmd_8.bettergold.bettergold.MODID, "swim_speed_water");
+
+    /**
+     * 维护「水中游泳速度」这一个条件修饰符（{@code bettergold:swim_speed_water}）。
+     *
+     * <p>用 {@code EntityTickEvent.Post}（与 {@link #onAbsorptionTick} 同一套写法、覆盖所有生物），
+     * 每 tick <b>先无条件移除</b>、再按当前状态决定要不要挂回去 —— 于是
+     * <b>出水、脱甲、死亡、换维度都会在下一 tick 回到原速度</b>，不会留下永久修饰符
+     * （{@code transient} 修饰符本来也不写存档）。</p>
+     *
+     * <p>只对 {@code swimSpeedPerPiece > 0} 的族（= 靛海金）生效；件数口径与既有那条完全一致
+     * （{@link #wornPieces}，四槽盔甲、最多 4 件）。</p>
+     */
+    @SubscribeEvent
+    public static void onSwimSpeedTick(net.neoforged.neoforge.event.tick.EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof net.minecraft.world.entity.LivingEntity entity)) {
+            return;
+        }
+        if (entity.level().isClientSide() || !entity.isAlive()) {
+            return;
+        }
+        var instance = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        if (instance == null) {
+            return;
+        }
+        // 先无条件移除：出水 / 脱甲 / 死亡 / 换维度 ⇒ 回到原速度（不留永久修饰符）
+        instance.removeModifier(SWIM_SPEED_WATER_ID);
+        if (!entity.isInWater()) {
+            return;
+        }
+        int pieces = 0;
+        for (var family : MetalFamily.all()) {
+            if (family.swimSpeedPerPiece > 0.0F) {
+                pieces += wornPieces(entity, family);
+            }
+        }
+        if (pieces <= 0) {
+            return;
+        }
+        float value = SWIM_SPEED_WATER_PER_PIECE * Math.min(pieces, 4);
+        instance.addOrUpdateTransientModifier(
+                new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                        SWIM_SPEED_WATER_ID, value,
+                        // 必须 ADD_MULTIPLIED_TOTAL：ADD_VALUE 因为基础移速 0.1 会变成「+0.25 点 = ×3.5」，
+                        // 而不是「+25%」（见 AGENTS.md 第 4 条红线）。
+                        net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+    }
+
+    /**
+     * 这个实体「每件 +25% 游泳速度」那一族穿了几件（0~4）：只统计 {@code swimSpeedPerPiece > 0} 的族，
+     * 也就是靛海金。供探针与 tooltip 判据复用。
+     */
+    public static int waterSwimPieces(net.minecraft.world.entity.LivingEntity entity) {
+        int pieces = 0;
+        for (var family : MetalFamily.all()) {
+            if (family.swimSpeedPerPiece > 0.0F) {
+                pieces += wornPieces(entity, family);
+            }
+        }
+        return Math.min(pieces, 4);
+    }
+
+    /** 水中游泳速度修饰符 id（只读出口，给探针 / 关卡判据用；它不是存档可见 id，仅运行期存在） */
+    public static net.minecraft.resources.ResourceLocation swimSpeedWaterId() {
+        return SWIM_SPEED_WATER_ID;
+    }
+
     // ⚠ 已删除：SHIELD_ABSORPTION_CAP_ID（bettergold:shield_absorption_cap）。
     //   它是 1.5 武器轮第一版为「上限取较大者（max）」口径引入的第二个 id（盔甲 16 / 盾牌 4 各挂一个）。
     //   bg-15w 第 4 项把口径改成**相加**（穿 4 件 + 拿盾 = 20），上限只需要一个合成值，
