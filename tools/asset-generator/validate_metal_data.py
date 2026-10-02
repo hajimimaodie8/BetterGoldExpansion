@@ -259,28 +259,35 @@ else:
             bg8_problems.append(f"{item} 的位次 {gear[item]} 不在那 10 件之后（期望 > {described_max}）")
 print(f"装备分区顺序（§8.1）问题: {len(bg8_problems)} {bg8_problems[:8]}")
 
-# --- ② 水中游泳速度（§8.3）：一个 id、MOVEMENT_SPEED + ADD_MULTIPLIED_TOTAL、值与件数挂钩 ---
+# --- ② 真正的游泳速度（bg-15w §8.3 · 作者 2026-10-02 19:42 **整节重做**）---
+# ⚠ 本节断言在 2026-10-02 19:42 之后**整块换成新口径**。
+#   旧口径（已被作者推翻，见需求 §8.3，断言也随之改掉，不是漏写）：
+#     `MetalEvents#onSwimSpeedTick` 里**运行期**给 `Attributes.MOVEMENT_SPEED` 挂
+#     `ADD_MULTIPLIED_TOTAL` 条件修饰符（仅 `isInWater()`），值 = 0.25 × 件数、
+#     **全仓唯一 id** `bettergold:swim_speed_water`。
+#     被推翻的原因：`MOVEMENT_SPEED` 在 `LivingEntity#travel` 的水中分支里**不是最终乘数**，
+#     端到端位移超线性（实测 1.7574/2.6031/3.4941/4.4116）。
+#   新口径：`MetalFamily.MetalArmorItem#getDefaultAttributeModifiers()` 里挂
+#     `NeoForgeMod.SWIM_SPEED`（`neoforge:swim_speed`，`PercentageAttribute` 基值 1.0）、
+#     `ADD_VALUE` +0.25（四件 2.0 = 200%）、**每个部位一个 id** `swim_speed_water_<部位>`。
+#     ⚠ id 的规律**随场景反转**：物品常驻属性是"每件各挂一份" ⇒ 必须不同 id；
+#     "运行期只维护一个总值" ⇒ 必须同一个 id（本文件 §13.5 与本仓两种都踩过）。
+#   这几类的失败方式都是静默的，所以都要有关卡：
+#     · 属性挂错（写成 MOVEMENT_SPEED）⇒ 陆地也跟着加速；
+#     · 四件共用同一个 id ⇒ 按 id 去重 ⇒ 穿 4 件只算 1 件（本仓真实事故，docs/1.5-规格.md §13.5）；
+#     · 旧实现没删干净 ⇒ 两套逻辑并存、效果双份。
 swim_problems = []
 metal_events = (JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8")
 metal_family = (JAVA / "material" / "MetalFamily.java").read_text(encoding="utf-8")
 
-# 反空转守护：id 字面量必须**恰好出现一次**（多一个 id = 同一个效果挂两份 = 双倍）
-id_literal = '"swim_speed_water"'
-id_hits = sum(f.read_text(encoding="utf-8").count(id_literal)
-              for f in (REPO / "src" / "main" / "java").rglob("*.java"))
-if id_hits != 1:
-    swim_problems.append(f"{id_literal} 在 src/main/java 里出现 {id_hits} 次（必须恰好 1 次：只许一个修饰符 id）")
 
-if "SWIM_SPEED_WATER_PER_PIECE = 0.25F" not in metal_events:
-    swim_problems.append("MetalEvents 里 SWIM_SPEED_WATER_PER_PIECE 不是 0.25F（每件 +25% 的值被改过）")
-
-# 处理器方法体：截出 onSwimSpeedTick 到下一个顶层方法结束（按花括号配平）
 def strip_comments(source: str) -> str:
     """去掉块注释与行注释 —— 判据必须在**代码**上成立。
 
     ⚠ 本关卡自己的教训（`mcmod_experience` §3.4）：注释里提到被禁的写法会让断言**假绿**。
-    本轮实测：把 `Operation.ADD_MULTIPLIED_TOTAL` 扰动成 `ADD_VALUE` 后关卡仍然 `exit 0`，
-    因为方法体里那句内联注释还写着「必须 ADD_MULTIPLIED_TOTAL」。去注释后才会真红。
+    本轮又实测到同一形状的**第二次**：旧实现被删后留了一段"墓碑注释"解释它为什么被推翻，
+    那段注释里**逐字写着**旧常量名 / 旧 id / `MOVEMENT_SPEED` ⇒ "旧实现必须不存在"与
+    "不许出现 MOVEMENT_SPEED" 这两条负向断言，若在含注释的文本上跑就永远绿。
     """
     source = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
     source = re.sub(r"//[^\n]*", "", source)
@@ -304,37 +311,62 @@ def method_body(source: str, signature: str) -> str:
                 return strip_comments(source[j:k + 1])
     return ""
 
-body = method_body(metal_events, "public static void onSwimSpeedTick(")
-if not body:
-    swim_problems.append("MetalEvents 里找不到 onSwimSpeedTick 方法体（反空转守护）")
-else:
-    for needle, why in [
-        ("Attributes.MOVEMENT_SPEED", "用的是 MOVEMENT_SPEED 属性"),
-        ("ADD_MULTIPLIED_TOTAL", "必须用 ADD_MULTIPLIED_TOTAL（ADD_VALUE 会变成 +0.25 点 = ×3.5）"),
-        ("entity.isInWater()", "必须只在 isInWater() 时生效"),
-        ("SWIM_SPEED_WATER_ID", "必须用那个唯一 id"),
-        ("removeModifier(SWIM_SPEED_WATER_ID)", "必须先无条件移除（出水/脱甲/死亡都要回到原速度）"),
-        ("SWIM_SPEED_WATER_PER_PIECE", "值必须来自 0.25 × 件数"),
-        ("Math.min(pieces, 4)", "件数必须钳在 0..4"),
-    ]:
-        if needle not in body:
-            swim_problems.append(f"onSwimSpeedTick 缺「{needle}」（{why}）")
 
-# ★ 负向断言（§8.3 最容易写歪的地方）：常驻属性表里**不许**出现 MOVEMENT_SPEED
+events_code = strip_comments(metal_events)
 armor_body = method_body(metal_family, "public ItemAttributeModifiers getDefaultAttributeModifiers()")
+
 if not armor_body:
     swim_problems.append("MetalFamily 里找不到 getDefaultAttributeModifiers 方法体（反空转守护）")
 else:
+    # ① 新属性必须在、且必须是 SWIM_SPEED
+    if "NeoForgeMod.SWIM_SPEED" not in armor_body:
+        swim_problems.append("getDefaultAttributeModifiers 里没有 NeoForgeMod.SWIM_SPEED（§8.3 新口径没落地）")
+    # ② 负向：常驻属性表里**不许**出现 MOVEMENT_SPEED（那会变成陆地也加速）
     if "MOVEMENT_SPEED" in armor_body:
         swim_problems.append("getDefaultAttributeModifiers 里出现了 MOVEMENT_SPEED（会变成陆地也加速）")
+    # ③ ADD_MULTIPLIED_TOTAL 是旧口径；§8.3 写死用 ADD_VALUE（基值 1.0）
+    if "ADD_MULTIPLIED_TOTAL" in armor_body:
+        swim_problems.append("getDefaultAttributeModifiers 里出现了 ADD_MULTIPLIED_TOTAL（§8.3 写死 ADD_VALUE）")
+    # ④ 既有那条（浅水）与它的四部位 id 一个字都不许动
     if "WATER_MOVEMENT_EFFICIENCY" not in armor_body:
         swim_problems.append("getDefaultAttributeModifiers 里没有 WATER_MOVEMENT_EFFICIENCY（浅水那条被删了？）")
-    # 既有那条的四部位 id 一个字都不许动（1.5 修正⑤ 修过的 bug）
     if '"swim_speed_" + this.getType().getName()' not in armor_body:
         swim_problems.append("四部位各自的 id swim_speed_<部位> 不见了（1.5 修正⑤ 修过的 bug 被回退）")
+    # ⑤ 新 id 必须**每个部位一个**（不是全仓唯一那一个）
+    if '"swim_speed_water_" + this.getType().getName()' not in armor_body:
+        swim_problems.append(
+            "新属性没用「每部位一个 id」swim_speed_water_<部位>（共用一个 id ⇒ 穿 4 件只算 1 件）")
+    # ⑥ 适用范围：非靛海金（swimSpeedPerPiece <= 0）必须原样返回，不波及另外五套金属
+    if "swimSpeedPerPiece <= 0.0F" not in armor_body:
+        swim_problems.append("getDefaultAttributeModifiers 缺 swimSpeedPerPiece <= 0.0F 的短路（会波及另外五套金属）")
+
+# 反空转守护 + 唯一真源：新 id 的拼法在 src/main/java 里**恰好一处**
+id_literal = '"swim_speed_water_" + this.getType().getName()'
+id_hits = sum(f.read_text(encoding="utf-8").count(id_literal)
+              for f in (REPO / "src" / "main" / "java").rglob("*.java"))
+if id_hits != 1:
+    swim_problems.append(f"{id_literal} 在 src/main/java 里出现 {id_hits} 次（必须恰好 1 次）")
+
+if "SWIM_SPEED_PER_PIECE = 0.25F" not in metal_family:
+    swim_problems.append("MetalFamily 里 SWIM_SPEED_PER_PIECE 不是 0.25F（每件 +25% 的值被改过）")
+
+# ★ 负向：旧口径必须**整块**消失（在**去注释后**的代码上判，墓碑注释不算）
+for needle, why in [
+    ("onSwimSpeedTick", "旧的运行期入口 onSwimSpeedTick 还在"),
+    ("SWIM_SPEED_WATER_PER_PIECE", "旧常量 SWIM_SPEED_WATER_PER_PIECE 还在"),
+    ("SWIM_SPEED_WATER_ID", "旧的唯一 id 常量 SWIM_SPEED_WATER_ID 还在"),
+    ("waterSwimPieces", "旧的 waterSwimPieces 还在"),
+    ("swimSpeedWaterId", "旧的 swimSpeedWaterId 还在"),
+]:
+    if needle in events_code:
+        swim_problems.append(f"MetalEvents（去注释后）里仍能找到「{needle}」（{why}）")
+
+# 反向：旧口径的"墓碑注释"必须在（写明被谁在什么时候推翻），否则后人会以为是漏写
+if "19:42" not in metal_events or "被作者" not in metal_events:
+    swim_problems.append("MetalEvents 里缺少「旧 MOVEMENT_SPEED 方案已被作者 19:42 推翻」的墓碑注释")
 
 bg8_problems.extend(swim_problems)
-print(f"水中游泳速度（§8.3）问题: {len(swim_problems)} {swim_problems[:8]}")
+print(f"游泳速度 SWIM_SPEED（§8.3 新口径）问题: {len(swim_problems)} {swim_problems[:8]}")
 print(f"bg-15w §八 追加轮② 问题合计: {len(bg8_problems)} {bg8_problems[:8]}")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags

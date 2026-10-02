@@ -1,0 +1,220 @@
+[BG8BPROBE] INFO opening_probe_world :: bg8bprobe (copy of author save)
+[BG8BPROBE] INFO player_prepared :: gameMode=SURVIVAL effects=0 health=20.0000
+[BG8BPROBE] INFO arena_built :: arena=48 x0=47 z0=-49 waterY=200 landY=220 poolY=300 forced=25
+[BG8BPROBE] INFO plan_build :: world=bg8bprobe serverPlayer=Dev localPlayer=Dev
+[BG8BPROBE] INFO sample_water_p0 :: inWater=true onGround=true swim=1.0000 wme=0.0000 ms=0.1000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1000
+[BG8BPROBE] PASS env_water_p0 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_water_p0 :: wme=0.0000 want=0.0000
+[BG8BPROBE] PASS ms_base_water_p0 :: MOVEMENT_SPEED=0.1000 want=0.100000
+[BG8BPROBE] PASS swim_value_water_p0 :: SWIM_SPEED=1.0000 want=1.0000
+[BG8BPROBE] PASS swim_ids_water_p0 :: ourIds=[] want=[]
+[BG8BPROBE] PASS client_swim_value_water_p0 :: client SWIM_SPEED=1.0000 want=1.0000
+[BG8BPROBE] PASS client_swim_ids_water_p0 :: clientIds=[] want=[]
+[BG8BPROBE] INFO move_water_p0 :: distance=3.6126 (40 ticks) startZ=-45.4984 endZ=-46.3145 endY=200.0000 endInWater=true
+[BG8BPROBE] PASS move_happened_water_p0 :: distance=3.6126
+[BG8BPROBE] PASS move_not_clipped_water_p0 :: endZ=-46.3145 wallZ=0
+[BG8BPROBE] PASS predicted_abs_water_p0 :: measured=3.6126 predicted=3.9954 ratio=0.9042
+[BG8BPROBE] INFO sample_water_p1 :: inWater=true onGround=true swim=1.0000 wme=0.2500 ms=0.1250 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1000
+[BG8BPROBE] PASS env_water_p1 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_water_p1 :: wme=0.2500 want=0.2500
+[BG8BPROBE] FAIL ms_base_water_p1 :: MOVEMENT_SPEED=0.1250 want=0.100000
+[BG8BPROBE] FAIL swim_value_water_p1 :: SWIM_SPEED=1.0000 want=1.2500
+[BG8BPROBE] FAIL swim_ids_water_p1 :: ourIds=[] want=[swim_speed_water_helmet]
+[BG8BPROBE] FAIL client_swim_value_water_p1 :: client SWIM_SPEED=1.0000 want=1.2500
+[BG8BPROBE] FAIL client_swim_ids_water_p1 :: clientIds=[] want=[swim_speed_water_helmet]
+[BG8BPROBE] INFO move_water_p1 :: distance=6.6542 (40 ticks) startZ=-42.7455 endZ=-36.1859 endY=200.0000 endInWater=true
+[BG8BPROBE] PASS move_happened_water_p1 :: distance=6.6542
+[BG8BPROBE] PASS move_not_clipped_water_p1 :: endZ=-36.1859 wallZ=0
+[BG8BPROBE] PASS predicted_abs_water_p1 :: measured=6.6542 predicted=7.0198 ratio=0.9479
+[BG8BPROBE] INFO sample_water_p2 :: inWater=true onGround=true swim=1.0000 wme=0.5000 ms=0.1500 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1500
+[BG8BPROBE] PASS env_water_p2 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_water_p2 :: wme=0.5000 want=0.5000
+[BG8BPROBE] FAIL ms_base_water_p2 :: MOVEMENT_SPEED=0.1500 want=0.100000
+[BG8BPROBE] FAIL swim_value_water_p2 :: SWIM_SPEED=1.0000 want=1.5000
+[BG8BPROBE] FAIL swim_ids_water_p2 :: ourIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet]
+[BG8BPROBE] FAIL client_swim_value_water_p2 :: client SWIM_SPEED=1.0000 want=1.5000
+[BG8BPROBE] FAIL client_swim_ids_water_p2 :: clientIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet]
+[BG8BPROBE] INFO move_water_p2 :: distance=10.1894 (40 ticks) startZ=-40.9293 endZ=-30.7399 endY=200.0000 endInWater=true
+[BG8BPROBE] PASS move_happened_water_p2 :: distance=10.1894
+[BG8BPROBE] PASS move_not_clipped_water_p2 :: endZ=-30.7399 wallZ=0
+[BG8BPROBE] PASS predicted_abs_water_p2 :: measured=10.1894 predicted=10.3974 ratio=0.9800
+[BG8BPROBE] INFO sample_water_p3 :: inWater=true onGround=true swim=1.0000 wme=0.7500 ms=0.1750 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1500
+[BG8BPROBE] PASS env_water_p3 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_water_p3 :: wme=0.7500 want=0.7500
+[BG8BPROBE] FAIL ms_base_water_p3 :: MOVEMENT_SPEED=0.1750 want=0.100000
+[BG8BPROBE] FAIL swim_value_water_p3 :: SWIM_SPEED=1.0000 want=1.7500
+[BG8BPROBE] FAIL swim_ids_water_p3 :: ourIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] FAIL client_swim_value_water_p3 :: client SWIM_SPEED=1.0000 want=1.7500
+[BG8BPROBE] FAIL client_swim_ids_water_p3 :: clientIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] INFO move_water_p3 :: distance=13.6773 (40 ticks) startZ=-39.1950 endZ=-25.5177 endY=200.0000 endInWater=true
+[BG8BPROBE] PASS move_happened_water_p3 :: distance=13.6773
+[BG8BPROBE] PASS move_not_clipped_water_p3 :: endZ=-25.5177 wallZ=0
+[BG8BPROBE] PASS predicted_abs_water_p3 :: measured=13.6773 predicted=13.9564 ratio=0.9800
+[BG8BPROBE] INFO sample_water_p4 :: inWater=true onGround=true swim=1.0000 wme=1.0000 ms=0.2000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.2000
+[BG8BPROBE] PASS env_water_p4 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_water_p4 :: wme=1.0000 want=1.0000
+[BG8BPROBE] FAIL ms_base_water_p4 :: MOVEMENT_SPEED=0.2000 want=0.100000
+[BG8BPROBE] FAIL swim_value_water_p4 :: SWIM_SPEED=1.0000 want=2.0000
+[BG8BPROBE] FAIL swim_ids_water_p4 :: ourIds=[] want=[swim_speed_water_boots, swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] FAIL client_swim_value_water_p4 :: client SWIM_SPEED=1.0000 want=2.0000
+[BG8BPROBE] FAIL client_swim_ids_water_p4 :: clientIds=[] want=[swim_speed_water_boots, swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] INFO move_water_p4 :: distance=17.2687 (40 ticks) startZ=-37.3848 endZ=-20.1161 endY=200.0000 endInWater=true
+[BG8BPROBE] PASS move_happened_water_p4 :: distance=17.2687
+[BG8BPROBE] PASS move_not_clipped_water_p4 :: endZ=-20.1161 wallZ=0
+[BG8BPROBE] PASS predicted_abs_water_p4 :: measured=17.2687 predicted=17.6211 ratio=0.9800
+[BG8BPROBE] INFO sample_land_p0 :: inWater=false onGround=true swim=1.0000 wme=0.0000 ms=0.1000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.2000
+[BG8BPROBE] PASS env_land_p0 :: inWater=false
+[BG8BPROBE] PASS wme_unchanged_land_p0 :: wme=0.0000 want=0.0000
+[BG8BPROBE] PASS ms_base_land_p0 :: MOVEMENT_SPEED=0.1000 want=0.100000
+[BG8BPROBE] PASS swim_value_land_p0 :: SWIM_SPEED=1.0000 want=1.0000
+[BG8BPROBE] PASS swim_ids_land_p0 :: ourIds=[] want=[]
+[BG8BPROBE] PASS client_swim_value_land_p0 :: client SWIM_SPEED=1.0000 want=1.0000
+[BG8BPROBE] PASS client_swim_ids_land_p0 :: clientIds=[] want=[]
+[BG8BPROBE] INFO move_land_p0 :: distance=8.6344 (40 ticks) startZ=-41.4424 endZ=-32.8081 endY=220.0000 endInWater=false
+[BG8BPROBE] PASS move_happened_land_p0 :: distance=8.6344
+[BG8BPROBE] PASS move_not_clipped_land_p0 :: endZ=-32.8081 wallZ=0
+[BG8BPROBE] FAIL predicted_abs_land_p0 :: measured=8.6344 predicted=3.9954 ratio=2.1611
+[BG8BPROBE] INFO sample_land_p1 :: inWater=false onGround=true swim=1.0000 wme=0.2500 ms=0.1000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1000
+[BG8BPROBE] PASS env_land_p1 :: inWater=false
+[BG8BPROBE] PASS wme_unchanged_land_p1 :: wme=0.2500 want=0.2500
+[BG8BPROBE] PASS ms_base_land_p1 :: MOVEMENT_SPEED=0.1000 want=0.100000
+[BG8BPROBE] FAIL swim_value_land_p1 :: SWIM_SPEED=1.0000 want=1.2500
+[BG8BPROBE] FAIL swim_ids_land_p1 :: ourIds=[] want=[swim_speed_water_helmet]
+[BG8BPROBE] FAIL client_swim_value_land_p1 :: client SWIM_SPEED=1.0000 want=1.2500
+[BG8BPROBE] FAIL client_swim_ids_land_p1 :: clientIds=[] want=[swim_speed_water_helmet]
+[BG8BPROBE] INFO move_land_p1 :: distance=8.6344 (40 ticks) startZ=-41.4424 endZ=-32.8081 endY=220.0000 endInWater=false
+[BG8BPROBE] PASS move_happened_land_p1 :: distance=8.6344
+[BG8BPROBE] PASS move_not_clipped_land_p1 :: endZ=-32.8081 wallZ=0
+[BG8BPROBE] FAIL predicted_abs_land_p1 :: measured=8.6344 predicted=6.0712 ratio=1.4222
+[BG8BPROBE] INFO sample_land_p2 :: inWater=false onGround=true swim=1.0000 wme=0.5000 ms=0.1000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1000
+[BG8BPROBE] PASS env_land_p2 :: inWater=false
+[BG8BPROBE] PASS wme_unchanged_land_p2 :: wme=0.5000 want=0.5000
+[BG8BPROBE] PASS ms_base_land_p2 :: MOVEMENT_SPEED=0.1000 want=0.100000
+[BG8BPROBE] FAIL swim_value_land_p2 :: SWIM_SPEED=1.0000 want=1.5000
+[BG8BPROBE] FAIL swim_ids_land_p2 :: ourIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet]
+[BG8BPROBE] FAIL client_swim_value_land_p2 :: client SWIM_SPEED=1.0000 want=1.5000
+[BG8BPROBE] FAIL client_swim_ids_land_p2 :: clientIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet]
+[BG8BPROBE] INFO move_land_p2 :: distance=8.6344 (40 ticks) startZ=-41.4424 endZ=-32.8081 endY=220.0000 endInWater=false
+[BG8BPROBE] PASS move_happened_land_p2 :: distance=8.6344
+[BG8BPROBE] PASS move_not_clipped_land_p2 :: endZ=-32.8081 wallZ=0
+[BG8BPROBE] FAIL predicted_abs_land_p2 :: measured=8.6344 predicted=7.3393 ratio=1.1765
+[BG8BPROBE] INFO sample_land_p3 :: inWater=false onGround=true swim=1.0000 wme=0.7500 ms=0.1000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1000
+[BG8BPROBE] PASS env_land_p3 :: inWater=false
+[BG8BPROBE] PASS wme_unchanged_land_p3 :: wme=0.7500 want=0.7500
+[BG8BPROBE] PASS ms_base_land_p3 :: MOVEMENT_SPEED=0.1000 want=0.100000
+[BG8BPROBE] FAIL swim_value_land_p3 :: SWIM_SPEED=1.0000 want=1.7500
+[BG8BPROBE] FAIL swim_ids_land_p3 :: ourIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] FAIL client_swim_value_land_p3 :: client SWIM_SPEED=1.0000 want=1.7500
+[BG8BPROBE] FAIL client_swim_ids_land_p3 :: clientIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] INFO move_land_p3 :: distance=8.6344 (40 ticks) startZ=-41.4424 endZ=-32.8081 endY=220.0000 endInWater=false
+[BG8BPROBE] PASS move_happened_land_p3 :: distance=8.6344
+[BG8BPROBE] PASS move_not_clipped_land_p3 :: endZ=-32.8081 wallZ=0
+[BG8BPROBE] PASS predicted_abs_land_p3 :: measured=8.6344 predicted=8.1946 ratio=1.0537
+[BG8BPROBE] INFO sample_land_p4 :: inWater=false onGround=true swim=1.0000 wme=1.0000 ms=0.1000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1000
+[BG8BPROBE] PASS env_land_p4 :: inWater=false
+[BG8BPROBE] PASS wme_unchanged_land_p4 :: wme=1.0000 want=1.0000
+[BG8BPROBE] PASS ms_base_land_p4 :: MOVEMENT_SPEED=0.1000 want=0.100000
+[BG8BPROBE] FAIL swim_value_land_p4 :: SWIM_SPEED=1.0000 want=2.0000
+[BG8BPROBE] FAIL swim_ids_land_p4 :: ourIds=[] want=[swim_speed_water_boots, swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] FAIL client_swim_value_land_p4 :: client SWIM_SPEED=1.0000 want=2.0000
+[BG8BPROBE] FAIL client_swim_ids_land_p4 :: clientIds=[] want=[swim_speed_water_boots, swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] INFO move_land_p4 :: distance=8.6344 (40 ticks) startZ=-41.4424 endZ=-32.8081 endY=220.0000 endInWater=false
+[BG8BPROBE] PASS move_happened_land_p4 :: distance=8.6344
+[BG8BPROBE] PASS move_not_clipped_land_p4 :: endZ=-32.8081 wallZ=0
+[BG8BPROBE] PASS predicted_abs_land_p4 :: measured=8.6344 predicted=8.8106 ratio=0.9800
+[BG8BPROBE] INFO sample_ascend_p0 :: inWater=true onGround=true swim=1.0000 wme=0.0000 ms=0.1000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1000
+[BG8BPROBE] PASS env_ascend_p0 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_ascend_p0 :: wme=0.0000 want=0.0000
+[BG8BPROBE] PASS ms_base_ascend_p0 :: MOVEMENT_SPEED=0.1000 want=0.100000
+[BG8BPROBE] PASS swim_value_ascend_p0 :: SWIM_SPEED=1.0000 want=1.0000
+[BG8BPROBE] PASS swim_ids_ascend_p0 :: ourIds=[] want=[]
+[BG8BPROBE] PASS client_swim_value_ascend_p0 :: client SWIM_SPEED=1.0000 want=1.0000
+[BG8BPROBE] PASS client_swim_ids_ascend_p0 :: clientIds=[] want=[]
+[BG8BPROBE] INFO move_ascend_p0 :: rise=6.9919 (40 ticks) startZ=-4.5000 endZ=-4.5000 endY=309.8000 endInWater=true
+[BG8BPROBE] PASS move_happened_ascend_p0 :: rise=6.9919
+[BG8BPROBE] PASS ascend_stayed_submerged_ascend_p0 :: endY=309.8000 endInWater=true
+[BG8BPROBE] INFO sample_ascend_p1 :: inWater=true onGround=true swim=1.0000 wme=0.2500 ms=0.1250 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1250
+[BG8BPROBE] PASS env_ascend_p1 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_ascend_p1 :: wme=0.2500 want=0.2500
+[BG8BPROBE] FAIL ms_base_ascend_p1 :: MOVEMENT_SPEED=0.1250 want=0.100000
+[BG8BPROBE] FAIL swim_value_ascend_p1 :: SWIM_SPEED=1.0000 want=1.2500
+[BG8BPROBE] FAIL swim_ids_ascend_p1 :: ourIds=[] want=[swim_speed_water_helmet]
+[BG8BPROBE] FAIL client_swim_value_ascend_p1 :: client SWIM_SPEED=1.0000 want=1.2500
+[BG8BPROBE] FAIL client_swim_ids_ascend_p1 :: clientIds=[] want=[swim_speed_water_helmet]
+[BG8BPROBE] INFO move_ascend_p1 :: rise=6.9919 (40 ticks) startZ=-4.5000 endZ=-4.5000 endY=309.8000 endInWater=true
+[BG8BPROBE] PASS move_happened_ascend_p1 :: rise=6.9919
+[BG8BPROBE] PASS ascend_stayed_submerged_ascend_p1 :: endY=309.8000 endInWater=true
+[BG8BPROBE] INFO sample_ascend_p2 :: inWater=true onGround=true swim=1.0000 wme=0.5000 ms=0.1500 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1500
+[BG8BPROBE] PASS env_ascend_p2 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_ascend_p2 :: wme=0.5000 want=0.5000
+[BG8BPROBE] FAIL ms_base_ascend_p2 :: MOVEMENT_SPEED=0.1500 want=0.100000
+[BG8BPROBE] FAIL swim_value_ascend_p2 :: SWIM_SPEED=1.0000 want=1.5000
+[BG8BPROBE] FAIL swim_ids_ascend_p2 :: ourIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet]
+[BG8BPROBE] FAIL client_swim_value_ascend_p2 :: client SWIM_SPEED=1.0000 want=1.5000
+[BG8BPROBE] FAIL client_swim_ids_ascend_p2 :: clientIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet]
+[BG8BPROBE] INFO move_ascend_p2 :: rise=6.9919 (40 ticks) startZ=-4.5000 endZ=-4.5000 endY=309.8000 endInWater=true
+[BG8BPROBE] PASS move_happened_ascend_p2 :: rise=6.9919
+[BG8BPROBE] PASS ascend_stayed_submerged_ascend_p2 :: endY=309.8000 endInWater=true
+[BG8BPROBE] INFO sample_ascend_p3 :: inWater=true onGround=true swim=1.0000 wme=0.7500 ms=0.1750 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.1750
+[BG8BPROBE] PASS env_ascend_p3 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_ascend_p3 :: wme=0.7500 want=0.7500
+[BG8BPROBE] FAIL ms_base_ascend_p3 :: MOVEMENT_SPEED=0.1750 want=0.100000
+[BG8BPROBE] FAIL swim_value_ascend_p3 :: SWIM_SPEED=1.0000 want=1.7500
+[BG8BPROBE] FAIL swim_ids_ascend_p3 :: ourIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] FAIL client_swim_value_ascend_p3 :: client SWIM_SPEED=1.0000 want=1.7500
+[BG8BPROBE] FAIL client_swim_ids_ascend_p3 :: clientIds=[] want=[swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] INFO move_ascend_p3 :: rise=6.9919 (40 ticks) startZ=-4.5000 endZ=-4.5000 endY=309.8000 endInWater=true
+[BG8BPROBE] PASS move_happened_ascend_p3 :: rise=6.9919
+[BG8BPROBE] PASS ascend_stayed_submerged_ascend_p3 :: endY=309.8000 endInWater=true
+[BG8BPROBE] INFO sample_ascend_p4 :: inWater=true onGround=true swim=1.0000 wme=1.0000 ms=0.2000 ourIds=[] clientSwim=1.0000 clientIds=[] clientMs=0.2000
+[BG8BPROBE] PASS env_ascend_p4 :: inWater=true
+[BG8BPROBE] PASS wme_unchanged_ascend_p4 :: wme=1.0000 want=1.0000
+[BG8BPROBE] FAIL ms_base_ascend_p4 :: MOVEMENT_SPEED=0.2000 want=0.100000
+[BG8BPROBE] FAIL swim_value_ascend_p4 :: SWIM_SPEED=1.0000 want=2.0000
+[BG8BPROBE] FAIL swim_ids_ascend_p4 :: ourIds=[] want=[swim_speed_water_boots, swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] FAIL client_swim_value_ascend_p4 :: client SWIM_SPEED=1.0000 want=2.0000
+[BG8BPROBE] FAIL client_swim_ids_ascend_p4 :: clientIds=[] want=[swim_speed_water_boots, swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] INFO move_ascend_p4 :: rise=6.9919 (40 ticks) startZ=-4.5000 endZ=-4.5000 endY=309.8000 endInWater=true
+[BG8BPROBE] PASS move_happened_ascend_p4 :: rise=6.9919
+[BG8BPROBE] PASS ascend_stayed_submerged_ascend_p4 :: endY=309.8000 endInWater=true
+[BG8BPROBE] INFO swim_state_unequip_before_water_p4 :: value=1.0000 ids=[] want=2.0000
+[BG8BPROBE] FAIL unequip_before_water_p4_value :: value=1.0000 want=2.0000
+[BG8BPROBE] FAIL unequip_before_water_p4_ids :: ids=[] want=[swim_speed_water_boots, swim_speed_water_chestplate, swim_speed_water_helmet, swim_speed_water_leggings]
+[BG8BPROBE] INFO swim_state_unequip_after_water_p0 :: value=1.0000 ids=[] want=1.0000
+[BG8BPROBE] PASS unequip_after_water_p0_value :: value=1.0000 want=1.0000
+[BG8BPROBE] PASS unequip_after_water_p0_ids :: ids=[] want=[]
+[BG8BPROBE] INFO swim_state_unequip_after_water_p0_client :: value=1.0000 ids=[] want=1.0000
+[BG8BPROBE] PASS unequip_after_water_p0_client_value :: value=1.0000 want=1.0000
+[BG8BPROBE] PASS unequip_after_water_p0_client_ids :: ids=[] want=[]
+[BG8BPROBE] INFO forceload_release :: levelForcedCount=0 (forced at build = 25)
+[BG8BPROBE] PASS forceload_released :: stillForced=0
+[BG8BPROBE] PASS tick_liveness_server :: serverPlayerTicks=1339
+[BG8BPROBE] PASS tick_liveness_client :: localPlayerTicks=1200
+[BG8BPROBE] INFO ratio_water_p0 :: measured=1.0000 sourcePredicted=1.0000 swimOnlyFactor=1.0000 move_n=3.6126 move_0=3.6126
+[BG8BPROBE] INFO ratio_water_p1 :: measured=1.8419 sourcePredicted=1.7570 swimOnlyFactor=1.0000 move_n=6.6542 move_0=3.6126
+[BG8BPROBE] PASS ratio_matches_source_water_p1 :: measured=1.8419 predicted=1.7570
+[BG8BPROBE] INFO ratio_water_p2 :: measured=2.8205 sourcePredicted=2.6023 swimOnlyFactor=1.0000 move_n=10.1894 move_0=3.6126
+[BG8BPROBE] FAIL ratio_matches_source_water_p2 :: measured=2.8205 predicted=2.6023
+[BG8BPROBE] INFO ratio_water_p3 :: measured=3.7860 sourcePredicted=3.4931 swimOnlyFactor=1.0000 move_n=13.6773 move_0=3.6126
+[BG8BPROBE] FAIL ratio_matches_source_water_p3 :: measured=3.7860 predicted=3.4931
+[BG8BPROBE] INFO ratio_water_p4 :: measured=4.7801 sourcePredicted=4.4104 swimOnlyFactor=1.0000 move_n=17.2687 move_0=3.6126
+[BG8BPROBE] FAIL ratio_matches_source_water_p4 :: measured=4.7801 predicted=4.4104
+[BG8BPROBE] INFO ratio_land_p0 :: measured=1.0000 move_n=8.6344 move_0=8.6344
+[BG8BPROBE] PASS land_ratio_is_1_p0 :: land ratio=1.0000 (8.6344 / 8.6344)
+[BG8BPROBE] INFO ratio_land_p1 :: measured=1.0000 move_n=8.6344 move_0=8.6344
+[BG8BPROBE] PASS land_ratio_is_1_p1 :: land ratio=1.0000 (8.6344 / 8.6344)
+[BG8BPROBE] INFO ratio_land_p2 :: measured=1.0000 move_n=8.6344 move_0=8.6344
+[BG8BPROBE] PASS land_ratio_is_1_p2 :: land ratio=1.0000 (8.6344 / 8.6344)
+[BG8BPROBE] INFO ratio_land_p3 :: measured=1.0000 move_n=8.6344 move_0=8.6344
+[BG8BPROBE] PASS land_ratio_is_1_p3 :: land ratio=1.0000 (8.6344 / 8.6344)
+[BG8BPROBE] INFO ratio_land_p4 :: measured=1.0000 move_n=8.6344 move_0=8.6344
+[BG8BPROBE] PASS land_ratio_is_1_p4 :: land ratio=1.0000 (8.6344 / 8.6344)
+[BG8BPROBE] INFO ratio_ascend_p0 :: measured=1.0000 rise_n=6.9919 rise_0=6.9919
+[BG8BPROBE] INFO ratio_ascend_p1 :: measured=1.0000 rise_n=6.9919 rise_0=6.9919
+[BG8BPROBE] INFO ratio_ascend_p2 :: measured=1.0000 rise_n=6.9919 rise_0=6.9919
+[BG8BPROBE] INFO ratio_ascend_p3 :: measured=1.0000 rise_n=6.9919 rise_0=6.9919
+[BG8BPROBE] INFO ratio_ascend_p4 :: measured=1.0000 rise_n=6.9919 rise_0=6.9919
+[BG8BPROBE] INFO summary_water :: [ascend_p0=1.0000, ascend_p1=1.0000, ascend_p2=1.0000, ascend_p3=1.0000, ascend_p4=1.0000]
+[BG8BPROBE] INFO SUMMARY :: pass=99 fail=64
+[BG8BPROBE] INFO probe_finished
+[19:59:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (bg8bprobe): All chunks are saved

@@ -1,0 +1,38 @@
+# bg-15w 第四轮续工 §8.3：B 级（构建 + 5 个校验器）原始输出摘要
+
+> 会话时间 2026-10-02 20:0x；工作树 = **探针已整块删除之后**的最终形态（jar 里不含任何探针类）。
+> stderr 一律单独重定向（`2>build\bg8b-final-*.err`），判读看 `BUILD SUCCESSFUL` 与各校验器的退出码。
+
+```
+$ .\gradlew.bat compileJava                          → BUILD SUCCESSFUL（exit 0）
+$ .\gradlew.bat runData                              → BUILD SUCCESSFUL（exit 0，21 s；兼作 Bootstrap/mixin 冒烟）
+$ .\gradlew.bat processResources jar --rerun-tasks    → BUILD SUCCESSFUL（exit 0，17 s）
+      build/libs/bettergold-1.5.0.jar = 1,089,658 B
+
+$ python tools\asset-generator\validate_metal_assets.py → exit 0
+      （六套金属各 item=29 / block=10 / armor=2；专属材料缺件 0；贴图缺失 0；420 个 JSON 全解析）
+
+$ python tools\asset-generator\validate_metal_data.py   → exit 0
+      小刀标签缺成员: 0 []
+      武器附魔标签缺成员/多余胚底: 0 []
+      bg-15w 续工轮（tooltip 键 + 双向条件配方 + 胚底条件可见）问题: 0 []
+      装备分区顺序（§8.1）问题: 0 []
+      游泳速度 SWIM_SPEED（§8.3 新口径）问题: 0 []      ← 本轮整块换成新口径的断言族
+      bg-15w §八 追加轮② 问题合计: 0 []
+
+$ python tools\asset-generator\validate_trim_assets.py  → exit 0（写出 build/p15fix-asset-audit.txt）
+
+$ python tools\asset-generator\check_jar_clean.py       → exit 0
+      jar 内 *Probe* 路径 = 0 []
+      jar 内含 'halt' 字节的 class = 0 []
+      jar 内含 'BG-PROBE' 常量的 class = 0 []
+      jar 内文件总数 = 1882
+
+$ python tools\asset-generator\check_forced_chunks.py   → exit 0
+      data.Forced = [] / data.Forced length = 0 / chunks.dat 侧 forceload 为 0 = True
+```
+
+## 关卡自身的扰动实测（改坏 ⇒ 必须红 ⇒ 改回 ⇒ 绿）
+
+见本目录 `03-关卡扰动实测.txt`（输出）与 `05-扰动脚本-bg8b-perturb.py.txt`（脚本副本）。
+共 **1 条基线 + 6 条改坏 + 1 条"只改注释必须仍绿"的反向对照 + 1 条收尾基线**，**mismatches = 0**。

@@ -55,11 +55,16 @@
 - 「1% 移速」必须用 **`ADD_MULTIPLIED_TOTAL`**；用 `ADD_VALUE` 会因为基础移速 0.1 变成 **−10%** `【实测】docs/1.5-规格.md:462`。
 - 吸收值会被原版 `MAX_ABSORPTION`（默认 0）夹住，**必须自己挂属性修饰符** `【实测】docs/1.5-规格.md:823`。
 - 远程武器的命中派发要用 **`DamageSource#getWeaponItem()`**，不能用主手物品（换手/投掷离手会漏判）。
-- **`MOVEMENT_SPEED` 在水里不是最终乘数**：`LivingEntity#travel` 的水中分支里它只以
-  `f5 += (getSpeed() - f5) * f6` 参与（`f6` = `WATER_MOVEMENT_EFFICIENCY`，`!onGround()` 时还会 ×0.5）
-  ⇒ 「水中 +25%/件」的属性值精确，但**端到端位移比值会超线性**（实测 1.76/2.60/3.49/4.41）。
-  要**位移**严格 ×1.25/件，那一层该落在 **`neoforge:swim_speed`**（`f5 *= getAttributeValue(SWIM_SPEED)`，
-  只在水里那一段被读、`setSyncable(true)`）。详见 `docs/1.5-规格.md` §17.3 / §17.4。
+- **`MOVEMENT_SPEED` 在水里不是最终乘数** ⇒ 17:44 那版「运行期给 `MOVEMENT_SPEED` 挂条件修饰符」
+  **已被作者 19:42 推翻并整块删除**（旧口径实测：属性比值精确 ×1.25/件，端到端位移却是 1.7570/2.6023/3.4931/4.4104）。
+  现行口径 = **`neoforge:swim_speed`**（`NeoForgeMod.SWIM_SPEED`，`PercentageAttribute` 基值 1.0、`setSyncable(true)`）：
+  **常驻物品属性**、`ADD_VALUE` 每件 +0.25、`travel` 水里那一段**最后一步**
+  `f5 *= getAttributeValue(SWIM_SPEED)` 直接乘上去 ⇒ **这一层自己的位移倍率精确 = 1 + 0.25×件数**
+  （实测 1.2501/1.5000/1.7500/2.0000，对照上一轮"只有浅水那条"的留档）；上浮/下潜也吃它。
+  ⚠ **总位移仍 ≈ 1.90/2.76/3.59/4.41**：被要求**原样保留**的浅水那条自己就贡献 1.52→2.21，两者**相乘**。
+- **属性修饰符 id 的规律随场景反转**：**物品常驻属性**（每件各挂一份）⇒ **每个部位不同 id**
+  （`swim_speed_<部位>`、`swim_speed_water_<部位>`）；**运行期只维护一个总值** ⇒ **同一个 id**。
+  写反的后果：前者"穿 4 件只算 1 件"、后者"效果翻倍"（本仓两种都踩过）。详见 `docs/1.5-规格.md` §17.8 / §13.5。
 - **属性是否 `setSyncable(true)` 决定客户端看不看得见**：`MOVEMENT_SPEED` 是（客户端逐值相同），
   `KNOCKBACK_RESISTANCE` **不是**（客户端恒 0，那是原版行为）——见 `docs/1.5-规格.md` §16.2 / §17.3。
 - **`GEAR_SLOT` 一表两用**（既定装备顺序、又判"是不是金属装备"）：作者给的清单漏项时

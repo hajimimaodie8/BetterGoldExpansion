@@ -51,9 +51,12 @@ public final class AllMetals {
      *   <li>盔甲：护甲 5·10·8·5、耐久 814·1184·1110·962、附魔 24、韧性 6、击退抗性 15%、
      *       单件即猪灵中立；每件 25% 窒息 / 溺水抗性 + 每件 25% 给攻击者叠沉淀，四件全套完全免疫 + 100%；
      *       另外<b>每件 +25% 游泳速度</b>（1.5 修正⑤：{@code WATER_MOVEMENT_EFFICIENCY}，四件打满 100%）；
-     *       <b>再新增一条</b>「真正的水中游泳速度」（bg-15w §8.3：水中时挂 {@code MOVEMENT_SPEED}
-     *       {@code ADD_MULTIPLIED_TOTAL}，值 = 0.25 × 件数、一个 id {@code bettergold:swim_speed_water}，
-     *       出水 / 脱甲即移除；见 {@code MetalEvents#onSwimSpeedTick}）。两条<b>并存、不合并</b>。</li>
+     *       <b>再新增一条</b>「真正的游泳速度」（bg-15w §8.3，作者 2026-10-02 <b>19:42 整节重做</b>的裁定：
+     *       {@code NeoForgeMod.SWIM_SPEED} / {@code neoforge:swim_speed}，{@code ADD_VALUE} +0.25，
+     *       值 = 1 + 0.25 × 件数、<b>每个部位一个 id</b> {@code swim_speed_water_<部位>}，
+     *       与浅水那条一起挂在 {@code MetalFamily.MetalArmorItem#getDefaultAttributeModifiers()} —— 常驻属性，
+     *       只在水里那一段被读；<b>17:44 那版往 {@code MOVEMENT_SPEED} 挂条件修饰符的实现已被作者推翻并删除</b>，
+     *       见 {@code docs/1.5-规格.md} §17.4 / §17.8）。两条<b>并存、不合并</b>。</li>
      * </ul>
      */
     public static final MetalFamily INDIGOSEAGOLD = MetalFamily.register(

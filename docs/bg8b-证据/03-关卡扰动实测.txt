@@ -1,0 +1,9 @@
+OK    baseline validate_metal_data                 exit=0
+OK    A SWIM_SPEED reverted to WATER_MOVEMENT_EFFICIENCY (comment keeps the name) exit=1 expect_hit=True (NeoForgeMod.SWIM_SPEED)
+OK    B per-piece id collapsed to ONE shared id                  exit=1 expect_hit=True (swim_speed_water_)
+OK    C ADD_VALUE reverted to ADD_MULTIPLIED_TOTAL (last occurrence only) exit=1 expect_hit=True (ADD_MULTIPLIED_TOTAL)
+OK    D zero-guard loosened (0.0F -> -1.0F, reaches the other five families) exit=1 expect_hit=True (swimSpeedPerPiece <= 0.0F)
+OK    E old runtime entry onSwimSpeedTick re-introduced in MetalEvents code exit=1 expect_hit=True (onSwimSpeedTick)
+OK    F SWIM_SPEED_PER_PIECE 0.25F -> 0.5F                       exit=1 expect_hit=True (0.25F)
+OK    G INVERSE control: comment-only mention of forbidden names must stay GREEN exit=0 expect=exit0
+OK    baseline after restore validate_metal_data   exit=0

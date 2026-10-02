@@ -121,15 +121,31 @@ public final class MetalFamily {
     // ==================== 1.5 修正轮新增的数值 ====================
 
     /**
-     * 靛海金盔甲每件提供的游泳速度（{@link net.minecraft.world.entity.ai.attributes.Attributes#WATER_MOVEMENT_EFFICIENCY}）：
-     * 25% = 0.25，四件叠加正好 1.0（该属性是 {@code RangedAttribute(0.0, 0.0, 1.0)}，上限就是 1.0）。
+     * 靛海金盔甲每件提供的游泳速度：25% = 0.25，四件叠加 = 2.0（= 200%）。
      *
-     * <p>⚠ <b>这一个值只管「浅水 / 贴水面移动效率」那一半</b>（原版 Depth Strider 那条）。
-     * bg-15w §8.3 之后还有<b>第二条</b>加成 —— 真正的水中游泳速度，它<b>不在这里</b>：
-     * 那条是运行期条件修饰符（水中才挂，{@code MOVEMENT_SPEED + ADD_MULTIPLIED_TOTAL}，
-     * 值 = {@code MetalEvents.SWIM_SPEED_WATER_PER_PIECE × 件数}，一个 id
-     * {@code bettergold:swim_speed_water}），见 {@code MetalEvents#onSwimSpeedTick}。
-     * 两条并存；这个常量与四个 {@code swim_speed_<部位>} 的 id 一个字都没动。</p>
+     * <p>⚠ <b>这个值现在同时喂两条属性</b>（都在
+     * {@link MetalArmorItem#getDefaultAttributeModifiers()}，随装备槽位自动生效/失效）：
+     * <ol>
+     *   <li>{@link net.minecraft.world.entity.ai.attributes.Attributes#WATER_MOVEMENT_EFFICIENCY}
+     *       —— 浅水 / 贴水面移动效率（原版 Depth Strider 那条），是
+     *       {@code RangedAttribute(0.0, 0.0, 1.0)}，四件正好打满 1.0。四件共用同一个 id 会按 id 去重
+     *       ⇒「穿 4 件只算 1 件」，所以**每个部位一个 id**（{@code swim_speed_<部位>}，
+     *       1.5 修正轮修过的 bug，见 {@code docs/1.5-规格.md} §13.5）；</li>
+     *   <li>{@link net.neoforged.neoforge.common.NeoForgeMod#SWIM_SPEED} —— <b>真正的「游泳速度」</b>
+     *       （bg-15w §8.3，作者 2026-10-02 19:42 裁定的口径）：属性基值 1.0
+     *       （{@code PercentageAttribute("neoforge.swim_speed", 1.0, 0.0, 1024.0).setSyncable(true)}），
+     *       {@code ADD_VALUE} +0.25 ⇒ 1.25 = 125%、四件 2.0 = 200%。
+     *       它在 {@code LivingEntity#travel} 的水中分支**最后一步**被直接乘上去
+     *       （{@code f5 *= getAttributeValue(SWIM_SPEED)}）⇒ 位移严格 ×(1 + 0.25×件数)；
+     *       而且**只在水里那一段被读** ⇒ 陆地逐值不变。同样**每个部位一个 id**
+     *       （{@code swim_speed_water_<部位>}），理由与上面第 1 条完全一样。</li>
+     * </ol>
+     * <p>两条<b>并存、不合并</b>（作者原话：「戒指<b>也</b>自带…」）。</p>
+     *
+     * <p>⚠ 历史：17:44 那一版「真正的游泳速度」是在 {@code MetalEvents#onSwimSpeedTick} 里
+     * 给 {@code MOVEMENT_SPEED} 挂条件修饰符，**已被作者 19:42 整节推翻并删除**（改口径的理由见
+     * {@code docs/1.5-规格.md} §17.4：{@code MOVEMENT_SPEED} 在水里不是最终乘数，
+     * 端到端位移会超线性到 1.76/2.60/3.49/4.41）。</p>
      */
     public static final float SWIM_SPEED_PER_PIECE = 0.25F;
 
@@ -1006,6 +1022,11 @@ public final class MetalFamily {
          * 该属性是 {@code RangedAttribute("generic.water_movement_efficiency", 0.0, 0.0, 1.0)}
          * （{@code Attributes.java:145-147}），<b>上限就是 1.0</b>，所以四件 ×25% 正好打满、
          * 再多也不会超过 100%（会被夹到 1.0）。</p>
+         *
+         * <p>bg-15w §8.3（作者 2026-10-02 19:42 重做的口径）：同一个常量<b>还</b>喂第二条属性
+         * {@link net.neoforged.neoforge.common.NeoForgeMod#SWIM_SPEED}（<b>真正的「游泳速度」</b>，
+         * {@code LivingEntity#travel} 水中分支的最后一步 {@code f5 *= getAttributeValue(SWIM_SPEED)}）。
+         * 两条都在 {@link #getDefaultAttributeModifiers()} 里挂、都<b>每个部位一个 id</b>。</p>
          */
         private final float swimSpeedPerPiece;
 
@@ -1025,13 +1046,25 @@ public final class MetalFamily {
         }
 
         /**
-         * 在盔甲自身的属性（护甲 / 韧性 / 击退抗性）之后追加「每件游泳速度」。
+         * 在盔甲自身的属性（护甲 / 韧性 / 击退抗性）之后追加<b>两条</b>游泳相关的常驻属性：
+         * <ol>
+         *   <li>{@code WATER_MOVEMENT_EFFICIENCY}（浅水 / 贴水面效率，原版 Depth Strider 那条）；</li>
+         *   <li>{@code NeoForgeMod.SWIM_SPEED}（<b>真正的「游泳速度」</b>，bg-15w §8.3 作者 19:42 裁定的口径）。</li>
+         * </ol>
          *
          * <p>必须覆写这个<b>无参</b>版本：{@code ArmorItem} 把护甲/韧性/击退抗性做成
          * {@code defaultModifiers} 懒加载表，{@code ItemStack#getAttributeModifiers()} 最终走到
          * {@code IItemExtension#getDefaultAttributeModifiers(ItemStack)}，而它的默认实现就是回调本方法
          * （{@code IItemExtension.java:431} 一带）。用 {@code Item.Properties#attributes(...)} 整份替换
          * 反而会把护甲加成一起丢掉，所以这里只在原表上追加。</p>
+         *
+         * <p><b>为什么 {@code SWIM_SPEED} 可以（而且应该）挂在这里</b>（这是本轮最关键的判断）：
+         * 它是<b>常驻</b>属性，但 {@code LivingEntity#travel} 只在<b>水中分支的最后一步</b>读它
+         * （{@code f5 *= getAttributeValue(SWIM_SPEED)}）⇒ <b>陆地天然不受影响</b>，
+         * 因此不需要任何 tick / {@code isInWater()} 条件 / 状态维护；
+         * 而 17:44 那一版往 {@code MOVEMENT_SPEED} 上挂条件修饰符，正是因为没有它才被迫做运行期维护
+         * （且 {@code MOVEMENT_SPEED} 在水里不是最终乘数 ⇒ 端到端位移超线性，
+         * 见 {@code docs/1.5-规格.md} §17.4 与 §17.8）。</p>
          */
         @Override
         public ItemAttributeModifiers getDefaultAttributeModifiers() {
@@ -1039,7 +1072,8 @@ public final class MetalFamily {
             if (this.swimSpeedPerPiece <= 0.0F) {
                 return base;
             }
-            return base.withModifierAdded(
+            // ① 浅水 / 贴水面移动效率（1.5 修正轮修过的 bug，一个字都不许动）
+            ItemAttributeModifiers withEfficiency = base.withModifierAdded(
                     net.minecraft.world.entity.ai.attributes.Attributes.WATER_MOVEMENT_EFFICIENCY,
                     new net.minecraft.world.entity.ai.attributes.AttributeModifier(
                             // 每一个部位一个 id：属性修饰符按 id 去重，四件共用同一个 id 会互相覆盖，
@@ -1047,6 +1081,22 @@ public final class MetalFamily {
                             // 原版盔甲也是这么做的：ArmorItem 用 "armor." + type.getName()。
                             ResourceLocation.fromNamespaceAndPath(bettergold.MODID,
                                     "swim_speed_" + this.getType().getName()),
+                            this.swimSpeedPerPiece,
+                            net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
+                    net.minecraft.world.entity.EquipmentSlotGroup.bySlot(this.getType().getSlot()));
+            // ② 真正的「游泳速度」（bg-15w §8.3 · 作者 2026-10-02 19:42 裁定改用 SWIM_SPEED）
+            //    · 属性：neoforge:swim_speed（PercentageAttribute，基值 1.0、0..1024、setSyncable(true)）
+            //    · 操作：ADD_VALUE（与参考模组 Aether Gravitation 海皇戒指的 ADDITION 同构）
+            //      ⇒ +0.25 = 125%、四件 +1.0 = 200%；它是 PercentageAttribute，tooltip 自带百分比形态
+            //    · id：**每个部位一个**（`swim_speed_water_<部位>`）—— 与①同一类去重规则，
+            //      物品常驻属性是"每件各挂一份"，共用一个 id 就会被去重成"只算一件"。
+            //      ⚠ 这与"运行期只维护一个总值"的场景**正好相反**（那种必须同一个 id）：
+            //      本文件 `MetalEvents.ABSORPTION_CAP_ID` 是后者。别再搞反。
+            return withEfficiency.withModifierAdded(
+                    net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED,
+                    new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                            ResourceLocation.fromNamespaceAndPath(bettergold.MODID,
+                                    "swim_speed_water_" + this.getType().getName()),
                             this.swimSpeedPerPiece,
                             net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
                     net.minecraft.world.entity.EquipmentSlotGroup.bySlot(this.getType().getSlot()));

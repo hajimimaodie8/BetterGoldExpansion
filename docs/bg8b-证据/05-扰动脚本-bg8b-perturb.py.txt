@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Temporary perturbation harness (bg-15w 4th continuation, §8.3 SWIM_SPEED static checkers).
+
+For each case: perturb one source file on disk, run the validator, require exit 1 AND the
+expected substring in stdout, then restore the original bytes and verify SHA256 is back.
+Case G is the INVERSE control: a comment-only perturbation must stay exit 0 (the checker must
+strip comments, otherwise a comment mentioning MOVEMENT_SPEED would be a false red).
+Baseline (no perturbation) must exit 0.
+
+Temporary: deleted at wrap-up (a copy is archived under docs/).
+"""
+import hashlib
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+JAVA = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold"
+METAL_EVENTS = JAVA / "material" / "MetalEvents.java"
+METAL_FAMILY = JAVA / "material" / "MetalFamily.java"
+VALIDATOR = REPO / "tools" / "asset-generator" / "validate_metal_data.py"
+
+ENV = dict(os.environ)
+ENV["PYTHONIOENCODING"] = "utf-8"
+
+SWIM_ADD = "net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED,"
+GUARD = "swimSpeedPerPiece <= 0.0F"
+PIECE_ID = '"swim_speed_water_" + this.getType().getName()'
+ABSORPTION_ANCHOR = "    private static final net.minecraft.resources.ResourceLocation ABSORPTION_CAP_ID ="
+
+
+def sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def run_validator():
+    p = subprocess.run([sys.executable, str(VALIDATOR)], capture_output=True, cwd=str(REPO), env=ENV)
+    out = (p.stdout or b"").decode("utf-8", "replace") + (p.stderr or b"").decode("utf-8", "replace")
+    return p.returncode, out
+
+
+def sub_once(text, old, new):
+    if text.count(old) != 1:
+        raise SystemExit("PERTURB TARGET NOT UNIQUE: %r count=%d" % (old, text.count(old)))
+    return text.replace(old, new)
+
+
+def sub_last(text, old, new):
+    i = text.rfind(old)
+    if i < 0:
+        raise SystemExit("PERTURB TARGET NOT FOUND: %r" % (old,))
+    return text[:i] + new + text[i + len(old):]
+
+
+def insert_before(text, anchor, added):
+    return sub_once(text, anchor, added + anchor)
+
+
+CASES = [
+    # name, file, transform(text) -> text, expected substring in validator stdout, want_green
+    ("A SWIM_SPEED reverted to WATER_MOVEMENT_EFFICIENCY (comment keeps the name)",
+     METAL_FAMILY,
+     lambda t: sub_once(t, SWIM_ADD,
+                        "net.minecraft.world.entity.ai.attributes.Attributes.WATER_MOVEMENT_EFFICIENCY,"
+                        " // NeoForgeMod.SWIM_SPEED"),
+     "NeoForgeMod.SWIM_SPEED", False),
+    ("B per-piece id collapsed to ONE shared id",
+     METAL_FAMILY,
+     lambda t: sub_once(t, PIECE_ID, '"swim_speed_water"'),
+     "swim_speed_water_", False),
+    ("C ADD_VALUE reverted to ADD_MULTIPLIED_TOTAL (last occurrence only)",
+     METAL_FAMILY,
+     lambda t: sub_last(t, "AttributeModifier.Operation.ADD_VALUE",
+                        "AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL"),
+     "ADD_MULTIPLIED_TOTAL", False),
+    ("D zero-guard loosened (0.0F -> -1.0F, reaches the other five families)",
+     METAL_FAMILY,
+     lambda t: sub_once(t, GUARD, "swimSpeedPerPiece <= -1.0F"),
+     GUARD, False),
+    ("E old runtime entry onSwimSpeedTick re-introduced in MetalEvents code",
+     METAL_EVENTS,
+     lambda t: insert_before(t, ABSORPTION_ANCHOR,
+                             "    public static void onSwimSpeedTick("
+                             "net.neoforged.neoforge.event.tick.EntityTickEvent.Post event) {\n    }\n\n"),
+     "onSwimSpeedTick", False),
+    ("F SWIM_SPEED_PER_PIECE 0.25F -> 0.5F",
+     METAL_FAMILY,
+     lambda t: sub_once(t, "SWIM_SPEED_PER_PIECE = 0.25F", "SWIM_SPEED_PER_PIECE = 0.5F"),
+     "0.25F", False),
+    ("G INVERSE control: comment-only mention of forbidden names must stay GREEN",
+     METAL_FAMILY,
+     lambda t: sub_once(t, "ItemAttributeModifiers base = super.getDefaultAttributeModifiers();",
+                        "// MOVEMENT_SPEED ADD_MULTIPLIED_TOTAL swim_speed_water (comment only)\n"
+                        "            ItemAttributeModifiers base = super.getDefaultAttributeModifiers();"),
+     "", True),
+]
+
+lines = []
+
+
+def emit(s):
+    print(s)
+    lines.append(s)
+
+
+code, out = run_validator()
+emit("OK    baseline validate_metal_data                 exit=%d" % code)
+if code != 0:
+    emit("ABORT baseline is not green; tail: " + out[-900:])
+    raise SystemExit(1)
+
+failures = 0
+for name, path, transform, expect, want_green in CASES:
+    original = path.read_bytes()
+    before = sha(path)
+    text = original.decode("utf-8")
+    new_text = transform(text)
+    if new_text == text:
+        emit("BAD   %s :: perturbation had no effect" % name)
+        failures += 1
+        continue
+    path.write_bytes(new_text.encode("utf-8"))
+    try:
+        code, out = run_validator()
+    finally:
+        path.write_bytes(original)
+    if sha(path) != before:
+        emit("BAD   %s :: restore FAILED (sha mismatch)" % name)
+        failures += 1
+        continue
+    hit = expect in out
+    if want_green:
+        ok = (code == 0)
+        detail = "expect=exit0"
+    else:
+        ok = (code == 1 and hit)
+        detail = "expect_hit=%s (%s)" % (hit, expect)
+    emit("%s %-58s exit=%d %s" % ("OK   " if ok else "BAD  ", name, code, detail))
+    if not ok:
+        failures += 1
+        emit("      tail: " + out[-700:].replace("\n", " | "))
+
+code, out = run_validator()
+emit("OK    baseline after restore validate_metal_data   exit=%d" % code)
+if code != 0:
+    failures += 1
+
+(REPO / "build" / "bg8b-perturb.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+emit("mismatches = %d" % failures)
+raise SystemExit(1 if failures else 0)
