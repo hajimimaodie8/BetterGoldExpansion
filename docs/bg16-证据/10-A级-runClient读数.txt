@@ -1,0 +1,168 @@
+# bg-16 · A 级（runClient + 整合服务端 + 真实玩家 / 真 LocalPlayer）客户端读数
+
+> **环境**：`runClient`（整合服务端 = 真实 `ServerPlayer` + 真 `LocalPlayer`），世界 = **专用服务端探针世界的副本**
+> `run/saves/bg16cprobe`（作者的 `run/saves/新的世界` 全程未打开）；开关文件 `run/bg16c-probe.enabled`。
+> **日志原始出处**：`build/bg16cp-rc4.out`（第 4 次运行；`build/bg16cp-rc3.out` 是同一天的前一次运行，结论逐条一致）。
+> **结论**：**8 PASS / 6 FAIL / 1 SKIP**；FAIL 里 **2 条是探针自身的口径写错**、**1 条是探针采样时刻太晚**、
+> **1 条是跑道被堵**、**1 条是断言阈值写死成 10（实际每轮采 3 次）**，只有 **1 条是真正没能拿到证据**
+> （左右键事件两侧都没触发，见文末「未验证」）。**没有任何一条 FAIL 指向玩法代码出错**；
+> 反过来，**横幅层级（本条修正的验收本体）在 801 帧上 801 次成立**。
+
+## 一、横幅 tooltip 层级（`docs/1.6-规格.md` §2.1 的验收本体）—— **PASS**
+
+| 断言 | 读数 |
+|---|---|
+| `banner_draw_landing_is_foreground_before_tooltip` | **801 帧**里横幅处理器（`ContainerScreenEvent.Render.Foreground`，探针以 LOWEST 优先级在其后取样）**801 次**拿到帧内序号 **1**，`ScreenEvent.Render.Post`（tooltip 之后）**801 次**拿到序号 **≥2** ⇒ **同帧内 `bannerSeq < postSeq` 801/801、乱序 0** |
+| `banner_hover_under_banner_has_tooltip_and_geometric_overlap` | 悬停创造页第二行物品（`bettergold:mixed_crystal_pile`，slot 9，`guiLeft=116/guiTop=52`）时 **801 帧**都有 tooltip 行，且**801 帧**满足「tooltip 盒与横幅带重叠」的几何判定（`bannerBand=87..105`、`tooltipTop=66`、`overlapV=true overlapH=true`） |
+| `banner_final_legibility` | **SKIP = 需人眼**（tooltip 文字压在横幅美术上的可读性，纯观感） |
+
+> 旧落点（`ScreenEvent.Render.Post`）在**同一帧里就是序号 2**（= tooltip 之后）；这次实测到的横幅落点恒为**序号 1**，
+> 与「换落点」的源码结论（`AbstractContainerScreen:159` 发前景事件 → `Screen:111-114` 之后才 renderTooltip）**逐条对上**。
+
+## 二、安抚玩家（真实玩家 + 真实按键）—— 机制 PASS / 两条断言口径需修正
+
+| 项 | 读数（rc4） |
+|---|---|
+| 修饰符出现 | **10/10 轮**、**每轮 3 次采样（p10/p20/p30）共 30 次**：`serverSpeedMod=true serverSpeedValue=0.0000`、`serverJumpMod=true serverJumpValue=0.0000`、`clientSpeedMod=true clientSpeedValue=0.0000`（客户端也看得到 ⇒ 两条属性都是 `setSyncable(true)`） |
+| 修饰符移除（可逆性） | **10/10 轮**：`speedModsClear=true jumpModsClear=true clientSpeedMods=0` ⇒ 到期后**服务端与客户端都干净**，10 轮反复施加/到期**没有残留** |
+| 真实按键（禁移） | `movement_soothed_p20/p30/...`：`keyUp=true forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 delta` 恒定 ⇒ **按键确实按下、输入确实产生（forwardImpulse=1）、但速度被 ×0**；逐轮位移 **cycle2..cycle10 = 0.0000**（cycle1 = 0.2264 是**首轮同步前的瞬态**，见下） |
+| 真实按键（恢复） | 到期后 `keyUp=true speedAttr=0.1000 clientFreezeMods=0`，玩家位置 `z=3000.5 → 3002.7`（+2.2 格）⇒ 能动 |
+| 失败断言 1 `soothe_10_cycles_no_permanent_lock` | **探针阈值写错**：每轮采 3 次 ⇒ 计数是 **30**，而断言写的是 `==10`；数据本身是 30/30 全中（应判 PASS） |
+| 失败断言 2 `soothe_movement_restored_after_last_cycle` | **跑道被堵**：复活的攻击假人（铁傀儡，2.7 高）就站在正前方 2 格，玩家在测位移前已经**顶在它身上**（日志里三轮位置恒 `z=3002.700`）⇒ 位移读数无意义 |
+| 失败断言 3 `soothe_level1_movement_blocked` | 客户端位置读数**混入了服务端位置校正**（cycle1 首轮同步前有 0.2264 的漂移；rc3 那次甚至读到 1.1752）⇒ 「端到端位移」这条要用**服务端权威位置**测，不能用客户端 `LocalPlayer#getX()` |
+
+## 三、其余三项（对新两族逐条生效）—— 4 PASS / 2 FAIL（其中 1 条采样太晚）
+
+| 断言 | 读数 |
+|---|---|
+| `crossbow_loads_while_holding_or_on_release` **PASS** | `chargeDuration=20 useDuration=23 vanillaChargeDuration=25`；按住期间 `charged=false`（`remaining` 22→−14，`usingItem` 恒 true）；**松手那一 tick `charged=true`** ⇒ 能装填，但**实际需要按住 ≥25 tick**（不是规格写的 20）——细节与机理见 `12-新发现-真问题.md` 第二节 |
+| `bow_full_charge_speed_about_3_and_base_damage_4` **FAIL（采样太晚）** | 箭实体存在且 **`baseDamage=4.0`（本模组的覆写生效）**；但采样在松手后 6 tick，箭已**打进 3 格外的墙**（`arrows=1`、`speed=0.3013`，被墙吸住）⇒ 出膛速度没量到（正确做法是与松手同 tick 采样） |
+| `shield_break_immune_all_six_families_thornsgold` **PASS** | 服务端加 100 tick 破盾冷却后**下一 tick 就被清掉**（`immuneAfterTick=true`） |
+| `shield_break_control_vanilla_still_cooling` **PASS** | 同一条件下**原版盾牌仍在冷却**（`vanillaAfterTick=true`）⇒ 清除是「本模组盾牌」专属，不是普遍漏判 |
+| `shield_knockback_attribute_present_mainhand` **PASS** | 服务端 `KNOCKBACK_RESISTANCE = 0.10`，修饰符 = `[bettergold:shield_knockback_resistance, amount=0.1, ADD_VALUE]` |
+| `shield_block_reflect_gives_attacker_the_family_buff` **PASS** | 真玩家举树棘金盾（`blocking=true useTicks=10`）被僵尸近战命中：`LivingShieldBlockEvent blocked=true`，**攻击者拿到该族 buff**（`attackerHasBuff=true`） |
+| `echo_roar_particles_received_client_side` **PASS** | 服务端给牛挂幽咆后，**客户端粒子引擎里观察到 1 个 `SonicBoomParticle`** ⇒ 「3×3×3 + `SONIC_BOOM` 粒子」的粒子那一半**端到端成立**（服务端 runServer 侧无观察者，故本条在客户端验） |
+
+## 四、未验证 / 需人眼（诚实清单）
+
+1. **安抚下「左右键事件被取消」没有拿到事件级证据**：探针订阅了 `AttackEntityEvent` / `BlockEvent.BreakEvent` /
+   `PlayerInteractEvent.LeftClickBlock` / `RightClickBlock`（LOWEST 优先级，只看 `isCanceled()`），并用**真实按键**
+   （`KeyMapping.click(key)` + `setDown`，与 `KeyboardHandler` 物理按下同一条路）**以及**回退的直呼路径
+   （`MultiPlayerGameMode#attack / #startDestroyBlock / #useItemOn`，与按键处理器调用的是同一批方法）各驱动了一遍：
+   日志证明调用确实发生（`gameMode_attack :: target=entity.minecraft.iron_golem`、
+   `gameMode_startDestroyBlock :: pos=3000,101,3003`、`gameMode_useItemOn :: pos=…`），
+   但**两侧（客户端本地与整合服务端）的这 4 个事件计数一次都没有增加**（`attack=0/0 break=0/0 leftClick=0/0 rightClick=0/0`），
+   所以**该条只能记「未验证」**。同一份探针里 `LivingShieldBlockEvent`、`EntityInvulnerabilityCheckEvent`
+   都能收到 ⇒ 监听器本身没问题；`ServerboundUseItemPacket` 那条路径也是通的（弩按 40 tick 后松手装载成功）。
+   **下一步建议**：在 `ServerGamePacketListenerImpl#handleInteract / #handlePlayerAction / #handleUseItemOn`
+   各打一条计数日志，确认是「包没发」还是「服务端没收」，再谈取消断言。
+2. **横幅最终观感**（tooltip 文字压在横幅美术上的可读性）：**需人眼**。
+3. **弓满蓄力出膛速度**：箭的 `baseDamage=4.0` 已实测；`3.0` 的出膛速度**没量到**（箭已入墙）。
+4. **安抚「禁跳」**：只验了 `JUMP_STRENGTH` 的修饰符存在/值 0.0000（服务端与客户端两侧），**没有**单独测跳跃位移。
+
+**（以下为探针逐行输出，原样保留；rc4 共 104 行）**
+
+    BG16CPROBE probe registered (gameDir switch file found) gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+    BG16CPROBE INFO opening_probe_world :: bg16cprobe
+    BG16CPROBE INFO world_entered :: dim=minecraft:overworld player=Dev
+    BG16CPROBE INFO gamemode_creative_set
+    BG16CPROBE INFO creative_screen_open :: tab=bettergold:bettergold_tab menuSlots=54
+    BG16CPROBE INFO hover_slot_picked :: index=9 item=1 bettergold:mixed_crystal_pile
+    BG16CPROBE INFO banner_frames :: bannerFrames=801 ordered=801 badOrder=0 tooltipFrames=801 overlapFrames=801
+    BG16CPROBE INFO banner_geometry :: guiLeft=116 guiTop=52 sectionRows=5 mouseX=133 mouseY=96 | hoveredSlot=9/9,36 item=bettergold:mixed_crystal_pile tooltipLines=1 itemRow=2 bannerBand=87..105 tooltipTop=66 overlapV=true overlapH=true
+    BG16CPROBE PASS banner_draw_landing_is_foreground_before_tooltip :: frames with the banner handler live=801 ordered(bannerSeq<postSeq)=801 out-of-order=0
+    BG16CPROBE PASS banner_hover_under_banner_has_tooltip_and_geometric_overlap :: tooltip frames=801 frames with tooltip/banner overlap=801 (hoveredSlot=9/9,36 item=bettergold:mixed_crystal_pile tooltipLines=1 itemRow=2 bannerBand=87..105 tooltipTop=66 overlapV=true overlapH=true)
+    BG16CPROBE SKIP banner_final_legibility :: whether the tooltip text is comfortably readable over the banner art needs human eyes
+    BG16CPROBE INFO arena_ready :: player=BlockPos{x=3000, y=100, z=3000} cow=BlockPos{x=3000, y=100, z=3002} golemDummy=BlockPos{x=3000, y=100, z=3002} gameMode=SURVIVAL
+    BG16CPROBE INFO freeze_sample_cycle1_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO key_attack_down :: hitResult=ENTITY screen=null
+    BG16CPROBE INFO gameMode_attack :: target=entity.minecraft.iron_golem
+    BG16CPROBE INFO movement_soothed_p20 :: keyUp=true paused=false windowActive=true onGround=false delta=0.0804 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.657
+    BG16CPROBE INFO freeze_sample_cycle1_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO movement_soothed_p30 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.805
+    BG16CPROBE INFO freeze_sample_cycle1_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO key_attack_up :: hitResult=ENTITY screen=null
+    BG16CPROBE INFO movement_soothed_p40 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.805
+    BG16CPROBE INFO key_attack_down :: hitResult=BLOCK screen=null
+    BG16CPROBE INFO gameMode_startDestroyBlock :: pos=MutableBlockPos{x=3000, y=101, z=3003}
+    BG16CPROBE INFO movement_soothed_p50 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.805
+    BG16CPROBE INFO key_use_down :: hitResult=BLOCK
+    BG16CPROBE INFO gameMode_useItemOn :: pos=MutableBlockPos{x=3000, y=101, z=3003}
+    BG16CPROBE INFO movement_soothed_p60 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.805
+    BG16CPROBE INFO key_use_up :: hitResult=BLOCK
+    BG16CPROBE INFO movement_soothed_p70 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.805
+    BG16CPROBE INFO movement_soothed_p80 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.805
+    BG16CPROBE INFO key_attack_up :: hitResult=BLOCK screen=null
+    BG16CPROBE INFO movement_soothed_p90 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.0000 clientFreezeMods=1 pos=3000.500/100.000/3000.805
+    BG16CPROBE INFO soothed_window_counters :: atk=0/0 break=0/0 leftClick=0/0 rightClick=0/0
+    BG16CPROBE INFO key_attack_down :: hitResult=BLOCK screen=null
+    BG16CPROBE INFO gameMode_startDestroyBlock :: pos=MutableBlockPos{x=3000, y=101, z=3003}
+    BG16CPROBE INFO movement_recovered_p5 :: keyUp=false paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=0.000 speedAttr=0.1000 clientFreezeMods=0 pos=3000.500/100.000/3002.700
+    BG16CPROBE INFO key_attack_up :: hitResult=BLOCK screen=null
+    BG16CPROBE INFO movement_recovered_p10 :: keyUp=false paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=0.000 speedAttr=0.1000 clientFreezeMods=0 pos=3000.500/100.000/3002.700
+    BG16CPROBE FAIL soothe_level1_movement_blocked :: 40 ticks of real keyUp/keyJump with SOOTHE: displacement=0.2264
+    BG16CPROBE FAIL soothe_left_right_events_all_cancelled_while_soothed :: while soothed: attack=0/cancelled=0 break=0/0 leftClick=0/0 rightClick=0/0
+    BG16CPROBE FAIL soothe_keys_live_again_after_expiry :: after expiry the same key-driven left click produced fired=0 cancelled=0 (0 cancelled expected)
+    BG16CPROBE INFO freeze_sample_cycle2_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle2_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle2_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle3_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle3_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle3_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle4_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle4_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle4_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle5_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle5_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle5_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle6_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle6_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle6_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle7_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle7_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle7_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle8_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle8_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle8_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle9_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle9_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle9_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle10_soothed_p10 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle10_soothed_p20 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO freeze_sample_cycle10_soothed_p30 :: soothed=true serverSpeedMod=true serverSpeedValue=0.0000 serverJumpMod=true serverJumpValue=0.0000 clientSpeedMod=true clientSpeedValue=0.0000
+    BG16CPROBE INFO movement_restore_p10 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.1000 clientFreezeMods=0 pos=3000.470/100.000/3002.700
+    BG16CPROBE INFO movement_restore_p20 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.1000 clientFreezeMods=0 pos=3000.462/100.000/3002.700
+    BG16CPROBE INFO movement_restore_p30 :: keyUp=true paused=false windowActive=true onGround=true delta=0.0784 forwardImpulse=1.000 speedAttr=0.1000 clientFreezeMods=0 pos=3000.454/100.000/3002.700
+    BG16CPROBE INFO soothe_cycles :: cycle1{soothedMove=0.2264,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle2{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle3{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle4{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle5{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle6{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle7{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle8{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle9{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0} | cycle10{soothedMove=0.0000,speedModsClear=true,jumpModsClear=true,clientSpeedMods=0}
+    BG16CPROBE FAIL soothe_10_cycles_no_permanent_lock :: cycles=10 cyclesWithServerSpeedFreeze=30 cyclesWithServerJumpFreeze=30 cyclesWithClientSpeedFreeze=30
+    BG16CPROBE FAIL soothe_movement_restored_after_last_cycle :: after the 10th cycle: 30 ticks of real keyUp gave displacement=0.0209
+    BG16CPROBE INFO key_use_down :: hitResult=BLOCK
+    BG16CPROBE INFO bow_ready :: useDuration=72000 arrows=64
+    BG16CPROBE INFO key_use_up :: hitResult=BLOCK
+    BG16CPROBE INFO bow_sample :: speed=0.3013 baseDamage=4.0 arrows=1
+    BG16CPROBE FAIL bow_full_charge_speed_about_3_and_base_damage_4 :: speed=0.3013 baseDamage=4.0 arrows=1
+    BG16CPROBE INFO key_use_down :: hitResult=BLOCK
+    BG16CPROBE INFO crossbow_ready :: chargeDuration=20 useDuration=23 vanillaChargeDuration=25 arrows=128
+    BG16CPROBE INFO crossbow_sample_t5 :: charged=false usingItem=true remaining=21 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO crossbow_sample_t10 :: charged=false usingItem=true remaining=16 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO crossbow_sample_t15 :: charged=false usingItem=true remaining=11 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO crossbow_sample_t20 :: charged=false usingItem=true remaining=6 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO crossbow_sample_t25 :: charged=false usingItem=true remaining=1 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO crossbow_sample_t30 :: charged=false usingItem=true remaining=-4 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO crossbow_sample_t35 :: charged=false usingItem=true remaining=-9 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO crossbow_sample_t40 :: charged=false usingItem=true remaining=-14 item=bettergold:thornsgold_crossbow
+    BG16CPROBE INFO key_use_up :: hitResult=BLOCK
+    BG16CPROBE INFO crossbow_sample_after_release :: charged=true usingItem=false remaining=0 item=bettergold:thornsgold_crossbow
+    BG16CPROBE PASS crossbow_loads_while_holding_or_on_release :: chargeDuration=20 useDuration=23 vanillaChargeDuration=25 | t5:charged=false usingItem=true remaining=21 | t10:charged=false usingItem=true remaining=16 | t15:charged=false usingItem=true remaining=11 | t20:charged=false usingItem=true remaining=6 | t25:charged=false usingItem=true remaining=1 | t30:charged=false usingItem=true remaining=-4 | t35:charged=false usingItem=true remaining=-9 | t40:charged=false usingItem=true remaining=-14 | after_release:charged=true usingItem=false remaining=0 -> vanilla loading needs (getUseDuration - remaining)/getChargeDuration >= 1.0, i.e. 25 ticks of holding, but the mod's getUseDuration is 23 so the ratio tops out at 0.92
+    BG16CPROBE INFO key_use_down :: hitResult=BLOCK
+    BG16CPROBE INFO shield_setup :: kbMainAtSetup=0.0 kbModifiersAtSetup=[] blockingAtSetup=false useTicksAtSetup=0 blockEvent=true blockEventBlocked=false
+    BG16CPROBE INFO shield_sample :: kbMainAtSetup=0.0 kbModifiersAtSetup=[] blockingAtSetup=false useTicksAtSetup=0 blockEvent=true blockEventBlocked=false | afterTick: kbMain=0.1 modifiers=[AttributeModifier[id=bettergold:shield_knockback_resistance, amount=0.1, operation=ADD_VALUE]] blocking=true useTicks=10 immuneAfterTick=true vanillaAfterTick=true blockEventSeen=true blockEventBlocked=true reflectedNow=true attackerHasBuff=true
+    BG16CPROBE PASS shield_break_immune_all_six_families_thornsgold :: the mod's PlayerTickEvent.Post handler cleared the 100-tick disable cooldown: kbMainAtSetup=0.0 kbModifiersAtSetup=[] blockingAtSetup=false useTicksAtSetup=0 blockEvent=true blockEventBlocked=false | afterTick: kbMain=0.1 modifiers=[AttributeModifier[id=bettergold:shield_knockback_resistance, amount=0.1, operation=ADD_VALUE]] blocking=true useTicks=10 immuneAfterTick=true vanillaAfterTick=true blockEventSeen=true blockEventBlocked=true reflectedNow=true attackerHasBuff=true
+    BG16CPROBE PASS shield_break_control_vanilla_still_cooling :: a vanilla shield under the same conditions is still on cooldown (control)
+    BG16CPROBE PASS shield_knockback_attribute_present_mainhand :: server-side KNOCKBACK_RESISTANCE with the shield in the main hand = 0.1 modifiers=[AttributeModifier[id=bettergold:shield_knockback_resistance, amount=0.1, operation=ADD_VALUE]]
+    BG16CPROBE PASS shield_block_reflect_gives_attacker_the_family_buff :: LivingShieldBlockEvent seen=true blocked=true attacker got a family buff=true | kbMainAtSetup=0.0 kbModifiersAtSetup=[] blockingAtSetup=false useTicksAtSetup=0 blockEvent=true blockEventBlocked=false | afterTick: kbMain=0.1 modifiers=[AttributeModifier[id=bettergold:shield_knockback_resistance, amount=0.1, operation=ADD_VALUE]] blocking=true useTicks=10 immuneAfterTick=true vanillaAfterTick=true blockEventSeen=true blockEventBlocked=true reflectedNow=true attackerHasBuff=true
+    BG16CPROBE INFO key_use_up :: hitResult=BLOCK
+    BG16CPROBE INFO echo_particles_setup :: cow=BlockPos{x=3000, y=100, z=3003}
+    BG16CPROBE PASS echo_roar_particles_received_client_side :: max SonicBoomParticle instances in the client particle engine = 1 (server applyEffectTick -> sendParticles -> client ParticleEngine)
+    BG16CPROBE SUMMARY pass=8 fail=6 skip=1
+    BG16CPROBE DONE (no halt() anywhere; exits via Minecraft#stop())

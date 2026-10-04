@@ -1,0 +1,55 @@
+[21:07:28] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.21.1
+[21:07:28] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "bg15yprobe"
+[21:07:29] [worldgen/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[21:07:29] [Server thread/INFO] [minecraft/DedicatedServer]: Done (1.098s)! For help, type "help"
+BG15Y-PROBE switch=E:\mc\mcmod\bettergold-template-1.21.1\run\bg15y-probe.enabled exists=true
+BG15Y-PROBE forceloaded chunks=8
+BG15Y-PROBE ---- building at gameTime=743
+BG15Y-PROBE built case=indigoseagold_pillar_1layer block=bettergold:indigoseagold_pillar baseY=129 beaconY=130 layers=1 expect=1
+BG15Y-PROBE built case=illusiongold_pillar_1layer block=bettergold:illusiongold_pillar baseY=132 beaconY=133 layers=1 expect=1
+BG15Y-PROBE built case=indigoseagold_pillar_2layers block=bettergold:indigoseagold_pillar baseY=125 beaconY=126 layers=2 expect=2
+BG15Y-PROBE built case=illusiongold_pillar_2layers block=bettergold:illusiongold_pillar baseY=119 beaconY=120 layers=2 expect=2
+BG15Y-PROBE built case=sturdygold_pillar_1layer block=bettergold:sturdygold_pillar baseY=125 beaconY=126 layers=1 expect=1
+BG15Y-PROBE built case=thundergold_pillar_1layer block=bettergold:thundergold_pillar baseY=92 beaconY=93 layers=1 expect=1
+BG15Y-PROBE built case=vanilla_iron_block_1layer block=minecraft:iron_block baseY=101 beaconY=102 layers=1 expect=1
+BG15Y-PROBE built case=stone_1layer_NEGATIVE block=minecraft:stone baseY=109 beaconY=110 layers=1 expect=0
+BG15Y-PROBE ---- runtime tag dump: #minecraft:beacon_base_blocks, bettergold entries
+BG15Y-PROBE tag_bettergold_count=18
+BG15Y-PROBE tag_member bettergold:flamegold_block
+BG15Y-PROBE tag_member bettergold:flamegold_bricks
+BG15Y-PROBE tag_member bettergold:flamegold_pillar
+BG15Y-PROBE tag_member bettergold:gold_bricks
+BG15Y-PROBE tag_member bettergold:gold_pillar
+BG15Y-PROBE tag_member bettergold:illusiongold_block
+BG15Y-PROBE tag_member bettergold:illusiongold_bricks
+BG15Y-PROBE tag_member bettergold:indigoseagold_block
+BG15Y-PROBE tag_member bettergold:indigoseagold_bricks
+BG15Y-PROBE tag_member bettergold:sturdygold_block
+BG15Y-PROBE tag_member bettergold:sturdygold_bricks
+BG15Y-PROBE tag_member bettergold:sturdygold_pillar
+BG15Y-PROBE tag_member bettergold:thundergold_block
+BG15Y-PROBE tag_member bettergold:thundergold_bricks
+BG15Y-PROBE tag_member bettergold:thundergold_pillar
+BG15Y-PROBE tag_member bettergold:voodoogold_block
+BG15Y-PROBE tag_member bettergold:voodoogold_bricks
+BG15Y-PROBE tag_member bettergold:voodoogold_pillar
+BG15Y-PROBE tag_pillar_present bettergold:sturdygold_pillar=true
+BG15Y-PROBE tag_pillar_present bettergold:flamegold_pillar=true
+BG15Y-PROBE tag_pillar_present bettergold:voodoogold_pillar=true
+BG15Y-PROBE tag_pillar_present bettergold:thundergold_pillar=true
+BG15Y-PROBE tag_pillar_present bettergold:indigoseagold_pillar=false
+BG15Y-PROBE tag_pillar_present bettergold:illusiongold_pillar=false
+BG15Y-PROBE ---- sampling at gameTime=983 (gameTime%80=23)
+BG15Y-PROBE case=indigoseagold_pillar_1layer block=bettergold:indigoseagold_pillar pos=104,130,100 layers=1 levels_field=0 levels_nbt=0 beamSections(public)=0 beamSections(field)=1 color0=n/a baseBlockTagMember=false expect=1 FAIL
+BG15Y-PROBE case=illusiongold_pillar_1layer block=bettergold:illusiongold_pillar pos=120,133,100 layers=1 levels_field=0 levels_nbt=0 beamSections(public)=0 beamSections(field)=1 color0=n/a baseBlockTagMember=false expect=1 FAIL
+BG15Y-PROBE case=indigoseagold_pillar_2layers block=bettergold:indigoseagold_pillar pos=136,126,100 layers=2 levels_field=0 levels_nbt=0 beamSections(public)=0 beamSections(field)=1 color0=n/a baseBlockTagMember=false expect=2 FAIL
+BG15Y-PROBE case=illusiongold_pillar_2layers block=bettergold:illusiongold_pillar pos=152,120,100 layers=2 levels_field=0 levels_nbt=0 beamSections(public)=0 beamSections(field)=1 color0=n/a baseBlockTagMember=false expect=2 FAIL
+BG15Y-PROBE case=sturdygold_pillar_1layer block=bettergold:sturdygold_pillar pos=168,126,100 layers=1 levels_field=1 levels_nbt=1 beamSections(public)=1 beamSections(field)=1 color0=0xF9FFFE height0=2 baseBlockTagMember=true expect=1 PASS
+BG15Y-PROBE case=thundergold_pillar_1layer block=bettergold:thundergold_pillar pos=184,93,100 layers=1 levels_field=1 levels_nbt=1 beamSections(public)=1 beamSections(field)=1 color0=0xF9FFFE height0=2 baseBlockTagMember=true expect=1 PASS
+BG15Y-PROBE case=vanilla_iron_block_1layer block=minecraft:iron_block pos=200,102,100 layers=1 levels_field=1 levels_nbt=1 beamSections(public)=1 beamSections(field)=1 color0=0xF9FFFE height0=2 baseBlockTagMember=true expect=1 PASS
+BG15Y-PROBE case=stone_1layer_NEGATIVE block=minecraft:stone pos=216,110,100 layers=1 levels_field=0 levels_nbt=0 beamSections(public)=0 beamSections(field)=1 color0=n/a baseBlockTagMember=false expect=0 PASS
+BG15Y-PROBE forceload_released=8 stillForced=0 (expect 0)
+BG15Y-PROBE SUMMARY pass=4 fail=4
+[21:07:46] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[21:07:46] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 40s

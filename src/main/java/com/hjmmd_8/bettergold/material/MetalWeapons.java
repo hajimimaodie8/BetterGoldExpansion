@@ -44,7 +44,16 @@ public final class MetalWeapons {
     /** 弓：箭矢基础伤害（规格 12.2「弹射物伤害 4.0」；落点 = {@code AbstractArrow#baseDamage}） */
     public static final float BOW_PROJECTILE_DAMAGE = 4.0F;
 
-    /** 弩：蓄力秒数（规格 12.2「蓄力时间 1 秒」） */
+    /**
+     * 弩：本模组自己声称的蓄力秒数（规格 12.2「蓄力时间 1 秒」）。
+     *
+     * <p>⚠ <b>它不等于装载门槛</b>：{@code CrossbowItem#releaseUsing} 的「装满」判定除以的是
+     * <b>static</b> 的 {@code CrossbowItem.getChargeDuration}（基础 1.25 秒 = <b>25 tick</b>），
+     * 而 {@code CrossbowItem#getUseDuration} 是 {@code getChargeDuration + 3}。本常量只出现在
+     * {@link MetalCrossbowItem#chargeDuration} 里，后者又只被 {@code getUseDuration} 与客户端拉弓谓词
+     * 用到 ⇒ 实际装满仍需按住 ≥ 25 tick。A 级依据与更正见
+     * {@code docs/bg16-证据/12-新发现-真问题.md} 第二节、{@code docs/1.5-规格.md} §12.2「⚠ 更正」块。</p>
+     */
     public static final float CROSSBOW_CHARGE_SECONDS = 1.0F;
 
     /** 弩：箭矢弹速（规格 12.2「弹射物速度 4.5」） */
@@ -162,30 +171,46 @@ public final class MetalWeapons {
     }
 
     /**
-     * 弩：蓄力 {@value #CROSSBOW_CHARGE_SECONDS} 秒（原版 1.25 秒 = 25 tick → 目标 20 tick），
-     * 箭矢弹速 {@value #CROSSBOW_ARROW_POWER}（原版 3.15）。
+     * 弩：箭矢弹速 {@value #CROSSBOW_ARROW_POWER}（原版 3.15）。
      *
-     * <h2>蓄力 20 tick 的落点（两处，缺一不可）</h2>
-     * <ol>
-     *   <li><b>{@link #getUseDuration}</b> 返回我们自己的「20 + 3」：原版是
-     *       {@code getChargeDuration(stack, entity) + 3}（25 + 3 = 28），
-     *       而 {@code CrossbowItem#releaseUsing} 的「装满」判定是
-     *       {@code getPowerForTime(i, stack, entity) = i / getChargeDuration(...) >= 1.0F}。
-     *       两个 i 都来自同一个 {@code getUseDuration}，所以只要它变小、比值自动仍是 1.0
-     *       —— 不需要（也无法）重写那段逻辑。
-     *       <b>这里必须走 {@code super.getUseDuration()} 再用我们的时长替换基础秒数</b>：
-     *       {@code getChargeDuration} 是 static（不能覆写），但它开头的
-     *       {@code EnchantmentHelper.modifyCrossbowChargingTime} 是「快速装填」全部效果的唯一入口，
-     *       所以我们照同一条链自己算一遍（基础 1.0 秒，每级快速装填 −0.25 秒），手感原样保留。</li>
-     *   <li><b>{@link #use}</b>：原版那一发走 {@code CrossbowItem#getShootingPower}（private static，
-     *       箭 3.15 / 烟花 1.6），我们覆写 {@code use} 直接给出目标速度，
-     *       并<b>按弹种分别给值</b>（见 12.7 第 9 条：烟花沿用原版 1.6，不跟着箭矢一起加价）。</li>
-     * </ol>
+     * <h2>⚠ 「蓄力 20 tick」已被 A 级实测推翻 —— 实际沿用原版的 25 tick 分母（bg-16 收口轮）</h2>
+     *
+     * <p><b>旧推断（留档，不要照它推理）</b>：规格原写「弩蓄力 1 秒 = 20 tick」，
+     * 当时的实现说明是「{@code getUseDuration} 从 28 降到 23，而 {@code releaseUsing} 里的
+     * {@code i} 与分母都来自同一个 {@code getUseDuration}，所以只要它变小、<b>比值自动仍是 1.0</b>」。
+     * <b>这句是错的</b>：{@code CrossbowItem#releaseUsing} 的「装满」判定是</p>
+     * <pre>i = getUseDuration(stack, entity) - timeLeft;
+     * f = getPowerForTime(i, stack, entity) = i / CrossbowItem.getChargeDuration(stack, entity);   // 要求 f &gt;= 1.0F</pre>
+     * <p>而这个 {@code getChargeDuration} 是 <b>static</b>（{@code CrossbowItem.java:257-260}，
+     * 基础 {@code 1.25F × 20 = 25}）⇒ <b>它压根不读我们覆写的 {@code getUseDuration}</b>。
+     * 于是 {@code f_max = 23 / 25 = 0.92 < 1}，按住 23 tick 时装不上；玩家按住超过
+     * {@code getUseDuration} 之后 {@code useItemRemaining} 转负、松手时 {@code i = 实际按住的 tick 数}
+     * ⇒ <b>真正装满需要 ≥ 25 tick</b>（A 级：真玩家按住 40 tick，期间 {@code CHARGED_PROJECTILES} 恒空、
+     * 松手那一 tick 才 {@code charged=true}；证据 {@code docs/bg16-证据/10-A级-runClient读数.txt}、
+     * {@code docs/bg16-证据/12-新发现-真问题.md} §二）。</p>
+     *
+     * <p><b>现行实际口径</b>：{@link #getUseDuration} = {@code chargeDuration(...) + 3} = <b>23</b>
+     * 只影响「<b>举着的时长上限</b>」（按住到第 23 tick 之后物品不再处于"使用中"），
+     * <b>不影响装载门槛</b>；装载门槛仍是原版那条 25 tick（并照旧吃「快速装填」）。
+     * 本模组自己的 {@link #chargeDuration} 只被 {@link #getUseDuration} 与客户端拉弓谓词用到。
+     * 要做成真的 20 tick，必须 mixin 改那个 static 常量、或整段重写装载判定 ——
+     * 属作者另行裁定的事项；<b>本轮按「实际为准 + 文档更正」处理：代码不动</b>
+     * （{@code docs/1.5-规格.md} §12.2 与 {@code docs/1.6-规格.md} §6.4/§7.4 已就地标注，原文保留）。</p>
+     *
+     * <p>{@link #getUseDuration} 的实现要点（未变）：必须走 {@code super.getUseDuration()} 再用我们的时长替换基础秒数 ——
+     * {@code getChargeDuration} 是 static（不能覆写），但它开头的
+     * {@code EnchantmentHelper.modifyCrossbowChargingTime} 是「快速装填」全部效果的唯一入口，
+     * 所以我们照同一条链自己算一遍（基础 1.0 秒，每级快速装填 −0.25 秒），手感原样保留。</p>
+     *
+     * <p>弹速的落点是 {@link #use}：原版那一发走 {@code CrossbowItem#getShootingPower}（private static，
+     * 箭 3.15 / 烟花 1.6），我们覆写 {@code use} 直接给出目标速度，
+     * 并<b>按弹种分别给值</b>（见 12.7 第 9 条：烟花沿用原版 1.6，不跟着箭矢一起加价）。</p>
      *
      * <p>拉弓动画的 {@code pull} 谓词原版也读 {@code CrossbowItem.getChargeDuration}（25），
-     * 于是 20 tick 装满时它只到 0.8、三帧拉弓贴图只走到第二帧。这里在客户端
+     * 若真按 20 tick 装满则它只到 0.8、三帧拉弓贴图只走到第二帧。这里在客户端
      * （{@code client.MetalWeaponItemProperties}）给本模组的弩单独登记同一套谓词、
-     * 分母换成 {@link #chargeDuration}，动画与蓄力同步。</p>
+     * 分母换成 {@link #chargeDuration}，让<b>拉弓动画</b>与本模组自己声称的 20 tick 同步；
+     * ⚠ 它<b>只影响动画</b>，与上面那条 25 tick 的装载门槛是两条独立路径。</p>
      */
     public static class MetalCrossbowItem extends CrossbowItem {
 
@@ -205,7 +230,13 @@ public final class MetalWeapons {
             return this.enchantmentValue;
         }
 
-        /** 本弩的蓄力时长（tick）：基础 {@value #CROSSBOW_CHARGE_SECONDS} 秒，快速装填每级 −0.25 秒 */
+        /**
+         * 本模组自己声称的蓄力时长（tick）：基础 {@value #CROSSBOW_CHARGE_SECONDS} 秒，快速装填每级 −0.25 秒。
+         *
+         * <p>⚠ <b>它只落在两处</b>：{@link #getUseDuration}（= 本值 + 3 ⇒ 23）与客户端的拉弓谓词分母。
+         * 装载门槛读的是 <b>static</b> 的 {@code CrossbowItem.getChargeDuration}（原版 25 tick，不受本方法影响）
+         * ⇒ 按住本值（20 tick）**装不上**，实际要 ≥ 25 tick。见本类 javadoc 的「⚠ 已被 A 级实测推翻」一节。</p>
+         */
         public static int chargeDuration(ItemStack stack, LivingEntity shooter) {
             float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, CROSSBOW_CHARGE_SECONDS);
             return net.minecraft.util.Mth.floor(f * 20.0F);

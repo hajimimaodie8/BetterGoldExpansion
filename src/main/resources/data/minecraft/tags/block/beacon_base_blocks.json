@@ -18,6 +18,14 @@
     "bettergold:indigoseagold_block",
     "bettergold:indigoseagold_bricks",
     "bettergold:illusiongold_block",
-    "bettergold:illusiongold_bricks"
+    "bettergold:illusiongold_bricks",
+    "bettergold:indigoseagold_pillar",
+    "bettergold:illusiongold_pillar",
+    "bettergold:thornsgold_block",
+    "bettergold:thornsgold_bricks",
+    "bettergold:thornsgold_pillar",
+    "bettergold:echogold_block",
+    "bettergold:echogold_bricks",
+    "bettergold:echogold_pillar"
   ]
 }

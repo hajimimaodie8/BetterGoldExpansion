@@ -1,0 +1,17 @@
+OK    baseline validate_metal_data                       exit=0
+OK    A1 GEAR_SLOT: axe 的位次改回 §8.1 的 10（斧镐锹锄排最后）                     exit=1 expect_hit=True (GEAR_SLOT)
+OK    A2 GEAR_SLOT: 把 hoe 改名成 shears（等于从表里删掉它）                       exit=1 expect_hit=True (GEAR_SLOT)
+OK    A3 GEAR_SLOT: shield 与 axe 位次对调（弩之后不是斧镐锹锄）                     exit=1 expect_hit=True (不在弩)
+OK    B1 把 1.4 那张 flamegold_raw.json 放回产物目录                          exit=1 expect_hit=True (flamegold_raw.json)
+OK    B2 raw_flamegold.json 的 result 改成别的金属（串格）                      exit=1 expect_hit=True (result 不是)
+OK    B3 生成器 TEMPLATES 里又列上 flamegold_raw.json（下次重跑会把重复配方带回来）        exit=1 expect_hit=True (flamegold_raw.json)
+OK    B4 RawSturdygoldRecipe 不再返还玻璃瓶（保留它的理由没了）                       exit=1 expect_hit=True (glass_bottle)
+OK    C1 槽位组 MAINHAND -> OFFHAND                                     exit=1 expect_hit=True (MAINHAND)
+OK    C2 家族开关改成无条件（会波及五套金属）                                          exit=1 expect_hit=True (submergedMiningImmunity)
+OK    C3 去掉 isTool(...) 判据（会把盔甲也算进去）                                 exit=1 expect_hit=True (isTool()
+OK    C4 加成值 0.8F -> 1.0F（会变成 1.2 倍速挖）                               exit=1 expect_hit=True (0.8F)
+OK    C5 归位从 INDIGOSEAGOLD 挪走（靛海金不再开关）                               exit=1 expect_hit=True (submergedMiningImmunity)
+OK    C6 多给一族也打开开关（出现 2 次）                                           exit=1 expect_hit=True (submergedMiningImmunity)
+OK    C7 把这条属性塞进 MetalArmorItem#getDefaultAttributeModifiers（变成穿甲也免疫） exit=1 expect_hit=True (只针对【器具】)
+OK    D INVERSE：只加注释提到被计数/被禁的名字，必须仍然 GREEN                           exit=0 expect=exit0
+OK    baseline after restore validate_metal_data        exit=0

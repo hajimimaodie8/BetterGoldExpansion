@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": { "cross": "bettergold:block/golden_rose_bush_top" }
+}

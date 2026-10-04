@@ -35,6 +35,8 @@ public final class CreativeSections {
     public static final List<String> METAL_ORDER = List.of(
             "flamegold",      // 烈燃金
             "sturdygold",     // 万坚金
+            "thornsgold",     // 树棘金（1.6 新增，作者裁定：在万坚金与靛海金之间、树棘金在前）
+            "echogold",       // 幽咆金（1.6 新增）
             "indigoseagold",  // 靛海金（1.5，作者指定：在万坚金与巫毒金之间）
             "voodoogold",     // 巫毒金
             "thundergold",    // 结雷金
@@ -109,14 +111,14 @@ public final class CreativeSections {
             Map.entry("lantern", 10));
 
     /**
-     * 金属装备区区内位次：剑 + 1.5 的五类武器 + 四件盔甲 + 1.5 之前的斧镐锹锄（排最后）。
+     * 金属装备区区内位次：剑 + 1.5 的五类武器 + 1.4 的斧镐锹锄 + 四件盔甲（共 14 件）。
      *
-     * <p><b>作者定稿顺序（bg-15w <u>§八 8.1</u>，2026-10-02 17:44 按字面重钉）</b>：
-     * <b>剑 重锤 三叉戟 弓 弩 盾牌 头盔 胸甲 护腿 靴子</b>，
-     * 作者两次给出的清单里都<b>没有</b>斧 / 镐 / 锹 / 锄 ⇒ 按 §8.1 的保守做法把它们
-     * <b>排在这 10 件之后（位次 10~13）、仍然留在本表里</b>。</p>
+     * <p><b>作者定稿顺序（bg-15w <u>§九 9.1</u>，2026-10-03 09:09 —— ★ 更正 §8.1）</b>：
+     * <b>剑 → 重锤 → 三叉戟 → 弓 → 弩 → 斧 → 镐 → 锹 → 锄 → 盾 → 头盔 → 胸甲 → 护腿 → 靴子</b>
+     * （位次 0..13）。作者原话：「装备那边的排版其实是<b>弩之后的斧镐锹锄排这里</b>，
+     * 然后剩下才是盾、头胸腿靴（<b>健忘症发力了</b>）」。</p>
      *
-     * <p>⚠ <b>为什么不能把斧镐锹锄从这张表里删掉</b>（§8.1 明确警告）：本表<b>一表两用</b> ——
+     * <p>⚠ <b>为什么不能把斧镐锹锄从这张表里删掉</b>（§8.1 明确警告，§9.1 仍然成立）：本表<b>一表两用</b> ——
      * 既定顺序，又通过 {@link #kindOf} 决定「是不是金属装备」（{@code Kind.METAL_GEAR}），
      * 而 {@code CreativeTabSections.GEAR} 那个「金属装备」槽位的谓词就是 {@code isMetalGear}。
      * 删表项 ⇒ 它们连槽位都进不去，会被<b>静默丢出</b>装备分区（不是「排到最后」，是「看不见」）。
@@ -128,8 +130,11 @@ public final class CreativeSections {
      *       —— 五类新武器接在盔甲<b>之后</b>，内部顺序 重锤 → 弓 → 弩 → 三叉戟 → 盾牌；</li>
      *   <li>bg-15w 第 7 项（§3.6）：{@code sword axe pickaxe shovel hoe mace trident bow crossbow shield helmet chestplate leggings boots}
      *       —— 五类新武器<b>前移</b>到盔甲之前，内部顺序改为 重锤 → 三叉戟 → 弓 → 弩 → 盾牌；</li>
-     *   <li><b>本轮（§8.1）：{@code sword mace trident bow crossbow shield helmet chestplate leggings boots axe pickaxe shovel hoe}</b>
-     *       —— 作者说「按字面来」（他的列表里不含斧镐锹锄），故这四件排到最后。</li>
+     *   <li>bg-15w §八 8.1（2026-10-02 17:44，<b>⛔ 已被 §9.1 推翻</b>）：
+     *       {@code sword mace trident bow crossbow shield helmet chestplate leggings boots axe pickaxe shovel hoe}
+     *       —— 当时按作者"列表里没有斧镐锹锄"的<b>字面</b>把这四件排到 10~13；</li>
+     *   <li><b>本轮（§九 9.1）：{@code sword mace trident bow crossbow axe pickaxe shovel hoe shield helmet chestplate leggings boots}</b>
+     *       —— 作者更正：斧镐锹锄在<b>弩之后、盾之前</b>（位次 5..8）。</li>
      * </ol>
      * 于是创造页「装备」分区里，每种金属固定是上面那 14 件连续排布。</p>
      *
@@ -142,15 +147,15 @@ public final class CreativeSections {
             Map.entry("trident", 2),
             Map.entry("bow", 3),
             Map.entry("crossbow", 4),
-            Map.entry("shield", 5),
-            Map.entry("helmet", 6),
-            Map.entry("chestplate", 7),
-            Map.entry("leggings", 8),
-            Map.entry("boots", 9),
-            Map.entry("axe", 10),
-            Map.entry("pickaxe", 11),
-            Map.entry("shovel", 12),
-            Map.entry("hoe", 13));
+            Map.entry("axe", 5),
+            Map.entry("pickaxe", 6),
+            Map.entry("shovel", 7),
+            Map.entry("hoe", 8),
+            Map.entry("shield", 9),
+            Map.entry("helmet", 10),
+            Map.entry("chestplate", 11),
+            Map.entry("leggings", 12),
+            Map.entry("boots", 13));
 
     /**
      * 物品是不是「某套建材」的一员：是则返回它的类型位次（{@link #BUILDING_SLOT}），否则返回 {@code -1}。

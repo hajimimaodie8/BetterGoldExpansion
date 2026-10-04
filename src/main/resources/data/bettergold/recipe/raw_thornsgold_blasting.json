@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": { "item": "bettergold:raw_thornsgold" },
+  "result": { "id": "bettergold:thornsgold_ingot" },
+  "experience": 1.0,
+  "cookingtime": 100
+}

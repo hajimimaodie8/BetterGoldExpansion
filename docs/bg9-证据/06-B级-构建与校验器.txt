@@ -1,0 +1,48 @@
+# B 级证据：构建与校验器（bg-15w 第五轮续工 · §九 · 2026-10-03）
+
+> 「本次验证用的是哪一次构建」：**收尾这一次** —— 先 `compileJava` + `runData`，再
+> `processResources jar --rerun-tasks`（jar = **1,089,068 B**）；跑测那两轮（runA2 / runC）用的是
+> 同一份源码编译出来的客户端（runClient 会先 compileJava）。
+> 探针类（`probe/Bg9Probe.java`）与 `bettergoldClient` 里的临时注册**已在打包前整块删除**，
+> 所以下面 5 个校验器（含 `check_jar_clean`）测的是**最终产物**。
+
+## 一、三条命令（全部 BUILD SUCCESSFUL）
+
+```
+> .\gradlew.bat compileJava --console=plain
+BUILD SUCCESSFUL in 1s
+2 actionable tasks: 1 executed, 1 up-to-date
+
+> .\gradlew.bat runData --console=plain
+BUILD SUCCESSFUL in 11s
+7 actionable tasks: 1 executed, 6 up-to-date
+
+> .\gradlew.bat processResources jar --rerun-tasks --console=plain
+BUILD SUCCESSFUL in 6s
+4 actionable tasks: 4 executed
+build\libs\bettergold-1.5.0.jar = 1,089,068 B
+```
+
+（stderr 单独重定向到 `build/bg9-b1.err` / `b2.err` / `b3.err`；里面的 `注: ... 使用了已过时的 API`
+是 javac 的正常提示，不是失败 —— 见 `docs/构建与跑测注意事项.md` 第一节。）
+
+## 二、5 个校验器（全部 exit 0）
+
+| # | 命令 | 退出码 | 关键输出 |
+|---|---|---|---|
+| 1 | `python tools\asset-generator\validate_metal_assets.py` | **0** | 六套金属逐套 `item=29 block=10 armor=2` |
+| 2 | `python tools\asset-generator\validate_metal_data.py` | **0** | 8 个小节计数器**全 0**（含新增的 `§9.2` / `§9.3` 与改写后的 `装备分区顺序（§9.1 更正 §8.1）`） |
+| 3 | `python tools\asset-generator\validate_trim_assets.py` | **0** | 纹饰色卡 / 图集置换复核（本轮未动） |
+| 4 | `python tools\asset-generator\check_jar_clean.py` | **0** | `*Probe* 路径 = 0`、含 `halt` 字节的 class = **0**、`BG-PROBE` 常量 = 0、jar 内文件 1879 |
+| 5 | `python tools\asset-generator\check_forced_chunks.py`（默认 `run/world/data/chunks.dat`） | **0** | `data.Forced = []`、**length = 0** |
+
+## 三、收尾清理（探针铁律）
+
+| 项 | 结果 |
+|---|---|
+| `src` 下 `grep 'BG9PROBE\|Bg9Probe\|bg9-probe\|bg9probe'` | **0 命中**（探针类 + `bettergoldClient` 注册块**整块删除**，不是注释掉） |
+| 开关文件 `run/bg9-probe.enabled` | 已删除 |
+| 探针世界副本 `run/saves/bg9probe` | 已删除（三轮各自用完即删；作者的 `run/saves/新的世界` **29 个文件 SHA256 manifest 逐条未变**） |
+| 生产代码 / 探针里的 `server.halt` | **0 处**（探针用的是客户端 `Minecraft#stop()`，那是原版正常关服路径） |
+| forceload | 探针自己撤销 8 个区块并断言 `levelForcedCount=0`；`run/world` 的 `data.Forced` 仍是 `[]` |
+| `run/world`（专用服务端世界） | 本轮**未打开**（`check_forced_chunks` 读到的仍是上一次的 `[]`） |

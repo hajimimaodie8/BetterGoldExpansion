@@ -47,7 +47,9 @@ ITEM_TRIM_TEXTURES = [
 TRIM_TAG = DATA / "minecraft" / "tags" / "item" / "trim_materials.json"
 PALETTE_DIR = RES / "assets" / "bettergold" / "textures" / "trims" / "color_palettes"
 
-METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]
+METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
+          # 1.6（bg-16）：两套新金属（纹饰四样由这个生成器一次补齐）
+          "thornsgold", "echogold"]
 
 # item_model_index：必须互不相同、且避开原版 0.1~1.0（见文件头说明）
 ITEM_MODEL_INDEX = {
@@ -58,6 +60,9 @@ ITEM_MODEL_INDEX = {
     "thundergold": 0.05,
     "indigoseagold": 0.06,
     "illusiongold": 0.07,
+    # 1.6：接着往下取，仍然全部落在原版 0.1~1.0 **之外**
+    "thornsgold": 0.08,
+    "echogold": 0.09,
 }
 
 

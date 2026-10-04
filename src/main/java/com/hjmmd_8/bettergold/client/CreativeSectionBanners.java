@@ -22,7 +22,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 
 /**
  * 创造模式「分区横幅」的客户端渲染（航空学同款效果，但<b>不使用 Mixin</b>）。
@@ -35,12 +35,31 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
  * {@link CreativePageSections#byKey(String)} 取该分区的横幅贴图与释词。
  * 分区 key 与页 id 都由 {@link CreativePageSections} 单点给出，别名/改名不会失配。
  *
- * <h2>为什么可以不用 Mixin</h2>
- * 参考实现注入的是 {@code CreativeModeInventoryScreen#render} 的 TAIL；我们用 NeoForge 的
- * {@link ScreenEvent.Render.Post}。两者时序等价：1.21.1 里该事件由
- * {@code net.neoforged.neoforge.client.ClientHooks#drawScreenInternal} 在
- * {@code screen.renderWithTooltip(...)} <b>之后</b> 立刻发出（该文件第 427-431 行），
- * 此时物品格底板、物品、滑条都画完了，所以横幅压在最上层、不会被后续绘制盖掉。
+ * <h2>绘制落点：{@link ContainerScreenEvent.Render.Foreground}（bg-16 修正）</h2>
+ * <p><b>旧口径（1.4 起，已被 bg-16 推翻、此处留档不删）</b>：用 {@code ScreenEvent.Render.Post}，
+ * 理由是「它由 {@code ClientHooks#drawScreenInternal} 在 {@code screen.renderWithTooltip(...)}
+ * 之后发出，两者时序等价」。<b>那句「时序等价」是错的</b>：
+ * {@code renderWithTooltip} = {@code render(...)} + {@code renderTooltip(...)}（{@code Screen.java:111-117}，
+ * tooltip 是<b>最后</b>画的），而 {@code ClientHooks.java:429-430} 是在它<b>整段之后</b>才发事件
+ * ⇒ 横幅被画在 tooltip <b>之上</b>，鼠标悬停到横幅下方那一行的物品时，物品的名字/tooltip
+ * 会被横幅盖住（作者报的「Z 轴深度不够」就是这个现象）。</p>
+ *
+ * <p><b>为什么不能靠「改 z 深度」修</b>（作者原话给的方向里就有这一条，实测源码后排除）：
+ * {@code AbstractContainerScreen#render} 第 141 行是 {@code RenderSystem.disableDepthTest()}
+ * —— 物品格那一段的<b>深度测试被整个关掉</b>，z 参数不参与遮挡判定，只有<b>绘制顺序</b>决定谁在上。
+ * 所以唯一正确的修法是<b>换绘制落点，而不是换 z 值</b>（更不是隐藏/降透明度）。</p>
+ *
+ * <p><b>现行落点</b>：{@link ContainerScreenEvent.Render.Foreground}
+ * （{@code AbstractContainerScreen#render} 第 158 行 {@code renderLabels(...)} 之后、
+ * 第 159 行发出；其 javadoc 原文：「<i>Fired after the container screen's foreground layer and elements
+ * are drawn, but <b>before rendering the tooltips</b> and the item stack being dragged by the player</i>」）
+ * ⇒ <b>仍在物品/滑条之后（不会被底板盖掉）、但在 tooltip 之前（不再盖住 tooltip）</b>，
+ * 与航空学参考实现（注入 {@code render} 的 TAIL）时序一致，且依旧<b>不使用 Mixin</b>。</p>
+ *
+ * <p>⚠ <b>连带要求：坐标必须改成「容器相对」</b>。该事件是在 {@code pose().translate(leftPos, topPos, 0)}
+ * <b>之内</b>发出的（第 142-143 行，push 之后没有 pop），所以物品区左上角在这里的局部坐标就是
+ * {@code (ITEM_AREA_X, ITEM_AREA_Y)}；再按旧写法加一次 {@code guiLeft/guiTop} 会整体偏移
+ * 一个 (leftPos, topPos)。</p>
  *
  * <h2>绘制顺序（与方案文档一致）</h2>
  * <ol>
@@ -108,9 +127,16 @@ public final class CreativeSectionBanners {
 
     // ==================== 事件入口 ====================
 
+    /**
+     * 绘制入口（bg-16 起改用 {@link ContainerScreenEvent.Render.Foreground}）。
+     *
+     * <p>旧实现在 {@code ScreenEvent.Render.Post}（= tooltip 之后）⇒ 横幅压住 tooltip；
+     * 现行落点在 {@code renderLabels} 之后、tooltip 之前。判据（只在本模组唯一创造页、
+     * 且本页被选中时才画）与行号计算全部逐字不变。</p>
+     */
     @SubscribeEvent
-    public static void onScreenRender(ScreenEvent.Render.Post event) {
-        if (!(event.getScreen() instanceof CreativeModeInventoryScreen screen)) {
+    public static void onContainerScreenForeground(ContainerScreenEvent.Render.Foreground event) {
+        if (!(event.getContainerScreen() instanceof CreativeModeInventoryScreen screen)) {
             return;
         }
         ResourceLocation tabId = selectedTabId();
@@ -124,8 +150,10 @@ public final class CreativeSectionBanners {
         }
         CreativeModeInventoryScreen.ItemPickerMenu menu = screen.getMenu();
         int firstVisibleRow = firstVisibleRow(menu, scrollOffs(screen));
-        int left = guiLeft(screen) + ITEM_AREA_X;
-        int top = guiTop(screen) + ITEM_AREA_Y;
+        // ⚠ 本事件在 pose().translate(leftPos, topPos, 0) 之内发出 ⇒ 用「容器相对坐标」，
+        //    绝不能再加 guiLeft/guiTop（那会整体偏移一个 (leftPos, topPos)）。
+        int left = ITEM_AREA_X;
+        int top = ITEM_AREA_Y;
         GuiGraphics graphics = event.getGuiGraphics();
 
         for (Map.Entry<String, Integer> entry : rows.entrySet()) {
@@ -242,27 +270,13 @@ public final class CreativeSectionBanners {
         }
     }
 
-    private static int guiLeft(CreativeModeInventoryScreen screen) {
-        Integer value = readInt(screen, "leftPos");
-        return value != null ? value : screen.getGuiLeft();
-    }
-
-    private static int guiTop(CreativeModeInventoryScreen screen) {
-        Integer value = readInt(screen, "topPos");
-        return value != null ? value : screen.getGuiTop();
-    }
-
-    private static @Nullable Integer readInt(Object target, String name) {
-        Field field = findField(target.getClass(), name);
-        if (field == null) {
-            return null;
-        }
-        try {
-            return field.getInt(target);
-        } catch (ReflectiveOperationException ignored) {
-            return null;
-        }
-    }
+    /*
+     * bg-16：原来这里还有 guiLeft(screen) / guiTop(screen) / readInt(...) 三个助手
+     * （反射读 leftPos/topPos，兜底用 getGuiLeft()/getGuiTop()）。
+     * 改用 ContainerScreenEvent.Render.Foreground 之后坐标必须是「容器相对」的，
+     * 这三个助手没有任何调用点，故整块删除（不是注释掉；旧口径已写在类 javadoc 里留档）。
+     * findField(...) 仍然被 selectedTabId / scrollOffs 使用，保留。
+     */
 
     /** 沿继承链找字段（leftPos/topPos 声明在 AbstractContainerScreen 上，不在子类） */
     private static @Nullable Field findField(Class<?> type, String name) {

@@ -1,0 +1,53 @@
+# bg-16 close-round: raw BG16CLOSE lines, runServer probe (probe deleted afterwards)
+
+## (1) BEFORE the fix: file back at data/bettergold/data_maps/item/compostables.json  => 8 PASS / 3 FAIL
+[19:27:44] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.probe.Bg16CloseProbe for @SubscribeEvent-annotated methods
+[19:27:44] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/probe/Bg16CloseProbe; to the game event bus
+[19:27:47] [main/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bg16close
+[19:27:47] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "bg16close"
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_map_id_is_neoforge :: NeoForgeDataMaps.COMPOSTABLES.id()=neoforge:compostables
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE INFO compost_probe :: vine=-1.0 vineDataMap=null
+[19:27:51] [Server thread/ERROR] [co.hj.be.bettergold/]: BG16CLOSE FAIL compost_vine_getValue_0p65 :: getValue(glittering_vine)=-1.0
+[19:27:51] [Server thread/ERROR] [co.hj.be.bettergold/]: BG16CLOSE FAIL compost_vine_datamap_not_null :: dataMapEntry=null
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE INFO compost_controls :: wheat=0.65 wheatDataMap=Compostable[chance=0.65, canVillagerCompost=false] seeds=0.3
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_vanilla_wheat_control :: getValue(wheat)=0.65 entry=Compostable[chance=0.65, canVillagerCompost=false]
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_vanilla_seeds_control_0p3 :: getValue(wheat_seeds)=0.3
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE INFO compost_negatives :: stone=-1.0 bundled_echo_shard=-1.0
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_negative_stone :: getValue(stone)=-1.0 entryNull=true
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_negative_own_shard :: getValue(bundled_echo_shard)=-1.0
+[19:27:51] [Server thread/ERROR] [co.hj.be.bettergold/]: BG16CLOSE FAIL compost_world_insert_vine_levels_up :: real composter: level 0 --insert(glittering_vine)--> level=0
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_world_insert_wheat_levels_up :: real composter: level 0 --insert(wheat)--> level=1
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_world_insert_stone_no_effect :: real composter: level 0 --insert(stone)--> level=0
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_world_insert_own_shard_no_effect :: real composter: level 0 --insert(bundled_echo_shard)--> level=0 stackLeft=1
+[19:27:51] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE SUMMARY pass=8 fail=3
+[19:27:51] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg16close]'/minecraft:overworld
+[19:27:51] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg16close]'/minecraft:the_nether
+[19:27:51] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg16close]'/minecraft:the_end
+[19:27:51] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bg16close
+[19:27:51] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (bg16close): All chunks are saved
+
+## (2) AFTER the fix: file at data/neoforge/data_maps/item/compostables.json  => 11 PASS / 0 FAIL
+[19:28:21] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.probe.Bg16CloseProbe for @SubscribeEvent-annotated methods
+[19:28:21] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/probe/Bg16CloseProbe; to the game event bus
+[19:28:24] [main/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bg16close
+[19:28:25] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "bg16close"
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_map_id_is_neoforge :: NeoForgeDataMaps.COMPOSTABLES.id()=neoforge:compostables
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE INFO compost_probe :: vine=0.65 vineDataMap=Compostable[chance=0.65, canVillagerCompost=false]
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_vine_getValue_0p65 :: getValue(glittering_vine)=0.65
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_vine_datamap_not_null :: dataMapEntry=Compostable[chance=0.65, canVillagerCompost=false]
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE INFO compost_controls :: wheat=0.65 wheatDataMap=Compostable[chance=0.65, canVillagerCompost=false] seeds=0.3
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_vanilla_wheat_control :: getValue(wheat)=0.65 entry=Compostable[chance=0.65, canVillagerCompost=false]
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_vanilla_seeds_control_0p3 :: getValue(wheat_seeds)=0.3
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE INFO compost_negatives :: stone=-1.0 bundled_echo_shard=-1.0
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_negative_stone :: getValue(stone)=-1.0 entryNull=true
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_negative_own_shard :: getValue(bundled_echo_shard)=-1.0
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_world_insert_vine_levels_up :: real composter: level 0 --insert(glittering_vine)--> level=1
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_world_insert_wheat_levels_up :: real composter: level 0 --insert(wheat)--> level=1
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_world_insert_stone_no_effect :: real composter: level 0 --insert(stone)--> level=0
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE PASS compost_world_insert_own_shard_no_effect :: real composter: level 0 --insert(bundled_echo_shard)--> level=0 stackLeft=1
+[19:28:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG16CLOSE SUMMARY pass=11 fail=0
+[19:28:28] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg16close]'/minecraft:overworld
+[19:28:28] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg16close]'/minecraft:the_end
+[19:28:28] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg16close]'/minecraft:the_nether
+[19:28:28] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bg16close
+[19:28:28] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (bg16close): All chunks are saved

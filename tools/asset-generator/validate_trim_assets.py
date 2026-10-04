@@ -20,7 +20,9 @@ RES = REPO / "src" / "main" / "resources"
 VANILLA = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
     r"C:\Users\Lenovo\.gradle\caches\neoformruntime\artifacts\minecraft_1.21.1_client.jar")
 OURS = ["sturdygold", "unwanted_antique", "flamegold", "voodoogold", "thundergold",
-        "indigoseagold", "illusiongold"]
+        "indigoseagold", "illusiongold",
+        # 1.6（bg-16）：两套新金属的纹饰（item_model_index 0.08 / 0.09，仍在原版 0.1~1.0 之外）
+        "thornsgold", "echogold"]
 VANILLA_INDEX = {"quartz": 0.1, "iron": 0.2, "netherite": 0.3, "redstone": 0.4, "copper": 0.5,
                  "gold": 0.6, "emerald": 0.7, "diamond": 0.8, "lapis": 0.9, "amethyst": 1.0}
 
@@ -153,7 +155,8 @@ def main():
     # ---------- 5. 我方盔甲物品模型 ----------
     p("")
     p("== 5. 我方盔甲物品模型（JSON 里没有 trim overlay，这是原样；overlay 由客户端 ArmorTrimItemModels 运行期补） ==")
-    for m in ["sturdygold", "flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]:
+    for m in ["sturdygold", "flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
+              "thornsgold", "echogold"]:
         for slot in ["helmet", "chestplate", "leggings", "boots"]:
             path = RES / "assets/bettergold/models/item" / f"{m}_{slot}.json"
             if path.is_file():

@@ -72,6 +72,7 @@ public final class AllMetals {
                     .suffocationResist()
                     .sedimentReflect()
                     .swimSpeed(MetalFamily.SWIM_SPEED_PER_PIECE)
+                    .submergedMiningImmunity()
                     .specialWeaponMetal(true, 2048)
                     .coreItem(() -> MetalSpecialItems.INDIGO_OCEAN_HEART.get()));
 
@@ -95,6 +96,55 @@ public final class AllMetals {
                     .sootheReflect(0.04F)
                     .specialWeaponMetal(true, 2048)
                     .coreItem(() -> MetalSpecialItems.CHORUS_CHERRY_BRANCH.get()));
+
+    /**
+     * 树棘金（1.6 · bg-16）：主题「荆棘 / 仙人掌 / 寄生」。
+     *
+     * <ul>
+     *   <li><b>数值一个字段都不覆盖</b>（§0.1 的省事结论）：4096 / 24 / 14 / 下界合金级与
+     *       {@code Spec} 默认值逐项相同，逐件伤害与攻速也由 {@code 1 + 4.5 + 每武器常量} 自动得出。</li>
+     *   <li>核心材料：<b>闪耀藤条</b>（掉落物，见 {@code MetalSpecialItems.GLITTERING_VINE}）。</li>
+     *   <li>建材：踩踏 / 紧贴 / 破坏 / 右键 ⇒ 对触发者 1 点<b>仙人掌同款</b>伤害（{@code cactus}），
+     *       同一实体每 10 tick 最多一次；<b>不会清除掉落物</b>（本轮不写任何 {@code ItemEntity} 摧毁逻辑）。</li>
+     *   <li>器具（含五类武器与盾牌）：每次命中叠加 1 级 16 秒<b>寄生</b>（无上限）；
+     *       寄生每秒造成「等级」点 {@code cactus} 伤害，且每次结算 36% 概率给施加者回「等级」点血。</li>
+     *   <li>盔甲：每件 25% 仙人掌伤害减免 + 每件 25% 几率给攻击者叠寄生，四件全套 = 100% 免疫 + 100% 施加。</li>
+     *   <li><b>免疫仙人掌</b>（§3.8 的"新机制"）：该族物品的掉落物形态不被仙人掌摧毁
+     *       （{@code EntityInvulnerabilityCheckEvent}）、装备不因仙人掌伤害扣耐久
+     *       （{@code ArmorHurtEvent}，两者都是现成 NeoForge 事件 ⇒ <b>不需要 mixin</b>）。</li>
+     * </ul>
+     */
+    public static final MetalFamily THORNSGOLD = MetalFamily.register(
+            new MetalFamily.Spec("thornsgold", "树棘金")
+                    .contactCactusThorns()
+                    .parasiteOnAttack()
+                    .cactusResist()
+                    .parasiteReflect()
+                    .cactusImmune()
+                    .specialWeaponMetal(true, 2048)
+                    .coreItem(() -> MetalSpecialItems.GLITTERING_VINE.get()));
+
+    /**
+     * 幽咆金（1.6 · bg-16）：主题「深暗 / 监守者声波 / 幽咆」。
+     *
+     * <ul>
+     *   <li>数值同样<b>一个字段都不覆盖</b>（吃 {@code Spec} 默认值）。</li>
+     *   <li>核心材料：<b>集束回响碎片</b>（3×3 有序：中心幽匿脉络 + 外圈 8 回响碎片）。</li>
+     *   <li>建材：四个动作 ⇒ 以该<b>方块中心</b>为心、3×3×3 内全部生物 3 点 {@code sonic_boom} 伤害 +
+     *       {@code SONIC_BOOM} 粒子；同一实体每 10 tick 最多一次。</li>
+     *   <li>器具（含五类武器与盾牌）：每次命中叠加 1 级 6 秒<b>幽咆</b>；
+     *       幽咆每秒以目标为中心（方块坐标 ±1，含目标自己）造成「等级」点 {@code sonic_boom} 伤害 + 粒子。</li>
+     *   <li>盔甲：每件 25% 声波伤害减免 + 每件 25% 几率给攻击者叠幽咆，四件全套 = 100% + 100%。</li>
+     * </ul>
+     */
+    public static final MetalFamily ECHOGOLD = MetalFamily.register(
+            new MetalFamily.Spec("echogold", "幽咆金")
+                    .contactSonicBoom()
+                    .echoRoarOnAttack()
+                    .sonicResist()
+                    .echoRoarReflect()
+                    .specialWeaponMetal(true, 2048)
+                    .coreItem(() -> MetalSpecialItems.BUNDLED_ECHO_SHARD.get()));
 
     /**
      * 万坚金（新约 1.4：从 {@code AllItems} / {@code AllBlocks} 的硬编码，以及当时还各自独立的

@@ -397,6 +397,18 @@ public class AllItems {
             ITEMS.register("gourmet_box", () -> new com.hjmmd_8.bettergold.item.GiftBoxItem(
                     new Item.Properties().stacksTo(16), com.hjmmd_8.bettergold.item.GiftBoxItem.Kind.GOURMET));
 
+    /**
+     * 炼金珍材盒（1.6 · bg-16 §4.2）：易金人村落**专家**（第 4 级）售卖的"开材料"盒子。
+     *
+     * <p>价格 = 7 张礼品金票 + 20 点村民经验；开出 = 任意一族的核心材料、等概率
+     * （池子从 {@code MetalFamily.all()} 现算，见 {@code GiftBoxItem#rollAlchemy}）。
+     * 贴图 = 作者素材 {@code 炼金珍材盒.png}（16×16）。</p>
+     */
+    public static final DeferredItem<com.hjmmd_8.bettergold.item.GiftBoxItem> ALCHEMY_MATERIALS_BOX =
+            ITEMS.register("alchemy_materials_box", () -> new com.hjmmd_8.bettergold.item.GiftBoxItem(
+                    new Item.Properties().stacksTo(16),
+                    com.hjmmd_8.bettergold.item.GiftBoxItem.Kind.ALCHEMY));
+
     // ==================== 新约 1.3：下界合金古董升级模板 ====================
 
     public static final DeferredItem<SmithingTemplateItem> NETHERITE_ANTIQUE_UPGRADE_TEMPLATE =

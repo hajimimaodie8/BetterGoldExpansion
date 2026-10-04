@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top_left_open",
+  "textures": {
+    "bottom": "bettergold:block/thornsgold_door_bottom",
+    "top": "bettergold:block/thornsgold_door_top"
+  }
+}

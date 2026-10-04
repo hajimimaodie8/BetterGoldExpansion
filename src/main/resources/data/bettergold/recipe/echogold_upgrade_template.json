@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GIG",
+    "GTG",
+    "GCG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_block" },
+    "I": { "item": "bettergold:echogold_ingot" },
+    "T": { "item": "minecraft:netherite_upgrade_smithing_template" },
+    "C": { "item": "bettergold:bundled_echo_shard" }
+  },
+  "result": { "id": "bettergold:echogold_upgrade_template" }
+}

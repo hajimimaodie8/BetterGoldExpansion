@@ -1,0 +1,6 @@
+{
+  "parent": "bettergold:item/echogold_crossbow",
+  "textures": {
+    "layer0": "bettergold:item/echogold_crossbow_firework"
+  }
+}

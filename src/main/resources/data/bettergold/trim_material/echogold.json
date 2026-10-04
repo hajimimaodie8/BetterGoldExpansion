@@ -1,0 +1,9 @@
+{
+  "asset_name": "echogold",
+  "description": {
+    "color": "#E8B93A",
+    "translate": "trim_material.bettergold.echogold"
+  },
+  "ingredient": "bettergold:echogold_ingot",
+  "item_model_index": 0.09
+}

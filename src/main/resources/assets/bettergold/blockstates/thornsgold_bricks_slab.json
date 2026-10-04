@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "type=bottom": { "model": "bettergold:block/thornsgold_bricks_slab" },
+    "type=double": { "model": "bettergold:block/thornsgold_bricks_slab_double" },
+    "type=top": { "model": "bettergold:block/thornsgold_bricks_slab_top" }
+  }
+}

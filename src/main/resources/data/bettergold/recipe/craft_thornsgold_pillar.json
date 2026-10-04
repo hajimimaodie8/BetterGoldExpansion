@@ -1,0 +1,17 @@
+{
+    "key":  {
+                "B":  {
+                          "item":  "bettergold:thornsgold_block"
+                      }
+            },
+    "category":  "building",
+    "pattern":  [
+                    "B",
+                    "B"
+                ],
+    "result":  {
+                   "id":  "bettergold:thornsgold_pillar",
+                   "count":  2
+               },
+    "type":  "minecraft:crafting_shaped"
+}

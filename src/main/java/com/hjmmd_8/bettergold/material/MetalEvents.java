@@ -187,6 +187,165 @@ public final class MetalEvents {
         }
     }
 
+    // ==================== bg-16 §5.1：安抚对「玩家」生效（禁止移动 + 左右键全部用途）====================
+
+    /**
+     * <b>安抚的玩家分支</b>（作者原话：「安抚 Buff 对玩家起效为<b>禁止移动</b> + <b>无法使用左右键</b>」）。
+     *
+     * <h2>落点一：禁止移动 / 禁止跳跃 —— 运行时属性修饰符（不是每 tick 抹速度）</h2>
+     * <p>落在 {@code PlayerTickEvent.Post}：安抚在身时给两条属性挂<b>临时</b>修饰符、消失时立即移除：</p>
+     * <ul>
+     *   <li>{@code MOVEMENT_SPEED} ×0（{@code ADD_MULTIPLIED_TOTAL} −1.0）——
+     *       原版移动 = 速度 × 输入，速度 0 ⇒ 按着前进键也走不动；</li>
+     *   <li>{@code JUMP_STRENGTH} ×0（同操作）—— 基值 0.42、属性下界正好 0.0
+     *       （neoforge sources {@code Attributes.java:80-81}
+     *       {@code RangedAttribute("attribute.name.generic.jump_strength", 0.42F, 0.0, 32.0)}）。</li>
+     * </ul>
+     * <p><b>为什么不用「每 tick 把 deltaMovement 清零」</b>：玩家的位置由客户端权威上报，
+     * 服务端清零只会在下一 tick 被纠正回去（橡皮筋）；而这两条属性都 {@code setSyncable(true)}
+     * （同文件 {@code :80-81} 与 {@code :114-116}）⇒ 客户端读到的就是 0
+     * ⇒ <b>按了键也不产生输入</b>，观感干净，也不需要任何网络包。</p>
+     * <p><b>为什么不用 {@code ADD_VALUE}</b>：基值 0.1 / 0.42，写死 −0.1 只能管到默认值
+     * （装了别的模组给了加成就不为 0），{@code ADD_MULTIPLIED_TOTAL} 才是「乘 0」。</p>
+     *
+     * <h2>★ 可逆性（本轮第一优先级）</h2>
+     * <p>本机制<b>零持久状态</b>：不写 NBT、不进 {@link SootheState}（那里对非 {@code Mob} 本来就
+     * {@code return}，玩家的 {@code restore/clear} 天然是空操作），而且每 tick 用
+     * {@code hasEffect(SOOTHE)} <b>双向</b>判定 —— 还挂着就 {@code addOrUpdateTransientModifier}
+     * （同一个 id、覆盖式写入）、不挂就 {@code removeModifier}，而修饰符本身是
+     * <b>transient</b>（不落盘）。⇒ 自然到期 / 牛奶 / 指令 / 死亡 / 退服 / 服务器重启，
+     * <b>任何一条路径</b>下一 tick 都会把这两条属性恢复原状，
+     * <b>不可能出现「被安抚过的玩家永久不能动」</b>（这正是既有 {@link SootheState} 那整段血泪注释的教训）。</p>
+     *
+     * <h2>落点二：左右键的全部用途</h2>
+     * <p>见下面各处理器（攻击 / 破坏 / 左键点方块 / 右键方块 / 右键物品 / 右键实体 / 右键实体精确部位）。
+     * 左右键的每一个 cancellable 入口都<b>单列一条</b>，不靠「监听基类 {@code PlayerInteractEvent}
+     * 的隐式分派」—— 漏掉任一子类都是静默失效（那个键照样有用）。
+     * {@code RightClickEmpty} / {@code LeftClickEmpty} 本身<b>不可取消</b>（空手点空气没有可取消的动作），
+     * 故不列。</p>
+     */
+    @SubscribeEvent
+    public static void onSoothePlayerFreeze(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
+        var player = event.getEntity();
+        if (player.level().isClientSide()) {
+            return;   // 属性值由服务端算、客户端读同步值（两条属性都是 setSyncable(true)）
+        }
+        boolean soothing = player.hasEffect(AllEffects.SOOTHE);
+        sootheFreeze(player, net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED,
+                SOOTHE_FREEZE_SPEED_ID, soothing);
+        sootheFreeze(player, net.minecraft.world.entity.ai.attributes.Attributes.JUMP_STRENGTH,
+                SOOTHE_FREEZE_JUMP_ID, soothing);
+        if (soothing) {
+            player.setSprinting(false);
+        }
+    }
+
+    /** 安抚期间「禁止移动」用的属性修饰符 id（运行时只维护一个总值 ⇒ 固定 id，与物品属性那套相反） */
+    public static final net.minecraft.resources.ResourceLocation SOOTHE_FREEZE_SPEED_ID =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    com.hjmmd_8.bettergold.bettergold.MODID, "soothe_freeze_speed");
+    /** 安抚期间「禁止跳跃」用的属性修饰符 id */
+    public static final net.minecraft.resources.ResourceLocation SOOTHE_FREEZE_JUMP_ID =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    com.hjmmd_8.bettergold.bettergold.MODID, "soothe_freeze_jump");
+    /** ×0 ⇒ {@code ADD_MULTIPLIED_TOTAL} 的 −1.0 */
+    private static final double SOOTHE_FREEZE_MULTIPLIER = -1.0D;
+
+    /** 挂上 / 摘掉「禁止移动 / 禁止跳跃」的临时修饰符（幂等：重复挂同一个 id 是覆盖式写入） */
+    private static void sootheFreeze(LivingEntity entity,
+            net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute,
+            net.minecraft.resources.ResourceLocation id, boolean frozen) {
+        net.minecraft.world.entity.ai.attributes.AttributeInstance instance = entity.getAttribute(attribute);
+        if (instance == null) {
+            return;
+        }
+        if (frozen) {
+            instance.addOrUpdateTransientModifier(
+                    new net.minecraft.world.entity.ai.attributes.AttributeModifier(id, SOOTHE_FREEZE_MULTIPLIER,
+                            net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        } else {
+            instance.removeModifier(id);
+        }
+    }
+
+    /** 安抚在身时：攻击（左键打实体）无效 */
+    @SubscribeEvent
+    public static void onSootheAttack(net.neoforged.neoforge.event.entity.player.AttackEntityEvent event) {
+        if (isSoothed(event.getEntity())) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** 安抚在身时：破坏方块无效（左键按住也挖不动） */
+    @SubscribeEvent
+    public static void onSootheBreak(net.neoforged.neoforge.event.level.BlockEvent.BreakEvent event) {
+        if (isSoothed(event.getPlayer())) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** 安抚在身时：左键点在方块上无效（连「开始挖」都不给）
+     *  （{@code LeftClickBlock} 只有 cancel、<b>没有</b> {@code setCancellationResult}，所以这里只取消） */
+    @SubscribeEvent
+    public static void onSootheLeftClickBlock(
+            net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event) {
+        if (isSoothed(event.getEntity())) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** 安抚在身时：右键方块无效（开门 / 放方块 / 交互方块） */
+    @SubscribeEvent
+    public static void onSootheRightClickBlock(
+            net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock event) {
+        if (isSoothed(event.getEntity())) {
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
+    }
+
+    /** 安抚在身时：右键用物品无效（吃东西 / 拉弓 / 举盾 / 投掷） */
+    @SubscribeEvent
+    public static void onSootheRightClickItem(
+            net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
+        if (isSoothed(event.getEntity())) {
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
+    }
+
+    /** 安抚在身时：右键实体无效（交易 / 骑乘 / 剪羊毛…） */
+    @SubscribeEvent
+    public static void onSootheEntityInteract(
+            net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract event) {
+        if (isSoothed(event.getEntity())) {
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
+    }
+
+    /** 安抚在身时：对实体精确部位右键无效（同一件事的第二条入口，见 {@code PlayerInteractEvent}） */
+    @SubscribeEvent
+    public static void onSootheEntityInteractSpecific(
+            net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific event) {
+        if (isSoothed(event.getEntity())) {
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
+    }
+
+    /**
+     * 「这个玩家现在被安抚了吗」—— 唯一的判据。
+     *
+     * <p>刻意<b>不加 client/server 限制</b>：{@code MobEffect} 是同步到客户端的，
+     * 两侧都取消才算「左右键无效」；只取消服务端的话客户端仍会摆臂 / 放破坏粒子（预测），
+     * 观感上像「没生效」。玩家引用可能为 null（{@code BlockEvent.BreakEvent#getPlayer}），
+     * 所以这里判空。</p>
+     */
+    private static boolean isSoothed(net.minecraft.world.entity.player.Player player) {
+        return player != null && player.hasEffect(AllEffects.SOOTHE);
+    }
+
     /** 聚紫能晶尘：合成时返还作为模具使用的砂轮 */
     @SubscribeEvent
     public static void onCrafted(net.neoforged.neoforge.event.entity.player.PlayerEvent.ItemCraftedEvent event) {
@@ -242,10 +401,24 @@ public final class MetalEvents {
      * </ul>
      */
     public static void applyContact(net.minecraft.world.entity.LivingEntity entity,
-            net.minecraft.world.level.block.Block block) {
+            net.minecraft.world.level.block.Block block, net.minecraft.core.BlockPos pos) {
         MetalFamily family = MetalFamily.of(block);
         if (family == null) {
             return;
+        }
+        // ---------- 1.6（bg-16）树棘金建材：四个动作 ⇒ 触发者挨 1 点「仙人掌同款」伤害 ----------
+        // 与下面靛海金那条 contactDamage 的差别：这条**不挑目标类型**（谁碰谁挨）、点数固定 1.0
+        // （原版仙人掌方块自己就是 `hurt(damageSources().cactus(), 1.0F)`），冷却复用同一套
+        // 「同一实体每 10 tick 最多一次」语义、但用**本族自己的键** —— 与靛海金共用一把锁
+        // 会互相吃掉冷却（谁先写谁生效）。
+        // ⚠ 需求特意强调「不会清除掉落物」：这里**只**造成伤害，不写任何 ItemEntity 摧毁逻辑。
+        if (family.contactCactusThorns
+                && !contactThrottled(entity, CACTUS_CONTACT_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
+            entity.hurt(entity.damageSources().cactus(), 1.0F);
+        }
+        // ---------- 1.6（bg-16）幽咆金建材：四个动作 ⇒ **该方块中心** 3×3×3 声波伤害 + 粒子 ----------
+        if (family.contactSonicBoom && pos != null) {
+            sonicContact(entity.level(), pos);
         }
         // ---------- 1.5 靛海金建材：对特定生物的「接触伤害」 ----------
         // 末影人 / 烈焰人 / 雪傀儡 / 炽足兽 在踩踏或紧贴该系列方块时每次判定 4 点伤害，
@@ -295,6 +468,193 @@ public final class MetalEvents {
             entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                     effect, MetalFamily.CONTACT_EFFECT_TICKS, 0));
         }
+    }
+
+    // ==================== 1.6（bg-16）：两套新金属的 trait ====================
+
+    /** 树棘金建材的「1 点仙人掌伤害」冷却键（每族一把锁，不与靛海金共用） */
+    private static final String CACTUS_CONTACT_KEY = "bettergold_contact_cactus_tick";
+    /** 幽咆金建材的声波伤害冷却键 */
+    private static final String SONIC_CONTACT_KEY = "bettergold_contact_sonic_tick";
+    /** 寄生结算时「施加者是谁」记在**目标**的持久数据里（回血要用） */
+    public static final String PARASITE_SOURCE_KEY = "bettergold_parasite_source";
+    /** 幽咆每秒结算的冷却键（挂在**受损者**身上，避免同一实体被同一块建材/同一次结算反复打） */
+    private static final String ECHO_ROAR_TICK_KEY = "bettergold_echo_roar_tick";
+
+    /**
+     * 通用的「同一实体每 {@code cooldown} tick 最多一次」节流（放实体持久数据里，跟着实体生灭）。
+     *
+     * <p>与 {@link #contactDamage} 用的是**同一套语义**（规格 §3.4 要求"必须复用"），
+     * 但键按族分开 ⇒ 站在靛海金方块与树棘金方块之间不会互相吃掉冷却。</p>
+     *
+     * @return {@code true} = 本次跳过（冷却中 / 客户端 / 已经不活）
+     */
+    private static boolean contactThrottled(net.minecraft.world.entity.LivingEntity entity,
+            String key, int cooldown) {
+        if (entity.level().isClientSide() || !entity.isAlive()) {
+            return true;
+        }
+        var data = entity.getPersistentData();
+        long now = entity.level().getGameTime();
+        if (data.contains(key) && now - data.getLong(key) < cooldown) {
+            return true;
+        }
+        data.putLong(key, now);
+        return false;
+    }
+
+    /**
+     * 「监守者声波」伤害源：<b>不带攻击者实体</b>（{@code new DamageSource(holder)}），与结雷金的落雷同构。
+     *
+     * <p>为什么不用 {@code damageSources().sonicBoom(entity)}：那个重载会把传入实体**同时当作攻击者** ——
+     * 于是受害者在 {@code LivingDamageEvent} 里变成"攻击者"，会走 {@link #dispatchWeaponHit}
+     * （等于"手里拿着本模组武器挨声波时会给自己上 buff"），而自伤反制那条虽被
+     * {@code attacker == wearer} 拦住，但没必要留着这个坑。</p>
+     */
+    private static net.minecraft.world.damagesource.DamageSource sonicBoomSource(
+            net.minecraft.world.level.Level level) {
+        return new net.minecraft.world.damagesource.DamageSource(
+                level.registryAccess().holderOrThrow(
+                        net.minecraft.world.damagesource.DamageTypes.SONIC_BOOM));
+    }
+
+    /**
+     * 幽咆金建材：以**该方块中心**为心、3×3×3 内全部生物 3 点声波伤害 + 中心 {@code SONIC_BOOM} 粒子。
+     *
+     * <p>与「寄生把自己叠在触发者身上」不同：这条是**范围伤害**，所以按"每个受害者各自节流"
+     * （{@link #SONIC_CONTACT_KEY}）来防刷屏。</p>
+     */
+    private static void sonicContact(net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
+        if (level.isClientSide()) {
+            return;
+        }
+        var center = pos.getCenter();
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM,
+                    center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+        var area = new net.minecraft.world.phys.AABB(pos).inflate(MetalFamily.ECHO_ROAR_RADIUS);
+        for (var victim : level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, area)) {
+            if (contactThrottled(victim, SONIC_CONTACT_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
+                continue;
+            }
+            victim.hurt(sonicBoomSource(level), MetalFamily.CONTACT_SONIC_DAMAGE);
+        }
+    }
+
+    /** 命中时把「施加者是谁」记到目标身上（寄生回血要用；每次命中覆盖为最新施加者） */
+    public static void markParasiteSource(net.minecraft.world.entity.LivingEntity target,
+            net.minecraft.world.entity.LivingEntity attacker) {
+        if (target.level().isClientSide() || attacker == null || attacker == target) {
+            return;
+        }
+        target.getPersistentData().putUUID(PARASITE_SOURCE_KEY, attacker.getUUID());
+    }
+
+    /** 寄生结算时按 UUID 找回施加者（已死 / 已卸载 / 换维度一律当没有） */
+    private static net.minecraft.world.entity.LivingEntity parasiteApplier(
+            net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LivingEntity target) {
+        var data = target.getPersistentData();
+        if (!data.hasUUID(PARASITE_SOURCE_KEY)) {
+            return null;
+        }
+        var entity = level.getEntities().get(data.getUUID(PARASITE_SOURCE_KEY));
+        return entity instanceof net.minecraft.world.entity.LivingEntity living && living.isAlive() ? living : null;
+    }
+
+    /**
+     * 寄生的每秒结算（由 {@code AllEffects.PARASITE#applyEffectTick} 调用）。
+     *
+     * <p>伤害 = 等级（1 级 1 点 / 2 级 2 点 / 3 级 3 点），类型 {@code minecraft:cactus}；
+     * 每次结算 <b>36% 概率</b>给施加者回「等级」点血 —— 概率**不随等级变**
+     * （作者原话「2 级就是恢复 2 点」，取"概率不变、回血量 = 等级"这一读法）。</p>
+     */
+    public static void parasiteTick(net.minecraft.world.entity.LivingEntity entity, int amplifier) {
+        if (!(entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            return;
+        }
+        float level = (amplifier + 1) * MetalFamily.PARASITE_DAMAGE_PER_LEVEL;
+        entity.hurt(serverLevel.damageSources().cactus(), level);
+        var applier = parasiteApplier(serverLevel, entity);
+        if (applier != null && serverLevel.getRandom().nextFloat() < MetalFamily.PARASITE_HEAL_CHANCE) {
+            applier.heal(level);
+        }
+    }
+
+    /**
+     * 幽咆的每秒结算（由 {@code AllEffects.ECHO_ROAR#applyEffectTick} 调用）。
+     *
+     * <p>以<b>目标所在方块坐标 ±1（3×3×3）</b>为中心（与既有 {@code thunderStrike} 的 3×3 扫描同构），
+     * 对范围内**含目标自己**的全部生物造成「等级」点 {@code sonic_boom} 伤害，并在中心发
+     * {@code SONIC_BOOM} 粒子；同一实体每 10 tick 最多被结算一次。</p>
+     */
+    public static void echoRoarTick(net.minecraft.world.entity.LivingEntity entity, int amplifier) {
+        if (!(entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            return;
+        }
+        var pos = entity.blockPosition();
+        var center = pos.getCenter();
+        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM,
+                center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;
+        var area = new net.minecraft.world.phys.AABB(pos).inflate(MetalFamily.ECHO_ROAR_RADIUS);
+        for (var victim : serverLevel.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, area)) {
+            if (contactThrottled(victim, ECHO_ROAR_TICK_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
+                continue;
+            }
+            victim.hurt(sonicBoomSource(serverLevel), level);
+        }
+    }
+
+    private static boolean isCactus(net.minecraft.world.damagesource.DamageSource source) {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.CACTUS);
+    }
+
+    private static boolean isSonicBoom(net.minecraft.world.damagesource.DamageSource source) {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.SONIC_BOOM);
+    }
+
+    /**
+     * <b>§3.8 免疫仙人掌 · 物品形式</b>：树棘金系列的掉落物（{@code ItemEntity}）不被仙人掌摧毁。
+     *
+     * <p>落点 = NeoForge 现成的 {@code EntityInvulnerabilityCheckEvent}（<b>不需要 mixin</b>）：
+     * {@code Entity#isInvulnerableTo} 已被 NeoForge 改成走 {@code CommonHooks.isEntityInvulnerableTo}，
+     * 而 {@code ItemEntity#hurt} 的<b>第一句</b>就是 {@code isInvulnerableTo(source)} ⇒ 这里置真即可。</p>
+     */
+    @SubscribeEvent
+    public static void onCactusItemImmunity(
+            net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent event) {
+        if (!(event.getEntity() instanceof net.minecraft.world.entity.item.ItemEntity itemEntity)) {
+            return;
+        }
+        if (!isCactus(event.getSource())) {
+            return;
+        }
+        MetalFamily family = MetalFamily.of(itemEntity.getItem());
+        if (family != null && family.cactusImmune) {
+            event.setInvulnerable(true);
+        }
+    }
+
+    /**
+     * <b>§3.8 免疫仙人掌 · 装备耐久</b>：树棘金装备不因仙人掌伤害扣耐久。
+     *
+     * <p>落点 = {@code ArmorHurtEvent}（<b>不需要 mixin</b>）：原版那段「逐槽 {@code hurtAndBreak}」
+     * 已被 NeoForge 用 {@code if (true) return;} 整个架空，盔甲耐久的<b>唯一执行点</b>就是这个事件
+     * （{@code CommonHooks.onArmorHurt}）。把该族盔甲的 {@code newDamage} 置 0 即可。</p>
+     */
+    @SubscribeEvent
+    public static void onArmorHurtCactusImmunity(
+            net.neoforged.neoforge.event.entity.living.ArmorHurtEvent event) {
+        if (!isCactus(event.getDamageSource())) {
+            return;
+        }
+        event.getArmorMap().forEach((slot, entry) -> {
+            MetalFamily family = MetalFamily.of(entry.armorItemStack);
+            if (family != null && family.cactusImmune) {
+                entry.newDamage = 0.0F;
+            }
+        });
     }
 
     /** 接触伤害的「上次结算 tick」在实体持久数据里的键（跟着实体走，不会泄漏、也不怕卸载重载） */
@@ -351,7 +711,7 @@ public final class MetalEvents {
     @SubscribeEvent
     public static void onBreakBlock(net.neoforged.neoforge.event.level.BlockEvent.BreakEvent event) {
         if (event.getPlayer() != null) {
-            applyContact(event.getPlayer(), event.getState().getBlock());
+            applyContact(event.getPlayer(), event.getState().getBlock(), event.getPos());
         }
     }
 
@@ -359,7 +719,7 @@ public final class MetalEvents {
     @SubscribeEvent
     public static void onRightClickBlock(
             net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock event) {
-        applyContact(event.getEntity(), event.getLevel().getBlockState(event.getPos()).getBlock());
+        applyContact(event.getEntity(), event.getLevel().getBlockState(event.getPos()).getBlock(), event.getPos());
     }
 
     /** 踩踏 / 紧贴：每 10 tick 扫一次玩家周围 3×3×3 的方块 */
@@ -380,7 +740,7 @@ public final class MetalEvents {
         var center = entity.blockPosition();
         for (var pos : net.minecraft.core.BlockPos.betweenClosed(
                 center.offset(-1, -1, -1), center.offset(1, 1, 1))) {
-            applyContact(entity, entity.level().getBlockState(pos).getBlock());
+            applyContact(entity, entity.level().getBlockState(pos).getBlock(), pos);
         }
     }
 
@@ -646,6 +1006,13 @@ public final class MetalEvents {
             if (attacker.getRandom().nextFloat() < family.sootheOnAttackChance) {
                 applySoothe(target, MetalFamily.SOOTHE_TICKS);
             }
+        } else if (family.parasiteOnAttack) { // 1.6 树棘金：叠 1 级 16 秒寄生（无上限）+ 记住施加者（回血用）
+            stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.PARASITE,
+                    MetalFamily.PARASITE_TICKS);
+            markParasiteSource(target, attacker);
+        } else if (family.echoRoarOnAttack) { // 1.6 幽咆金：叠 1 级 6 秒幽咆
+            stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.ECHO_ROAR,
+                    MetalFamily.ECHO_ROAR_TICKS);
         }
     }
 
@@ -1140,7 +1507,10 @@ public final class MetalEvents {
             }
             boolean applies = (FLAME_ID.equals(family.id) && isFire(event.getSource()))
                     || (VOODOO_ID.equals(family.id) && isMagic(event.getSource()))
-                    || (family.suffocationResist && isSuffocation(event.getSource()));
+                    || (family.suffocationResist && isSuffocation(event.getSource()))
+                    // 1.6（bg-16）：树棘金盔甲减「仙人掌」伤害 / 幽咆金盔甲减「监守者声波」伤害
+                    || (family.cactusResist && isCactus(event.getSource()))
+                    || (family.sonicResist && isSonicBoom(event.getSource()));
             if (applies) {
                 event.setNewDamage(event.getNewDamage() * (1.0F - Math.min(pieces, 4) * 0.25F));
             }
@@ -1157,7 +1527,9 @@ public final class MetalEvents {
             return capped * family.sootheReflectPerPiece;   // 幻惑金：每件 4%
         }
         if (FLAME_ID.equals(family.id) || VOODOO_ID.equals(family.id)
-                || THUNDER_ID.equals(family.id) || family.sedimentReflect) {
+                || THUNDER_ID.equals(family.id) || family.sedimentReflect
+                // 1.6（bg-16）：树棘金 / 幽咆金盔甲也是「每件 25%、四件 100%」那一档
+                || family.parasiteReflect || family.echoRoarReflect) {
             return capped * 0.25F;                          // 其余反制家族：每件 25%
         }
         return 0.0F;
@@ -1204,6 +1576,13 @@ public final class MetalEvents {
                         MetalFamily.SEDIMENT_TICKS);
             } else if (family.sootheReflectPerPiece > 0.0F) {   // 幻惑金：给攻击者 1 秒安抚
                 applySoothe(attacker, MetalFamily.SOOTHE_TICKS);
+            } else if (family.parasiteReflect) {   // 1.6 树棘金：给攻击者叠 1 级寄生（并记住施加者）
+                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.PARASITE,
+                        MetalFamily.PARASITE_TICKS);
+                markParasiteSource(attacker, wearer);
+            } else if (family.echoRoarReflect) {   // 1.6 幽咆金：给攻击者叠 1 级幽咆
+                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.ECHO_ROAR,
+                        MetalFamily.ECHO_ROAR_TICKS);
             }
         }
         // 结雷金：每件 25% 几率清除自身一次虚弱与颤栗
@@ -1346,6 +1725,87 @@ public final class MetalEvents {
                 drop.setItem(smelted.copyWithCount(smelted.getCount() * stack.getCount()));
             }
         }
+    }
+
+
+    // ==================== bg-15w §九 9.3（2026-10-03）：靛海金器具无视水下挖掘惩罚 ====================
+
+    /**
+     * §9.3 的加成值：原版 {@code SUBMERGED_MINING_SPEED} 基值 **0.2** ⇒ {@code +0.8} 正好抬到 **1.0**
+     * （= 与陆地完全一致、一点惩罚都不剩）。
+     */
+    public static final float SUBMERGED_MINING_IMMUNITY_BONUS = 0.8F;
+
+    /**
+     * §9.3 的修饰符 id。
+     *
+     * <p>⚠ 这里是 <b>"单栈单条"</b>（同一把镐只可能挂这一条），所以**一个固定 id** 就是对的 ——
+     * 与 {@code MetalFamily.MetalArmorItem} 那两条"每件各挂一份 ⇒ 每个部位不同 id"的属性
+     * <b>正好相反</b>（属性修饰符按 id 去重，写反的两种后果本仓都踩过：共用 id ⇒ 只算一件；多 id ⇒ 双倍）。
+     * 详见 {@code docs/1.5-规格.md} §13.5 / §17.8 与 {@code mcmod_experience} §4 第 32 条。</p>
+     */
+    public static final net.minecraft.resources.ResourceLocation SUBMERGED_MINING_IMMUNITY_ID =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    com.hjmmd_8.bettergold.bettergold.MODID, "submerged_mining_immunity");
+
+    /**
+     * §9.3：给<b>靛海金的全部器具</b>补一条「水下挖掘速度 = 1.0」的属性修饰符。
+     *
+     * <h2>需求与落点</h2>
+     * <p>作者 2026-10-03：「为靛海金器具新增一个<b>无视水里挖掘惩罚</b>的机制」，范围 = 全套靛海金器具
+     * （剑 / 斧 / 镐 / 锹 / 锄 + 乐事联动小刀）。</p>
+     *
+     * <h2>为什么用这个事件（源码依据）</h2>
+     * <ol>
+     *   <li><b>惩罚在哪判</b>：{@code net.minecraft.world.entity.player.Player#getDigSpeed(BlockState, BlockPos)}
+     *       （patched neoforge sources {@code Player.java:775}）里
+     *       {@code if (this.isEyeInFluid(FluidTags.WATER)) { f *= (float)this.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue(); }}
+     *       （同文件 {@code :795-797}）；该属性 = {@code player.submerged_mining_speed}，
+     *       {@code new RangedAttribute(..., 0.2, 0.0, 20.0).setSyncable(true)}（{@code Attributes.java:139-141}），
+     *       且所有玩家天生带它（{@code Player.java:237}）⇒ **惩罚就是 ×0.2**，抬到 1.0 即"完全无视"。</li>
+     *   <li><b>为什么不用自定义工具类</b>：本仓的工具是直接用原版类造的
+     *       （{@code new SwordItem/AxeItem/PickaxeItem/ShovelItem/HoeItem}，见 {@code MetalFamily} 的工具注册段）
+     *       ⇒ 无处可覆写 {@code getDefaultAttributeModifiers()}。</li>
+     *   <li><b>为什么这个事件真的能生效</b>：{@code ItemStack#forEachModifier(...)} →
+     *       {@code IItemStackExtension#getAttributeModifiers()}（neoforge sources {@code :507-515}）→
+     *       {@code CommonHooks.computeModifiedAttributes(...)} 里派发本事件；而玩家收装备走的正是
+     *       {@code LivingEntity#handleEquipmentChanges} 里的 {@code itemstack.forEachModifier(equipmentslot, ...)}
+     *       （同文件 {@code :2611,2628}）⇒ 事件里加的修饰符会真的挂到玩家属性上；
+     *       tooltip 也读得到（{@code AttributeUtil.addAttributeTooltips} → {@code forEachModifier}）。</li>
+     * </ol>
+     *
+     * <h2>⚠ 硬要求（照 §9.3 原文）</h2>
+     * <ul>
+     *   <li><b>事件在热路径上</b>：{@code ItemStack#getAttributeModifiers()} 说它是
+     *       "queried (for any reason)" ⇒ 每次查物品属性都会触发 ⇒ 处理器必须<b>先廉价早退</b>，
+     *       绝不做重活（这里只查一次家族索引 + 一次 {@code List#contains}）。</li>
+     *   <li><b>只对靛海金</b>：判据是 {@code MetalFamily#submergedMiningImmunity}（只有
+     *       {@code AllMetals.INDIGOSEAGOLD} 归位时打开）+ {@code family.isTool(item)}
+     *       （器具清单 = 剑斧镐锹锄 + 已登记的小刀）—— <b>不含盔甲</b>、不含五类新武器。</li>
+     *   <li><b>不许重复添加</b>：同属性同 id 已存在时 {@code addModifier} 返回 {@code false}（不抛异常），
+     *       一个固定 id 天然幂等。</li>
+     * </ul>
+     */
+    @SubscribeEvent
+    public static void onItemAttributeModifiers(
+            net.neoforged.neoforge.event.ItemAttributeModifierEvent event) {
+        // ① 廉价早退：90% 的查询都不是我们的物品
+        MetalFamily family = MetalFamily.of(event.getItemStack());
+        if (family == null || !family.submergedMiningImmunity) {
+            return;
+        }
+        // ② 只要"器具"（剑 / 斧 / 镐 / 锹 / 锄 / 小刀），不要盔甲、不要五类新武器
+        if (!family.isTool(event.getItemStack().getItem())) {
+            return;
+        }
+        // ③ 槽位组 = MAINHAND（§9.3 写死）；0.2 + 0.8 = 1.0 ⇒ 眼睛泡在水里也不减速
+        event.addModifier(
+                net.minecraft.world.entity.ai.attributes.Attributes.SUBMERGED_MINING_SPEED,
+                new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                        SUBMERGED_MINING_IMMUNITY_ID,
+                        SUBMERGED_MINING_IMMUNITY_BONUS,
+                        net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
+                net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND);
     }
 
 

@@ -35,6 +35,9 @@ METALS = [
     ("thundergold", "结雷金", "Thundergold"),
     ("indigoseagold", "靛海金", "Indigoseagold"),
     ("illusiongold", "幻惑金", "Illusiongold"),
+    # 1.6（bg-16）：两套新金属（五类武器的语言键在这里生成，物品/方块那些在 generate_metal_data.py）
+    ("thornsgold", "树棘金", "Thornsgold"),
+    ("echogold", "幽咆金", "Echogold"),
 ]
 
 # 武器后缀 -> (中文名, 英文名)
@@ -106,8 +109,12 @@ def main() -> None:
 
     zh = entries()
     en = entries_en()
-    if len(zh) != 35 or len(en) != 35:
-        print(f"[错误] 条目数不是 35（zh={len(zh)} en={len(en)}）")
+    # ⚠ bg-16：不变量由列表现算（8 套 × 5 类 + 5 件胚底 = 45），不许写死 35 ——
+    #   写死会让生成器在"新增一套金属"时自己报错（AGENTS 红线 2 的同一种形态）。
+    expected_lang = len(METALS) * len(WEAPONS) + len(BLANK_CN)
+    if len(zh) != expected_lang or len(en) != expected_lang:
+        print(f"[错误] 条目数不是 {expected_lang}（{len(METALS)} 套 × {len(WEAPONS)} 类 + "
+              f"{len(BLANK_CN)} 件胚底；zh={len(zh)} en={len(en)}）")
         sys.exit(1)
 
     a1, n1 = merge(LANG / "zh_cn.json", zh, args.apply)

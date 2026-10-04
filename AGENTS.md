@@ -19,7 +19,8 @@
 
 | 文件 | 内容 | 什么时候读 |
 |---|---|---|
-| `docs/1.5-规格.md` | **现行规格与实现依据**：新金属（靛海金/幻惑金）、新 buff（沉淀/安抚）、巫毒公式变更、金制武器扩展、胚底最终形态、逐轮实测证据 | 要加/改任何内容之前 |
+| `docs/1.5-规格.md` | **1.5 规格与实现依据**：新金属（靛海金/幻惑金）、新 buff（沉淀/安抚）、巫毒公式变更、金制武器扩展、胚底最终形态、逐轮实测证据 | 查 1.5 的历史与依据 |
+| `docs/1.6-规格.md` | **1.6 现行规格与实现进度（bg-16）**：两套新金属（树棘金/幽咆金）+ 三个散件 + 两处修正 + 第三轮 A 级实机验证 + **第四轮收口轮**（§7.4 两条真问题） | **要加/改任何内容之前**（比 1.5 新） |
 | `docs/构建与跑测注意事项.md` | 构建成败判读、`run\` 独占、探针铁律、编码与 BOM、创造页坑、可信度要求 | **动手前扫一眼**，跑测前必读 |
 | `docs/新增材料家族.md` | 加一整套金属（`MetalFamily.Spec` 一次注册）的标准流程 | 要加新金属时 |
 | `docs/1.4-进度与交接.md` | 1.4 遗留与交接 | 查历史遗留 |
@@ -45,6 +46,11 @@
 专属材料模型**不在**模板集里 ⇒ 客户端**紫黑格**（不报错）；16×48 的灯笼贴图缺 `.mcmeta` ⇒ 被**纵向拉长**。
 每加一类新东西都要问「**生成器覆盖它了吗**」，并把检查加进 `tools/asset-generator/validate_*.py`。
 **接手先跑两条校验**：`python tools\asset-generator\validate_metal_assets.py`、`validate_metal_data.py`。
+**③ bg-15y 补记（2026-10-02）**：生成器的**后缀清单本身**也会漏 —— `generate_metal_tags.py` 往
+`#minecraft:beacon_base_blocks` 里一直只加 块/砖，**柱子从没进过生成器**（1.4 那 5 根是手写进产物 JSON 的），
+1.5 两套新金属的柱子就漏了 ＝「靛海金柱/幻惑金柱当不了信标基座」；而且 `merge()` **只增不删**会把当年的手写条目
+变成"看不见的既成事实"。**口径**：N 套必须一致的标签，生成器清单要**按 N 套穷尽**（含不在 `METALS` 里的万坚金），
+关卡写「六套成员数一致」的**不变量**（且要对 `#bettergold:*` 桥接做递归展开，否则假红）。详见 `docs/1.5-规格.md` §18。
 
 **3）附魔靠标签，忘了不报错**
 `【记录】docs/1.5-规格.md:578-591（§12 第 3 条）`：1.21 的附魔台走 `stack.is(definition.supportedItems)`，全是物品标签。
@@ -68,7 +74,13 @@
 - **属性是否 `setSyncable(true)` 决定客户端看不看得见**：`MOVEMENT_SPEED` 是（客户端逐值相同），
   `KNOCKBACK_RESISTANCE` **不是**（客户端恒 0，那是原版行为）——见 `docs/1.5-规格.md` §16.2 / §17.3。
 - **`GEAR_SLOT` 一表两用**（既定装备顺序、又判"是不是金属装备"）：作者给的清单漏项时
-  **只许重排、不许删项**（删了 = 那件物品静默掉出装备分区）。见 §17.1。
+  **只许重排、不许删项**（删了 = 那件物品静默掉出装备分区）。
+  ⚠ **顺序的现行口径 = `docs/1.5-规格.md` §19.1**（作者 2026-10-03 §9.1 **更正了 §8.1**）：
+  **剑 重锤 三叉戟 弓 弩 斧 镐 锹 锄 盾 头盔 胸甲 护腿 靴子**；§17.1 那张位次表**已作废**（只留档，不删）。
+- **给"已注册物品"补属性用 `ItemAttributeModifierEvent`**（本仓工具 `new PickaxeItem(...)` 等**原版类**，
+  无处覆写 `getDefaultAttributeModifiers()`）：靛海金器具的"**免水下挖掘惩罚**"就挂在这里
+  （`Attributes.SUBMERGED_MINING_SPEED +0.8`、`ADD_VALUE`、`MAINHAND`、**一个固定 id**
+  `bettergold:submerged_mining_immunity`；范围 = `family.isTool(...)`）。见 `docs/1.5-规格.md` §19.3。
 
 **5）验证与探针（照 `docs/构建与跑测注意事项.md`）**
 - **只读 JSON / 只读源码不算验证**；结论分 A 实机 / B 仅编译 / C 仅读源码三级汇报。
@@ -81,6 +93,12 @@
 （参照：COE 侧已有明确红线「不改任何贴图、也不自己画」，见 `createoreexpansion/AGENTS.md`。）
 （`bg-15w` 续工轮作者**明确授权**改过**一张**：`textures/trims/color_palettes/indigoseagold.png`
 回退成原版 quartz 的白灰阶 8 像素，见 `docs/1.5-规格.md` §16.4；**除这一张外仍然不许顺手改**。）
+（**第二次**贴图授权（`bg-16`，作者 2026-10-04 原话「**需要替换！**」）：把
+`textures/item/golden_trident_blank.png` 换成作者 zip 里那张 `金三叉戟胚底(这是新贴图记得换!).png`
+的**字节原样**（16×16，SHA256 `73e4df0f098dced43d43f8529a7aa07c702e63e5aacd70d99a25fdfbb1e6f5b6`，
+源文件哈希 == jar 内条目哈希已实测；见 `docs/1.6-规格.md` §6.5）；**关卡已把它钉成文件级白名单 + SHA256 锚点**
+（`validate_metal_assets.py` 的 `[bg16-authorized-blank-texture]`）。**除这两张之外一律不许改/自己画**；
+再要换任何一张，必须让作者**点名到文件**并把原话写进规格。）
 
 **7）mixin 基础设施（`bg-15w` 续工轮起才有）**
 - 配置：`src/main/resources/bettergold.mixins.json`（`client: ["ItemRendererTridentMixin"]`）+
@@ -92,6 +110,24 @@
 - 自己的 additional model 用 `ModelEvent.RegisterAdditional` 登记（`ModelResourceLocation.standalone` +
   **完整模型路径** `ns:item/x_in_hand`，NeoForge 不补 `item/` 前缀），否则拿到 missing model。
 - 细节与六情形并排对照见 `docs/1.5-规格.md` §16.6。
+
+**8）数据地图 / 标签的命名空间就是 id 的一部分（`bg-16` 收口轮，2026-10-04）**
+`data/<ns>/data_maps/<registry>/<path>.json` ⇒ 数据地图 id = `<ns>:<path>`。闪耀藤条的可堆肥（65%）曾写在
+`data/bettergold/data_maps/item/compostables.json`，而 `ComposterBlock#getValue` 读的是 **`neoforge:compostables`**
+⇒ 注册成从未注册过的 `bettergold:compostables`、**整条被静默丢弃**（A 级：`getValue = -1.0`、`getData = null`，
+原版小麦对照 `0.65`；修后 `0.65` + 真堆肥桶 `insert` 后 `level 0 → 1`）。现行落点 =
+`data/neoforge/data_maps/item/compostables.json`（内容不变）。
+**规则**：加任何数据地图/标签前先确认「**谁读它**」；关卡要写「**旧位置必须不存在**」的负向断言 +
+「`<ns>/<registry>/<file>` 必须与注册它的 `DataMapType` 对齐」的**白名单不变量**
+（`validate_metal_data.py` 的 `[bg16-datamap-*]`）；⚠ 改这类 bug 前先 `grep` 关卡里有没有把**旧位置**写成契约的断言
+——本仓原来那条正断言写的就是**错路径**，不改它会反过来拦住修复。详见 `docs/1.6-规格.md` §8.1。
+
+**9）金属弩的实际蓄力 = 原版 25 tick（不是规格写的 20 tick）（`bg-16` 收口轮）**
+装载判定在 `CrossbowItem#releaseUsing` 里除以的是 **`static` 的 `CrossbowItem.getChargeDuration`**（1.25F×20 = **25**）
+⇒ 覆写 `getUseDuration`(=23) **不会**让分母变；`getUseDuration` 只决定「**举着的时长上限**」。
+`MetalWeapons` 里那句「比值自动仍是 1.0」的旧推断**已被实测推翻**（原文留档）。
+**代码按"实际为准"不动**；要真做成 20 tick 必须 mixin 改那个 `static` 常量或重写装载判定（待作者裁定）。
+口径已就地标注在 `docs/1.5-规格.md` §12.2 与 `docs/1.6-规格.md` §6.4/§7.4/§8.2，关卡 `[bg16-crossbow-caliber]` 守着。
 
 ## 🔧 构建与跑测
 

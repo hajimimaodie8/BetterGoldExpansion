@@ -58,6 +58,13 @@ METALS = {
     "靛海金": "indigoseagold",
     "幻惑金": "illusiongold",
     "万坚金": "sturdygold",
+    # 1.6（bg-16）：两套新金属。它们的素材来自 `更有用的金 新约9.zip`，**布局与 新约8 不同**
+    # —— 五类武器不再按武器类型分目录，而是放在**各自的金属文件夹**里：
+    #   `树棘金/树棘金重锤.png`、`树棘金/树棘金弓2.png`、`树棘金/树棘金弩6.png`、
+    #   `树棘金/树棘金三叉戟2.png`（32×32 实体）、`树棘金/树棘金盾牌.png`（64×64 实体）。
+    # 下面的 tex_any(...) 两种布局都会试，第一个命中的胜出 ⇒ 老包与新包都能从零重建。
+    "树棘金": "thornsgold",
+    "幽咆金": "echogold",
 }
 
 # 胚底 id 后缀（物品 id = golden_<武器>_blank）
@@ -79,6 +86,8 @@ MODELS_ITEM = "models/item"
 
 problems: list[str] = []
 written: list[str] = []
+# bg-16：包里没有、但仓库里已有 ⇒ 保留（例如只用 新约9 重跑时，老六套金属的武器贴图不在这只包里）
+kept: list[str] = []
 
 
 def fail(msg: str) -> None:
@@ -350,37 +359,59 @@ def main() -> None:
         write(rel, data)
         return data
 
-    # ---------- 六套金属 ----------
+    def tex_any(sources: list[str], rel: str, expect: tuple[int, int] | None = None) -> bytes | None:
+        """两种素材布局都试，第一个存在的胜出（bg-16 新增，见 METALS 上方注释）：
+        新约8 = 按武器类型分目录（`重锤/<中文名>重锤.png`）；
+        新约9 = 每套金属一个目录（`<中文名>/<中文名>弓2.png`）。"""
+        for src in sources:
+            if src in textures:
+                return tex(src, rel, expect)
+        if (ASSETS / rel).is_file():
+            # 仓库里已经有这张（老六套金属在 新约9 里当然没有）⇒ 原样保留，不算问题
+            kept.append(rel)
+            return None
+        problems.append(f"素材缺失（两种布局都找不到，且仓库里也没有）: {' | '.join(sources)}")
+        return None
+
+    # ---------- 六套金属（1.6 起是八套；每一条都给出两种布局的候选路径） ----------
     for cn, wid in METALS.items():
-        tex(f"重锤/{cn}重锤.png", f"{TEX_ITEM}/{wid}_mace.png", (16, 16))
+        tex_any([f"重锤/{cn}重锤.png", f"{cn}/{cn}重锤.png"], f"{TEX_ITEM}/{wid}_mace.png", (16, 16))
 
-        tex(f"弓/{cn}弓.png", f"{TEX_ITEM}/{wid}_bow.png", (16, 16))
+        tex_any([f"弓/{cn}弓.png", f"{cn}/{cn}弓.png"], f"{TEX_ITEM}/{wid}_bow.png", (16, 16))
         for i in range(3):
-            # 命名笔误兜底：`弓/巫毒金3.png` 应为 `弓/巫毒金弓3.png`
-            tex(f"弓/{cn}弓{i + 1}.png", f"{TEX_ITEM}/{wid}_bow_pulling_{i}.png", (16, 16),
-                fallback=f"弓/{cn}{i + 1}.png")
+            # ⚠ 两种布局的**帧编号差一位**（本轮实测）：
+            #   新约8 `弓/<cn>弓{1,2,3}.png`；新约9 `<cn>/<cn>弓{2,3,4}.png`（`弓.png` 是本体那一张）。
+            #   旧写法 `弓/巫毒金3.png`（少一个「弓」字）也要兜住。
+            tex_any([f"弓/{cn}弓{i + 1}.png", f"弓/{cn}{i + 1}.png", f"{cn}/{cn}弓{i + 2}.png"],
+                    f"{TEX_ITEM}/{wid}_bow_pulling_{i}.png", (16, 16))
 
-        tex(f"弩/{cn}弩.png", f"{TEX_ITEM}/{wid}_crossbow.png", (16, 16))
+        tex_any([f"弩/{cn}弩.png", f"{cn}/{cn}弩.png"], f"{TEX_ITEM}/{wid}_crossbow.png", (16, 16))
         for i in range(3):
-            tex(f"弩/{cn}弩{i + 1}.png", f"{TEX_ITEM}/{wid}_crossbow_pulling_{i}.png", (16, 16))
-        tex(f"弩/{cn}弩4.png", f"{TEX_ITEM}/{wid}_crossbow_arrow.png", (16, 16))
-        tex(f"弩/{cn}弩5.png", f"{TEX_ITEM}/{wid}_crossbow_firework.png", (16, 16))
+            # 同上：新约8 `弩1..3` → pulling_0..2；新约9 `弩2..4` → pulling_0..2
+            tex_any([f"弩/{cn}弩{i + 1}.png", f"{cn}/{cn}弩{i + 2}.png"],
+                    f"{TEX_ITEM}/{wid}_crossbow_pulling_{i}.png", (16, 16))
+        # 新约8：弩4 = arrow、弩5 = firework；新约9：弩5 = arrow、弩6 = firework
+        tex_any([f"弩/{cn}弩4.png", f"{cn}/{cn}弩5.png"], f"{TEX_ITEM}/{wid}_crossbow_arrow.png", (16, 16))
+        tex_any([f"弩/{cn}弩5.png", f"{cn}/{cn}弩6.png"], f"{TEX_ITEM}/{wid}_crossbow_firework.png", (16, 16))
 
-        tex(f"三叉戟/{cn}三叉戟.png", f"{TEX_ITEM}/{wid}_trident.png", (16, 16))
-        tex(f"三叉戟/{cn}三叉戟2.png", f"{TEX_ENTITY}/trident_{wid}.png", (32, 32))
+        tex_any([f"三叉戟/{cn}三叉戟.png", f"{cn}/{cn}三叉戟.png"], f"{TEX_ITEM}/{wid}_trident.png", (16, 16))
+        tex_any([f"三叉戟/{cn}三叉戟2.png", f"{cn}/{cn}三叉戟2.png"], f"{TEX_ENTITY}/trident_{wid}.png", (32, 32))
 
-        tex(f"盾牌/{cn}盾牌.png", f"{TEX_ENTITY}/shield_{wid}.png", (64, 64))
+        tex_any([f"盾牌/{cn}盾牌.png", f"{cn}/{cn}盾牌.png"], f"{TEX_ENTITY}/shield_{wid}.png", (64, 64))
 
         for name, text in weapon_models(wid).items():
             write(f"{MODELS_ITEM}/{name}", text)
 
     # ---------- 五件「胚底」（纯合成中间物：一张 16×16 贴图 + 一个最简单的模型） ----------
+    # 它们的贴图在新约8 里、新约9 里没有 ⇒ 走 tex_any 的"仓库里已有就保留"那条路，不报缺失。
     for src, weapon in BLANK_TEXTURES.items():
         blank_id = f"golden_{weapon}{BLANK_SUFFIX}"
-        tex(src, f"{TEX_ITEM}/{blank_id}.png", (16, 16))
+        tex_any([src], f"{TEX_ITEM}/{blank_id}.png", (16, 16))
         write(f"{MODELS_ITEM}/{blank_id}.json", blank_model(blank_id))
 
     print(f"{'已写入' if args.apply else '演练（未写入）'}: {len(written)} 个文件")
+    if kept:
+        print(f"[提示] 包内没有、按仓库现有保留: {len(kept)} 张（老金属在只给新包的场景下就是这条）")
     if problems:
         print(f"[提示] {len(problems)} 条:")
         for p in problems:

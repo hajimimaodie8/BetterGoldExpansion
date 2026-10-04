@@ -1,0 +1,11 @@
+bg-16 third round: author-authorized texture swap (golden_trident_blank)
+author quote: 需要替换！ (2026-10-04)
+zip entry used: 金三叉戟胚底(这是新贴图记得换!).png  (345 bytes)
+PNG header: 16x16, bit depth 8, color type 6 (RGBA), interlace 0
+source sha256 = 73e4df0f098dced43d43f8529a7aa07c702e63e5aacd70d99a25fdfbb1e6f5b6
+jar    sha256 = 73e4df0f098dced43d43f8529a7aa07c702e63e5aacd70d99a25fdfbb1e6f5b6
+identical = True   jar = bettergold-1.6.0.jar (1259158 bytes)
+gate: validate_metal_assets.py -> bg-16 授权贴图（golden_trident_blank）问题: 0  (exit 0)
+perturbation: flip last byte -> exit 1 + [bg16-authorized-blank-texture]; restored byte-for-byte
+git status -- textures models: the only modified existing texture is golden_trident_blank.png
+model models/item/golden_trident_blank.json unchanged: {"parent":"minecraft:item/generated", layer0 -> bettergold:item/golden_trident_blank}

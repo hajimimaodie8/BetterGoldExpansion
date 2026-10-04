@@ -35,6 +35,19 @@ METALS = {
     "thundergold":  {"cn": "结雷金", "folder": "结雷金"},
     "indigoseagold": {"cn": "靛海金", "folder": "靛海金"},
     "illusiongold": {"cn": "幻惑金", "folder": "幻惑金"},
+    # 1.6（bg-16）：两套新金属。素材 = `更有用的金 新约9.zip`，仍然是「每套金属一个顶级文件夹」的布局。
+    "thornsgold":   {"cn": "树棘金", "folder": "树棘金"},
+    "echogold":     {"cn": "幽咆金", "folder": "幽咆金"},
+}
+
+# 新约9 起，五类武器的贴图与「三叉戟实体 32×32 / 盾牌实体 64×64」放在**各自的金属文件夹**里
+# （`树棘金/树棘金弓2.png` …），与本脚本的 SUFFIX_MAP 无关 —— 它们由 `generate_weapon_assets.py`
+# 负责（那边有 bow/crossbow/trident/shield 的模型与 override 逻辑）。
+# 这里显式跳过、不报"未识别"，**避免两处各写一份映射**（单点真源）。
+WEAPON_SUFFIXES = {
+    "重锤", "弓", "弓1", "弓2", "弓3", "弓4",
+    "弩", "弩1", "弩2", "弩3", "弩4", "弩5", "弩6",
+    "三叉戟", "三叉戟2", "盾牌",
 }
 
 # 中文名后缀 -> 目标路径(相对 assets/bettergold)。{id} 会替换成英文 id
@@ -89,6 +102,13 @@ SPECIAL_TEXTURES = {
                       "沉淀": "textures/mob_effect/sediment.png"},
     "illusiongold": {"紫颂樱花枝": "textures/item/chorus_cherry_branch.png",
                      "安抚": "textures/mob_effect/soothe.png"},
+    # 1.6（bg-16）：树棘金 = 闪耀藤条 + 寄生（buff 图标）；幽咆金 = 集束回响碎片 + 幽咆。
+    # ⚠ 作者素材文件名是「音咆.png」（与本轮裁定的统一名「幽咆」不一致）——
+    #   这里**只按作者的文件名取值**，落盘的目标名是我们自己的 `echo_roar`，不改作者的图/文件名。
+    "thornsgold":   {"闪耀藤条": "textures/item/glittering_vine.png",
+                     "寄生": "textures/mob_effect/parasite.png"},
+    "echogold":     {"集束回响碎片": "textures/item/bundled_echo_shard.png",
+                     "音咆": "textures/mob_effect/echo_roar.png"},
 }
 
 # 纹饰色卡目录
@@ -185,6 +205,9 @@ def main() -> None:
             special = SPECIAL_TEXTURES.get(metal_id, {})
             if stem in special:
                 rel = Path(special[stem])
+            elif suffix in WEAPON_SUFFIXES:
+                # 五类武器（含三叉戟实体 / 盾牌实体）：由 generate_weapon_assets.py 负责，见上方常量注释
+                continue
             elif suffix in SUFFIX_MAP:
                 rel = Path(SUFFIX_MAP[suffix].format(id=metal_id))
             else:

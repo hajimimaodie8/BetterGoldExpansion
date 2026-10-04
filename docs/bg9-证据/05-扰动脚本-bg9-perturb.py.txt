@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""bg-15w §九 静态关卡的**扰动实测**（临时脚本，收尾删除；副本留档 docs/bg9-证据/）。
+
+做法（照 `mcmod_experience` §3.4 与 docs/bg8b-证据/05 的既有 harness）：
+  每个用例：**在磁盘上**扰动一个源文件/产物 → 跑 `validate_metal_data.py` →
+  要求 `exit 1` 且 stdout 里出现**期望子串**（逐条写死）→ **立刻按原始字节还原** → 校验 SHA256 一致。
+  另有：
+    · 基线（不扰动）必须 `exit 0`；
+    · **反向对照**：只加注释（提到被计数/被禁的名字）必须**仍然 exit 0**
+      —— 关卡判据是"去注释后的代码"，写进注释不该喂饱正向断言、也不该误伤；
+    · 收尾再跑一次基线必须 `exit 0`。
+"""
+import hashlib
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+JAVA = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold"
+CREATIVE = JAVA / "material" / "CreativeSections.java"
+METAL_EVENTS = JAVA / "material" / "MetalEvents.java"
+METAL_FAMILY = JAVA / "material" / "MetalFamily.java"
+ALL_METALS = JAVA / "material" / "AllMetals.java"
+RAW_RECIPE = JAVA / "recipe" / "RawSturdygoldRecipe.java"
+GEN_RECIPES = REPO / "tools" / "asset-generator" / "generate_metal_recipes.py"
+VALIDATOR = REPO / "tools" / "asset-generator" / "validate_metal_data.py"
+LEGACY_FLAME = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "recipe" / "flamegold_raw.json"
+RAW_FLAME = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "recipe" / "raw_flamegold.json"
+
+ENV = dict(os.environ)
+ENV["PYTHONIOENCODING"] = "utf-8"
+
+HANDLER_LINE = "    public static void onItemAttributeModifiers("
+
+
+def sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def run_validator():
+    p = subprocess.run([sys.executable, str(VALIDATOR)], capture_output=True, cwd=str(REPO), env=ENV)
+    out = (p.stdout or b"").decode("utf-8", "replace") + (p.stderr or b"").decode("utf-8", "replace")
+    return p.returncode, out
+
+
+def sub_once(text, old, new):
+    if text.count(old) != 1:
+        raise SystemExit("PERTURB TARGET NOT UNIQUE: %r count=%d" % (old, text.count(old)))
+    return text.replace(old, new)
+
+
+def insert_before(text, anchor, added):
+    return sub_once(text, anchor, added + anchor)
+
+
+# ---- 用例表：(名字, 文件, 变换, 期望子串, want_green) ----
+CASES = [
+    # ---------- §9.1 装备顺序 ----------
+    ("A1 GEAR_SLOT: axe 的位次改回 §8.1 的 10（斧镐锹锄排最后）",
+     CREATIVE,
+     lambda t: sub_once(t, 'Map.entry("axe", 5)', 'Map.entry("axe", 10)'),
+     "GEAR_SLOT", False),
+    ("A2 GEAR_SLOT: 把 hoe 改名成 shears（等于从表里删掉它）",
+     CREATIVE,
+     lambda t: sub_once(t, 'Map.entry("hoe", 8)', 'Map.entry("shears", 8)'),
+     "GEAR_SLOT", False),
+    ("A3 GEAR_SLOT: shield 与 axe 位次对调（弩之后不是斧镐锹锄）",
+     CREATIVE,
+     lambda t: sub_once(sub_once(t, 'Map.entry("axe", 5)', 'Map.entry("axe", 9)'),
+                        'Map.entry("shield", 9)', 'Map.entry("shield", 5)'),
+     "不在弩", False),
+
+    # ---------- §9.2 重复原料配方 ----------
+    ("B1 把 1.4 那张 flamegold_raw.json 放回产物目录",
+     LEGACY_FLAME,
+     None,  # 见下方 create 分支
+     "flamegold_raw.json", False),
+    ("B2 raw_flamegold.json 的 result 改成别的金属（串格）",
+     RAW_FLAME,
+     lambda t: sub_once(t, '"result": "bettergold:raw_flamegold"', '"result": "bettergold:raw_sturdygold"'),
+     "result 不是", False),
+    ("B3 生成器 TEMPLATES 里又列上 flamegold_raw.json（下次重跑会把重复配方带回来）",
+     GEN_RECIPES,
+     lambda t: sub_once(t, '    "raw_sturdygold.json",',
+                        '    "raw_sturdygold.json",\n    "flamegold_raw.json",'),
+     "flamegold_raw.json", False),
+    ("B4 RawSturdygoldRecipe 不再返还玻璃瓶（保留它的理由没了）",
+     RAW_RECIPE,
+     lambda t: sub_once(t, "new ItemStack(Items.GLASS_BOTTLE)", "ItemStack.EMPTY"),
+     "glass_bottle", False),
+
+    # ---------- §9.3 靛海金器具免水下挖掘惩罚 ----------
+    ("C1 槽位组 MAINHAND -> OFFHAND",
+     METAL_EVENTS,
+     lambda t: sub_once(t, "net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND",
+                        "net.minecraft.world.entity.EquipmentSlotGroup.OFFHAND"),
+     "MAINHAND", False),
+    ("C2 家族开关改成无条件（会波及五套金属）",
+     METAL_EVENTS,
+     lambda t: sub_once(t, "!family.submergedMiningImmunity", "false"),
+     "submergedMiningImmunity", False),
+    ("C3 去掉 isTool(...) 判据（会把盔甲也算进去）",
+     METAL_EVENTS,
+     lambda t: sub_once(t, "if (!family.isTool(event.getItemStack().getItem())) {",
+                        "if (false) {"),
+     "isTool(", False),
+    ("C4 加成值 0.8F -> 1.0F（会变成 1.2 倍速挖）",
+     METAL_EVENTS,
+     lambda t: sub_once(t, "SUBMERGED_MINING_IMMUNITY_BONUS = 0.8F",
+                        "SUBMERGED_MINING_IMMUNITY_BONUS = 1.0F"),
+     "0.8F", False),
+    ("C5 归位从 INDIGOSEAGOLD 挪走（靛海金不再开关）",
+     ALL_METALS,
+     lambda t: sub_once(t, "                    .submergedMiningImmunity()",
+                        "                    .submergedMiningImmunityX()"),
+     "submergedMiningImmunity", False),
+    ("C6 多给一族也打开开关（出现 2 次）",
+     ALL_METALS,
+     lambda t: sub_once(t, '            new MetalFamily.Spec("illusiongold", "幻惑金")',
+                        '            new MetalFamily.Spec("illusiongold", "幻惑金")\n'
+                        '                    .submergedMiningImmunity()'),
+     "submergedMiningImmunity", False),
+    ("C7 把这条属性塞进 MetalArmorItem#getDefaultAttributeModifiers（变成穿甲也免疫）",
+     METAL_FAMILY,
+     lambda t: sub_once(t, "            ItemAttributeModifiers base = super.getDefaultAttributeModifiers();",
+                        "            ItemAttributeModifiers base = super.getDefaultAttributeModifiers();\n"
+                        "            if (base != null) { var probe = Attributes.SUBMERGED_MINING_SPEED; }"),
+     "只针对【器具】", False),
+
+    # ---------- 反向对照 ----------
+    ("D INVERSE：只加注释提到被计数/被禁的名字，必须仍然 GREEN",
+     METAL_EVENTS,
+     lambda t: sub_once(t, HANDLER_LINE,
+                        "    // comment-only: \"submerged_mining_immunity\" MAINHAND 0.8F isTool( "
+                        "SUBMERGED_MINING_SPEED ADD_VALUE\n" + HANDLER_LINE),
+     "", True),
+]
+
+CREATE_FLAME = (
+    '{\n  "type": "minecraft:crafting_shapeless",\n'
+    '  "ingredients": [ { "item": "bettergold:mixed_crystal_pile" } ],\n'
+    '  "result": { "id": "bettergold:raw_flamegold", "count": 1 }\n}\n'
+)
+
+lines = []
+
+
+def emit(s):
+    print(s)
+    lines.append(s)
+
+
+code, out = run_validator()
+emit("OK    baseline validate_metal_data                       exit=%d" % code)
+if code != 0:
+    emit("ABORT baseline 不是绿的；tail: " + out[-900:])
+    raise SystemExit(1)
+
+failures = 0
+for name, path, transform, expect, want_green in CASES:
+    created = False
+    original = path.read_bytes() if path.is_file() else None
+    before = sha(path) if path.is_file() else None
+    if transform is None:
+        # create 分支：造出那个"不该存在的"产物文件
+        path.write_text(CREATE_FLAME, encoding="utf-8", newline="\n")
+        created = True
+    else:
+        text = original.decode("utf-8")
+        new_text = transform(text)
+        if new_text == text:
+            emit("BAD   %s :: 扰动没有生效" % name)
+            failures += 1
+            continue
+        path.write_bytes(new_text.encode("utf-8"))
+    try:
+        code, out = run_validator()
+    finally:
+        if created:
+            path.unlink()
+        else:
+            path.write_bytes(original)
+    if not created and sha(path) != before:
+        emit("BAD   %s :: 还原失败（SHA 不一致）" % name)
+        failures += 1
+        continue
+    hit = expect in out
+    if want_green:
+        ok = code == 0
+        detail = "expect=exit0"
+    else:
+        ok = code == 1 and hit
+        detail = "expect_hit=%s (%s)" % (hit, expect)
+    emit("%s %-62s exit=%d %s" % ("OK   " if ok else "BAD  ", name, code, detail))
+    if not ok:
+        failures += 1
+        emit("      tail: " + out[-700:].replace("\n", " | "))
+
+code, out = run_validator()
+emit("OK    baseline after restore validate_metal_data        exit=%d" % code)
+if code != 0:
+    failures += 1
+
+(REPO / "build" / "bg9-perturb.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+emit("mismatches = %d" % failures)
+raise SystemExit(1 if failures else 0)

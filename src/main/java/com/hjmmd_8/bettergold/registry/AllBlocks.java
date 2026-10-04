@@ -114,6 +114,26 @@ public class AllBlocks {
                     .sound(net.minecraft.world.level.block.SoundType.CHAIN)
                     .noOcclusion()));
 
+    // ==================== 1.6（bg-16 §4.1）金玫瑰丛 ====================
+
+    /**
+     * 金玫瑰丛（纯装饰，作者原话「纯装饰用」）。
+     *
+     * <p>形态 = <b>与原版「玫瑰丛」同构的双层花</b>（{@code TallFlowerBlock}，一个方块 id、
+     * {@code half=upper/lower} 两个半块）：依据是作者素材给的是
+     * <b>{@code 金玫瑰丛 上.png} + {@code 金玫瑰丛 下.png} 两张 16×16</b>，
+     * 而原版玫瑰丛正是 {@code block/rose_bush_top} + {@code block/rose_bush_bottom} 两张、由
+     * {@code blockstates/rose_bush.json} 按 {@code half} 选模型 —— 资产形状直接给出了答案。</p>
+     *
+     * <p>属性照抄原版玫瑰丛（{@code Blocks.ROSE_BUSH}）：无碰撞、瞬间破坏、草音效、
+     * 可种在泥土 / 草方块 / 耕地上，破坏任一半都取回自身（{@code DoublePlantBlock} 的既有语义）。
+     * <b>没有任何功能 trait</b>（纯装饰：不造成伤害、不给 buff、不进任何 tag）。</p>
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.TallFlowerBlock> GOLDEN_ROSE_BUSH =
+            BLOCKS.register("golden_rose_bush",
+                    () -> new net.minecraft.world.level.block.TallFlowerBlock(
+                            BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.ROSE_BUSH)));
+
     // ==================== 万坚金系方块（钻石镐） ====================
     // 新约 1.4：万坚金的注册已交给 metal/AllMetals.STURDYGOLD（金属族），
     // 这里只保留原来的 public 字段名做别名（按注册名懒绑定，见 material/MetalAliases），
@@ -286,6 +306,10 @@ public class AllBlocks {
     public static final DeferredItem<BlockItem> GOLD_TRAPDOOR_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_trapdoor", GOLD_TRAPDOOR);
     public static final DeferredItem<BlockItem> GOLD_LANTERN_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_lantern", GOLD_LANTERN);
     public static final DeferredItem<BlockItem> GOLD_CHAIN_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_chain", GOLD_CHAIN);
+
+    /** 1.6（bg-16）：金玫瑰丛的物品形态（双层花的物品就是它自己） */
+    public static final DeferredItem<BlockItem> GOLDEN_ROSE_BUSH_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("golden_rose_bush", GOLDEN_ROSE_BUSH);
 
     public static final DeferredItem<BlockItem> STURDYGOLD_BLOCK_ITEM = MetalAliases.item("sturdygold_block");
     public static final DeferredItem<BlockItem> STURDYGOLD_BRICKS_ITEM = MetalAliases.item("sturdygold_bricks");

@@ -33,6 +33,10 @@ METALS = {
     "thundergold": "amethyst_energy_dust",
     "indigoseagold": "indigo_ocean_heart",
     "illusiongold": "chorus_cherry_branch",
+    # 1.6（bg-16）：树棘金的核心材料是**掉落物**（闪耀藤条，不走合成）⇒ 这里只登记幽咆金的集束回响碎片。
+    # 原料合成（raw_echogold = 集束回响碎片 + 金锭 …）与其余 27 条配方模板照旧。
+    "thornsgold": "glittering_vine",
+    "echogold": "bundled_echo_shard",
 }
 
 # 原料合成配方的模板文件（1.5 起对非万坚金金属注入 exchange / result 两个字段）

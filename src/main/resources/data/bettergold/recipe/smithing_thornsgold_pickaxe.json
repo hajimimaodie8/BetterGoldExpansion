@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bettergold:thornsgold_upgrade_template" },
+  "base": { "item": "minecraft:golden_pickaxe" },
+  "addition": { "item": "bettergold:thornsgold_ingot" },
+  "result": { "id": "bettergold:thornsgold_pickaxe", "count": 1 }
+}

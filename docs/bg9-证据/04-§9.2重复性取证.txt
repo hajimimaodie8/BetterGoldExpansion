@@ -1,0 +1,48 @@
+==============================================================================
+§9.2 重复性取证（改前）
+==============================================================================
+
+--- flamegold ---
+  legacy type     = minecraft:crafting_shapeless
+  custom type     = bettergold:raw_sturdygold
+  legacy result   = bettergold:raw_flamegold
+  custom result   = bettergold:raw_flamegold
+  legacy 输入 9 格 = {'bettergold:alchemic_fuel': 1, 'bettergold:blazing_rod': 1, 'bettergold:mixed_crystal_pile': 2, 'minecraft:gold_block': 2, 'minecraft:netherite_ingot': 1, 'minecraft:redstone': 2}
+  custom 输入 9 格 = {'bettergold:alchemic_fuel': 1, 'bettergold:blazing_rod': 1, 'bettergold:mixed_crystal_pile': 2, 'minecraft:gold_block': 2, 'minecraft:netherite_ingot': 1, 'minecraft:redstone': 2}  (固定 8 格 + exchange)
+  输入逐项相同     = True
+  产物相同         = True
+
+--- voodoogold ---
+  legacy type     = minecraft:crafting_shapeless
+  custom type     = bettergold:raw_sturdygold
+  legacy result   = bettergold:raw_voodoogold
+  custom result   = bettergold:raw_voodoogold
+  legacy 输入 9 格 = {'bettergold:alchemic_fuel': 1, 'bettergold:mixed_crystal_pile': 2, 'bettergold:voodoo_feather': 1, 'minecraft:gold_block': 2, 'minecraft:netherite_ingot': 1, 'minecraft:redstone': 2}
+  custom 输入 9 格 = {'bettergold:alchemic_fuel': 1, 'bettergold:mixed_crystal_pile': 2, 'bettergold:voodoo_feather': 1, 'minecraft:gold_block': 2, 'minecraft:netherite_ingot': 1, 'minecraft:redstone': 2}  (固定 8 格 + exchange)
+  输入逐项相同     = True
+  产物相同         = True
+
+--- thundergold ---
+  legacy type     = minecraft:crafting_shapeless
+  custom type     = bettergold:raw_sturdygold
+  legacy result   = bettergold:raw_thundergold
+  custom result   = bettergold:raw_thundergold
+  legacy 输入 9 格 = {'bettergold:alchemic_fuel': 1, 'bettergold:amethyst_energy_dust': 1, 'bettergold:mixed_crystal_pile': 2, 'minecraft:gold_block': 2, 'minecraft:netherite_ingot': 1, 'minecraft:redstone': 2}
+  custom 输入 9 格 = {'bettergold:alchemic_fuel': 1, 'bettergold:amethyst_energy_dust': 1, 'bettergold:mixed_crystal_pile': 2, 'minecraft:gold_block': 2, 'minecraft:netherite_ingot': 1, 'minecraft:redstone': 2}  (固定 8 格 + exchange)
+  输入逐项相同     = True
+  产物相同         = True
+
+--- 同类旁证：另外三种金属有没有 legacy 那一张 ---
+  sturdygold     sturdygold_raw.json=False  raw_sturdygold.json=True
+  indigoseagold  indigoseagold_raw.json=False  raw_indigoseagold.json=True
+  illusiongold   illusiongold_raw.json=False  raw_illusiongold.json=True
+
+--- 功能差异（为什么保留自定义那张）---
+  自定义 bettergold:raw_sturdygold -> RawSturdygoldRecipe#getRemainingItems
+     对 bettergold:alchemic_fuel 那一格返还 minecraft:glass_bottle（源码 :141-150）
+  minecraft:crafting_shapeless 只按物品自身的 craftRemainder 退还剩余物；
+     bettergold:alchemic_fuel 是 registerSimpleItem（无 craftRemainder）
+     => 工作台那张永远返不了玻璃瓶
+
+==============================================================================
+三张 shapeless 与自定义那张：输入逐项相同 + 产物相同 + 同类旁证成立 => 真重复

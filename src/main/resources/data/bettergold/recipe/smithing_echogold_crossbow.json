@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "mut"
+      }
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:echogold_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:golden_crossbow_blank"
+  },
+  "addition": {
+    "item": "bettergold:echogold_ingot"
+  },
+  "result": {
+    "id": "bettergold:echogold_crossbow",
+    "count": 1
+  }
+}

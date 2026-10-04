@@ -12,6 +12,8 @@
       minecraft:mineable/pickaxe 会自动跟着有（那些文件里写的是 "#bettergold:xxx"）。
     * 1.21 的 #minecraft:enchantable/* 全部由类别标签拼出 —— 器具不进 swords/pickaxes/... 就附不了魔；
       盔甲不进 head/chest/leg/foot_armor 则既不能附魔也不能打纹饰。
+    * "六套金属应当一致"的标签（#minecraft:beacon_base_blocks 等）必须显式覆盖万坚金 ——
+      万坚金的数据是 1.3 手写的、不在 METALS 循环里，见 ALL_METALS / BEACON_SUFFIXES 的注释。
 """
 from __future__ import annotations
 
@@ -22,9 +24,28 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 DATA = REPO / "src" / "main" / "resources" / "data"
 
-METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]
+METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
+          # 1.6（bg-16）：两套新金属。加这一行就自动带上 家族标签 / 工具类别 / 盔甲类别 /
+          # mineable+needs_diamond_tool，以及信标基座段（那段遍历 ALL_METALS ⇒ 块/砖/柱各一条）。
+          "thornsgold", "echogold"]
+# 万坚金（sturdygold）是本模组最早的一套金属：它的数据 / 标签是 1.3 **手写**的，不进 METALS 循环
+# （进了会在 #minecraft:mineable/pickaxe 里留下与 "#bettergold:storage_blocks" 桥接重复的条目）。
+# 但凡口径是"六套金属一致"的标签，都必须显式把万坚金算进来 —— 见下面的 BEACON_SUFFIXES。
+STURDYGOLD = "sturdygold"
+ALL_METALS = [STURDYGOLD, *METALS]
 BLOCKS = ["block", "bricks", "bricks_slab", "bricks_stairs", "bricks_wall",
           "pillar", "door", "trapdoor", "bars", "chain", "lantern"]
+# #minecraft:beacon_base_blocks 的成员口径（1.4 既有口径，commit b5f68d3 手写进 JSON）：
+#   「金砖块 + 万坚金块/砖 + 烈燃/巫毒/结雷 的 块/砖/柱」= 14 条 ⇒ 金属的**块 / 砖 / 柱**三类都能当信标金字塔基座。
+# ⚠ bg-15y 修的 bug 就在这一行：这里原先只有 block / bricks，**柱子从来没进过生成器**
+#   （1.4 的 5 根柱子是直接手写进产物 JSON 的，生成器只是没删它们）；
+#   1.5 新增两套金属时生成器照常补了 块/砖，于是靛海金柱 / 幻惑金柱漏出标签。
+#   现在改成六套金属一次性列全 ⇒ 就算产物 JSON 被删掉、从零重建，结果也逐字一致。
+BEACON_SUFFIXES = ["block", "bricks", "pillar"]
+# 金系那两块（**不是** MetalFamily：gold 那套没有 block，只有 1.3 手写的金砖块 / 金柱）。
+# 列在这里，让 #minecraft:beacon_base_blocks **整份**都由生成器负责，不留手写条目
+# （原来这两条只存在于产物 JSON 里 —— 与"柱子"同一种成因：手写条目没人管）。
+BEACON_NON_FAMILY = ["bettergold:gold_bricks", "bettergold:gold_pillar"]
 TOOLS = {"swords": "sword", "pickaxes": "pickaxe", "axes": "axe", "shovels": "shovel", "hoes": "hoe"}
 ARMOR = {"head_armor": "helmet", "chest_armor": "chestplate", "leg_armor": "leggings", "foot_armor": "boots"}
 
@@ -52,8 +73,15 @@ def build_plan() -> dict[Path, list[str]]:
         add(DATA / "minecraft" / "tags" / "block" / "needs_diamond_tool.json",
             [f"bettergold:{m}_{b}" for b in BLOCKS])
         add(DATA / "minecraft" / "tags" / "block" / "walls.json", [f"bettergold:{m}_bricks_wall"])
+
+    # 信标基座：金系两块 + 六套金属 × {块, 砖, 柱}。
+    # ⚠ 这一段**必须**留在 METALS 循环外并遍历 ALL_METALS：
+    #   ① 柱子（pillar）原先完全不在生成器里（bg-15y 的 bug 根因）；
+    #   ② 万坚金不在 METALS 里，但它同样要有块/砖/柱三件。
+    add(DATA / "minecraft" / "tags" / "block" / "beacon_base_blocks.json", BEACON_NON_FAMILY)
+    for m in ALL_METALS:
         add(DATA / "minecraft" / "tags" / "block" / "beacon_base_blocks.json",
-            [f"bettergold:{m}_block", f"bettergold:{m}_bricks"])
+            [f"bettergold:{m}_{s}" for s in BEACON_SUFFIXES])
     return plan
 
 

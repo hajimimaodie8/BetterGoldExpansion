@@ -38,14 +38,20 @@ import java.util.function.Consumer;
 public class GiftBoxItem extends Item {
 
     public enum Kind {
-        TREASURE, CURIO, IDOL, GOURMET
+        TREASURE, CURIO, IDOL, GOURMET,
+        /** 1.6（bg-16）：炼金珍材盒 —— 开出任意一族的核心材料（见 {@link #rollAlchemy}） */
+        ALCHEMY
     }
 
     private static final ResourceKey<LootTable>[] TREASURE_TABLES = new ResourceKey[]{
             chest("pillager_outpost"), chest("woodland_mansion"), chest("jungle_temple"),
             chest("shipwreck_treasure"), chest("desert_pyramid"), chest("ancient_city"),
             chest("bastion_treasure"), chest("nether_bridge"), chest("stronghold_corridor"),
-            chest("end_city_treasure"), chest("trial_chambers/reward")
+            chest("end_city_treasure"), chest("trial_chambers/reward"),
+            // 1.6（bg-16）：追加「埋藏宝藏」（作者原话"就是那个能开出海洋之心的战利品表"）。
+            // ⚠ 需求文档 §4.3 写的是「现有 8 张 ⇒ 追加后 9 张」，**与实际不符**：
+            //   本表实际是 11 张 ⇒ 追加后 = 12 张（关卡按 12 写，见 docs/1.6-规格.md §3.1）。
+            chest("buried_treasure")
     };
 
     private static final ResourceKey<LootTable> chest(String path) {
@@ -74,6 +80,7 @@ public class GiftBoxItem extends Item {
                 case CURIO -> rollCurio(loot);
                 case IDOL -> rollIdol(loot);
                 case GOURMET -> rollGourmet(loot);
+                case ALCHEMY -> rollAlchemy(loot);
             }
             loot.forEach(gift -> {
                 if (gift.isEmpty()) {
@@ -147,9 +154,42 @@ public class GiftBoxItem extends Item {
         }
     }
 
+    /**
+     * 炼金珍材盒（1.6 · bg-16）：开出 <b>1 个</b>「任意一族的核心材料」，八族等概率。
+     *
+     * <p>池子 = {@link com.hjmmd_8.bettergold.material.MetalFamily#all()} 里所有**声明了
+     * {@code coreItem} 的族**（炽焰棒 / 巫毒羽毛 / 紫紫能晶尘 / 靛蓝海洋之心 / 紫颂樱花枝 /
+     * 金钱贝 / 闪耀藤条 / 集束回响碎片）= 8 个 —— 刻意**从家族表现算**而不是写死清单：
+     * 以后再加一族金属，它自动进池子（写死清单就是 AGENTS 红线 2「生成器清单漏项」的同一种形态）。</p>
+     *
+     * <p>⚠ 需求 §7 #12 的推断值表写的是「全部族的 coreItem，等概率（含新两族）」，
+     * 而作者原话是「任意一个<b>特殊金属</b>的核心材料」；按 §12.3 万坚金是"基础套装"、
+     * 严格讲不算特殊金属，但文档的池子清单里**含**金钱贝 ⇒ 本轮按文档的 8 族池落档，
+     * 并在 docs/1.6-规格.md 里标注"作者一句话可改"。</p>
+     */
+    private void rollAlchemy(List<ItemStack> loot) {
+        List<Item> pool = coreMaterials();
+        if (pool.isEmpty()) {
+            return;
+        }
+        var random = net.minecraft.util.RandomSource.create();
+        random.setSeed(System.nanoTime());
+        loot.add(new ItemStack(pool.get(random.nextInt(pool.size()))));
+    }
+
+    /** 八族的核心材料（{@code coreItem} 为空的族跳过）—— 从家族表现算，不写死清单 */
+    private static List<Item> coreMaterials() {
+        List<Item> pool = new ArrayList<>();
+        for (var family : com.hjmmd_8.bettergold.material.MetalFamily.all()) {
+            if (family.coreItem != null) {
+                pool.add(family.coreItem.get());
+            }
+        }
+        return pool;
+    }
+
     /** 古董器具（含农夫乐事联动的小刀） */
-    private static List<Item> antiqueTools() {
-        List<Item> tools = new ArrayList<>(List.of(
+    private static List<Item> antiqueTools() {        List<Item> tools = new ArrayList<>(List.of(
                 AllItems.ANTIQUE_SWORD.get(), AllItems.ANTIQUE_AXE.get(), AllItems.ANTIQUE_PICKAXE.get(),
                 AllItems.ANTIQUE_SHOVEL.get(), AllItems.ANTIQUE_HOE.get()));
         if (FdModule.isLoaded()) {

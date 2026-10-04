@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """收尾核对：产物 jar 名 / jar 内是否有 *Probe* 路径 / class 里是否含 halt 字节。"""
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -13,8 +14,17 @@ print("build/libs jars:")
 for j in jars:
     print(f"  {j.name}  ({j.stat().st_size} bytes)")
 
-target = LIBS / "bettergold-1.5.0.jar"
-print(f"\n产物 bettergold-1.5.0.jar 存在 = {target.is_file()}")
+# ⚠ bg-16（1.6）：**jar 名必须从 gradle.properties 的 mod_version 现算**，不许写死 ——
+#   写死 1.5.0 时，1.6.0 这一轮里这个关卡会去检查一个**过期的旧 jar**（而且照样全绿），
+#   于是"收尾核对"检查的根本不是这一轮的产物（旧 jar 里当然没有新探针）。
+_props = (REPO / "gradle.properties").read_text(encoding="utf-8")
+_m = re.search(r"^mod_version\s*=\s*(\S+)\s*$", _props, re.MULTILINE)
+_version = _m.group(1) if _m else "0.0.0"
+target = LIBS / f"bettergold-{_version}.jar"
+print(f"\n产物 bettergold-{_version}.jar（来自 gradle.properties 的 mod_version）存在 = {target.is_file()}")
+if len(jars) > 1:
+    print(f"  ⚠ build/libs 里有 {len(jars)} 个 jar（旧版本的 jar 会留在这里）——"
+          f"只核对上面这一个；跑 `gradlew clean` 可在干净树里复核")
 
 if target.is_file():
     with zipfile.ZipFile(target) as z:

@@ -65,6 +65,17 @@ public class VillageTrades {
                 new ItemStack(AllItems.IDOL_GIFT_BOX.get()), MAX_USES, 20, 0.05F));
         trades.get(3).add(new BasicItemListing(new ItemStack(AllItems.GIFT_GOLD_TICKET.get(), 6),
                 new ItemStack(AllItems.GOURMET_BOX.get()), MAX_USES, 20, 0.05F));
+
+        // ---- 专家（第 4 级）----
+        // 1.6（bg-16 §4.2）：7 张礼品金票 + 20 经验 ⇒ 1 个炼金珍材盒。
+        // ⚠ 两条与需求文档不一致、已按实际落档（详见 docs/1.6-规格.md §3.1）：
+        //   ① 等级：作者说「专家售卖」⇒ 取第 4 级（Expert）—— 本文件此前最高只用到第 3 级（老手）；
+        //      `computeIfAbsent` 是防御性的：自定义职业的等级表未必预先建了 4 号槽。
+        //   ② 交易次数上限 = 999（沿用本文件其余 6 条的既有值）；需求 §7 #11 写的 99
+        //      与它的理由"MC 交易上限"不成立 —— 见本文件类注释里的源码依据。
+        trades.computeIfAbsent(4, k -> new java.util.ArrayList<>()).add(new BasicItemListing(
+                new ItemStack(AllItems.GIFT_GOLD_TICKET.get(), 7),
+                new ItemStack(AllItems.ALCHEMY_MATERIALS_BOX.get()), MAX_USES, 20, 0.05F));
     }
 
     private VillageTrades() {

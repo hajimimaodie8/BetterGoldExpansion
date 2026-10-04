@@ -31,6 +31,9 @@ METALS = {
     "thundergold": {"cn": "结雷金", "en": "Thundergold", "special_cn": "聚紫能晶尘", "special_en": "Amethyst Energy Dust", "special_id": "amethyst_energy_dust"},
     "indigoseagold": {"cn": "靛海金", "en": "Indigoseagold", "special_cn": "靛蓝海洋之心", "special_en": "Indigo Ocean Heart",  "special_id": "indigo_ocean_heart"},
     "illusiongold":  {"cn": "幻惑金", "en": "Illusiongold",  "special_cn": "紫颂樱花枝",   "special_en": "Chorus Cherry Branch", "special_id": "chorus_cherry_branch"},
+    # 1.6（bg-16）：树棘金（核心材料 = 闪耀藤条，掉落物）/ 幽咆金（核心材料 = 集束回响碎片，合成）。
+    "thornsgold":    {"cn": "树棘金", "en": "Thornsgold",   "special_cn": "闪耀藤条",     "special_en": "Glittering Vine",     "special_id": "glittering_vine"},
+    "echogold":      {"cn": "幽咆金", "en": "Echogold",     "special_cn": "集束回响碎片", "special_en": "Bundled Echo Shard",  "special_id": "bundled_echo_shard"},
 }
 
 # 物品 id 后缀 -> (中文模板, 英文模板)
@@ -70,6 +73,11 @@ EFFECT_NAMES = {
     "tremble": ("颤栗", "Tremble"),
     "sediment": ("沉淀", "Sediment"),
     "soothe": ("安抚", "Soothe"),
+    # 1.6（bg-16）：树棘金 / 幽咆金 的专属 buff。
+    # ⚠ 效果 id 用英文（parasite / echo_roar），中文名按作者裁定统一叫「幽咆」
+    #   （作者素材里的文件名是「音咆.png」，这里只取图、不改名）。
+    "parasite": ("寄生", "Parasite"),
+    "echo_roar": ("幽咆", "Echo Roar"),
 }
 
 

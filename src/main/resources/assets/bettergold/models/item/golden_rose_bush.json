@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "bettergold:block/golden_rose_bush_top" }
+}

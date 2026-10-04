@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "half=lower": { "model": "bettergold:block/golden_rose_bush_bottom" },
+    "half=upper": { "model": "bettergold:block/golden_rose_bush_top" }
+  }
+}

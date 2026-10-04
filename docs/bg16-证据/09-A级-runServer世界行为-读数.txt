@@ -1,0 +1,106 @@
+# bg-16 · A 级（runServer + 临时探针世界）世界行为读数
+
+> **环境**：`runServer`（专用服务端，无玩家），**全新探针世界** `run/bg16probe`（`server.properties`
+> 的 `level-name` 临时改为 `bg16probe`，收尾已恢复；**作者的 `run/saves/新的世界` 与本轮 `run/world` 全程未打开**）。
+> 开关文件 `run/bg16-probe.enabled`；探针类 `com.hjmmd_8.bettergold.probe.Bg16Probe`（**收尾整块删除**）。
+> **日志原始出处**：`build/bg16p-rs5.out`（`cmd /c ... > file` 原始字节，本文件按 GBK→UTF-8 转写）。
+> **结论**：**42 PASS / 1 FAIL（真 bug）/ 2 SKIP**；计划表全部用**绝对 tick**（§3.2 规则 11），
+> t=20…700，第 760 tick 打 SUMMARY 后**只调一次 `halt(false)`**。
+>
+> **唯一的 FAIL 是本轮抓到的真 bug**（堆肥数据地图命名空间写错，见 `12-新发现-两个真bug.md`），
+> 其余全部 PASS；两条 SKIP 是「服务端侧没有观察者」（粒子）与「n=20 无法判均匀」（珍材盒池子），
+> 前者改到 `runClient` 侧验、后者明确降级为「只断言每次恰好 1 件且必属 8 族池」，
+> **没有写恒真断言充绿**。
+>
+> **探针自身踩过的三个坑（已修，留作经验）**：
+> ① 原版 `FakePlayer#isInvulnerableTo` 恒 `true`，**且** `ServerPlayer#spawnInvulnerableTime=60`
+>    在 `FakePlayer#tick()` 空实现下**永不递减**，**且** `instabuild` 让 `ItemStack#hurtAndBreak` 空转
+>    ⇒ 不修这三条，任何 `hurt()` 都是**静默无效**（本轮第一版 6 条红全部由此而来）；
+> ② `ItemEntity` **嵌在方块里**时会把 `noPhysics` 置真并走 `moveTowardsClosestSpace`，**绕过**
+>    `Entity#checkInsideBlocks` ⇒ `CactusBlock#entityInside`，所以「仙人掌上的掉落物」必须放在
+>    **碰撞箱顶面**（BB 仍覆盖仙人掌方块坐标），不能塞进方块内部；
+> ③ 接触类 3×3×3 的盒子**以方块坐标为中心**（y 99..101），**站在方块顶上**（脚 y=101.0）的实体
+>    正好落在盒子边界上被排除 ⇒ 受试体要站在旁边的地面上，且 `applyContact` 的「触发者挨打」
+>    与「方块周围挨打」是两条不同的作用域。
+
+**（以下为探针逐行输出，原样保留）**
+
+    BG16PROBE probe registered (gameDir switch file found) gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+    BG16PROBE INFO setup_begin :: difficulty=EASY forcedBefore=0
+    BG16PROBE PASS forceload_set_9 :: forcedBefore=0 forcedAfter=9
+    BG16PROBE INFO block_states :: cactusA=Block{minecraft:cactus} cactusB=Block{minecraft:cactus} thornsPad=Block{bettergold:thornsgold_block} echoPad=Block{bettergold:echogold_block} indigoPad=Block{bettergold:indigoseagold_block}
+    BG16PROBE INFO cactus_diag tick=30 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO spawn_done :: cows/golems/blazes/items placed, difficulty=EASY
+    BG16PROBE INFO cactus_diag tick=40 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO cactus_diag tick=50 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO item_pin_sample tick=60 thornsPos=(2010.5, 100.9385, 2002.5) blockAtThornsFeet=Block{minecraft:cactus} invulnThorns=30 invulnSturdy=5
+    BG16PROBE INFO cactus_diag tick=60 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO parasite_l1_apply :: health=1000.0 duration=200 amplifier=0
+    BG16PROBE INFO cactus_diag tick=70 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO cactus_diag tick=80 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO parasite_l1_sample tick=80 health=999.0
+    BG16PROBE INFO cactus_diag tick=90 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO item_pin_sample tick=100 thornsPos=(2010.5, 100.9385, 2002.5) blockAtThornsFeet=Block{minecraft:cactus} invulnThorns=70 invulnSturdy=5
+    BG16PROBE INFO cactus_diag tick=100 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO parasite_l1_sample tick=100 health=998.0
+    BG16PROBE INFO cactus_diag tick=110 at=Block{minecraft:cactus} below=Block{minecraft:sand} below2=Block{minecraft:stone} north=Block{minecraft:air} east=Block{minecraft:air} randomTick=0
+    BG16PROBE INFO lookup_detail :: aabbLiving=23 allInArea=24 watched=cow:90 cow:90 cow:90 iron_golem:90 iron_golem:90 blaze:90
+    BG16PROBE PASS forceload_entities_visible_after_wait :: aabbLiving=23 allInArea=24 trackedPresent=6/6 tickCountRising=6 (sampled 90 ticks after spawn, 100 after forceload)
+    BG16PROBE INFO parasite_l1_sample tick=120 health=997.0
+    BG16PROBE INFO parasite_l1_sample tick=140 health=996.0
+    BG16PROBE PASS parasite_level1_one_point_per_second :: window=60..145 hits=5 lost=5.0 ticks=61@1.0,81@1.0,101@1.0,121@1.0,141@1.0
+    BG16PROBE PASS cactus_item_thornsgold_survives :: alive=true removed=false count=1 pos=(2010.5, 100.9385, 2002.5) after 120 ticks on a real cactus
+    BG16PROBE PASS cactus_item_thornsgold_immunity_was_actually_exercised :: EntityInvulnerabilityCheckEvent on the item = 120, of which vetoed true = 120 (native cactus hurt() ran every tick, our handler answered every one)
+    BG16PROBE PASS cactus_item_sturdygold_control_destroyed :: removed=true invulnChecks=5 (same cactus, same window)
+    BG16PROBE INFO parasite_l2_apply :: health=1000.0 duration=200 amplifier=1
+    BG16PROBE INFO parasite_l2_sample tick=180 health=998.0
+    BG16PROBE INFO parasite_l2_sample tick=200 health=996.0
+    BG16PROBE PASS cactus_armor_player_took_the_hit :: health delta=0.75 (probe FakePlayer subclass clears isInvulnerableTo + spawnInvulnerableTime; the stock FakePlayer returns true / stays at 60 forever)
+    BG16PROBE PASS armor_durability_cactus_thornsgold_unchanged :: thornsgold helmet damage=0
+    BG16PROBE PASS armor_durability_cactus_sturdygold_plus1 :: sturdygold chestplate damage=1
+    BG16PROBE PASS armor_durability_real_non_player_never_takes_armour_damage :: iron golem helmet damage=0 -> LivingEntity#hurtArmor is an empty body; Player#hurtArmor is the only override (Player.java:981-983)
+    BG16PROBE INFO parasite_l2_sample tick=220 health=994.0
+    BG16PROBE INFO parasite_l2_sample tick=240 health=992.0
+    BG16PROBE PASS parasite_level2_two_points_per_second :: window=160..245 hits=5 lost=10.0 ticks=161@2.0,181@2.0,201@2.0,221@2.0,241@2.0
+    BG16PROBE INFO dmg_log_cleared :: recording window starts here (echo apply at t=250)
+    BG16PROBE INFO echo_apply :: center=cowX amp=1 dur=200 area=AABB[2023.0, 100.0, 2001.0] -> [2026.0, 103.0, 2004.0]
+    BG16PROBE INFO contact_begin :: scan window 300..380, cowCT on thornsgold, blazeA on indigoseagold
+    BG16PROBE PASS action_break_block_thornsgold_1pt :: damage=1.0 (armour slots cleared, the break event damages the triggering player)
+    BG16PROBE PASS action_right_click_echogold_3pt :: receiver=cowEcho (standing next to the block) damage=3.0 | the event carrier itself (FakePlayer) took 0.0
+    BG16PROBE PASS contact_same_tick_second_call_ignored :: after first call=1.0 after second call in the same tick=1.0 (vanilla invulnerableTime zeroed between the two calls)
+    BG16PROBE PASS contact_two_different_family_keys_both_land_same_tick :: thorns(cactus key)=1.0 then echo(sonic key)=3.0 = 1+3 in the same tick (contact keys cleared between sub-tests)
+    BG16PROBE PASS contact_indigo_and_thorns_keys_do_not_eat_each_other :: indigo-then-thorns = 4.0+1.0 ; thorns-then-indigo = 1.0+4.0 (both = 5.0)
+    BG16PROBE PASS echo_roar_3x3x3_damage :: golem_pm1=8.0/8.0 golem_z1=8.0 center=8.0 settles=4 (level2 x 4 settles at 20-tick spacing)
+    BG16PROBE PASS echo_roar_far_control_zero :: golem 6 blocks away total=0.0
+    BG16PROBE SKIP echo_roar_particles_server :: server-side sendParticles has no observer without a player; particle receipt is asserted in the runClient probe
+    BG16PROBE PASS contact_scan_thornsgold_one_point :: window=300..380 hits=8 total=8.0 ticks=309@1.0,319@1.0,329@1.0,339@1.0,349@1.0,359@1.0,369@1.0,379@1.0
+    BG16PROBE PASS contact_scan_indigoseagold_four_points :: blaze on the indigoseagold block: in_wall hits=8 total=32.0 ticks=308@4.0,318@4.0,328@4.0,338@4.0,348@4.0,358@4.0,368@4.0,378@4.0
+    BG16PROBE PASS contact_per_family_cooldown_keys_are_distinct :: cow keys[cactus=true,indigo=false] blaze keys[indigo=true,cactus=false]
+    BG16PROBE PASS armor_one_piece_ratio_0p75_same_armor_control :: thornsgold1=3.0 sturdygold1(control, same armour value)=4.0 ratio=0.75
+    BG16PROBE PASS armor_four_pieces_reduce_to_zero :: thornsgold4=0.0 sturdygold4(control)=4.0
+    BG16PROBE PASS mace_final_damage_x1p2_thornsgold :: plain mob attack 1.0 -> health delta=1.2000122
+    BG16PROBE PASS mace_control_sword_is_1p0 :: same attacker, sword -> health delta=1.0
+    BG16PROBE PASS mace_final_damage_x1p2_echogold :: plain mob attack 1.0 -> health delta=1.2000122
+    BG16PROBE INFO trident_thrown :: from=(2020.5, 101.7, 2010.5) target=(2027.5, 101.0, 2010.5)
+    BG16PROBE PASS trident_thrown_damage_15 :: hits=1 total=15.0 tridentRemoved=false
+    BG16PROBE PASS parasite_heal_chance_level1_36pct :: n=1000 healEvents=337 p=0.337 expected=0.36 4sigma=0.06071573 heal=1 dmg=1 mismatches=0.0
+    BG16PROBE PASS parasite_heal_chance_level2_36pct_and_heals_2 :: n=1000 healEvents=346 p=0.346 expected=0.36 4sigma=0.06071573 heal=2 dmg=2 mismatches=0.0
+    BG16PROBE PASS glm_fortune_0_2100 :: n=2100 hits=115 p=0.054761905 want=0.06 4sigma=0.020729551
+    BG16PROBE PASS glm_fortune_1_2100 :: n=2100 hits=223 p=0.10619047 want=0.12 4sigma=0.028364968
+    BG16PROBE PASS glm_fortune_2_2100 :: n=2100 hits=369 p=0.17571428 want=0.17999999 4sigma=0.03353463
+    BG16PROBE PASS glm_fortune_3_2100 :: n=2100 hits=526 p=0.25047618 want=0.24 4sigma=0.037278872
+    BG16PROBE INFO glm_distribution :: f0=115/2100 f1=223/2100 f2=369/2100 f3=526/2100
+    BG16PROBE PASS glm_wrong_tool_control_zero :: vanilla iron pickaxe (fortune 3) n=2100 hits=0
+    BG16PROBE PASS glm_wrong_block_control_zero :: stone block + our pickaxe (fortune 3) n=2100 hits=0
+    BG16PROBE PASS alchemy_box_20_opens_one_core_material_each :: opens=20 lootItems=20 poolSize=8 distribution=[golden_cowrie=2 indigo_ocean_heart=5 glittering_vine=1 voodoo_feather=2 amethyst_energy_dust=3 chorus_cherry_branch=4 blazing_rod=1 bundled_echo_shard=2]
+    BG16PROBE SKIP alchemy_box_distribution_sample :: n=20 cannot test uniformity; the machine-checkable part is 'exactly one item per open, always from the coreItem pool'
+    BG16PROBE INFO treasure_tables_count :: 12
+    BG16PROBE PASS buried_treasure_table_rolls_and_is_in_gift_box_list :: rolls=200 nonEmpty=200 heartOfTheSea=200 buried_treasure in TREASURE_TABLES=true
+    BG16PROBE PASS rose_bush_places_two_halves :: lower=Block{bettergold:golden_rose_bush} upper=Block{bettergold:golden_rose_bush} (dirt placed below: TallFlowerBlock#canSurvive needs #minecraft:dirt under the lower half)
+    BG16PROBE PASS rose_bush_loot_lower_1_upper_0 :: lowerDrops=[1 bettergold:golden_rose_bush] upperDrops=[]
+    BG16PROBE PASS rose_bush_break_upper_removes_both_halves :: after breaking the upper half: lower=Block{minecraft:air} upper=Block{minecraft:air}
+    BG16PROBE INFO compost_probe :: vine=-1.0 wheat(vanilla control)=0.65 vineDataMap=null wheatDataMap=Compostable[chance=0.65, canVillagerCompost=false]
+    BG16PROBE PASS compost_vanilla_control_is_loaded :: vanilla wheat via the neoforge:compostables data map = 0.65
+    BG16PROBE FAIL compost_glittering_vine_0p65 :: glittering_vine=-1.0 dataMapEntry=null (file is at data/bettergold/data_maps/item/compostables.json, but ComposterBlock#getValue reads neoforge:compostables)
+    BG16PROBE PASS forceload_runtime_back_to_zero :: forced before release=9 after=0 (expected the 9 probe chunks to be gone)
+    BG16PROBE SUMMARY pass=42 fail=1 skip=2

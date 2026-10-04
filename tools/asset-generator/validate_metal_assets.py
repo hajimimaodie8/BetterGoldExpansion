@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """校验新生成的三套金属资产：JSON 能否解析 + 模型引用的贴图是否都存在。"""
 from __future__ import annotations
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -9,7 +10,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
 DATA = REPO / "src" / "main" / "resources" / "data"
-METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]
+METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
+          # 1.6（bg-16）：两套新金属 —— 关卡必须跟着扫描表一起加，否则新族"零检查"也会全绿
+          "thornsgold", "echogold"]
 ALL_METALS = ["sturdygold", *METALS]
 # 1.5 武器轮：五类武器的 wid（武器 id 前缀）= 六套金属（金制武器不存在，见 1.5 修正轮）
 WEAPON_WIDS = ALL_METALS
@@ -19,7 +22,9 @@ BLANK_WIDS = [f"golden_{w}_blank" for w in ("mace", "bow", "crossbow", "trident"
 # 各金属的专属材料（走 SPECIAL_TEXTURES，不在金属模板集里）：必须有贴图 + 物品模型，
 # 否则客户端会刷「Unable to load model ... FileNotFoundException」并渲染成紫黑格。
 SPECIAL_ITEMS = ["blazing_rod", "voodoo_feather", "amethyst_energy_dust",
-                 "indigo_ocean_heart", "chorus_cherry_branch"]
+                 "indigo_ocean_heart", "chorus_cherry_branch",
+                 # 1.6（bg-16）：树棘金 / 幽咆金 的核心材料（前者是掉落物、后者由合成得到）
+                 "glittering_vine", "bundled_echo_shard"]
 
 bad_json, missing_tex, checked = [], [], 0
 tex_roots = [ASSETS / "textures"]
@@ -258,5 +263,38 @@ for metal in METALS:
     armor = list((ASSETS / "textures/models/armor").glob(f"*{metal}*"))
     print(f"{metal:<12} item={len(items):<3} block={len(blocks):<3} armor={len(armor)}")
 
+# ==================== bg-16：作者"第二次贴图授权"的文件级白名单 ====================
+# 口径（作者 2026-10-04 原话「需要替换！」）：**只换这一张** ——
+#   assets/bettergold/textures/item/golden_trident_blank.png 的内容换成作者 zip 里那张
+#   `金三叉戟胚底(这是新贴图记得换!).png` 的**字节原样**。
+# 这条断言把它钉成 **SHA256 锚点 + 文件级白名单**（而不是"某处有一张图"）：
+#   ① 内容必须是那次授权的字节（哈希不符 ⇒ 有人又动过这张图，或者换了别的东西）；
+#   ② 尺寸必须是 16×16（胚底红线：中间物只需一张 16×16 图标）；
+#   ③ 反向：**除了这一张，不许有第二张既有贴图被改写** —— 由 `git status` 人工复核，
+#      关卡这边守住"这一张就是授权的那一张"。
+# ⚠ 这是本项目第二次"逐一授权改贴图"（第一次 = textures/trims/color_palettes/indigoseagold.png，
+#   见 docs/1.5-规格.md §16.4）。
+blank_tex_hash_problems = []
+AUTHORIZED_BLANK_TEXTURE = {
+    "textures/item/golden_trident_blank.png":
+        "73e4df0f098dced43d43f8529a7aa07c702e63e5aacd70d99a25fdfbb1e6f5b6",
+}
+for rel, want in AUTHORIZED_BLANK_TEXTURE.items():
+    path = ASSETS / rel
+    if not path.is_file():
+        blank_tex_hash_problems.append(f"缺 {rel}（反空转守护）")
+        continue
+    got = hashlib.sha256(path.read_bytes()).hexdigest()
+    if got != want:
+        blank_tex_hash_problems.append(
+            f"{rel} 的 SHA256 不是作者授权的那一张 [bg16-authorized-blank-texture] "
+            f"(got {got}, want {want})")
+    w, h = png_size(path)
+    if (w, h) != (16, 16):
+        blank_tex_hash_problems.append(f"{rel} 不是 16x16（实际 {w}x{h}）")
+print(f"bg-16 授权贴图（golden_trident_blank）问题: {len(blank_tex_hash_problems)} "
+      f"{blank_tex_hash_problems[:4]}")
+
 sys.exit(1 if (bad_json or missing_tex or missing_special or missing_weapon_assets
-               or missing_blank_assets or size_bad or trident_problems or mixin_problems) else 0)
+               or missing_blank_assets or size_bad or trident_problems or mixin_problems
+               or blank_tex_hash_problems) else 0)

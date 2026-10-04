@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bettergold:echogold_upgrade_template" },
+  "base": { "item": "minecraft:golden_chestplate" },
+  "addition": { "item": "bettergold:echogold_ingot" },
+  "result": { "id": "bettergold:echogold_chestplate", "count": 1 }
+}

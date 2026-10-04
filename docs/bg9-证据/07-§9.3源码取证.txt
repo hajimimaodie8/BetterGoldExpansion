@@ -1,0 +1,51 @@
+# §9.3 源码取证（bg-15w 第五轮续工 · 2026-10-03）
+
+> 证据来源：`build/moddev/artifacts/neoforge-21.1.228-sources.jar`（NeoForge 21.1.228 patched sources）。
+> 行号 = 该 jar 内文件的行号；判据都是"惩罚在哪一行被读 / 事件在哪一行被派发 / 谁调它"。
+
+## 一、水下挖掘惩罚到底在哪判（★ 落点选择的依据）
+
+| 事实 | 类名:行号 | 原文（逐字） |
+|---|---|---|
+| 惩罚所在方法 | `net/minecraft/world/entity/player/Player.java:775` | `public float getDigSpeed(BlockState p_36282_, @Nullable BlockPos pos) {` |
+| **惩罚本体** | `Player.java:794-797` | `f *= (float)this.getAttributeValue(Attributes.BLOCK_BREAK_SPEED);`<br>`if (this.isEyeInFluid(FluidTags.WATER)) {`<br>`    f *= (float)this.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue();`<br>`}` |
+| 同一条里另一条与"离地"相关的惩罚（**不是**本需求要修的那条，见"边界"） | `Player.java:799-800` | `if (!this.onGround()) { f /= 5.0F;` |
+| 属性定义（基值 **0.2**、范围 0..20、**setSyncable(true)**） | `net/minecraft/world/entity/ai/attributes/Attributes.java:139-141` | `public static final Holder<Attribute> SUBMERGED_MINING_SPEED = register(`<br>`    "player.submerged_mining_speed", new RangedAttribute("attribute.name.player.submerged_mining_speed", 0.2, 0.0, 20.0).setSyncable(true)` |
+| 所有玩家天生带它 | `Player.java:237` | `.add(Attributes.SUBMERGED_MINING_SPEED)` |
+| 旧版 `getDestroySpeed` 只是转发 | `Player.java:770-773` | `@Deprecated //Use location sensitive version below`<br>`public float getDestroySpeed(BlockState state) { return getDigSpeed(state, null); }` |
+
+**⇒ 惩罚 = ×0.2；抬到 1.0 即"完全无视" ⇒ 加成值 `+0.8`。**
+
+## 二、`ItemAttributeModifierEvent` 能不能真的补上属性（三段链）
+
+| 环节 | 类名:行号 | 原文 / 语义 |
+|---|---|---|
+| 事件本体 | `net/neoforged/neoforge/event/ItemAttributeModifierEvent.java:35` | `public class ItemAttributeModifierEvent extends Event {` |
+| 补属性的 API | `ItemAttributeModifierEvent.java:81-83` | `public boolean addModifier(Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup slot) { return getBuilder().addModifier(attribute, modifier, slot); }` |
+| ① 查询物品属性会派发它 | `net/neoforged/neoforge/common/extensions/IItemStackExtension.java:507-515` | `default ItemAttributeModifiers getAttributeModifiers() { ... return CommonHooks.computeModifiedAttributes(self(), defaultModifiers); }`（类注释：*"The `ItemAttributeModifiersEvent` is then fired to allow external adjustments."*） |
+| ② 玩家收装备时走的正是它 | `net/minecraft/world/entity/LivingEntity.java:2611, 2628` | `itemstack.forEachModifier(equipmentslot, (attr, modif) -> { ... });`（`ItemStack#forEachModifier` → `getAttributeModifiers()`，`ItemStack.java:996`） |
+| ③ tooltip 也读它 | `net/neoforged/neoforge/common/util/AttributeUtil.java:94-100` | `ItemAttributeModifiers modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY); if (modifiers.showInTooltip()) { applyModifierTooltips(stack, tooltip, ctx); }`（`getSortedModifiers` 用 `stack.forEachModifier(...)`，`:302-311`） |
+| 同 id 已存在时的语义 | `ItemAttributeModifierEvent.java:181-191` | `if (entriesByKey.containsKey(key)) { return false; }` ⇒ **不抛异常**；一个固定 id 天然幂等 |
+| 事件在热路径上 | `ItemAttributeModifierEvent.java:30-34` | 类注释：*"fired when the attributes for an item stack are queried (for any reason)"*、*"may be fired on both the logical server and logical client"* |
+
+**⇒ 用具（而不是新建工具类）是唯一可行落点**：本仓工具是 `new SwordItem/AxeItem/PickaxeItem/ShovelItem/HoeItem(...)`
+（`MetalFamily.java:533-541`），**没有自定义工具类可覆写 `getDefaultAttributeModifiers()`**。
+
+## 三、端到端挖掘计时的**原版常量**（为什么"首例 +0、其余 +5"）
+
+| 事实 | 类名:行号 | 原文 |
+|---|---|---|
+| 挖掉一个方块后把延迟设回 5 | `net/minecraft/client/multiplayer/MultiPlayerGameMode.java:259` | `this.destroyDelay = 5;` |
+| 这 5 tick 被整个吃掉（不累进度） | `MultiPlayerGameMode.java:212-214` | `if (this.destroyDelay > 0) { this.destroyDelay--; return true; }` |
+| 它只在**按住攻击键**时递减 | `MultiPlayerGameMode.java:210` + `Minecraft.java:2047` | `continueAttack(...)` → `this.gameMode.continueDestroyBlock(pos, dir)` |
+
+**⇒ 探针把原始 tick 数减去"首例 0 / 其余 5"得到"纯破坏进度 tick"**（公式写在探针 `progressTicks()` 的 javadoc 里）。
+两个改前基线（runA / runA2）实测逐位相同：`12 / 60 / 21 / 82`，与"+0/+5"完全吻合。
+
+## 四、边界（本轮**没有**动的另一条惩罚）
+
+`Player.java:799-800` 的 `if (!this.onGround()) { f /= 5.0F; }` 是**另一条**规则（离地就减半再除以 5），
+与 `SUBMERGED_MINING_SPEED` 无关。本需求 §9.3 只要求"无视水里挖掘惩罚"（那条属性），
+所以探针把两个站位都做成 **脚踩实地（`onGround=true`）**，并且把 `onGround` 写成断言
+（`attr_onground_*` / `mine_onground_*`）——否则会混进"离地 /5"，把 1.0 vs 0.2 的对照污染成"1.0 vs 0.04"。
+**边界（未验证）**：在水里**悬空**（游着挖）时，上面那条 `/5` 仍然生效 —— 轮不到本轮的口径，未改、未验。

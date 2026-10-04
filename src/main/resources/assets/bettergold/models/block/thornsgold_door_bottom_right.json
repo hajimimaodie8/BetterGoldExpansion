@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_right",
+  "textures": {
+    "bottom": "bettergold:block/thornsgold_door_bottom",
+    "top": "bettergold:block/thornsgold_door_top"
+  }
+}

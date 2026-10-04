@@ -1,0 +1,31 @@
+﻿[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE probe registered (gameDir switch file found)
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS families_eight :: families=8
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS metal_order :: order=[flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold]
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS family_exists_thornsgold :: family=树棘金
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS tier_thornsgold :: uses=4096 ench=24 speed=14.0 dmgBonus=4.5
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS family_exists_echogold :: family=幽咆金
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS tier_echogold :: uses=4096 ench=24 speed=14.0 dmgBonus=4.5
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS traits_thornsgold :: cactusThorns=true parasiteOnAttack=true cactusResist=true parasiteReflect=true cactusImmune=true
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS traits_echogold :: sonicBoom=true echoOnAttack=true sonicResist=true echoReflect=true cactusImmune=false
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_thornsgold_sword :: damage=10.0000 speed=1.8000 want=10.0/1.8 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_thornsgold_axe :: damage=12.0000 speed=1.2000 want=12.0/1.2 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_thornsgold_pickaxe :: damage=8.0000 speed=1.4000 want=8.0/1.4 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_thornsgold_shovel :: damage=8.5000 speed=1.2000 want=8.5/1.2 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_thornsgold_hoe :: damage=7.0000 speed=4.2000 want=7.0/4.2 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_thornsgold_mace :: damage=9.0000 speed=0.8000 want=9.0/0.8 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_thornsgold_trident :: damage=13.0000 speed=1.3000 want=13.0/1.3 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_echogold_sword :: damage=10.0000 speed=1.8000 want=10.0/1.8 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_echogold_axe :: damage=12.0000 speed=1.2000 want=12.0/1.2 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_echogold_pickaxe :: damage=8.0000 speed=1.4000 want=8.0/1.4 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_echogold_shovel :: damage=8.5000 speed=1.2000 want=8.5/1.2 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_echogold_hoe :: damage=7.0000 speed=4.2000 want=7.0/4.2 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_echogold_mace :: damage=9.0000 speed=0.8000 want=9.0/0.8 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS attr_echogold_trident :: damage=13.0000 speed=1.3000 want=13.0/1.3 maxDamage=4096 enchValue=24
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS cactus_immune_predicate :: item=thornsgold_ingot family=thornsgold immune=true
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS cactus_immune_scope_others :: item=sturdygold_ingot control=sturdygold immune=false
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS core_material_not_in_family_index :: glittering_vine family=null
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS alchemy_pool_eight :: core material pool size=8
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS treasure_tables_twelve :: count=12 hasBuriedTreasure=true
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS soothe_ids :: speed=bettergold:soothe_freeze_speed jump=bettergold:soothe_freeze_jump
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE PASS jump_strength_attribute_floor :: jumpStrengthMin=0.0
+[com.hjmmd_8.bettergold.bettergold/]: BG16PROBE SUMMARY pass=29 fail=0

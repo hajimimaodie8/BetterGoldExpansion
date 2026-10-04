@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        { "condition": "minecraft:survives_explosion" }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "bettergold:golden_rose_bush",
+              "condition": "minecraft:block_state_property",
+              "properties": { "half": "lower" }
+            }
+          ],
+          "name": "bettergold:golden_rose_bush"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "bettergold:blocks/golden_rose_bush"
+}

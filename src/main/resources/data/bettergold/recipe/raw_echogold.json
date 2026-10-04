@@ -1,0 +1,5 @@
+{
+  "type": "bettergold:raw_sturdygold",
+  "exchange": "bettergold:bundled_echo_shard",
+  "result": "bettergold:raw_echogold"
+}

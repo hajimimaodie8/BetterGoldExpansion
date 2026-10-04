@@ -16,7 +16,9 @@
         "voodoogold": "bettergold:trims/color_palettes/voodoogold",
         "thundergold": "bettergold:trims/color_palettes/thundergold",
         "indigoseagold": "bettergold:trims/color_palettes/indigoseagold",
-        "illusiongold": "bettergold:trims/color_palettes/illusiongold"
+        "illusiongold": "bettergold:trims/color_palettes/illusiongold",
+        "thornsgold": "bettergold:trims/color_palettes/thornsgold",
+        "echogold": "bettergold:trims/color_palettes/echogold"
       }
     }
   ]

@@ -1,0 +1,60 @@
+# bg-16 · 两处修正的源码取证（C 级：只读源码，未进游戏）
+
+> **用途**：`docs/1.6-规格.md` 里 §5.1 / §5.2 的落点为什么是这几个钩子、为什么**都不需要 Mixin**、
+> 以及为什么"改 z 深度"这条方向**物理上无效**。全部逐行引自
+> `build\moddev\artifacts\neoforge-21.1.228-sources.jar`（NeoForge 打过补丁的 vanilla + NeoForge 源码），
+> 解包目录 `build\src-x\`（临时物，不进版本库）。
+> **依据等级 = C（仅读源码）**：下面每一条都还**没有**进游戏实测，验收见 §5.1 / §5.2 的 A 级待办。
+
+---
+
+## 一、§5.2 创造页横幅：为什么"改 z"无效、为什么必须换落点
+
+| # | 事实 | 出处（类:行） |
+|---|---|---|
+| 1 | 物品格那一段**关掉了深度测试** ⇒ z 参数不参与遮挡，只有**绘制顺序**决定谁在上 | `net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java:141`：`RenderSystem.disableDepthTest();` |
+| 2 | 之后 pose 被 `translate(leftPos, topPos, 0)`，且**在 `render` 结束前不 pop** ⇒ 事件里若还用绝对坐标就会整体偏移一个 `(leftPos, topPos)` | 同文件 `:142-143`：`guiGraphics.pose().pushPose(); guiGraphics.pose().translate((float)i, (float)j, 0.0F);` |
+| 3 | `renderLabels` 之后、**tooltip 之前**发出 `ContainerScreenEvent.Render.Foreground` | 同文件 `:158` `this.renderLabels(...)`；`:159` `NeoForge.EVENT_BUS.post(new ContainerScreenEvent.Render.Foreground(this, guiGraphics, mouseX, mouseY));` |
+| 4 | 该事件的 javadoc 原文：*"Fired after the container screen's foreground layer and elements are drawn, but **before rendering the tooltips** and the item stack being dragged by the player."* | `net/neoforged/neoforge/client/event/ContainerScreenEvent.java:84-95` |
+| 5 | tooltip 是 `renderWithTooltip` 的**最后**一步 | `net/minecraft/client/gui/screens/Screen.java:111-117`（`this.render(...)` → 然后 `guiGraphics.renderTooltip(...)`） |
+| 6 | 旧落点 `ScreenEvent.Render.Post` 是在 `renderWithTooltip(...)` **整段之后**才发的 ⇒ 横幅必然压在 tooltip 之上（= 作者报的现象） | `net/neoforged/neoforge/client/ClientHooks.java:429-430`（`:429` `screen.renderWithTooltip(...)`；`:430` `NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(...))`） |
+| 7 | 参考实现（航空学）注入的是 `CreativeModeInventoryScreen#render` 的 TAIL（= tooltip 之前）⇒ 它**没有**这个 bug；我们的旧落点与之**不等价** | `docs/创造页分区栏目-参考实现/05-参考来源与出处.md:35`、`:212` |
+
+**⇒ 结论**：修法 = 换落点（`ContainerScreenEvent.Render.Foreground`）+ 坐标改容器相对；
+**不采用**"改 z / 换 RenderType / 降透明度 / 隐藏横幅"（前两个在 `disableDepthTest` 下无效，后两个违反需求原文）。
+
+---
+
+## 二、§5.1 安抚对玩家：为什么用属性修饰符 + 事件取消（零持久状态）
+
+| # | 事实 | 出处 |
+|---|---|---|
+| 1 | `MOVEMENT_SPEED` 是 `PercentageAttribute(..., 0.7, 0.0, 1024.0)`、**`setSyncable(true)`** ⇒ 服务端算、客户端看得到 | `Attributes.java:114-116` |
+| 2 | `JUMP_STRENGTH` 是 `RangedAttribute(0.42F, 0.0, 32.0)`、**`setSyncable(true)`** ⇒ ×0 落在合法下界 0.0 | `Attributes.java:80-81` |
+| 3 | 原版移动 = 速度 × 输入 ⇒ 速度 ×0 就是"按了键也走不动"；且**不需要任何网络包** | 同上（属性同步是原版机制） |
+| 4 | 运行期维护"一个总值"的属性修饰符必须**同一个 id**、并且要 `addOrUpdateTransientModifier`（覆盖式、不落盘）；本仓既有范式就是 `ABSORPTION_CAP_ID` | `MetalEvents.java` 吸收上限那段（`ABSORPTION_CAP_ID`） |
+| 5 | `PlayerInteractEvent` 的可取消子类共 7 类：`EntityInteractSpecific` / `EntityInteract` / `RightClickBlock` / `RightClickItem` / `LeftClickBlock`（`RightClickEmpty` / `LeftClickEmpty` **不可取消**） | `PlayerInteractEvent.java:60,118,163,249,279,300,384`（`implements ICancellableEvent` 的 5 个） |
+| 6 | `LeftClickBlock` **只有 cancel、没有** `setCancellationResult`（编译期直接报错 ⇒ 已按此修正） | 同上 `:300`（对照 `:100,145,237,269` 都有 `setCancellationResult`） |
+| 7 | 既有安抚的生物机制（`SootheState`）里「非 `Mob` 直接 return」的守卫**恰好三处**（`begin` / `restore` / `recoverIfStale`）⇒ 玩家永远不会进那套状态机，**没有可泄漏的持久数据** | `SootheState.java:78,105,171` |
+
+**⇒ 结论**：玩家的禁移/禁键**全部是运行时判定**（`hasEffect(SOOTHE)`），
+到期 / 牛奶 / 指令 / 死亡 / 退服**任何一条路径**下一 tick 自动恢复 ⇒ 结构上不可能"永久不能动"。
+
+---
+
+## 三、§3.8 免疫仙人掌：两处落点都不需要 Mixin（**本轮已定，尚未实现**）
+
+| # | 事实 | 出处 |
+|---|---|---|
+| 1 | `ItemEntity#hurt` **第一句**就是 `isInvulnerableTo(source)` ⇒ 事件能拦住"仙人掌摧毁掉落物" | `net/minecraft/world/entity/item/ItemEntity.java:296-298` |
+| 2 | 紧接着还有一句 `canBeHurtBy(source)`（**成品物品自身的**耐用性判定，也是官方钩子） | 同文件 `:301`：`} else if (!this.getItem().canBeHurtBy(source)) {` |
+| 3 | `isInvulnerableTo` 已被 NeoForge 改成走 `CommonHooks.isEntityInvulnerableTo` ⇒ 发 `EntityInvulnerabilityCheckEvent`（可 `setInvulnerable`） | `Entity.java:2681-2687`；`CommonHooks.java:272-282`；`event/entity/EntityInvulnerabilityCheckEvent.java:20-26` |
+| 4 | 仙人掌伤害的施加点就是一句 `hurt(damageSources().cactus(), 1.0F)` | `net/minecraft/world/level/block/CactusBlock.java:120-122` |
+| 5 | 盔甲耐久原版循环**已被 NeoForge 整个废掉**：`CommonHooks.onArmorHurt(...)` 之后 `if (true) return; //Neo: Invalidates the loop.` | `LivingEntity.java:1707-1719`（`:1711` 调用、`:1712` 直接 return） |
+| 6 | 盔甲耐久的**唯一执行点** = `ArmorHurtEvent`（逐槽 `newDamage`，可改可 cancel）；且它**内部就已经**问了 `canBeHurtBy` | `CommonHooks.java:348-360`（`:353` `armorPiece.canBeHurtBy(source) ? damage : 0`、`:357` 发事件、`:359` 才 `hurtAndBreak`）；`event/entity/living/ArmorHurtEvent.java` |
+| 7 | 仙人掌伤害在 1.21.1 **只扣盔甲槽**耐久（手持物不会因挨打掉耐久） | `Player.java:981` `protected void hurtArmor(...)` → `LivingEntity#doHurtEquipment(..., ARMOR_SLOTS)` |
+
+**⇒ 结论（两个落点，均无需 Mixin）**：
+- **物品形式**：`EntityInvulnerabilityCheckEvent`（判 `ItemEntity` 的物品栈属于 `cactusImmune` 族 + `source.is(DamageTypes.CACTUS)` ⇒ `setInvulnerable(true)`）。
+- **装备耐久**：`ArmorHurtEvent`（对该族盔甲把 `newDamage` 置 0）。
+- 备选（更省事但会波及全族物品类）：给物品类覆写 `canBeHurtBy(stack, source)` —— 需为 30 余件物品各造一个子类，**不如上面两条精确**，故不采用。

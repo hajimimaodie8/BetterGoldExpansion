@@ -1,0 +1,296 @@
+[BG9PROBE] probe_enabled :: gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[BG9PROBE] opening_probe_world :: bg9probe
+[BG9PROBE] server_ready :: st=1
+[BG9PROBE] INFO tab_display_items :: total_nonempty=293
+[BG9PROBE] PASS gear_order_sturdygold :: n=14 got=[sword, mace, trident, bow, crossbow, axe, pickaxe, shovel, hoe, shield, helmet, chestplate, leggings, boots]
+[BG9PROBE] PASS gear_count_sturdygold :: n=14 want=14
+[BG9PROBE] PASS gear_order_flamegold :: n=14 got=[sword, mace, trident, bow, crossbow, axe, pickaxe, shovel, hoe, shield, helmet, chestplate, leggings, boots]
+[BG9PROBE] PASS gear_count_flamegold :: n=14 want=14
+[BG9PROBE] PASS gear_order_voodoogold :: n=14 got=[sword, mace, trident, bow, crossbow, axe, pickaxe, shovel, hoe, shield, helmet, chestplate, leggings, boots]
+[BG9PROBE] PASS gear_count_voodoogold :: n=14 want=14
+[BG9PROBE] PASS gear_order_thundergold :: n=14 got=[sword, mace, trident, bow, crossbow, axe, pickaxe, shovel, hoe, shield, helmet, chestplate, leggings, boots]
+[BG9PROBE] PASS gear_count_thundergold :: n=14 want=14
+[BG9PROBE] PASS gear_order_indigoseagold :: n=14 got=[sword, mace, trident, bow, crossbow, axe, pickaxe, shovel, hoe, shield, helmet, chestplate, leggings, boots]
+[BG9PROBE] PASS gear_count_indigoseagold :: n=14 want=14
+[BG9PROBE] PASS gear_order_illusiongold :: n=14 got=[sword, mace, trident, bow, crossbow, axe, pickaxe, shovel, hoe, shield, helmet, chestplate, leggings, boots]
+[BG9PROBE] PASS gear_count_illusiongold :: n=14 want=14
+[BG9PROBE] PASS gear_total_items :: total=84 want=84
+[BG9PROBE] PASS gear_literal_sturdygold :: chain=sword,mace,trident,bow,crossbow,axe,pickaxe,shovel,hoe,shield,helmet,chestplate,leggings,boots
+[BG9PROBE] PASS gear_literal_flamegold :: chain=sword,mace,trident,bow,crossbow,axe,pickaxe,shovel,hoe,shield,helmet,chestplate,leggings,boots
+[BG9PROBE] PASS gear_literal_voodoogold :: chain=sword,mace,trident,bow,crossbow,axe,pickaxe,shovel,hoe,shield,helmet,chestplate,leggings,boots
+[BG9PROBE] PASS gear_literal_thundergold :: chain=sword,mace,trident,bow,crossbow,axe,pickaxe,shovel,hoe,shield,helmet,chestplate,leggings,boots
+[BG9PROBE] PASS gear_literal_indigoseagold :: chain=sword,mace,trident,bow,crossbow,axe,pickaxe,shovel,hoe,shield,helmet,chestplate,leggings,boots
+[BG9PROBE] PASS gear_literal_illusiongold :: chain=sword,mace,trident,bow,crossbow,axe,pickaxe,shovel,hoe,shield,helmet,chestplate,leggings,boots
+[BG9PROBE] INFO stageA_start :: st=50
+[BG9PROBE] INFO arena_built :: land=2000,200,2000 water=2064,210,2000 forced=8
+[BG9PROBE] PASS recipe_present_sturdygold :: id=bettergold:raw_sturdygold result=bettergold:raw_sturdygold
+[BG9PROBE] PASS recipe_id_is_custom_sturdygold :: id=bettergold:raw_sturdygold
+[BG9PROBE] PASS recipe_serializer_sturdygold :: isRawSturdygoldRecipe=true
+[BG9PROBE] PASS recipe_result_sturdygold :: result=bettergold:raw_sturdygold
+[BG9PROBE] PASS recipe_result_count_sturdygold :: count=1
+[BG9PROBE] PASS recipe_bottle_returned_sturdygold :: slot7=1 minecraft:glass_bottle
+[BG9PROBE] PASS recipe_unique_match_sturdygold :: matched_recipes=1
+[BG9PROBE] PASS recipe_shuffled_sturdygold :: id=bettergold:raw_sturdygold
+[BG9PROBE] PASS recipe_file_id_present_sturdygold :: byKey(bettergold:raw_sturdygold)=true
+[BG9PROBE] PASS recipe_present_flamegold :: id=bettergold:raw_flamegold result=bettergold:raw_flamegold
+[BG9PROBE] PASS recipe_id_is_custom_flamegold :: id=bettergold:raw_flamegold
+[BG9PROBE] PASS recipe_serializer_flamegold :: isRawSturdygoldRecipe=true
+[BG9PROBE] PASS recipe_result_flamegold :: result=bettergold:raw_flamegold
+[BG9PROBE] PASS recipe_result_count_flamegold :: count=1
+[BG9PROBE] PASS recipe_bottle_returned_flamegold :: slot7=1 minecraft:glass_bottle
+[BG9PROBE] PASS recipe_unique_match_flamegold :: matched_recipes=1
+[BG9PROBE] PASS recipe_shuffled_flamegold :: id=bettergold:raw_flamegold
+[BG9PROBE] PASS recipe_file_id_present_flamegold :: byKey(bettergold:raw_flamegold)=true
+[BG9PROBE] PASS recipe_present_voodoogold :: id=bettergold:raw_voodoogold result=bettergold:raw_voodoogold
+[BG9PROBE] PASS recipe_id_is_custom_voodoogold :: id=bettergold:raw_voodoogold
+[BG9PROBE] PASS recipe_serializer_voodoogold :: isRawSturdygoldRecipe=true
+[BG9PROBE] PASS recipe_result_voodoogold :: result=bettergold:raw_voodoogold
+[BG9PROBE] PASS recipe_result_count_voodoogold :: count=1
+[BG9PROBE] PASS recipe_bottle_returned_voodoogold :: slot7=1 minecraft:glass_bottle
+[BG9PROBE] PASS recipe_unique_match_voodoogold :: matched_recipes=1
+[BG9PROBE] PASS recipe_shuffled_voodoogold :: id=bettergold:raw_voodoogold
+[BG9PROBE] PASS recipe_file_id_present_voodoogold :: byKey(bettergold:raw_voodoogold)=true
+[BG9PROBE] PASS recipe_present_thundergold :: id=bettergold:raw_thundergold result=bettergold:raw_thundergold
+[BG9PROBE] PASS recipe_id_is_custom_thundergold :: id=bettergold:raw_thundergold
+[BG9PROBE] PASS recipe_serializer_thundergold :: isRawSturdygoldRecipe=true
+[BG9PROBE] PASS recipe_result_thundergold :: result=bettergold:raw_thundergold
+[BG9PROBE] PASS recipe_result_count_thundergold :: count=1
+[BG9PROBE] PASS recipe_bottle_returned_thundergold :: slot7=1 minecraft:glass_bottle
+[BG9PROBE] PASS recipe_unique_match_thundergold :: matched_recipes=1
+[BG9PROBE] PASS recipe_shuffled_thundergold :: id=bettergold:raw_thundergold
+[BG9PROBE] PASS recipe_file_id_present_thundergold :: byKey(bettergold:raw_thundergold)=true
+[BG9PROBE] PASS recipe_present_indigoseagold :: id=bettergold:raw_indigoseagold result=bettergold:raw_indigoseagold
+[BG9PROBE] PASS recipe_id_is_custom_indigoseagold :: id=bettergold:raw_indigoseagold
+[BG9PROBE] PASS recipe_serializer_indigoseagold :: isRawSturdygoldRecipe=true
+[BG9PROBE] PASS recipe_result_indigoseagold :: result=bettergold:raw_indigoseagold
+[BG9PROBE] PASS recipe_result_count_indigoseagold :: count=1
+[BG9PROBE] PASS recipe_bottle_returned_indigoseagold :: slot7=1 minecraft:glass_bottle
+[BG9PROBE] PASS recipe_unique_match_indigoseagold :: matched_recipes=1
+[BG9PROBE] PASS recipe_shuffled_indigoseagold :: id=bettergold:raw_indigoseagold
+[BG9PROBE] PASS recipe_file_id_present_indigoseagold :: byKey(bettergold:raw_indigoseagold)=true
+[BG9PROBE] PASS recipe_present_illusiongold :: id=bettergold:raw_illusiongold result=bettergold:raw_illusiongold
+[BG9PROBE] PASS recipe_id_is_custom_illusiongold :: id=bettergold:raw_illusiongold
+[BG9PROBE] PASS recipe_serializer_illusiongold :: isRawSturdygoldRecipe=true
+[BG9PROBE] PASS recipe_result_illusiongold :: result=bettergold:raw_illusiongold
+[BG9PROBE] PASS recipe_result_count_illusiongold :: count=1
+[BG9PROBE] PASS recipe_bottle_returned_illusiongold :: slot7=1 minecraft:glass_bottle
+[BG9PROBE] PASS recipe_unique_match_illusiongold :: matched_recipes=1
+[BG9PROBE] PASS recipe_shuffled_illusiongold :: id=bettergold:raw_illusiongold
+[BG9PROBE] PASS recipe_file_id_present_illusiongold :: byKey(bettergold:raw_illusiongold)=true
+[BG9PROBE] PASS legacy_recipe_absent_flamegold_raw :: byKey=false
+[BG9PROBE] PASS legacy_file_absent_flamegold_raw :: src_file=false
+[BG9PROBE] PASS legacy_recipe_absent_voodoogold_raw :: byKey=false
+[BG9PROBE] PASS legacy_file_absent_voodoogold_raw :: src_file=false
+[BG9PROBE] PASS legacy_recipe_absent_thundergold_raw :: byKey=false
+[BG9PROBE] PASS legacy_file_absent_thundergold_raw :: src_file=false
+[BG9PROBE] PASS recipe_anti_vacuum :: found_raw_recipes=6 want=6
+[BG9PROBE] PASS submerged_on_sturdygold_sword :: has=false want=false family=sturdygold
+[BG9PROBE] PASS submerged_on_sturdygold_axe :: has=false want=false family=sturdygold
+[BG9PROBE] PASS submerged_on_sturdygold_pickaxe :: has=false want=false family=sturdygold
+[BG9PROBE] PASS submerged_on_sturdygold_shovel :: has=false want=false family=sturdygold
+[BG9PROBE] PASS submerged_on_sturdygold_hoe :: has=false want=false family=sturdygold
+[BG9PROBE] PASS submerged_on_sturdygold_knife :: has=false want=false family=sturdygold
+[BG9PROBE] PASS submerged_on_flamegold_sword :: has=false want=false family=flamegold
+[BG9PROBE] PASS submerged_on_flamegold_axe :: has=false want=false family=flamegold
+[BG9PROBE] PASS submerged_on_flamegold_pickaxe :: has=false want=false family=flamegold
+[BG9PROBE] PASS submerged_on_flamegold_shovel :: has=false want=false family=flamegold
+[BG9PROBE] PASS submerged_on_flamegold_hoe :: has=false want=false family=flamegold
+[BG9PROBE] PASS submerged_on_flamegold_knife :: has=false want=false family=flamegold
+[BG9PROBE] PASS submerged_on_voodoogold_sword :: has=false want=false family=voodoogold
+[BG9PROBE] PASS submerged_on_voodoogold_axe :: has=false want=false family=voodoogold
+[BG9PROBE] PASS submerged_on_voodoogold_pickaxe :: has=false want=false family=voodoogold
+[BG9PROBE] PASS submerged_on_voodoogold_shovel :: has=false want=false family=voodoogold
+[BG9PROBE] PASS submerged_on_voodoogold_hoe :: has=false want=false family=voodoogold
+[BG9PROBE] PASS submerged_on_voodoogold_knife :: has=false want=false family=voodoogold
+[BG9PROBE] PASS submerged_on_thundergold_sword :: has=false want=false family=thundergold
+[BG9PROBE] PASS submerged_on_thundergold_axe :: has=false want=false family=thundergold
+[BG9PROBE] PASS submerged_on_thundergold_pickaxe :: has=false want=false family=thundergold
+[BG9PROBE] PASS submerged_on_thundergold_shovel :: has=false want=false family=thundergold
+[BG9PROBE] PASS submerged_on_thundergold_hoe :: has=false want=false family=thundergold
+[BG9PROBE] PASS submerged_on_thundergold_knife :: has=false want=false family=thundergold
+[BG9PROBE] PASS submerged_amount_indigoseagold_sword :: amount=0.800000011920929 op=ADD_VALUE
+[BG9PROBE] PASS submerged_op_indigoseagold_sword :: op=ADD_VALUE
+[BG9PROBE] PASS submerged_slot_indigoseagold_sword :: slot=MAINHAND
+[BG9PROBE] PASS submerged_on_indigoseagold_sword :: has=true want=true family=indigoseagold
+[BG9PROBE] PASS submerged_amount_indigoseagold_axe :: amount=0.800000011920929 op=ADD_VALUE
+[BG9PROBE] PASS submerged_op_indigoseagold_axe :: op=ADD_VALUE
+[BG9PROBE] PASS submerged_slot_indigoseagold_axe :: slot=MAINHAND
+[BG9PROBE] PASS submerged_on_indigoseagold_axe :: has=true want=true family=indigoseagold
+[BG9PROBE] PASS submerged_amount_indigoseagold_pickaxe :: amount=0.800000011920929 op=ADD_VALUE
+[BG9PROBE] PASS submerged_op_indigoseagold_pickaxe :: op=ADD_VALUE
+[BG9PROBE] PASS submerged_slot_indigoseagold_pickaxe :: slot=MAINHAND
+[BG9PROBE] PASS submerged_on_indigoseagold_pickaxe :: has=true want=true family=indigoseagold
+[BG9PROBE] PASS submerged_amount_indigoseagold_shovel :: amount=0.800000011920929 op=ADD_VALUE
+[BG9PROBE] PASS submerged_op_indigoseagold_shovel :: op=ADD_VALUE
+[BG9PROBE] PASS submerged_slot_indigoseagold_shovel :: slot=MAINHAND
+[BG9PROBE] PASS submerged_on_indigoseagold_shovel :: has=true want=true family=indigoseagold
+[BG9PROBE] PASS submerged_amount_indigoseagold_hoe :: amount=0.800000011920929 op=ADD_VALUE
+[BG9PROBE] PASS submerged_op_indigoseagold_hoe :: op=ADD_VALUE
+[BG9PROBE] PASS submerged_slot_indigoseagold_hoe :: slot=MAINHAND
+[BG9PROBE] PASS submerged_on_indigoseagold_hoe :: has=true want=true family=indigoseagold
+[BG9PROBE] PASS submerged_amount_indigoseagold_knife :: amount=0.800000011920929 op=ADD_VALUE
+[BG9PROBE] PASS submerged_op_indigoseagold_knife :: op=ADD_VALUE
+[BG9PROBE] PASS submerged_slot_indigoseagold_knife :: slot=MAINHAND
+[BG9PROBE] PASS submerged_on_indigoseagold_knife :: has=true want=true family=indigoseagold
+[BG9PROBE] PASS submerged_on_illusiongold_sword :: has=false want=false family=illusiongold
+[BG9PROBE] PASS submerged_on_illusiongold_axe :: has=false want=false family=illusiongold
+[BG9PROBE] PASS submerged_on_illusiongold_pickaxe :: has=false want=false family=illusiongold
+[BG9PROBE] PASS submerged_on_illusiongold_shovel :: has=false want=false family=illusiongold
+[BG9PROBE] PASS submerged_on_illusiongold_hoe :: has=false want=false family=illusiongold
+[BG9PROBE] PASS submerged_on_illusiongold_knife :: has=false want=false family=illusiongold
+[BG9PROBE] PASS submerged_scope_indigo_only :: indigo_tools_with_modifier=6 other_families_with_modifier=0
+[BG9PROBE] INFO stageA_done :: st=50 pass=135 fail=0
+[BG9PROBE] INFO stageC_start :: st=51
+[BG9PROBE] INFO attr_sturdygold_pickaxe_water :: submerged=0.2000 digSpeed=2.0000 eyeInWater=true onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_sturdygold_pickaxe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_sturdygold_pickaxe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_sturdygold_pickaxe_water :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_sturdygold_pickaxe_land :: submerged=0.2000 digSpeed=10.0000 eyeInWater=false onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_sturdygold_pickaxe_land :: eyeInWater=false want=false
+[BG9PROBE] PASS attr_onground_sturdygold_pickaxe_land :: onGround=true
+[BG9PROBE] PASS attr_submerged_sturdygold_pickaxe_land :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_flamegold_pickaxe_water :: submerged=0.2000 digSpeed=2.8000 eyeInWater=true onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_flamegold_pickaxe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_flamegold_pickaxe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_flamegold_pickaxe_water :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_flamegold_pickaxe_land :: submerged=0.2000 digSpeed=14.0000 eyeInWater=false onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_flamegold_pickaxe_land :: eyeInWater=false want=false
+[BG9PROBE] PASS attr_onground_flamegold_pickaxe_land :: onGround=true
+[BG9PROBE] PASS attr_submerged_flamegold_pickaxe_land :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_voodoogold_pickaxe_water :: submerged=0.2000 digSpeed=2.8000 eyeInWater=true onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_voodoogold_pickaxe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_voodoogold_pickaxe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_voodoogold_pickaxe_water :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_voodoogold_pickaxe_land :: submerged=0.2000 digSpeed=14.0000 eyeInWater=false onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_voodoogold_pickaxe_land :: eyeInWater=false want=false
+[BG9PROBE] PASS attr_onground_voodoogold_pickaxe_land :: onGround=true
+[BG9PROBE] PASS attr_submerged_voodoogold_pickaxe_land :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_thundergold_pickaxe_water :: submerged=0.2000 digSpeed=2.8000 eyeInWater=true onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_thundergold_pickaxe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_thundergold_pickaxe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_thundergold_pickaxe_water :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_thundergold_pickaxe_land :: submerged=0.2000 digSpeed=14.0000 eyeInWater=false onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_thundergold_pickaxe_land :: eyeInWater=false want=false
+[BG9PROBE] PASS attr_onground_thundergold_pickaxe_land :: onGround=true
+[BG9PROBE] PASS attr_submerged_thundergold_pickaxe_land :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_indigoseagold_pickaxe_water :: submerged=1.0000 digSpeed=14.0000 eyeInWater=true onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_indigoseagold_pickaxe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_indigoseagold_pickaxe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_indigoseagold_pickaxe_water :: submerged=1.0000 want=1.0000
+[BG9PROBE] INFO attr_indigoseagold_pickaxe_land :: submerged=1.0000 digSpeed=14.0000 eyeInWater=false onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_indigoseagold_pickaxe_land :: eyeInWater=false want=false
+[BG9PROBE] PASS attr_onground_indigoseagold_pickaxe_land :: onGround=true
+[BG9PROBE] PASS attr_submerged_indigoseagold_pickaxe_land :: submerged=1.0000 want=1.0000
+[BG9PROBE] INFO attr_illusiongold_pickaxe_water :: submerged=0.2000 digSpeed=2.8000 eyeInWater=true onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_illusiongold_pickaxe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_illusiongold_pickaxe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_illusiongold_pickaxe_water :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_illusiongold_pickaxe_land :: submerged=0.2000 digSpeed=14.0000 eyeInWater=false onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_illusiongold_pickaxe_land :: eyeInWater=false want=false
+[BG9PROBE] PASS attr_onground_illusiongold_pickaxe_land :: onGround=true
+[BG9PROBE] PASS attr_submerged_illusiongold_pickaxe_land :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_empty_water :: submerged=0.2000 digSpeed=0.2000 eyeInWater=true onGround=true correctTool=false attempt=0
+[BG9PROBE] PASS attr_env_empty_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_empty_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_empty_water :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_empty_land :: submerged=0.2000 digSpeed=1.0000 eyeInWater=false onGround=true correctTool=false attempt=0
+[BG9PROBE] PASS attr_env_empty_land :: eyeInWater=false want=false
+[BG9PROBE] PASS attr_onground_empty_land :: onGround=true
+[BG9PROBE] PASS attr_submerged_empty_land :: submerged=0.2000 want=0.2000
+[BG9PROBE] INFO attr_indigoseagold_sword_water :: submerged=1.0000 digSpeed=1.0000 eyeInWater=true onGround=true correctTool=false attempt=0
+[BG9PROBE] PASS attr_env_indigoseagold_sword_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_indigoseagold_sword_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_indigoseagold_sword_water :: submerged=1.0000 want=1.0000
+[BG9PROBE] INFO attr_indigoseagold_axe_water :: submerged=1.0000 digSpeed=1.0000 eyeInWater=true onGround=true correctTool=false attempt=0
+[BG9PROBE] PASS attr_env_indigoseagold_axe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_indigoseagold_axe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_indigoseagold_axe_water :: submerged=1.0000 want=1.0000
+[BG9PROBE] INFO attr_indigoseagold_pickaxe_water :: submerged=1.0000 digSpeed=14.0000 eyeInWater=true onGround=true correctTool=true attempt=0
+[BG9PROBE] PASS attr_env_indigoseagold_pickaxe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_indigoseagold_pickaxe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_indigoseagold_pickaxe_water :: submerged=1.0000 want=1.0000
+[BG9PROBE] INFO attr_indigoseagold_shovel_water :: submerged=1.0000 digSpeed=1.0000 eyeInWater=true onGround=true correctTool=false attempt=0
+[BG9PROBE] PASS attr_env_indigoseagold_shovel_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_indigoseagold_shovel_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_indigoseagold_shovel_water :: submerged=1.0000 want=1.0000
+[BG9PROBE] INFO attr_indigoseagold_hoe_water :: submerged=1.0000 digSpeed=1.0000 eyeInWater=true onGround=true correctTool=false attempt=0
+[BG9PROBE] PASS attr_env_indigoseagold_hoe_water :: eyeInWater=true want=true
+[BG9PROBE] PASS attr_onground_indigoseagold_hoe_water :: onGround=true
+[BG9PROBE] PASS attr_submerged_indigoseagold_hoe_water :: submerged=1.0000 want=1.0000
+[BG9PROBE] PASS digspeed_ratio_sturdygold :: water=2.0000 land=10.0000 ratio=0.2000 want=0.2000
+[BG9PROBE] PASS submerged_paired_sturdygold :: waterSubmerged=0.2000 landSubmerged=0.2000
+[BG9PROBE] PASS digspeed_ratio_flamegold :: water=2.8000 land=14.0000 ratio=0.2000 want=0.2000
+[BG9PROBE] PASS submerged_paired_flamegold :: waterSubmerged=0.2000 landSubmerged=0.2000
+[BG9PROBE] PASS digspeed_ratio_voodoogold :: water=2.8000 land=14.0000 ratio=0.2000 want=0.2000
+[BG9PROBE] PASS submerged_paired_voodoogold :: waterSubmerged=0.2000 landSubmerged=0.2000
+[BG9PROBE] PASS digspeed_ratio_thundergold :: water=2.8000 land=14.0000 ratio=0.2000 want=0.2000
+[BG9PROBE] PASS submerged_paired_thundergold :: waterSubmerged=0.2000 landSubmerged=0.2000
+[BG9PROBE] PASS digspeed_ratio_indigoseagold :: water=14.0000 land=14.0000 ratio=1.0000 want=1.0000
+[BG9PROBE] PASS submerged_paired_indigoseagold :: waterSubmerged=1.0000 landSubmerged=1.0000
+[BG9PROBE] PASS digspeed_ratio_illusiongold :: water=2.8000 land=14.0000 ratio=0.2000 want=0.2000
+[BG9PROBE] PASS submerged_paired_illusiongold :: waterSubmerged=0.2000 landSubmerged=0.2000
+[BG9PROBE] PASS digspeed_ratio_empty_hand :: water=0.2000 land=1.0000 ratio=0.2000
+[BG9PROBE] PASS attr_fullset_sword :: submerged=1.0000 digSpeed=1.0000
+[BG9PROBE] PASS attr_fullset_axe :: submerged=1.0000 digSpeed=1.0000
+[BG9PROBE] PASS attr_fullset_shovel :: submerged=1.0000 digSpeed=1.0000
+[BG9PROBE] PASS attr_fullset_hoe :: submerged=1.0000 digSpeed=1.0000
+[BG9PROBE] INFO stageC_done :: samples=18
+[BG9PROBE] INFO mine_prepare_land_indigoseagold :: ct=208
+[BG9PROBE] INFO prep_read_land_indigoseagold :: digSpeed=14.0000 submerged=1.0000 onGround=true eyeInWater=false
+[BG9PROBE] PASS mine_aim_land_indigoseagold :: hitResult=BLOCK pos=MutableBlockPos{x=2000, y=201, z=1999} want=BlockPos{x=2000, y=201, z=1999}
+[BG9PROBE] PASS mine_env_land_indigoseagold :: eyeInWater=false want=false
+[BG9PROBE] PASS mine_onground_land_indigoseagold :: onGround=true
+[BG9PROBE] PASS mine_no_dig_effects_land_indigoseagold :: effects_ok
+[BG9PROBE] PASS mine_survival_land_indigoseagold :: instabuild=false
+[BG9PROBE] INFO mine_start_land_indigoseagold :: ct=218 serverDigSpeed=14.0000 serverSubmerged=1.0000
+[BG9PROBE] INFO mine_result_land_indigoseagold :: ticks=12 broken=true start=218 end=230 serverDigSpeedAtStart=14.0000
+[BG9PROBE] PASS mine_broke_land_indigoseagold :: ticks=12
+[BG9PROBE] INFO mine_prepare_land_sturdygold :: ct=235
+[BG9PROBE] INFO prep_read_land_sturdygold :: digSpeed=10.0000 submerged=0.2000 onGround=true eyeInWater=false
+[BG9PROBE] PASS mine_aim_land_sturdygold :: hitResult=BLOCK pos=MutableBlockPos{x=2000, y=201, z=1999} want=BlockPos{x=2000, y=201, z=1999}
+[BG9PROBE] PASS mine_env_land_sturdygold :: eyeInWater=false want=false
+[BG9PROBE] PASS mine_onground_land_sturdygold :: onGround=true
+[BG9PROBE] PASS mine_no_dig_effects_land_sturdygold :: effects_ok
+[BG9PROBE] PASS mine_survival_land_sturdygold :: instabuild=false
+[BG9PROBE] INFO mine_start_land_sturdygold :: ct=245 serverDigSpeed=10.0000 serverSubmerged=0.2000
+[BG9PROBE] INFO mine_result_land_sturdygold :: ticks=21 broken=true start=245 end=266 serverDigSpeedAtStart=10.0000
+[BG9PROBE] PASS mine_broke_land_sturdygold :: ticks=21
+[BG9PROBE] INFO mine_prepare_water_indigoseagold :: ct=271
+[BG9PROBE] INFO prep_read_water_indigoseagold :: digSpeed=14.0000 submerged=1.0000 onGround=true eyeInWater=true
+[BG9PROBE] PASS mine_aim_water_indigoseagold :: hitResult=BLOCK pos=MutableBlockPos{x=2064, y=211, z=1999} want=BlockPos{x=2064, y=211, z=1999}
+[BG9PROBE] PASS mine_env_water_indigoseagold :: eyeInWater=true want=true
+[BG9PROBE] PASS mine_onground_water_indigoseagold :: onGround=true
+[BG9PROBE] PASS mine_no_dig_effects_water_indigoseagold :: effects_ok
+[BG9PROBE] PASS mine_survival_water_indigoseagold :: instabuild=false
+[BG9PROBE] INFO mine_start_water_indigoseagold :: ct=281 serverDigSpeed=14.0000 serverSubmerged=1.0000
+[BG9PROBE] INFO mine_result_water_indigoseagold :: ticks=17 broken=true start=281 end=298 serverDigSpeedAtStart=14.0000
+[BG9PROBE] PASS mine_broke_water_indigoseagold :: ticks=17
+[BG9PROBE] INFO mine_prepare_water_sturdygold :: ct=303
+[BG9PROBE] INFO prep_read_water_sturdygold :: digSpeed=2.0000 submerged=0.2000 onGround=true eyeInWater=true
+[BG9PROBE] PASS mine_aim_water_sturdygold :: hitResult=BLOCK pos=MutableBlockPos{x=2064, y=211, z=1999} want=BlockPos{x=2064, y=211, z=1999}
+[BG9PROBE] PASS mine_env_water_sturdygold :: eyeInWater=true want=true
+[BG9PROBE] PASS mine_onground_water_sturdygold :: onGround=true
+[BG9PROBE] PASS mine_no_dig_effects_water_sturdygold :: effects_ok
+[BG9PROBE] PASS mine_survival_water_sturdygold :: instabuild=false
+[BG9PROBE] INFO mine_start_water_sturdygold :: ct=313 serverDigSpeed=2.0000 serverSubmerged=0.2000
+[BG9PROBE] INFO mine_result_water_sturdygold :: ticks=82 broken=true start=313 end=395 serverDigSpeedAtStart=2.0000
+[BG9PROBE] PASS mine_broke_water_sturdygold :: ticks=82
+[BG9PROBE] INFO tooltip_line_indigoseagold_pickaxe :: \u975b\u6d77\u91d1\u9550
+[BG9PROBE] INFO tooltip_line_indigoseagold_pickaxe :: 
+[BG9PROBE] INFO tooltip_line_indigoseagold_pickaxe :: \u5728\u4e3b\u624b\u65f6\uff1a
+[BG9PROBE] INFO tooltip_line_indigoseagold_pickaxe ::  8 \u653b\u51fb\u4f24\u5bb3
+[BG9PROBE] INFO tooltip_line_indigoseagold_pickaxe ::  1.4 \u653b\u51fb\u901f\u5ea6
+[BG9PROBE] INFO tooltip_line_indigoseagold_pickaxe :: +0.8 \u6c34\u4e0b\u6316\u6398\u901f\u5ea6
+[BG9PROBE] PASS tooltip_has_submerged_line :: attrName=\u6c34\u4e0b\u6316\u6398\u901f\u5ea6 lines=6
+[BG9PROBE] PASS forceload_cleared :: forcedNow=0
+[BG9PROBE] INFO mine_ticks_land_indigoseagold :: raw=12 progress=12
+[BG9PROBE] INFO mine_ticks_land_sturdygold :: raw=21 progress=16
+[BG9PROBE] INFO mine_ticks_water_indigoseagold :: raw=17 progress=12
+[BG9PROBE] INFO mine_ticks_water_sturdygold :: raw=82 progress=77
+[BG9PROBE] INFO mine_pair_indigoseagold :: land=12 water=12 (progress ticks; raw=12/17)
+[BG9PROBE] PASS mine_indigo_water_equals_land :: land=12 water=12
+[BG9PROBE] INFO mine_pair_sturdygold :: land=16 water=77 (progress ticks; raw=21/82)
+[BG9PROBE] PASS mine_sturdy_water_slower :: land=16 water=77 ratio=4.81
+[BG9PROBE] INFO SUMMARY :: pass=237 fail=0
+[BG9PROBE] probe_finished
+ThreadedAnvilChunkStorage (bg9probe): All chunks are saved

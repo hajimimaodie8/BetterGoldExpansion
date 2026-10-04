@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "bettergold:block/echogold_bricks",
+    "top": "bettergold:block/echogold_bricks",
+    "side": "bettergold:block/echogold_bricks"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BB",
+    "BB"
+  ],
+  "key": {
+    "B": { "item": "bettergold:echogold_block" }
+  },
+  "result": {
+    "id": "bettergold:echogold_bricks",
+    "count": 4
+  }
+}

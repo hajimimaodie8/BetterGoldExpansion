@@ -75,7 +75,9 @@ REPO = Path(__file__).resolve().parents[2]
 RECIPES = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "recipe"
 TAGS = REPO / "src" / "main" / "resources" / "data" / "minecraft" / "tags" / "item" / "enchantable"
 
-METALS = ["sturdygold", "flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold"]
+METALS = ["sturdygold", "flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
+          # 1.6（bg-16）：两套新金属（五类武器的锻造配方 + 附魔类别标签 + mut 变体一起生成）
+          "thornsgold", "echogold"]
 WEAPONS = ["mace", "bow", "crossbow", "trident", "shield"]
 
 # 外部模组（已核实，见需求 §3.8 与附二的复现步骤）
@@ -314,8 +316,12 @@ def main() -> None:
     if count_of(blank_path("shield"), "minecraft:gold_ingot") != 7:
         problems.append("金制盾牌胚底的金锭不是 7 个")
     # 4. 锻造升级：两份条件配方都要对（同 (金属, 武器) 两条 id 必须不同）
-    if len(METALS) * len(WEAPONS) != 30:
-        problems.append("锻造升级配方不是 5 类 × 6 金属 = 30 条")
+    # ⚠ bg-16：这条不变量**必须由列表现算**，不许写死 30 —— 1.6 加了两套金属（6 → 8 套），
+    #   写死 30 会让生成器自己在"新增一套金属"时报错（正是 AGENTS 红线 2「生成器不等于全覆盖」的形态）。
+    expected_smithing = len(METALS) * len(WEAPONS)
+    if expected_smithing != 40:
+        problems.append(f"锻造升级配方不是 {len(WEAPONS)} 类 × {len(METALS)} 金属 = "
+                        f"{len(WEAPONS) * len(METALS)} 条（bg-16 起应为 8 套 × 5 类 = 40 条）")
     for metal in METALS:
         for weapon in WEAPONS:
             pairs = [

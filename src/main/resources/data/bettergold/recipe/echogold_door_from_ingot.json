@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "II",
+    "II",
+    "II"
+  ],
+  "key": {
+    "I": { "item": "bettergold:echogold_ingot" }
+  },
+  "result": {
+    "id": "bettergold:echogold_door",
+    "count": 3
+  }
+}

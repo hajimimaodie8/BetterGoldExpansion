@@ -118,6 +118,23 @@ public final class MetalFamily {
     /** 颤栗（tremble）时长：16 秒 = 320 tick（结雷金器具 / 反制，1.4 起就是 16 秒） */
     public static final int TREMBLE_TICKS = 16 * 20;
 
+    /** 寄生（parasite）时长：16 秒 = 320 tick（1.6 树棘金；与沉淀同口径、等级可无限叠加） */
+    public static final int PARASITE_TICKS = 16 * 20;
+
+    /** 幽咆（echo_roar）时长：6 秒 = 120 tick（1.6 幽咆金；与巫毒同口径） */
+    public static final int ECHO_ROAR_TICKS = 6 * 20;
+
+    /** 寄生造成的伤害类型 = 仙人掌（{@code minecraft:cactus}）；幽咆 = 监守者声波（{@code minecraft:sonic_boom}） */
+    public static final float PARASITE_DAMAGE_PER_LEVEL = 1.0F;
+    /** 幽咆对 3×3×3 内生物的点数 = 等级（等级 1 = 1 点、2 = 2 点），伤害类型 {@code minecraft:sonic_boom} */
+    public static final float ECHO_ROAR_DAMAGE_PER_LEVEL = 1.0F;
+    /** 寄生回血概率（每次伤害结算 36% 概率给施加者回「等级」点血，概率**不随等级变**） */
+    public static final float PARASITE_HEAL_CHANCE = 0.36F;
+    /** 幽咆的 3×3×3：以目标所在方块为中心，方块坐标 ±1（与既有 {@code thunderStrike} 的 3×3 扫描同构） */
+    public static final int ECHO_ROAR_RADIUS = 1;
+    /** 幽咆金建材的声波伤害（3 点）与 3×3×3 半径 */
+    public static final float CONTACT_SONIC_DAMAGE = 3.0F;
+
     // ==================== 1.5 修正轮新增的数值 ====================
 
     /**
@@ -273,6 +290,42 @@ public final class MetalFamily {
     public final float swimSpeedPerPiece;
     /** 盔甲：每隔这么多 tick 给穿戴者 1 份伤害吸收（0 = 不开启；万坚金 = 320） */
     public final int absorptionIntervalTicks;
+
+    // ==================== 1.6（bg-16）：两套新金属 ====================
+
+    /** 建材：四个动作 ⇒ 对触发者 1 点仙人掌伤害（树棘金） */
+    public final boolean contactCactusThorns;
+    /** 建材：四个动作 ⇒ 方块中心 3×3×3 声波伤害 + 粒子（幽咆金） */
+    public final boolean contactSonicBoom;
+    /** 器具：命中叠 1 级寄生（树棘金） */
+    public final boolean parasiteOnAttack;
+    /** 器具：命中叠 1 级幽咆（幽咆金） */
+    public final boolean echoRoarOnAttack;
+    /** 盔甲：每件 25% 仙人掌伤害减免（树棘金） */
+    public final boolean cactusResist;
+    /** 盔甲：每件 25% 监守者声波伤害减免（幽咆金） */
+    public final boolean sonicResist;
+    /** 盔甲：每件 25% 几率给攻击者叠寄生（树棘金） */
+    public final boolean parasiteReflect;
+    /** 盔甲：每件 25% 几率给攻击者叠幽咆（幽咆金） */
+    public final boolean echoRoarReflect;
+    /** 本族物品免疫仙人掌（掉落物不被摧毁 + 装备不因仙人掌伤害掉耐久；树棘金） */
+    public final boolean cactusImmune;
+
+    /**
+     * 器具：<b>无视水下的挖掘惩罚</b>（靛海金，bg-15w §九 9.3，作者 2026-10-03）。
+     *
+     * <p>原版惩罚在 {@code Player#getDigSpeed(BlockState, BlockPos)}：眼睛泡在水里时
+     * {@code f *= getAttributeValue(Attributes.SUBMERGED_MINING_SPEED)}，而那条属性基值
+     * 只有 <b>0.2</b>（neoforge sources {@code Player.java:795-797}、{@code Attributes.java:139-141}）
+     * ⇒ 水下挖掘慢到 1/5。本开关为真时，{@link MetalEvents#onItemAttributeModifiers} 会给
+     * <b>本族的全部器具</b>（剑 / 斧 / 镐 / 锹 / 锄 / 乐事联动小刀）往 {@code MAINHAND} 组补
+     * {@code +0.8} ⇒ {@code 0.2 + 0.8 = 1.0}，与陆地完全一致。</p>
+     *
+     * <p>范围：<b>只有靛海金</b>（{@code AllMetals.INDIGOSEAGOLD} 归位时调用
+     * {@code Spec#submergedMiningImmunity()}）；其余五套金属与所有原版工具不受影响。</p>
+     */
+    public final boolean submergedMiningImmunity;
 
     // ==================== 1.5 武器扩展（每套金属 5 类，见 docs/1.5-规格.md 第十二节） ====================
 
@@ -506,6 +559,17 @@ public final class MetalFamily {
         this.doubleDamageOnTargets = spec.doubleDamageOnTargets;
         this.swimSpeedPerPiece = spec.swimSpeedPerPiece;
         this.absorptionIntervalTicks = spec.absorptionIntervalTicks;
+        this.submergedMiningImmunity = spec.submergedMiningImmunity;
+        // 1.6（bg-16）：两套新金属的 trait（Spec → 本类逐字复制，与上面那批同构）
+        this.contactCactusThorns = spec.contactCactusThorns;
+        this.contactSonicBoom = spec.contactSonicBoom;
+        this.parasiteOnAttack = spec.parasiteOnAttack;
+        this.echoRoarOnAttack = spec.echoRoarOnAttack;
+        this.cactusResist = spec.cactusResist;
+        this.sonicResist = spec.sonicResist;
+        this.parasiteReflect = spec.parasiteReflect;
+        this.echoRoarReflect = spec.echoRoarReflect;
+        this.cactusImmune = spec.cactusImmune;
         this.specialWeaponMetal = spec.specialWeaponMetal;
         this.shieldDurability = spec.shieldDurability;
         // ⚠ 口径变更（bg-15w 续工轮，作者 2026-10-02）：
@@ -812,6 +876,35 @@ public final class MetalFamily {
         /** 盔甲：每隔多少 tick 给穿戴者 1 份吸收（0 = 不开启；万坚金 = 320） */
         public int absorptionIntervalTicks = 0;
 
+        // ---------- bg-15w §九 9.3（2026-10-03）----------
+        /** 器具：水下挖掘不受惩罚（靛海金；见 {@link MetalFamily#submergedMiningImmunity}） */
+        public boolean submergedMiningImmunity = false;
+
+        // ---------- 1.6（bg-16）：两套新金属 ----------
+        /** 建材：踩踏 / 紧贴 / 破坏 / 右键 ⇒ 对触发者 1 点「仙人掌同款」伤害（树棘金） */
+        public boolean contactCactusThorns = false;
+        /** 建材：四个动作 ⇒ 以**该方块中心**为心、3×3×3 内全部生物 3 点监守者声波伤害 + 粒子（幽咆金） */
+        public boolean contactSonicBoom = false;
+        /** 器具：命中叠加 1 级 16 秒寄生（树棘金；等级无上限） */
+        public boolean parasiteOnAttack = false;
+        /** 器具：命中叠加 1 级 6 秒幽咆（幽咆金） */
+        public boolean echoRoarOnAttack = false;
+        /** 盔甲：每件 25% 仙人掌伤害减免、全套 100%（树棘金） */
+        public boolean cactusResist = false;
+        /** 盔甲：每件 25% 监守者声波伤害减免、全套 100%（幽咆金） */
+        public boolean sonicResist = false;
+        /** 盔甲：每件 25% 几率给攻击者叠 1 级寄生、全套 100%（树棘金） */
+        public boolean parasiteReflect = false;
+        /** 盔甲：每件 25% 几率给攻击者叠 1 级幽咆、全套 100%（幽咆金） */
+        public boolean echoRoarReflect = false;
+        /**
+         * 本族物品<b>免疫仙人掌</b>（树棘金，§3.8）：
+         * ① 掉落物形态（{@code ItemEntity}）不被仙人掌摧毁；
+         * ② 装备（盔甲槽）不因仙人掌伤害扣耐久。
+         * 落点见 {@code MetalEvents#onCactusItemImmunity} / {@link MetalEvents#onArmorHurt}。
+         */
+        public boolean cactusImmune = false;
+
         // ---------- 1.5 武器扩展 ----------
         /**
          * 本族是否属于「特殊金属」（规格 12.3）：有专属 buff 的五套为 true，万坚金为 false。
@@ -962,6 +1055,77 @@ public final class MetalFamily {
 
         public Spec fireResistant(boolean value) {
             this.fireResistant = value;
+            return this;
+        }
+
+        /**
+         * 器具：<b>无视水下挖掘惩罚</b>（靛海金，bg-15w §九 9.3）。
+         *
+         * <p>落点在 {@link MetalEvents#onItemAttributeModifiers}：给本族<b>全部器具</b>补
+         * {@code Attributes.SUBMERGED_MINING_SPEED += 0.8}（基值 0.2 ⇒ 水里 1.0 = 完全无惩罚），
+         * 槽位组 {@code MAINHAND}、一个固定 id。用具（而不是给物品加自定义类）的理由：
+         * 本仓的工具是<b>直接用原版类造的</b>（{@code new PickaxeItem(...)} 等，见本文件工具注册段）
+         * ⇒ 没有地方能覆写 {@code getDefaultAttributeModifiers()}，
+         * 而 {@code ItemAttributeModifierEvent} 正是 NeoForge 给"已注册物品"补属性的正式钩子。</p>
+         */
+        public Spec submergedMiningImmunity() {
+            this.submergedMiningImmunity = true;
+            return this;
+        }
+
+        // ---------- 1.6（bg-16）：两套新金属的归位方法 ----------
+
+        /** 建材：四个动作 ⇒ 对触发者 1 点仙人掌伤害（树棘金；不会清除掉落物） */
+        public Spec contactCactusThorns() {
+            this.contactCactusThorns = true;
+            return this;
+        }
+
+        /** 建材：四个动作 ⇒ 方块中心 3×3×3 内全部生物 3 点声波伤害 + 粒子（幽咆金） */
+        public Spec contactSonicBoom() {
+            this.contactSonicBoom = true;
+            return this;
+        }
+
+        /** 器具：命中叠加 1 级寄生（树棘金） */
+        public Spec parasiteOnAttack() {
+            this.parasiteOnAttack = true;
+            return this;
+        }
+
+        /** 器具：命中叠加 1 级幽咆（幽咆金） */
+        public Spec echoRoarOnAttack() {
+            this.echoRoarOnAttack = true;
+            return this;
+        }
+
+        /** 盔甲：每件 25% 仙人掌伤害减免、全套 100%（树棘金） */
+        public Spec cactusResist() {
+            this.cactusResist = true;
+            return this;
+        }
+
+        /** 盔甲：每件 25% 监守者声波伤害减免、全套 100%（幽咆金） */
+        public Spec sonicResist() {
+            this.sonicResist = true;
+            return this;
+        }
+
+        /** 盔甲：每件 25% 几率给攻击者叠寄生（树棘金） */
+        public Spec parasiteReflect() {
+            this.parasiteReflect = true;
+            return this;
+        }
+
+        /** 盔甲：每件 25% 几率给攻击者叠幽咆（幽咆金） */
+        public Spec echoRoarReflect() {
+            this.echoRoarReflect = true;
+            return this;
+        }
+
+        /** 本族物品免疫仙人掌（掉落物不被摧毁 + 装备不因仙人掌伤害掉耐久，树棘金） */
+        public Spec cactusImmune() {
+            this.cactusImmune = true;
             return this;
         }
 

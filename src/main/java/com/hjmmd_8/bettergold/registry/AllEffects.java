@@ -167,6 +167,63 @@ public class AllEffects {
                 }
             });
 
+    /**
+     * 寄生（parasite，1.6 树棘金）：目标持续受到「仙人掌同款」伤害。
+     *
+     * <ul>
+     *   <li><b>伤害 = 等级</b>（1 级 1 点、2 级 2 点、3 级 3 点），类型 {@code minecraft:cactus}；
+     *       每秒结算一次（{@code duration % 20 == 0}，与高燃 / 沉淀同节奏）。</li>
+     *   <li>每次结算 <b>36% 概率</b>给<b>施加者</b>回「等级」点血（概率不随等级变；
+     *       施加者 UUID 记在目标的持久数据里，见 {@code MetalEvents#markParasiteSource}）。</li>
+     *   <li>叠加 = <b>提升等级、无上限</b>（{@code stackEffect} 每次命中 +1 级）。
+     *       时长 16 秒（{@code MetalFamily.PARASITE_TICKS}，与沉淀同口径）。</li>
+     * </ul>
+     *
+     * <p>结算逻辑写在 {@code MetalEvents#parasiteTick} —— 效果类只做"每秒调一次"的派发，
+     * 与 {@link #HIGH_BURN} / {@link #SEDIMENT} 的分工一致。</p>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> PARASITE =
+            EFFECTS.register("parasite", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x5E8C31) {
+                @Override
+                public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+                    com.hjmmd_8.bettergold.material.MetalEvents.parasiteTick(entity, amplifier);
+                    return true;
+                }
+
+                @Override
+                public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+                    return duration % 20 == 0;
+                }
+            });
+
+    /**
+     * 幽咆（echo_roar，1.6 幽咆金）：目标中心爆发监守者声波。
+     *
+     * <ul>
+     *   <li>每秒（{@code duration % 20 == 0}）以<b>目标所在方块坐标 ±1（3×3×3）</b>为中心，
+     *       对范围内含目标自己的全部生物造成「等级」点 {@code minecraft:sonic_boom} 伤害，
+     *       并在中心发 {@code SONIC_BOOM} 粒子。</li>
+     *   <li>叠加 = <b>提升等级</b>（作者 2026-10-04 裁定：与寄生同口径）；时长 6 秒
+     *       （{@code MetalFamily.ECHO_ROAR_TICKS}，与巫毒同口径）。</li>
+     * </ul>
+     *
+     * <p>⚠ 中文名按作者裁定统一叫「<b>幽咆</b>」；作者素材的文件名是「音咆.png」，
+     * 我们只取那张图（落盘为 {@code textures/mob_effect/echo_roar.png}），<b>不改文件名、不改贴图</b>。</p>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> ECHO_ROAR =
+            EFFECTS.register("echo_roar", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x1B6B7A) {
+                @Override
+                public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+                    com.hjmmd_8.bettergold.material.MetalEvents.echoRoarTick(entity, amplifier);
+                    return true;
+                }
+
+                @Override
+                public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+                    return duration % 20 == 0;
+                }
+            });
+
     private AllEffects() {
     }
 }
