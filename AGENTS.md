@@ -155,6 +155,13 @@
   `validate_metal_data.py` 的 `[bgbook-isolation-*]` 守着）。
 - **构建侧配套**：Patchouli **只加 `compileOnly`、故意不加 `localRuntime`** —— 加了 localRuntime 之后 dev 环境
   **永远**装着它，"没装"这一档就再也造不出来（本轮的两种环境 A 级实测正是靠 `run/mods` 里放/拿 jar）。
+- **✅ dev 环境的现行做法（作者 2026-10-04 裁定「dev 环境常驻 Patchouli」）**：把
+  `Patchouli-1.21.1-93-NEOFORGE.jar`（**646,777 B**，SHA256
+  `959af52ed6640c316c3a8469203420be4aeea11ad6603890ba83bf48f5d9f993`）**常驻**放在
+  **`run/mods/`**（与 JEI 并列；来源 = Gradle 缓存 `maven.modrinth:patchouli` 里那个**真正的 mod jar**，
+  不是 `-sources` / `-javadoc`）⇒ 作者一启动 dev 客户端就能**自己检查手册装得进、跑得起来**。
+  ⚠ 要测「**没装**」那一档时**手动把该 jar 移出 `run/mods`**，测完再放回；
+  该 jar 是**交付物，不是临时文件**（收尾**不要删**）。
 - 细节（读 jar 得到的两条事实：`custom_book_item` 是**物品栈字符串**、`ItemModBook#use` 只认堆叠上的
   `patchouli:book` 组件；配方页**每页最多 2 个**）见 `docs/1.6-规格.md` §10.1；跨项目条目见
   `mod_experience` §4 第 50 条（optional 两种口径）与 §4（Patchouli 页面/条目 API 陷阱）。
