@@ -1,0 +1,33 @@
+{
+  "name": "bettergold.handbook.entry.merchant",
+  "category": "bettergold:merchant_antiques",
+  "icon": "bettergold:gold_exchange_counter",
+  "sortnum": 0,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.merchant"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:gold_exchange_counter"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:gift_gold_ticket"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:alchemy_materials_box"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:treasure_gift_box"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:curio_box"
+    }
+  ]
+}

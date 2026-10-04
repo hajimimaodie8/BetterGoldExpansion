@@ -11,7 +11,7 @@
 `【读源码】bettergold/gradle.properties`
 
 - 模组：`bettergold`（更好的金 / Better Gold），**NeoForge 21.1.228 / Minecraft 1.21.1**，ModDevGradle，Parchment 2024.11.17。
-- 根目录：`E:\mc\mcmod\bettergold-template-1.21.1`，包根 `com.hjmmd_8.bettergold`，`mod_version=1.5.0`。
+- 根目录：`E:\mc\mcmod\bettergold-template-1.21.1`，包根 `com.hjmmd_8.bettergold`，`mod_version=1.6.0`。
 - **注册命名空间恒 `bettergold`**（存档红线）：id / 语言键 / 配置键 / 数据包路径一律不许改。
 - 可选联动：Farmer's Delight（`1.21.1-1.3.4`，**optional**，走乐事联动层）；另有 IE 冲压机配方等联动。
 
@@ -20,7 +20,7 @@
 | 文件 | 内容 | 什么时候读 |
 |---|---|---|
 | `docs/1.5-规格.md` | **1.5 规格与实现依据**：新金属（靛海金/幻惑金）、新 buff（沉淀/安抚）、巫毒公式变更、金制武器扩展、胚底最终形态、逐轮实测证据 | 查 1.5 的历史与依据 |
-| `docs/1.6-规格.md` | **1.6 现行规格与实现进度（bg-16）**：两套新金属（树棘金/幽咆金）+ 三个散件 + 两处修正 + 第三轮 A 级实机验证 + **第四轮收口轮**（§7.4 两条真问题） | **要加/改任何内容之前**（比 1.5 新） |
+| `docs/1.6-规格.md` | **1.6 现行规格与实现进度（bg-16）**：两套新金属（树棘金/幽咆金）+ 三个散件 + 两处修正 + 第三轮 A 级实机验证 + **第四轮收口轮**（§7.4 两条真问题）+ **§十 bg-book（帕秋莉手册：optional 前置 / 没装就不注册 / 手册物品与内容骨架）** | **要加/改任何内容之前**（比 1.5 新） |
 | `docs/构建与跑测注意事项.md` | 构建成败判读、`run\` 独占、探针铁律、编码与 BOM、创造页坑、可信度要求 | **动手前扫一眼**，跑测前必读 |
 | `docs/新增材料家族.md` | 加一整套金属（`MetalFamily.Spec` 一次注册）的标准流程 | 要加新金属时 |
 | `docs/1.4-进度与交接.md` | 1.4 遗留与交接 | 查历史遗留 |
@@ -105,8 +105,18 @@
   `META-INF/neoforge.mods.toml` 里**已启用**的 `[[mixins]] config="${mod_id}.mixins.json"`（原先是注释态）。
 - 目前唯一的 mixin 是三叉戟「手持 3D」：改 `ItemRenderer` 里**三处写死的** `stack.is(Items.TRIDENT)`
   （`getModel` 选 3D / `render` 的 flag 分支 / 「要不要走自定义渲染器」判定）。
-- ⚠ **新增 mixin 必须同时做三件事**：写进 `*.mixins.json` 的 `client`/`common` 列表、`require` 写死（改形状要**当场报错**）、
+- ⚠ **新增 mixin 必须同时做三件事**：写进 `*.mixins.json` 的**双端列表**（键名是 **`mixins`**）/`client`/`server`、`require` 写死（改形状要**当场报错**）、
   跑一次 `.\gradlew.bat runData` 当冒烟（漏了列表 = **静默不加载**）。
+- ⚠ **`bg-17` 实测的静默坑：双端列表的键名是 `mixins`，不是 `common`** —— Sponge Mixin 只认
+  `mixins` / `client` / `server`（见其 `MixinConfig` 的字段），**未知键被整个忽略**，
+  而且 `required: true` **也不会**因此报错（列表为空 ⇒ 没有东西需要 apply）。
+  症状：mixin 类编译得好好的、`runData` 全绿、**A 级实测里那行改动完全不存在**
+  （本项目实例：`CrossbowItem.getChargeDuration(本模组弩)` 仍是 25 而不是 20）。
+  ⇒ 新增 mixin 后**必须**在能触发该路径的 `run*` 日志里 `grep` 到 `Mixing <Mixin类名> from ... into <目标类>`
+  那一行，才算"加载了"。
+- ⚠ **`runClient --args="..."` 会把 ModDevGradle 的主类参数整个替换掉**（`devlaunch.Main` 会去把 `--quickPlayPath` 当主类名）
+  ⇒ 要给客户端加参数，改 `build/moddev/clientRunProgramArgs.txt` 末尾的「User Supplied Program Arguments」段（**临时改、跑完复原并核对 SHA256**），
+  或用 `--quickPlayPath <file> --quickPlaySingleplayer <世界文件夹名>` 让客户端直接进世界（本机实测可用）。
 - 自己的 additional model 用 `ModelEvent.RegisterAdditional` 登记（`ModelResourceLocation.standalone` +
   **完整模型路径** `ns:item/x_in_hand`，NeoForge 不补 `item/` 前缀），否则拿到 missing model。
 - 细节与六情形并排对照见 `docs/1.5-规格.md` §16.6。
@@ -122,12 +132,32 @@
 （`validate_metal_data.py` 的 `[bg16-datamap-*]`）；⚠ 改这类 bug 前先 `grep` 关卡里有没有把**旧位置**写成契约的断言
 ——本仓原来那条正断言写的就是**错路径**，不改它会反过来拦住修复。详见 `docs/1.6-规格.md` §8.1。
 
-**9）金属弩的实际蓄力 = 原版 25 tick（不是规格写的 20 tick）（`bg-16` 收口轮）**
-装载判定在 `CrossbowItem#releaseUsing` 里除以的是 **`static` 的 `CrossbowItem.getChargeDuration`**（1.25F×20 = **25**）
+**9）金属弩的蓄力 = 本模组弩 20 tick（`bg-16` 裁定落实轮起；上一轮那条"沿用原版 25 tick、代码不动"已被取代）**
+装载判定在 `CrossbowItem#releaseUsing` 里除以的是 **`static` 的 `CrossbowItem.getChargeDuration`**（原版 1.25F×20 = **25**）
 ⇒ 覆写 `getUseDuration`(=23) **不会**让分母变；`getUseDuration` 只决定「**举着的时长上限**」。
 `MetalWeapons` 里那句「比值自动仍是 1.0」的旧推断**已被实测推翻**（原文留档）。
-**代码按"实际为准"不动**；要真做成 20 tick 必须 mixin 改那个 `static` 常量或重写装载判定（待作者裁定）。
-口径已就地标注在 `docs/1.5-规格.md` §12.2 与 `docs/1.6-规格.md` §6.4/§7.4/§8.2，关卡 `[bg16-crossbow-caliber]` 守着。
+**✅ 现行口径（作者 2026-10-04 裁定「真改」）**：新增 `mixin/CrossbowChargeDurationMixin.java`
+（**MixinExtras `@ModifyReturnValue`、`require = 1` 写死**、登记在 `bettergold.mixins.json` 的 **`mixins`** 列表 = 双端；
+⚠ 双端列表的**键名是 `mixins`，不是 `common`** —— 写 `common` 会被静默忽略，见第 7 条）
+把那个 static 方法的返回值对**本模组的弩**换成 `MetalCrossbowItem.chargeDuration`（= 20 tick）
+⇒ **按住 19 tick 装不上、20 tick 装上**；**原版弩与任何第三方弩原样放回**（守卫 = `instanceof MetalCrossbowItem`）。
+`CrossbowItem#useOnRelease` 恒 `true`（`:307-309`）⇒ 按住可超过 `getUseDuration`、松手时 `i = 实际按住 tick 数`，
+所以门槛**精确等于**分母。口径已就地标注（原文保留）在 `docs/1.5-规格.md` §12.2 与
+`docs/1.6-规格.md` §6.4/§7.4/§8.2；关卡 `[bg16-crossbow-caliber]` 按新口径守着（含"非本模组物品不得被本 mixin 影响"的负向断言）。
+
+**10）可选依赖有「两种口径」，对类加载的要求正好相反 —— 别互相照抄（`bg-book`，2026-10-04）**
+- **A · 总是注册、功能软依赖**：本仓对**农夫乐事**就是用这条（`fd/FdModule.isLoaded()` 只决定"挂不挂模块"，
+  刀这一类物品始终存在；FD 的类靠**反射**绕开 ⇒ 允许在字段初始化器里引用对方类型）。
+- **B · 没装就不注册**：本仓对 **Patchouli** 用这条（作者原话「没装手册进不去」= 那一格**根本不存在**）：
+  `HandbookModule.register` 没装时**返回 null（不登记）**。
+  ⇒ **任何对 Patchouli 类型的静态引用都会在类加载时炸**，`isLoaded` 守卫写在字段/构造器/静态块里**救不了** ——
+  引用**只许在方法体内、且在早退之后**（全仓只许 `patchouli/PatchouliCompat.java` 一个文件引用它，
+  `validate_metal_data.py` 的 `[bgbook-isolation-*]` 守着）。
+- **构建侧配套**：Patchouli **只加 `compileOnly`、故意不加 `localRuntime`** —— 加了 localRuntime 之后 dev 环境
+  **永远**装着它，"没装"这一档就再也造不出来（本轮的两种环境 A 级实测正是靠 `run/mods` 里放/拿 jar）。
+- 细节（读 jar 得到的两条事实：`custom_book_item` 是**物品栈字符串**、`ItemModBook#use` 只认堆叠上的
+  `patchouli:book` 组件；配方页**每页最多 2 个**）见 `docs/1.6-规格.md` §10.1；跨项目条目见
+  `mod_experience` §4 第 50 条（optional 两种口径）与 §4（Patchouli 页面/条目 API 陷阱）。
 
 ## 🔧 构建与跑测
 

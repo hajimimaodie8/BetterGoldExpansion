@@ -1,0 +1,35 @@
+# bg-16 / bg-17 · 关卡扰动实测（任务1 + 任务2 的新增/改写断言逐条命中）
+
+> 关卡：`tools/asset-generator/validate_metal_data.py`（在**去注释后**的源码上跑）。
+> 脚本：`build/bg17-perturb.py`（副本 `docs/bg16-证据/21-扰动脚本副本.py`）；
+> 纪律照 mcmod_experience §3.4：**改坏 ⇒ 必须命中它自己的稳定 ASCII 断言 id + exit 1 ⇒ 改回 ⇒ exit 0**，
+> 且**只加注释必须仍绿**（本轮的 INVERSE 用例），全部源文件**逐字节 SHA256 复原**。
+>
+> 用例数：**1 基线 + 16 条改坏 + 1 条反向对照（只改注释）+ 1 条收尾基线 = 19 次运行**，`mismatches = 0`。
+> 其中 C1 就是派单要求的「**去掉 coreItem 判据 ⇒ exit 1**」；X5b 是"把双端列表写成 `common`"这个**真实踩过的静默坑**。
+>
+```
+
+OK  baseline validate_metal_data    exit=0
+OK  C1 coreItem branch removed from isCactusImmune (the required 'remove the coreItem predicate' case)    exit=1 expect=1 sub='[bg16-cactus-coreitem-predicate]'
+OK  C2 coreItem branch inverted (blanket rule broken)    exit=1 expect=1 sub='[bg16-cactus-coreitem-blanket]'
+OK  C3 onCactusItemImmunity reverted to the old family-only pattern    exit=1 expect=1 sub='[bg16-cactus-coreitem-event]'
+OK  C4 one family loses its coreItem declaration (7 of 8)    exit=1 expect=1 sub='[bg16-cactus-coreitem-anti-vacuum]'
+OK  C5 a COMMENT mentions the new predicate while the real call is gone -> must still be RED    exit=1 expect=1 sub='[bg16-cactus-coreitem-event]'
+OK  X1 instanceof guard removed (would touch vanilla / third-party crossbows)    exit=1 expect=1 sub='[bg16-crossbow-mixin-guard]'
+OK  X2 guard moved AFTER the conversion (order broken)    exit=1 expect=1 sub='[bg16-crossbow-mixin-guard-first]'
+OK  X3 require = 1 -> require = 0 (silent-failure protection removed)    exit=1 expect=1 sub='[bg16-crossbow-mixin-require]'
+OK  X4 target descriptor loses the return type    exit=1 expect=1 sub='[bg16-crossbow-mixin-descriptor]'
+OK  X5 mixin dropped from the mixins.json 'mixins' list (silently not loaded)    exit=1 expect=1 sub='[bg16-crossbow-mixin-listed]'
+OK  X5b the real trap: the entry moved to a bogus 'common' key (Mixin silently ignores it)    exit=1 expect=1 sub='[bg16-crossbow-mixin-listed]'
+OK  X6 mixin also registered on the client list (wrong side)    exit=1 expect=1 sub='[bg16-crossbow-mixin-side]'
+OK  X7 docs/1.6 loses the new caliber sentence    exit=1 expect=1 sub='[bg16-crossbow-caliber-doc16-new]'
+OK  X8 docs/1.5 loses the new caliber sentence    exit=1 expect=1 sub='[bg16-crossbow-caliber-doc15-new]'
+OK  X9 seconds->ticks factor changed to 25    exit=1 expect=1 sub='[bg16-crossbow-caliber]'
+OK  X10 MetalCrossbowItem really overrides releaseUsing (the other landing spot)    exit=1 expect=1 sub='[bg16-crossbow-caliber]'
+OK  INVERSE comments only (releaseUsing / chargeDuration / cactusImmune mentioned in comments) must stay GREEN    exit=0 expect=0 sub=''
+OK  baseline after restore        exit=0
+final SHA256 of all touched sources restored byte-for-byte
+mismatches = 0
+
+```

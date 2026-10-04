@@ -1,0 +1,157 @@
+{
+  "name": "bettergold.handbook.entry.tools_per_family",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:sturdygold_sword",
+  "sortnum": 0,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.tools"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_sword",
+      "recipe2": "bettergold:smithing_flamegold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_pickaxe",
+      "recipe2": "bettergold:smithing_flamegold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_hoe",
+      "recipe2": "bettergold:smithing_flamegold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_sword",
+      "recipe2": "bettergold:smithing_sturdygold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_pickaxe",
+      "recipe2": "bettergold:smithing_sturdygold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_hoe",
+      "recipe2": "bettergold:smithing_sturdygold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_sword",
+      "recipe2": "bettergold:smithing_thornsgold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_pickaxe",
+      "recipe2": "bettergold:smithing_thornsgold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_hoe",
+      "recipe2": "bettergold:smithing_thornsgold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_echogold_sword",
+      "recipe2": "bettergold:smithing_echogold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_echogold_pickaxe",
+      "recipe2": "bettergold:smithing_echogold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_echogold_hoe",
+      "recipe2": "bettergold:smithing_echogold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_indigoseagold_sword",
+      "recipe2": "bettergold:smithing_indigoseagold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_indigoseagold_pickaxe",
+      "recipe2": "bettergold:smithing_indigoseagold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_indigoseagold_hoe",
+      "recipe2": "bettergold:smithing_indigoseagold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_voodoogold_sword",
+      "recipe2": "bettergold:smithing_voodoogold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_voodoogold_pickaxe",
+      "recipe2": "bettergold:smithing_voodoogold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_voodoogold_hoe",
+      "recipe2": "bettergold:smithing_voodoogold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thundergold_sword",
+      "recipe2": "bettergold:smithing_thundergold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thundergold_pickaxe",
+      "recipe2": "bettergold:smithing_thundergold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thundergold_hoe",
+      "recipe2": "bettergold:smithing_thundergold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_sword",
+      "recipe2": "bettergold:smithing_illusiongold_axe",
+      "title": "bettergold.handbook.page.tools_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_pickaxe",
+      "recipe2": "bettergold:smithing_illusiongold_shovel",
+      "title": "bettergold.handbook.page.tools_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_hoe",
+      "recipe2": "bettergold:smithing_illusiongold_knife",
+      "title": "bettergold.handbook.page.tools_3"
+    }
+  ]
+}

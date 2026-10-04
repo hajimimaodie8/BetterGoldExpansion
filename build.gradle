@@ -157,6 +157,14 @@ dependencies {
     compileOnly "maven.modrinth:farmers-delight:${farmersdelight_version}"
     localRuntime "maven.modrinth:farmers-delight:${farmersdelight_version}"
 
+    // Optional integration with Patchouli (帕秋莉手册), resolved from the Modrinth Maven.
+    // Paradigm B ("not installed => the object is never created", bg-book §3.1.3): the handbook item
+    // is only registered while Patchouli is loaded, therefore every reference to a Patchouli type
+    // lives in a method body behind an isLoaded(...) early-exit (see patchouli/PatchouliCompat).
+    // compileOnly ONLY, on purpose: see the long note in gradle.properties - a localRuntime line
+    // would make the "Patchouli not installed" dev environment impossible to reproduce.
+    compileOnly "maven.modrinth:patchouli:${patchouli_version}"
+
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html

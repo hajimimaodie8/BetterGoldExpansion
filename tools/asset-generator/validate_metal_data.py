@@ -961,6 +961,53 @@ for _field in ("contactCactusThorns", "contactSonicBoom", "parasiteOnAttack", "e
     if f"this.{_field} = spec.{_field};" not in _mf_src:
         _bg16_bad("bg16-family-copy", f"MetalFamily 没有把 Spec.{_field} 复制到本体（事件里读的是 family.{_field}）")
 
+# ---------- 6b) 免疫仙人掌：判据必须把「核心材料」也算进去（bg-16 裁定落实轮，2026-10-04） ----------
+# 作者裁定的原话范围：「核心材料也要免疫仙人掌」「范围＝八套金属的 coreItem 全部」，
+# 并要求「八族 coreItem 逐一断言 immune=true」（那条是 A 级探针侧的断言）。
+# 事实：核心材料（MetalSpecialItems / AllItems 注册的那些）**不在**任何族的 allItems 里
+#   ⇒ 它们没进 BY_ITEM ⇒ 原先那句 `MetalFamily.of(...) != null && family.cactusImmune`
+#   对它们恒为 false，也就是「闪耀藤条这类核心材料不免疫」——那正是本轮要修的行为。
+# 现行落点 = MetalFamily.isCactusImmune(Item)：家族索引命中 ⇒ 看该族旗标；
+#   否则看它是不是某族的 coreItem ⇒ **一律免疫**（与旗标无关，这是作者这一轮给的范围）。
+# ⚠ 八族的 coreItem 符号**从 AllMetals.java 现算**，不写死清单 —— 写死清单 = 加族时静默漏（§2.2）。
+_all_metals_code = strip_comments(_all_metals_src)
+_core_items = re.findall(r"\.coreItem\(\(\)\s*->\s*([A-Za-z0-9_.]+)\.get\(\)\)", _all_metals_code)
+if len(_core_items) != 8:
+    _bg16_bad("bg16-cactus-coreitem-anti-vacuum",
+              f"AllMetals.java 里现算出 {len(_core_items)} 个 `.coreItem(() -> X.get())`（应为八族 8 个）")
+elif len(set(_core_items)) != 8:
+    _bg16_bad("bg16-cactus-coreitem-distinct",
+              f"八族里有重复的 coreItem 符号：{sorted(_core_items)}")
+_core_owner_body = method_body(_mf_src, "public static @Nullable MetalFamily coreItemOwner(")
+if not _core_owner_body:
+    _bg16_bad("bg16-cactus-coreitem-owner",
+              "MetalFamily 缺 coreItemOwner(Item)（核心材料的单独查表；反空转守护）")
+elif "BY_ID.values()" not in _core_owner_body or "core.get() == item" not in _core_owner_body:
+    _bg16_bad("bg16-cactus-coreitem-owner",
+              "coreItemOwner 没有遍历家族表并逐族比较 coreItem（判别 cores 的写法被改过）")
+_immune_body = method_body(_mf_src, "public static boolean isCactusImmune(")
+if not _immune_body:
+    _bg16_bad("bg16-cactus-coreitem-predicate",
+              "MetalFamily 缺 isCactusImmune(Item)（免疫仙人掌的统一判据；反空转守护）")
+else:
+    if "cactusImmune" not in _immune_body:
+        _bg16_bad("bg16-cactus-coreitem-predicate",
+                  "isCactusImmune 没有读该族的 cactusImmune 旗标（家族索引那条分支丢了）")
+    if "coreItemOwner(" not in _immune_body:
+        _bg16_bad("bg16-cactus-coreitem-predicate",
+                  "isCactusImmune 没有走 coreItemOwner(（核心材料那条分支丢了）")
+    if "return coreItemOwner(item) != null;" not in _immune_body:
+        _bg16_bad("bg16-cactus-coreitem-blanket",
+                  "isCactusImmune 的核心材料分支不是「是某族 coreItem ⇒ 一律免疫」"
+                  "（作者裁定的范围＝八套金属的 coreItem 全部）")
+_immune_evt = method_body(_events_src, "public static void onCactusItemImmunity(")
+if not _immune_evt:
+    _bg16_bad("bg16-cactus-coreitem-event",
+              "MetalEvents 里找不到 onCactusItemImmunity 方法体（反空转守护）")
+elif "MetalFamily.isCactusImmune(" not in _immune_evt:
+    _bg16_bad("bg16-cactus-coreitem-event",
+              "onCactusItemImmunity 没走 MetalFamily.isCactusImmune(（核心材料仍会被仙人掌摧毁）")
+
 # ---------- 7) 两个 buff：形状 + 数值常量 ----------
 _effects_src = strip_comments((JAVA / "registry" / "AllEffects.java").read_text(encoding="utf-8"))
 for _needle, _tag, _why in (
@@ -1036,16 +1083,18 @@ for _key in ("item.bettergold.alchemy_materials_box", "block.bettergold.golden_r
     if _key not in zh or _key not in en:
         _bg16_bad("bg16-spare-lang", f"三个散件缺语言键 {_key}")
 
-# ---------- 7) 金属弩的**实际蓄力口径**（bg-16 收口轮：规格写的「20 tick」已被 A 级实测推翻） ----------
-# 事实（【读源码】+【实测】）：原版「装满」判定在 CrossbowItem#releaseUsing 里除以的是
-#   **static** 的 `CrossbowItem.getChargeDuration`（基础 1.25F × 20 = **25 tick**），压根不读我们覆写的
-#   `getUseDuration`（= chargeDuration + 3 = **23**）⇒ `f_max = 23/25 = 0.92 < 1`，按住 23 tick 装不上；
-#   按住超过 getUseDuration 之后 useItemRemaining 转负、松手时 i = 实际按住 tick 数 ⇒ **真正装满要 ≥ 25 tick**。
-#   实测：真玩家按住 40 tick，期间 CHARGED_PROJECTILES 恒空、松手那一 tick 才 charged=true
-#   （docs/bg16-证据/10-A级-runClient读数.txt、…/12-新发现-真问题.md §二）。
-# 本轮处置 = **代码不动 + 文档/注释就地更正**（原文保留）。
-# 这条断言守两件事：① 口径不许被**静默**改回 20 tick；② 谁真去改装载判定（覆写 releaseUsing），
-# 就**必须**同步改文档口径，不许让文档与代码再次分家。
+# ---------- 7) 金属弩的蓄力口径（bg-16 裁定落实轮，2026-10-04：作者裁定「真改」⇒ 本模组弩 20 tick） ----------
+# 事实（【读源码】neoforge 21.1.228 sources）：
+#   `public static int CrossbowItem#getChargeDuration(ItemStack, LivingEntity)`（`CrossbowItem.java:257-260`，
+#   基础 `1.25F × 20 = 25`）被 `getPowerForTime`（`:274-281` ← **装载门槛**，经 `releaseUsing` `:102-121`）、
+#   `getUseDuration`（`:253-255`）、`onUseTick`（`:224`）、客户端 `ItemProperties`（`:193`）读。
+#   而 `CrossbowItem#useOnRelease` 恒 `true`（`:307-309`）⇒ `LivingEntity#updateUsingItem`（`:3151-3163`）
+#   不会自动收手 ⇒ 松手时 `i = 实际按住的 tick 数`（**不被** `getUseDuration` 截断）
+#   ⇒ **装载门槛精确等于那个分母**：分母 20 ⇒ 按住 19 不装、20 装。
+# 落点 = `mixin/CrossbowChargeDurationMixin.java`（MixinExtras `@ModifyReturnValue`、`require = 1` 写死），
+#   登记在 `bettergold.mixins.json` 的 **common** 列表（双端；**不在** client 列表）。
+# 硬要求：**不许波及原版弩与任何第三方弩** ⇒ 守卫必须 `instanceof MetalCrossbowItem`，否则 `return original;`。
+# 上一轮那条「实际沿用原版 25 tick / 代码不动」的口径**已被本裁定取代**（原文在文档里保留，不许静默删）。
 _weapons_src = (JAVA / "material" / "MetalWeapons.java").read_text(encoding="utf-8")
 _weapons_code = strip_comments(_weapons_src)
 _cb_start = _weapons_code.find("class MetalCrossbowItem")
@@ -1063,21 +1112,418 @@ else:
                   "getUseDuration 不是 chargeDuration(...) + 3（它只决定「举着的时长上限」= 23）")
     if "releaseUsing(" in _crossbow_blk:
         _bg16_bad("bg16-crossbow-caliber",
-                  "MetalCrossbowItem 覆写了 releaseUsing（= 装载门槛真被改了）：实际口径已变，"
-                  "必须同步更新 docs/1.5-规格.md §12.2 的「⚠ 更正」块与 docs/1.6-规格.md 的口径后再改这条断言")
-# 反空转守护 + 文档侧：口径更正必须在位（原文保留 + 新口径写明）
+                  "MetalCrossbowItem 覆写了 releaseUsing：那是**另一条落点**，与本轮选的 mixin 会分家，"
+                  "二选一（本轮选 mixin）；改完同步文档后再改这条断言")
+
+# 7b) mixin 落点本身：文件 + 注入形状 + require + **守卫（不波及其它弩）**
+_mixin_crossbow = JAVA / "mixin" / "CrossbowChargeDurationMixin.java"
+_cb_mixin_code = ""
+if not _mixin_crossbow.is_file():
+    _bg16_bad("bg16-crossbow-mixin-file",
+              "缺 mixin/CrossbowChargeDurationMixin.java（本模组弩 20 tick 的落点）")
+else:
+    _cb_mixin_code = strip_comments(_mixin_crossbow.read_text(encoding="utf-8"))
+if _cb_mixin_code:
+    for _needle, _tag, _why in (
+            ("@Mixin(CrossbowItem.class)", "bg16-crossbow-mixin-target",
+             "mixin 的目标不是 CrossbowItem"),
+            ("ModifyReturnValue", "bg16-crossbow-mixin-injector",
+             "没用 @ModifyReturnValue（改的是返回值，不是语句）"),
+            ('"getChargeDuration(Lnet/minecraft/world/item/ItemStack;'
+             'Lnet/minecraft/world/entity/LivingEntity;)I"', "bg16-crossbow-mixin-descriptor",
+             "目标方法没写完整描述符（原版改签名时会静默找不到注入点）"),
+            ("require = 1", "bg16-crossbow-mixin-require",
+             "require 没写死成 1（形状改了就不会当场报错）"),
+            ('@At("RETURN")', "bg16-crossbow-mixin-at",
+             "注入点不是 RETURN"),
+            ("instanceof MetalWeapons.MetalCrossbowItem", "bg16-crossbow-mixin-guard",
+             "没有 instanceof 守卫（会波及原版弩与第三方弩）"),
+            ("return original;", "bg16-crossbow-mixin-passthrough",
+             "没有把非本模组物品原样放回（会波及原版弩与第三方弩）"),
+            ("return MetalWeapons.MetalCrossbowItem.chargeDuration(stack, shooter);",
+             "bg16-crossbow-mixin-value",
+             "返回值不是 MetalCrossbowItem.chargeDuration(...)（20 tick 口径没接上）")):
+        if _needle not in _cb_mixin_code:
+            _bg16_bad(_tag, _why)
+    # 结构性顺序：守卫必须在「换算成 20 tick」之前（反了 = 先改后判，原版弩也会被改）
+    _guard_at = _cb_mixin_code.find("instanceof MetalWeapons.MetalCrossbowItem")
+    _value_at = _cb_mixin_code.find("chargeDuration(stack, shooter)")
+    if _guard_at < 0 or _value_at < 0 or _guard_at > _value_at:
+        _bg16_bad("bg16-crossbow-mixin-guard-first",
+                  "「instanceof 守卫」没有出现在「返回 20 tick」之前（顺序反了 = 原版弩也会被改）")
+# 列表：必须在 **`mixins`**（Sponge Mixin 里"双端"那个列表就叫这个名字）里，
+# 且不许误登记进 `client` / `server`（漏了列表 = 静默不加载；放错列表 = 服务端/客户端没有这条行为）。
+# ⚠ 本仓实测教训（bg-17，2026-10-04）：**写 `"common"` 是无效键** —— Mixin 只认 `mixins` / `client` / `server`，
+#   未知键被**静默忽略**（`required: true` 也不会报错，因为那个列表空 ⇒ 没有东西需要 apply）
+#   ⇒ A 级实测里 `CrossbowItem.getChargeDuration(本模组弩)` 仍是 **25**、mixin 一次都没加载。
+_cb_name = "CrossbowChargeDurationMixin"
+_mixins_json = json.loads(_mixins_txt) if _mixins_txt.strip() else {}
+if _cb_name not in _mixins_json.get("mixins", []):
+    _bg16_bad("bg16-crossbow-mixin-listed",
+              "bettergold.mixins.json 的 mixins 列表里没有 CrossbowChargeDurationMixin"
+              "（注意：双端列表的键名是 `mixins`，写 `common` 会被静默忽略 = mixin 不加载）")
+if _cb_name in _mixins_json.get("client", []):
+    _bg16_bad("bg16-crossbow-mixin-side",
+              "CrossbowChargeDurationMixin 被登记进了 client 列表；它改的是双端的 getChargeDuration，必须走 mixins")
+if _cb_name in _mixins_json.get("server", []):
+    _bg16_bad("bg16-crossbow-mixin-side",
+              "CrossbowChargeDurationMixin 被登记进了 server 列表；它改的是双端的 getChargeDuration，必须走 mixins")
+
+# 7c) 文档侧：**上一轮的原文保留**（不许静默删）+ **本裁定的新口径在位**
 _spec15 = (REPO / "docs" / "1.5-规格.md").read_text(encoding="utf-8")
 _spec16 = (REPO / "docs" / "1.6-规格.md").read_text(encoding="utf-8")
-if "沿用原版的 25 tick 分母" not in _spec15 or "已被实测推翻" not in _spec15:
+if "已被实测推翻" not in _spec15 or "沿用原版的 25 tick 分母" not in _spec15:
     _bg16_bad("bg16-crossbow-caliber-doc15",
-              "docs/1.5-规格.md §12.2 缺「已被实测推翻」的就地标注或「沿用原版的 25 tick 分母」的新口径")
+              "docs/1.5-规格.md §12.2 缺上一轮的「已被实测推翻 / 沿用原版的 25 tick 分母」原文（不许静默删）")
+if "已被本裁定取代" not in _spec15 or "本模组弩：蓄力 = 20 tick" not in _spec15:
+    _bg16_bad("bg16-crossbow-caliber-doc15-new",
+              "docs/1.5-规格.md §12.2 缺本裁定的新口径（须含「已被本裁定取代」与「本模组弩：蓄力 = 20 tick」）")
 if "沿用原版的 25 tick 分母" not in _spec16:
     _bg16_bad("bg16-crossbow-caliber-doc16",
-              "docs/1.6-规格.md 缺弩的 25 tick 新口径标注（§6.4 / §7.4 第 2 条的收口段）")
+              "docs/1.6-规格.md 缺上一轮 25 tick 口径的收口段（原文保留）")
+if "已被本裁定取代" not in _spec16 or "本模组弩：蓄力 = 20 tick" not in _spec16:
+    _bg16_bad("bg16-crossbow-caliber-doc16-new",
+              "docs/1.6-规格.md 缺本裁定的新口径（须含「已被本裁定取代」与「本模组弩：蓄力 = 20 tick」）")
+
+# ==================== bg-book（2026-10-04）：帕秋莉手册 ====================
+# 本轮形状由两条**读 jar 得到**的事实决定（`Patchouli-1.21.1-93-NEOFORGE.jar`，Modrinth `maven.modrinth:patchouli`）：
+#
+#  ① **"全是 JSON"只对书/类别/条目成立，"右键打开"这一下必须有代码**：
+#     - `ItemModBook#use` 打开哪本书来自**堆叠上的 `patchouli:book` 数据组件**
+#       （`ItemModBook#getBookId`：`stack.has(PatchouliDataComponents.BOOK) ? stack.get(BOOK) : null`）；
+#     - 而 `ItemModBook` 的构造器是 `super(new Item.Properties().stacksTo(1))`、**不接受自定义 Properties**
+#       ⇒ 没法给"我方物品"挂默认组件 ⇒ 不能复用它；
+#     - `book.json` 的 `custom_book_item` 只是**物品栈字符串**（`Book#lambda$new$1` →
+#       `ItemStackUtil.deserializeStack` → 内部走原版 `ItemParser`），解析失败**只 warn** 然后给
+#       `ItemStack.EMPTY`（静默）；而且它只在 `dont_generate_book` 为真时才生效。
+#     ⇒ 落点 = 我方自己的 `Item` 子类 + `PatchouliAPI.get().openBookGUI(ServerPlayer, bookId)`
+#       （与 `ItemModBook#use` 同一条路径，`PatchouliAPIImpl#openBookGUI` 不要求书已注册）。
+#
+#  ② **配方页的结构上限 = 每页 2 个配方**：`PageDoubleRecipe` 只有 `recipe` / `recipe2` 两个槽
+#     （`@SerializedName("recipe")` / `("recipe2")`），页面类型表（`ClientBookRegistry#addPageTypes`）
+#     里没有"N 个配方"那一档 ⇒ 器具（6 件）= 3 页、盔甲（4 件）= 2 页。
+#     **要"6 件一页"唯一出路是自定义 page type**（= 自己写一整页客户端渲染），本轮不做。
+#
+#  ③ 口径 = **没装 Patchouli 就不注册手册物品**（口径 B，与农夫乐事的"总是注册、功能软依赖"相反）
+#     ⇒ 所有对 Patchouli 类型的引用**只许在方法体内、且在 `isLoaded(...)` 早退之后**：
+#     写在字段 / 构造器 / 静态初始化块里 = **类加载即炸**，守卫根本没机会执行。
+#     配套：构建里**故意只加 compileOnly、不加 localRuntime** —— 否则 dev 永远装着 Patchouli，
+#     "没装"这一档就再也造不出来（本轮两种环境实测就靠 `run/mods` 放/拿 jar）。
+bgbook_problems: list[str] = []
+
+
+def _bgbook_bad(tag: str, msg: str) -> None:
+    bgbook_problems.append(f"{msg} [{tag}]")
+
+
+_HANDBOOK_ITEM = "alchemy_student_handbook"
+# ⚠ Patchouli 1.20+ 把"书"的布局劈成两半（**本轮 A 级实测抓到的，不是我们的选择**）：
+#   data/bettergold/patchouli_books/<book>/book.json    <- 唯一留在**数据包**侧的文件
+#   assets/bettergold/patchouli_books/<book>/<lang>/**  <- 类别 / 条目 / 页面全在**客户端资源**侧
+# 而且 book.json 必须 `"use_resource_pack": true`（1.20 起数据包侧的内容加载已被移除）。
+# 把内容放在 data/ 下 ⇒ Patchouli 抛 `IllegalArgumentException: Book … has use_resource_pack set
+# to false. This behaviour was removed in 1.20.` 并**整本书被跳过**（`Book.java:148` ←
+# `BookRegistry.loadBook`），表现是"物品在、右键打不开、日志里一条 ERROR"。
+_BOOK_ROOT = _DATA / "bettergold" / "patchouli_books" / "alchemy_handbook"
+_ASSET_ROOT = _RES / "assets" / "bettergold" / "patchouli_books" / "alchemy_handbook"
+_ZH_BOOK = _ASSET_ROOT / "zh_cn"
+_EN_BOOK = _ASSET_ROOT / "en_us"
+
+# ---------- 1) 依赖声明：optional（**不是 required**）+ 只写下限 + AFTER ----------
+# 判据跑在**去掉注释**后的文本上（TOML 的注释以 `#` 开头）：否则注释里提一句 `type="required"`
+# 就会让负向断言**假红**（mcmod_experience §3.4 那条"注释既能喂饱正向断言、也能误伤负向断言"）。
+_mods_toml_raw = (REPO / "src/main/resources/META-INF/neoforge.mods.toml").read_text(encoding="utf-8")
+_mods_toml_txt = re.sub(r"(?m)#[^\n]*", "", _mods_toml_raw)
+_dep_blocks = re.findall(r"\[\[dependencies\.[^\]]+\]\](.*?)(?=\[\[|\Z)", _mods_toml_txt, re.S)
+_patchouli_blocks = [b for b in _dep_blocks if re.search(r'modId\s*=\s*"patchouli"', b)]
+if not _patchouli_blocks:
+    _bgbook_bad("bgbook-dep-optional", "neoforge.mods.toml 里没有 patchouli 的依赖声明块")
+else:
+    _dep = _patchouli_blocks[0]
+    if not re.search(r'type\s*=\s*"optional"', _dep):
+        _bgbook_bad("bgbook-dep-optional", "patchouli 依赖不是 optional（没装它就会拒载）")
+    if re.search(r'type\s*=\s*"(required|incompatible)"', _dep):
+        _bgbook_bad("bgbook-dep-optional", "patchouli 依赖被写成了 required / incompatible")
+    if not re.search(r'versionRange\s*=\s*"\[1\.21\.1-93,\)"', _dep):
+        _bgbook_bad("bgbook-dep-versionrange",
+                    "patchouli 的 versionRange 不是只写下限的 [1.21.1-93,)（写了上界 = 它更新一次就拒载）")
+    if not re.search(r'ordering\s*=\s*"AFTER"', _dep):
+        _bgbook_bad("bgbook-dep-ordering",
+                    "patchouli 依赖没有 ordering=AFTER（本模组要往它的体系里登记书 / 类别）")
+
+# ---------- 2) 构建：compileOnly，且**故意没有 localRuntime** ----------
+# 同样跑在去注释后的文本上（注释里提一句 localRuntime 不该让它假红）
+_gradle_txt = strip_comments((REPO / "build.gradle").read_text(encoding="utf-8"))
+if 'compileOnly "maven.modrinth:patchouli:${patchouli_version}"' not in _gradle_txt:
+    _bgbook_bad("bgbook-gradle-compile-only", "build.gradle 没有 patchouli 的 compileOnly 依赖行")
+if re.search(r"localRuntime\s+\"maven\.modrinth:patchouli", _gradle_txt):
+    _bgbook_bad("bgbook-gradle-no-localruntime",
+                "build.gradle 给 patchouli 加了 localRuntime ⇒ dev 环境永远装着它，"
+                "「没装 Patchouli」这一档再也造不出来（本轮的两种环境实测依赖它）")
+if "patchouli_version=" not in (REPO / "gradle.properties").read_text(encoding="utf-8"):
+    _bgbook_bad("bgbook-gradle-version", "gradle.properties 里没有 patchouli_version（版本号必须只有一处真源）")
+
+# ---------- 3) 类加载隔离：全仓只有 patchouli/PatchouliCompat.java 能引用 Patchouli 的类型 ----------
+_ref_files = []
+for _p in sorted(JAVA.rglob("*.java")):
+    if "probe" in _p.parts:  # 探针（临时验证代码）不算生产代码；收尾整块删除
+        continue
+    _txt = strip_comments(_p.read_text(encoding="utf-8"))
+    if "vazkii.patchouli" in _txt or "vazkii/patchouli" in _txt:
+        _ref_files.append(_p)
+if [p.name for p in _ref_files] != ["PatchouliCompat.java"]:
+    _bgbook_bad("bgbook-isolation-single-file",
+                "引用 vazkii.patchouli 的生产代码文件必须**只有** patchouli/PatchouliCompat.java，实际 "
+                + str([str(p.relative_to(REPO)) for p in _ref_files]))
+_compat_path = JAVA / "patchouli" / "PatchouliCompat.java"
+_compat_code = strip_comments(_compat_path.read_text(encoding="utf-8")) if _compat_path.is_file() else ""
+if not _compat_code:
+    _bgbook_bad("bgbook-isolation-single-file", "反空转守护：找不到 patchouli/PatchouliCompat.java")
+else:
+    # 判据只看**方法体**里的使用点：`import vazkii.patchouli.…` 本来就在最上面（那是允许的）
+    _compat_body = "\n".join(
+        _l for _l in _compat_code.splitlines() if not _l.strip().startswith("import "))
+    _guard_at = _compat_body.find("isLoaded()")
+    _api_positions = [i for i in (_compat_body.find("PatchouliAPI"), _compat_body.find("PatchouliSounds"))
+                      if i >= 0]
+    _first_api = min(_api_positions) if _api_positions else -1
+    if _guard_at < 0:
+        _bgbook_bad("bgbook-isolation-guard", "PatchouliCompat 里没有 isLoaded() 早退守卫")
+    elif _first_api >= 0 and _guard_at > _first_api:
+        _bgbook_bad("bgbook-isolation-guard",
+                    "PatchouliCompat 的 isLoaded() 守卫出现在第一次触碰 Patchouli 类型**之后**"
+                    "（顺序反了 = 没装时照样会去解析对方的类）")
+    for _i, _line in enumerate(_compat_code.splitlines()):
+        if _line.strip().startswith("import "):
+            continue
+        if not re.search(r"Patchouli(API|Sounds|DataComponents|Items)", _line):
+            continue
+        if re.match(r"^\s*(public|private|protected|static|final|transient)\s+[\w.<>\[\],\s]+\s+\w+\s*[=;]",
+                    _line):
+            _bgbook_bad("bgbook-isolation-no-field",
+                        "PatchouliCompat 第 %d 行把 Patchouli 类型写进了字段声明（类加载即炸）" % (_i + 1))
+    _static_blk = re.search(r"static\s*\{[^}]*\}", _compat_code)
+    if _static_blk and "Patchouli" in _static_blk.group(0):
+        _bgbook_bad("bgbook-isolation-no-static-init",
+                    "PatchouliCompat 的静态初始化块里出现了 Patchouli 类型（类加载即炸）")
+
+# ---------- 4) 物品注册必须在环境判定之内 ----------
+_module_path = JAVA / "patchouli" / "HandbookModule.java"
+_module_code = strip_comments(_module_path.read_text(encoding="utf-8")) if _module_path.is_file() else ""
+if not _module_code:
+    _bgbook_bad("bgbook-item-guarded", "反空转守护：找不到 patchouli/HandbookModule.java")
+elif 'isLoaded("patchouli")' not in _module_code:
+    _bgbook_bad("bgbook-item-guarded",
+                "HandbookModule 没有用 ModList.get().isLoaded(\"patchouli\") 作为第一道闸")
+_all_items_code = strip_comments((JAVA / "registry" / "AllItems.java").read_text(encoding="utf-8"))
+if "HandbookModule.register(ITEMS)" not in _all_items_code:
+    _bgbook_bad("bgbook-item-guarded", "AllItems 没有通过 HandbookModule.register(ITEMS) 做条件注册")
+if re.search(r'ITEMS\.register\(\s*"' + _HANDBOOK_ITEM + r'"', _all_items_code):
+    _bgbook_bad("bgbook-item-guarded",
+                "AllItems 直接注册了手册物品（绕过了环境判定 ⇒ 没装 Patchouli 时它也会存在）")
+
+# ---------- 5) 创造页：材料分区第一位 ----------
+_cts_code = strip_comments((JAVA / "material" / "CreativeTabSections.java").read_text(encoding="utf-8"))
+_mat_start = _cts_code.find("List<Slot> MATERIALS")
+_mat_end = _cts_code.find(");", _mat_start) if _mat_start >= 0 else -1
+_mat_blk = _cts_code[_mat_start:_mat_end] if _mat_start >= 0 and _mat_end > _mat_start else ""
+if not _mat_blk:
+    _bgbook_bad("bgbook-creative-first", "反空转守护：找不到 CreativeTabSections.MATERIALS 的段列表")
+else:
+    _hb_at = _mat_blk.find("isHandbook")
+    _other_at = _mat_blk.find('"其他材料"')
+    if _hb_at < 0:
+        _bgbook_bad("bgbook-creative-first", "材料分区的段列表里没有手册那一段")
+    elif _other_at >= 0 and _hb_at > _other_at:
+        _bgbook_bad("bgbook-creative-first",
+                    "手册那一段不在材料分区**第一位**（作者要的是「材料位第一」）")
+
+# ---------- 6) 书的数据树：结构 ----------
+if not (_BOOK_ROOT / "book.json").is_file():
+    _bgbook_bad("bgbook-book-json", "缺 patchouli_books/alchemy_handbook/book.json")
+else:
+    _book = json.loads((_BOOK_ROOT / "book.json").read_text(encoding="utf-8"))
+    if _book.get("custom_book_item") != "bettergold:%s" % _HANDBOOK_ITEM:
+        _bgbook_bad("bgbook-book-custom-item",
+                    "book.json 的 custom_book_item 不是 bettergold:alchemy_student_handbook"
+                    "（它是**物品栈字符串**，写错只 warn 后变成 ItemStack.EMPTY = 静默）")
+    if _book.get("dont_generate_book") is not True:
+        _bgbook_bad("bgbook-book-dont-generate",
+                    "book.json 没有 dont_generate_book=true"
+                    "（否则 Patchouli 会另生成自带书物品；custom_book_item 也只在它为真时生效）")
+    for _k in ("name", "landing_text"):
+        _v = _book.get(_k)
+        if not isinstance(_v, str) or not _v.startswith("bettergold.handbook"):
+            _bgbook_bad("bgbook-book-keys", "book.json 的 %s 不是 bettergold.handbook.* 语言键" % _k)
+    if _book.get("use_resource_pack") is not True:
+        _bgbook_bad("bgbook-book-resource-pack",
+                    "book.json 没有 use_resource_pack=true：Patchouli 1.20 起数据包侧的内容加载已被移除"
+                    "（缺了会抛 IllegalArgumentException 并**整本书被跳过**、右键打不开）")
+    if _book.get("i18n") is not True:
+        _bgbook_bad("bgbook-book-i18n", "book.json 没有 i18n=true（类别 / 条目要按语言目录取文件）")
+
+# 布局劈两半：数据包侧**只许**有 book.json；类别 / 条目必须在 assets 侧（负向断言守住本轮抓到的真 bug）
+for _lang_dir in ("zh_cn", "en_us"):
+    _stray = _BOOK_ROOT / _lang_dir
+    if _stray.exists():
+        _bgbook_bad("bgbook-book-split",
+                    "内容仍留在数据包侧 %s：Patchouli 1.20 起内容必须在 assets/，data/ 下只留 book.json"
+                    % _stray.relative_to(REPO))
+if not (_ASSET_ROOT / "zh_cn" / "entries").is_dir() or not (_ASSET_ROOT / "en_us" / "entries").is_dir():
+    _bgbook_bad("bgbook-book-split", "assets 侧缺 zh_cn/entries 或 en_us/entries（布局被搬回 data/ 了？）")
+
+_zh_files = sorted(str(p.relative_to(_ZH_BOOK)).replace("\\", "/")
+                   for p in _ZH_BOOK.rglob("*.json")) if _ZH_BOOK.is_dir() else []
+_en_files = sorted(str(p.relative_to(_EN_BOOK)).replace("\\", "/")
+                   for p in _EN_BOOK.rglob("*.json")) if _EN_BOOK.is_dir() else []
+if _zh_files != _en_files:
+    _bgbook_bad("bgbook-book-bilingual",
+                "zh_cn 与 en_us 的书文件集合不一致（差集 = %s）" % sorted(set(_zh_files) ^ set(_en_files)))
+if len(_zh_files) < 11:
+    _bgbook_bad("bgbook-book-anti-vacuum",
+                "zh_cn 下的书 JSON 只有 %d 个（4 类别 + 7 条目 = 11；数据树被清空会命中这条）"
+                % len(_zh_files))
+
+# 四个类别：顺序（sortnum）= 作者给的顺序，**材料类必须第一**，图标逐一钉住（§3.3）
+_EXPECT_CATEGORIES = [("alchemy_start", "bettergold:raw_sturdygold"),
+                      ("gear_upgrade", "bettergold:sturdygold_sword"),
+                      ("golden_feast", "bettergold:sturdygold_apple"),
+                      ("merchant_antiques", "bettergold:gold_exchange_counter")]
+_cats_now = []
+for _p in sorted((_ZH_BOOK / "categories").glob("*.json")) if (_ZH_BOOK / "categories").is_dir() else []:
+    _c = json.loads(_p.read_text(encoding="utf-8"))
+    _cats_now.append((_c.get("sortnum", 999), _p.stem, _c.get("icon")))
+_cats_now.sort()
+if [(c[1], c[2]) for c in _cats_now] != _EXPECT_CATEGORIES:
+    _bgbook_bad("bgbook-categories",
+                "四个类别（按 sortnum）必须是 %s，实际 %s"
+                % (_EXPECT_CATEGORIES, [(c[1], c[2]) for c in _cats_now]))
+
+# ---------- 7) 条目 / 页面：页数从"金属套数"现算 + 配方引用不许死链 + 每页 ≤ 2 个配方 ----------
+_KNOWN_PAGE_TYPES = {"patchouli:text", "patchouli:crafting", "patchouli:smithing", "patchouli:spotlight",
+                     "patchouli:smelting", "patchouli:blasting", "patchouli:smoking", "patchouli:campfire",
+                     "patchouli:stonecutting", "patchouli:image", "patchouli:empty", "patchouli:link",
+                     "patchouli:relations", "patchouli:entity", "patchouli:quest", "patchouli:multiblock",
+                     "patchouli:template"}
+_EXPECT_TOOL_PAGES = 1 + len(ALL_METALS) * 3   # 1 页开场文字 + 六件器具 ÷ 每页 2 个 = 3 页/套
+_EXPECT_ARMOR_PAGES = 1 + len(ALL_METALS) * 2  # 1 页开场文字 + 四件盔甲 ÷ 每页 2 个 = 2 页/套
+_entries_now = {}
+for _p in sorted((_ZH_BOOK / "entries").glob("*.json")) if (_ZH_BOOK / "entries").is_dir() else []:
+    _entries_now[_p.stem] = json.loads(_p.read_text(encoding="utf-8"))
+if len(_entries_now) != 7:
+    _bgbook_bad("bgbook-entry-count",
+                "条目数应为 7（骨架：材料 2 / 装备 2 / 食物 1 / 商人古董 2），实际 %d" % len(_entries_now))
+for _entry, _expect in (("tools_per_family", _EXPECT_TOOL_PAGES), ("armor_per_family", _EXPECT_ARMOR_PAGES)):
+    _got = len(_entries_now.get(_entry, {}).get("pages", []))
+    if _got != _expect:
+        _bgbook_bad("bgbook-pages-per-family",
+                    "条目 %s 的页数 %d != 金属套数 × %d = %d"
+                    "（每页 2 个配方是 Patchouli 的结构上限；加金属时这里与生成器一起红）"
+                    % (_entry, _got, _expect // len(ALL_METALS), _expect))
+_valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
+_total_pages = 0
+_recipe_refs = set()
+for _name, _e in sorted(_entries_now.items()):
+    if _e.get("category") not in _valid_categories:
+        _bgbook_bad("bgbook-entry-category",
+                    "条目 %s 的 category 不是四个类别之一：%s" % (_name, _e.get("category")))
+    if not str(_e.get("name", "")).startswith("bettergold.handbook.entry."):
+        _bgbook_bad("bgbook-entry-name", "条目 %s 的 name 不是 bettergold.handbook.entry.* 语言键" % _name)
+    for _pg in _e.get("pages", []):
+        _total_pages += 1
+        if _pg.get("type") not in _KNOWN_PAGE_TYPES:
+            _bgbook_bad("bgbook-page-type",
+                        "条目 %s 用了未知页面类型 %s" % (_name, _pg.get("type")))
+        for _overflow in ("recipe3", "recipe4", "recipes"):
+            if _overflow in _pg:
+                _bgbook_bad("bgbook-page-recipe-cap",
+                            "条目 %s 的页里出现 %s：Patchouli 的配方页**只有** recipe / recipe2 两个槽"
+                            "（写别的键不会报错，只会被忽略 ⇒ 配方静默不显示）" % (_name, _overflow))
+        for _rk in ("recipe", "recipe2"):
+            if _rk in _pg:
+                _recipe_refs.add(_pg[_rk])
+if _total_pages < 60:
+    _bgbook_bad("bgbook-anti-vacuum",
+                "手册总页数只有 %d（骨架应 ≥ 60 页；数据树被清空会命中这条）" % _total_pages)
+_missing_recipe_files = sorted(
+    r for r in _recipe_refs
+    if not (_DATA / "bettergold" / "recipe" / (r.split(":", 1)[1] + ".json")).is_file())
+if _missing_recipe_files:
+    _bgbook_bad("bgbook-recipe-refs",
+                "手册引用了**不存在的配方**（死链，游戏里那一页会空掉）：%s" % _missing_recipe_files[:5])
+if not _recipe_refs:
+    _bgbook_bad("bgbook-recipe-refs", "反空转守护：一页配方页都没解析到（配方引用检查会假绿）")
+
+# ---------- 8) 语言键：书 JSON 里引用的每一个键都必须在 zh_cn / en_us 里存在 ----------
+_LANG_KEY_RE = re.compile(r"^bettergold\.handbook\.[a-z0-9_.]+$")
+
+
+def _collect_lang_keys(node, out):
+    if isinstance(node, dict):
+        for _k, _v in node.items():
+            if _k in ("name", "description", "landing_text", "subtitle", "title", "text") \
+                    and isinstance(_v, str) and _LANG_KEY_RE.match(_v):
+                out.add(_v)
+            _collect_lang_keys(_v, out)
+    elif isinstance(node, list):
+        for _v in node:
+            _collect_lang_keys(_v, out)
+
+
+_referenced_keys = set()
+for _root_for_keys in (_BOOK_ROOT, _ASSET_ROOT):
+    for _p in sorted(_root_for_keys.rglob("*.json")) if _root_for_keys.is_dir() else []:
+        _collect_lang_keys(json.loads(_p.read_text(encoding="utf-8")), _referenced_keys)
+_referenced_keys.add("item.bettergold.%s" % _HANDBOOK_ITEM)
+for _key in sorted(_referenced_keys):
+    if _key not in zh or _key not in en:
+        _bgbook_bad("bgbook-lang-keys", "手册引用的语言键缺中文或英文：%s" % _key)
+if len(_referenced_keys) < 25:
+    _bgbook_bad("bgbook-lang-anti-vacuum",
+                "从书 JSON 里解析到的手册语言键只有 %d 个（解析失败 / 键被删会命中这条）"
+                % len(_referenced_keys))
+
+# ---------- 9) 图标 + 模型（本轮唯一新增的贴图，按作者素材哈希钉住） ----------
+import hashlib  # noqa: E402  （只在本节用到，放这里免得动文件头）
+
+_icon_path = _RES / "assets" / "bettergold" / "textures" / "item" / ("%s.png" % _HANDBOOK_ITEM)
+if not _icon_path.is_file():
+    _bgbook_bad("bgbook-icon", "缺手册物品图标 textures/item/%s.png" % _HANDBOOK_ITEM)
+else:
+    _icon_bytes = _icon_path.read_bytes()
+    _iw = int.from_bytes(_icon_bytes[16:20], "big")
+    _ih = int.from_bytes(_icon_bytes[20:24], "big")
+    _isha = hashlib.sha256(_icon_bytes).hexdigest()
+    if (_iw, _ih) != (16, 16):
+        _bgbook_bad("bgbook-icon", "手册图标不是 16×16（实际 %d x %d）" % (_iw, _ih))
+    if _isha != "c4d9e4e7e91bca9dfbcb8886db4578b345e913cbe47e74a0779494d7787bee24":
+        _bgbook_bad("bgbook-icon",
+                    "手册图标哈希与作者给的素材不一致（这是本轮唯一被新增的贴图，钉哈希防替换）")
+_model_path = _RES / "assets" / "bettergold" / "models" / "item" / ("%s.json" % _HANDBOOK_ITEM)
+if not _model_path.is_file():
+    _bgbook_bad("bgbook-model", "缺手册物品模型 models/item/%s.json（客户端会紫黑格）" % _HANDBOOK_ITEM)
+else:
+    _model = json.loads(_model_path.read_text(encoding="utf-8"))
+    if _model.get("parent") != "minecraft:item/generated" or "overrides" in _model:
+        _bgbook_bad("bgbook-model",
+                    "手册模型不是 item/generated 单层（纯功能物品不许有 override / 谓词）")
+
+# ---------- 10) 文档侧：口径必须落档（含"每页 2 个配方是 Patchouli 的结构上限"） ----------
+_spec16_book = (REPO / "docs" / "1.6-规格.md").read_text(encoding="utf-8")
+for _needle, _tag, _why in (
+        ("bg-book", "bgbook-doc", "docs/1.6-规格.md 里没有 bg-book 节"),
+        ("Patchouli 的结构上限", "bgbook-doc-page-cap",
+         "docs/1.6-规格.md 没写明「每页 2 个配方是 Patchouli 的结构上限」"),
+        ("故意不加 localRuntime", "bgbook-doc-compile-only",
+         "docs/1.6-规格.md 没写明「故意不加 localRuntime」这条口径")):
+    if _needle not in _spec16_book:
+        _bgbook_bad(_tag, _why)
 
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
+print(f"bg-book 帕秋莉手册问题: {len(bgbook_problems)} {bgbook_problems[:8]}"
+      f"（手册 {len(_entries_now)} 条目 / {_total_pages} 页 / {len(_recipe_refs)} 条配方引用）")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
-               or bg16_problems
+               or bg16_problems or bgbook_problems
                or symmetric_problems or beacon_problems) else 0)

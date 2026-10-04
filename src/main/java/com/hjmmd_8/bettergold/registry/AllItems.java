@@ -344,6 +344,20 @@ public class AllItems {
     public static final DeferredItem<Item> GOLDEN_COWRIE_MOLD = ITEMS.register("golden_cowrie_mold",
             () -> new Item(new Item.Properties().durability(64)));
 
+    // ==================== 新生代炼金术学员手册（bg-book，1.6） ====================
+    // 用途分类：纯功能物品（不是中间物、不是成品装备）—— 无属性、无耐久、堆叠 1、
+    // 不进任何附魔类别标签（enchantable 系列）、模型 item/generated 单层。
+    //
+    // ★ 条件注册（口径 B，与农夫乐事那套"总是注册、功能软依赖"相反）：
+    //   装了 Patchouli ⇒ 该物品存在；没装 ⇒ **不注册**（作者 2026-10-04 裁定："没装手册进不去"，
+    //   那一格根本不存在，而不是"存在但打不开"）。判定点在类初始化期（落在 @Mod 构造器之内、
+    //   RegisterEvent 派发之前），所以注册表条目数会随环境变化 —— 本仓创造页按 id/位次排、
+    //   不按索引读物品，因此不会被打乱（见 docs/1.6-规格.md 的 bg-book 节）。
+    //   本字段在"没装"时为 null；没有任何代码对它解引用（创造页用的是 instanceof 判定）。
+    @org.jetbrains.annotations.Nullable
+    public static final DeferredItem<Item> ALCHEMY_STUDENT_HANDBOOK =
+            com.hjmmd_8.bettergold.patchouli.HandbookModule.register(ITEMS);
+
     // ==================== 万坚金升级模板（1.4 起由金属族注册，这里只留旧名字的别名） ====================
 
     /** 万坚金升级模板：完全参照原版下界合金升级模板（SmithingTemplateItem），语言键与迁移前一致 */

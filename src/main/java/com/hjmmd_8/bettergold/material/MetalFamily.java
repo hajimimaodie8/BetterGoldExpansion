@@ -225,6 +225,54 @@ public final class MetalFamily {
         return BY_BLOCK.get(block);
     }
 
+    /**
+     * <b>这个物品是不是某族的核心材料（{@code coreItem}）</b>—— 单独一条查表，
+     * <b>不改动</b> {@link #of(Item)} 的语义。
+     *
+     * <p>为什么必须单独查：核心材料（{@code MetalSpecialItems} / {@code AllItems} 注册的那些，
+     * 如闪耀藤条 / 集束回响碎片 / 炽焰棒）<b>不在</b>任何族的 {@code allItems} 里，
+     * 所以它们压根没进 {@link #BY_ITEM} ⇒ {@link #of(Item)} 对它们恒为 {@code null}
+     * （bg-16 第一轮探针实测：{@code MetalFamily.of(new ItemStack(glittering_vine)) = null}）。
+     * 八族的核心材料一共 8 件，遍历一次即可（不会被热路径上的调用次数放大成问题）。</p>
+     */
+    public static @Nullable MetalFamily coreItemOwner(Item item) {
+        ensureIndex();
+        for (MetalFamily family : BY_ID.values()) {
+            Supplier<Item> core = family.coreItem;
+            if (core != null && core.get() == item) {
+                return family;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * <b>免疫仙人掌的完整判据</b>（§3.8 的「物品形式」那一半；装备耐久那一半仍走
+     * {@code MetalEvents.onArmorHurtCactusImmunity} 的 {@code family.cactusImmune}，两者落点不同、不要合并）。
+     *
+     * <p>两条分支：</p>
+     * <ol>
+     *   <li><b>家族索引命中</b>（锭 / 粒 / 原料 / 建材 / 模板 / 器具 / 盔甲 / 五类武器）
+     *       ⇒ 看该族的 {@link #cactusImmune} 旗标（现行只有树棘金为真）；</li>
+     *   <li><b>是某族的核心材料</b>（{@link #coreItemOwner}，八族共 8 件）
+     *       ⇒ <b>一律免疫</b>。</li>
+     * </ol>
+     *
+     * <p>⚠ <b>第 2 条是作者 2026-10-04 的裁定</b>（原话范围：<i>「核心材料也要免疫仙人掌」</i>、
+     * <i>「范围＝八套金属的 coreItem 全部」</i>），**与第 1 条的旗标无关**：
+     * 幽咆金的 {@code cactusImmune} 仍为 {@code false}（它的锭 / 建材 / 装备照旧不免疫），
+     * 但它那件核心材料（集束回响碎片）按本条免疫。要改成「核心材料也看该族旗标」
+     * 只需把这里的 {@code coreItemOwner(item) != null} 换成
+     * {@code owner != null && owner.cactusImmune}（一处一行）。</p>
+     */
+    public static boolean isCactusImmune(Item item) {
+        MetalFamily indexed = of(item);
+        if (indexed != null) {
+            return indexed.cactusImmune;
+        }
+        return coreItemOwner(item) != null;
+    }
+
     /** 所有已注册的金属族（按注册顺序） */
     public static List<MetalFamily> all() {
         return List.copyOf(BY_ID.values());

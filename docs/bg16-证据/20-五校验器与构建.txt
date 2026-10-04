@@ -1,0 +1,76 @@
+# bg-16 / bg-17 · 裁定落实轮：构建、五校验器、探针清理与纪律证据
+
+> **本轮四件事**：① 免疫仙人掌判据扩展到八族 coreItem；② 金属弩蓄力真做成 20 tick（mixin）；
+> ③ `AGENTS.md` 的 `mod_version` 1.5.0 → 1.6.0；④ 把探针设计（绝对 tick 表 + 分组断言清单）写进
+> `docs/1.6-规格.md` §9.4。
+> **未动**：贴图 / 模型 / 语言键 / 数值 / 配方 / 标签 / 注册 id；工作树里已提交的成果（HEAD `b99e758`）；
+> `开工需求\` 只读；**没有开始 `bg-book`**。
+
+---
+
+## 一、B 级构建（命令 + `BUILD SUCCESSFUL` + 退出码）
+
+| 命令 | 结果 |
+|---|---|
+| `.\gradlew.bat compileJava` | **BUILD SUCCESSFUL**（`exit 0`） |
+| `.\gradlew.bat runData` | **BUILD SUCCESSFUL**（`exit 0`；兼作 **mixin 配置冒烟**——配置里那三个列表键合法、无 `MixinApplyError`） |
+| `.\gradlew.bat processResources jar --rerun-tasks` | **BUILD SUCCESSFUL**（`exit 0`）；产物 `build/libs/bettergold-1.6.0.jar` = **1,260,445 B**（上一轮 1,259,158 B；增量 = 新的 mixin 类 + `bettergold.mixins.json` 的那一行） |
+| `.\gradlew.bat build`（上一轮同口径） | 本轮未重复跑（`compileJava` + `runData` + `jar` 三段已覆盖改动面；`build` 只是这三段的聚合） |
+
+## 二、五校验器（全部 `exit 0`）
+
+| 校验器 | 退出码 | 关键读数 |
+|---|---|---|
+| `python tools\asset-generator\validate_metal_assets.py` | **0** | 八族逐族 `item=29 block=10 armor=2`；贴图/模型缺件 0；`mixin 相关=0`；授权贴图 `golden_trident_blank` 白名单 0 问题 |
+| `python tools\asset-generator\validate_metal_data.py` | **0** | 语言键 307 / 缺中英 0；`bg-16 两处修正（横幅落点 / 安抚对玩家）问题: 0`（新增的 **6b 免疫仙人掌-coreItem 段** 与**改写后的弩口径段**都在这一段计数里） |
+| `python tools\asset-generator\validate_trim_assets.py` | **0** | 9 个纹饰材质 `item_model_index` 唯一、全在原版 0.1~1.0 之外 |
+| `python tools\asset-generator\check_jar_clean.py` | **0** | 产物 = `bettergold-1.6.0.jar`（1,260,445 B，按 `gradle.properties` 的 `mod_version` 现算）；jar 内 `*Probe*` 路径 **0**、含 `halt` 字节的 class **0**、含 `BG-PROBE` 常量的 class **0**；文件总数 **2261** |
+| `python tools\asset-generator\check_forced_chunks.py`（默认 `run/world/data/chunks.dat`） | **0** | `data.Forced = []`、`length = 0` |
+
+> ⚠ 一条**用法更正**（写给下一轮）：`check_forced_chunks.py` 的参数是 **`chunks.dat` 的路径**（默认 `run/world/data/chunks.dat`），
+> 传**目录** `run/world` 会 `PermissionError: [Errno 13] Permission denied`（Windows 下把目录当文件打开）。
+> 上一轮证据表里写的「（`run/world`）」是简写，不是真的传目录。
+
+## 三、探针清理与纪律（**整块删除**，不是注释掉）
+
+| 检查 | 命令 | 结果 |
+|---|---|---|
+| 服务端探针类已删 | 删除 `src/main/java/com/hjmmd_8/bettergold/probe/`（整目录） | 目录不存在 = `False` |
+| 客户端探针类已删 | 同上（两个探针在同一目录） | 同上 |
+| 源码零残留 | `Get-ChildItem src -Recurse -File \| Select-String 'BG17PROBE\|BG17CPROBE\|Bg17Probe\|Bg17ClientProbe\|bg17'` | **0 hits** |
+| 开关文件已删 | `run/bg17-probe.enabled`、`run/bg17c-probe.enabled` | 两个都不存在 |
+| 生产代码无 `halt(` | `Select-String 'halt\(' src/**/*.java` | **0**（关服只发生在探针里：服务端探针在 t=240 打 `SUMMARY` 后**只调一次** `server.halt(false)`，客户端探针**从不** `halt`，退出走 `Minecraft#stop()`） |
+| 探针世界已删 | `run/bg17probe`（专用服务端侧）、`run/saves/bg17cprobe`（客户端副本） | 两个都不存在；`run/saves/` 下只剩作者的 `新的世界` |
+| 作者存档**未打开** | `run/saves/新的世界` 29 个文件、最大 mtime = **2026-10-02 14:29:21** | 与上一轮留档一致 |
+| `server.properties` 逐字节复原 | 跑测前备份 → 收尾原样复制回来；SHA256 比对 | `12B360E69DB4B3126BA9F74E6AB59DF2F25BA1A22AA2C12F38AE05D1E18AE20A` **前后一致**（`level-name=world`） |
+| 客户端启动参数临时改动已复原 | `build/moddev/clientRunProgramArgs.txt`：跑测前备份 → 追加 `--quickPlayPath/--quickPlaySingleplayer` → 收尾原样复制回来；SHA256 比对 | `A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB` **前后一致** |
+| forceload 双向 0 | 运行期：探针 t=20 加 9 块、t=240 逐块释放并断言 `forceload_runtime_back_to_zero`（`forced before release=9 after=0` PASS）；存盘侧：探针世界整目录删除 + `run/world` 实测 `data.Forced = []` | 双向 0 |
+
+## 四、mixin **确实加载了**的日志证据（本轮的静默坑）
+
+第一版把 `CrossbowChargeDurationMixin` 写进 `bettergold.mixins.json` 的 **`"common"`** 键 ⇒ Sponge Mixin **不认识这个键**、
+整条被静默忽略：编译全绿、`runData` 全绿、`required: true` 也不报错，而 A 级实测里
+`CrossbowItem.getChargeDuration(本模组弩)` 仍然是 **25**（6 条 FAIL）。
+
+改成 **`"mixins"`** 键之后，同一份探针 **33 PASS / 0 FAIL**，并且日志里出现了这一行（**这就是"加载了"的唯一判据**）：
+
+```
+[20:04:14] [pool-9-thread-1/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+```
+
+⇒ 关卡把"类名必须在 `mixins` 列表里、且**不在** `client` / `server` 里"钉成断言
+（`bg16-crossbow-mixin-listed` / `bg16-crossbow-mixin-side`），扰动用例 **X5b** 专门复现"写成 `common`"这个形状（必红）。
+
+## 五、诚实边界（本轮没做 / 没验）
+
+1. **`gradlew build` 未单独重跑**（见第一节注）；`build` 与已跑的三段是同一批任务。
+2. **权威 `i` 的取法**依赖"释放包在实体 `updateUsingItem` 之前被处理"这一顺序：
+   本轮 12/12 用例里它与客户端逐 tick 观察值**逐个相等**，但**没有**做包级日志取证（没在
+   `ServerGamePacketListenerImpl#handlePlayerAction` 打计数）——若将来这里出现 ±1 的争议，先补那一条。
+3. **本模组那条 `pull` 谓词未被钳位**：`i = 21/22` 时读到 **1.05 / 1.10**（>1）。模型 override 判据是"≥ 1.0"，
+   所以行为正确；本轮**按派单范围不修**（不在四件事里）。
+4. **第一轮客户端探针（mixin 未加载那一版）的两个 vanilla 用例**（`vanilla_t22/t23`）的"权威 i"读数分别是 15 / 30，
+   与客户端 `i` 不符（探针自己的服务端捕获在用例切换边界上取样偏了）；**第二轮（修好之后）12 个用例的权威 i 与客户端 i 全部相等**，
+   本节所有结论都取第二轮。第一轮日志整份留档（`build/bg17-rc-run1.out`）作为"mixin 未加载"的负向对照。
+5. **未跑 `runServer` 之外的世界行为回归**：本轮只验了任务 1/2 的 A 级（仙人掌核心材料 + 弩 19/20），
+   上一轮那 42 条世界行为断言**未重跑**（本轮没有触碰那些路径）。

@@ -1,0 +1,37 @@
+{
+  "name": "bettergold.handbook.entry.golden_feast",
+  "category": "bettergold:golden_feast",
+  "icon": "bettergold:sturdygold_apple",
+  "sortnum": 0,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.golden_feast"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:sturdygold_apple"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:sturdygold_carrot"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:sturdygold_ice_cream"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:sturdygold_chocolate_bar"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:sturdygold_brewed_hot_cocoa"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:golden_chocolate_bar"
+    }
+  ]
+}

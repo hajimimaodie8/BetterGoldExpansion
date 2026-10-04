@@ -47,12 +47,22 @@ public final class MetalWeapons {
     /**
      * 弩：本模组自己声称的蓄力秒数（规格 12.2「蓄力时间 1 秒」）。
      *
-     * <p>⚠ <b>它不等于装载门槛</b>：{@code CrossbowItem#releaseUsing} 的「装满」判定除以的是
-     * <b>static</b> 的 {@code CrossbowItem.getChargeDuration}（基础 1.25 秒 = <b>25 tick</b>），
-     * 而 {@code CrossbowItem#getUseDuration} 是 {@code getChargeDuration + 3}。本常量只出现在
+     * <p><b>✅ 现行口径（bg-16 裁定落实轮，2026-10-04 · 作者裁定「真改」）—— 本值<b>就是</b>装载门槛。</b>
+     * 新增的 {@code mixin.CrossbowChargeDurationMixin}（登记在 {@code bettergold.mixins.json} 的
+     * {@code common} 列表）把 <b>static</b> 的 {@code CrossbowItem.getChargeDuration} 对<b>本模组的弩</b>
+     * 换成 {@link MetalCrossbowItem#chargeDuration}（对原版弩 / 任何第三方弩<b>原样放回</b>）
+     * ⇒ 分母 = <b>20</b>、按住 <b>19 tick 装不上、20 tick 装上</b>；
+     * 客户端拉弓谓词本来就用这个分母，三处（装载 / 举着时长上限 / 动画）天然同步。
+     * A 级读数与"原版弩仍 25"的对照见 {@code docs/bg16-证据/18}。</p>
+     *
+     * <p><b>⚠ 以下是被本裁定取代的上一轮记录（原文保留，不要再照它推理）</b>：
+     * 「它不等于装载门槛：{@code CrossbowItem#releaseUsing} 的「装满」判定除以的是 <b>static</b> 的
+     * {@code CrossbowItem.getChargeDuration}（基础 1.25 秒 = <b>25 tick</b>），而
+     * {@code CrossbowItem#getUseDuration} 是 {@code getChargeDuration + 3}。本常量只出现在
      * {@link MetalCrossbowItem#chargeDuration} 里，后者又只被 {@code getUseDuration} 与客户端拉弓谓词
-     * 用到 ⇒ 实际装满仍需按住 ≥ 25 tick。A 级依据与更正见
-     * {@code docs/bg16-证据/12-新发现-真问题.md} 第二节、{@code docs/1.5-规格.md} §12.2「⚠ 更正」块。</p>
+     * 用到 ⇒ 实际装满仍需按住 ≥ 25 tick。」
+     * ——那段在<b>当时（mixin 之前）是对的</b>，现在被上面这条裁定取代；A 级依据见
+     * {@code docs/bg16-证据/12-新发现-真问题.md} 第二节与 {@code docs/1.5-规格.md} §12.2 的两个「⚠」块。</p>
      */
     public static final float CROSSBOW_CHARGE_SECONDS = 1.0F;
 
@@ -173,7 +183,17 @@ public final class MetalWeapons {
     /**
      * 弩：箭矢弹速 {@value #CROSSBOW_ARROW_POWER}（原版 3.15）。
      *
-     * <h2>⚠ 「蓄力 20 tick」已被 A 级实测推翻 —— 实际沿用原版的 25 tick 分母（bg-16 收口轮）</h2>
+     * <h2>✅ 现行口径（bg-16 裁定落实轮，2026-10-04 · 作者裁定「**真改**」）</h2>
+     *
+     * <p>蓄力<b>真的</b>是 20 tick：新增的 {@code mixin.CrossbowChargeDurationMixin}（登记在
+     * {@code bettergold.mixins.json} 的 {@code common} 列表）把 <b>static</b> 的
+     * {@code CrossbowItem.getChargeDuration} 对<b>本模组的弩</b>换成 {@link #chargeDuration}，
+     * 对原版弩与任何第三方弩<b>原样放回</b>。⇒ 装载门槛 = 20 tick（按住 <b>19 装不上、20 装上</b>），
+     * 与 {@link #getUseDuration}（= 23，只决定「举着的时长上限」）以及客户端拉弓谓词共用同一个分母，
+     * 三处天然同步。A 级读数（含「原版弩仍 25」的对照）见 {@code docs/bg16-证据/18}。</p>
+     *
+     * <h2>⚠ 以下这段是<b>已被上面那条裁定取代</b>的上一轮记录（原文保留，不要再照它推理）
+     * —— 「蓄力 20 tick」曾被 A 级实测推翻，当时口径 = 实际沿用原版的 25 tick 分母（bg-16 收口轮）</h2>
      *
      * <p><b>旧推断（留档，不要照它推理）</b>：规格原写「弩蓄力 1 秒 = 20 tick」，
      * 当时的实现说明是「{@code getUseDuration} 从 28 降到 23，而 {@code releaseUsing} 里的
@@ -196,6 +216,12 @@ public final class MetalWeapons {
      * 要做成真的 20 tick，必须 mixin 改那个 static 常量、或整段重写装载判定 ——
      * 属作者另行裁定的事项；<b>本轮按「实际为准 + 文档更正」处理：代码不动</b>
      * （{@code docs/1.5-规格.md} §12.2 与 {@code docs/1.6-规格.md} §6.4/§7.4 已就地标注，原文保留）。</p>
+     *
+     * <p><b>→ 裁定已到（2026-10-04，bg-16 裁定落实轮）：作者选了「真改」</b>，
+     * 于是上面这段描述的「25 tick 门槛 + 代码不动」<b>不再成立</b>；
+     * 落点就是本类 javadoc 顶部那条：{@code mixin.CrossbowChargeDurationMixin} 只对本模组的弩返回 20。
+     * <b>这段原文一字未删</b>，因为它解释了"为什么必须动 mixin 而不能只覆写 {@code getUseDuration}"
+     * —— 那仍然是本落点的全部理由。{@code getUseDuration} 依然<b>不</b>是门槛（只是举着时长上限）。</p>
      *
      * <p>{@link #getUseDuration} 的实现要点（未变）：必须走 {@code super.getUseDuration()} 再用我们的时长替换基础秒数 ——
      * {@code getChargeDuration} 是 static（不能覆写），但它开头的
@@ -231,11 +257,19 @@ public final class MetalWeapons {
         }
 
         /**
-         * 本模组自己声称的蓄力时长（tick）：基础 {@value #CROSSBOW_CHARGE_SECONDS} 秒，快速装填每级 −0.25 秒。
+         * 本模组的蓄力时长（tick）：基础 {@value #CROSSBOW_CHARGE_SECONDS} 秒，快速装填每级 −0.25 秒。
          *
-         * <p>⚠ <b>它只落在两处</b>：{@link #getUseDuration}（= 本值 + 3 ⇒ 23）与客户端的拉弓谓词分母。
-         * 装载门槛读的是 <b>static</b> 的 {@code CrossbowItem.getChargeDuration}（原版 25 tick，不受本方法影响）
-         * ⇒ 按住本值（20 tick）**装不上**，实际要 ≥ 25 tick。见本类 javadoc 的「⚠ 已被 A 级实测推翻」一节。</p>
+         * <p><b>✅ 现行口径（bg-16 裁定落实轮，2026-10-04）</b>：本方法<b>就是装载门槛的来源</b> ——
+         * {@code mixin.CrossbowChargeDurationMixin} 把 <b>static</b> 的
+         * {@code CrossbowItem.getChargeDuration} 对本模组的弩换成本方法（其内部就是原版那条
+         * {@code EnchantmentHelper.modifyCrossbowChargingTime} 链，只把基础 1.25 秒换成 1.0 秒），
+         * 所以它同时决定三处：**装载门槛** / {@link #getUseDuration}（= 本值 + 3 ⇒ 23，只管「举着的时长上限」）
+         * / 客户端拉弓谓词分母。</p>
+         *
+         * <p>⚠ <b>以下是被取代的上一轮记录（原文保留）</b>：「它只落在两处：{@link #getUseDuration}
+         * （= 本值 + 3 ⇒ 23）与客户端的拉弓谓词分母。<b>装载门槛读的是 <b>static</b> 的
+         * {@code CrossbowItem.getChargeDuration}（原版 25 tick，不受本方法影响）
+         * ⇒ 按住本值（20 tick）装不上，实际要 ≥ 25 tick。</b>」—— 那在 mixin 落地前是对的。</p>
          */
         public static int chargeDuration(ItemStack stack, LivingEntity shooter) {
             float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, CROSSBOW_CHARGE_SECONDS);
@@ -243,6 +277,7 @@ public final class MetalWeapons {
         }
 
         @Override
+        // note: releaseUsing(ItemStack, Level, LivingEntity, int) is NOT overridden here
         public int getUseDuration(ItemStack stack, LivingEntity entity) {
             return chargeDuration(stack, entity) + 3;
         }

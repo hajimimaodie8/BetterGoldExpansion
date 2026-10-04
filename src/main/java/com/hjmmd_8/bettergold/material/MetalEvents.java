@@ -620,6 +620,13 @@ public final class MetalEvents {
      * <p>落点 = NeoForge 现成的 {@code EntityInvulnerabilityCheckEvent}（<b>不需要 mixin</b>）：
      * {@code Entity#isInvulnerableTo} 已被 NeoForge 改成走 {@code CommonHooks.isEntityInvulnerableTo}，
      * 而 {@code ItemEntity#hurt} 的<b>第一句</b>就是 {@code isInvulnerableTo(source)} ⇒ 这里置真即可。</p>
+     *
+     * <p><b>判据收在 {@link MetalFamily#isCactusImmune(Item)} 一处</b>（bg-16 裁定落实轮，2026-10-04）：
+     * 它同时覆盖「家族索引命中 ⇒ 看该族旗标」与「是该族核心材料 ⇒ 免疫」两条分支 ——
+     * 后者是作者本轮的裁定（核心材料也要免疫仙人掌，范围 = 八族 coreItem 全部）。
+     * 原先这里写的是 {@code MetalFamily.of(...) != null && family.cactusImmune}，
+     * 而核心材料不进家族索引（{@code of()} 对它恒 {@code null}）⇒ 闪耀藤条这类核心材料**不免疫**，
+     * 那正是本轮要修的行为。</p>
      */
     @SubscribeEvent
     public static void onCactusItemImmunity(
@@ -630,8 +637,7 @@ public final class MetalEvents {
         if (!isCactus(event.getSource())) {
             return;
         }
-        MetalFamily family = MetalFamily.of(itemEntity.getItem());
-        if (family != null && family.cactusImmune) {
+        if (MetalFamily.isCactusImmune(itemEntity.getItem().getItem())) {
             event.setInvulnerable(true);
         }
     }

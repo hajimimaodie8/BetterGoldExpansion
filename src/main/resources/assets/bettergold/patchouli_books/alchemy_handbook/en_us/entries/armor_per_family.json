@@ -1,0 +1,109 @@
+{
+  "name": "bettergold.handbook.entry.armor_per_family",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:sturdygold_chestplate",
+  "sortnum": 1,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.armor"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_helmet",
+      "recipe2": "bettergold:smithing_flamegold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_leggings",
+      "recipe2": "bettergold:smithing_flamegold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_helmet",
+      "recipe2": "bettergold:smithing_sturdygold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_leggings",
+      "recipe2": "bettergold:smithing_sturdygold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_helmet",
+      "recipe2": "bettergold:smithing_thornsgold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_leggings",
+      "recipe2": "bettergold:smithing_thornsgold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_echogold_helmet",
+      "recipe2": "bettergold:smithing_echogold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_echogold_leggings",
+      "recipe2": "bettergold:smithing_echogold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_indigoseagold_helmet",
+      "recipe2": "bettergold:smithing_indigoseagold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_indigoseagold_leggings",
+      "recipe2": "bettergold:smithing_indigoseagold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_voodoogold_helmet",
+      "recipe2": "bettergold:smithing_voodoogold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_voodoogold_leggings",
+      "recipe2": "bettergold:smithing_voodoogold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thundergold_helmet",
+      "recipe2": "bettergold:smithing_thundergold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thundergold_leggings",
+      "recipe2": "bettergold:smithing_thundergold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_helmet",
+      "recipe2": "bettergold:smithing_illusiongold_chestplate",
+      "title": "bettergold.handbook.page.armor_1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_leggings",
+      "recipe2": "bettergold:smithing_illusiongold_boots",
+      "title": "bettergold.handbook.page.armor_2"
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+== compileJava ==
+(see below) BUILD SUCCESSFUL
+
+== runData ==
+[20:54:22] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23190!/data/.mcassetsroot' uses unexpected schema
+[20:54:23] [main/INFO] [minecraft/DataGenerator]: All providers took: 0 ms
+[20:54:23] [main/INFO] [minecraft/HashCache]: Caching: total files: 0, old count: 0, new count: 1, removed stale: 0, written: 0
+BUILD SUCCESSFUL in 19s
+7 actionable tasks: 1 executed, 1 from cache, 5 up-to-date
+Configuration cache entry stored.
+
+== processResources jar --rerun-tasks ==
+> Task :processResources
+> Task :classes
+> Task :jar
+BUILD SUCCESSFUL in 9s
+4 actionable tasks: 4 executed
+Configuration cache entry stored.
+
+== jar listing (handbook entries) ==
+data/bettergold/patchouli_books/alchemy_handbook/book.json  294
+assets/bettergold/patchouli_books/alchemy_handbook/{zh_cn,en_us}/**  22 files
+assets/bettergold/textures/item/alchemy_student_handbook.png  512
+assets/bettergold/models/item/alchemy_student_handbook.json  121
+
+== five validators ==
+﻿=== five validators (bg-book round) ===
+
+### python tools\asset-generator\validate_metal_assets.py
+检查 JSON: 595 个
+解析失败: 0
+贴图缺失: 0
+专属材料缺件: 0
+武器贴图/模型缺件: 0 []
+胚底贴图/模型问题: 0 []
+盾牌/三叉戟实体贴图尺寸不符: 0 []
+三叉戟三模型结构问题: 0 []
+mixin 接线问题: 0 []
+flamegold    item=29  block=10  armor=2
+voodoogold   item=29  block=10  armor=2
+thundergold  item=29  block=10  armor=2
+indigoseagold item=29  block=10  armor=2
+illusiongold item=29  block=10  armor=2
+thornsgold   item=29  block=10  armor=2
+echogold     item=29  block=10  armor=2
+bg-16 授权贴图（golden_trident_blank）问题: 0 []
+exit=0
+
+### python tools\asset-generator\validate_metal_data.py
+检查语言键 307 个（8 套金属的全部物品与方块 + 5 件胚底）
+缺中文: 0 []
+缺英文: 0 []
+缺战利品表: 0 []
+小刀标签缺成员: 0 []
+武器附魔标签缺成员/多余胚底: 0 []
+bg-15w 续工轮（tooltip 键 + 双向条件配方 + 胚底条件可见）问题: 0 []
+装备分区顺序（§9.1 更正 §8.1）问题: 0 []
+游泳速度 SWIM_SPEED（§8.3 新口径）问题: 0 []
+bg-15w §八 追加轮② 问题合计: 0 []
+六套金属标签一致性（34 个标签 × 8 套金属）问题: 0 []
+信标基座标签 #minecraft:beacon_base_blocks 问题: 0 []
+  （期望 26 条 = 六套金属 × 3 + 2 条金系；实际有效成员 26 条）
+§9.2 重复原料配方（六套各一张 + 三张 legacy 必须消失）问题: 0 []
+§9.3 靛海金器具免水下挖掘惩罚问题: 0 []
+bg-15w §九 追加轮③ 问题合计: 0 []
+bg-16 两处修正（横幅落点 / 安抚对玩家）问题: 0 []
+bg-book 帕秋莉手册问题: 0 []（手册 7 条目 / 74 页 / 88 条配方引用）
+exit=0
+
+### python tools\asset-generator\validate_trim_assets.py
+== 1. data/bettergold/trim_material/*.json ==
+  sturdygold         asset_name=sturdygold         item_model_index=0.01  撞原版=无
+  unwanted_antique   asset_name=unwanted_antique   item_model_index=0.02  撞原版=无
+  flamegold          asset_name=flamegold          item_model_index=0.03  撞原版=无
+  voodoogold         asset_name=voodoogold         item_model_index=0.04  撞原版=无
+  thundergold        asset_name=thundergold        item_model_index=0.05  撞原版=无
+  indigoseagold      asset_name=indigoseagold      item_model_index=0.06  撞原版=无
+  illusiongold       asset_name=illusiongold       item_model_index=0.07  撞原版=无
+  thornsgold         asset_name=thornsgold         item_model_index=0.08  撞原版=无
+  echogold           asset_name=echogold           item_model_index=0.09  撞原版=无
+  唯一值个数=9 / 9（必须相等）
+  全部落在原版 0.1..1.0 之外 = True
+
+== 2. 色卡 assets/bettergold/textures/trims/color_palettes/<asset>.png（8×1） ==
+  sturdygold         size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(116, 31, 0, 255) 全白=False
+  unwanted_antique   size=(8, 1) 唯一像素=8 首=(124, 131, 110, 255) 末=(21, 26, 24, 255) 全白=False
+  flamegold          size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(116, 50, 0, 255) 全白=False
+  voodoogold         size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(41, 40, 74, 255) 全白=False
+  thundergold        size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(76, 23, 72, 255) 全白=False
+  indigoseagold      size=(8, 1) 唯一像素=8 首=(242, 239, 237, 255) 末=(42, 40, 34, 255) 全白=False
+  illusiongold       size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(149, 67, 108, 255) 全白=False
+  thornsgold         size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(30, 48, 4, 255) 全白=False
+  echogold           size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(3, 60, 74, 255) 全白=False
+  原版对比 trim_palette.png（palette_key，8×1 灰阶）：
+    size=(8, 1) 像素=[(224, 224, 224, 255), (192, 192, 192, 255), (160, 160, 160, 255), (128, 128, 128, 255), (96, 96, 96, 255), (64, 64, 64, 255), (32, 32, 32, 255), (0, 0, 0, 255)]
+  原版 quartz 色卡（作者看到的「白色」就是它）：
+    size=(8, 1) 像素=[(242, 239, 237, 255), (246, 234, 223, 255), (227, 219, 196, 255), (182, 173, 150, 255), (144, 142, 128, 255), (101, 97, 86, 255), (69, 67, 60, 255), (42, 40, 34, 255)]
+
+== 3. 图集置换（两处，缺一不生效） ==
+  a) armor_trims.json（穿戴模型 trims/models/armor/*）: 9 条置换，我方全在 = True
+  b) blocks.json（物品形态 trims/items/*_trim）存在 = True
+     源贴图 = ['trims/items/helmet_trim', 'trims/items/chestplate_trim', 'trims/items/leggings_trim', 'trims/items/boots_trim']
+     palette_key = ['trims/color_palettes/trim_palette']
+     9 条置换，我方全在 = True
+     sturdygold         -> bettergold:trims/color_palettes/sturdygold
+     unwanted_antique   -> bettergold:trims/color_palettes/unwanted_antique
+     flamegold          -> bettergold:trims/color_palettes/flamegold
+     voodoogold         -> bettergold:trims/color_palettes/voodoogold
+     thundergold        -> bettergold:trims/color_palettes/thundergold
+     indigoseagold      -> bettergold:trims/color_palettes/indigoseagold
+     illusiongold       -> bettergold:trims/color_palettes/illusiongold
+     thornsgold         -> bettergold:trims/color_palettes/thornsgold
+     echogold           -> bettergold:trims/color_palettes/echogold
+     注意：SpriteSourceList.load 用的是 resourceManager.getResourceStack（同名文件**拼接**），
+     所以本文件是**追加**到原版 blocks.json 的源列表上，不会覆盖原版 14 个材质。
+
+== 4. 原版盔甲物品模型的 overrides（trim_type → 哪个模型） ==
+  trim_type 0.1 -> minecraft:item/netherite_chestplate_quartz_trim
+  trim_type 0.2 -> minecraft:item/netherite_chestplate_iron_trim
+  trim_type 0.3 -> minecraft:item/netherite_chestplate_netherite_darker_trim
+  trim_type 0.4 -> minecraft:item/netherite_chestplate_redstone_trim
+  trim_type 0.5 -> minecraft:item/netherite_chestplate_copper_trim
+  trim_type 0.6 -> minecraft:item/netherite_chestplate_gold_trim
+  trim_type 0.7 -> minecraft:item/netherite_chestplate_emerald_trim
+  trim_type 0.8 -> minecraft:item/netherite_chestplate_diamond_trim
+  trim_type 0.9 -> minecraft:item/netherite_chestplate_lapis_trim
+  trim_type 1.0 -> minecraft:item/netherite_chestplate_amethyst_trim
+  netherite_chestplate_quartz_trim.json textures = {'layer0': 'minecraft:item/netherite_chestplate', 'layer1': 'minecraft:trims/items/chestplate_trim_quartz'}
+  => 修复前我方六个金属的 item_model_index 全是 0.1，谓词值 0.1 命中的就是 quartz 那一行，
+     最终画的是 minecraft:trims/items/chestplate_trim_quartz（quartz 色卡 = 白灰阶）⇒ 「纹饰都是白色」。
+
+== 5. 我方盔甲物品模型（JSON 里没有 trim overlay，这是原样；overlay 由客户端 ArmorTrimItemModels 运行期补） ==
+  6 套 × 4 件 = 24 个模型全部只有 {parent: minecraft:item/generated, textures:{layer0}}，
+  没有 overrides / 没有 layer1（对照原版 netherite_chestplate.json）⇒ 修之前自家盔甲连纹饰都不画。
+  修法：client/ArmorTrimItemModels.java 在 ModelEvent.ModifyBakingResult 里给**所有**带纹饰槽位的
+  盔甲物品模型套一层包装，按纹饰材质的 asset_name 现算「原模型四边形 + 纹饰精灵」那一层；
+  这样原版 25 件与自家 24 件一起生效，也不需要复制/覆盖原版模型 JSON。
+
+== 6. 修正①：小刀必须进 #farmersdelight:tools/knives（附魔类别标签全靠它） ==
+  data/farmersdelight/tags/item/tools/knives.json: 10 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife']
+  data/c/tags/item/tools/knife.json: 10 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife']
+  FD jar 里 data/minecraft/tags/item/enchantable/{bow,crossbow,trident,mace,sword,sharp_weapon,
+  weapon,fire_aspect,durability,mining,mining_loot,vanishing}.json 都靠它拼出来；
+  1.5 的靛海金刀 / 幻惑金刀原先不在这个标签里 ⇒ 只有那两把不能附魔。
+
+[写出] E:\mc\mcmod\bettergold-template-1.21.1\build\p15fix-asset-audit.txt
+exit=0
+
+### python tools\asset-generator\check_jar_clean.py
+build/libs jars:
+  bettergold-1.5.0.jar  (1089906 bytes)
+  bettergold-1.6.0.jar  (1280676 bytes)
+
+产物 bettergold-1.6.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+  ⚠ build/libs 里有 2 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+jar 内 *Probe* 路径 = 0 []
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2300
+exit=0
+
+### python tools\asset-generator\check_forced_chunks.py run\world\data\chunks.dat
+chunks.dat top-level keys = ['data', 'DataVersion']
+chunks.dat data keys      = ['Forced']
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True
+exit=0

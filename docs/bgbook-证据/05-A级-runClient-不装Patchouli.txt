@@ -1,0 +1,17 @@
+== runClient #1 : Patchouli NOT installed (quickPlay world run/saves/bgbookcp) ==
+log: build/bgbook-run4.log
+gradle: BUILD SUCCESSFUL in 1m 11s, exit 0
+note: the first attempt let the SERVER plan halt the integrated server at tick 40 -> the client plan
+never ran; the probe now arms only on a DEDICATED server (logged as server armed=false dedicated=false).
+
+[20:48:33] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli not loaded -> the alchemy handbook item is NOT registered
+[20:48:38] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE client armed=true gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:49:18] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server armed=false dedicated=false gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:49:21] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS env_client :: patchouliLoaded=false
+[20:49:21] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registration_follows_env_client :: registered=false patchouliLoaded=false (must be equal)
+[20:49:21] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS field_null_follows_env_client :: fieldNull=true
+[20:49:21] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_absent_from_creative_page_client :: foundAt=-1
+[20:49:21] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS materials_first_without_patchouli_client :: firstId=bettergold:mixed_crystal_pile
+[20:49:21] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registered_item_count_client :: AllItems.ITEMS entries=322 pageStacks=422
+[20:49:24] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE SUMMARY where=client pass=6 fail=0 fails=[]
+[20:49:24] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE client stopping (tick=90)

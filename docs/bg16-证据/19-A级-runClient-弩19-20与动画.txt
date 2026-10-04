@@ -1,0 +1,109 @@
+# bg-16 / bg-17 · A 级（runClient + 整合服务端 + 真玩家 / 真按键）—— 任务2：本模组弩蓄力 = 20 tick
+
+> 环境：.\gradlew.bat runClient（整合服务端 = 真 ServerPlayer + 真 LocalPlayer），世界 = 专用服务端探针世界的副本
+> run/saves/bg17cprobe（作者的 run/saves/新的世界 全程未打开）；开关文件 run/bg17c-probe.enabled；
+> 探针类 com.hjmmd_8.bettergold.probe.Bg17ClientProbe（收尾整块删除）。退出走 Minecraft#stop()（探针里没有任何 halt()）。
+> 客户端启动参数：build/moddev/clientRunProgramArgs.txt 的「User Supplied Program Arguments」段临时追加
+>   --quickPlayPath logs/quickplay/bg17c.json --quickPlaySingleplayer bg17cprobe（跑完已逐字节复原）。
+> 日志原始出处：build/bg17-rc.out（cmd /c 原始字节重定向；探针输出全 ASCII）。
+>
+> 驱动方式（必须真客户端，mcmod_experience 4 rule 59：「使用中」状态是客户端权威的）：
+>   KeyMapping.click(keyUse) + KeyMapping.set(keyUse, true) 按住；按住期间逐 tick 读
+>   getUseItemRemainingTicks() 与 i = getUseDuration - remaining；i 到达目标值那一 tick 松手（set(keyUse,false)）。
+> 每个用例先由服务端把一把**全新**弩放进快捷栏 0 + 64 箭 + 64 烟花，并清空 CHARGED_PROJECTILES；每个用例等 2 tick 再读结果。
+> 权威 i 的取法：releaseUsing 收到的 timeLeft = 松手前**最后一个仍在使用中**的服务端 tick 上的 useItemRemainingTicks
+>   （释放包在 PlayerList#tick 里处理，早于该 tick 的实体 updateUsingItem）⇒ i = getUseDuration - 该值。
+>
+> 结论：SUMMARY pass=33 fail=0。
+
+> ⚠ 两轮：第一轮（build/bg17-rc-run1.out）时 mixin 写成 "common" 键 ⇒ Mixin 静默忽略 ⇒ getChargeDuration=25、
+> 6 条 FAIL 全部由此而来；改成 "mixins" 键后**同一份探针**立刻 33 PASS / 0 FAIL。第一轮留档不删。
+
+> mixin 已加载的日志证据：
+
+    [20:04:14] [pool-9-thread-1/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+
+**（以下为探针逐行输出，原样保留）**
+
+BG17CPROBE probe registered (gameDir switch file found) gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run cases=12
+BG17CPROBE waiting_for_world :: tick=100
+BG17CPROBE waiting_for_world :: tick=200
+BG17CPROBE waiting_for_world :: tick=300
+BG17CPROBE waiting_for_world :: tick=400
+BG17CPROBE waiting_for_world :: tick=500
+BG17CPROBE waiting_for_world :: tick=600
+BG17CPROBE INFO closing_screen :: ReceivingLevelScreen
+BG17CPROBE INFO case_begin :: mod_t17 target=17 item=bettergold:thornsgold_crossbow
+BG17CPROBE INFO case_result :: mod_t17 target=17 usingTicks=17 clientI=17 authoritativeI=17 useDuration=23 getChargeDuration=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.8500
+BG17CPROBE INFO case_trace :: mod_t17 t1:remaining=22,i=1 t2:remaining=21,i=2 t3:remaining=20,i=3 t4:remaining=19,i=4 t5:remaining=18,i=5 t6:remaining=17,i=6 t7:remaining=16,i=7 t8:remaining=15,i=8 t9:remaining=14,i=9 t10:remaining=13,i=10 t11:remaining=12,i=11 t12:remaining=11,i=12 t13:remaining=10,i=13 t14:remaining=9,i=14 t15:remaining=8,i=15 t16:remaining=7,i=16 t17:remaining=6,i=17
+BG17CPROBE INFO case_begin :: mod_t18 target=18 item=bettergold:thornsgold_crossbow
+BG17CPROBE INFO case_result :: mod_t18 target=18 usingTicks=18 clientI=18 authoritativeI=18 useDuration=23 getChargeDuration=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9000
+BG17CPROBE INFO case_trace :: mod_t18 t1:remaining=22,i=1 t2:remaining=21,i=2 t3:remaining=20,i=3 t4:remaining=19,i=4 t5:remaining=18,i=5 t6:remaining=17,i=6 t7:remaining=16,i=7 t8:remaining=15,i=8 t9:remaining=14,i=9 t10:remaining=13,i=10 t11:remaining=12,i=11 t12:remaining=11,i=12 t13:remaining=10,i=13 t14:remaining=9,i=14 t15:remaining=8,i=15 t16:remaining=7,i=16 t17:remaining=6,i=17 t18:remaining=5,i=18
+BG17CPROBE INFO case_begin :: mod_t19 target=19 item=bettergold:thornsgold_crossbow
+BG17CPROBE INFO case_result :: mod_t19 target=19 usingTicks=19 clientI=19 authoritativeI=19 useDuration=23 getChargeDuration=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9500
+BG17CPROBE INFO case_trace :: mod_t19 t1:remaining=22,i=1 t2:remaining=21,i=2 t3:remaining=20,i=3 t4:remaining=19,i=4 t5:remaining=18,i=5 t6:remaining=17,i=6 t7:remaining=16,i=7 t8:remaining=15,i=8 t9:remaining=14,i=9 t10:remaining=13,i=10 t11:remaining=12,i=11 t12:remaining=11,i=12 t13:remaining=10,i=13 t14:remaining=9,i=14 t15:remaining=8,i=15 t16:remaining=7,i=16 t17:remaining=6,i=17 t18:remaining=5,i=18 t19:remaining=4,i=19
+BG17CPROBE INFO case_begin :: mod_t20 target=20 item=bettergold:thornsgold_crossbow
+BG17CPROBE INFO case_result :: mod_t20 target=20 usingTicks=20 clientI=20 authoritativeI=20 useDuration=23 getChargeDuration=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000
+BG17CPROBE INFO case_trace :: mod_t20 t1:remaining=22,i=1 t2:remaining=21,i=2 t3:remaining=20,i=3 t4:remaining=19,i=4 t5:remaining=18,i=5 t6:remaining=17,i=6 t7:remaining=16,i=7 t8:remaining=15,i=8 t9:remaining=14,i=9 t10:remaining=13,i=10 t11:remaining=12,i=11 t12:remaining=11,i=12 t13:remaining=10,i=13 t14:remaining=9,i=14 t15:remaining=8,i=15 t16:remaining=7,i=16 t17:remaining=6,i=17 t18:remaining=5,i=18 t19:remaining=4,i=19 t20:remaining=3,i=20
+BG17CPROBE INFO case_begin :: mod_t21 target=21 item=bettergold:thornsgold_crossbow
+BG17CPROBE INFO world_tick :: tick=800 dim=minecraft:overworld player=Dev screen=null
+BG17CPROBE INFO case_result :: mod_t21 target=21 usingTicks=21 clientI=21 authoritativeI=21 useDuration=23 getChargeDuration=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0500
+BG17CPROBE INFO case_trace :: mod_t21 t1:remaining=22,i=1 t2:remaining=21,i=2 t3:remaining=20,i=3 t4:remaining=19,i=4 t5:remaining=18,i=5 t6:remaining=17,i=6 t7:remaining=16,i=7 t8:remaining=15,i=8 t9:remaining=14,i=9 t10:remaining=13,i=10 t11:remaining=12,i=11 t12:remaining=11,i=12 t13:remaining=10,i=13 t14:remaining=9,i=14 t15:remaining=8,i=15 t16:remaining=7,i=16 t17:remaining=6,i=17 t18:remaining=5,i=18 t19:remaining=4,i=19 t20:remaining=3,i=20 t21:remaining=2,i=21
+BG17CPROBE INFO case_begin :: mod_t22 target=22 item=bettergold:thornsgold_crossbow
+BG17CPROBE INFO case_result :: mod_t22 target=22 usingTicks=22 clientI=22 authoritativeI=22 useDuration=23 getChargeDuration=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.1000
+BG17CPROBE INFO case_trace :: mod_t22 t1:remaining=22,i=1 t2:remaining=21,i=2 t3:remaining=20,i=3 t4:remaining=19,i=4 t5:remaining=18,i=5 t6:remaining=17,i=6 t7:remaining=16,i=7 t8:remaining=15,i=8 t9:remaining=14,i=9 t10:remaining=13,i=10 t11:remaining=12,i=11 t12:remaining=11,i=12 t13:remaining=10,i=13 t14:remaining=9,i=14 t15:remaining=8,i=15 t16:remaining=7,i=16 t17:remaining=6,i=17 t18:remaining=5,i=18 t19:remaining=4,i=19 t20:remaining=3,i=20 t21:remaining=2,i=21 t22:remaining=1,i=22
+BG17CPROBE INFO case_begin :: vanilla_t22 target=22 item=minecraft:crossbow
+BG17CPROBE INFO case_result :: vanilla_t22 target=22 usingTicks=22 clientI=22 authoritativeI=22 useDuration=28 getChargeDuration=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.8800
+BG17CPROBE INFO case_trace :: vanilla_t22 t1:remaining=27,i=1 t2:remaining=26,i=2 t3:remaining=25,i=3 t4:remaining=24,i=4 t5:remaining=23,i=5 t6:remaining=22,i=6 t7:remaining=21,i=7 t8:remaining=20,i=8 t9:remaining=19,i=9 t10:remaining=18,i=10 t11:remaining=17,i=11 t12:remaining=16,i=12 t13:remaining=15,i=13 t14:remaining=14,i=14 t15:remaining=13,i=15 t16:remaining=12,i=16 t17:remaining=11,i=17 t18:remaining=10,i=18 t19:remaining=9,i=19 t20:remaining=8,i=20 t21:remaining=7,i=21 t22:remaining=6,i=22
+BG17CPROBE INFO case_begin :: vanilla_t23 target=23 item=minecraft:crossbow
+BG17CPROBE INFO case_result :: vanilla_t23 target=23 usingTicks=23 clientI=23 authoritativeI=23 useDuration=28 getChargeDuration=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9200
+BG17CPROBE INFO case_trace :: vanilla_t23 t1:remaining=27,i=1 t2:remaining=26,i=2 t3:remaining=25,i=3 t4:remaining=24,i=4 t5:remaining=23,i=5 t6:remaining=22,i=6 t7:remaining=21,i=7 t8:remaining=20,i=8 t9:remaining=19,i=9 t10:remaining=18,i=10 t11:remaining=17,i=11 t12:remaining=16,i=12 t13:remaining=15,i=13 t14:remaining=14,i=14 t15:remaining=13,i=15 t16:remaining=12,i=16 t17:remaining=11,i=17 t18:remaining=10,i=18 t19:remaining=9,i=19 t20:remaining=8,i=20 t21:remaining=7,i=21 t22:remaining=6,i=22 t23:remaining=5,i=23
+BG17CPROBE INFO case_begin :: vanilla_t24 target=24 item=minecraft:crossbow
+BG17CPROBE INFO case_result :: vanilla_t24 target=24 usingTicks=24 clientI=24 authoritativeI=24 useDuration=28 getChargeDuration=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9600
+BG17CPROBE INFO case_trace :: vanilla_t24 t1:remaining=27,i=1 t2:remaining=26,i=2 t3:remaining=25,i=3 t4:remaining=24,i=4 t5:remaining=23,i=5 t6:remaining=22,i=6 t7:remaining=21,i=7 t8:remaining=20,i=8 t9:remaining=19,i=9 t10:remaining=18,i=10 t11:remaining=17,i=11 t12:remaining=16,i=12 t13:remaining=15,i=13 t14:remaining=14,i=14 t15:remaining=13,i=15 t16:remaining=12,i=16 t17:remaining=11,i=17 t18:remaining=10,i=18 t19:remaining=9,i=19 t20:remaining=8,i=20 t21:remaining=7,i=21 t22:remaining=6,i=22 t23:remaining=5,i=23 t24:remaining=4,i=24
+BG17CPROBE INFO case_begin :: vanilla_t25 target=25 item=minecraft:crossbow
+BG17CPROBE INFO case_result :: vanilla_t25 target=25 usingTicks=25 clientI=25 authoritativeI=25 useDuration=28 getChargeDuration=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000
+BG17CPROBE INFO case_trace :: vanilla_t25 t1:remaining=27,i=1 t2:remaining=26,i=2 t3:remaining=25,i=3 t4:remaining=24,i=4 t5:remaining=23,i=5 t6:remaining=22,i=6 t7:remaining=21,i=7 t8:remaining=20,i=8 t9:remaining=19,i=9 t10:remaining=18,i=10 t11:remaining=17,i=11 t12:remaining=16,i=12 t13:remaining=15,i=13 t14:remaining=14,i=14 t15:remaining=13,i=15 t16:remaining=12,i=16 t17:remaining=11,i=17 t18:remaining=10,i=18 t19:remaining=9,i=19 t20:remaining=8,i=20 t21:remaining=7,i=21 t22:remaining=6,i=22 t23:remaining=5,i=23 t24:remaining=4,i=24 t25:remaining=3,i=25
+BG17CPROBE INFO case_begin :: vanilla_t26 target=26 item=minecraft:crossbow
+BG17CPROBE INFO world_tick :: tick=1000 dim=minecraft:overworld player=Dev screen=null
+BG17CPROBE INFO case_result :: vanilla_t26 target=26 usingTicks=26 clientI=26 authoritativeI=26 useDuration=28 getChargeDuration=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000
+BG17CPROBE INFO case_trace :: vanilla_t26 t1:remaining=27,i=1 t2:remaining=26,i=2 t3:remaining=25,i=3 t4:remaining=24,i=4 t5:remaining=23,i=5 t6:remaining=22,i=6 t7:remaining=21,i=7 t8:remaining=20,i=8 t9:remaining=19,i=9 t10:remaining=18,i=10 t11:remaining=17,i=11 t12:remaining=16,i=12 t13:remaining=15,i=13 t14:remaining=14,i=14 t15:remaining=13,i=15 t16:remaining=12,i=16 t17:remaining=11,i=17 t18:remaining=10,i=18 t19:remaining=9,i=19 t20:remaining=8,i=20 t21:remaining=7,i=21 t22:remaining=6,i=22 t23:remaining=5,i=23 t24:remaining=4,i=24 t25:remaining=3,i=25 t26:remaining=2,i=26
+BG17CPROBE INFO case_begin :: vanilla_t27 target=27 item=minecraft:crossbow
+BG17CPROBE INFO case_result :: vanilla_t27 target=27 usingTicks=27 clientI=27 authoritativeI=27 useDuration=28 getChargeDuration=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000
+BG17CPROBE INFO case_trace :: vanilla_t27 t1:remaining=27,i=1 t2:remaining=26,i=2 t3:remaining=25,i=3 t4:remaining=24,i=4 t5:remaining=23,i=5 t6:remaining=22,i=6 t7:remaining=21,i=7 t8:remaining=20,i=8 t9:remaining=19,i=9 t10:remaining=18,i=10 t11:remaining=17,i=11 t12:remaining=16,i=12 t13:remaining=15,i=13 t14:remaining=14,i=14 t15:remaining=13,i=15 t16:remaining=12,i=16 t17:remaining=11,i=17 t18:remaining=10,i=18 t19:remaining=9,i=19 t20:remaining=8,i=20 t21:remaining=7,i=21 t22:remaining=6,i=22 t23:remaining=5,i=23 t24:remaining=4,i=24 t25:remaining=3,i=25 t26:remaining=2,i=26 t27:remaining=1,i=27
+BG17CPROBE PASS charge_rule_mod_t17 :: mod_t17 authoritativeI=17 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.8500 | expected: loaded exactly when authoritativeI >= 20, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_below_full_mod_t17 :: mod_t17 authoritativeI=17 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.8500 | expected: the registered 'pull' predicate is still below 1.0
+BG17CPROBE PASS charge_rule_mod_t18 :: mod_t18 authoritativeI=18 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9000 | expected: loaded exactly when authoritativeI >= 20, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_below_full_mod_t18 :: mod_t18 authoritativeI=18 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9000 | expected: the registered 'pull' predicate is still below 1.0
+BG17CPROBE PASS charge_rule_mod_t19 :: mod_t19 authoritativeI=19 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9500 | expected: loaded exactly when authoritativeI >= 20, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_below_full_mod_t19 :: mod_t19 authoritativeI=19 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9500 | expected: the registered 'pull' predicate is still below 1.0
+BG17CPROBE PASS charge_rule_mod_t20 :: mod_t20 authoritativeI=20 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: loaded exactly when authoritativeI >= 20, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_at_full_mod_t20 :: mod_t20 authoritativeI=20 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: the registered 'pull' predicate reaches 1.0 at/after full charge
+BG17CPROBE PASS charge_rule_mod_t21 :: mod_t21 authoritativeI=21 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0500 | expected: loaded exactly when authoritativeI >= 20, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_at_full_mod_t21 :: mod_t21 authoritativeI=21 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0500 | expected: the registered 'pull' predicate reaches 1.0 at/after full charge
+BG17CPROBE PASS charge_rule_mod_t22 :: mod_t22 authoritativeI=22 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.1000 | expected: loaded exactly when authoritativeI >= 20, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_at_full_mod_t22 :: mod_t22 authoritativeI=22 denominator(getChargeDuration, through the mixin)=20 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.1000 | expected: the registered 'pull' predicate reaches 1.0 at/after full charge
+BG17CPROBE PASS boundary_pair_present_mod_crossbow :: series=mod_crossbow has a case at authoritativeI=19 (true) and one at 20 (true) | anti-vacuum guard for the boundary assertions
+BG17CPROBE PASS threshold_is_denominator_mod_crossbow :: series=mod_crossbow separates exactly at 20
+BG17CPROBE PASS charge_rule_vanilla_t22 :: vanilla_t22 authoritativeI=22 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.8800 | expected: loaded exactly when authoritativeI >= 25, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_below_full_vanilla_t22 :: vanilla_t22 authoritativeI=22 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.8800 | expected: the registered 'pull' predicate is still below 1.0
+BG17CPROBE PASS charge_rule_vanilla_t23 :: vanilla_t23 authoritativeI=23 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9200 | expected: loaded exactly when authoritativeI >= 25, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_below_full_vanilla_t23 :: vanilla_t23 authoritativeI=23 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9200 | expected: the registered 'pull' predicate is still below 1.0
+BG17CPROBE PASS charge_rule_vanilla_t24 :: vanilla_t24 authoritativeI=24 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9600 | expected: loaded exactly when authoritativeI >= 25, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_below_full_vanilla_t24 :: vanilla_t24 authoritativeI=24 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=false serverCharged=false pull=0.9600 | expected: the registered 'pull' predicate is still below 1.0
+BG17CPROBE PASS charge_rule_vanilla_t25 :: vanilla_t25 authoritativeI=25 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: loaded exactly when authoritativeI >= 25, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_at_full_vanilla_t25 :: vanilla_t25 authoritativeI=25 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: the registered 'pull' predicate reaches 1.0 at/after full charge
+BG17CPROBE PASS charge_rule_vanilla_t26 :: vanilla_t26 authoritativeI=26 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: loaded exactly when authoritativeI >= 25, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_at_full_vanilla_t26 :: vanilla_t26 authoritativeI=26 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: the registered 'pull' predicate reaches 1.0 at/after full charge
+BG17CPROBE PASS charge_rule_vanilla_t27 :: vanilla_t27 authoritativeI=27 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: loaded exactly when authoritativeI >= 25, and the client must agree with the server
+BG17CPROBE PASS pull_predicate_at_full_vanilla_t27 :: vanilla_t27 authoritativeI=27 denominator(getChargeDuration, through the mixin)=25 ownChargeDuration=20 clientCharged=true serverCharged=true pull=1.0000 | expected: the registered 'pull' predicate reaches 1.0 at/after full charge
+BG17CPROBE PASS boundary_pair_present_vanilla_crossbow :: series=vanilla_crossbow has a case at authoritativeI=24 (true) and one at 25 (true) | anti-vacuum guard for the boundary assertions
+BG17CPROBE PASS threshold_is_denominator_vanilla_crossbow :: series=vanilla_crossbow separates exactly at 25
+BG17CPROBE PASS mixin_denominator_mod_crossbow_is_20 :: CrossbowItem.getChargeDuration(mod crossbow, player) = [20, 20, 20, 20, 20, 20] (expected 20)
+BG17CPROBE PASS mixin_denominator_vanilla_crossbow_still_25 :: CrossbowItem.getChargeDuration(vanilla crossbow, player) = [25, 25, 25, 25, 25, 25] (expected 25: the mixin must not touch it)
+BG17CPROBE PASS mod_get_use_duration_is_23 :: mod crossbow getUseDuration = [23, 23, 23, 23, 23, 23] (expected 23)
+BG17CPROBE PASS vanilla_get_use_duration_is_28 :: vanilla crossbow getUseDuration = [28, 28, 28, 28, 28, 28] (expected 28 = 25 + 3)
+BG17CPROBE PASS mod_own_charge_duration_is_20 :: MetalCrossbowItem.chargeDuration = [20, 20, 20, 20, 20, 20]
+BG17CPROBE SUMMARY pass=33 fail=0
+BG17CPROBE DONE (no halt() anywhere; exiting via Minecraft#stop())
+[20:05:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (bg17cprobe): All chunks are saved

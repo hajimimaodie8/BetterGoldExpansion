@@ -1,0 +1,26 @@
+== runServer #2 : Patchouli INSTALLED (run/mods/Patchouli-1.21.1-93-NEOFORGE.jar) ==
+log: build/bgbook-run2.log
+gradle: BUILD SUCCESSFUL, exit 0
+
+[20:36:54] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[20:36:58] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server armed=true gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS env_server :: patchouliLoaded=true
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registration_follows_env_server :: registered=true patchouliLoaded=true (must be equal)
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS field_null_follows_env_server :: fieldNull=false
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_in_creative_page_server :: index=9
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_is_materials_first_server :: firstNonEmptyIndex=9 handbookIndex=9 firstId=bettergold:alchemy_student_handbook
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_single_entry_server :: count=1
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_item_class_server :: com.hjmmd_8.bettergold.item.HandbookItem
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_stack_is_one_server :: maxStack=1
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_no_durability_server :: maxDamage=0
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_no_attributes_server :: modifiers=0
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_enchant_readouts_server :: isEnchantable=false enchantmentValue=0
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registered_item_count_server :: AllItems.ITEMS entries=323 pageStacks=422
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS patchouli_book_registered :: books=1 ourBook=true
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS patchouli_getBookStack_not_empty :: stack=1 patchouli:guide_book count=1
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS patchouli_getBookStack_readout :: stack=1 patchouli:guide_book (generic guide_book + book component, by API design)
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS patchouli_custom_book_item_resolved :: bookItem=1 bettergold:alchemy_student_handbook (a typo in custom_book_item would silently give ItemStack.EMPTY)
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS patchouli_bookItem_not_empty :: bookItem=1 bettergold:alchemy_student_handbook
+[20:36:59] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS patchouli_server_note :: book.json loaded server side; contents are client side
+[20:37:00] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE SUMMARY where=server pass=18 fail=0 fails=[]
+[20:37:00] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server halting once (tick=40)

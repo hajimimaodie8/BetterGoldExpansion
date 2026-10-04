@@ -154,18 +154,40 @@ public final class CreativeTabSections {
     // ==================== 内置 4 个分区的内部规则（分区 key / 横幅 / 释词见 CreativePageSections） ====================
 
     /**
-     * 材料分区内部顺序：其他材料 → 交易金商人相关 → 金属
+     * 材料分区内部顺序：<b>炼金术学员手册 → 其他材料 → 交易金商人相关 → 金属</b>
      * （作者定稿原话：其他材料排最前、交易金商人相关物排中、特殊金属排后）。
      *
      * <p>注意：规则是"先到先得"（每件物品只进第一个命中的段），所以「其他材料」排在第一位时
      * 不能再写成 {@code stack -> true} 的兜底判定 —— 那会把整个分区都吃进第一段。
-     * 这里改成正面判定"既不是交易金商人相关物、也不是金属物品"，三段合起来仍然恰好覆盖全部物品，
+     * 这里改成正面判定"既不是交易金商人相关物、也不是金属物品"，四段合起来仍然恰好覆盖全部物品，
      * 一件都不会丢。</p>
+     *
+     * <p><b>bg-book（1.6）：手册为什么是"材料位第一"</b> —— 需求要「新生代炼金术学员手册排在材料位第一」，
+     * 两种做法见需求 §6#5，本轮取的是<b>②「在材料分区的段列表里把它单列成第一段」</b>：</p>
+     * <ul>
+     *   <li>① 给它一个 {@link CreativeSections#MATERIAL_SLOT} 的最靠前新位次 —— <b>做不到/不该做</b>：
+     *       那张表是「**金属 id 后缀 → 位次**」（ingot / nugget / upgrade_template），
+     *       查它之前必须先通过 {@code metalOf(path)} 认出金属前缀；手册不是金属物品，
+     *       塞进去只会破坏 8 族金属的金属位次语义，而且根本走不到那张表。</li>
+     *   <li>② 本段 = 材料分区的第一段 ⇒ 手册就是整个材料分区的**第一个物品**（干净、不动机制）。</li>
+     * </ul>
+     * <p>⚠ 手册物品只在装了 Patchouli 时才注册；没装时本段的判定恒为 false（段为空、无副作用）。</p>
      */
     public static final List<Slot> MATERIALS = List.of(
+            new Slot("炼金术学员手册", CreativeTabSections::isHandbook),
             new Slot("其他材料", stack -> !isTraderRelated(stack) && !isMetal(stack)),
             new Slot("交易金商人相关", CreativeTabSections::isTraderRelated),
             new Slot("金属", CreativeTabSections::isMetal));
+
+    /**
+     * 新生代炼金术学员手册（bg-book，1.6）：材料分区的第一段就它一件。
+     *
+     * <p>判据用物品类而不是 id 字符串 —— 类比较不会因为 id 写错而静默失效，
+     * 而且没装 Patchouli 时根本没有实例，判定自然恒为 false。</p>
+     */
+    private static boolean isHandbook(ItemStack stack) {
+        return stack.getItem() instanceof com.hjmmd_8.bettergold.item.HandbookItem;
+    }
 
     /**
      * 建筑分区内部顺序：金属建材（金属块 + 那套建材）→ 其他建筑方块。

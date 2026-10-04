@@ -1,0 +1,18 @@
+== probes ==
+src/main/java/com/hjmmd_8/bettergold/probe/  (5 classes)  -> deleted
+run/bgbook-probe.enabled, run/bgbookc-probe.enabled      -> deleted
+production code halt(  = 0  (halt(false) only inside the deleted probe)
+jar: *Probe* paths = 0, classes containing halt = 0, BG-PROBE constants = 0 (check_jar_clean.py exit 0; 2300 files)
+
+== worlds / mods ==
+run/bgbookprobe, run/bgbookprobe2, run/saves/bgbookcp -> deleted
+run/mods/Patchouli-1.21.1-93-NEOFORGE.jar -> removed (run/mods keeps only the JEI jar)
+run/patchouli_books (empty dir created by Patchouli) -> removed
+run/saves/新的世界 : 29 files, mtime unchanged = 2026-10-02 14:29:21 (never opened)
+
+== temp config restore (byte exact, SHA256) ==
+run/server.properties                 12B360E69DB4B3126BA9F74E6AB59DF2F25BA1A22AA2C12F38AE05D1E18AE20A  (level-name=world)
+build/moddev/clientRunProgramArgs.txt A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB
+
+== forceload ==
+check_forced_chunks.py run/world/data/chunks.dat -> exit 0, data.Forced = [] (length 0); the probe never forceloaded

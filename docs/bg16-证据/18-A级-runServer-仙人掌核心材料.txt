@@ -1,0 +1,89 @@
+# bg-16 / bg-17 · A 级（runServer + 专用探针世界 bg17probe）—— 任务1：免疫仙人掌扩展到核心材料
+
+> 环境：.\gradlew.bat runServer（专用服务端，无玩家）；level-name 临时改成 ASCII 的 bg17probe（收尾复原）；
+> 开关文件 run/bg17-probe.enabled；探针类 com.hjmmd_8.bettergold.probe.Bg17Probe（收尾整块删除）。
+> 计划表 = 绝对 tick（t=20 建仙人掌 / t=30 判据 dump / t=40 生成 6 件掉落物 / t=45 采样 / t=160 采样+判定 /
+>   t=200 装备耐久 / t=240 SUMMARY 后只调一次 server.halt(false)）。
+> 日志原始出处：build/bg17-rs.out（cmd /c 原始字节重定向；探针输出全 ASCII，无 GBK 问题）。
+> 结论：SUMMARY pass=28 fail=0 skip=0。
+
+**每次跑的前置说明**：掉落物必须放在「仙人掌方块顶面之上、但不与仙人掌碰撞箱相交」的那一层
+（y = Y + 0.9435：BB = [100.9435, 101.1935] ⇒ 与方块 100 的格子相交（entityInside 会触发）、
+与碰撞箱 [100, 100.9375] 不相交（noPhysics 保持 false））；并且每 tick 把它钉回该位置、
+给一点水平速度，让 ItemEntity#tick 的 move 分支每 tick 都跑（= 每 tick 恰好 1 次免伤事件）。
+第一版探针**没有钉住**，掉落物被构造器给的随机初速度带下滑出仙人掌/落地后 noPhysics=true，
+读数只有 0~32 次事件 ⇒ 5 条假红（探针口径问题，不是功能问题；两版日志都留着）。
+
+**（以下为探针逐行输出，原样保留）**
+
+[19:57:32] [main/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bg17probe
+[19:57:33] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "bg17probe"
+BG17PROBE probe registered (gameDir switch file found) gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+BG17PROBE INFO setup_begin :: difficulty=EASY forcedBefore=0 forcedAfter=9
+BG17PROBE INFO block_states :: at0=Block{minecraft:cactus}[age=0] below0=Block{minecraft:sand} north0=Block{minecraft:air}
+BG17PROBE PASS cactus_blocks_placed :: 6 cactus columns at x=2000..2020 y=100 z=2000
+BG17PROBE INFO coreitem_immune :: family=flamegold item=bettergold:blazing_rod familyCactusImmune=false predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_flamegold :: family=flamegold coreItem=bettergold:blazing_rod isCactusImmune=true
+BG17PROBE INFO coreitem_immune :: family=voodoogold item=bettergold:voodoo_feather familyCactusImmune=false predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_voodoogold :: family=voodoogold coreItem=bettergold:voodoo_feather isCactusImmune=true
+BG17PROBE INFO coreitem_immune :: family=thundergold item=bettergold:amethyst_energy_dust familyCactusImmune=false predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_thundergold :: family=thundergold coreItem=bettergold:amethyst_energy_dust isCactusImmune=true
+BG17PROBE INFO coreitem_immune :: family=indigoseagold item=bettergold:indigo_ocean_heart familyCactusImmune=false predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_indigoseagold :: family=indigoseagold coreItem=bettergold:indigo_ocean_heart isCactusImmune=true
+BG17PROBE INFO coreitem_immune :: family=illusiongold item=bettergold:chorus_cherry_branch familyCactusImmune=false predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_illusiongold :: family=illusiongold coreItem=bettergold:chorus_cherry_branch isCactusImmune=true
+BG17PROBE INFO coreitem_immune :: family=thornsgold item=bettergold:glittering_vine familyCactusImmune=true predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_thornsgold :: family=thornsgold coreItem=bettergold:glittering_vine isCactusImmune=true
+BG17PROBE INFO coreitem_immune :: family=echogold item=bettergold:bundled_echo_shard familyCactusImmune=false predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_echogold :: family=echogold coreItem=bettergold:bundled_echo_shard isCactusImmune=true
+BG17PROBE INFO coreitem_immune :: family=sturdygold item=bettergold:golden_cowrie familyCactusImmune=false predicateImmune=true
+BG17PROBE PASS cactus_coreitem_immune_sturdygold :: family=sturdygold coreItem=bettergold:golden_cowrie isCactusImmune=true
+BG17PROBE PASS cactus_coreitem_families_eight :: families with a coreItem = 8 (expected 8)
+BG17PROBE PASS core_material_not_in_family_index :: MetalFamily.of(bettergold:glittering_vine) == null (coreItem lives outside BY_ITEM)
+BG17PROBE PASS cactus_positive_thornsgold_ingot_via_family_index :: thornsgold_ingot -> family index branch, cactusImmune=true
+BG17PROBE PASS cactus_negative_sturdygold_ingot :: sturdygold_ingot -> family index branch, cactusImmune=false (scope must not spill)
+BG17PROBE PASS cactus_negative_vanilla_stick :: minecraft:stick
+BG17PROBE PASS cactus_negative_vanilla_wheat_seeds :: minecraft:wheat_seeds
+BG17PROBE INFO spawned :: idx=0 id=98 item=bettergold:glittering_vine label=glittering_vine[thornsgold coreItem]
+BG17PROBE INFO spawned :: idx=1 id=99 item=bettergold:bundled_echo_shard label=bundled_echo_shard[echogold coreItem]
+BG17PROBE INFO spawned :: idx=2 id=100 item=bettergold:blazing_rod label=blazing_rod[flamegold coreItem]
+BG17PROBE INFO spawned :: idx=3 id=101 item=bettergold:thornsgold_ingot label=thornsgold_ingot[family index, cactusImmune=true]
+BG17PROBE INFO spawned :: idx=4 id=102 item=bettergold:sturdygold_ingot label=sturdygold_ingot[family index, cactusImmune=false, NEGATIVE]
+BG17PROBE INFO spawned :: idx=5 id=103 item=minecraft:stick label=minecraft:stick[non-mod, NEGATIVE]
+BG17PROBE PASS items_spawned_six :: spawned=6
+BG17PROBE INFO item_sample_t45 :: idx=0 item=bettergold:glittering_vine removed=false alive=true pos=2000.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=5
+BG17PROBE INFO item_sample_t45 :: idx=1 item=bettergold:bundled_echo_shard removed=false alive=true pos=2004.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=5
+BG17PROBE INFO item_sample_t45 :: idx=2 item=bettergold:blazing_rod removed=false alive=true pos=2008.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=5
+BG17PROBE INFO item_sample_t45 :: idx=3 item=bettergold:thornsgold_ingot removed=false alive=true pos=2012.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=5
+BG17PROBE INFO item_sample_t45 :: idx=4 item=bettergold:sturdygold_ingot removed=true alive=false pos=2016.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=0
+BG17PROBE INFO item_sample_t45 :: idx=5 item=minecraft:stick removed=true alive=false pos=2020.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=0
+BG17PROBE INFO item_sample_t160 :: idx=0 item=bettergold:glittering_vine removed=false alive=true pos=2000.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=120 vetoed=120
+BG17PROBE INFO item_sample_t160 :: idx=1 item=bettergold:bundled_echo_shard removed=false alive=true pos=2004.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=120 vetoed=120
+BG17PROBE INFO item_sample_t160 :: idx=2 item=bettergold:blazing_rod removed=false alive=true pos=2008.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=120 vetoed=120
+BG17PROBE INFO item_sample_t160 :: idx=3 item=bettergold:thornsgold_ingot removed=false alive=true pos=2012.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=120 vetoed=120
+BG17PROBE INFO item_sample_t160 :: idx=4 item=bettergold:sturdygold_ingot removed=true alive=false pos=2016.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=0
+BG17PROBE INFO item_sample_t160 :: idx=5 item=minecraft:stick removed=true alive=false pos=2020.5500/100.9375/2000.5500 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false onGround=true invulnChecks=5 vetoed=0
+BG17PROBE PASS cactus_item_alive_and_every_check_vetoed_0 :: item=bettergold:glittering_vine label=glittering_vine[thornsgold coreItem] alive=true invulnChecks=120 vetoed=120 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false | expected: alive for the whole 120-tick window on a real cactus, every EntityInvulnerabilityCheckEvent answered by our handler
+BG17PROBE PASS cactus_item_alive_and_every_check_vetoed_1 :: item=bettergold:bundled_echo_shard label=bundled_echo_shard[echogold coreItem] alive=true invulnChecks=120 vetoed=120 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false | expected: alive for the whole 120-tick window on a real cactus, every EntityInvulnerabilityCheckEvent answered by our handler
+BG17PROBE PASS cactus_item_alive_and_every_check_vetoed_2 :: item=bettergold:blazing_rod label=blazing_rod[flamegold coreItem] alive=true invulnChecks=120 vetoed=120 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false | expected: alive for the whole 120-tick window on a real cactus, every EntityInvulnerabilityCheckEvent answered by our handler
+BG17PROBE PASS cactus_item_alive_and_every_check_vetoed_3 :: item=bettergold:thornsgold_ingot label=thornsgold_ingot[family index, cactusImmune=true] alive=true invulnChecks=120 vetoed=120 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false | expected: alive for the whole 120-tick window on a real cactus, every EntityInvulnerabilityCheckEvent answered by our handler
+BG17PROBE PASS cactus_item_destroyed_control_4 :: item=bettergold:sturdygold_ingot label=sturdygold_ingot[family index, cactusImmune=false, NEGATIVE] alive=false invulnChecks=5 vetoed=0 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false | expected: destroyed after 5 native cactus hits, zero vetoes
+BG17PROBE PASS cactus_item_destroyed_control_5 :: item=minecraft:stick label=minecraft:stick[non-mod, NEGATIVE] alive=false invulnChecks=5 vetoed=0 blockAtFeet=Block{minecraft:cactus}[age=0] noPhysics=false | expected: destroyed after 5 native cactus hits, zero vetoes
+BG17PROBE INFO spawn_invulnerable_cleared :: spawnInvulnerableTime=0
+BG17PROBE INFO armour_player :: isInvulnerableTo(false-override)=false instabuild=false
+BG17PROBE INFO armour_thornsgold_helmet :: hurt=true health 20.0000 -> 19.2500 helmetDamage 0 -> 0
+BG17PROBE PASS armour_cactus_hit_landed_thornsgold :: hurt=true healthDelta=0.7500
+BG17PROBE PASS armour_durability_cactus_thornsgold_helmet_zero :: thornsgold helmet damage delta = 0 (expected 0)
+BG17PROBE INFO armour_sturdygold_chestplate :: hurt=true health 20.0000 -> 19.0000 chestDamage 0 -> 1
+BG17PROBE PASS armour_cactus_hit_landed_sturdygold :: hurt=true healthDelta=1.0000
+BG17PROBE PASS armour_durability_cactus_sturdygold_plus_one :: sturdygold chestplate damage delta = 1 (expected +1)
+BG17PROBE INFO armour_iron_golem :: inWorld=true chestplateDamage 0 -> 0
+BG17PROBE PASS armour_durability_real_non_player_never_takes_armour_damage :: iron golem chestplate damage delta = 0 (LivingEntity#hurtArmor is an empty body; Player#hurtArmor is the only override)
+BG17PROBE PASS forceload_runtime_back_to_zero :: forced before release=9 after=0
+BG17PROBE SUMMARY pass=28 fail=0 skip=0
+BG17PROBE INFO halting :: single server.halt(false) call
+[19:57:51] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg17probe]'/minecraft:overworld
+[19:57:52] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg17probe]'/minecraft:the_end
+[19:57:52] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bg17probe]'/minecraft:the_nether
+[19:57:52] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bg17probe
+[19:57:52] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (bg17probe): All chunks are saved

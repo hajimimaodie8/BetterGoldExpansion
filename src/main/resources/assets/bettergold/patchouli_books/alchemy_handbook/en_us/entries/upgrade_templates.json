@@ -1,0 +1,33 @@
+{
+  "name": "bettergold.handbook.entry.upgrade_templates",
+  "category": "bettergold:alchemy_start",
+  "icon": "bettergold:sturdygold_upgrade_template",
+  "sortnum": 1,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.upgrade_templates"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:flamegold_upgrade_template",
+      "recipe2": "bettergold:sturdygold_upgrade_template"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:thornsgold_upgrade_template",
+      "recipe2": "bettergold:echogold_upgrade_template"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:indigoseagold_upgrade_template",
+      "recipe2": "bettergold:voodoogold_upgrade_template"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:thundergold_upgrade_template",
+      "recipe2": "bettergold:illusiongold_upgrade_template"
+    }
+  ]
+}

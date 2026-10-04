@@ -1,0 +1,61 @@
+== runClient #2 : Patchouli INSTALLED (run/mods/Patchouli-1.21.1-93-NEOFORGE.jar) ==
+log: build/bgbook-run5.log
+gradle: BUILD SUCCESSFUL in 1m 17s, exit 0
+
+[20:51:36] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[20:51:41] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE client armed=true gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:52:22] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server armed=false dedicated=false gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS env_client :: patchouliLoaded=true
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registration_follows_env_client :: registered=true patchouliLoaded=true (must be equal)
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS field_null_follows_env_client :: fieldNull=false
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_in_creative_page_client :: index=9
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_is_materials_first_client :: firstNonEmptyIndex=9 handbookIndex=9 firstId=bettergold:alchemy_student_handbook
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_single_entry_client :: count=1
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_item_class_client :: com.hjmmd_8.bettergold.item.HandbookItem
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_stack_is_one_client :: maxStack=1
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_no_durability_client :: maxDamage=0
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_no_attributes_client :: modifiers=0
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_enchant_readouts_client :: isEnchantable=false enchantmentValue=0
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registered_item_count_client :: AllItems.ITEMS entries=323 pageStacks=422
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_entry_resources_count :: parsed=7/7
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_recipe_refs_anti_vacuum :: refs=88
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_recipe_refs_all_present :: refs=88 missing=[]
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS client_book_registered :: books=1
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS landing_text_translated :: key=bettergold.handbook.landing resolved=��Ҫ��ø���ǿ���Ƿ�"���"��Ȼ�Ǳز����ٵģ��Ȿ�齫�����˽��⼸��"���"��֪ʶ��
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_contents_no_error :: errored=false exception=null
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_categories_four :: size=4
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_entries_seven :: size=7
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_category_order :: ids=[alchemy_start, gear_upgrade, golden_feast, merchant_antiques]
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_translated_alchemy_start :: resolved=�������
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_matches_json_alchemy_start :: json=������� lang=�������
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_desc_translated_alchemy_start :: resolved=�����˽����"���"�йص��䷽��֪ʶ��
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_icon_alchemy_start :: icon=bettergold:raw_sturdygold want=bettergold:raw_sturdygold
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_has_entries_alchemy_start :: entries=2
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_translated_gear_upgrade :: resolved=װ��������
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_matches_json_gear_upgrade :: json=װ�������� lang=װ��������
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_desc_translated_gear_upgrade :: resolved="���"��Ȼ��Ȼ�����Լ���ר��װ����
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_icon_gear_upgrade :: icon=bettergold:sturdygold_sword want=bettergold:sturdygold_sword
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_has_entries_gear_upgrade :: entries=2
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_translated_golden_feast :: resolved=��ӵ�ʢ��
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_matches_json_golden_feast :: json=��ӵ�ʢ�� lang=��ӵ�ʢ��
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_desc_translated_golden_feast :: resolved=�Խ��ʳ��
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_icon_golden_feast :: icon=bettergold:sturdygold_apple want=bettergold:sturdygold_apple
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_has_entries_golden_feast :: entries=1
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_translated_merchant_antiques :: resolved=������Ŷ�
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_name_matches_json_merchant_antiques :: json=������Ŷ� lang=������Ŷ�
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_desc_translated_merchant_antiques :: resolved=��Ǯ����Ҫ��ȥ�ӻ�ġ�
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_icon_merchant_antiques :: icon=bettergold:gold_exchange_counter want=bettergold:gold_exchange_counter
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS category_has_entries_merchant_antiques :: entries=2
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_total_pages :: pages=74
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_entries_unlocked :: locked=0
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_entry_names_translated :: unresolvedKeys=0
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_entry_for_stack_readout :: flamegoldIngot=<null> thornsgoldSword=bettergold:tools_per_family
+[20:52:26] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS book_link_belongs_to_our_book :: entry=bettergold:tools_per_family
+[20:52:27] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS client_give_book :: serverMainHand=1 bettergold:alchemy_student_handbook
+[20:52:28] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS client_use_book_precondition :: player=true gameMode=true
+[20:52:28] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS client_use_book :: useItemSent
+[20:52:29] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_opened_by_right_click :: openBookGui=bettergold:alchemy_handbook
+[20:52:29] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_gui_on_screen :: screen=vazkii.patchouli.client.book.gui.GuiBookLanding
+[20:52:29] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_open_screen_readout :: screen=vazkii.patchouli.client.book.gui.GuiBookLanding
+[20:52:29] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE SUMMARY where=client pass=52 fail=0 fails=[]
+[20:52:29] [Render thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE client stopping (tick=90)

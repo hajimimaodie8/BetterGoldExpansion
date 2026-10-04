@@ -1,0 +1,28 @@
+== runServer #1/#3 : Patchouli NOT installed (run/mods = JEI only) ==
+logs: build/bgbook-run1.log (first pass) and build/bgbook-run3.log (final build) --
+the two passes are identical in every assertion.
+gradle: BUILD SUCCESSFUL in 33s / 21s, exit 0
+
+== build/bgbook-run3.log (final build) ==
+[20:37:28] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli not loaded -> the alchemy handbook item is NOT registered
+[20:37:32] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server armed=true gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:37:33] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS env_server :: patchouliLoaded=false
+[20:37:33] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registration_follows_env_server :: registered=false patchouliLoaded=false (must be equal)
+[20:37:33] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS field_null_follows_env_server :: fieldNull=true
+[20:37:33] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_absent_from_creative_page_server :: foundAt=-1
+[20:37:33] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS materials_first_without_patchouli_server :: firstId=bettergold:mixed_crystal_pile
+[20:37:33] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registered_item_count_server :: AllItems.ITEMS entries=322 pageStacks=422
+[20:37:34] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE SUMMARY where=server pass=6 fail=0 fails=[]
+[20:37:34] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server halting once (tick=40)
+
+== build/bgbook-run1.log (first pass) ==
+[20:32:17] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli not loaded -> the alchemy handbook item is NOT registered
+[20:32:26] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server armed=true gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:32:27] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS env_server :: patchouliLoaded=false
+[20:32:27] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registration_follows_env_server :: registered=false patchouliLoaded=false (must be equal)
+[20:32:27] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS field_null_follows_env_server :: fieldNull=true
+[20:32:27] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS handbook_absent_from_creative_page_server :: foundAt=-1
+[20:32:27] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS materials_first_without_patchouli_server :: firstId=bettergold:mixed_crystal_pile
+[20:32:27] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE PASS registered_item_count_server :: AllItems.ITEMS entries=322 pageStacks=422
+[20:32:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE SUMMARY where=server pass=6 fail=0 fails=[]
+[20:32:28] [Server thread/INFO] [co.hj.be.bettergold/]: BG-BOOK-PROBE server halting once (tick=40)

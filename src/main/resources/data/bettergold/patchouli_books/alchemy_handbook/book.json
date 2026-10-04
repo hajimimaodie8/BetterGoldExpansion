@@ -1,0 +1,10 @@
+{
+  "name": "bettergold.handbook.name",
+  "subtitle": "bettergold.handbook.subtitle",
+  "landing_text": "bettergold.handbook.landing",
+  "dont_generate_book": true,
+  "custom_book_item": "bettergold:alchemy_student_handbook",
+  "use_resource_pack": true,
+  "i18n": true,
+  "version": "1.6.0"
+}
