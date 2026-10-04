@@ -86,6 +86,16 @@
 - **只读 JSON / 只读源码不算验证**；结论分 A 实机 / B 仅编译 / C 仅读源码三级汇报。
 - 探针**绝不许把 `server.halt(...)` 之类带进生产代码**；收尾整块删除 + `grep` 零命中 + 开关文件删除；`halt(false)` **只能调一次**。
 - 测「范围内实体」前必须 forceload 并**等几 tick**，否则 AABB 查询看不见实体 ⇒ **假阴性**。
+- ⚠ **绝不用「UI 自动化」在 dev 里建世界**（`CreateWorldScreen.openFresh` + 回车这类）——
+  MC 的"创建新世界"界面**默认世界名取的是"新建世界"那个翻译键**（本机 zh_cn 下就是 `新的世界`），
+  于是它可能建出 `新的世界 (n)`，或更糟：**直接载入作者同名的存档并把它正常存盘重写一遍**。
+  **本仓实测误写作者存档一次**（2026-10-04 `bg-book` 收尾轮：日志三次
+  `Saving chunks for level 'ServerLevel[新的世界]'`、`level.dat` 2819 → **2866 B**、`playerdata/*.dat`
+  1248 → **1266 B**、约 20 个 region/entities/stats 文件被重写；`data/chunks.dat` 未变）。
+  ⇒ 要跑客户端进世界，**只**用 `--quickPlaySingleplayer <已存在的 ASCII 探针世界>`（世界**先建好**再启动客户端，
+  名字里**绝不能**出现作者存档名），并在**进世界后第一 tick 断言世界名**（客户端 `LevelData` 没有名字访问器 ⇒
+  从整合服务端 `overworld().getLevelData()` 反射读 `getLevelName()`），不等就**立刻停止所有动作**；
+  跑前留档 `run/saves` 目录清单（名字 + 文件数 + mtime）、跑后复核。跨项目条目见 `mod_experience` §3.2 规则 21。
 
 **6）贴图口径（本文件未成文 → 动手前先问用户）**
 本项目 `README.md` 声明「所有贴图均为本项目原创手绘资源」；素材由作者以 zip 提供（见 `docs/1.5-规格.md` 第八、十二节）。
