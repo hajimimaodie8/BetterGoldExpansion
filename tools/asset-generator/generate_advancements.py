@@ -59,6 +59,19 @@ def gear(metal: str) -> list[str]:
     return [f"{NS}:{metal}_{s}" for s in GEAR_SUFFIX]
 
 
+# ⚠ bg-ach §七.6（作者 2026-10-05：「**乐事的刀不会触发有关获得器具的进度**」）：
+#   「获得任意一种 XX金武器工具」这 8 条成就**不把刀算进去**。
+#   本仓的刀（`<metal>_knife`，走可选依赖 FD 的 `KnifeItem`）**就在 `GEAR_SUFFIX` 之外** ⇒
+#   按物品 id 排除这条规则**天然成立**（不需要再按标签排除）；
+#   本轮把它**显式钉成断言**（validate_advancements.py 的 `[bgach-no-knife-in-gear]`），
+#   免得以后有人"顺手"把 knife 加回 GEAR_SUFFIX 而静默改变 8 条成就的口径。
+#
+# ⚠ 已知不一致（记录在 docs/1.6-规格.md §18.3，**没有自行改手册**）：手册「器具同框」那一页
+#   （bg-book §3.4 / 生成器 `TOOLS = [sword, axe, pickaxe, shovel, hoe, knife]`）把刀算作器具，
+#   而进度这边不算 —— 两处口径不同，作者一句话即可统一。
+KNIVES = [f"{NS}:{m}_knife" for m in METALS]
+
+
 def armor(metal: str) -> list[str]:
     return [f"{NS}:{metal}_{s}" for s in ARMOR_SUFFIX]
 
@@ -181,16 +194,22 @@ def build() -> list[dict]:
                       frame=frame, fd=fd))
 
     # ---- §3.1 根与炼制（3）
+    # ⚠ bg-ach §七.2（作者 2026-10-05）：「"制作"条件什么的请给它无视掉，只要是**获得某样物品就能够触发**
+    #   成就（但**除了「这件商品很适合你哦~」这个成就**）」⇒ 凡原文写「制作 X」的成就一律改成
+    #   `minecraft:inventory_changed`（合成 / 拾取 / 交易 / 任何途径获得都会触发）；
+    #   **唯一例外** = merchant/gift_box（仍是 `villager_trade`，见 §3.4）。
+    #   ⚠ 作者给的**标题 / 简介文案一个字都没动**（§5.3 陷阱 4「逐字用」）：简介里那句「制作 X」
+    #     保留为原文、与判定口径分离 —— 这是本轮记在 docs/1.6-规格.md §18.2 的已知差异。
     add("root", "root", "旧时代炼金术的继承者", "以炼制\"贵金\"为主要目标，出发！",
         "minecraft:gold_ingot", None,
         {"craft_handbook": c_recipe(f"{NS}:alchemy_student_handbook")},
         [["craft_handbook"]])
     add("alchemy/mixed_crystal_pile", "mixed_crystal_pile",
         "炼制\"贵金\"所需I", "制作混合晶石堆", f"{NS}:mixed_crystal_pile", "root",
-        {"craft": c_recipe(f"{NS}:mixed_crystal_pile")}, [["craft"]])
+        {"have": c_inv([f"{NS}:mixed_crystal_pile"])}, [["have"]])
     add("alchemy/alchemic_fuel", "alchemic_fuel",
         "炼制\"贵金\"所需II", "制作炼金燃油", f"{NS}:alchemic_fuel", "root",
-        {"craft": c_recipe(f"{NS}:alchemic_fuel")}, [["craft"]])
+        {"have": c_inv([f"{NS}:alchemic_fuel"])}, [["have"]])
 
     # ---- §3.2 珍宝与 8 个核心材料（10）
     add("treasure/any_core_material", "core_material",
@@ -200,7 +219,7 @@ def build() -> list[dict]:
     treasure_parent = "treasure/any_core_material"
     add("treasure/blazing_rod", "blazing_rod", "超 燃 大 火 杆 ！", "制作一个高燃烈焰棒",
         f"{NS}:blazing_rod", treasure_parent,
-        {"craft": c_recipe(f"{NS}:blazing_rod")}, [["craft"]])
+        {"have": c_inv([f"{NS}:blazing_rod"])}, [["have"]])
     add("treasure/golden_cowrie", "golden_cowrie", "留于炽海的旧忆之贝", "获得一个金钱贝",
         f"{NS}:golden_cowrie", treasure_parent,
         {"have": c_inv([f"{NS}:golden_cowrie"])}, [["have"]])
@@ -209,27 +228,23 @@ def build() -> list[dict]:
         {"have": c_inv([f"{NS}:glittering_vine"])}, [["have"]])
     add("treasure/bundled_echo_shard", "bundled_echo_shard",
         "装填，捆绑，然后赶紧…", "制作一个集束回响碎片", f"{NS}:bundled_echo_shard", treasure_parent,
-        {"craft": c_recipe(f"{NS}:bundled_echo_shard")}, [["craft"]])
+        {"have": c_inv([f"{NS}:bundled_echo_shard"])}, [["have"]])
     add("treasure/indigo_ocean_heart", "indigo_ocean_heart", "淀入深海", "制作一个靛蓝海洋之心",
         f"{NS}:indigo_ocean_heart", treasure_parent,
-        {"craft": c_recipe(f"{NS}:indigo_ocean_heart")}, [["craft"]])
+        {"have": c_inv([f"{NS}:indigo_ocean_heart"])}, [["have"]])
     add("treasure/voodoo_feather", "voodoo_feather", "复制品般的无光之毛", "获得一个巫毒羽毛",
         f"{NS}:voodoo_feather", treasure_parent,
         {"have": c_inv([f"{NS}:voodoo_feather"])}, [["have"]])
     add("treasure/amethyst_energy_dust", "amethyst_energy_dust", "红紫回旋 大·爆炸",
         "制作一个聚紫能晶尘", f"{NS}:amethyst_energy_dust", treasure_parent,
-        {"craft": c_recipe(f"{NS}:amethyst_energy_dust")}, [["craft"]])
-    add("treasure/chorus_cherry_branch", "chorus_cherry_branch", "未外重叠的花香",
+        {"have": c_inv([f"{NS}:amethyst_energy_dust"])}, [["have"]])
+    # ⚠ §七.3 改名：「未外重叠的花香」→「末外重叠的花香」（只改这一个字）
+    add("treasure/chorus_cherry_branch", "chorus_cherry_branch", "末外重叠的花香",
         "制作一个紫颂樱花枝", f"{NS}:chorus_cherry_branch", treasure_parent,
-        {"craft": c_recipe(f"{NS}:chorus_cherry_branch")}, [["craft"]])
+        {"have": c_inv([f"{NS}:chorus_cherry_branch"])}, [["have"]])
     add("treasure/any_raw_metal", "raw_metal", "齐活，烧炼，拿下！",
         "制作出任意一种\"贵金\"原料", f"{NS}:raw_sturdygold", treasure_parent,
-        {f"craft_{m}": c_recipe(f"{NS}:raw_{m}") for m in
-         ["flamegold", "voodoogold", "thundergold", "indigoseagold",
-          "illusiongold", "thornsgold", "echogold", "sturdygold"]},
-        [[f"craft_{m}" for m in
-          ["flamegold", "voodoogold", "thundergold", "indigoseagold",
-           "illusiongold", "thornsgold", "echogold", "sturdygold"]]])
+        {"have": c_inv(RAW_MATERIALS)}, [["have"]])
 
     # ---- §3.3 八条金属线（25）
     # 每条线：核心材料成就 → 锭 →（武器工具 / 整套盔甲）；万坚金多一条挑战 ⑲
@@ -298,10 +313,10 @@ def build() -> list[dict]:
         {"have": c_inv([NETHERITE_ANTIQUE_TOOLS])}, [["have"]])
 
     # ---- §3.5 农业与食物（9）
+    farm = "agriculture/gold_infused_dirt"
     add("agriculture/gold_infused_dirt", "gold_infused_dirt", "土地也要染上黄金", "制作金染土",
         f"{NS}:gold_infused_dirt", "root",
-        {"craft": c_recipe(f"{NS}:gold_infused_dirt")}, [["craft"]])
-    farm = "agriculture/gold_infused_dirt"
+        {"have": c_inv([f"{NS}:gold_infused_dirt"])}, [["have"]])
     add("agriculture/eggplant_seeds", "eggplant_seeds", "光辉岁月之种",
         "在遗迹堡垒里获得金钱茄种子", f"{NS}:golden_eggplant_seeds", farm,
         {"have": c_inv([f"{NS}:golden_eggplant_seeds"], structure="minecraft:bastion_remnant")},
@@ -650,6 +665,8 @@ def main() -> int:
             "gear_suffix": GEAR_SUFFIX, "armor_suffix": ARMOR_SUFFIX, "metals": METALS,
             "gold_foods": GOLD_FOODS, "sturdygold_foods": STURDYGOLD_FOODS,
             "fd_gold_foods": FD_GOLD_FOODS, "fd_sturdygold_foods": FD_STURDYGOLD_FOODS,
+            # §七.6：刀**不是**器具 ⇒ 关卡用这份清单反向断言"8 条武器成就里一个刀都没有"
+            "knives": KNIVES,
         },
     }
     MANIFEST.write_bytes((json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")

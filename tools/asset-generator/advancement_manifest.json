@@ -30,11 +30,9 @@
       "title": "炼制\"贵金\"所需I",
       "description": "制作混合晶石堆",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:mixed_crystal_pile"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:alchemy/alchemic_fuel",
@@ -47,11 +45,9 @@
       "title": "炼制\"贵金\"所需II",
       "description": "制作炼金燃油",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:alchemic_fuel"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:treasure/any_core_material",
@@ -79,11 +75,9 @@
       "title": "超 燃 大 火 杆 ！",
       "description": "制作一个高燃烈焰棒",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:blazing_rod"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:treasure/golden_cowrie",
@@ -126,11 +120,9 @@
       "title": "装填，捆绑，然后赶紧…",
       "description": "制作一个集束回响碎片",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:bundled_echo_shard"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:treasure/indigo_ocean_heart",
@@ -143,11 +135,9 @@
       "title": "淀入深海",
       "description": "制作一个靛蓝海洋之心",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:indigo_ocean_heart"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:treasure/voodoo_feather",
@@ -175,11 +165,9 @@
       "title": "红紫回旋 大·爆炸",
       "description": "制作一个聚紫能晶尘",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:amethyst_energy_dust"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:treasure/chorus_cherry_branch",
@@ -189,14 +177,12 @@
       "icon": "bettergold:chorus_cherry_branch",
       "frame": "task",
       "fd": false,
-      "title": "未外重叠的花香",
+      "title": "末外重叠的花香",
       "description": "制作一个紫颂樱花枝",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:chorus_cherry_branch"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:treasure/any_raw_metal",
@@ -209,18 +195,9 @@
       "title": "齐活，烧炼，拿下！",
       "description": "制作出任意一种\"贵金\"原料",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:raw_echogold",
-        "bettergold:raw_flamegold",
-        "bettergold:raw_illusiongold",
-        "bettergold:raw_indigoseagold",
-        "bettergold:raw_sturdygold",
-        "bettergold:raw_thornsgold",
-        "bettergold:raw_thundergold",
-        "bettergold:raw_voodoogold"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:metal/flamegold/ingot",
@@ -668,11 +645,9 @@
       "title": "土地也要染上黄金",
       "description": "制作金染土",
       "triggers": [
-        "minecraft:recipe_crafted"
+        "minecraft:inventory_changed"
       ],
-      "recipe_ids": [
-        "bettergold:gold_infused_dirt"
-      ]
+      "recipe_ids": []
     },
     {
       "id": "bettergold:agriculture/eggplant_seeds",
@@ -893,6 +868,16 @@
       "bettergold:sturdygold_apple_pie_slice",
       "bettergold:sturdygold_chocolate_pie_slice",
       "bettergold:sturdygold_cake_slice"
+    ],
+    "knives": [
+      "bettergold:flamegold_knife",
+      "bettergold:sturdygold_knife",
+      "bettergold:thornsgold_knife",
+      "bettergold:echogold_knife",
+      "bettergold:indigoseagold_knife",
+      "bettergold:voodoogold_knife",
+      "bettergold:thundergold_knife",
+      "bettergold:illusiongold_knife"
     ]
   }
 }

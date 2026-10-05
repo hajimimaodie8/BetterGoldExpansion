@@ -1,0 +1,51 @@
+﻿# bg-append 追加轮（2026-10-05）· 收尾清理与逐字节复原
+
+## 1. 探针与开关文件（本轮纪律）
+* 本轮**没有写任何 Java 探针**（改动是手册 JSON / 语言键 / 两处配方的数据层 + 音效与渲染层的一行代码），
+  因此不存在"探针整块删除"的动作。复核：
+  * src/main/java/com/hjmmd_8/bettergold/probe/ 不存在（Count = 0）
+  * 生产代码里 halt( / BG-PROBE / probe 命中数 = **0**
+  * un\ 下没有任何 *probe* 开关文件
+* 本轮**没有启动任何 run\* 任务**（只跑 compileJava / runData / processResources+jar）⇒
+  un\ 独占纪律未被触碰，也没有"别的会话在跑"的冲突。
+
+## 2. 作者的存档（run/saves）
+* 跑前留档（2026-10-05 20:52）：新的世界 文件数 **29**，mtime 2026-10-04 21:30:01
+* 跑后复核（2026-10-05 21:2x）：新的世界 文件数 **29**，mtime **2026-10-04 21:30:01**（未变）
+* ⚠ 本轮**没有**用 --quickPlaySingleplayer 进过世界（也没有 UI 自动化建世界）——
+  run/saves 里也不存在任何 ASCII 探针世界 ⇒ **本轮无法做需要"进世界"的 A 级实测**（见 07）。
+
+## 3. 临时改过的文件：逐字节复原 + SHA256 相中
+所有"被扰动改坏过"的文件都由扰动脚本在每条用例后**逐字节写回原文**，脚本末尾逐文件比对 SHA256。
+用例覆盖的文件（全部 OK）：
+
+| 文件 | SHA256（改前 == 改后） |
+|---|---|
+| docs/1.6-规格.md | 00665a2a46bbf8b3016d7ec0a2a3ec0620bac426ca7b9855ca2b76b17b21b174 |
+| src/main/java/.../bettergoldClient.java | 63dd9bbd03d6f67b529944c3b3b3c66f1d9a3e6b3f5b0ebefd3640ac79113f3f |
+| src/main/java/.../material/MetalEvents.java | 162e1f3e588602b93573ae8c46ab0970d0a6f635e8c5768542d0f6b27d5f07a9 |
+| assets/bettergold/lang/en_us.json | 37621d6bd0a9b17694e386563c3dec4c67fb540b9258aa2dad0c2faa9ed934ef |
+| assets/bettergold/lang/zh_cn.json | 8b0009c3cd7e590135043dc18824ea66412556abed02af2b66cfba47e065cfdb |
+| patchouli_books/.../zh_cn/entries/golden_knowledge.json | f7059038584988ece34babbed801b3aede624296689571d4e274bb6995a90261 |
+| data/bettergold/advancement/merchant/gift_box.json | 624f1330a69fdac8203356c42f909aba2cc848ec5d7d2f7ba1573ddaf1529bbc |
+| data/bettergold/advancement/metal/flamegold/weapon.json | ce976edbb21015170aaa2bd280ea1f8bfbb1f60a68c2cd6e18c9159e21d62489 |
+| data/bettergold/advancement/treasure/blazing_rod.json | 71b5ef04285f41259092c25fa2c5487a9f58773480187e27ec0454d5a2fa510d |
+| data/bettergold/recipe/golden_rose_bush.json | aab83031486c45f83e51fc5cd19e4786b12c90f55fd6156060f72d5969e827bd |
+| data/bettergold/recipe/yellow_dye_from_golden_rose_bush.json | ce3449ffd01c709598e81551058e99168a694ec52e630cdc1d0cc90219049ce4 |
+| tools/asset-generator/generate_handbook_data.py | 883625a34d3a43b9a38fdf8c6366929f097be3f25f6cd167e87c8d164d212c1d |
+
+## 4. run\server.properties / run\config\*.toml / build\moddev\*.txt（改前 == 改后）
+| 文件 | SHA256 |
+|---|---|
+| run/server.properties | A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4 |
+| run/config/bettergold-common.toml | 731371ECCCCB018702BA5C606148D8BF54ACC731ABC26F9C446E6A1ECB8054AA |
+| build/moddev/clientRunProgramArgs.txt | A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB |
+| build/moddev/serverRunProgramArgs.txt | DEE12A6EE87E7A964BC56E8E89A0460A329333546902CE654B733E0C96A367A1 |
+
+（完整清单 = build/bgappend-baseline/hashes-before.txt，本轮未对该清单里任何文件做过写操作）
+
+## 5. 清理
+* 收尾删除：build/bgappend-baseline/vmd-debug.py（调试用副本）、build/bgappend-perturb/t.py、t2.py（一次性探针脚本）
+* 保留（证据）：build/bgappend-baseline/*.txt、build/bgappend-perturb/perturb-final.txt、
+  docs/bgappend-证据/*
+* 未删除任何"交付物"（run/mods/Patchouli-1.21.1-93-NEOFORGE.jar 原样在位）

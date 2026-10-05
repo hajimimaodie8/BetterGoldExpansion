@@ -13,16 +13,20 @@
     }
   },
   "criteria": {
-    "craft": {
-      "trigger": "minecraft:recipe_crafted",
+    "have": {
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "recipe_id": "bettergold:bundled_echo_shard"
+        "items": [
+          {
+            "items": "bettergold:bundled_echo_shard"
+          }
+        ]
       }
     }
   },
   "requirements": [
     [
-      "craft"
+      "have"
     ]
   ],
   "sends_telemetry_event": false

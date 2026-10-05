@@ -9,23 +9,16 @@
       "type": "patchouli:spotlight",
       "item": [
         "bettergold:flamegold_ingot",
-        "bettergold:flamegold_nugget",
         "bettergold:sturdygold_ingot",
-        "bettergold:sturdygold_nugget",
         "bettergold:thornsgold_ingot",
-        "bettergold:thornsgold_nugget",
         "bettergold:echogold_ingot",
-        "bettergold:echogold_nugget",
         "bettergold:indigoseagold_ingot",
-        "bettergold:indigoseagold_nugget",
         "bettergold:voodoogold_ingot",
-        "bettergold:voodoogold_nugget",
         "bettergold:thundergold_ingot",
-        "bettergold:thundergold_nugget",
-        "bettergold:illusiongold_ingot",
-        "bettergold:illusiongold_nugget"
+        "bettergold:illusiongold_ingot"
       ],
-      "text": "bettergold.handbook.page.knowledge_1_left"
+      "text": "bettergold.handbook.page.knowledge_1_summary",
+      "title": "各种各样的\"贵金\"锭"
     },
     {
       "type": "patchouli:spotlight",
@@ -39,7 +32,7 @@
         "bettergold:thundergold_upgrade_template",
         "bettergold:illusiongold_upgrade_template"
       ],
-      "text": "bettergold.handbook.page.knowledge_1_right"
+      "title": "\"贵金\"装备的升级锻造模版"
     },
     {
       "type": "patchouli:spotlight",

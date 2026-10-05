@@ -13,16 +13,20 @@
     }
   },
   "criteria": {
-    "craft": {
-      "trigger": "minecraft:recipe_crafted",
+    "have": {
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "recipe_id": "bettergold:chorus_cherry_branch"
+        "items": [
+          {
+            "items": "bettergold:chorus_cherry_branch"
+          }
+        ]
       }
     }
   },
   "requirements": [
     [
-      "craft"
+      "have"
     ]
   ],
   "sends_telemetry_event": false

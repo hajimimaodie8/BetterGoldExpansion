@@ -13,16 +13,20 @@
     }
   },
   "criteria": {
-    "craft": {
-      "trigger": "minecraft:recipe_crafted",
+    "have": {
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "recipe_id": "bettergold:gold_infused_dirt"
+        "items": [
+          {
+            "items": "bettergold:gold_infused_dirt"
+          }
+        ]
       }
     }
   },
   "requirements": [
     [
-      "craft"
+      "have"
     ]
   ],
   "sends_telemetry_event": false

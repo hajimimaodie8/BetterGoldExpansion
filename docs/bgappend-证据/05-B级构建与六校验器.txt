@@ -1,0 +1,37 @@
+﻿# bg-append 追加轮（2026-10-05）· B 级证据：构建 + 六校验器
+# 生成方式：逐条命令原样抄录（时间 = 本轮执行时刻）
+
+## 1. compileJava
+命令: .\gradlew.bat compileJava --console=plain
+结果: BUILD SUCCESSFUL in 2s / 2 actionable tasks: 1 executed, 1 up-to-date
+说明: stderr 只有 javac 的 deprecation 注（沿用既有 @Deprecated 调用），非错误。
+      详细输出: build/bgappend-baseline/compileJava.err
+
+## 2. runData（兼作 Bootstrap / mixin 冒烟）
+命令: .\gradlew.bat runData --console=plain
+结果: BUILD SUCCESSFUL in 17s / 7 actionable tasks: 2 executed, 5 up-to-date
+关键行: [21:04:16] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+        [21:04:16] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: 注册金属族 8 个: [flamegold(烈燃金), voodoogold(巫毒金), thundergold(结雷金), indigoseagold(靛海金), illusiongold(幻惑金), thornsgold(树棘金), echogold(幽咆金), sturdygold(万坚金)]
+        [21:04:17] [main/INFO] [minecraft/DataGenerator]: All providers took: 0 ms
+
+## 3. processResources jar --rerun-tasks
+命令: .\gradlew.bat processResources jar --rerun-tasks --console=plain
+结果: BUILD SUCCESSFUL in 8s / 4 actionable tasks: 4 executed
+产物: build/libs/bettergold-1.6.0.jar (1328313 B, 2026-10-05 21:04:29)
+
+## 4. 六校验器（全部 exit=0）
+| 校验器 | exit | 关键读数 |
+|---|---|---|
+| validate_metal_data.py | 0 | 各断言族问题均为 0；bg-append 追加轮 0 |
+| validate_metal_assets.py | 0 | bg-16 授权贴图白名单 0 违规 |
+| validate_trim_assets.py | 0 | 纹饰素材 0 违规 |
+| validate_advancements.py | 0 | 51 个成就 / 114 条 criteria / 配方引用 1 条（只剩 root）/ 语言键 102 |
+| check_jar_clean.py | 0 | jar 内 'halt' 字节 = 0；'BG-PROBE' = 0；文件总数 2372 |
+| check_forced_chunks.py | 0 | data.Forced = []；chunks.dat 侧 forceload = 0 |
+
+原始输出: build/bgappend-baseline/final-*.txt ；改前基线: build/bgappend-baseline/before-*.txt
+（改前 validate_metal_data.py = exit 1，原因是关卡读"外部活页需求文档"被作者 20:40 的改动带红；
+  修法与依据见 docs/1.6-规格.md §17.3.1）
+
+## 5. 字节级复原 / run 目录独占
+见 06-收尾清理与逐字节复原.txt

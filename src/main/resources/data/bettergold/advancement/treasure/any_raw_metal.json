@@ -13,65 +13,41 @@
     }
   },
   "criteria": {
-    "craft_flamegold": {
-      "trigger": "minecraft:recipe_crafted",
+    "have": {
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "recipe_id": "bettergold:raw_flamegold"
-      }
-    },
-    "craft_voodoogold": {
-      "trigger": "minecraft:recipe_crafted",
-      "conditions": {
-        "recipe_id": "bettergold:raw_voodoogold"
-      }
-    },
-    "craft_thundergold": {
-      "trigger": "minecraft:recipe_crafted",
-      "conditions": {
-        "recipe_id": "bettergold:raw_thundergold"
-      }
-    },
-    "craft_indigoseagold": {
-      "trigger": "minecraft:recipe_crafted",
-      "conditions": {
-        "recipe_id": "bettergold:raw_indigoseagold"
-      }
-    },
-    "craft_illusiongold": {
-      "trigger": "minecraft:recipe_crafted",
-      "conditions": {
-        "recipe_id": "bettergold:raw_illusiongold"
-      }
-    },
-    "craft_thornsgold": {
-      "trigger": "minecraft:recipe_crafted",
-      "conditions": {
-        "recipe_id": "bettergold:raw_thornsgold"
-      }
-    },
-    "craft_echogold": {
-      "trigger": "minecraft:recipe_crafted",
-      "conditions": {
-        "recipe_id": "bettergold:raw_echogold"
-      }
-    },
-    "craft_sturdygold": {
-      "trigger": "minecraft:recipe_crafted",
-      "conditions": {
-        "recipe_id": "bettergold:raw_sturdygold"
+        "items": [
+          {
+            "items": "bettergold:raw_flamegold"
+          },
+          {
+            "items": "bettergold:raw_voodoogold"
+          },
+          {
+            "items": "bettergold:raw_thundergold"
+          },
+          {
+            "items": "bettergold:raw_indigoseagold"
+          },
+          {
+            "items": "bettergold:raw_illusiongold"
+          },
+          {
+            "items": "bettergold:raw_thornsgold"
+          },
+          {
+            "items": "bettergold:raw_echogold"
+          },
+          {
+            "items": "bettergold:raw_sturdygold"
+          }
+        ]
       }
     }
   },
   "requirements": [
     [
-      "craft_flamegold",
-      "craft_voodoogold",
-      "craft_thundergold",
-      "craft_indigoseagold",
-      "craft_illusiongold",
-      "craft_thornsgold",
-      "craft_echogold",
-      "craft_sturdygold"
+      "have"
     ]
   ],
   "sends_telemetry_event": false

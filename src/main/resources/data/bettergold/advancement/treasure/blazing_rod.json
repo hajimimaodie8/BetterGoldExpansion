@@ -13,16 +13,20 @@
     }
   },
   "criteria": {
-    "craft": {
-      "trigger": "minecraft:recipe_crafted",
+    "have": {
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "recipe_id": "bettergold:blazing_rod"
+        "items": [
+          {
+            "items": "bettergold:blazing_rod"
+          }
+        ]
       }
     }
   },
   "requirements": [
     [
-      "craft"
+      "have"
     ]
   ],
   "sends_telemetry_event": false

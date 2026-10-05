@@ -345,9 +345,20 @@ def main() -> int:
             bad("bgach-requirements-semantics",
                 f"{path} 是「获得**所有**…」⇒ 每个食物必须各自一组（实际 {len(g)} 组）")
     g = groups_of("treasure/any_raw_metal")
-    if len(g) != 1 or len(g[0]) != 8:
+    # ⚠ bg-ach §七.2：这条从「制作任意一种原料」改成「获得任意一种原料」⇒ 8 个 craft_* 判据
+    #   合并成**一个** `inventory_changed`（单条 criteria + 8 个 ItemPredicate = 天然 OR）
+    #   ⇒ requirements 也从此前的那种形态收成 1 组 1 条；语义（任意一种）不变。
+    if len(g) != 1 or len(g[0]) != 1:
         bad("bgach-requirements-semantics",
-            f"treasure/any_raw_metal 是「任意一种原料」⇒ 恰好 1 组 8 条（OR），实际 {g}")
+            f"treasure/any_raw_metal 是「任意一种原料」⇒ 恰好 1 组 1 条（OR 由 items 列表承载），实际 {g}")
+    _raw_items = []
+    for _c in (advs.get("treasure/any_raw_metal", {}).get("criteria") or {}).values():
+        for _pred in (_c.get("conditions") or {}).get("items") or []:
+            _it = _pred.get("items")
+            _raw_items.extend([_it] if isinstance(_it, str) else (_it or []))
+    if len(set(_raw_items)) != 8:
+        bad("bgach-requirements-semantics",
+            f"treasure/any_raw_metal 的 items 不是 8 种原料（实际 {sorted(set(_raw_items))}）")
     g = groups_of("agriculture/plant_gold_crop")
     if sorted(len(x) for x in g) != [1, 2]:
         bad("bgach-requirements-semantics",
@@ -454,6 +465,67 @@ def main() -> int:
         if not (1 <= len(en_v) <= 120):
             bad("bgfinal-adv-lang-en-shape",
                 f"{key} 的英文值长度 {len(en_v)} 不合理（期望 1..120）")
+
+    # ---- 5c. bg-ach §七.2「"制作"条件一律改"获得"」+ §七.6「刀不算器具」----
+    # 期望值取自生成器清单的 `triggers`（= 真源的机器形态），再逐条钉住"这批必须已经是获得"。
+    #   ⚠ 唯一例外：root（`recipe_crafted: bettergold:alchemy_student_handbook`）——
+    #     它必须留在 `recipe_crafted`，因为手册物品在**没装 Patchouli 时根本不注册**，
+    #     而 `recipe_crafted` 的 recipe_id 是裸 ResourceLocation（不查注册表）⇒ 不会引起解析失败。
+    CRAFT_TO_HAVE_PATHS = [
+        "alchemy/mixed_crystal_pile", "alchemy/alchemic_fuel",
+        "treasure/blazing_rod", "treasure/bundled_echo_shard",
+        "treasure/indigo_ocean_heart", "treasure/amethyst_energy_dust",
+        "treasure/chorus_cherry_branch", "treasure/any_raw_metal",
+        "agriculture/gold_infused_dirt",
+    ]
+    if len(CRAFT_TO_HAVE_PATHS) != 9:
+        bad("bgach-craft-to-have", "§七.2 的清单不是 9 条（需求文档点名的就是这 9 条）")
+    _still_craft = [p for p in CRAFT_TO_HAVE_PATHS
+                    if "minecraft:recipe_crafted" in (man.get(f"{NS}:{p}", {}).get("triggers") or [])]
+    if _still_craft:
+        bad("bgach-craft-to-have",
+            f"这些成就还是「制作」判据（recipe_crafted），§七.2 要求改成「获得」：{_still_craft}")
+    for p in CRAFT_TO_HAVE_PATHS:
+        _w = advs.get(p, {}).get("criteria") or {}
+        if "minecraft:inventory_changed" not in [c.get("trigger") for c in _w.values()]:
+            bad("bgach-craft-to-have", f"{p} 的判据里没有 minecraft:inventory_changed（改成「获得」失败）")
+    # 唯一例外：「这件商品很适合你哦～」保持原条件（从易金商人那获得礼品盒 = villager_trade）
+    _giftbox = advs.get("merchant/gift_box", {}).get("criteria") or {}
+    if [c.get("trigger") for c in _giftbox.values()] != ["minecraft:villager_trade"]:
+        bad("bgach-craft-to-have-exception",
+            f"merchant/gift_box 的判据被动过了（§七.2 的唯一例外必须保持 villager_trade）："
+            f"{[c.get('trigger') for c in _giftbox.values()]}")
+    # 图纸里其余还带 recipe_crafted 的，只允许是 root 那一条（范围自描述、防止这条断言空转）
+    _recipe_left = sorted(k for k, v in advs.items()
+                          if "minecraft:recipe_crafted" in [c.get("trigger") for c in
+                                                            (v.get("criteria") or {}).values()])
+    if _recipe_left != ["root"]:
+        bad("bgach-recipe-crafted-scope",
+            f"还带 recipe_crafted 的成就应只有 root（实际 {_recipe_left}）")
+
+    # §七.6：**刀不算器具** —— 8 条「获得任意一种 XX金武器工具」的 criteria 里一个 `_knife` 都不许有。
+    KNIVES = set(manifest["lists"]["knives"])
+    if len(KNIVES) != 8:
+        bad("bgach-no-knife-in-gear", f"清单里的刀不是 8 把（实际 {len(KNIVES)}）—— 反空转守护")
+    _weapon_paths = [f"metal/{m}/weapon" for m in
+                     ["flamegold", "sturdygold", "thornsgold", "echogold",
+                      "indigoseagold", "voodoogold", "thundergold", "illusiongold"]]
+    if len(_weapon_paths) != 8:
+        bad("bgach-no-knife-in-gear", "8 条武器工具成就的路径清单不是 8 条 —— 反空转守护")
+    _gear_items: set[str] = set()
+    for p in _weapon_paths:
+        for _c in (advs.get(p, {}).get("criteria") or {}).values():
+            for _pred in (_c.get("conditions") or {}).get("items") or []:
+                _it = _pred.get("items")
+                _gear_items.update([_it] if isinstance(_it, str) else (_it or []))
+    if len(_gear_items) < 40:
+        bad("bgach-no-knife-in-gear",
+            f"8 条武器成就只解析到 {len(_gear_items)} 个物品（应 >= 40）—— 反空转守护")
+    _knife_in_gear = sorted(_gear_items & KNIVES)
+    if _knife_in_gear:
+        bad("bgach-no-knife-in-gear",
+            f"刀被算进了「获得武器工具」的成就里（作者 §七.6：「乐事的刀不会触发有关获得器具的进度」）："
+            f"{_knife_in_gear}")
 
     # ---- 输出 ----
     for p in problems:

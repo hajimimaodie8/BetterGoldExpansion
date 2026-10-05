@@ -138,6 +138,12 @@ public class bettergoldClient {
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_TOAD_FIGURINE.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_ENDERMAN_FIGURINE.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_CREEPER_FIGURINE.get(), cutout);
+
+            // 金玫瑰丛（1.6 追加轮 bg-fix §九.1，作者 2026-10-05）：双层十字花（`block/cross` 父模型）
+            // ⇒ 贴图必然带透明像素，而上面这份白名单**唯独漏了它** ⇒ 实机渲染出黑色边框。
+            // 根因就是本段开头那句注释：没注册 cutout 的透明方块会被 solid 层画成黑色。
+            // 照上面 GOLDEN_*_CROP 三行同形补一行（`TallFlowerBlock` 的上下两半共用同一个 block 实例 ⇒ 一行够）。
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_ROSE_BUSH.get(), cutout);
         });
     }
 }

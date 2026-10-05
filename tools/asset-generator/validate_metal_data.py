@@ -1557,6 +1557,14 @@ def _bgbook2_bad(tag: str, msg: str) -> None:
 
 _BG2_REQ_DOC = (REPO.parent / "mod_experience" / "开工需求"
                 / "20261004-1733_bg-book_patchouli-handbook.md")
+# ⚠ **冻结快照**（bg-append 追加轮，2026-10-05）：上一轮的本关卡直接读 `开工需求\` 那份**活页**，
+#   而那份文档**会被设计会话继续追加/就地修改** ⇒ 作者 20:40 一改 §6.3 的表，本关卡就**红**了
+#   （实测：解析出 24 段而不是 22 段，于是「8/22 段缺失」）。
+#   ⇒ 逐字文案的期望值必须来自**仓库内、随代码一起受版本控制**的冻结快照：
+#     `tools/asset-generator/bgappend-requirements-snapshot/`（内容取自 2026-10-05 20:40 的版本）。
+#   口径写在 docs/1.6-规格.md §17.3：**外部活页只作输入，期望值一律以快照为准**。
+_BG2_SNAPSHOT_DIR = (REPO / "tools" / "asset-generator" / "bgappend-requirements-snapshot")
+_BG2_SNAPSHOT = _BG2_SNAPSHOT_DIR / "bg-book-6.1-6.3.md"
 # 章 → (封面图标, sortnum, 页型序列)。页型序列就是"一行 = 左页 + 右页"的机器形态。
 _BG2_CHAPTERS = {
     "auxiliary_materials": ("mixed_crystal_pile", 2,
@@ -1632,15 +1640,16 @@ _bg2_missing_items = sorted(
 if _bg2_missing_items:
     _bgbook2_bad("bgbook2-item-refs",
                  "三章的图标引用了不存在的物品/方块（死链）：%s" % _bg2_missing_items[:5])
-if len(_bg2_item_refs) < 40:
+if len(_bg2_item_refs) < 35:
     _bgbook2_bad("bgbook2-item-refs",
-                 "三章只解析到 %d 个图标引用（应 43；反空转守护）" % len(_bg2_item_refs))
+                 "三章只解析到 %d 个图标引用（应 35；反空转守护）" % len(_bg2_item_refs))
 
-# 逐字文案：**期望值来自需求文档**（不是本脚本自己的表 —— 否则就是 §4 第 42 条那种空转）
-if not _BG2_REQ_DOC.is_file():
-    _bgbook2_bad("bgbook2-texts-verbatim", "读不到需求文档（逐字文案的期望值来源）：%s" % _BG2_REQ_DOC)
+# 逐字文案：**期望值来自冻结快照**（不是本脚本自己的表 —— 否则就是 §4 第 42 条那种空转）
+if not _BG2_SNAPSHOT.is_file():
+    _bgbook2_bad("bgbook2-texts-verbatim", "读不到冻结快照（逐字文案的期望值来源）：%s" % _BG2_SNAPSHOT)
+    _bg2_texts = []
 else:
-    _bg2_lines = _BG2_REQ_DOC.read_text(encoding="utf-8").split("\n")
+    _bg2_lines = _BG2_SNAPSHOT.read_text(encoding="utf-8").split("\n")
 
     def _bg2_rows(marker: str) -> list[list[str]]:
         out, active = [], False
@@ -1650,41 +1659,69 @@ else:
                 continue
             if active and _ln.startswith("### "):
                 break
-            if active and _ln.startswith("|") and "|---" not in _ln and "页" not in _ln.split("|")[1]:
-                out.append([_c for _c in _ln.split("|")][1:-1])
+            if not (active and _ln.startswith("|")) or "|---" in _ln:
+                continue
+            _cells = [c for c in _ln.split("|")][1:-1]
+            # ⚠ bg-append 追加轮修的两处**解析根因**（上一轮这里是 `"页" not in _cells[0]`）：
+            #   ① 表头判据不能用"第一格含『页』"——§6.3 的表头单元格是「页 | 左（含左上角图标 +
+            #      逐字文案） | 右（...）」但它**含 `<br>` 与表格竖线**，被切坏之后 "页" 不在第一格
+            #      ⇒ 表头被当成数据行、后续每一行整体错位一列，文案数量从 22 变成 24（实测红）；
+            #   ② 第 1 行**没有第二列**（§6.3 第 1 行是跨两列的汇总行，`left` 就是文案本身）
+            #      ⇒ `_r[1]` 直接 IndexError。改成"行号列必须是纯数字"+"按列号取、越界给空串"。
+            if not re.fullmatch(r"\d+", _cells[0].strip().replace("*", "")):
+                continue
+            out.append(_cells)
         return out
+
+    def _bg2_cell(_row: list[str], _idx: int) -> str:
+        return _row[_idx] if _idx < len(_row) else ""
 
     def _bg2_clean(_cell: str) -> str:
         return re.sub(r"\*\*(.+?)\*\*", r"\1", _cell.strip()).strip()
 
-    _bg2_texts = [_bg2_clean(_r[1]) for _r in _bg2_rows("### 6.1")]
+    _bg2_texts = [_bg2_clean(_bg2_cell(_r, 1)) for _r in _bg2_rows("### 6.1")]
     for _i, _r in enumerate(_bg2_rows("### 6.2"), start=1):
-        _bg2_texts.append(_bg2_clean(_r[2]))
+        _bg2_texts.append(_bg2_clean(_bg2_cell(_r, 2)))
         if _i == 1:
-            _bg2_texts.append(_bg2_clean(re.sub(r"^\s*\*\*右侧正文\*\*：", "", _r[3].split("<br>")[-1])))
+            _bg2_texts.append(_bg2_clean(
+                re.sub(r"^\s*\*\*右侧正文\*\*：", "", _bg2_cell(_r, 3).split("<br>")[-1])))
     for _r in _bg2_rows("### 6.3"):
+        # ⚠ §七 之后的形状：章3 第 1 行是**汇总行** —— 左页只有一句正文（在单元格 1），
+        #   **右页只有一张图标、没有正文**（单元格 2 的 "（随排版顺序变化）" 是图标说明，不是文案）。
+        #   判据用**形状**（"图标：" 之后没有 `<br>` 文案段）而不是行号，免得以后行序一变就静默失准。
+        #   若照旧把图标说明也当成正文，会多出 1 段并报「1 段缺失」（实测红过）。
         for _col in (1, 2):
-            _bg2_texts.append(_bg2_clean(_r[_col].split("<br>")[-1]))
-    if len(_bg2_texts) != 22 or sum(len(_t) for _t in _bg2_texts) < 600:
+            _body = _bg2_cell(_r, _col).split("<br>")[-1].strip()
+            if _body.startswith("图标："):
+                continue  # 该格只有图标说明、没有正文
+            _bg2_texts.append(_bg2_clean(_body))
+    # §6.3 第 1 行是**汇总行**（bg-book §七.1：作者要求删掉原来那两段长文案、只留一句）
+    # ⇒ 它的文案在第 1 个单元格里，另外两个单元格只有图标说明（没有正文）。
+    _bg2_texts = [_t for _t in _bg2_texts if _t]
+    if len(_bg2_texts) != 21 or sum(len(_t) for _t in _bg2_texts) < 600:
         _bgbook2_bad("bgbook2-texts-verbatim",
-                     "从需求文档解析到 %d 段逐字文案 / 共 %d 字（应 22 段、总字数 >= 600；反空转守护）"
+                     "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 21 段 = 2 + 9 + 1 + 9、"
+                     "总字数 >= 600；反空转守护）"
                      % (len(_bg2_texts), sum(len(_t) for _t in _bg2_texts)))
     _zh_values = set(zh.values())
     _bg2_missing_texts = [_t for _t in _bg2_texts if _t not in _zh_values]
     if _bg2_missing_texts:
         _bgbook2_bad("bgbook2-texts-verbatim",
-                     "需求文档里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
+                     "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
                      % (len(_bg2_missing_texts), len(_bg2_texts), _bg2_missing_texts[0][:40]))
 
-# 语言键：25 条（3 个条目名 + 22 段文案）必须**中英双端都有**
+# 语言键：24 条（3 个条目名 + 21 段文案/标题键）必须**中英双端都有**
+#   ⚠ bg-append 追加轮：`knowledge_1_left` / `knowledge_1_right` **已被作者要求删除**
+#     （§七.1「把那些东西都汇总起来」）⇒ 换成 `knowledge_1_summary`（整页只剩这一句）。
 _bg2_suffixes = (["aux_1", "aux_2"]
                  + ["core_%d" % _i for _i in range(1, 10)] + ["core_1_right"]
-                 + ["knowledge_%d_%s" % (_i, _s) for _i in range(1, 6) for _s in ("left", "right")])
+                 + ["knowledge_1_summary"]
+                 + ["knowledge_%d_%s" % (_i, _s) for _i in range(2, 6) for _s in ("left", "right")])
 _bg2_keys = (["bettergold.handbook.entry.%s" % _c for _c in _BG2_CHAPTERS]
              + ["bettergold.handbook.page.%s" % _s for _s in _bg2_suffixes])
-if len(_bg2_keys) != 25:
+if len(_bg2_keys) != 24:
     _bgbook2_bad("bgbook2-lang-bilingual",
-                 "章节语言键清单是 %d 条（应 25 = 3 + 22；反空转守护）" % len(_bg2_keys))
+                 "章节语言键清单是 %d 条（应 24 = 3 + 21；反空转守护）" % len(_bg2_keys))
 for _k in _bg2_keys:
     if _k not in zh or _k not in en:
         _bgbook2_bad("bgbook2-lang-bilingual", "章节语言键缺中文或英文：%s" % _k)
@@ -2046,6 +2083,260 @@ for _needle, _tag, _why in (
 #   ③ 高燃 **1 级不点燃**（端到端 0/1/2，与沉淀对齐）
 # 每条断言都带稳定 ASCII id（[bgfinal-...]），判据一律跑在**去注释**后的源码上。
 # ===========================================================================
+# ==================== bg-append 追加轮（2026-10-05）：三份需求各自的新增节 ====================
+#
+# 覆盖范围（逐条对应需求文档的**追加轮**，不是为了凑数）：
+#   * `bg-book` §七  —— 手册章3 的七处修正（汇总页 / 锭表 / 模板标题 / 建筑方块 / 制成 / 固定顺序）；
+#   * `bg-fix` §八  —— 幽咆金声波音效（建材 + 音咆两处都要）+ 16 条配置项的**汉化**；
+#   * `bg-fix` §九  —— 金玫瑰丛：cutout 渲染层 + 两条配方；
+#   * `bg-ach` §七  —— **由 `validate_advancements.py` 守**（[bgach-craft-to-have*] /
+#                       [bgach-no-knife-in-gear] / [bgach-recipe-crafted-scope]，
+#                       那边本来就跑在去注释源码 + 成就产物上，重复一份没有意义）。
+# 每条断言都带**稳定的 ASCII id**（`[bgappend-*]`），供扰动矩阵逐条自证（mcmod_experience §3.4）。
+bgappend_problems: list[str] = []
+
+
+def _bgappend_bad(tag: str, msg: str) -> None:
+    bgappend_problems.append("%s [%s]" % (msg, tag))
+
+
+def _bgappend_jload(_p):
+    try:
+        return json.loads(_p.read_text(encoding="utf-8"))
+    except Exception as _e:  # noqa: BLE001 —— 解析失败也要变成一条"问题"，不能炸脚本
+        _bgappend_bad("bgappend-json", "读不了 / 解析失败：%s（%s）" % (_p, _e))
+        return {}
+
+
+# ---------- A. bg-book §七：手册章3 的七处修正 ----------
+_BG3_ZH = _ZH_BOOK / "entries" / "golden_knowledge.json"
+_BG3_EN = _EN_BOOK / "entries" / "golden_knowledge.json"
+# 章3 第 1 行（汇总行）的两张图标表 + 两个标题（作者 §七 第 2/3/4 条）
+_BG3_INGOT_IDS = ["bettergold:flamegold_ingot", "bettergold:sturdygold_ingot",
+                  "bettergold:thornsgold_ingot", "bettergold:echogold_ingot",
+                  "bettergold:indigoseagold_ingot", "bettergold:voodoogold_ingot",
+                  "bettergold:thundergold_ingot", "bettergold:illusiongold_ingot"]
+_BG3_TEMPLATE_IDS = ["bettergold:%s_upgrade_template" % _s for _s in
+                     ("flamegold", "sturdygold", "thornsgold", "echogold",
+                      "indigoseagold", "voodoogold", "thundergold", "illusiongold")]
+_BG3_INGOT_TITLE = "\u5404\u79cd\u5404\u6837\u7684\"\u8d35\u91d1\"\u952d"          # 各种各样的"贵金"锭
+_BG3_TEMPLATE_TITLE = "\"\u8d35\u91d1\"\u88c5\u5907\u7684\u5347\u7ea7\u953b\u9020\u6a21\u7248"  # "贵金"装备的升级锻造模版
+_BG3_BUILDING_ORDER = ["_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
+                       "_bricks_wall", "_bars", "_door", "_trapdoor", "_chain", "_lantern"]
+_BG3_OLD_TEXT_KEYS = ["bettergold.handbook.page.knowledge_1_left",
+                      "bettergold.handbook.page.knowledge_1_right"]
+_BG3_ZH_E = _bgappend_jload(_BG3_ZH)
+_BG3_EN_E = _bgappend_jload(_BG3_EN)
+_BG3_PAGES = _BG3_ZH_E.get("pages") or []
+if len(_BG3_PAGES) != 10:
+    _bgappend_bad("bgappend-book-k3-pages",
+                  "章3（「贵金」的知识）的 Patchouli 页数不是 10（5 行 × 2；实际 %d）—— 反空转守护"
+                  % len(_BG3_PAGES))
+else:
+    # 第 1 页：左 = 八族**锭**的轮换表（§七.2），右 = 八族升级模板的轮换表（§七.4）
+    _p0, _p1 = _BG3_PAGES[0], _BG3_PAGES[1]
+    if _p0.get("item") != _BG3_INGOT_IDS:
+        _bgappend_bad("bgappend-book-k3-p1-ingots",
+                      "章3 第 1 页左页的图标不是「八族锭（按排版顺序）」（§七.2）：%r" % (_p0.get("item"),))
+    if _p0.get("title") != _BG3_INGOT_TITLE:
+        _bgappend_bad("bgappend-book-k3-p1-ingot-title",
+                      "章3 第 1 页左标题不是 %r（§七.2）：%r" % (_BG3_INGOT_TITLE, _p0.get("title")))
+    if _p0.get("text") != "bettergold.handbook.page.knowledge_1_summary":
+        _bgappend_bad("bgappend-book-k3-p1-summary",
+                      "章3 第 1 页（汇总页）的正文不是 knowledge_1_summary（§七.1）：%r" % (_p0.get("text"),))
+    if "text" in _p1:
+        _bgappend_bad("bgappend-book-k3-p1-summary",
+                      "章3 第 1 页右页不该有正文（§七.1 要求整页只留一句）：%r" % (_p1.get("text"),))
+    if _p1.get("item") != _BG3_TEMPLATE_IDS:
+        _bgappend_bad("bgappend-book-k3-p1-templates",
+                      "章3 第 1 页右页的图标不是「八族升级锻造模板」：%r" % (_p1.get("item"),))
+    if _p1.get("title") != _BG3_TEMPLATE_TITLE:
+        _bgappend_bad("bgappend-book-k3-p1-template-title",
+                      "章3 第 1 页右标题不是 %r（§七.4）：%r" % (_BG3_TEMPLATE_TITLE, _p1.get("title")))
+    # §七.1：原来那两段长文案**不许再被任何一页引用**，也不许再出现在语言值里
+    #   （键**留在 lang 里作历史留档**是允许的 —— 见该键注释；被引用/被复用才是回退）
+    _bg3_refs = set()
+    for _pg in _BG3_PAGES:
+        if isinstance(_pg.get("text"), str):
+            _bg3_refs.add(_pg["text"])
+    _bg3_still = sorted(k for k in _BG3_OLD_TEXT_KEYS if k in _bg3_refs)
+    if _bg3_still:
+        _bgappend_bad("bgappend-book-k3-old-text-gone",
+                      "§七.1 要求删掉的两段长文案又被页面引用了：%s" % _bg3_still)
+    _bg3_old_values = [zh.get(k) for k in _BG3_OLD_TEXT_KEYS if zh.get(k)]
+    for _v in _bg3_old_values:
+        if _v in set(zh.values()) - {_v}:
+            _bgappend_bad("bgappend-book-k3-old-text-gone",
+                          "§七.1 删掉的那两段长文案又被复制到别的语言键里了：%s…" % _v[:30])
+    # §七.5/§七.6：全部手册文案里不许再有「作为的建筑方块」
+    _bg3_bad_phrase = sorted(k for k, v in zh.items()
+                             if k.startswith("bettergold.handbook.") and "作为的建筑方块" in str(v))
+    if _bg3_bad_phrase:
+        _bgappend_bad("bgappend-book-building-blocks",
+                      "手册文案里还有「作为的建筑方块」（§七.6 要求全换成「制成的建筑方块」）：%s"
+                      % _bg3_bad_phrase[:5])
+    # 负向：幻惑金那句"瞬间变被动形态"已被 bg-fix §8.1 作废 ⇒ 手册里**不得**再出现
+    _bg3_passive = sorted(k for k, v in zh.items()
+                          if k.startswith("bettergold.handbook.") and "被动形态" in str(v))
+    if _bg3_passive:
+        _bgappend_bad("bgappend-book-no-pacify-text",
+                      "手册里还留着「瞬间变为被动形态」（bg-fix §8.1 已整条作废）：%s" % _bg3_passive)
+    if _BG3_ZH_E.get("pages") != _BG3_EN_E.get("pages"):
+        _bgappend_bad("bgappend-book-k3-bilingual",
+                      "章3 的 zh/en 页列表不一致（结构必须双端相同）")
+
+# §七.7：建筑方块图标的**固定顺序**（锭块 → 砖块 → 柱 → 楼梯 → 台阶 → 砖墙 → 栏杆 → 门 → 活板门 → 链 → 灯笼）
+#   落点 = 生成器的 `METAL_BLOCK_SUFFIX_ORDER`（真源）+ 从产物里反查 11 个方块 id 都真实存在。
+_BGDOC_GEN = (REPO / "tools" / "asset-generator" / "generate_handbook_data.py")
+if not _BGDOC_GEN.is_file():
+    _bgappend_bad("bgappend-book-block-order", "读不到手册生成器：%s" % _BGDOC_GEN)
+else:
+    _bgdoc_src = _BGDOC_GEN.read_text(encoding="utf-8")
+    _bgdoc_m = re.search(r"METAL_BLOCK_SUFFIX_ORDER\s*=\s*\[(.*?)\]", _bgdoc_src, re.S)
+    if not _bgdoc_m:
+        _bgappend_bad("bgappend-book-block-order",
+                      "生成器里没有 METAL_BLOCK_SUFFIX_ORDER（§七.7 的固定顺序没有落成常量）")
+    else:
+        _bgdoc_order = re.findall(r'"([^"]+)"', _bgdoc_m.group(1))
+        if _bgdoc_order != _BG3_BUILDING_ORDER:
+            _bgappend_bad("bgappend-book-block-order",
+                          "建筑方块图标顺序不是 §七.7 的固定顺序：%s" % _bgdoc_order)
+        if len(_bgdoc_order) != 11:
+            _bgappend_bad("bgappend-book-block-order",
+                          "建筑方块的形态数不是 11（实际 %d）—— 反空转守护" % len(_bgdoc_order))
+        _bgdoc_missing = sorted("bettergold:sturdygold" + _sfx for _sfx in _bgdoc_order
+                                if ("block.bettergold.sturdygold" + _sfx) not in zh)
+        if _bgdoc_missing:
+            _bgappend_bad("bgappend-book-block-order",
+                          "§七.7 点名的形态里有语言文件里不存在的方块：%s" % _bgdoc_missing)
+
+# ---------- B. bg-fix §八.3：幽咆金的「监守者声波音效」（**两处都要**） ----------
+if _bgfix_mev.count("playSonicBoomSound(") != 3:
+    _bgappend_bad("bgappend-sonic-sound-sites",
+                  "playSonicBoomSound 的出现次数不是 3（1 处定义 + 建材 + 音咆；实际 %d）"
+                  % _bgfix_mev.count("playSonicBoomSound("))
+for _needle, _tag, _why in (
+        ("SoundEvents.WARDEN_SONIC_BOOM", "bgappend-sonic-sound-id",
+         "声波音效不是 SoundEvents.WARDEN_SONIC_BOOM（§8.5 #2 的推断值）"),
+        ("SoundSource.HOSTILE", "bgappend-sonic-sound-source",
+         "声波音效的 SoundSource 不是 HOSTILE（原版 Warden 用的就是它）")):
+    if _needle not in _bgfix_mev:
+        _bgappend_bad(_tag, _why)
+# 音效必须**跟在节流之后**（防空放）：建材那条在 contactThrottled 分支之后、且只在真的挨打时响
+_sonic_body = method_body(_bgfix_mev, "private static void sonicContact(")
+if not _sonic_body:
+    _bgappend_bad("bgappend-sonic-sound-throttled", "找不到 sonicContact 方法体（反空转守护）")
+elif "playSonicBoomSound(" in _sonic_body and "contactThrottled(" not in _sonic_body:
+    _bgappend_bad("bgappend-sonic-sound-throttled",
+                  "sonicContact 里放音效却没有 contactThrottled（会每 tick 刷屏）")
+_echo_body = method_body(_bgfix_mev, "public static void echoRoarTick(")
+if not _echo_body:
+    _bgappend_bad("bgappend-sonic-sound-throttled", "找不到 echoRoarTick 方法体（反空转守护）")
+else:
+    if "playSonicBoomSound(" not in _echo_body:
+        _bgappend_bad("bgappend-sonic-sound-sites", "音咆 buff 每跳没有声波音效（§8.3 点名的第二处）")
+    # ⚠ 判据用**守卫表达式**而不是变量名：`if (hitAny)` 被改成 `if (false)` 时调用点还在、
+    #   关卡不能因此放过（扰动实测抓出来的：只查 "hitAny" 会漏掉这种"调用还在但永不执行"的改法）
+    if "if (hitAny)" not in _echo_body:
+        _bgappend_bad("bgappend-sonic-sound-throttled",
+                      "echoRoarTick 里没有 `if (hitAny)` 守卫（没有生物挨打也会响 = 空放）")
+
+# ---------- C. bg-fix §八.4：16 条配置项的**汉化**（`bettergold.configuration.<key>`） ----------
+#   真源 = Config.java 里那 16 个键（上面 bg-fix 段已逐个核实过）；这里只查"界面中文有没有"。
+_BGAPPEND_CFG_KEYS = sorted(set("bettergold.configuration." + _k for _k in
+                                list(_BGFIX_WEAPON_KEYS.values())
+                                + list(_BGFIX_ARMOR_KEYS.values()) + [_BGFIX_MULT_KEY]))
+if len(_BGAPPEND_CFG_KEYS) != 16:
+    _bgappend_bad("bgappend-config-i18n", "16 条配置键的清单不是 16 条 —— 反空转守护")
+#   反空转的另一半：这些键**必须真的存在于 Config.java**（否则关卡的"清单"是自己编的）
+_bgappend_cfg_missing = sorted(k.split(".", 2)[2] for k in _BGAPPEND_CFG_KEYS
+                               if k.split(".", 2)[2] not in _cfg_keys)
+if _bgappend_cfg_missing:
+    _bgappend_bad("bgappend-config-i18n",
+                  "本地化清单里有 Config.java 里不存在的键：%s" % _bgappend_cfg_missing)
+_bgappend_i18n_missing = sorted(k for k in _BGAPPEND_CFG_KEYS if k not in zh or k not in en)
+if _bgappend_i18n_missing:
+    _bgappend_bad("bgappend-config-i18n",
+                  "配置界面缺中文/英文显示名：%s" % _bgappend_i18n_missing)
+#   中文侧必须是中文（不是把英文 key 抄一遍）；英文侧必须是英文
+_BGAPPEND_CJK = re.compile(r"[\u4e00-\u9fff]")
+_bgappend_not_cjk = sorted(k for k in _BGAPPEND_CFG_KEYS
+                           if not _BGAPPEND_CJK.search(str(zh.get(k, ""))))
+if _bgappend_not_cjk:
+    _bgappend_bad("bgappend-config-i18n-zh",
+                  "这些配置项的中文显示名里没有中日韩文字（只是抄了键名？）：%s" % _bgappend_not_cjk)
+_bgappend_zh_in_en = sorted(k for k in _BGAPPEND_CFG_KEYS
+                            if _BGAPPEND_CJK.search(str(en.get(k, ""))))
+if _bgappend_zh_in_en:
+    _bgappend_bad("bgappend-config-i18n-en",
+                  "这些配置项的英文显示名里混进了中文：%s" % _bgappend_zh_in_en)
+
+# ---------- E. 文档侧：本轮的**新口径必须落档**（docs/1.6-规格.md 的新节） ----------
+#   这一条同时是"不许只改代码不写规格"的机器守卫（§7.1 的交付清单）。
+for _needle, _tag, _why in (
+        ("bg-append", "bgappend-doc", "docs/1.6-规格.md 里没有本轮的节（bg-append 追加轮）"),
+        ("PageSpotlight", "bgappend-doc-spotlight",
+         "docs/1.6-规格.md 没写「Patchouli 的 spotlight 页只有一个图标槽」这条结构事实（§七.3 的落法依据）"),
+        ("METAL_BLOCK_SUFFIX_ORDER", "bgappend-doc-block-order",
+         "docs/1.6-规格.md 没写建筑方块固定顺序的落点（§七.7）"),
+        ("冻结快照", "bgappend-doc-snapshot",
+         "docs/1.6-规格.md 没写「逐字文案的期望值改为仓库内冻结快照」这条口径（本轮解析根因的修法）")):
+    if _needle not in _bgfix_spec:
+        _bgappend_bad(_tag, _why)
+
+# ---------- D. bg-fix §九：金玫瑰丛（cutout 渲染层 + 两条配方） ----------
+#   §9.1 的根因 = 少一行 `setRenderLayer(...GOLDEN_ROSE_BUSH..., cutout)`；
+#   §9.2 = 有序 3×3（玫瑰丛居中 + 8 金粒）；§9.3 = 无序 1 丛 → 2 黄染料。
+_BGAPPEND_CLIENT = strip_comments((JAVA / "bettergoldClient.java").read_text(encoding="utf-8"))
+if "setRenderLayer(AllBlocks.GOLDEN_ROSE_BUSH.get(), cutout)" not in _BGAPPEND_CLIENT:
+    _bgappend_bad("bgappend-rose-render-layer",
+                  "bettergoldClient 里没有给金玫瑰丛注册 cutout 渲染层（§9.1：黑边根因）")
+#   负向对照：其余方块**不许**被这轮顺手改动（白名单行数不变 = 只有新增那 1 行）
+#   计数口径：13 条显式注册（GOLD_* 5 + 金雕摆件 3 + 作物 3 + 门/活板门/栏杆/链里 GOLD_ 的那几条…
+#   以**实测 17** 为准）+ 家族循环体里 4 条（lantern/door/trapdoor/bars）——本轮之前是 16。
+if _BGAPPEND_CLIENT.count("ItemBlockRenderTypes.setRenderLayer(") != 17:
+    _bgappend_bad("bgappend-rose-render-layer-scope",
+                  "setRenderLayer 的调用点数不是 17（本轮新增 1 行后应为 17；改动越界了）"
+                  "：实际 %d" % _BGAPPEND_CLIENT.count("ItemBlockRenderTypes.setRenderLayer("))
+_rose_recipe = _DATA / "bettergold" / "recipe" / "golden_rose_bush.json"
+if not _rose_recipe.is_file():
+    _bgappend_bad("bgappend-rose-recipe", "缺金玫瑰丛的合成配方（§9.2）")
+else:
+    _rr = _bgappend_jload(_rose_recipe)
+    if _rr.get("type") != "minecraft:crafting_shaped":
+        _bgappend_bad("bgappend-rose-recipe", "金玫瑰丛的配方不是有序合成（§9.2 推断值：有序 3×3）")
+    _pattern = _rr.get("pattern") or []
+    _key = _rr.get("key") or {}
+    if len(_pattern) != 3 or any(len(_row) != 3 for _row in _pattern):
+        _bgappend_bad("bgappend-rose-recipe", "金玫瑰丛的图案不是 3×3：%r" % (_pattern,))
+    else:
+        _mid = _pattern[1][1]
+        if _mid not in _key or _key[_mid].get("item") != "minecraft:rose_bush":
+            _bgappend_bad("bgappend-rose-recipe", "3×3 的正中央不是原版玫瑰丛：%r" % (_pattern,))
+        _ring = [c for r in _pattern for c in r if c != _mid]
+        if len(_ring) != 8 or len(set(_ring)) != 1:
+            _bgappend_bad("bgappend-rose-recipe", "外圈不是同一材料的 8 格：%r" % (_pattern,))
+        elif _key.get(_ring[0], {}).get("item") != "minecraft:gold_nugget":
+            _bgappend_bad("bgappend-rose-recipe",
+                          "外圈材料不是金粒（§9.2）：%r" % (_key.get(_ring[0]),))
+    if (_rr.get("result") or {}).get("id") != "bettergold:golden_rose_bush" \
+            or (_rr.get("result") or {}).get("count") != 1:
+        _bgappend_bad("bgappend-rose-recipe", "金玫瑰丛配方的产出不对：%r" % (_rr.get("result"),))
+_rose_dye = _DATA / "bettergold" / "recipe" / "yellow_dye_from_golden_rose_bush.json"
+if not _rose_dye.is_file():
+    _bgappend_bad("bgappend-rose-dye", "缺「金玫瑰丛 → 黄色染料」的配方（§9.3）")
+else:
+    _rd = _bgappend_jload(_rose_dye)
+    _rd_ings = [_i.get("item") for _i in (_rd.get("ingredients") or [])]
+    if _rd.get("type") != "minecraft:crafting_shapeless" or _rd_ings != ["bettergold:golden_rose_bush"]:
+        _bgappend_bad("bgappend-rose-dye",
+                      "黄染料配方不是「无序 + 单个金玫瑰丛」：%r / %r" % (_rd.get("type"), _rd_ings))
+    if (_rd.get("result") or {}).get("id") != "minecraft:yellow_dye" \
+            or (_rd.get("result") or {}).get("count") != 2:
+        _bgappend_bad("bgappend-rose-dye",
+                      "黄染料产量不是 2（§9.3；⚠「染料 vs 燃料」是需求 §9.4 #2 的待确认项，"
+                      "本轮按「染料」落地）：%r" % (_rd.get("result"),))
+
 bgfinal_problems: list[str] = []
 
 
@@ -2241,6 +2532,8 @@ print(f"bg-book 帕秋莉手册问题: {len(bgbook_problems)} {bgbook_problems[:
       f"（手册 {len(_entries_now)} 条目 / {_total_pages} 页 / {len(_recipe_refs)} 条配方引用）")
 print(f"bg-book §六 追加轮（三章逐页补全）问题: {len(bgbook2_problems)} {bgbook2_problems[:8]}"
       f"（三章 {_bg2_pages_total} 页 / {len(_bg2_recipe_refs)} 条配方引用 / {len(_bg2_item_refs)} 个图标引用）")
+print(f"bg-append 追加轮（手册七处修正 / 声波音效 / 配置汉化 / 金玫瑰丛）问题: "
+      f"{len(bgappend_problems)} {bgappend_problems[:8]}")
 print(f"bg-fix 1.6 七条修正问题: {len(bgfix_problems)} {bgfix_problems[:8]}")
 print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: "
       f"{len(bgfinal_problems)} {bgfinal_problems[:8]}")
@@ -2248,5 +2541,5 @@ print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级�
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
-               or bgfinal_problems
+               or bgfinal_problems or bgappend_problems
                or symmetric_problems or beacon_problems) else 0)

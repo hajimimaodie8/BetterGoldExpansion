@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "NRN",
+    "NNN"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:gold_nugget"
+    },
+    "R": {
+      "item": "minecraft:rose_bush"
+    }
+  },
+  "result": {
+    "id": "bettergold:golden_rose_bush",
+    "count": 1
+  }
+}

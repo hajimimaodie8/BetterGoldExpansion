@@ -131,6 +131,12 @@ def crafting_page(recipe_a, recipe_b=None, title_key=None):
 
 
 def spotlight_page(item, text_key=None, title_key=None):
+    """⚠ 两个可选参数的语义不同，别写反（会静默变成正文而不是页眉）：
+
+    * ``title`` —— 页面渲染时经 ``i18nText()`` 解析 ⇒ **既接受语言键也接受字面文本**
+      （作者 §七 第 2/4 条给的就是中文标题原文）；
+    * ``text`` —— 页面**正文**，同样经 ``i18nText()`` 解析。
+    """
     page = {"type": "patchouli:spotlight", "item": item}
     if text_key:
         page["text"] = text_key
@@ -302,10 +308,34 @@ CORE_ROWS = [
 ]
 
 # 章3 ·「贵金」的知识: 5 rows, both halves are icon + text.
+#
+# 追加轮（bg-book §七，2026-10-05 作者七处修正）第 1/2/3/4 条的落法：
+#   * 第 1 条「把那些东西都汇总起来」⇒ 删掉本页原来那两段长文案
+#     （原「材料链」段 = 旧 `knowledge_1_left`；原「锻造模板怎么用」段 = 旧 `knowledge_1_right`），
+#     整页只剩**两张图标 + 一句汇总**（新键 `knowledge_1_summary`，只有左页承载正文，
+#     右页 `spotlight` 不带 `text` ⇒ 两页合起来只有一句话，符合"只留一句"）。
+#   * 第 2 条「左图标 = 各种各样的"贵金"锭」⇒ 从左到右 = 八族**锭**（原来还夹着粒）。
+#   * 第 3 条「下方图标换成若干变化的贵金锭」⇒ ⚠ **Patchouli 的 spotlight 页只有一个图标槽**
+#     （`PageSpotlight` 的字段只有 `item` / `title` / `linkRecipe`，`render()` 只画
+#      `stacks[(ticksInBook / 20) % stacks.length]` 一次，坐标写死 (50,15)）⇒
+#     "中上角 + 下方"两张图标在一个 Patchouli 页里**表达不了**；本轮按"值得表"取
+#     **一份不断轮换的锭表**（与第 2 条同源），并在 docs/1.6-规格.md §17 记为待作者一句话裁定。
+#   * 第 4 条「锻造模板那个标题改成『"贵金"装备的升级锻造模版』」⇒ 见 KNOWLEDGE_1_TEMPLATE_TITLE。
+KNOWLEDGE_1_INGOT_TITLE = "各种各样的\"贵金\"锭"
+KNOWLEDGE_1_TEMPLATE_TITLE = "\"贵金\"装备的升级锻造模版"
+# §七 第 7 条：建筑方块的中上角图标按**固定顺序**显示 ——
+#   锭块 → 砖块 → 柱 → 楼梯 → 台阶 → 砖墙 → 栏杆 → 门 → 活板门 → 链 → 灯笼
+# ⚠ 这是本文件里**唯一的**方块形态清单（生成器覆盖检查：家族里还有 `_bricks_*` 之外的同名形态吗？
+#   答案在 `MetalFamily` 的方块注册里 —— 逐条比对见 docs/1.6-规格.md §17.2）。
+#   关卡 `[bgappend-book-block-order]` 直接读这个常量与产物核对。
+METAL_BLOCK_SUFFIX_ORDER = [
+    "_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
+    "_bricks_wall", "_bars", "_door", "_trapdoor", "_chain", "_lantern",
+]
 KNOWLEDGE_ROWS = [
-    # row 1: left = ingot+nugget of every family (ingot first), right = every template
-    ([x for metal, _core in METALS for x in ("bettergold:%s_ingot" % metal,
-                                             "bettergold:%s_nugget" % metal)],
+    # row 1: left = every family's **ingot** (rotating list = 「随排版顺序不断变化」),
+    #        right = every family's upgrade template (rotating list), each with its own title.
+    ([ "bettergold:%s_ingot" % metal for metal, _core in METALS ],
      ["bettergold:%s_upgrade_template" % metal for metal, _core in METALS]),
 ]
 for _i in range(0, len(METALS), 2):
@@ -343,9 +373,20 @@ def entry_core_materials():
 
 
 def entry_golden_knowledge():
-    """章3 ·「贵金」的知识（封面图标 = 推断值，见上方注释）。"""
+    """章3 ·「贵金」的知识（封面图标 = 推断值，见上方注释）。
+
+    ⚠ 追加轮（§七）之后本条目**没有** `knowledge_1_left/right` 两把键了：
+    第 1 页按作者要求"汇总"，正文只剩一句 = `knowledge_1_summary`（挂在**左页 spotlights 的 text**），
+    两张图标各自带标题（`knowledge_1_ingot_title` / `knowledge_1_template_title`）——
+    这样右页没有正文，整页=一句话（见 docs/1.6-规格.md §17.1）。
+    """
     pages = []
     for index, (left_items, right_items) in enumerate(KNOWLEDGE_ROWS, start=1):
+        if index == 1:
+            pages.append(spotlight_page(left_items, "%s.page.knowledge_1_summary" % LANG,
+                                       KNOWLEDGE_1_INGOT_TITLE))
+            pages.append(spotlight_page(right_items, None, KNOWLEDGE_1_TEMPLATE_TITLE))
+            continue
         pages.append(spotlight_page(left_items, "%s.page.knowledge_%d_left" % (LANG, index)))
         pages.append(spotlight_page(right_items, "%s.page.knowledge_%d_right" % (LANG, index)))
     return entry("golden_knowledge", "alchemy_start", "sturdygold_ingot", 4, pages)

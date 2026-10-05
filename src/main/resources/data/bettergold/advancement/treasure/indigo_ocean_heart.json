@@ -13,16 +13,20 @@
     }
   },
   "criteria": {
-    "craft": {
-      "trigger": "minecraft:recipe_crafted",
+    "have": {
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "recipe_id": "bettergold:indigo_ocean_heart"
+        "items": [
+          {
+            "items": "bettergold:indigo_ocean_heart"
+          }
+        ]
       }
     }
   },
   "requirements": [
     [
-      "craft"
+      "have"
     ]
   ],
   "sends_telemetry_event": false

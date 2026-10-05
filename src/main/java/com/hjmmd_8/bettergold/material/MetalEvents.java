@@ -519,6 +519,38 @@ public final class MetalEvents {
     }
 
     /**
+     * 「监守者声波」音效（bg-fix §八.3，作者 2026-10-05：「幽咆金有关的监守者声波音效仍你仍然没有提供」）。
+     *
+     * <p>两处**都要**出声（作者明确点了两个地方）：</p>
+     * <ol>
+     *   <li>幽咆金<b>建材</b>的 3×3×3 接触声波（{@link #sonicContact}）；</li>
+     *   <li>音咆（{@code echo_roar}，内部 id 不动）buff 的<b>每秒声波结算</b>（{@link #echoRoarTick}）。</li>
+     * </ol>
+     *
+     * <p><b>防空放 / 限频</b>：只借<b>已经存在的</b>两套节流，不另造计时器 ——</p>
+     * <ul>
+     *   <li>建材那条：整段在 {@link #contactThrottled}（{@code SONIC_CONTACT_KEY}）之后
+     *       ⇒ 同一块方块每 {@link MetalFamily.Spec#DEFAULT_CONTACT_COOLDOWN} tick 最多响一次；</li>
+     *   <li>音咆那条：每次 {@code applyEffectTick} 只调一次（不是每个受害者各响一次）
+     *       ⇒ 每个挂着音咆的目标每 20 tick 最多响一次；没有目标挨打就不响
+     *       （{@code hitAny} 为假时直接跳过）。</li>
+     * </ul>
+     *
+     * <p><b>音量 / 音源</b>：{@code SoundEvents.WARDEN_SONIC_BOOM} 是原版音效
+     * （{@code warden.sonic_boom}，原版 {@code Warden} 直接用 {@code level.playSound(...)} 广播，
+     * 音量 3.0）⇒ 这里取<b>同一族</b>的 {@code SoundSource.HOSTILE}、音量 {@code 3.0F}、
+     * 音高 {@code 1.0F}，参数与原版一致；节流之后不会刷屏。</p>
+     *
+     * <p>只对**服务端**发（{@code ServerLevel#playSound} 走原版 {@code ClientboundSoundPacket}），
+     * 客户端无需额外代码。</p>
+     */
+    private static void playSonicBoomSound(net.minecraft.server.level.ServerLevel level,
+            net.minecraft.core.BlockPos pos) {
+        level.playSound(null, pos, net.minecraft.sounds.SoundEvents.WARDEN_SONIC_BOOM,
+                net.minecraft.sounds.SoundSource.HOSTILE, 3.0F, 1.0F);
+    }
+
+    /**
      * 幽咆金建材：以**该方块中心**为心、3×3×3 内全部生物 3 点声波伤害 + **击退** + 中心 {@code SONIC_BOOM} 粒子。
      *
      * <p>与「寄生把自己叠在触发者身上」不同：这条是**范围伤害**，所以按"每个受害者各自节流"
@@ -554,6 +586,7 @@ public final class MetalEvents {
                     center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
         var area = new net.minecraft.world.phys.AABB(pos).inflate(MetalFamily.ECHO_ROAR_RADIUS);
+        boolean soundPlayed = false;
         for (var victim : level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, area)) {
             if (contactThrottled(victim, SONIC_CONTACT_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
                 continue;
@@ -561,6 +594,12 @@ public final class MetalEvents {
             // 原版 SonicBoom.java:79-83 的第一层：伤害没落地（免疫 / 无敌帧差额为 0 / 已死）就不推。
             if (!victim.hurt(sonicBoomSource(level), MetalFamily.CONTACT_SONIC_DAMAGE)) {
                 continue;
+            }
+            if (!soundPlayed) {
+                // bg-fix §八.3：只在**真的有生物挨了这一下**时响一次（限频 = 本次接触判定内只响一次，
+                // 而整段判定本身已被 contactThrottled 约束到每 10 tick 一次）
+                playSonicBoomSound((net.minecraft.server.level.ServerLevel) level, pos);
+                soundPlayed = true;
             }
             applyBlockSonicKnockback(victim, center);
         }
@@ -645,11 +684,18 @@ public final class MetalEvents {
                 center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;
         var area = new net.minecraft.world.phys.AABB(pos).inflate(MetalFamily.ECHO_ROAR_RADIUS);
+        boolean hitAny = false;
         for (var victim : serverLevel.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, area)) {
             if (contactThrottled(victim, ECHO_ROAR_TICK_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
                 continue;
             }
-            victim.hurt(sonicBoomSource(serverLevel), level);
+            if (victim.hurt(sonicBoomSource(serverLevel), level)) {
+                hitAny = true;
+            }
+        }
+        // bg-fix §八.3：音咆 buff 每跳声波也出声（限频 = 每次结算最多一次、且必须有生物真的挨打）
+        if (hitAny) {
+            playSonicBoomSound(serverLevel, pos);
         }
     }
 
