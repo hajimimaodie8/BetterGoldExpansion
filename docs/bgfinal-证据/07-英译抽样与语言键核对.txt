@@ -1,0 +1,49 @@
+英译抽样与语言键核对 · bg-final（2026-10-05）
+====================================================================================================
+① 键集：zh 102 条 / en 102 条；完全一致 = True；各应为 102
+② en == zh（= 还是中文原文）的条数 = 0 []（唯一豁免口 SYMBOL_ONLY_OK 现在是空集）
+③ 空串 = 0；不含 ASCII 字母 = 0 []
+④ 长度：min=14 max=77（判据 1..120）
+
+⑤ 未动的三份真源（开工时记录的 SHA256 vs 收尾时）
+   zh_cn.json（一个字都不许动）
+     开工时 1A7D7FE8233F48BABC13FBE158628A5D548A22964CDB71B9C292419CDAC8D3C2
+     收尾时 1A7D7FE8233F48BABC13FBE158628A5D548A22964CDB71B9C292419CDAC8D3C2   一致 = True
+   advancement_manifest.json
+     开工时 777394C43E5A9CD204B6C3F8F991586985743DD87FE5B1B49A924535E4317198
+     收尾时 777394C43E5A9CD204B6C3F8F991586985743DD87FE5B1B49A924535E4317198   一致 = True
+   en_us.json（本轮只改这一个文件）
+     开工时 BF96247258E89D799FBA53092047618226815B1AD0019D3177B4A1548D9CE29E
+     收尾时 7CD8E83F7D7D7F5C03318122B6301B79AC2CCEB4FB5F76711B4D84A706D4C3F5   一致 = False
+   51 个成就 JSON + manifest 里有差异的 = 0 []
+
+⑥ 抽样对照（zh_cn 未动 / en_us 本轮新值）
+----------------------------------------------------------------------------------------------------
+   root.title
+     zh: 旧时代炼金术的继承者
+     en: Heir to the Old Alchemy
+   root.description
+     zh: 以炼制"贵金"为主要目标，出发！
+     en: Set out with smelting "noble gold" as your main goal!
+   blazing_rod.title
+     zh: 超 燃 大 火 杆 ！
+     en: S U P E R  B L A Z I N G  R O D !
+   sturdygold_skeleton.title
+     zh: 骷髅打金服
+     en: Skeleton Gold Farm
+   sturdygold_skeleton.description
+     zh: 用万坚金武器工具攻击骷髅使其掉落金骨粉
+     en: Hit a skeleton with a Sturdygold weapon or tool so it drops Golden Bone Meal.
+   echogold_armor.title
+     zh: 苏打色的战甲配上劲爆的音乐
+     en: Soda-Colored Armor With Blasting Music
+   midas_feast_2.description
+     zh: 获得所有乐事联动的金食物
+     en: Obtain all Farmer's Delight golden foods.
+   illusiongold_weapon.title
+     zh: 要不要休息一下呀～
+     en: Why Not Take a Little Rest~
+
+⑦ 生成器幂等性：tools/asset-generator/generate_advancements.py --lang 重跑
+   重跑 exit=0；en_us.json SHA256 7CD8E83F7D7D7F5C03318122B6301B79AC2CCEB4FB5F76711B4D84A706D4C3F5 -> 7CD8E83F7D7D7F5C03318122B6301B79AC2CCEB4FB5F76711B4D84A706D4C3F5；一致 = True
+   （重跑仍未改动 zh_cn.json / 51 个成就 JSON / manifest —— 逐项哈希同上）

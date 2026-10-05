@@ -30,6 +30,15 @@ import json
 import sys
 from pathlib import Path
 
+# Windows 控制台是 GBK：非 GBK 字符（U+21D2 之类）会让 print 直接抛 UnicodeEncodeError，
+# 于是"关卡红了"变成"关卡崩了"（扰动实测会记成"没命中"）。这里兜底成替换符。
+# ==== bg-final 实测教训（2026-10-05）：本文件原先没有这一行，于是只要 bg-final 断言里的
+# 消息带 U+21D2，进程就死在那一句 print 上、连"问题: N"都不打 ⇒ 扰动矩阵看起来像"没红"。====
+try:
+    sys.stdout.reconfigure(errors="replace")
+except Exception:
+    pass
+
 REPO = Path(__file__).resolve().parents[2]
 DATA = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "advancement"
 LANG = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
@@ -335,19 +344,147 @@ def build() -> list[dict]:
 
 LANG_PREFIX = "advancements.bettergold"
 
-# 英文口径：作者 51 条标题/简介是他写的中文梗，需求文档 §5.3 陷阱 4 写「英文缺失就留空或音译，别自己编」。
-# 「音译」对这类标题不成立、「留空」会在英文客户端显示空白标题 ⇒ 这里取第三条：
-# **英文条目 = 中文原文逐字**（一个字都没自己编；要改成留空/音译只需改这一个常量）。
-EN_POLICY = "copy_zh"
+# ---------------------------------------------------------------------------
+# 英文口径（1.6 收尾轮 bg-final 第 2 件，2026-10-05）
+#
+# ⚠ 旧口径（原文保留，未删）：作者 51 条标题/简介是他写的中文梗，需求文档 §5.3 陷阱 4 写
+#   「英文缺失就留空或音译，别自己编」。「音译」对这类标题不成立、「留空」会在英文客户端显示空白标题
+#   ⇒ 上一轮取第三条：**英文条目 = 中文原文逐字**（`EN_POLICY = "copy_zh"`，一个字都没自己编）。
+#   作者本轮裁定：**102 条英文值必须是真的英译**（键名不动 / zh_cn 一个字不动 / 成就 id 不动）。
+#
+# 术语一律沿用既有 `assets/bettergold/lang/en_us.json` 与
+# `docs/发布/1.5.0/CHANGELOG-1.5.0.md` 的写法，不新造：
+#   Sturdygold / Flamegold / Voodoogold / Thundergold / Indigoseagold / Illusiongold /
+#   Thornsgold / Echogold、Mixed Crystal Pile、Alchemic Fuel、Blazing Rod、Golden Cowrie、
+#   Glittering Vine、Bundled Echo Shard、Indigo Ocean Heart、Voodoo Feather、
+#   Amethyst Energy Dust、Chorus Cherry Branch、Gold-Infused Dirt、Golden Bone Meal、
+#   Gold Trader、Alchemical Cowrie Meat、Sonic Roar / Sediment / Soothe（手册 en_us 与 1.5 变更日志）。
+# 标题保持"梗"的语气、简介保持"怎么做"的字面意思；两条都不许与中文原值逐字相同
+# （validate_advancements.py 的 [bgfinal-adv-lang-translated] 守着这条，纯符号/数字类标题才可豁免）。
+# ---------------------------------------------------------------------------
+EN_POLICY = "translate"
+
+EN: dict[str, tuple[str, str]] = {  # advancement key -> (title, description)
+    "root": ("Heir to the Old Alchemy",
+             'Set out with smelting "noble gold" as your main goal!'),
+    "mixed_crystal_pile": ("What Noble Gold Needs I", "Craft a Mixed Crystal Pile."),
+    "alchemic_fuel": ("What Noble Gold Needs II", "Craft some Alchemic Fuel."),
+    "core_material": ("Treasure of a Thousand-Mile Journey",
+                      'Obtain any kind of "noble gold" core material.'),
+    "blazing_rod": ("S U P E R  B L A Z I N G  R O D !", "Craft a Blazing Rod."),
+    "golden_cowrie": ("An Old-Memory Shell Left in the Blazing Sea",
+                      "Obtain a Golden Cowrie."),
+    "glittering_vine": ("A Vine in the Dark, Suddenly Aglow",
+                        "Obtain a Glittering Vine."),
+    "bundled_echo_shard": ("Load It, Bundle It, and Then Hurry...",
+                           "Craft a Bundled Echo Shard."),
+    "indigo_ocean_heart": ("Sinking Into the Deep Sea",
+                           "Craft an Indigo Ocean Heart."),
+    "voodoo_feather": ("A Lightless Feather, Like a Copy",
+                       "Obtain a Voodoo Feather."),
+    "amethyst_energy_dust": ("Red-Purple Whirl: Big Bang",
+                             "Craft some Amethyst Energy Dust."),
+    "chorus_cherry_branch": ("Overlapping Fragrance, Unfolding",
+                             "Craft a Chorus Cherry Branch."),
+    "raw_metal": ("All Set, Smelt It, Taken!",
+                  'Craft any kind of raw "noble gold" material.'),
+    "flamegold_ingot": ("I  G O T  F L A M E G O L D !!!",
+                        "The urgent thing is that we are one tiger-running-forward short..."),
+    "flamegold_weapon": ("H I G H  H E A T  K E P T  U P",
+                         "Obtain any kind of Flamegold weapon or tool."),
+    "flamegold_armor": ("W H A T  A  F I R E  Y O U  A R E",
+                        "Obtain a full set of Flamegold armor."),
+    "sturdygold_ingot": ("Our First Pot of Gold in Life",
+                         "We can do a lot of things with this metal!"),
+    "sturdygold_weapon": ("Gild Yourself - I Mean Your Blood",
+                          "Obtain any kind of Sturdygold weapon or tool."),
+    "sturdygold_armor": ("Even My Blood Is Stained With Gold",
+                         "Obtain a full set of Sturdygold armor."),
+    "sturdygold_skeleton": ("Skeleton Gold Farm",
+                            "Hit a skeleton with a Sturdygold weapon or tool so it drops Golden Bone Meal."),
+    "thornsgold_ingot": ("Did an Ingot Just Prick Me?!",
+                         "But it looked so smooth..."),
+    "thornsgold_weapon": ("The Green That Takes In",
+                          "Obtain any kind of Thornsgold weapon or tool."),
+    "thornsgold_armor": ("Looks Like a Ghillie Suit, Is Actually a Walking Cactus",
+                         "Obtain a full set of Thornsgold armor."),
+    "echogold_ingot": ("A Roaring Entrance Just Like That",
+                       "Feels like you could build a big speaker out of this!"),
+    "echogold_weapon": ("Wait for the Show - This One Is About the Drummer",
+                        "Obtain any kind of Echogold weapon or tool."),
+    "echogold_armor": ("Soda-Colored Armor With Blasting Music",
+                       "Obtain a full set of Echogold armor."),
+    "indigoseagold_ingot": ("Indigo Floating on the Sunken Sea",
+                            "This metal~ was smelted with water, smelted with water."),
+    "indigoseagold_weapon": ("Struck Hard by Crushing Water Pressure",
+                             "Obtain any kind of Indigoseagold weapon or tool."),
+    "indigoseagold_armor": ("Deep-Sea Walker",
+                            "Obtain a full set of Indigoseagold armor."),
+    "voodoogold_ingot": ("Something Seeped Through With Venom",
+                         "The toxin this metal gives off is deeply unsettling."),
+    "voodoogold_weapon": ("An Exterminating Toxin of Great Threat",
+                          "Obtain any kind of Voodoogold weapon or tool."),
+    "voodoogold_armor": ("Purple All Over - Probably Not to Be Messed With",
+                         "Obtain a full set of Voodoogold armor."),
+    "thundergold_ingot": ("Must This Metal Really Be Thunder-Pink?",
+                          "That is not pink, it is magenta!"),
+    "thundergold_weapon": ("A Numbing Bolt of Lightning",
+                           "Obtain any kind of Thundergold weapon or tool."),
+    "thundergold_armor": ("I Am Just a Passing Lightning Rod",
+                          "Obtain a full set of Thundergold armor."),
+    "illusiongold_ingot": ("Eternal Illusion",
+                           "The scent of flowers this metal gives off is mesmerizing."),
+    "illusiongold_weapon": ("Why Not Take a Little Rest~",
+                            "Obtain any kind of Illusiongold weapon or tool."),
+    "illusiongold_armor": ("Just Calm Your Heart Like This~",
+                           "Obtain a full set of Illusiongold armor."),
+    "gift_gold_ticket": ("One Ticket to Luxury", "Obtain a Gift Gold Ticket."),
+    "gift_box": ("This Item Suits You Very Well~",
+                 "Get any kind of gift box from the Gold Trader."),
+    "antique_tool": ("Ancient Collection",
+                     "Obtain any kind of antique weapon or tool."),
+    "netherite_antique_tool": ("The Royal Remains Endure Forever",
+                               "Take good care of this piece of your collection."),
+    "gold_infused_dirt": ("Even the Land Must Be Gilded",
+                          "Craft some Gold-Infused Dirt."),
+    "eggplant_seeds": ("Seeds of Glorious Years",
+                       "Get Golden Eggplant Seeds inside a bastion remnant."),
+    "golden_egg": ("What a Big Golden Egg~",
+                   "Feed golden seeds to a chicken to get a Golden Egg."),
+    "plant_gold_crop": ("Tilling My Golden Land",
+                        "Till Gold-Infused Dirt and plant any kind of golden crop."),
+    "midas_feast_1": ("Midas' Feast I", "Obtain all golden foods."),
+    "sturdygold_feast_1": ("Gilding Evolution I",
+                           "Obtain all Sturdygold foods."),
+    "alchemical_meat": ("Eating Technology, Pfft - Alchemy Meat",
+                        "Obtain Alchemical Cowrie Meat."),
+    "midas_feast_2": ("Midas' Feast II",
+                      "Obtain all Farmer's Delight golden foods."),
+    "sturdygold_feast_2": ("Gilding Evolution II",
+                           "Obtain all Farmer's Delight Sturdygold foods."),
+}
 
 
 def lang_entries(A: list[dict]) -> list[tuple[str, str, str]]:
-    """返回 [(key, zh, en), ...]，顺序固定 = 表序 × title/description。"""
+    """返回 [(key, zh, en), ...]，顺序固定 = 表序 × title/description。
+
+    英译**缺一条就报错**（不许静默写成空串或退回中文）——这是"102 条全都要真英译"的机器形态。
+    """
+    assert EN_POLICY == "translate", f"EN_POLICY 不是 translate（{EN_POLICY}）"
+    missing = [a["key"] for a in A if a["key"] not in EN]
+    assert not missing, f"这些成就在 EN 表里没有英译：{missing}"
+    extra = sorted(set(EN) - {a["key"] for a in A})
+    assert not extra, f"EN 表里有成就表之外的键：{extra}"
     out = []
     for a in A:
-        for suffix, zh in (("title", a["title"]), ("description", a["desc"])):
+        en_title, en_desc = EN[a["key"]]
+        assert en_title.strip(), f"{a['key']}.title 的英译是空的"
+        assert en_desc.strip(), f"{a['key']}.description 的英译是空的"
+        for suffix, zh, en in (("title", a["title"], en_title),
+                               ("description", a["desc"], en_desc)):
             key = f"{LANG_PREFIX}.{a['key']}.{suffix}"
-            out.append((key, zh, zh if EN_POLICY == "copy_zh" else ""))
+            out.append((key, zh, en))
+    assert len(out) == len(A) * 2, f"语言键条数不是 2×{len(A)}"
     return out
 
 

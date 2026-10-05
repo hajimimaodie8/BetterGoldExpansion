@@ -7,6 +7,15 @@ import re
 import sys
 from pathlib import Path
 
+# Windows 控制台是 GBK：非 GBK 字符（U+21D2 之类）会让 print 直接抛 UnicodeEncodeError，
+# 于是"关卡红了"变成"关卡崩了"（扰动实测会记成"没命中"）。这里兜底成替换符。
+# ==== bg-final 实测教训（2026-10-05）：本文件原先没有这一行，于是只要 bg-final 断言里的
+# 消息带 U+21D2，进程就死在那一句 print 上、连"问题: N"都不打 ⇒ 扰动矩阵看起来像"没红"。====
+try:
+    sys.stdout.reconfigure(errors="replace")
+except Exception:
+    pass
+
 REPO = Path(__file__).resolve().parents[2]
 JAVA = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold"
 LANG = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
@@ -2030,14 +2039,214 @@ for _needle, _tag, _why in (
     if _needle not in _bgfix_spec:
         _bgfix_bad(_tag, _why)
 
+# ===========================================================================
+# bg-final（1.6 收尾轮，2026-10-05）：三件已裁定的收尾
+#   ① 幽咆金建材的声波**真的击退**（手册原文就写着 knock the target back）
+#   ② 102 条成就英文值**真英译**（断言在 validate_advancements.py 的 [bgfinal-adv-lang-*]）
+#   ③ 高燃 **1 级不点燃**（端到端 0/1/2，与沉淀对齐）
+# 每条断言都带稳定 ASCII id（[bgfinal-...]），判据一律跑在**去注释**后的源码上。
+# ===========================================================================
+bgfinal_problems: list[str] = []
+
+
+def _bgfinal_bad(tag: str, msg: str) -> None:
+    bgfinal_problems.append("%s [%s]" % (msg, tag))
+
+
+def _bgfinal_block(body: str, header: str) -> tuple[str, str]:
+    """按花括号配平切出 `header` 那个块，返回 (块文本, 去掉该块之后的剩余文本)。
+
+    找不到 header / 块不配平时返回 ("", body) —— 调用方必须把空块当成"反空转失败"。
+    """
+    i = body.find(header)
+    if i < 0:
+        return "", body
+    j = body.find("{", i)
+    if j < 0:
+        return "", body
+    depth = 0
+    for k in range(j, len(body)):
+        if body[k] == "{":
+            depth += 1
+        elif body[k] == "}":
+            depth -= 1
+            if depth == 0:
+                return body[i:k + 1], body[:i] + body[k + 1:]
+    return "", body
+
+
+# ---------- ① 声波击退 ----------
+_bgfinal_mev = _bgfix_mev          # MetalEvents（已去注释）
+_bgfinal_mf = _bgfix_mf            # MetalFamily（已去注释）
+_sonic_body = method_body(_bgfinal_mev, "private static void sonicContact(")
+_kb_body = method_body(_bgfinal_mev, "private static void applyBlockSonicKnockback(")
+if not _sonic_body:
+    _bgfinal_bad("bgfinal-sonic-knockback-present",
+                 "MetalEvents 里找不到 sonicContact 方法体（反空转守护）")
+if not _kb_body:
+    _bgfinal_bad("bgfinal-sonic-knockback-present",
+                 "MetalEvents 里找不到 applyBlockSonicKnockback 方法体（反空转守护）")
+if _sonic_body and _kb_body:
+    # 正向：真的推了，且方向是「方块中心 → 受害者」
+    for _needle, _why in (("pos.getCenter()", "没有拿方块中心当原点"),
+                          ("applyBlockSonicKnockback(victim, center)", "没有调用那一处推"),
+                          ("victim.hurt(", "没有伤害调用")):
+        if _needle not in _sonic_body:
+            _bgfinal_bad("bgfinal-sonic-knockback-present", "%s：sonicContact 里没有 %s"
+                         % (_why, _needle))
+    for _needle, _why in (("victim.push(", "没有走 Entity#push("),
+                          ("subtract(blockCenter)", "方向不是「方块中心 → 受害者」"),
+                          (".normalize()", "方向没有归一化"),
+                          ("KNOCKBACK_RESISTANCE", "没乘 (1 - 击退抗性)"),
+                          ("1.0D - resistance", "没乘 (1 - 击退抗性)")):
+        if _needle not in _kb_body:
+            _bgfinal_bad("bgfinal-sonic-knockback-present", "%s：applyBlockSonicKnockback 里没有 %s"
+                         % (_why, _needle))
+    # 只推一次 + 只在这一次结算里推（在节流之后、且 push 只出现一次）
+    if _sonic_body.count("push(") != 0:
+        _bgfinal_bad("bgfinal-sonic-knockback-once",
+                     "sonicContact 里出现了行内 push(（推的落点必须在唯一那一处 helper 里）")
+    if _kb_body.count("push(") != 1:
+        _bgfinal_bad("bgfinal-sonic-knockback-once",
+                     "applyBlockSonicKnockback 里 push( 出现 %d 次（期望恰好 1 次）"
+                     % _kb_body.count("push("))
+    _i_throttle = _sonic_body.find("contactThrottled(")
+    _i_call = _sonic_body.find("applyBlockSonicKnockback(")
+    _i_hurt = _sonic_body.find("victim.hurt(")
+    if _i_throttle < 0 or _i_call < 0 or _i_call < _i_throttle:
+        _bgfinal_bad("bgfinal-sonic-knockback-once",
+                     "推的调用点不在 contactThrottled(...) 之后 -> 可能每 tick 都推")
+    if _i_hurt < 0 or _i_call < _i_hurt:
+        _bgfinal_bad("bgfinal-sonic-knockback-damage-gated",
+                     "推的调用点不在 victim.hurt(...) 之后 -> 免疫 / 无敌帧差额为 0 时也会被推"
+                     "（原版 SonicBoom.java:79-83 是 `if (target.hurt(...)) { push }`）")
+    if "if (!victim.hurt(" not in _sonic_body:
+        _bgfinal_bad("bgfinal-sonic-knockback-damage-gated",
+                     "没有 `if (!victim.hurt(...)) { continue; }` 这道闸门")
+    # 幅度：必须由「原版声波基准 × 伤害比」推出来，而不是凭空拍一个数
+    _m_dmg = re.search(r"CONTACT_SONIC_DAMAGE\s*=\s*([0-9.]+)F", _bgfinal_mf)
+    _m_ref = re.search(r"SONIC_BOOM_REFERENCE_DAMAGE\s*=\s*([0-9.]+)F", _bgfinal_mf)
+    _m_h = re.search(r"SONIC_BOOM_KNOCKBACK_HORIZONTAL\s*=\s*([0-9.]+)D", _bgfinal_mf)
+    _m_v = re.search(r"SONIC_BOOM_KNOCKBACK_VERTICAL\s*=\s*([0-9.]+)D", _bgfinal_mf)
+    if not (_m_dmg and _m_ref and _m_h and _m_v):
+        _bgfinal_bad("bgfinal-sonic-knockback-magnitude",
+                     "MetalFamily 里找不到四个基准常量（反空转守护："
+                     "CONTACT_SONIC_DAMAGE / SONIC_BOOM_REFERENCE_DAMAGE / "
+                     "SONIC_BOOM_KNOCKBACK_HORIZONTAL / SONIC_BOOM_KNOCKBACK_VERTICAL）")
+    else:
+        _want_h = float(_m_h.group(1)) * (float(_m_dmg.group(1)) / float(_m_ref.group(1)))
+        _want_v = float(_m_v.group(1)) * (float(_m_dmg.group(1)) / float(_m_ref.group(1)))
+        if abs(_want_h - 0.75) > 1e-9 or abs(_want_v - 0.15) > 1e-9:
+            _bgfinal_bad("bgfinal-sonic-knockback-magnitude",
+                         "由原版基准 × 伤害比推出的击退强度 = %.4f / %.4f，期望 0.75 / 0.15"
+                         "（2.5×3/10 与 0.5×3/10）" % (_want_h, _want_v))
+        _deriv = _bgfinal_mf[_bgfinal_mf.find("CONTACT_SONIC_KNOCKBACK_HORIZONTAL ="):]
+        _deriv = _deriv[: _deriv.find(";")]
+        for _needle in ("SONIC_BOOM_KNOCKBACK_HORIZONTAL", "CONTACT_SONIC_DAMAGE",
+                        "SONIC_BOOM_REFERENCE_DAMAGE"):
+            if _needle not in _deriv:
+                _bgfinal_bad("bgfinal-sonic-knockback-magnitude",
+                             "水平击退常量不是由 %s 推出来的（变成了拍脑袋的魔数）" % _needle)
+    # 范围边界：击退只服务幽咆金这一条，其余接触效果一个都没有
+    _java_sources = list((JAVA).rglob("*.java"))
+    # ⚠ 计数一律跑在**去注释**后的文本上，否则 javadoc 里写一句 {@link #applyBlockSonicKnockback}
+    #   就会把这个桶多算一次（本轮实测：含注释 3 → 去注释 2）。
+    _kb_files = sorted(str(p.relative_to(REPO)) for p in _java_sources
+                       if "CONTACT_SONIC_KNOCKBACK_" in strip_comments(p.read_text(encoding="utf-8")))
+    if len(_kb_files) != 2:
+        _bgfinal_bad("bgfinal-sonic-knockback-single-site",
+                     "引用 CONTACT_SONIC_KNOCKBACK_* 的文件 = %s（期望恰好 2 个：MetalFamily 定义 + "
+                     "MetalEvents 使用）-> 别的接触效果被顺手加上击退了" % _kb_files)
+    _helper_hits = sum(strip_comments(p.read_text(encoding="utf-8")).count("applyBlockSonicKnockback") - 1
+                       for p in _java_sources
+                       if "applyBlockSonicKnockback" in strip_comments(p.read_text(encoding="utf-8")))
+    if _helper_hits != 1:
+        _bgfinal_bad("bgfinal-sonic-knockback-single-site",
+                     "applyBlockSonicKnockback 的调用点 = %d 个（期望恰好 1 个）" % _helper_hits)
+    _contact_body = method_body(_bgfinal_mev, "public static void applyContact(")
+    if not _contact_body:
+        _bgfinal_bad("bgfinal-sonic-knockback-single-site",
+                     "找不到 applyContact 方法体（反空转守护）")
+    elif "push(" in _contact_body:
+        _bgfinal_bad("bgfinal-sonic-knockback-single-site",
+                     "applyContact 里出现了行内 push( -> 击退被写进了共用的接触入口")
+    # 其余三条接触效果仍在（阴性对照：这一轮没把它们改坏）
+    for _needle, _why in (("CACTUS_CONTACT_KEY", "树棘金建材的接触伤害没了"),
+                          ("contactDamage(entity, family)", "靛海金建材的接触伤害没了"),
+                          ("family.contactBenefit", "幻惑金建材的正面效果没了"),
+                          ("family.contactFire", "烈燃金建材的点火没了")):
+        if _needle not in _contact_body:
+            _bgfinal_bad("bgfinal-sonic-knockback-families-untouched", "%s（缺 %s）" % (_why, _needle))
+    if _bgfinal_mev.count("setRemainingFireTicks") != 1:
+        _bgfinal_bad("bgfinal-sonic-knockback-families-untouched",
+                     "MetalEvents 里 setRemainingFireTicks 出现 %d 次（烈燃金点火那条应当恰好 1 次）"
+                     % _bgfinal_mev.count("setRemainingFireTicks"))
+
+# ---------- ③ 高燃 1 级不点燃 ----------
+_bgfinal_fx = _bgfix_fx            # AllEffects（已去注释）
+_hb_class = method_body(_bgfinal_fx, 'EFFECTS.register("high_burn"')
+_hb_body = method_body(_hb_class, "public boolean applyEffectTick(")
+_sd_class = method_body(_bgfinal_fx, 'EFFECTS.register("sediment"')
+_sd_body = method_body(_sd_class, "public boolean applyEffectTick(")
+_shifted_body = method_body(_bgfinal_fx, "public static float shiftedDamage(")
+if not _hb_body:
+    _bgfinal_bad("bgfinal-highburn-body", "AllEffects 里找不到高燃的 applyEffectTick 方法体（反空转守护）")
+if not _sd_body:
+    _bgfinal_bad("bgfinal-highburn-body", "AllEffects 里找不到沉淀的 applyEffectTick 方法体（反空转守护）")
+if not _shifted_body or "Math.max(0, amplifier)" not in _shifted_body:
+    _bgfinal_bad("bgfinal-highburn-body",
+                 "shiftedDamage 不是 `Math.max(0, amplifier)`（1 级 = 0 点的唯一真源）")
+if _hb_body:
+    _blk, _rest = _bgfinal_block(_hb_body, "if (damage > 0.0F)")
+    if not _blk:
+        _bgfinal_bad("bgfinal-highburn-zero-no-fire",
+                     "高燃 applyEffectTick 里没有 `if (damage > 0.0F) {` 守卫块"
+                     "（点数为 0 时必须既不 hurt 也不刷燃烧）")
+    else:
+        for _needle in ("entity.hurt(", "setRemainingFireTicks"):
+            if _needle not in _blk:
+                _bgfinal_bad("bgfinal-highburn-zero-no-fire", "守卫块里没有 %s" % _needle)
+        for _needle, _why in (("setRemainingFireTicks", "1 级（0 点）仍会刷新燃烧计时 -> 原版每 20 tick 自补 1 点"),
+                              (".hurt(", "1 级（0 点）仍会走一次 hurt（还会白占一次无敌帧）")):
+            if _needle in _rest:
+                _bgfinal_bad("bgfinal-highburn-zero-no-fire", "守卫块之外还有 %s：%s" % (_needle, _why))
+    if "shiftedDamage(amplifier)" not in _hb_body:
+        _bgfinal_bad("bgfinal-highburn-zero-no-fire",
+                     "高燃没有用共用的 shiftedDamage(amplifier)（公式必须只有一处真源）")
+    if _bgfinal_fx.count("setRemainingFireTicks") != 1:
+        _bgfinal_bad("bgfinal-highburn-zero-no-fire",
+                     "AllEffects 里 setRemainingFireTicks 出现 %d 次（高燃那一处应当恰好 1 次）"
+                     % _bgfinal_fx.count("setRemainingFireTicks"))
+    # 2 级及以上照旧点燃：守卫块里的 hurt 伤害必须还是那次结算的值
+    if "damage" not in _hb_body:
+        _bgfinal_bad("bgfinal-highburn-level2-still-burns", "高燃不再按 damage 结算（2 级及以上也不点燃了）")
+if _sd_body and "setRemainingFireTicks" in _sd_body:
+    _bgfinal_bad("bgfinal-highburn-sediment-untouched",
+                 "沉淀的结算里出现了 setRemainingFireTicks（沉淀本来就不点燃，别顺手加）")
+if _sd_body and "inWall()" not in _sd_body:
+    _bgfinal_bad("bgfinal-highburn-sediment-untouched", "沉淀的伤害类型不再是 in_wall()")
+
+# ---------- 文档侧：新口径必须落档（docs/1.6-规格.md） ----------
+for _needle, _tag, _why in (
+        ("bg-final", "bgfinal-doc", "docs/1.6-规格.md 里没有 bg-final 这一轮的节"),
+        ("SonicBoom.java:79-83", "bgfinal-doc", "docs/1.6-规格.md 没写击退的源码依据"),
+        ("0.75", "bgfinal-doc", "docs/1.6-规格.md 没写水平击退强度 0.75"),
+        ("已选 (b)", "bgfinal-doc", "docs/1.6-规格.md 的 §11.6.2「★A 两条出路」没有就地标注已选 (b)"),
+        ("1 级 0 / 2 级 1 / 3 级 2", "bgfinal-doc", "docs/1.6-规格.md 没写高燃的端到端 0/1/2 曲线")):
+    if _needle not in _bgfix_spec:
+        _bgfinal_bad(_tag, _why)
+
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
 print(f"bg-book 帕秋莉手册问题: {len(bgbook_problems)} {bgbook_problems[:8]}"
       f"（手册 {len(_entries_now)} 条目 / {_total_pages} 页 / {len(_recipe_refs)} 条配方引用）")
 print(f"bg-book §六 追加轮（三章逐页补全）问题: {len(bgbook2_problems)} {bgbook2_problems[:8]}"
       f"（三章 {_bg2_pages_total} 页 / {len(_bg2_recipe_refs)} 条配方引用 / {len(_bg2_item_refs)} 个图标引用）")
 print(f"bg-fix 1.6 七条修正问题: {len(bgfix_problems)} {bgfix_problems[:8]}")
+print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: "
+      f"{len(bgfinal_problems)} {bgfinal_problems[:8]}")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
+               or bgfinal_problems
                or symmetric_problems or beacon_problems) else 0)

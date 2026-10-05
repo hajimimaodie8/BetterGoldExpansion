@@ -1,0 +1,626 @@
+package com.hjmmd_8.bettergold.probe.bgfinal;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.material.MetalEvents;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * 1.6 收尾轮（bg-final）A 级探针 —— <b>只验证、不实现</b>，收尾整块删除。
+ *
+ * <p>两件：① 幽咆金建材的声波<b>真的击退</b>（方向 + 幅度 + 只推一次 + 免疫 + 别的金属不受影响 +
+ * 自然「踩踏 / 贴近」路径）② 高燃 <b>1 级不点燃</b>（端到端 0/1/2，与沉淀并排对照）。</p>
+ *
+ * <h2>判据为什么这样取（前两版探针实测踩到的四个坑，都已修）</h2>
+ * <ol>
+ *   <li><b>真实 AI 实体的「位移」不是好判据</b>：Cow 会随机漫步，10 tick 自己就能走 1.3~7.0 格
+ *       （第一版基线实测 K1 朝方块走了 1.36 格、K7 走了 7.02 格）⇒ "位移 &gt; 阈值"在
+ *       <b>没有击退的改前</b>也会绿（假绿）。现行判据 = <b>同一 tick 内、调用前后的速度差</b>
+ *       {@code Δdelta = deltaAfter − deltaBefore}（{@code Entity#push} 就是 {@code setDeltaMovement(delta + push)}），
+ *       与"以方块中心向外"的期望向量逐分量比（容差 1e-6）。</li>
+ *   <li><b>真实 AI 实体的「速度」也不是好判据</b>：改前基线里 K1 自己就走出了
+ *       {@code |delta_h| = 0.33}、{@code dy = +0.36} ⇒ 第一版的"速度分量"判据同样是假绿。</li>
+ *   <li><b>{@code hasImpulse} 也不干净</b>（第一版以为"只有 {@code Entity#push} 会置真"——错）：
+ *       {@code LivingEntity} 自己在 {@code jumpFromGround} / {@code travel} / {@code pushEntities}
+ *       里也会置真（neoforge 21.1.228 sources {@code LivingEntity.java:1537 / 2191 / 3487}），
+ *       改前基线里 K7 的 {@code hasImpulse} 就是 {@code true}。⇒ 只作旁证，不作判据。</li>
+ *   <li><b>最贵的一条：{@code hurt()} 自己就会推一把</b>。{@code LivingEntity#hurt} 在
+ *       {@code if (flag1)} 里无条件走 {@code if (!source.is(DamageTypeTags.NO_KNOCKBACK)) ...
+ *       this.knockback(0.4F, d0, d1);}（neoforge 21.1.228 sources {@code LivingEntity.java:1241-1253}），
+ *       而幽咆金用的 {@code new DamageSource(holder)} <b>没有实体也没有位置</b> ⇒ {@code d0 = d1 = 0}
+ *       ⇒ {@code knockback} 里的随机兜底（{@code LivingEntity.java:1540-1543}：
+ *       {@code while (x*x + z*z < 1e-5) x = (Math.random()-Math.random())*0.01}）
+ *       给出一个<b>随机水平方向、强度 0.4×(1−抗性) 的击退</b>，竖直那半则是确定的
+ *       {@code onGround ? min(0.4, y/2+0.4) : y}。
+ *       第一版判据只比"我们那一笔"⇒ 改前基线里 {@code Δdelta} 明明不是 0
+ *       （K1 {@code (-0.3143, 0.4392, 0.2474)}）却与期望差 1.2，看着像"改前就有一半击退"。
+ *       ⇒ 判据拆成两笔：<b>竖直逐分量精确比</b> + <b>水平残差长度必须恰等于 0.4×(1−抗性)</b>。</li>
+ *   <li><b>自然路径（每 10 tick 的接触扫描）用同一把尺子，但采样点在事件里</b>：伤害事件在
+ *       {@code hurt → 我们的 push} <b>之前</b>发生 ⇒ 在事件里存下"推前速度 + onGround"，
+ *       同一个服务端 tick 的 {@code ServerTickEvent.Post}（在所有 level tick 之后）再取差值。</li>
+ *   <li><b>受试体会自己逛进声波范围</b>：第一版把受试体放在真建材附近，结果 ① 高燃/沉淀组
+ *       漫步过去挨了 7 次 sonic_boom（读数 3.3/1.9/2.8 点/秒，全被污染）② K1 在显式调用<b>之前</b>
+ *       就被每 10 tick 的扫描打过（{@code invulnerableTime=11} ⇒ 我们那次 {@code hurt} 被无敌帧挡掉，
+ *       读数变成"没伤害也没击退"的假红）。
+ *       ⇒ 现行做法 = ① 高燃/沉淀组关进<b>四面围墙的独立围栏</b>（离最近建材 &gt;= 14 格）；
+ *       ② 击退"显式调用"组搬到<b>空地上、对着一个不存在的坐标</b>调用
+ *       {@code MetalEvents.applyContact(victim, 幽咆金方块, 空中坐标)}（= 规则 29 的"只直接调共用入口"），
+ *       于是自然扫描一次都不会碰它们。</li>
+ * </ol>
+ *
+ * <p>其余纪律：绝对 tick 表；开关文件 {@code FMLPaths.GAMEDIR/bgfinal-probe.enabled} 存在才动作；
+ * 只打印 ASCII；{@code halt(false)} 只调一次；临时 forceload 收尾撤销并核对回基值。</p>
+ */
+@EventBusSubscriber(modid = com.hjmmd_8.bettergold.bettergold.MODID)
+public final class BgFinalProbe {
+
+    private static final String TAG = "BGFINAL-PROBE";
+    private static final int FLOOR_Y = 199;
+    private static final int STAND_Y = 200;
+    /** 三块<b>真实存在</b>的建材（自然「踩踏 / 贴近」路径要用真的） */
+    private static final BlockPos ECHO_BLOCK = new BlockPos(204, STAND_Y, 200);
+    private static final BlockPos STURDY_BLOCK = new BlockPos(210, STAND_Y, 200);
+    private static final BlockPos NATURAL_BLOCK = new BlockPos(215, STAND_Y, 200);
+    /** 击退"显式调用"组的空中合成坐标（那里没有真方块 ⇒ 自然扫描永远不碰它们） */
+    private static final BlockPos SYNTH_ECHO = new BlockPos(204, STAND_Y, 219);
+    private static final BlockPos SYNTH_STURDY = new BlockPos(204, STAND_Y, 224);
+    /** 高燃 / 沉淀围栏（离最近建材 &gt;= 14 格） */
+    private static final int PEN_X0 = 230;
+    private static final int PEN_X1 = 240;
+    private static final int PEN_Z0 = 195;
+    private static final int PEN_Z1 = 205;
+    /** 规格值（不从代码常量读 —— 否则就是"拿期望表自比"）：2.5 × 3/10 与 0.5 × 3/10 */
+    private static final double SPEC_KNOCKBACK_H = 0.75D;
+    private static final double SPEC_KNOCKBACK_V = 0.15D;
+    private static final double PUSH_TOLERANCE = 1.0E-6D;
+
+    private static boolean armed;
+    private static boolean enabled;
+    private static int baseForced = -1;
+    private static boolean halted;
+
+    private static Cow k1, k2, k3immune, k4noai, k5ai, k6other, k7natural;
+    private static Cow hb1, hb2, hb3, sd1, sd2, sd3;
+
+    private static final Map<UUID, String> NAMES = new HashMap<>();
+    private static final Map<String, Vec3> POS0 = new HashMap<>();
+    private static final Map<String, Vec3> DELTA_BEFORE = new HashMap<>();
+    private static final Map<String, Float> HP0 = new HashMap<>();
+    private static final Map<String, Boolean> IMPULSE_BEFORE = new HashMap<>();
+    private static final Map<String, Boolean> ONGROUND_BEFORE = new HashMap<>();
+    private static final Map<String, Integer> DMG_COUNT = new HashMap<>();
+    private static final Map<String, Integer> DMG_ZERO = new HashMap<>();
+    private static final Map<String, Integer> DMG_FIRE_POS = new HashMap<>();
+    private static final Map<String, Integer> DMG_SONIC = new HashMap<>();
+    private static int hb1FireMax = -1;
+    private static int hb2FireMax = -1;
+    private static int naturalOk;
+    private static double naturalWorstErr = -1.0D;
+    private static Vec3 pendingNaturalPre;
+    private static boolean pendingNaturalOnGround;
+
+    private static final List<String> FAILS = new ArrayList<>();
+    private static int checks;
+    private static int passed;
+
+    private BgFinalProbe() {
+    }
+
+    // ------------------------------------------------------------------ 工具
+
+    private static void log(String msg) {
+        System.out.println(TAG + " " + msg);
+    }
+
+    private static String f(double v) {
+        return String.format(java.util.Locale.ROOT, "%.4f", v);
+    }
+
+    private static String fv(Vec3 v) {
+        return "(" + f(v.x) + "," + f(v.y) + "," + f(v.z) + ")";
+    }
+
+    private static void check(String id, boolean ok, String detail) {
+        checks++;
+        if (ok) {
+            passed++;
+        } else {
+            FAILS.add(id);
+        }
+        log("CHECK " + (ok ? "PASS" : "FAIL") + " [" + id + "] :: " + detail);
+    }
+
+    private static String nameOf(LivingEntity e) {
+        return e == null ? null : NAMES.get(e.getUUID());
+    }
+
+    private static String snap(LivingEntity e) {
+        Vec3 d = e.getDeltaMovement();
+        return "hp=" + f(e.getHealth()) + " delta=" + fv(d) + " hasImpulse=" + e.hasImpulse
+                + " invulnTime=" + e.invulnerableTime + " fire=" + e.getRemainingFireTicks()
+                + " pos=" + fv(e.position());
+    }
+
+    private static Block blockByPath(String path) {
+        for (var entry : BuiltInRegistries.BLOCK.entrySet()) {
+            if (entry.getKey().location().getPath().equals(path)) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 期望向量：以方块中心 → 受害者碰撞箱中心，归一化后按规格值施加。
+     *
+     * <p>⚠ 这只是**我们那一笔**。同一 tick 里 {@code hurt()} 自己还会按原版公式推一把
+     * （见 {@link #vanillaHurtDelta}），判据要把两笔加起来。</p>
+     */
+    private static Vec3 pushVector(LivingEntity e, BlockPos pos) {
+        double resistance = e.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
+        double scale = 1.0D - Math.max(0.0D, Math.min(1.0D, resistance));
+        Vec3 victimCenter = e.position().add(0.0D, e.getBbHeight() / 2.0D, 0.0D);
+        Vec3 dir = victimCenter.subtract(pos.getCenter()).normalize();
+        return new Vec3(dir.x * SPEC_KNOCKBACK_H * scale, dir.y * SPEC_KNOCKBACK_V * scale,
+                dir.z * SPEC_KNOCKBACK_H * scale);
+    }
+
+    /**
+     * <b>原版「受伤反应」那一笔</b>（本探针最贵的一个发现）：
+     * {@code LivingEntity#hurt} 在 {@code if (flag1)} 里无条件走
+     * {@code if (!source.is(DamageTypeTags.NO_KNOCKBACK)) { ... this.knockback(0.4F, d0, d1); }}
+     * （neoforge 21.1.228 sources {@code LivingEntity.java:1241-1253}），
+     * 而 {@code d0 / d1} 只在「直接实体是投掷物」或「{@code source.getSourcePosition() != null}」时才非零
+     * —— 幽咆金用的 {@code new DamageSource(holder)}（无实体、无位置）两样都不满足
+     * ⇒ {@code d0 = d1 = 0} ⇒ {@code knockback} 里那句
+     * {@code while (x * x + z * z < 1.0E-5F) { x = (Math.random() - Math.random()) * 0.01; ... }}
+     * （{@code LivingEntity.java:1540-1543}）取一个<b>随机水平方向</b>、强度
+     * {@code 0.4 × (1 − 击退抗性)}；竖直是确定的
+     * {@code onGround ? min(0.4, y/2 + 0.4) : y}。
+     *
+     * <p>⇒ 判据 = {@code Δdelta ≈ 原版那一笔（水平随机、竖直确定）+ 我们那一笔（精确向量）}：
+     * 竖直逐分量比（容差 1e-6）、水平的<b>残差长度</b>必须等于 {@code 0.4 × (1 − 抗性)}（容差 1e-6）。
+     * 改前（没有我们那一笔）这两个量都对不上 —— 见证据文件里改前/改后两轮读数。</p>
+     */
+    private static Vec3 vanillaHurtDelta(LivingEntity e, Vec3 before, boolean onGround) {
+        double resistance = e.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
+        double strength = (double) 0.4F * (1.0D - Math.max(0.0D, Math.min(1.0D, resistance)));
+        double lift = onGround ? Math.min(0.4D, before.y / 2.0D + strength) : before.y;
+        return new Vec3(-before.x / 2.0D, lift - before.y, -before.z / 2.0D);
+    }
+
+    private static Cow cow(ServerLevel level, String name, double x, double z, boolean noai) {
+        Cow c = EntityType.COW.create(level);
+        if (c == null) {
+            return null;
+        }
+        c.setPos(x, STAND_Y, z);
+        c.setNoAi(noai);
+        c.setPersistenceRequired();
+        AttributeInstance hp = c.getAttribute(Attributes.MAX_HEALTH);
+        if (hp != null) {
+            hp.addTransientModifier(new AttributeModifier(
+                    ResourceLocation.fromNamespaceAndPath("bettergold", "bgfinal_probe_hp"),
+                    490.0D, AttributeModifier.Operation.ADD_VALUE));
+        }
+        c.setHealth(c.getMaxHealth());
+        level.addFreshEntity(c);
+        NAMES.put(c.getUUID(), name);
+        return c;
+    }
+
+    private static double vanillaRandomStrength(LivingEntity e) {
+        double resistance = e.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
+        return (double) 0.4F * (1.0D - Math.max(0.0D, Math.min(1.0D, resistance)));
+    }
+
+    /**
+     * 推前快照（必须在那次 {@code applyContact} **之前**逐个体采样）。
+     *
+     * <p>⚠ 只能调**一次** {@code applyContact}：它内部会对整个 3×3×3 里的每个受害者各推一次，
+     * 所以"每个受害者调一次"= 第一个受害者被推两次（第一版就踩了这个，读数会翻倍）。</p>
+     */
+    private static void snapshotBefore(LivingEntity e) {
+        String n = nameOf(e);
+        DELTA_BEFORE.put(n, e.getDeltaMovement());
+        IMPULSE_BEFORE.put(n, e.hasImpulse);
+        ONGROUND_BEFORE.put(n, e.onGround());
+        HP0.put(n, e.getHealth());
+    }
+
+    /** 推后判定（同类判据只有一处，三种形态用 kind 区分） */
+    private static void evaluatePush(LivingEntity e, BlockPos synth, String kind) {
+        String n = nameOf(e);
+        Vec3 before = DELTA_BEFORE.getOrDefault(n, Vec3.ZERO);
+        boolean impulseBefore = IMPULSE_BEFORE.getOrDefault(n, Boolean.FALSE);
+        boolean onGround = ONGROUND_BEFORE.getOrDefault(n, Boolean.TRUE);
+        float hpBefore = HP0.getOrDefault(n, e.getHealth());
+        Vec3 d = e.getDeltaMovement().subtract(before);
+        switch (kind) {
+            case "push" -> {
+                Vec3 vanilla = vanillaHurtDelta(e, before, onGround);
+                Vec3 push = pushVector(e, synth);
+                Vec3 fixed = vanilla.add(push);
+                double dyErr = Math.abs(d.y - fixed.y);
+                double residual = Math.sqrt((d.x - fixed.x) * (d.x - fixed.x)
+                        + (d.z - fixed.z) * (d.z - fixed.z));
+                double hErr = Math.abs(residual - vanillaRandomStrength(e));
+                log("EVAL-push " + n + " hp " + f(hpBefore) + " -> " + f(e.getHealth()) + " dDelta=" + fv(d)
+                        + " vanilla=" + fv(vanilla) + " +push=" + fv(push) + " => fixed=" + fv(fixed)
+                        + " dyErr=" + f(dyErr) + " hResidual=" + f(residual) + " hErr=" + f(hErr) + " "
+                        + snap(e));
+                check("bgfinal-kb-push-vector", dyErr <= PUSH_TOLERANCE && hErr <= PUSH_TOLERANCE,
+                        n + " Δdelta=" + fv(d) + "；原版受伤反应（竖直确定 " + f(vanilla.y) + " / 水平随机 0.4）"
+                                + " + 我们那一笔（方块中心向外 0.75 水平 / 0.15 竖直）⇒ 竖直 err=" + f(dyErr)
+                                + "、水平残差=" + f(residual) + "（应为 " + f(vanillaRandomStrength(e))
+                                + "）err=" + f(hErr) + "，容差 " + PUSH_TOLERANCE);
+                check("bgfinal-kb-impulse", !impulseBefore && e.hasImpulse,
+                        n + " hasImpulse " + impulseBefore + " -> " + e.hasImpulse
+                                + "（`Entity#push` 会置真；只作旁证，主判据是 Δdelta 的两笔分解）");
+                check("bgfinal-kb-hurt-landed", hpBefore - e.getHealth() == 3.0F,
+                        n + " hp " + f(hpBefore) + " -> " + f(e.getHealth()) + "（同一 tick 内，应为 3 点）");
+                check("bgfinal-kb-invuln-frame", e.invulnerableTime >= 10,
+                        n + " invulnerableTime=" + e.invulnerableTime + "（原版命中后进入无敌帧，确切值即证据）");
+            }
+            case "immune" -> check("bgfinal-kb-immune-no-push",
+                    e.getHealth() == hpBefore && d.length() <= PUSH_TOLERANCE
+                            && e.hasImpulse == impulseBefore,
+                    n + " hp " + f(hpBefore) + " -> " + f(e.getHealth()) + " Δdelta=" + fv(d)
+                            + " hasImpulse " + impulseBefore + " -> " + e.hasImpulse
+                            + "（setInvulnerable 与创造模式走同一条 isInvulnerableTo 闸门 ⇒ hurt 返回假 ⇒ "
+                            + "既没有伤害也没有那一笔受伤反应）");
+            case "other" -> check("bgfinal-kb-other-metal-untouched",
+                    e.getHealth() == hpBefore && d.length() <= PUSH_TOLERANCE
+                            && e.hasImpulse == impulseBefore,
+                    n + " hp " + f(hpBefore) + " -> " + f(e.getHealth()) + " Δdelta=" + fv(d)
+                            + "（万坚金家族 contactSonicBoom=false，同一个入口也不应有任何效果）");
+            default -> check("bgfinal-kb-kind", false, "未知 kind=" + kind);
+        }
+    }
+
+    // ------------------------------------------------------------------ 剧本
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        MinecraftServer server = event.getServer();
+        int t = server.getTickCount();
+        if (!armed) {
+            armed = true;
+            enabled = java.nio.file.Files.exists(FMLPaths.GAMEDIR.get().resolve("bgfinal-probe.enabled"));
+            log("armed=true enabled=" + enabled + " gameDir=" + FMLPaths.GAMEDIR.get());
+            if (!enabled) {
+                return;
+            }
+        }
+        if (!enabled) {
+            return;
+        }
+        ServerLevel level = server.overworld();
+        try {
+            switch (t) {
+                case 20 -> {
+                    int floor = 0;
+                    for (BlockPos p : BlockPos.betweenClosed(199, FLOOR_Y, 195, 241, FLOOR_Y, 226)) {
+                        level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+                        floor++;
+                    }
+                    for (BlockPos p : BlockPos.betweenClosed(199, STAND_Y, 195, 241, STAND_Y + 8, 226)) {
+                        level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
+                    }
+                    // 高燃 / 沉淀围栏：四面 2 格高的石墙
+                    for (int y = STAND_Y; y <= STAND_Y + 1; y++) {
+                        for (int x = PEN_X0 - 1; x <= PEN_X1 + 1; x++) {
+                            level.setBlockAndUpdate(new BlockPos(x, y, PEN_Z0 - 1), Blocks.STONE.defaultBlockState());
+                            level.setBlockAndUpdate(new BlockPos(x, y, PEN_Z1 + 1), Blocks.STONE.defaultBlockState());
+                        }
+                        for (int z = PEN_Z0 - 1; z <= PEN_Z1 + 1; z++) {
+                            level.setBlockAndUpdate(new BlockPos(PEN_X0 - 1, y, z), Blocks.STONE.defaultBlockState());
+                            level.setBlockAndUpdate(new BlockPos(PEN_X1 + 1, y, z), Blocks.STONE.defaultBlockState());
+                        }
+                    }
+                    Block echo = blockByPath("echogold_block");
+                    Block sturdy = blockByPath("sturdygold_block");
+                    check("bgfinal-probe-blocks-exist", echo != null && sturdy != null,
+                            "echogold_block=" + (echo == null ? "null" : "ok")
+                                    + " sturdygold_block=" + (sturdy == null ? "null" : "ok"));
+                    level.setBlockAndUpdate(ECHO_BLOCK, echo.defaultBlockState());
+                    level.setBlockAndUpdate(STURDY_BLOCK, sturdy.defaultBlockState());
+                    level.setBlockAndUpdate(NATURAL_BLOCK, echo.defaultBlockState());
+                    log("floor=" + floor + " real: echo=" + ECHO_BLOCK + " sturdy=" + STURDY_BLOCK
+                            + " natural=" + NATURAL_BLOCK + " | synth: echo=" + SYNTH_ECHO + " sturdy="
+                            + SYNTH_STURDY + " | pen=[" + PEN_X0 + ".." + PEN_X1 + "]x[" + PEN_Z0 + ".."
+                            + PEN_Z1 + "]");
+                    baseForced = level.getForcedChunks().size();
+                    for (int cx = 11; cx <= 16; cx++) {
+                        for (int cz = 11; cz <= 15; cz++) {
+                            level.setChunkForced(cx, cz, true);
+                        }
+                    }
+                    log("forceload base=" + baseForced + " now=" + level.getForcedChunks().size()
+                            + " (direction A: base->N)");
+                }
+                case 40 -> {
+                    k1 = cow(level, "K1_ai", 206.2D, 219.0D, false);
+                    k2 = cow(level, "K2_ai", 206.2D, 220.0D, false);
+                    k3immune = cow(level, "K3_immune", 206.2D, 218.0D, false);
+                    k4noai = cow(level, "K4_noai", 218.5D, 203.5D, true);
+                    k5ai = cow(level, "K5_ai_control", 221.5D, 203.5D, false);
+                    k6other = cow(level, "K6_sturdy_block", 206.2D, 223.5D, false);
+                    k7natural = cow(level, "K7_natural_scan", 215.5D, 201.5D, false);
+                    if (k3immune != null) {
+                        k3immune.setInvulnerable(true);
+                    }
+                    hb1 = cow(level, "HB_L1", 232.5D, 198.5D, false);
+                    hb2 = cow(level, "HB_L2", 235.5D, 198.5D, false);
+                    hb3 = cow(level, "HB_L3", 238.5D, 198.5D, false);
+                    sd1 = cow(level, "SD_L1", 232.5D, 202.5D, false);
+                    sd2 = cow(level, "SD_L2", 235.5D, 202.5D, false);
+                    sd3 = cow(level, "SD_L3", 238.5D, 202.5D, false);
+                    log("spawned subjects: " + NAMES.size());
+                }
+                case 60 -> {
+                    var all = level.getEntities().getAll();
+                    int found = 0;
+                    int ticking = 0;
+                    for (LivingEntity e : subjects()) {
+                        if (e == null) {
+                            continue;
+                        }
+                        boolean in = false;
+                        for (var x : all) {
+                            if (x.getUUID().equals(e.getUUID())) {
+                                in = true;
+                                break;
+                            }
+                        }
+                        found += in ? 1 : 0;
+                        ticking += e.tickCount > 0 ? 1 : 0;
+                        if (!in || e.isRemoved() || e.tickCount <= 0) {
+                            log("SUBJECT-BAD " + nameOf(e) + " inList=" + in + " removed=" + e.isRemoved()
+                                    + " tickCount=" + e.tickCount);
+                        }
+                    }
+                    check("bgfinal-subjects-alive", found == 13 && ticking >= 13,
+                            "inList=" + found + "/13 ticking=" + ticking + "/13");
+                }
+                case 100 -> {
+                    // ===== 击退（显式调用组）：一次调用 ⇒ 推前快照 + 推后判定，全在同一 tick 内 =====
+                    k1.setPos(206.2D, STAND_Y, 219.0D);
+                    k2.setPos(206.2D, STAND_Y, 220.0D);
+                    k3immune.setPos(206.2D, STAND_Y, 218.0D);
+                    k6other.setPos(206.2D, STAND_Y, 223.5D);
+                    for (LivingEntity e : List.of(k1, k2, k3immune, k6other)) {
+                        log("PRE  " + nameOf(e) + " " + snap(e));
+                        POS0.put(nameOf(e), e.position());
+                        snapshotBefore(e);
+                    }
+                    // ⚠ 只调一次：内部会对 3×3×3 里每个受害者各结算一次（含推）
+                    MetalEvents.applyContact(k1, blockByPath("echogold_block"), SYNTH_ECHO);
+                    evaluatePush(k1, SYNTH_ECHO, "push");
+                    evaluatePush(k2, SYNTH_ECHO, "push");
+                    evaluatePush(k3immune, SYNTH_ECHO, "immune");
+                    // 别的金属（万坚金）建材：同一个入口、同样的调用形状，不应有任何伤害 / 击退
+                    snapshotBefore(k6other);
+                    MetalEvents.applyContact(k6other, blockByPath("sturdygold_block"), SYNTH_STURDY);
+                    evaluatePush(k6other, SYNTH_STURDY, "other");
+                }
+                case 110 -> {
+                    for (LivingEntity e : List.of(k1, k2, k3immune, k6other)) {
+                        String n = nameOf(e);
+                        Vec3 d = e.position().subtract(POS0.get(n));
+                        log("MOVE10 " + n + " d=" + fv(d) + " horiz=" + f(Math.sqrt(d.x * d.x + d.z * d.z))
+                                + "（仅供参考，不作判据：AI 漫步噪声 1.3~7.0 格）");
+                    }
+                    for (LivingEntity e : List.of(k4noai, k5ai)) {
+                        String n = nameOf(e);
+                        POS0.put(n, e.position());
+                        e.knockback(2.0D, 1.0D, 0.0D);
+                        log("CTRL-KNOCKBACK " + n + " " + snap(e));
+                    }
+                }
+                case 121 -> {
+                    for (LivingEntity e : List.of(k4noai, k5ai)) {
+                        String n = nameOf(e);
+                        Vec3 d = e.position().subtract(POS0.get(n));
+                        double h = Math.sqrt(d.x * d.x + d.z * d.z);
+                        log("CTRL-MOVE10 " + n + " d=" + fv(d) + " horiz=" + f(h) + " " + snap(e));
+                        if (n.equals("K4_noai")) {
+                            check("bgfinal-kb-noai-zero-displacement", h < 0.05D,
+                                    "阴性对照（NoAi 位移恒 0，复现上一轮教训）horiz=" + f(h));
+                        } else {
+                            check("bgfinal-kb-ai-positive-control", h > 1.0D,
+                                    "阳性对照（真实 AI 实体的位移判据不是恒 0）horiz=" + f(h));
+                        }
+                    }
+                }
+                case 140 -> {
+                    applyEffect(hb1, AllEffects.HIGH_BURN, 0);
+                    applyEffect(hb2, AllEffects.HIGH_BURN, 1);
+                    applyEffect(hb3, AllEffects.HIGH_BURN, 2);
+                    applyEffect(sd1, AllEffects.SEDIMENT, 0);
+                    applyEffect(sd2, AllEffects.SEDIMENT, 1);
+                    applyEffect(sd3, AllEffects.SEDIMENT, 2);
+                    log("effects applied (duration 400 = 20s; shouldApplyEffectTickThisTick = duration % 20 == 0)");
+                }
+                case 160 -> {
+                    for (LivingEntity e : List.of(hb1, hb2, hb3, sd1, sd2, sd3)) {
+                        HP0.put(nameOf(e), e.getHealth());
+                        log("HP-BASE " + nameOf(e) + " " + snap(e));
+                    }
+                }
+                case 360 -> {
+                    for (LivingEntity e : List.of(hb1, hb2, hb3, sd1, sd2, sd3)) {
+                        String n = nameOf(e);
+                        double drop = (HP0.get(n) - e.getHealth()) / 10.0D;
+                        log("HP-END " + n + " " + snap(e) + " dropPerSecond=" + f(drop));
+                        check("bgfinal-highburn-no-contact-pollution",
+                                DMG_SONIC.getOrDefault(n, 0) == 0,
+                                n + " 窗口内 sonic_boom 事件 " + DMG_SONIC.getOrDefault(n, 0)
+                                        + " 条（必须 0：围栏离最近建材 >= 14 格）");
+                        if (n.startsWith("HB_")) {
+                            double want = n.equals("HB_L1") ? 0.0D : (n.equals("HB_L2") ? 1.0D : 2.0D);
+                            check("bgfinal-highburn-end2end", Math.abs(drop - want) <= 0.15D,
+                                    n + " 端到端 " + f(drop) + " 点/秒（期望 " + f(want) + "）");
+                        } else {
+                            double want = n.equals("SD_L1") ? 0.0D : (n.equals("SD_L2") ? 1.0D : 2.0D);
+                            check("bgfinal-sediment-end2end", Math.abs(drop - want) <= 0.15D,
+                                    n + " 端到端 " + f(drop) + " 点/秒（期望 " + f(want) + "，并排对照）");
+                        }
+                    }
+                    check("bgfinal-highburn-l1-no-fire", hb1FireMax <= 0,
+                            "HB_L1 窗口内剩余燃烧 tick 最大值 = " + hb1FireMax
+                                    + "（<= 0 = 从未着火；未着火的哨兵值是 -1，着火会看到 1..20）");
+                    check("bgfinal-highburn-l2-still-burns", hb2FireMax > 0,
+                            "HB_L2 窗口内剩余燃烧 tick 最大值 = " + hb2FireMax + "（期望 > 0 = 2 级照旧点燃）");
+                    check("bgfinal-highburn-zero-events", DMG_ZERO.getOrDefault("HB_L1", 0) == 0,
+                            "HB_L1 的 0.0 金额事件 " + DMG_ZERO.getOrDefault("HB_L1", 0)
+                                    + " 条（改后 1 级既不 hurt 也不点燃 ⇒ 连 0 点事件都没有）");
+                    check("bgfinal-highburn-l1-no-vanilla-burn",
+                            DMG_FIRE_POS.getOrDefault("HB_L1", 0) == 0,
+                            "HB_L1 的 on_fire 正金额事件 " + DMG_FIRE_POS.getOrDefault("HB_L1", 0)
+                                    + " 条（>0 = 原版燃烧自己补的 1 点/秒还在）");
+                    check("bgfinal-highburn-event-count",
+                            DMG_COUNT.getOrDefault("HB_L2", 0) >= 8 && DMG_COUNT.getOrDefault("HB_L3", 0) >= 8,
+                            "HB_L2 事件 " + DMG_COUNT.getOrDefault("HB_L2", 0) + " 条 / HB_L3 "
+                                    + DMG_COUNT.getOrDefault("HB_L3", 0) + " 条（10 秒窗内 ≈10）");
+                }
+                case 380 -> {
+                    if (k7natural != null) {
+                        String n = nameOf(k7natural);
+                        check("bgfinal-kb-natural-path", naturalOk >= 1,
+                                n + " 自然「踩踏 / 贴近」扫描命中 " + DMG_COUNT.getOrDefault(n, 0)
+                                        + " 条，其中 Δdelta 与期望向量逐分量精确匹配 " + naturalOk
+                                        + " 次（最差 err=" + f(naturalWorstErr) + "，容差 "
+                                        + PUSH_TOLERANCE + "）");
+                    } else {
+                        check("bgfinal-kb-natural-path", false, "K7_natural_scan 没有生成");
+                    }
+                    log("tally count=" + DMG_COUNT + " zero=" + DMG_ZERO + " firePos=" + DMG_FIRE_POS
+                            + " sonic=" + DMG_SONIC);
+                }
+                case 400 -> {
+                    for (int cx = 11; cx <= 16; cx++) {
+                        for (int cz = 11; cz <= 15; cz++) {
+                            level.setChunkForced(cx, cz, false);
+                        }
+                    }
+                    int now = level.getForcedChunks().size();
+                    log("forceload now=" + now + " base=" + baseForced + " (direction B: N->base)");
+                    check("bgfinal-forceload-restored", now == baseForced,
+                            "forceload " + now + " == base " + baseForced);
+                }
+                case 420 -> {
+                    log("SUMMARY checks=" + checks + " PASS=" + passed + " FAIL=" + FAILS.size()
+                            + " fails=" + FAILS);
+                    log("HALT once halted=" + halted);
+                    halted = true;
+                    server.halt(false);
+                }
+                default -> {
+                    // ① 自然路径：伤害事件那一刻存下的"推前速度"，在**同一个服务端 tick 的末尾**取差值
+                    if (pendingNaturalPre != null) {
+                        Vec3 d = k7natural.getDeltaMovement().subtract(pendingNaturalPre);
+                        Vec3 vanilla = vanillaHurtDelta(k7natural, pendingNaturalPre, pendingNaturalOnGround);
+                        Vec3 push = pushVector(k7natural, NATURAL_BLOCK);
+                        Vec3 fixed = vanilla.add(push);
+                        double dyErr = Math.abs(d.y - fixed.y);
+                        double residual = Math.sqrt((d.x - fixed.x) * (d.x - fixed.x)
+                                + (d.z - fixed.z) * (d.z - fixed.z));
+                        double hErr = Math.abs(residual - vanillaRandomStrength(k7natural));
+                        double err = Math.max(dyErr, hErr);
+                        naturalWorstErr = Math.max(naturalWorstErr, err);
+                        if (err <= PUSH_TOLERANCE) {
+                            naturalOk++;
+                        }
+                        log("NATURAL-PUSH t=" + t + " dDelta=" + fv(d) + " fixed=" + fv(fixed) + " dyErr="
+                                + f(dyErr) + " hResidual=" + f(residual) + " hErr=" + f(hErr));
+                        pendingNaturalPre = null;
+                    }
+                    if (t > 100 && t < 360) {
+                        if (t > 160) {
+                            hb1FireMax = Math.max(hb1FireMax, hb1.getRemainingFireTicks());
+                            hb2FireMax = Math.max(hb2FireMax, hb2.getRemainingFireTicks());
+                        }
+                        if (t == 200 || t == 280) {
+                            log("FIRE-SAMPLE t=" + t + " HB_L1=" + hb1.getRemainingFireTicks()
+                                    + " HB_L2=" + hb2.getRemainingFireTicks()
+                                    + " HB_L3=" + hb3.getRemainingFireTicks());
+                        }
+                    }
+                    // ② 把自然路径受试体反复"钉回"测试位（经验规则 18 的钉法：否则第一次被推走就再也不挨打了）
+                    if (t > 100 && t < 360 && t % 10 == 0) {
+                        k7natural.setPos(215.5D, STAND_Y, 201.5D);
+                    }
+                }
+            }
+        } catch (Throwable thr) {
+            log("PROBE-ERROR t=" + t + " " + thr);
+            thr.printStackTrace();
+        }
+    }
+
+    private static List<LivingEntity> subjects() {
+        return List.of(k1, k2, k3immune, k4noai, k5ai, k6other, k7natural, hb1, hb2, hb3, sd1, sd2, sd3);
+    }
+
+    private static void applyEffect(Cow c, net.neoforged.neoforge.registries.DeferredHolder<
+            net.minecraft.world.effect.MobEffect, net.minecraft.world.effect.MobEffect> effect, int amplifier) {
+        c.addEffect(new MobEffectInstance(effect, 400, amplifier));
+    }
+
+    @SubscribeEvent
+    public static void onDamagePost(LivingDamageEvent.Post event) {
+        if (!enabled) {
+            return;
+        }
+        LivingEntity e = event.getEntity();
+        String n = nameOf(e);
+        String type = event.getSource().typeHolder().unwrapKey()
+                .map(k -> k.location().toString()).orElse("?");
+        float amount = event.getNewDamage();
+        log("DAMAGE t=" + e.level().getGameTime() + " subj=" + n + " amount=" + f(amount) + " type=" + type
+                + " hp=" + f(e.getHealth()));
+        if ("minecraft:sonic_boom".equals(type) && "K7_natural_scan".equals(n)) {
+            // 伤害事件发生在 push 之前（hurt -> 我们的 push）：先存下推前速度与 onGround
+            pendingNaturalPre = e.getDeltaMovement();
+            pendingNaturalOnGround = e.onGround();
+        }
+        if (n != null) {
+            DMG_COUNT.merge(n, 1, Integer::sum);
+            if (amount <= 0.0F) {
+                DMG_ZERO.merge(n, 1, Integer::sum);
+            }
+            if ("minecraft:on_fire".equals(type) && amount > 0.0F) {
+                DMG_FIRE_POS.merge(n, 1, Integer::sum);
+            }
+            if ("minecraft:sonic_boom".equals(type)) {
+                DMG_SONIC.merge(n, 1, Integer::sum);
+            }
+        }
+    }
+}

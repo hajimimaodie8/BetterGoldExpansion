@@ -1,0 +1,47 @@
+收尾清理与逐字节复原 · bg-final（2026-10-05）
+====================================================================================================
+① 探针整块删除：src\main\java\com\hjmmd_8\bettergold\probe 存在 = False
+   grep 'BgFinalProbe|BGFINAL-PROBE|bgfinal-probe' 于 src（含二进制逐字节扫）：0 命中 []
+   grep 于 src 之外（排除 build/docs/run/.git/.gradle）：0 命中 []
+② 开关文件 run/bgfinal-probe.enabled 存在 = False
+③ 探针世界 run/bgfinalprobe 存在 = False
+④ run/server.properties 逐字节复原：SHA256 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+   开工时记录 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4  -> 一致 = True
+   ⚠ 服务器每次启停都会重写第 2 行 `#<date>`（本轮 4 次 runServer 各写一次）⇒ 先按 level-name 复原、再以开工时的 SHA256 为靶子穷举回那一行的原始值：
+   命中 `#Mon Oct 05 17:40:32 CST 2026`（= 上一轮 bg-fix 那次 runServer 留下的时间戳）⇒ 哈希相中。
+   ⚠ 如实记账：内容逐字节复原，但**文件 mtime 与开工时不同**（mtime 不是内容）。
+⑤ run/saves（作者存档）：
+   开工时：新的世界|files=29|mtime=2026-10-04T21:30:01
+   收尾时：新的世界|files=42|mtime=1791120601.3965247
+   新的世界: 文件数 = 29, mtime = 2026-10-04T21:30:01
+   ⇒ 与开工时逐项相同（1 个目录 / 29 文件 / mtime 未变）
+⑥ run/mods/[JEI物品管理器] jei-1.21.1-neoforge-19.16.1.156.jar: 1409179 B  SHA256=CD167D1ED49A15C73C7D117E8225FEF6111CBC6A319B8E086374DE3B0CAD6C52
+⑥ run/mods/Patchouli-1.21.1-93-NEOFORGE.jar: 646777 B  SHA256=959AF52ED6640C316C3A8469203420BE4AEEA11AD6603890BA83BF48F5D9F993
+⑦ build/moddev/clientLegacyClasspath.txt: 16473 B  SHA256=0D078554328EE7FAE773CED600CF6FD0DB3EFD0CCFEED235A78827CA941C1E21（本轮**没有**改过它）
+⑦ build/moddev/clientRunProgramArgs.txt: 394 B  SHA256=A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB（本轮**没有**改过它）
+⑦ build/moddev/clientRunVmArgs.txt: 1936 B  SHA256=DA8D26F0A1CDB388C48A8FD95340EF17121254962661EB58E64D0762F57BF8BB（本轮**没有**改过它）
+⑦ build/moddev/dataLegacyClasspath.txt: 16473 B  SHA256=0D078554328EE7FAE773CED600CF6FD0DB3EFD0CCFEED235A78827CA941C1E21（本轮**没有**改过它）
+⑦ build/moddev/dataRunProgramArgs.txt: 549 B  SHA256=85BC346B9E371D8C25FF9C0F86E42D487F11902A61427C8A752DF47D9BEB3FD7（本轮**没有**改过它）
+⑦ build/moddev/dataRunVmArgs.txt: 1853 B  SHA256=BDE6D13CF88624AA4C869D028FA688099736FD71F33891CBBE7B08F3799D0F4F（本轮**没有**改过它）
+⑦ build/moddev/gameTestServerLegacyClasspath.txt: 10368 B  SHA256=A732082FD251123F9262F5966FB068DD7CFBCF9034E57E2DE671FCA108B273A9（本轮**没有**改过它）
+⑦ build/moddev/gameTestServerRunProgramArgs.txt: 288 B  SHA256=A964CF7AC5F53F5AD8462538972EFBE675F5DF047DD573C9F90E1B7EF0B5A137（本轮**没有**改过它）
+⑦ build/moddev/gameTestServerRunVmArgs.txt: 1983 B  SHA256=348AF829C27C94FC7A480583D678175DE31CE484F01443AA55A08C61355B7ED5（本轮**没有**改过它）
+⑦ build/moddev/serverLegacyClasspath.txt: 10368 B  SHA256=A732082FD251123F9262F5966FB068DD7CFBCF9034E57E2DE671FCA108B273A9（本轮**没有**改过它）
+⑦ build/moddev/serverRunProgramArgs.txt: 296 B  SHA256=DEE12A6EE87E7A964BC56E8E89A0460A329333546902CE654B733E0C96A367A1（本轮**没有**改过它）
+⑦ build/moddev/serverRunVmArgs.txt: 1905 B  SHA256=4FCE7D3EDDF5A06F29CC788D43AD81C9069ACDF2A7C5EA20D8BE19C150EFA7E8（本轮**没有**改过它）
+⑧ run/config/bettergold-common.toml: 6212 B  SHA256=731371ECCCCB018702BA5C606148D8BF54ACC731ABC26F9C446E6A1ECB8054AA（本轮**没有**改过它）
+⑧ run/config/farmersdelight-client.toml: 476 B  SHA256=A8CDC0376674D522D92D977CAC5800D00C6F70EA62EA83DEA59595FB232B8E3E（本轮**没有**改过它）
+⑧ run/config/farmersdelight-common.toml: 3817 B  SHA256=0CC639F1CE8AB5E63F754AB41BE3AB09398FD149DE6D0B5EDC476034E3ED8B06（本轮**没有**改过它）
+⑧ run/config/fml.toml: 1550 B  SHA256=CC59FB1039726FDA3AB1EB69B06D9B9AEBB7496604EA579CFB735BC5377E7825（本轮**没有**改过它）
+⑧ run/config/immersiveengineering-server.toml: 22359 B  SHA256=162BE7204C1C733844F28AFA60D4642BEF127F15B584E81B75B8018C83C4A364（本轮**没有**改过它）
+⑧ run/config/immersiveengineering-startup.toml: 1694 B  SHA256=DB0592DACADDC8D709B9632C9FD4B785622B671FE0DBA35009EE198F858F1BB2（本轮**没有**改过它）
+⑧ run/config/jei-server.toml: 253 B  SHA256=9B054057CEF0F6239322B1CEE9A08DDF98452F573A15043811424A68EA162C64（本轮**没有**改过它）
+⑧ run/config/mut_affix_coefficients.toml: 263 B  SHA256=EC25FF143A12A79C17A0CFEFF11508EE7483351AD0C8CB84013801EADFD1708A（本轮**没有**改过它）
+⑧ run/config/mut_crossbow_load_count.toml: 850 B  SHA256=BE8A4E8A82CB95F13B1B1EBFD1AFAC4E3EB67322D3E121D6AE8390A2ED3B6D54（本轮**没有**改过它）
+⑧ run/config/neoforge-client.toml: 578 B  SHA256=D58D93E2C429410D0ABF25507D1679F732E1023B03BB52414348EFCF5CF3DDB0（本轮**没有**改过它）
+⑧ run/config/neoforge-common.toml: 772 B  SHA256=FE878A2717A145CD890621EAC5B3BE1E1FD656F7FF9ABC6E8D53F670D37474C4（本轮**没有**改过它）
+⑧ run/config/neoforge-server.toml: 1177 B  SHA256=B1E3B38D612295F8D9DFA0FBDB538A992B7A1A3B7A766C491B4E9FDF3823396F（本轮**没有**改过它）
+⑧ run/config/patchouli-client.toml: 1089 B  SHA256=D9A6D7CADB6D473CF087602D9866840D2BB7F2C16915267EB3F6FBF68D5D774D（本轮**没有**改过它）
+⑨ halt(false) 只调一次：探针日志末尾有且只有一行 `HALT once halted=false`（见 01/02 的 SUMMARY 段）
+⑩ forceload 双向 0：A 级探针 CHECK [bgfinal-forceload-restored] forceload 0 == base 0；另 check_forced_chunks.py 对 run/world/data/chunks.dat = `data.Forced = []`（见 05）
+⑪ 贴图：本轮 git status 只有 3 个 java + 2 个 py + 1 个生成器 + en_us.json + docs 变化，**没有任何 PNG / 模型 / 配方 / 语言键名 变化**（详见收尾报告）

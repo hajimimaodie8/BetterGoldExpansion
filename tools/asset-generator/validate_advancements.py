@@ -50,6 +50,15 @@ TRIGGER_WHITELIST = {
 VANILLA_ITEMS = {"minecraft:gold_ingot", "minecraft:golden_apple", "minecraft:golden_carrot"}
 VANILLA_TAGS = {"#minecraft:hoes", "#minecraft:skeletons"}
 
+# 1.6 收尾轮 bg-final 第 2 件：**英文值必须是真英译**（旧口径 = 复制中文，已推翻）。
+# 唯一的豁免口子是"纯符号 / 数字类标题"——当前**一条都没有**（空集）。
+# 白名单本身也要能自证：列进来的键，其中文侧必须真的不含中日韩文字（[bgfinal-adv-lang-whitelist-honest]）。
+SYMBOL_ONLY_OK: set[str] = set()
+# 中英两侧各应扫到的 `advancements.bettergold.*` 条数 = 51 成就 × 2（title/description）
+ADV_LANG_EXPECTED = EXPECTED_COUNT * 2
+# 中日韩文字 + 全角标点（用来判定"不是纯符号/数字"）
+CJK_RE = re.compile(r"[\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]")
+
 problems: list[str] = []
 
 
@@ -412,6 +421,40 @@ def main() -> int:
     if lang_n != EXPECTED_COUNT * 2:
         bad("bgach-lang-count", f"核对的语言键数 = {lang_n}，期望 {EXPECTED_COUNT * 2}")
 
+    # ---- 10. 英文值必须是真英译（1.6 收尾轮 bg-final 第 2 件）----
+    # 旧口径：en_us 的 102 条 = 中文原文逐字（生成器 EN_POLICY = "copy_zh"），**已被推翻**；
+    # 现行口径：真英译，且**键名不动 / zh_cn 一个字不动 / 成就 id 不动**（前三节已各自守着）。
+    adv_prefix = f"advancements.{NS}."
+    zh_adv = {k: str(v) for k, v in zh.items() if k.startswith(adv_prefix)}
+    en_adv = {k: str(v) for k, v in en.items() if k.startswith(adv_prefix)}
+    if len(zh_adv) != ADV_LANG_EXPECTED or len(en_adv) != ADV_LANG_EXPECTED:
+        bad("bgfinal-adv-lang-anti-vacuum",
+            f"扫到的语言键数 zh={len(zh_adv)} / en={len(en_adv)}，期望 {ADV_LANG_EXPECTED}"
+            f"（匹配 0 条即红：否则下面的循环什么都扫不到也会全绿）")
+    if set(zh_adv) != set(en_adv):
+        bad("bgfinal-adv-lang-parity",
+            f"中英键集不一致：只 zh 有 {sorted(set(zh_adv) - set(en_adv))[:8]} / "
+            f"只 en 有 {sorted(set(en_adv) - set(zh_adv))[:8]}")
+    for key in sorted(SYMBOL_ONLY_OK):
+        if key not in zh_adv:
+            bad("bgfinal-adv-lang-whitelist-honest", f"{key} 被列进纯符号白名单，但它不在语言文件里")
+        elif CJK_RE.search(zh_adv[key]):
+            bad("bgfinal-adv-lang-whitelist-honest",
+                f"{key} 被列进纯符号白名单，但中文侧含中日韩文字：{zh_adv[key]!r}")
+    for key in sorted(set(zh_adv) & set(en_adv)):
+        zh_v, en_v = zh_adv[key], en_adv[key]
+        if en_v == zh_v and key not in SYMBOL_ONLY_OK:
+            bad("bgfinal-adv-lang-translated",
+                f"{key} 的英文值仍是中文原文逐字（旧口径 EN_POLICY=copy_zh 的残留）：{en_v!r}")
+        if not en_v.strip():
+            bad("bgfinal-adv-lang-empty", f"{key} 的英文值是空串")
+        elif not re.search(r"[A-Za-z]", en_v):
+            bad("bgfinal-adv-lang-en-shape",
+                f"{key} 的英文值里一个 ASCII 字母都没有：{en_v!r}")
+        if not (1 <= len(en_v) <= 120):
+            bad("bgfinal-adv-lang-en-shape",
+                f"{key} 的英文值长度 {len(en_v)} 不合理（期望 1..120）")
+
     # ---- 输出 ----
     for p in problems:
         print(f"FAIL {p}")
@@ -422,6 +465,8 @@ def main() -> int:
           f"{sorted(used_triggers)} / 配方引用 {len(recipe_refs)} 条 / 语言键 {lang_n} 条")
     print("OK [bgach] 树：根 5 孩子、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；1 条 challenge")
     print("OK [bgach] 物品引用 %d 个全部存在于注册表真源；食物清单与 Java 真源逐条一致" % len(set(refs)))
+    print(f"OK [bgfinal-adv-lang] {len(en_adv)} 条英文值全部是真英译"
+          f"（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 {len(SYMBOL_ONLY_OK)} 条）")
     return 0
 
 

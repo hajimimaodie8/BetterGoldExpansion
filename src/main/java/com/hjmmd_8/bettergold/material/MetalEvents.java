@@ -519,10 +519,30 @@ public final class MetalEvents {
     }
 
     /**
-     * 幽咆金建材：以**该方块中心**为心、3×3×3 内全部生物 3 点声波伤害 + 中心 {@code SONIC_BOOM} 粒子。
+     * 幽咆金建材：以**该方块中心**为心、3×3×3 内全部生物 3 点声波伤害 + **击退** + 中心 {@code SONIC_BOOM} 粒子。
      *
      * <p>与「寄生把自己叠在触发者身上」不同：这条是**范围伤害**，所以按"每个受害者各自节流"
      * （{@link #SONIC_CONTACT_KEY}）来防刷屏。</p>
+     *
+     * <p><b>击退（1.6 收尾轮 bg-final 核实项②，2026-10-05）</b>：手册原文就写着
+     * 「deal 3 points of warden sonic boom damage to targets in a 3x3x3 area <b>and knock the target back</b>」，
+     * 而在此之前这条路径<b>只有 hurt 与粒子、没有击退</b>（C 级指认：本方法里 {@code grep push(} = 0 命中）。
+     * 现在按原版「监守者声波」补齐，三处口径与依据：
+     * <ol>
+     *   <li><b>方向由方块中心向外</b>（{@link #applyBlockSonicKnockback}）：这条是"建材接触"效果、
+     *       <b>没有攻击者</b>，所以不抄武器那套「攻击者 → 受害者」的方向，而是拿
+     *       {@link net.minecraft.core.BlockPos#getCenter()} 当原点、指向受害者<b>碰撞箱中心</b>后归一化。</li>
+     *   <li><b>幅度按伤害比缩放</b>：原版声波 10 点配 2.5 / 0.5，本仓 3 点 ⇒
+     *       {@link MetalFamily#CONTACT_SONIC_KNOCKBACK_HORIZONTAL} = 0.75、
+     *       {@link MetalFamily#CONTACT_SONIC_KNOCKBACK_VERTICAL} = 0.15（推导与量级对照写在那两个常量上）。</li>
+     *   <li><b>只在这一次结算里推一次</b>：整段位于 {@link #contactThrottled} 的节流分支之后
+     *       ⇒ 同一受害者每 {@code DEFAULT_CONTACT_COOLDOWN}（10 tick）最多挨一次伤害 + 推一次，
+     *       不是每 tick 推。且与伤害一样<b>只在 {@code hurt(...)} 返回真时才推</b>
+     *       （照抄 {@code SonicBoom.java:79-83}：免疫 / 无敌帧差额为 0 的目标既不挨伤害也不被推）。</li>
+     * </ol>
+     * <b>范围边界</b>：树棘金（{@code CACTUS_CONTACT_KEY}）、靛海金（{@code contactDamage}）、
+     * 幻惑金（{@code contactBenefit}）三条接触效果**一个字节都没动**，
+     * 击退常量在整个仓库里只有本方法一个消费点（由 {@code [bgfinal-sonic-knockback-single-site]} 守着）。</p>
      */
     private static void sonicContact(net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
         if (level.isClientSide()) {
@@ -538,8 +558,35 @@ public final class MetalEvents {
             if (contactThrottled(victim, SONIC_CONTACT_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
                 continue;
             }
-            victim.hurt(sonicBoomSource(level), MetalFamily.CONTACT_SONIC_DAMAGE);
+            // 原版 SonicBoom.java:79-83 的第一层：伤害没落地（免疫 / 无敌帧差额为 0 / 已死）就不推。
+            if (!victim.hurt(sonicBoomSource(level), MetalFamily.CONTACT_SONIC_DAMAGE)) {
+                continue;
+            }
+            applyBlockSonicKnockback(victim, center);
         }
+    }
+
+    /**
+     * 「以方块中心向外」推一次（幽咆金建材专用）。
+     *
+     * <p>方向 = {@code normalize(受害者碰撞箱中心 − 方块中心)}；两个强度都乘
+     * {@code (1 − 击退抗性)}（与 {@code SonicBoom.java:80-82} 逐字同构，额外做一次
+     * {@code clamp(0,1)} 兜底：模组/数据包把抗性加到 1 以上时不会推出反向位移）。
+     * 走 {@code Entity#push(...)} 而不是 {@code LivingEntity#knockback(...)} ——
+     * 后者语义是"被武器命中"（把已有速度除以 2、并自带落地竖直分量），建材没有攻击者。</p>
+     */
+    private static void applyBlockSonicKnockback(net.minecraft.world.entity.LivingEntity victim,
+            net.minecraft.world.phys.Vec3 blockCenter) {
+        var victimCenter = victim.position()
+                .add(0.0D, victim.getBbHeight() / 2.0D, 0.0D);
+        var dir = victimCenter.subtract(blockCenter).normalize();
+        double resistance = net.minecraft.util.Mth.clamp(
+                victim.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE),
+                0.0D, 1.0D);
+        double scale = 1.0D - resistance;
+        victim.push(dir.x() * MetalFamily.CONTACT_SONIC_KNOCKBACK_HORIZONTAL * scale,
+                dir.y() * MetalFamily.CONTACT_SONIC_KNOCKBACK_VERTICAL * scale,
+                dir.z() * MetalFamily.CONTACT_SONIC_KNOCKBACK_HORIZONTAL * scale);
     }
 
     /** 命中时把「施加者是谁」记到目标身上（寄生回血要用；每次命中覆盖为最新施加者） */

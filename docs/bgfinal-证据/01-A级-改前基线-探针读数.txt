@@ -1,0 +1,82 @@
+A 级证据 · 改前基线（HEAD 的三个 java 文件 = 未加击退 / 高燃 1 级仍点燃）：26 PASS / 7 FAIL
+====================================================================================================
+BGFINAL-PROBE armed=true enabled=true gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+BGFINAL-PROBE CHECK PASS [bgfinal-probe-blocks-exist] :: echogold_block=ok sturdygold_block=ok
+BGFINAL-PROBE forceload base=0 now=30 (direction A: base->N)
+BGFINAL-PROBE spawned subjects: 13
+BGFINAL-PROBE NATURAL-PUSH t=48 dDelta=(-0.1298,0.4392,-0.3784) fixed=(0.0000,0.4686,0.7354) dyErr=0.0294 hResidual=1.1213 hErr=0.7213
+BGFINAL-PROBE NATURAL-PUSH t=58 dDelta=(-0.3377,0.4392,0.1883) fixed=(-0.3695,0.4657,0.6300) dyErr=0.0265 hResidual=0.4428 hErr=0.0428
+BGFINAL-PROBE CHECK PASS [bgfinal-subjects-alive] :: inList=13/13 ticking=13/13
+BGFINAL-PROBE PRE  K1_ai hp=500.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=0 fire=-1 pos=(206.2000,200.0000,219.0000)
+BGFINAL-PROBE PRE  K2_ai hp=500.0000 delta=(-0.0368,-0.0784,0.0295) hasImpulse=false invulnTime=0 fire=-1 pos=(206.2000,200.0000,220.0000)
+BGFINAL-PROBE PRE  K3_immune hp=500.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=0 fire=-1 pos=(206.2000,200.0000,218.0000)
+BGFINAL-PROBE PRE  K6_sturdy_block hp=500.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=0 fire=-1 pos=(206.2000,200.0000,223.5000)
+BGFINAL-PROBE EVAL-push K1_ai hp 500.0000 -> 497.0000 dDelta=(-0.1770,0.4392,0.3587) vanilla=(-0.0000,0.4392,-0.0000) +push=(0.7150,0.0168,-0.2103) => fixed=(0.7150,0.4560,-0.2103) dyErr=0.0168 hResidual=1.0580 hErr=0.6580 hp=497.0000 delta=(-0.1770,0.3608,0.3587) hasImpulse=true invulnTime=20 fire=-1 pos=(206.2000,200.0000,219.0000)
+BGFINAL-PROBE CHECK FAIL [bgfinal-kb-push-vector] :: K1_ai ??delta=(-0.1770,0.4392,0.3587)??????????????????? 0.4392 / ????? 0.4?? + ?????????????????????? 0.75 ?? / 0.15 ?????? ??? err=0.0168?????в?=1.0580???? 0.4000??err=0.6580????? 1.0E-6
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-impulse] :: K1_ai hasImpulse false -> true??`Entity#push` ?????棻???????????о??? ??delta ????????
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-hurt-landed] :: K1_ai hp 500.0000 -> 497.0000???? tick ????? 3 ??
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-invuln-frame] :: K1_ai invulnerableTime=20????????к????????????????????
+BGFINAL-PROBE EVAL-push K2_ai hp 500.0000 -> 497.0000 dDelta=(-0.2468,0.4392,0.2847) vanilla=(0.0184,0.4392,-0.0147) +push=(0.7150,0.0168,0.2103) => fixed=(0.7334,0.4560,0.1956) dyErr=0.0168 hResidual=0.9843 hErr=0.5843 hp=497.0000 delta=(-0.2836,0.3608,0.3142) hasImpulse=true invulnTime=20 fire=-1 pos=(206.2000,200.0000,220.0000)
+BGFINAL-PROBE CHECK FAIL [bgfinal-kb-push-vector] :: K2_ai ??delta=(-0.2468,0.4392,0.2847)??????????????????? 0.4392 / ????? 0.4?? + ?????????????????????? 0.75 ?? / 0.15 ?????? ??? err=0.0168?????в?=0.9843???? 0.4000??err=0.5843????? 1.0E-6
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-impulse] :: K2_ai hasImpulse false -> true??`Entity#push` ?????棻???????????о??? ??delta ????????
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-hurt-landed] :: K2_ai hp 500.0000 -> 497.0000???? tick ????? 3 ??
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-invuln-frame] :: K2_ai invulnerableTime=20????????к????????????????????
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-immune-no-push] :: K3_immune hp 500.0000 -> 500.0000 ??delta=(0.0000,0.0000,0.0000) hasImpulse false -> false??setInvulnerable ???????????? isInvulnerableTo ??? ? hurt ????? ? ?????????????????????????
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-other-metal-untouched] :: K6_sturdy_block hp 500.0000 -> 500.0000 ??delta=(0.0000,0.0000,0.0000)????????? contactSonicBoom=false????????????????κ?Ч????
+BGFINAL-PROBE CTRL-KNOCKBACK K4_noai hp=500.0000 delta=(-2.0000,0.0000,0.0000) hasImpulse=true invulnTime=0 fire=-1 pos=(218.5000,200.0000,203.5000)
+BGFINAL-PROBE CTRL-KNOCKBACK K5_ai_control hp=500.0000 delta=(-2.0000,0.4000,0.0000) hasImpulse=true invulnTime=0 fire=-1 pos=(221.5000,200.0000,203.5000)
+BGFINAL-PROBE CTRL-MOVE10 K4_noai d=(0.0000,0.0000,0.0000) horiz=0.0000 hp=500.0000 delta=(-1.5759,0.0000,0.0000) hasImpulse=false invulnTime=0 fire=-1 pos=(218.5000,200.0000,203.5000)
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-noai-zero-displacement] :: ????????NoAi λ??? 0???????????????horiz=0.0000
+BGFINAL-PROBE CTRL-MOVE10 K5_ai_control d=(-9.6012,0.0000,0.0000) horiz=9.6012 hp=500.0000 delta=(-0.4382,-0.0784,0.0000) hasImpulse=false invulnTime=0 fire=-1 pos=(211.8988,200.0000,203.5000)
+BGFINAL-PROBE CHECK PASS [bgfinal-kb-ai-positive-control] :: ??????????? AI ????λ???о????? 0??horiz=9.6012
+BGFINAL-PROBE NATURAL-PUSH t=128 dDelta=(0.3648,0.4392,0.1641) fixed=(0.0000,0.4686,0.7354) dyErr=0.0294 hResidual=0.6779 hErr=0.2779
+BGFINAL-PROBE NATURAL-PUSH t=138 dDelta=(0.3594,0.4392,0.0463) fixed=(0.4387,0.4563,0.5987) dyErr=0.0171 hResidual=0.5581 hErr=0.1581
+BGFINAL-PROBE effects applied (duration 400 = 20s; shouldApplyEffectTickThisTick = duration % 20 == 0)
+BGFINAL-PROBE HP-BASE HB_L1 hp=499.0000 delta=(0.0000,-0.0784,-0.0549) hasImpulse=false invulnTime=1 fire=1 pos=(230.4840,200.0000,195.6117)
+BGFINAL-PROBE HP-BASE HB_L2 hp=499.0000 delta=(0.0083,-0.0784,-0.1871) hasImpulse=false invulnTime=1 fire=1 pos=(233.4928,200.0000,197.8699)
+BGFINAL-PROBE HP-BASE HB_L3 hp=498.0000 delta=(0.0400,-0.0784,-0.0395) hasImpulse=false invulnTime=1 fire=1 pos=(240.3397,200.0000,196.6584)
+BGFINAL-PROBE HP-BASE SD_L1 hp=500.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=1 fire=-1 pos=(232.5000,200.0000,202.5000)
+BGFINAL-PROBE HP-BASE SD_L2 hp=499.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=1 fire=-1 pos=(235.5000,200.0000,202.5000)
+BGFINAL-PROBE HP-BASE SD_L3 hp=498.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=1 fire=-1 pos=(238.5000,200.0000,202.5000)
+BGFINAL-PROBE NATURAL-PUSH t=178 dDelta=(-0.3650,0.4392,0.2315) fixed=(0.4842,0.4614,0.5261) dyErr=0.0222 hResidual=0.8988 hErr=0.4988
+BGFINAL-PROBE NATURAL-PUSH t=188 dDelta=(0.1317,0.4392,-0.3636) fixed=(-0.2437,0.4689,0.7050) dyErr=0.0297 hResidual=1.1325 hErr=0.7325
+BGFINAL-PROBE NATURAL-PUSH t=198 dDelta=(-0.2902,0.4392,0.3730) fixed=(0.6172,0.4629,0.4052) dyErr=0.0237 hResidual=0.9080 hErr=0.5080
+BGFINAL-PROBE FIRE-SAMPLE t=200 HB_L1=1 HB_L2=1 HB_L3=1
+BGFINAL-PROBE NATURAL-PUSH t=208 dDelta=(-0.3390,0.4392,0.2630) fixed=(0.1950,0.4686,0.6977) dyErr=0.0294 hResidual=0.6885 hErr=0.2885
+BGFINAL-PROBE NATURAL-PUSH t=218 dDelta=(0.1625,0.4392,0.3478) fixed=(-0.1524,0.4697,0.7249) dyErr=0.0305 hResidual=0.4913 hErr=0.0913
+BGFINAL-PROBE NATURAL-PUSH t=228 dDelta=(0.3299,0.4392,0.2205) fixed=(0.5166,0.4584,0.5568) dyErr=0.0192 hResidual=0.3847 hErr=0.0153
+BGFINAL-PROBE NATURAL-PUSH t=238 dDelta=(-0.3574,0.4392,0.3065) fixed=(0.6619,0.4584,0.3179) dyErr=0.0192 hResidual=1.0194 hErr=0.6194
+BGFINAL-PROBE NATURAL-PUSH t=248 dDelta=(0.0132,0.4392,0.3971) fixed=(-0.2681,0.4686,0.6976) dyErr=0.0294 hResidual=0.4117 hErr=0.0117
+BGFINAL-PROBE NATURAL-PUSH t=258 dDelta=(0.1465,0.4392,0.4112) fixed=(0.3694,0.4600,0.6777) dyErr=0.0208 hResidual=0.3475 hErr=0.0525
+BGFINAL-PROBE NATURAL-PUSH t=268 dDelta=(-0.2104,0.4392,0.3735) fixed=(0.4919,0.4605,0.5555) dyErr=0.0213 hResidual=0.7255 hErr=0.3255
+BGFINAL-PROBE FIRE-SAMPLE t=280 HB_L1=1 HB_L2=1 HB_L3=1
+BGFINAL-PROBE HP-END HB_L1 hp=489.0000 delta=(0.1358,-0.0784,0.0005) hasImpulse=false invulnTime=1 fire=1 pos=(231.9300,200.0000,205.5194) dropPerSecond=1.0000
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-no-contact-pollution] :: HB_L1 ?????? sonic_boom ??? 0 ???????? 0??Χ??????????? >= 14 ??
+BGFINAL-PROBE CHECK FAIL [bgfinal-highburn-end2end] :: HB_L1 ????? 1.0000 ??/?????? 0.0000??
+BGFINAL-PROBE HP-END HB_L2 hp=489.0000 delta=(-0.1847,-0.0784,0.0054) hasImpulse=false invulnTime=1 fire=1 pos=(233.1805,200.0000,195.4658) dropPerSecond=1.0000
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-no-contact-pollution] :: HB_L2 ?????? sonic_boom ??? 0 ???????? 0??Χ??????????? >= 14 ??
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-end2end] :: HB_L2 ????? 1.0000 ??/?????? 1.0000??
+BGFINAL-PROBE HP-END HB_L3 hp=478.0000 delta=(0.0071,-0.0784,0.1865) hasImpulse=false invulnTime=1 fire=1 pos=(237.4831,200.0000,201.7602) dropPerSecond=2.0000
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-no-contact-pollution] :: HB_L3 ?????? sonic_boom ??? 0 ???????? 0??Χ??????????? >= 14 ??
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-end2end] :: HB_L3 ????? 2.0000 ??/?????? 2.0000??
+BGFINAL-PROBE HP-END SD_L1 hp=500.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=1 fire=-1 pos=(234.2383,200.0000,205.5500) dropPerSecond=0.0000
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-no-contact-pollution] :: SD_L1 ?????? sonic_boom ??? 0 ???????? 0??Χ??????????? >= 14 ??
+BGFINAL-PROBE CHECK PASS [bgfinal-sediment-end2end] :: SD_L1 ????? 0.0000 ??/?????? 0.0000??????????
+BGFINAL-PROBE HP-END SD_L2 hp=489.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=1 fire=-1 pos=(234.1995,200.0000,202.0149) dropPerSecond=1.0000
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-no-contact-pollution] :: SD_L2 ?????? sonic_boom ??? 0 ???????? 0??Χ??????????? >= 14 ??
+BGFINAL-PROBE CHECK PASS [bgfinal-sediment-end2end] :: SD_L2 ????? 1.0000 ??/?????? 1.0000??????????
+BGFINAL-PROBE HP-END SD_L3 hp=478.0000 delta=(0.0000,-0.0784,0.0000) hasImpulse=false invulnTime=1 fire=-1 pos=(240.1598,200.0000,204.1598) dropPerSecond=2.0000
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-no-contact-pollution] :: SD_L3 ?????? sonic_boom ??? 0 ???????? 0??Χ??????????? >= 14 ??
+BGFINAL-PROBE CHECK PASS [bgfinal-sediment-end2end] :: SD_L3 ????? 2.0000 ??/?????? 2.0000??????????
+BGFINAL-PROBE CHECK FAIL [bgfinal-highburn-l1-no-fire] :: HB_L1 ???????????? tick ???? = 20??<= 0 = ??δ???δ?????????? -1???????? 1..20??
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-l2-still-burns] :: HB_L2 ???????????? tick ???? = 20?????? > 0 = 2 ?????????
+BGFINAL-PROBE CHECK FAIL [bgfinal-highburn-zero-events] :: HB_L1 ?? 0.0 ?????? 11 ??????? 1 ????? hurt ?????? ? ?? 0 ?????????У?
+BGFINAL-PROBE CHECK FAIL [bgfinal-highburn-l1-no-vanilla-burn] :: HB_L1 ?? on_fire ???????? 11 ????>0 = ????????????? 1 ??/?????
+BGFINAL-PROBE CHECK PASS [bgfinal-highburn-event-count] :: HB_L2 ??? 11 ?? / HB_L3 11 ????10 ???? ??10??
+BGFINAL-PROBE CHECK FAIL [bgfinal-kb-natural-path] :: K7_natural_scan ???????? / ????????????? 14 ???????? ??delta ????????????????????? 0 ?Σ???? err=0.7325????? 1.0E-6??
+BGFINAL-PROBE forceload now=0 base=0 (direction B: N->base)
+BGFINAL-PROBE CHECK PASS [bgfinal-forceload-restored] :: forceload 0 == base 0
+BGFINAL-PROBE SUMMARY checks=33 PASS=26 FAIL=7 fails=[bgfinal-kb-push-vector, bgfinal-kb-push-vector, bgfinal-highburn-end2end, bgfinal-highburn-l1-no-fire, bgfinal-highburn-zero-events, bgfinal-highburn-l1-no-vanilla-burn, bgfinal-kb-natural-path]
+BGFINAL-PROBE HALT once halted=false
+====================================================================================================
+(本文件由 runServer 日志按 GBK 解码后筛出探针行；被筛掉的逐条 DAMAGE 事件共 107 条，其中 sonic_boom 事件由 CHECK 里的 tally 行汇总)

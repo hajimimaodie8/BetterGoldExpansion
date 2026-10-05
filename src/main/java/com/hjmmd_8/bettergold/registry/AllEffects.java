@@ -38,6 +38,15 @@ public class AllEffects {
     public static final DeferredRegister<MobEffect> EFFECTS =
             DeferredRegister.create(Registries.MOB_EFFECT, bettergold.MODID);
 
+    /**
+     * 高燃每级结算时把目标的燃烧计时刷回的 tick 数（= 1 秒）。
+     *
+     * <p>⚠ 只在 {@code shiftedDamage(amplifier) > 0} 时才刷（1.6 收尾轮 bg-final 的现行口径）：
+     * 原版 {@code Entity#baseTick} 会借这个计时每 20 tick 自己补 1 点火焰伤害
+     * （{@code Entity.java:460-472}）⇒ 若 1 级（0 点）也刷，端到端就会多出 1 点/秒。</p>
+     */
+    private static final int HIGH_BURN_FIRE_TICKS = 20;
+
     /** 抗寒性：免疫冰冻伤害 */
     public static final DeferredHolder<MobEffect, MobEffect> COLD_RESISTANCE =
             EFFECTS.register("cold_resistance", () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x55C8E8) {
@@ -70,14 +79,37 @@ public class AllEffects {
      * 所以由本效果一次性结算全部伤害，数值可控。
      * ⚠ bg-fix：点数为 0 时<b>仍然照调一次 {@code hurt(...)}</b>（只是点数是 0）——保持与旧实现同一条调用路径，
      * 避免"0 点就不调 ⇒ 燃烧计时不被清 ⇒ 原版每秒燃烧伤害补回来"这种新行为（【推断】+ 待 A 级读数复核）。</p>
+     *
+     * <p>⚠⚠ <b>上面那条 bg-fix 的处置已被 1.6 收尾轮（bg-final，2026-10-05）推翻，原文保留不删</b>：
+     * 它的两个前提都被源码/A 级读数否掉了 ——
+     * <ol>
+     *   <li>「{@code hurt} 会清掉燃烧计时」<b>在源码里不成立</b>：{@code LivingEntity#hurt}
+     *       （neoforge 21.1.228 sources {@code LivingEntity.java:1142-1206}）整段没有
+     *       {@code setRemainingFireTicks} / {@code clearFire}；燃烧计时唯一的递减点是
+     *       {@code Entity#baseTick}（{@code Entity.java:460-472}），而它自己就会
+     *       {@code if (remainingFireTicks % 20 == 0 && !isInLava()) hurt(onFire, 1.0F)}。</li>
+     *   <li>所以"照调 {@code hurt(0)}"<b>挡不住</b>那 1 点：只要本效果把燃烧计时刷回 20，
+     *       原版每 20 tick 就自己补 1 点 ⇒ bg-fix 的 A 级端到端读数是
+     *       <b>高燃 1/2/3 级 = 1/1/2 点/秒</b>，而<b>我们自己的结算</b>明明是 0/1/2
+     *       （2/3 级时原版那 1 点被 {@code LivingEntity#hurt} 的无敌帧差额逻辑挡掉：
+     *       {@code amount <= lastHurt} ⇒ 只补差额，差额 = 0）。</li>
+     * </ol>
+     * ⇒ <b>现行口径：{@link #shiftedDamage}(amplifier) ≤ 0（即 1 级）时既不 {@code hurt}、也不刷燃烧</b>，
+     * 1 级不再着火（<b>视觉效果随之改变，属预期结果</b>）；2 级及以上照旧点燃。
+     * 端到端曲线由此与沉淀对齐为 <b>1 级 0 / 2 级 1 / 3 级 2 点/秒</b>。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> HIGH_BURN =
             EFFECTS.register("high_burn", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFF7A18) {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                        entity.hurt(serverLevel.damageSources().onFire(), shiftedDamage(amplifier));
-                        entity.setRemainingFireTicks(20);
+                        // 1 级（amplifier 0 ⇒ shiftedDamage = 0）走进"不结算"分支：
+                        // 不 hurt、也不 setRemainingFireTicks ⇒ 原版燃烧没有可燃的计时可以借。
+                        float damage = shiftedDamage(amplifier);
+                        if (damage > 0.0F) {
+                            entity.hurt(serverLevel.damageSources().onFire(), damage);
+                            entity.setRemainingFireTicks(HIGH_BURN_FIRE_TICKS);
+                        }
                     }
                     return true;
                 }

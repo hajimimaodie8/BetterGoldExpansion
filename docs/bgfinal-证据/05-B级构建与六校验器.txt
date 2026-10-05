@@ -1,0 +1,60 @@
+B 级证据 · bg-final（1.6 收尾轮，2026-10-05）
+====================================================================================================
+0) 说明：本文件由 tools 侧一次性脚本生成（UTF-8 无 BOM）；命令行输出按 GBK/UTF-8 自适应解码。
+
+1) .\gradlew.bat compileJava  -> 
+2) .\gradlew.bat runData      -> BUILD SUCCESSFUL in 17s
+3) .\gradlew.bat processResources jar --rerun-tasks -> BUILD SUCCESSFUL in 11s
+   产物 bettergold-1.6.0.jar = 1326495 B（上一层轮 1326351 B；差值 = 102 条英译）
+
+4) 六个校验器（探针整块删除之后跑的；本文件里的 exit 码是进程真实退出码）
+----------------------------------------------------------------------------------------------------
+
+### validate_metal_data.py   exit=0
+bg-15w §九 追加轮③ 问题合计: 0 []
+bg-16 两处修正（横幅落点 / 安抚对玩家）问题: 0 []
+bg-book 帕秋莉手册问题: 0 []（手册 10 条目 / 106 页 / 104 条配方引用）
+bg-book §六 追加轮（三章逐页补全）问题: 0 []（三章 32 页 / 16 条配方引用 / 43 个图标引用）
+bg-fix 1.6 七条修正问题: 0 []
+bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: 0 []
+
+### validate_metal_assets.py   exit=0
+thundergold  item=29  block=10  armor=2
+indigoseagold item=29  block=10  armor=2
+illusiongold item=29  block=10  armor=2
+thornsgold   item=29  block=10  armor=2
+echogold     item=29  block=10  armor=2
+bg-16 授权贴图（golden_trident_blank）问题: 0 []
+
+### validate_trim_assets.py   exit=0
+  data/farmersdelight/tags/item/tools/knives.json: 10 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife']
+  data/c/tags/item/tools/knife.json: 10 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife']
+  FD jar 里 data/minecraft/tags/item/enchantable/{bow,crossbow,trident,mace,sword,sharp_weapon,
+  weapon,fire_aspect,durability,mining,mining_loot,vanishing}.json 都靠它拼出来；
+  1.5 的靛海金刀 / 幻惑金刀原先不在这个标签里 ⇒ 只有那两把不能附魔。
+[写出] E:\mc\mcmod\bettergold-template-1.21.1\build\p15fix-asset-audit.txt
+
+### validate_advancements.py   exit=0
+OK [bgach] 51 个成就 / 121 条 criteria / 触发类型 ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:recipe_crafted', 'minecraft:villager_trade'] / 配方引用 17 条 / 语言键 102 条
+OK [bgach] 树：根 5 孩子、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；1 条 challenge
+OK [bgach] 物品引用 111 个全部存在于注册表真源；食物清单与 Java 真源逐条一致
+OK [bgfinal-adv-lang] 102 条英文值全部是真英译（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 0 条）
+
+### check_jar_clean.py   exit=0
+产物 bettergold-1.6.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+  ⚠ build/libs 里有 2 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+jar 内 *Probe* 路径 = 0 []
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2372
+
+### check_forced_chunks.py   exit=0
+chunks.dat top-level keys = ['data', 'DataVersion']
+chunks.dat data keys      = ['Forced']
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True
+
+====================================================================================================
+5) 生成器幂等性：generate_advancements.py --lang 重跑一次，en_us.json 的 102 行值不再变化
+   （见 07-英译抽样与语言键核对.txt 的 SHA256 前后一致）

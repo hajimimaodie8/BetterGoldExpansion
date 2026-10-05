@@ -135,6 +135,40 @@ public final class MetalFamily {
     /** 幽咆金建材的声波伤害（3 点）与 3×3×3 半径 */
     public static final float CONTACT_SONIC_DAMAGE = 3.0F;
 
+    // ---------- 1.6 收尾轮（bg-final）核实项②：幽咆金建材的声波**真的要击退** ----------
+    // 依据 = 原版「监守者声波」本身（手册写的也是「3 points of warden sonic boom damage ...
+    // **and knock the target back**」）。原版那一条的完整写法见 neoforge 21.1.228 sources
+    // `net/minecraft/world/entity/ai/behavior/warden/SonicBoom.java:79-83`：
+    //     if (target.hurt(level.damageSources().sonicBoom(owner), 10.0F)) {
+    //         double d1 = 0.5 * (1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+    //         double d0 = 2.5 * (1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+    //         target.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);
+    //     }
+    // 三件事一起抄：① **只在 hurt() 返回真时**推（免疫 / 无敌帧差额为 0 ⇒ 不推）；
+    // ② 两个方向强度都要乘 `(1 − 击退抗性)`；③ 走 `Entity#push(...)`（不是 `knockback(...)` ——
+    // 后者会把已有速度/2 并自带落地竖直分量，那是"武器命中"的语义，建材没有攻击者）。
+    /** 原版声波的基准伤害（10 点）—— 本仓接触声波的点数按与它的比值缩放击退强度 */
+    public static final float SONIC_BOOM_REFERENCE_DAMAGE = 10.0F;
+    /** 原版声波的水平击退强度（`SonicBoom.java:81` 的字面量 2.5） */
+    public static final double SONIC_BOOM_KNOCKBACK_HORIZONTAL = 2.5D;
+    /** 原版声波的竖直击退强度（`SonicBoom.java:80` 的字面量 0.5） */
+    public static final double SONIC_BOOM_KNOCKBACK_VERTICAL = 0.5D;
+    /**
+     * 本仓接触声波的水平击退强度 = 2.5 × (3 点 / 10 点) = <b>0.75</b>。
+     *
+     * <p>取值理由：方向与结构照抄原版声波，<b>幅度按伤害比线性缩放</b> ——
+     * 本仓是「建材接触」的 3 点脉冲（每 10 tick 最多一次），不是监守者那一发 10 点的全力声波；
+     * 照抄 2.5 会把人从方块上直接抛飞 6 格以上，站在建材旁边就无法停住。
+     * 0.75 的水平初速度在贴地摩擦下约等于 <b>1.5~2 格</b>的水平位移
+     * （摩擦 0.6 的等比级数：0.75 + 0.45 + 0.27 + … ≈ 1.9），
+     * 与原版近战一击（标准 `knockback(0.4, …)`）同量级、明显可见。</p>
+     */
+    public static final double CONTACT_SONIC_KNOCKBACK_HORIZONTAL =
+            SONIC_BOOM_KNOCKBACK_HORIZONTAL * (CONTACT_SONIC_DAMAGE / SONIC_BOOM_REFERENCE_DAMAGE);
+    /** 本仓接触声波的竖直击退强度 = 0.5 × (3 点 / 10 点) = <b>0.15</b>（同一条缩放理由） */
+    public static final double CONTACT_SONIC_KNOCKBACK_VERTICAL =
+            SONIC_BOOM_KNOCKBACK_VERTICAL * (CONTACT_SONIC_DAMAGE / SONIC_BOOM_REFERENCE_DAMAGE);
+
     // ==================== 1.5 修正轮新增的数值 ====================
 
     /**

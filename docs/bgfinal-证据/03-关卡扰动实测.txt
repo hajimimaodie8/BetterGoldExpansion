@@ -1,0 +1,39 @@
+====================================================================================================
+bg-final �ؿ��Ŷ�ʵ�⣺17 ������
+====================================================================================================
+OK             00 ���ߣ�δ�Ŷ���
+               validate_metal_data exit=0 / validate_advancements exit=0��bg-final ��: ['bg-final 1.6 ��β�������������� / �ɾ�Ӣ�� / ��ȼ 1 ������ȼ������: 0 []']
+OK             01 ɾ����˵��ã���ǰ��״��
+               exit=1 ���� ['bgfinal-sonic-knockback-present']
+OK             02 ɾ�� hurt բ�ţ�����Ҳ�ᱻ�ƣ�
+               exit=1 ���� ['bgfinal-sonic-knockback-damage-gated']
+OK             03 helper �������Σ�����ֻ��һ�Σ�
+               exit=1 ���� ['bgfinal-sonic-knockback-once']
+OK             04 �ѻ���д�����õ� applyContact������屻˳�ּ��ϣ�
+               exit=1 ���� ['bgfinal-sonic-knockback-single-site']
+OK             05 ���ȳ������ĳ����Դ�����
+               exit=1 ���� ['bgfinal-sonic-knockback-magnitude']
+OK             06 ֻ��ע�ͣ�������գ��������̣�
+               exit=0������ 0��ֻ��ע�ͱ������̣�
+OK             07 ��ȼ 1 ���ֵ�ȼ�������������ſ�ɺ���
+               exit=1 ���� ['bgfinal-highburn-zero-no-fire']
+OK             08 ��ȼ��������֮���ֶ�ˢһ��ȼ��
+               exit=1 ���� ['bgfinal-highburn-zero-no-fire']
+OK             09 �����˳�ּ��ϵ�ȼ
+               exit=1 ���� ['bgfinal-highburn-sediment-untouched']
+OK             10 ������ѡ (b)���ı�ע��ɾ
+               exit=1 ���� ['bgfinal-doc']
+OK             11 en_us ��һ��Ӣ��ֵ�Ļ�����ԭ��
+               exit=1 ���� ['bgfinal-adv-lang-translated']
+OK             12 en_us ��һ��������Ӣ�������룩
+               exit=1 ���� ['bgfinal-adv-lang-parity']
+OK             13 en_us ĳ��Ӣ��ֵΪ��
+               exit=1 ���� ['bgfinal-adv-lang-empty']
+OK             14 en_us ĳ��Ӣ��ֵ��û�� ASCII ��ĸ
+               exit=1 ���� ['bgfinal-adv-lang-en-shape']
+OK             15 ������ EN ��©һ������������������
+               exit=1�������� 0 + ����©����
+OK             99 ��β���ߣ�ȫ����ԭ֮��
+               validate_metal_data exit=0 / validate_advancements exit=0��bg-final ��: ['bg-final 1.6 ��β�������������� / �ɾ�Ӣ�� / ��ȼ 1 ������ȼ������: 0 []']
+====================================================================================================
+mismatches = 0
