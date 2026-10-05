@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:chorus_cherry_branch",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chorus_cherry_branch.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chorus_cherry_branch.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:chorus_cherry_branch"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

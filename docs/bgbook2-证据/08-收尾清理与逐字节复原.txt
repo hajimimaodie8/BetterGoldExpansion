@@ -1,0 +1,17 @@
+收尾清理与逐字节复原（bg-book §六 + bg-fix §七）
+
+① 探针整块删除：src/main/java/com/hjmmd_8/bettergold/probe/ 目录已删除；
+   src 下 grep 'BG-BOOK2-PROBE|BgBook2ServerProbe|BgBook2ClientProbe' = 0；
+   生产代码 grep 'halt(' = 0；jar 内 *Probe* 0 / halt 0 / BG-PROBE 0（check_jar_clean exit 0）。
+② bettergold.java 的临时注册 6 行已删除 -> git diff --numstat 为空（与 HEAD 逐字节相同）。
+③ 开关文件 run/bgbook2-probe.enabled、run/bgbook2c-probe.enabled 已删。
+④ 探针世界 run/bgbook2probe 与客户端副本 run/saves/bgbook2cprobe 已删；
+   run/saves 只剩作者的『新的世界』（29 文件，mtime 10/04/2026 21:30:01，跑前跑后一致）。
+⑤ build/moddev/clientRunProgramArgs.txt：临时追加 --quickPlaySingleplayer bgbook2cprobe，
+   收尾复原，SHA256 = A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB（与基线一致）。
+⑥ run/server.properties：临时 level-name=world -> bgbook2probe；收尾已把 level-name 复原为 world。
+   SHA256 与跑前不一致（13222B3F... -> A2229937...）—— **差异只有第 2 行那个自适应时间戳注释**
+   （#<date>，server 每次启动自己重写）；其余 63 行与 build/bg16close/server.properties.bak
+   （12B360E6...，bg-16 收尾留档）逐字节相同（字节级 diff：1440 B 里只有 7 个字节不同，全在时间戳那一行）。
+⑦ run/mods 两支 jar 未动（Patchouli 646777 B / JEI 1409179 B）。
+⑧ 贴图：本轮一个字节未动（新增的三章只用既有物品图标）。

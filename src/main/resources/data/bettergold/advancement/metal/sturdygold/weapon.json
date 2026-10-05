@@ -1,0 +1,44 @@
+{
+  "parent": "bettergold:metal/sturdygold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:sturdygold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.sturdygold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.sturdygold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:sturdygold_sword",
+              "bettergold:sturdygold_axe",
+              "bettergold:sturdygold_pickaxe",
+              "bettergold:sturdygold_shovel",
+              "bettergold:sturdygold_hoe",
+              "bettergold:sturdygold_mace",
+              "bettergold:sturdygold_bow",
+              "bettergold:sturdygold_crossbow",
+              "bettergold:sturdygold_trident",
+              "bettergold:sturdygold_shield"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

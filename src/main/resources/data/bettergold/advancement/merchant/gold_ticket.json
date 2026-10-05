@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:metal/sturdygold/weapon",
+  "display": {
+    "icon": {
+      "id": "bettergold:gift_gold_ticket",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.gift_gold_ticket.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.gift_gold_ticket.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:gift_gold_ticket"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

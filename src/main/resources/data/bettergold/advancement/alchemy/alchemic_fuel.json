@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:root",
+  "display": {
+    "icon": {
+      "id": "bettergold:alchemic_fuel",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.alchemic_fuel.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.alchemic_fuel.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:alchemic_fuel"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

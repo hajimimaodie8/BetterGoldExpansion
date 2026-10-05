@@ -1410,9 +1410,18 @@ _EXPECT_ARMOR_PAGES = 1 + len(ALL_METALS) * 2  # 1 页开场文字 + 四件盔�
 _entries_now = {}
 for _p in sorted((_ZH_BOOK / "entries").glob("*.json")) if (_ZH_BOOK / "entries").is_dir() else []:
     _entries_now[_p.stem] = json.loads(_p.read_text(encoding="utf-8"))
-if len(_entries_now) != 7:
+_SKELETON_ENTRIES = ("metal_tour", "upgrade_templates", "tools_per_family",
+                     "armor_per_family", "golden_feast", "merchant", "antiques")
+# bg-book §六 追加轮（2026-10-05）：三章（副要材料 / 核心材料 / 知识）
+_BG2_ENTRY_NAMES = ("auxiliary_materials", "core_materials", "golden_knowledge")
+_missing_skeleton = [n for n in _SKELETON_ENTRIES if n not in _entries_now]
+if _missing_skeleton:
     _bgbook_bad("bgbook-entry-count",
-                "条目数应为 7（骨架：材料 2 / 装备 2 / 食物 1 / 商人古董 2），实际 %d" % len(_entries_now))
+                "第一轮的骨架条目被删掉了（追加轮只许新增）：%s" % _missing_skeleton)
+if len(_entries_now) != len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES):
+    _bgbook_bad("bgbook-entry-count",
+                "条目数应为 %d（骨架 7 + §六 章节 3），实际 %d"
+                % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES), len(_entries_now)))
 for _entry, _expect in (("tools_per_family", _EXPECT_TOOL_PAGES), ("armor_per_family", _EXPECT_ARMOR_PAGES)):
     _got = len(_entries_now.get(_entry, {}).get("pages", []))
     if _got != _expect:
@@ -1519,11 +1528,516 @@ for _needle, _tag, _why in (
     if _needle not in _spec16_book:
         _bgbook_bad(_tag, _why)
 
+# ==================== bg-book §六 追加轮（2026-10-05）：「炼金的起步」三章逐页补全 ====================
+#
+# 形状由**读 Patchouli jar 的字节码**决定（不是猜的）：
+#   * `PageDoubleRecipe extends PageWithText` ⇒ **配方页自带 `text` 字段**（图标 + 文案 + 配方同页可表达）；
+#   * `PageSpotlight#render` 的图标是 `stacks[(ticksInBook / 20) % stacks.length]`
+#     ⇒ 列表里的图标**每 20 tick 换一个** —— 这正是作者说的「随排版顺序**不断变化**」；
+#   * 需求 §6.2 第 1 行的图标列写「（无）」、而图标本身（"中上角：炼金珍材盒"）写在**右侧**列
+#     ⇒ 文档的**一行 = 书的一屏 = 跨页** ⇒ 落地 = 一行两个 Patchouli 页
+#     （左页 = 图标 + 逐字文案；右页 = 配方，或右图标 + 右文案）。
+#     章1 2 行 → 4 页；章2 9 行 → 18 页；章3 5 行 → 10 页；合计 **32 页 = 文档说的 16「跨页」**。
+#     （另一种读法「一行 = 1 个 Patchouli 页」= 16 页，无法表达"左侧文案 + 左上角图标"；两种都写在规格 §12。）
+bgbook2_problems: list[str] = []
+
+
+def _bgbook2_bad(tag: str, msg: str) -> None:
+    bgbook2_problems.append("%s [%s]" % (msg, tag))
+
+
+_BG2_REQ_DOC = (REPO.parent / "mod_experience" / "开工需求"
+                / "20261004-1733_bg-book_patchouli-handbook.md")
+# 章 → (封面图标, sortnum, 页型序列)。页型序列就是"一行 = 左页 + 右页"的机器形态。
+_BG2_CHAPTERS = {
+    "auxiliary_materials": ("mixed_crystal_pile", 2,
+                            ["patchouli:spotlight", "patchouli:crafting"] * 2),
+    "core_materials": ("golden_cowrie", 3,
+                       ["patchouli:text", "patchouli:spotlight"]
+                       + ["patchouli:spotlight", "patchouli:crafting"] * 8),
+    "golden_knowledge": ("sturdygold_ingot", 4,
+                         ["patchouli:spotlight", "patchouli:spotlight"] * 5),
+}
+_bg2_pages_total = 0
+_bg2_recipe_refs = set()
+_bg2_item_refs = set()
+for _cname, (_cicon, _csort, _cseq) in _BG2_CHAPTERS.items():
+    _zh_p = _ZH_BOOK / "entries" / ("%s.json" % _cname)
+    _en_p = _EN_BOOK / "entries" / ("%s.json" % _cname)
+    if not _zh_p.is_file() or not _en_p.is_file():
+        _bgbook2_bad("bgbook2-chapter-entries", "章节条目缺文件（zh/en 各需一份）：%s" % _cname)
+        continue
+    _zh_e = json.loads(_zh_p.read_text(encoding="utf-8"))
+    _en_e = json.loads(_en_p.read_text(encoding="utf-8"))
+    _want_icon = "bettergold:%s" % _cicon
+    if _zh_e.get("icon") != _want_icon or _en_e.get("icon") != _want_icon:
+        _bgbook2_bad("bgbook2-chapter-entries",
+                     "%s 的章节封面图标不是 %s（实际 %r / %r）"
+                     % (_cname, _want_icon, _zh_e.get("icon"), _en_e.get("icon")))
+    if _zh_e.get("sortnum") != _csort or _en_e.get("sortnum") != _csort:
+        _bgbook2_bad("bgbook2-chapter-entries", "%s 的 sortnum 不是 %d" % (_cname, _csort))
+    if _zh_e.get("category") != "bettergold:alchemy_start":
+        _bgbook2_bad("bgbook2-chapter-entries",
+                     "%s 不挂在「炼金的起步」类别下（实际 %r）" % (_cname, _zh_e.get("category")))
+    if _zh_e.get("name") != "bettergold.handbook.entry.%s" % _cname:
+        _bgbook2_bad("bgbook2-chapter-entries",
+                     "%s 的 name 不是 bettergold.handbook.entry.%s" % (_cname, _cname))
+    if _zh_e.get("pages") != _en_e.get("pages"):
+        _bgbook2_bad("bgbook2-chapter-entries", "%s 的 zh/en 页列表不一致（结构必须双端相同）" % _cname)
+    _seq_now = [str(_p.get("type")) for _p in _zh_e.get("pages", [])]
+    if _seq_now != _cseq:
+        _bgbook2_bad("bgbook2-chapter-pages",
+                     "%s 的页型序列不是「一行一跨页 = 左页 + 右页」：期望 %s，实际 %s"
+                     % (_cname, _cseq, _seq_now))
+    _bg2_pages_total += len(_seq_now)
+    for _pg in _zh_e.get("pages", []):
+        if _pg.get("type") not in _KNOWN_PAGE_TYPES:
+            _bgbook2_bad("bgbook2-page-type", "%s 用了未知页面类型 %s" % (_cname, _pg.get("type")))
+        for _overflow in ("recipe3", "recipe4", "recipes"):
+            if _overflow in _pg:
+                _bgbook2_bad("bgbook2-recipe-cap",
+                             "%s 的页里出现 %s（Patchouli 只有 recipe / recipe2 两个槽，多写的键静默被忽略）"
+                             % (_cname, _overflow))
+        for _rk in ("recipe", "recipe2"):
+            if _rk in _pg:
+                _bg2_recipe_refs.add(_pg[_rk])
+        _it = _pg.get("item")
+        for _one in ([_it] if isinstance(_it, str) else (_it or [])):
+            _bg2_item_refs.add(str(_one))
+if _bg2_pages_total != 32:
+    _bgbook2_bad("bgbook2-chapter-pages",
+                 "三章合计应是 32 个 Patchouli 页（= 文档 2+9+5 = 16 行 × 2），实际 %d" % _bg2_pages_total)
+_bg2_missing_recipes = sorted(
+    _r for _r in _bg2_recipe_refs
+    if not (_DATA / "bettergold" / "recipe" / (_r.split(":", 1)[1] + ".json")).is_file())
+if _bg2_missing_recipes:
+    _bgbook2_bad("bgbook2-recipe-refs",
+                 "三章引用了不存在的配方（死链，游戏里那一页会空掉）：%s" % _bg2_missing_recipes[:5])
+if len(_bg2_recipe_refs) < 13:
+    _bgbook2_bad("bgbook2-recipe-refs",
+                 "三章只解析到 %d 个配方引用（应 13；反空转守护）" % len(_bg2_recipe_refs))
+_bg2_missing_items = sorted(
+    _i for _i in _bg2_item_refs
+    if ("item.bettergold.%s" % _i.split(":", 1)[1]) not in zh
+    and ("block.bettergold.%s" % _i.split(":", 1)[1]) not in zh)
+if _bg2_missing_items:
+    _bgbook2_bad("bgbook2-item-refs",
+                 "三章的图标引用了不存在的物品/方块（死链）：%s" % _bg2_missing_items[:5])
+if len(_bg2_item_refs) < 40:
+    _bgbook2_bad("bgbook2-item-refs",
+                 "三章只解析到 %d 个图标引用（应 43；反空转守护）" % len(_bg2_item_refs))
+
+# 逐字文案：**期望值来自需求文档**（不是本脚本自己的表 —— 否则就是 §4 第 42 条那种空转）
+if not _BG2_REQ_DOC.is_file():
+    _bgbook2_bad("bgbook2-texts-verbatim", "读不到需求文档（逐字文案的期望值来源）：%s" % _BG2_REQ_DOC)
+else:
+    _bg2_lines = _BG2_REQ_DOC.read_text(encoding="utf-8").split("\n")
+
+    def _bg2_rows(marker: str) -> list[list[str]]:
+        out, active = [], False
+        for _ln in _bg2_lines:
+            if _ln.startswith(marker):
+                active = True
+                continue
+            if active and _ln.startswith("### "):
+                break
+            if active and _ln.startswith("|") and "|---" not in _ln and "页" not in _ln.split("|")[1]:
+                out.append([_c for _c in _ln.split("|")][1:-1])
+        return out
+
+    def _bg2_clean(_cell: str) -> str:
+        return re.sub(r"\*\*(.+?)\*\*", r"\1", _cell.strip()).strip()
+
+    _bg2_texts = [_bg2_clean(_r[1]) for _r in _bg2_rows("### 6.1")]
+    for _i, _r in enumerate(_bg2_rows("### 6.2"), start=1):
+        _bg2_texts.append(_bg2_clean(_r[2]))
+        if _i == 1:
+            _bg2_texts.append(_bg2_clean(re.sub(r"^\s*\*\*右侧正文\*\*：", "", _r[3].split("<br>")[-1])))
+    for _r in _bg2_rows("### 6.3"):
+        for _col in (1, 2):
+            _bg2_texts.append(_bg2_clean(_r[_col].split("<br>")[-1]))
+    if len(_bg2_texts) != 22 or sum(len(_t) for _t in _bg2_texts) < 600:
+        _bgbook2_bad("bgbook2-texts-verbatim",
+                     "从需求文档解析到 %d 段逐字文案 / 共 %d 字（应 22 段、总字数 >= 600；反空转守护）"
+                     % (len(_bg2_texts), sum(len(_t) for _t in _bg2_texts)))
+    _zh_values = set(zh.values())
+    _bg2_missing_texts = [_t for _t in _bg2_texts if _t not in _zh_values]
+    if _bg2_missing_texts:
+        _bgbook2_bad("bgbook2-texts-verbatim",
+                     "需求文档里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
+                     % (len(_bg2_missing_texts), len(_bg2_texts), _bg2_missing_texts[0][:40]))
+
+# 语言键：25 条（3 个条目名 + 22 段文案）必须**中英双端都有**
+_bg2_suffixes = (["aux_1", "aux_2"]
+                 + ["core_%d" % _i for _i in range(1, 10)] + ["core_1_right"]
+                 + ["knowledge_%d_%s" % (_i, _s) for _i in range(1, 6) for _s in ("left", "right")])
+_bg2_keys = (["bettergold.handbook.entry.%s" % _c for _c in _BG2_CHAPTERS]
+             + ["bettergold.handbook.page.%s" % _s for _s in _bg2_suffixes])
+if len(_bg2_keys) != 25:
+    _bgbook2_bad("bgbook2-lang-bilingual",
+                 "章节语言键清单是 %d 条（应 25 = 3 + 22；反空转守护）" % len(_bg2_keys))
+for _k in _bg2_keys:
+    if _k not in zh or _k not in en:
+        _bgbook2_bad("bgbook2-lang-bilingual", "章节语言键缺中文或英文：%s" % _k)
+
+# 文档侧：§六 追加轮的形状 / 推断值 / 第 8 条结论必须落档
+for _needle, _tag, _why in (
+        ("1 行 = 1 跨页", "bgbook2-doc",
+         "docs/1.6-规格.md 没写「§6 的一行 = 一个跨页 = 两个 Patchouli 页」这条形状"),
+        ("bettergold:sturdygold_ingot", "bgbook2-doc",
+         "docs/1.6-规格.md 没写章3 封面图标的推断值"),
+        ("stopBeingAngry", "bgbook2-doc",
+         "docs/1.6-规格.md 没写第 8 条的动作（stopBeingAngry）"),
+        ("AngerLevel", "bgbook2-doc",
+         "docs/1.6-规格.md 没写「AngerLevel 在 1.21.1 不存在」"),
+        ("无击退", "bgbook2-doc",
+         "docs/1.6-规格.md 没写幽咆金「并击退目标」与代码现状不符（核实项②）")):
+    if _needle not in _spec16_book:
+        _bgbook2_bad(_tag, _why)
+
+# ==================== bg-fix（会话标记 bg-fix，2026-10-05）：1.6 的七条修正 ====================
+#
+# 每一条都带**稳定的 ASCII id**（`[bgfix-...]`），供扰动矩阵逐条自证（mcmod_experience §3.4）。
+# 判据一律跑在**去注释**后的源码上（注释既能喂饱正向断言、也能误伤负向断言）。
+bgfix_problems: list[str] = []
+
+
+def _bgfix_bad(tag: str, msg: str) -> None:
+    bgfix_problems.append("%s [%s]" % (msg, tag))
+
+
+_bgfix_cfg = strip_comments((JAVA / "config" / "Config.java").read_text(encoding="utf-8"))
+_bgfix_mev = strip_comments((JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8"))
+_bgfix_mod = strip_comments((JAVA / "event" / "ModEvents.java").read_text(encoding="utf-8"))
+_bgfix_mf = strip_comments((JAVA / "material" / "MetalFamily.java").read_text(encoding="utf-8"))
+_bgfix_am = strip_comments((JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"))
+_bgfix_fx = strip_comments((JAVA / "registry" / "AllEffects.java").read_text(encoding="utf-8"))
+_bgfix_glm = strip_comments((JAVA / "registry" / "AllLootModifiers.java").read_text(encoding="utf-8"))
+_bgfix_items = strip_comments((JAVA / "registry" / "AllItems.java").read_text(encoding="utf-8"))
+_bgfix_book = strip_comments((JAVA / "patchouli" / "HandbookModule.java").read_text(encoding="utf-8"))
+
+# ---------- 第 2 条 · buff 显示名 → 音咆（**只改显示名**） ----------
+if zh.get("effect.bettergold.echo_roar") != "\u97f3\u5486":
+    _bgfix_bad("bgfix-echo-name-zh",
+               "zh_cn 的 effect.bettergold.echo_roar 不是「音咆」（实际 %r）"
+               % zh.get("effect.bettergold.echo_roar"))
+if en.get("effect.bettergold.echo_roar") != "Sonic Roar":
+    _bgfix_bad("bgfix-echo-name-en",
+               "en_us 的 effect.bettergold.echo_roar 不是 \"Sonic Roar\"（实际 %r）"
+               % en.get("effect.bettergold.echo_roar"))
+# 负向：**金属名**（幽咆金）相关语言键不许出现「音咆」（作者只改 buff 的显示名）
+_echo_metal_keys = [k for k in zh if k.startswith("item.bettergold.echogold")
+                    or k.startswith("block.bettergold.echogold")
+                    or k.startswith("trim_material.bettergold.echogold")
+                    or k.startswith("item.bettergold.smithing_template.echogold")]
+if len(_echo_metal_keys) < 10:
+    _bgfix_bad("bgfix-echo-metal-name-untouched",
+               "幽咆金相关语言键只找到 %d 条（反空转守护：应 >= 10）" % len(_echo_metal_keys))
+_bad_echo_metal = [k for k in _echo_metal_keys if "\u97f3\u5486" in str(zh.get(k))]
+if _bad_echo_metal:
+    _bgfix_bad("bgfix-echo-metal-name-untouched",
+               "金属名（幽咆金）被顺手改成了音咆：%s" % _bad_echo_metal[:5])
+if zh.get("item.bettergold.echogold_ingot") != "\u5e7d\u5486\u91d1\u952d":
+    _bgfix_bad("bgfix-echo-metal-name-untouched",
+               "item.bettergold.echogold_ingot 不再是「幽咆金锭」（金属名被改）")
+if 'EFFECTS.register("echo_roar"' not in _bgfix_fx:
+    _bgfix_bad("bgfix-echo-id-unchanged", "AllEffects 里的 echo_roar 注册 id 不见了（id 不许改）")
+
+# ---------- 第 3 条 · 闪耀藤条判据收窄为「特殊金属」（除万坚金） ----------
+if "isSpecialMetal()" not in _bgfix_glm:
+    _bgfix_bad("bgfix-vine-special-metal", "闪耀藤条判据没有用 family.isSpecialMetal()（没收窄，万坚金仍会掉）")
+else:
+    _i_special = _bgfix_glm.find("isSpecialMetal()")
+    _i_istool = _bgfix_glm.find("family.isTool(")
+    if _i_istool < 0:
+        _bgfix_bad("bgfix-vine-special-metal", "工具判据里找不到 family.isTool(（反空转守护）")
+    elif _i_special > _i_istool:
+        _bgfix_bad("bgfix-vine-special-metal", "isSpecialMetal() 落在 isTool( 之后 ⇒ 万坚金仍会掉藤条")
+if "family != null && (family.isTool(" in _bgfix_glm:
+    _bgfix_bad("bgfix-vine-old-broad",
+               "仍留着旧口径 `family != null && (family.isTool(`（= 任意一族，万坚金会掉藤条）")
+if 'STURDYGOLD_ID = "sturdygold"' not in _bgfix_mf:
+    _bgfix_bad("bgfix-special-metal-predicate", "MetalFamily 里没有 STURDYGOLD_ID 常量")
+if "public boolean isSpecialMetal()" not in _bgfix_mf:
+    _bgfix_bad("bgfix-special-metal-predicate", "MetalFamily 里没有 isSpecialMetal()")
+elif "!STURDYGOLD_ID.equals(this.id)" not in _bgfix_mf:
+    _bgfix_bad("bgfix-special-metal-predicate",
+               "isSpecialMetal() 的判据不是 !STURDYGOLD_ID.equals(this.id)")
+_n_specs = _bgfix_am.count("new MetalFamily.Spec(")
+if _n_specs != 8:
+    _bgfix_bad("bgfix-special-metal-predicate",
+               "AllMetals 里的 MetalFamily.Spec 不是 8 个（实际 %d；反空转守护）" % _n_specs)
+
+# ---------- 第 4 条 · 紫颂樱花枝配方：1 个樱花树苗 → 恶魂之泪 ----------
+_ccb_path = _DATA / "bettergold" / "recipe" / "chorus_cherry_branch.json"
+if not _ccb_path.is_file():
+    _bgfix_bad("bgfix-chorus-recipe", "缺 data/bettergold/recipe/chorus_cherry_branch.json")
+else:
+    _ccb = json.loads(_ccb_path.read_text(encoding="utf-8"))
+    _ccb_ing = [str(i.get("item")) for i in _ccb.get("ingredients", [])]
+    if _ccb.get("type") != "minecraft:crafting_shapeless":
+        _bgfix_bad("bgfix-chorus-recipe", "樱花枝配方不是 crafting_shapeless（实际 %r）" % _ccb.get("type"))
+    if _ccb_ing.count("minecraft:cherry_sapling") != 7 or _ccb_ing.count("minecraft:ghast_tear") != 1:
+        _bgfix_bad("bgfix-chorus-recipe",
+                   "樱花枝配方必须是 7 樱花树苗 + 1 恶魂之泪（实际 sapling=%d tear=%d）"
+                   % (_ccb_ing.count("minecraft:cherry_sapling"),
+                      _ccb_ing.count("minecraft:ghast_tear")))
+    if _ccb_ing.count("minecraft:chorus_flower") != 1:
+        _bgfix_bad("bgfix-chorus-recipe", "樱花枝配方里的紫颂花不是 1 个")
+    if (_ccb.get("result") or {}).get("id") != "bettergold:chorus_cherry_branch":
+        _bgfix_bad("bgfix-chorus-recipe",
+                   "樱花枝配方的产物被动了（应是 bettergold:chorus_cherry_branch）")
+
+# ---------- 第 5 条 · 万坚金武器工具击杀骷髅类 => 80% 掉金骨粉 ----------
+if 'ITEMS.register("golden_bone_meal"' not in _bgfix_items:
+    _bgfix_bad("bgfix-skeleton-drop",
+               "金骨粉物品不存在（bettergold:golden_bone_meal 没注册）—— 第 5 条依赖它，不许自己造物品")
+for _needle, _why in (
+        ("SKELETON_GOLDEN_BONE_MEAL_CHANCE = 0.8F", "击杀掉率不是 80%"),
+        ("AbstractSkeleton", "「骷髅类型」判据没走 AbstractSkeleton"),
+        ("GOLDEN_BONE_MEAL.get()", "掉落物不是金骨粉"),
+        ("event.getDrops().add(", "没有把金骨粉加进击杀掉落"),
+        ("isSturdygoldAttackWeapon(", "武器判据没有复用万坚金那一处（又写了一份）")):
+    if _needle not in _bgfix_mev:
+        _bgfix_bad("bgfix-skeleton-drop", "MetalEvents 里 %s 不在位（%s）" % (_needle, _why))
+_i_skel = _bgfix_mev.find("AbstractSkeleton")
+_i_high = _bgfix_mev.find("AllEffects.HIGH_BURN) && !entity.isOnFire()")
+if _i_skel < 0 or _i_high < 0:
+    _bgfix_bad("bgfix-skeleton-precedes-highburn", "找不到骨架/高燃标记（反空转守护）")
+elif _i_skel > _i_high:
+    _bgfix_bad("bgfix-skeleton-precedes-highburn",
+               "骷髅掉落在「高燃掉熟食」早退之后 ⇒ 永不触发（静默失效）")
+_ld_files = []
+for _p in JAVA.rglob("*.java"):
+    if "LivingDropsEvent" in strip_comments(_p.read_text(encoding="utf-8")):
+        _ld_files.append(_p.name)
+_ld_files = sorted(_ld_files)
+# 白名单：本仓**本来就有两个**击杀掉落处理点（ModEvents = 猪灵掉金钱贝；MetalEvents = 高燃掉熟食）。
+# bg-fix 第 5 条只许**加进 MetalEvents.onLivingDrops**，不许再添第三个事件（陷阱 #5）。
+if _ld_files != ["MetalEvents.java", "ModEvents.java"]:
+    _bgfix_bad("bgfix-skeleton-single-event",
+               "LivingDropsEvent 的处理点落在 %s（白名单 = MetalEvents.java + ModEvents.java；不许再添第三个）"
+               % _ld_files)
+if _bgfix_mev.count("public static void onLivingDrops(") != 1:
+    _bgfix_bad("bgfix-skeleton-single-event", "MetalEvents 里 onLivingDrops 处理点不是恰好 1 个")
+if "public static boolean isSturdygoldAttackWeapon(" not in _bgfix_mod:
+    _bgfix_bad("bgfix-skeleton-weapon-judgement",
+               "ModEvents.isSturdygoldAttackWeapon 不是 public ⇒ 武器判据被写了两份")
+
+# ---------- 第 6 条 · 高燃 / 沉淀：曲线整体后移一级 ----------
+if "public static float shiftedDamage(int amplifier)" not in _bgfix_fx:
+    _bgfix_bad("bgfix-shifted-damage-impl", "AllEffects 里没有 shiftedDamage(int)（公式不是唯一实现）")
+elif "return Math.max(0, amplifier);" not in _bgfix_fx:
+    _bgfix_bad("bgfix-shifted-damage-impl", "shiftedDamage 的实现不是 max(0, amplifier)")
+if _bgfix_fx.count("shiftedDamage(amplifier)") != 2:
+    _bgfix_bad("bgfix-shifted-damage-used",
+               "shiftedDamage(amplifier) 出现 %d 次（高燃 + 沉淀必须各一次）"
+               % _bgfix_fx.count("shiftedDamage(amplifier)"))
+if "amplifier + 2" in _bgfix_fx:
+    _bgfix_bad("bgfix-shifted-damage-used", "AllEffects 里还留着旧口径 `amplifier + 2`")
+if _bgfix_fx.count("duration % 20 == 0") != 5:
+    _bgfix_bad("bgfix-shifted-damage-frequency",
+               "每秒结算判据的条数不是 5（频率被改动了；反空转守护）")
+if "float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;" not in _bgfix_mev:
+    _bgfix_bad("bgfix-parasite-echo-unchanged",
+               "音咆的「伤害 = 等级」公式被动了（本条只许改高燃 / 沉淀）")
+
+# ---------- 第 7 条 · 16 条配置项 = 唯一真源 ----------
+_BGFIX_FAMILIES = ["flamegold", "voodoogold", "thundergold", "indigoseagold",
+                   "illusiongold", "thornsgold", "echogold", "sturdygold"]
+_BGFIX_WEAPON_KEYS = {f: f + "WeaponBuffChance" for f in _BGFIX_FAMILIES}
+_BGFIX_WEAPON_KEYS["sturdygold"] = "sturdygoldWeaponAbilityChance"
+_BGFIX_ARMOR_KEYS = {f: f + "ArmorBuffChance" for f in _BGFIX_FAMILIES if f != "sturdygold"}
+_BGFIX_MULT_KEY = "sturdygoldArmorAbilityIntervalMultiplier"
+_EXISTING_CONFIG_KEYS = ["logDirtBlock", "magicNumber", "magicNumberIntroduction", "items",
+                         "goldLootMode", "goldLootItems", "voodooExtractRatio",
+                         "voodooFlatPerLevel", "thunderSoundMode"]
+_cfg_keys = re.findall(r'\.define(?:InRange|ListAllowEmpty)?\(\s*"([^"]+)"', _bgfix_cfg)
+if len(_cfg_keys) != 25:
+    _bgfix_bad("bgfix-config-16-keys",
+               "Config.java 的键总数不是 25（既有 9 + 新增 16；实际 %d: %s）" % (len(_cfg_keys), _cfg_keys))
+for _k in _EXISTING_CONFIG_KEYS:
+    if _k not in _cfg_keys:
+        _bgfix_bad("bgfix-config-existing-keys",
+                   "既有配置键 %s 不见了/被改名（配置键名是存档红线）" % _k)
+for _f, _k in _BGFIX_WEAPON_KEYS.items():
+    if _k not in _cfg_keys:
+        _bgfix_bad("bgfix-config-16-keys", "缺武器侧配置键 %s（%s）" % (_k, _f))
+for _f, _k in _BGFIX_ARMOR_KEYS.items():
+    if _k not in _cfg_keys:
+        _bgfix_bad("bgfix-config-16-keys", "缺盔甲侧配置键 %s（%s）" % (_k, _f))
+if _BGFIX_MULT_KEY not in _cfg_keys:
+    _bgfix_bad("bgfix-config-16-keys", "缺万坚金间隔系数键 %s" % _BGFIX_MULT_KEY)
+_BGFIX_DEFAULTS = [
+    ("flamegoldWeaponBuffChance", 1.0), ("voodoogoldWeaponBuffChance", 1.0),
+    ("thundergoldWeaponBuffChance", 1.0), ("indigoseagoldWeaponBuffChance", 1.0),
+    ("illusiongoldWeaponBuffChance", 0.16), ("thornsgoldWeaponBuffChance", 1.0),
+    ("echogoldWeaponBuffChance", 1.0), ("sturdygoldWeaponAbilityChance", 1.0),
+    ("flamegoldArmorBuffChance", 0.25), ("voodoogoldArmorBuffChance", 0.25),
+    ("thundergoldArmorBuffChance", 0.25), ("indigoseagoldArmorBuffChance", 0.25),
+    ("illusiongoldArmorBuffChance", 0.04), ("thornsgoldArmorBuffChance", 0.25),
+    ("echogoldArmorBuffChance", 0.25), ("sturdygoldArmorAbilityIntervalMultiplier", 1.0),
+]
+for _k, _d in _BGFIX_DEFAULTS:
+    _m = re.search(r'\.defineInRange\(\s*"%s"\s*,\s*([0-9.]+)D' % re.escape(_k), _bgfix_cfg)
+    if not _m:
+        _bgfix_bad("bgfix-config-defaults", "找不到键 %s 的 defineInRange 默认值" % _k)
+    elif abs(float(_m.group(1)) - _d) > 1e-9:
+        _bgfix_bad("bgfix-config-defaults", "键 %s 的默认值不是 %s（实际 %s）" % (_k, _d, _m.group(1)))
+_cfg_cc = method_body(_bgfix_mev, "private static float counterChance(")
+if "armorBuffChance(family.id)" not in _cfg_cc:
+    _bgfix_bad("bgfix-config-single-source", "counterChance 没从配置读（armorBuffChance(family.id) 不在位）")
+if "0.25F" in _cfg_cc or "sootheReflectPerPiece" in _cfg_cc:
+    _bgfix_bad("bgfix-config-single-source",
+               "counterChance 里还留着一份硬编码概率（0.25F / sootheReflectPerPiece）")
+_cfg_afe = method_body(_bgfix_mev, "public static void applyFamilyWeaponEffect(")
+if "weaponBuffChance(family.id)" not in _cfg_afe:
+    _bgfix_bad("bgfix-config-single-source",
+               "applyFamilyWeaponEffect 没从配置读（weaponBuffChance(family.id) 不在位）")
+if "nextFloat() < family.sootheOnAttackChance" in _cfg_afe:
+    _bgfix_bad("bgfix-config-single-source",
+               "幻惑金仍在用 sootheOnAttackChance 掷骰 = 第二处硬编码概率（会掷两次 ⇒ 0.16x0.16）")
+if _cfg_afe.count("sootheOnAttackChance") != 1:
+    _bgfix_bad("bgfix-config-single-source",
+               "applyFamilyWeaponEffect 里 sootheOnAttackChance 出现 %d 次（只许当一次存在位判据）"
+               % _cfg_afe.count("sootheOnAttackChance"))
+if "weaponChance <= 0.0F" not in _cfg_afe:
+    _bgfix_bad("bgfix-config-zero-never", "武器侧配置 0 时没有 return（「改 0 ⇒ 永不触发」不成立）")
+_cfg_abs = method_body(_bgfix_mev, "public static void onAbsorptionTick(")
+if "absorptionInterval(family.absorptionIntervalTicks)" not in _cfg_abs:
+    _bgfix_bad("bgfix-config-single-source",
+               "万坚金间隔没从配置读（absorptionInterval(family.absorptionIntervalTicks) 不在位）")
+if "% family.absorptionIntervalTicks" in _cfg_abs:
+    _bgfix_bad("bgfix-config-single-source",
+               "onAbsorptionTick 仍直接用族常量取模（配置系数没生效）")
+if "weaponBuffChance(com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD.id)" not in _bgfix_mod:
+    _bgfix_bad("bgfix-config-single-source",
+               "万坚金武器「能力概率」没有走同一个配置入口（Config.weaponBuffChance）")
+if "abilityChance <= 0.0F" not in _bgfix_mod:
+    _bgfix_bad("bgfix-config-zero-never", "ModEvents 里武器侧配置 0 时没有 return")
+for _fn, _tag in (("public static float weaponBuffChance(String familyId)", "weaponBuffChance"),
+                  ("public static float armorBuffChance(String familyId)", "armorBuffChance")):
+    _b = method_body(_bgfix_cfg, _fn)
+    if _b.count('case "') != 8:
+        _bgfix_bad("bgfix-config-case-count",
+                   "%s 的 case 数不是 8（实际 %d）" % (_tag, _b.count('case "')))
+for _k in list(_BGFIX_WEAPON_KEYS.values()) + list(_BGFIX_ARMOR_KEYS.values()) + [_BGFIX_MULT_KEY]:
+    if not re.fullmatch(r"[a-z][A-Za-z0-9]*", _k):
+        _bgfix_bad("bgfix-config-key-ascii", "配置键不是英文 camelCase：%s" % _k)
+
+# ---------- 第 1 条 · 炼金术学员手册：1 书 + 1 金锭、无序合成（+ patchouli 条件） ----------
+_bgfix_hb = _DATA / "bettergold" / "recipe" / "alchemy_student_handbook.json"
+if not _bgfix_hb.is_file():
+    _bgfix_bad("bgfix-handbook-recipe",
+               "缺 data/bettergold/recipe/alchemy_student_handbook.json（第 1 条没落地）")
+else:
+    _hb = json.loads(_bgfix_hb.read_text(encoding="utf-8"))
+    if _hb.get("type") != "minecraft:crafting_shapeless":
+        _bgfix_bad("bgfix-handbook-recipe", "手册配方不是无序合成（实际 %r）" % _hb.get("type"))
+    _hb_ing = [str(i.get("item")) for i in _hb.get("ingredients", [])]
+    if sorted(_hb_ing) != ["minecraft:book", "minecraft:gold_ingot"]:
+        _bgfix_bad("bgfix-handbook-recipe",
+                   "手册配方材料不是「1 书 + 1 金锭」（实际 %s）" % sorted(_hb_ing))
+    if (_hb.get("result") or {}).get("id") != "bettergold:alchemy_student_handbook":
+        _bgfix_bad("bgfix-handbook-recipe", "手册配方产物不是 bettergold:alchemy_student_handbook")
+    if int((_hb.get("result") or {}).get("count", 0)) != 1:
+        _bgfix_bad("bgfix-handbook-recipe", "手册配方产出数量不是 1")
+    _hb_cond = json.dumps(_hb.get("neoforge:conditions", []), ensure_ascii=False)
+    if "neoforge:mod_loaded" not in _hb_cond or "patchouli" not in _hb_cond:
+        _bgfix_bad("bgfix-handbook-conditional",
+                   "手册配方没有 neoforge:mod_loaded(patchouli) 条件"
+                   "（没装 Patchouli 时手册物品不注册 ⇒ 配方解析失败刷错误）")
+if '"alchemy_student_handbook"' not in _bgfix_book:
+    _bgfix_bad("bgfix-handbook-item-id", "HandbookModule.ITEM_PATH 不再是 alchemy_student_handbook")
+
+# ---------- 文档：新口径必须落档（docs/1.6-规格.md 的 bg-fix 追加节） ----------
+_bgfix_spec = (REPO / "docs" / "1.6-规格.md").read_text(encoding="utf-8")
+for _needle, _tag, _why in (
+        ("bg-fix", "bgfix-doc", "docs/1.6-规格.md 里没有 bg-fix 追加节"),
+        ("\u97f3\u5486", "bgfix-doc-echo", "docs/1.6-规格.md 没写「音咆」这个新显示名"),
+        ("isSpecialMetal", "bgfix-doc-vine", "docs/1.6-规格.md 没写藤条收窄到 isSpecialMetal"),
+        ("ghast_tear", "bgfix-doc-chorus", "docs/1.6-规格.md 没写樱花枝配方换成恶魂之泪"),
+        ("golden_bone_meal", "bgfix-doc-skeleton", "docs/1.6-规格.md 没写金骨粉掉落"),
+        ("shiftedDamage", "bgfix-doc-curve", "docs/1.6-规格.md 没写高燃/沉淀的新公式"),
+        ("sturdygoldArmorAbilityIntervalMultiplier", "bgfix-doc-config",
+         "docs/1.6-规格.md 没写 16 条配置项")):
+    if _needle not in _bgfix_spec:
+        _bgfix_bad(_tag, _why)
+
+# ---------- §七 第 8 条 · 幻惑金建材：对玩家发起敌意的中立生物 ⇒（踩踏 / 贴近）瞬间变被动 ----------
+if "contactPacifyNeutral" not in _bgfix_mf:
+    _bgfix_bad("bgfix-pacify-flag", "MetalFamily 里没有 contactPacifyNeutral（第 8 条的族旗标）")
+if "public boolean contactPacifyNeutral = false;" not in _bgfix_mf:
+    _bgfix_bad("bgfix-pacify-flag", "Spec 里没有 contactPacifyNeutral 的默认字段")
+if "public Spec contactPacifyNeutral()" not in _bgfix_mf:
+    _bgfix_bad("bgfix-pacify-flag", "Spec 里没有 contactPacifyNeutral() 归位方法")
+_n_pacify_calls = _bgfix_am.count(".contactPacifyNeutral()")
+if _n_pacify_calls != 1:
+    _bgfix_bad("bgfix-pacify-flag",
+               "AllMetals 里 .contactPacifyNeutral() 出现 %d 次（应恰好 1 次 = 幻惑金）" % _n_pacify_calls)
+_i_ill = _bgfix_am.find('new MetalFamily.Spec("illusiongold"')
+_i_pac = _bgfix_am.find(".contactPacifyNeutral()")
+_i_next_spec = _bgfix_am.find("new MetalFamily.Spec(", _i_ill + 1)
+if _i_ill < 0:
+    _bgfix_bad("bgfix-pacify-flag", "AllMetals 里找不到 illusiongold 的 Spec（反空转守护）")
+elif _i_pac < _i_ill or (_i_next_spec > 0 and _i_pac > _i_next_spec):
+    _bgfix_bad("bgfix-pacify-flag", "contactPacifyNeutral() 不在幻惑金那一份 Spec 里")
+
+_scan_body = method_body(_bgfix_mev, "private static void scanContact(")
+_apply_body = method_body(_bgfix_mev, "public static void applyContact(")
+_break_body = method_body(_bgfix_mev, "public static void onBreakBlock(")
+_use_body = method_body(_bgfix_mev, "public static void onRightClickBlock(")
+for _body, _what in ((_scan_body, "scanContact"), (_apply_body, "applyContact"),
+                     (_break_body, "onBreakBlock"), (_use_body, "onRightClickBlock")):
+    if not _body:
+        _bgfix_bad("bgfix-pacify-step-only", "取不到方法体：%s（反空转守护）" % _what)
+if "pacifyHostileNeutrals(" not in _scan_body:
+    _bgfix_bad("bgfix-pacify-step-only",
+               "scanContact（踩踏 / 贴近）里没有调用 pacifyHostileNeutrals ⇒ 第 8 条不会触发")
+for _body, _what in ((_apply_body, "applyContact"), (_break_body, "onBreakBlock"),
+                     (_use_body, "onRightClickBlock")):
+    if "pacifyHostileNeutrals(" in _body:
+        _bgfix_bad("bgfix-pacify-step-only",
+                   "%s 也调了 pacifyHostileNeutrals ⇒ 破坏 / 右键也会触发（作者只要踩踏 / 贴近）" % _what)
+
+_pac_body = method_body(_bgfix_mev, "private static boolean pacifyHostileNeutrals(")
+_pred_body = method_body(_bgfix_mev, "private static boolean isHostileNeutralTowardsPlayer(")
+if not _pac_body:
+    _bgfix_bad("bgfix-pacify-predicate", "找不到 pacifyHostileNeutrals 方法体（反空转守护）")
+if not _pred_body:
+    _bgfix_bad("bgfix-pacify-predicate", "找不到 isHostileNeutralTowardsPlayer 方法体（反空转守护）")
+for _needle, _why in (("stopBeingAngry()", "动作不是原版 NeutralMob#stopBeingAngry()"),
+                      ("isClientSide()", "缺客户端早退"),
+                      ("isAlive()", "缺存活判定")):
+    if _needle not in _pac_body:
+        _bgfix_bad("bgfix-pacify-predicate", "%s：方法体里没有 %s" % (_why, _needle))
+for _needle, _why in (("instanceof net.minecraft.world.entity.NeutralMob", "判据不是 NeutralMob"),
+                      ("getTarget() instanceof net.minecraft.world.entity.player.Player",
+                       "缺「当前攻击目标是玩家」那一支"),
+                      ("isAngry()", "缺怒气计时判据（isAngry）"),
+                      ("isAngryAt(player)", "缺「怒气指向在场玩家」那一支"),
+                      ("level().players()", "没有遍历在场玩家")):
+    if _needle not in _pred_body:
+        _bgfix_bad("bgfix-pacify-predicate", "%s：判据里没有 %s" % (_why, _needle))
+if "getBrain()" in _pac_body or "ATTACK_TARGET" in _pac_body:
+    _bgfix_bad("bgfix-pacify-no-brain",
+               "顺手加了 brain 记忆清理 —— 1.21.1 的 6 个 NeutralMob 实现类（蜜蜂/铁傀儡/北极熊/狼/"
+               "末影人/僵尸猪灵）没有一个是脑驱动的（脑驱动的 Piglin/Hoglin/Zoglin/Breeze/Warden "
+               "都不实现 NeutralMob）")
+for _needle, _tag, _why in (
+        ("stopBeingAngry", "bgfix-pacify-doc", "docs/1.6-规格.md 没写第 8 条的动作"),
+        ("踩踏 / 贴近", "bgfix-pacify-doc", "docs/1.6-规格.md 没写「只在踩踏 / 贴近触发」")):
+    if _needle not in _bgfix_spec:
+        _bgfix_bad(_tag, _why)
+
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
 print(f"bg-book 帕秋莉手册问题: {len(bgbook_problems)} {bgbook_problems[:8]}"
       f"（手册 {len(_entries_now)} 条目 / {_total_pages} 页 / {len(_recipe_refs)} 条配方引用）")
+print(f"bg-book §六 追加轮（三章逐页补全）问题: {len(bgbook2_problems)} {bgbook2_problems[:8]}"
+      f"（三章 {_bg2_pages_total} 页 / {len(_bg2_recipe_refs)} 条配方引用 / {len(_bg2_item_refs)} 个图标引用）")
+print(f"bg-fix 1.6 七条修正问题: {len(bgfix_problems)} {bgfix_problems[:8]}")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
-               or bg16_problems or bgbook_problems
+               or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
                or symmetric_problems or beacon_problems) else 0)

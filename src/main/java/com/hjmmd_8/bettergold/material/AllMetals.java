@@ -83,6 +83,10 @@ public final class AllMetals {
      *   <li>材料链：紫颂樱花枝（1 紫颂花 + 8 樱花树苗）→ 幻惑金原料 → 幻惑金锭。</li>
      *   <li>建材：踩踏 / 紧贴 / 破坏 / 右键互动时给<b>玩家与友善生物</b>
      *       （{@code !(entity instanceof Enemy)}）1 级 120 tick 生命恢复（规格第七节第 4、9 条）。</li>
+     *   <li>建材（bg-fix §七 第 8 条，作者 2026-10-05）：<b>踩踏 / 贴近</b>时，<b>对玩家发起敌意状态的
+     *       中立生物</b>（{@code NeutralMob} 且"当前目标是玩家"或"怒气计时>0 且怒气指向在场玩家"）
+     *       <b>瞬间变为被动形态</b>（{@code NeutralMob#stopBeingAngry()}）；作者原话只写了这两个动作
+     *       ⇒ <b>破坏 / 右键不含</b>（落在 {@code MetalEvents#scanContact}，不在 {@code applyContact}）。</li>
      *   <li>器具：4096 / 24 / 14 / 下界合金级；命中 16% 概率施加 1 秒安抚（目标失去 AI）。</li>
      *   <li>盔甲：同靛海金的一套数值；每件 4% 几率对攻击者施加 1 秒安抚，四件全套 16%
      *       （规格第二节 2.2 的算术自洽解读：4% × 4 件 = 16%）。</li>
@@ -92,6 +96,7 @@ public final class AllMetals {
             new MetalFamily.Spec("illusiongold", "幻惑金")
                     .contactBenefit(() -> net.minecraft.world.effect.MobEffects.REGENERATION,
                             MetalFamily.CONTACT_EFFECT_TICKS, 0)
+                    .contactPacifyNeutral()
                     .sootheOnAttack(0.16F)
                     .sootheReflect(0.04F)
                     .specialWeaponMetal(true, 2048)

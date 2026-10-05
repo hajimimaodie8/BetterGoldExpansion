@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:gold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.root.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.root.description"
+    },
+    "background": "minecraft:textures/block/gold_block.png"
+  },
+  "criteria": {
+    "craft_handbook": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:alchemy_student_handbook"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft_handbook"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

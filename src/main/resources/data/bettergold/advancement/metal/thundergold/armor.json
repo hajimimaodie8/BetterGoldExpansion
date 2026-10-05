@@ -1,0 +1,72 @@
+{
+  "parent": "bettergold:metal/thundergold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:thundergold_chestplate",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.thundergold_armor.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.thundergold_armor.description"
+    }
+  },
+  "criteria": {
+    "armor_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:thundergold_helmet"
+          }
+        ]
+      }
+    },
+    "armor_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:thundergold_chestplate"
+          }
+        ]
+      }
+    },
+    "armor_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:thundergold_leggings"
+          }
+        ]
+      }
+    },
+    "armor_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:thundergold_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "armor_helmet"
+    ],
+    [
+      "armor_chestplate"
+    ],
+    [
+      "armor_leggings"
+    ],
+    [
+      "armor_boots"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

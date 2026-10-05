@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/golden_cowrie",
+  "display": {
+    "icon": {
+      "id": "bettergold:sturdygold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.sturdygold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.sturdygold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

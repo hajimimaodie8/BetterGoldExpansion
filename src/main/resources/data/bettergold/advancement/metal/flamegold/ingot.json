@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/blazing_rod",
+  "display": {
+    "icon": {
+      "id": "bettergold:flamegold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.flamegold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.flamegold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:flamegold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

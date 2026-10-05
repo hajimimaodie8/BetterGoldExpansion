@@ -218,11 +218,27 @@ public class ModEvents {
         LivingEntity victim = event.getEntity();
         Level level = victim.level();
         // 万坚金六大器具（剑/斧/镐/锹/锄 + 联动小刀）攻击时 6% 额外掉落礼品金票
+        // ⚠ bg-fix 第 7 条：这一条是**另一条能力**，**不在** 16 条配置项里（作者点名即可加第 17 个键）
         if (player.getRandom().nextFloat() < GIFT_TICKET_CHANCE) {
             dropItem(level, victim.getX(), victim.getY() + 0.5D, victim.getZ(),
                     new ItemStack(AllItems.GIFT_GOLD_TICKET.get()));
         }
-        // 功能 100% 触发：必定掉落一件金系物品（白板掉基础四件；有"取其金食"附魔才掉金食物）
+        // ---------- bg-fix 第 7 条：万坚金「武器工具触发能力概率」的**唯一闸门** ----------
+        //
+        // 这里的「能力」= 爆金（命中必定掉落一件金系物品，受 goldLootMode / goldLootItems 过滤）。
+        // 概率的唯一真源 = 配置项 sturdygoldWeaponAbilityChance（经 Config.weaponBuffChance("sturdygold") 读，
+        // 与其余 7 族**共用同一个入口**）。默认 1.0 ⇒ 与 1.6.0 逐位一致。
+        // ⚠ `abilityChance < 1.0F` 才掷骰 ⇒ 默认 1.0 时**不消耗随机数**（礼品金票那一掷在它前面，顺序不动）。
+        // ⚠ 配置 0 ⇒ 直接 return：永不爆金（礼品金票仍按它自己的 6% 走 —— 那一条不在 16 条范围内）。
+        float abilityChance = com.hjmmd_8.bettergold.config.Config
+                .weaponBuffChance(com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD.id);
+        if (abilityChance <= 0.0F) {
+            return;
+        }
+        if (abilityChance < 1.0F && player.getRandom().nextFloat() >= abilityChance) {
+            return;
+        }
+        // 功能触发（默认 100%）：必定掉落一件金系物品（白板掉基础四件；有"取其金食"附魔才掉金食物）
         Item loot = rollGoldLoot(player, weapon);
         if (level instanceof ServerLevel serverLevel) {
             ItemEntity drop = new ItemEntity(serverLevel,
@@ -430,8 +446,13 @@ public class ModEvents {
      * <p>⚠ 判据是「这件物品是不是万坚金族的武器/盾牌」，<b>不是</b>「是不是拿在手上」
      * —— 取武器的方式已经在调用点换成 {@code DamageSource#getWeaponItem()}
      * （见 {@link com.hjmmd_8.bettergold.material.MetalEvents#weaponOf}）。</p>
+     *
+     * <p><b>bg-fix（2026-10-05）把它从 {@code private} 改成 {@code public}</b>：第二个消费点出现了 ——
+     * 「万坚金武器工具击杀骷髅类 ⇒ 80% 掉金骨粉」落在
+     * {@code MetalEvents#onLivingDrops}，它<b>复用这一处判据</b>，
+     * 而不是再写一份「什么算万坚金武器」（§2.4「同一约束写两处」）。</p>
      */
-    private static boolean isSturdygoldAttackWeapon(ItemStack stack) {
+    public static boolean isSturdygoldAttackWeapon(ItemStack stack) {
         if (isSturdygoldTool(stack)) {
             return true;
         }

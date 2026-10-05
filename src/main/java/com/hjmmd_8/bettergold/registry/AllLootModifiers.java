@@ -215,7 +215,10 @@ public class AllLootModifiers {
      *       （0/1/2/3 级 ⇒ 6% / 12% / 18% / 24%）。</li>
      *   <li>「任意金武器工具」= <b>本模组全部金属族的器具（剑/斧/镐/锹/锄/小刀）
      *       + 1.5 五类武器（重锤/弓/弩/三叉戟/盾牌）</b> —— 判据是 {@code MetalFamily.of(tool)}
-     *       且该物品属于该族的 {@code isTool}/{@code isWeapon}。</li>
+     *       且该物品属于该族的 {@code isTool}/{@code isWeapon}。
+     *       <br>⚠ <b>旧口径（原文保留，未删）</b>：这一条来自 {@code bg-16}，当时是「<b>任意一族</b>」，
+     *       <b>含万坚金</b>。作者 2026-10-05 把它<b>收窄</b>为「<b>特殊金属</b> = 除万坚金以外的全部本模组金」（bg-fix 第 3 条）
+     *       ⇒ 现在多一条 {@code family.isSpecialMetal()} 的前置判定（见 {@code isOurTool}）。</li>
      *   <li><b>反例</b>：用别的模组的工具、或挖的不是树叶 / 藤蔓 ⇒ 不掉（两个判据都不满足）。</li>
      *   <li>概率与目标方块都写在 Java 里（vanilla 的物品标签表达不了"任意一族"），JSON 只提供 conditions。</li>
      * </ul>
@@ -261,10 +264,20 @@ public class AllLootModifiers {
                     || state.is(net.minecraft.world.level.block.Blocks.VINE);
         }
 
-        /** 工具：本模组任意金属族的器具（含乐事小刀）或五类武器 */
+        /**
+         * 工具：<b>特殊金属</b>（= 除万坚金以外的全部本模组金，7 族）的器具（含乐事小刀）或五类武器。
+         *
+         * <p><b>bg-fix 第 3 条</b>（作者 2026-10-05）：判据 = {@code family.isSpecialMetal()}
+         * <b>且</b>（{@code isTool} 或 {@code isWeapon}）。</p>
+         *
+         * <p>⚠ <b>旧口径（原文保留，未删）</b>：{@code return family != null && (family.isTool(tool.getItem()) || family.isWeapon(tool.getItem()));}
+         * —— 那是 {@code bg-16} 的「任意一族」，<b>万坚金也掉</b>；作者 2026-10-05 收窄后<b>万坚金挖树叶不掉藤条</b>
+         * （A 级反向对照的一条用例就是它）。</p>
+         */
         private static boolean isOurTool(ItemStack tool) {
             var family = com.hjmmd_8.bettergold.material.MetalFamily.of(tool);
-            return family != null && (family.isTool(tool.getItem()) || family.isWeapon(tool.getItem()));
+            return family != null && family.isSpecialMetal()
+                    && (family.isTool(tool.getItem()) || family.isWeapon(tool.getItem()));
         }
 
         /** 工具上的时运等级（0 = 没有 / 拿不到附魔注册表时也按 0 算） */

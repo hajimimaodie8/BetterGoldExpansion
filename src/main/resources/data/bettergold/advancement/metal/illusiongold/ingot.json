@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/chorus_cherry_branch",
+  "display": {
+    "icon": {
+      "id": "bettergold:illusiongold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.illusiongold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.illusiongold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:illusiongold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

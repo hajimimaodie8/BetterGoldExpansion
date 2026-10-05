@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:root",
+  "display": {
+    "icon": {
+      "id": "bettergold:gold_infused_dirt",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.gold_infused_dirt.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.gold_infused_dirt.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:gold_infused_dirt"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

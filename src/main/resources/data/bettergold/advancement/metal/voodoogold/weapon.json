@@ -1,0 +1,44 @@
+{
+  "parent": "bettergold:metal/voodoogold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:voodoogold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.voodoogold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.voodoogold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:voodoogold_sword",
+              "bettergold:voodoogold_axe",
+              "bettergold:voodoogold_pickaxe",
+              "bettergold:voodoogold_shovel",
+              "bettergold:voodoogold_hoe",
+              "bettergold:voodoogold_mace",
+              "bettergold:voodoogold_bow",
+              "bettergold:voodoogold_crossbow",
+              "bettergold:voodoogold_trident",
+              "bettergold:voodoogold_shield"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -55,17 +55,28 @@ public class AllEffects {
 
     /**
      * 高燃：持续燃烧。
-     * 每秒直接结算 (amplifier + 2) 点火焰伤害（1 级 2 点、2 级 3 点，与规格一致），
-     * 并维持 1 秒燃烧状态做视觉表现。
-     * 注：实测「维持燃烧状态 + 我们自己结算」不会产生额外的原版燃烧伤害（hurt 会清掉燃烧计时），
+     *
+     * <p><b>每秒伤害（bg-fix 第 6 条，作者 2026-10-05 裁定：曲线整体后移一级）</b>：
+     * {@code 伤害 = max(0, 等级 − 1)}，代码口径 = {@link #shiftedDamage}(amplifier)
+     * ⇒ <b>1 级 0 点</b>、<b>2 级 1 点</b>、3 级 2 点……</p>
+     *
+     * <p>⚠ <b>旧口径（原文保留，未删）</b>：「每秒直接结算 {@code (amplifier + 2)} 点火焰伤害
+     * （1 级 2 点、2 级 3 点，与规格一致）」= 1.4/1.5 的 {@code 伤害 = 等级 + 1}，
+     * <b>已被作者 2026-10-05 推翻</b>（原话「现在它们将跟寄生一样将火焰与窒息的 1 点伤害加成
+     * 转移到最高 2 级才能加成」；裁定表「1 级 0 点 / 2 级 1 点」）。</p>
+     *
+     * <p>并维持 1 秒燃烧状态做视觉表现。</p>
+     * <p>注：实测「维持燃烧状态 + 我们自己结算」不会产生额外的原版燃烧伤害（{@code hurt} 会清掉燃烧计时），
      * 所以由本效果一次性结算全部伤害，数值可控。
+     * ⚠ bg-fix：点数为 0 时<b>仍然照调一次 {@code hurt(...)}</b>（只是点数是 0）——保持与旧实现同一条调用路径，
+     * 避免"0 点就不调 ⇒ 燃烧计时不被清 ⇒ 原版每秒燃烧伤害补回来"这种新行为（【推断】+ 待 A 级读数复核）。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> HIGH_BURN =
             EFFECTS.register("high_burn", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFF7A18) {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                        entity.hurt(serverLevel.damageSources().onFire(), amplifier + 2);
+                        entity.hurt(serverLevel.damageSources().onFire(), shiftedDamage(amplifier));
                         entity.setRemainingFireTicks(20);
                     }
                     return true;
@@ -109,9 +120,13 @@ public class AllEffects {
      * 沉淀（sediment，1.5 靛海金）：「持续受窒息伤害 + 每级降 1% 移动速度」。
      *
      * <ul>
-     *   <li><b>伤害 = 等级 + 1</b>（1 级 2 点、2 级 3 点）。代码口径与 1.4 的
-     *       {@link #HIGH_BURN 高燃} 逐字同构：每秒（{@code duration % 20 == 0}）结算
-     *       {@code amplifier + 2} 点 —— {@code amplifier + 1} 是「等级」，再加 1 就是「等级 + 1」。</li>
+     *   <li><b>伤害 = 等级 − 1</b>（bg-fix 第 6 条，作者 2026-10-05 裁定：1 级 <b>0 点</b>、2 级 <b>1 点</b>、
+     *       3 级 2 点）：与 {@link #HIGH_BURN 高燃} <b>共用同一处公式</b> {@link #shiftedDamage}(amplifier)
+     *       —— 旧说法「伤害 = 等级 + 1（1 级 2 点、2 级 3 点），代码口径与 1.4 高燃逐字同构 {@code amplifier + 2}」
+     *       <b>已被推翻，原文保留在下一条</b>。</li>
+     *   <li>⚠ <b>旧口径（原文保留，未删）</b>：<b>伤害 = 等级 + 1</b>（1 级 2 点、2 级 3 点）。代码口径与 1.4 的
+     *       {@code high_burn} 逐字同构：每秒（{@code duration % 20 == 0}）结算 {@code amplifier + 2} 点 ——
+     *       {@code amplifier + 1} 是「等级」，再加 1 就是「等级 + 1」。</li>
      *   <li>伤害类型用 <b>{@code minecraft:in_wall}</b>（方块内窒息），与规格第七节第 3 条一致：
      *       {@code drown} 带 {@code DamageEffects.DROWNING}（会附溺水表现），{@code in_wall} 无附加效果，
      *       作持续掉血更干净；靛海金盔甲的「窒息 / 溺水抗性」正好覆盖它（第七节第 7 条：覆盖）。</li>
@@ -133,7 +148,7 @@ public class AllEffects {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                        entity.hurt(serverLevel.damageSources().inWall(), amplifier + 2);
+                        entity.hurt(serverLevel.damageSources().inWall(), shiftedDamage(amplifier));
                     }
                     return true;
                 }
@@ -207,8 +222,16 @@ public class AllEffects {
      *       （{@code MetalFamily.ECHO_ROAR_TICKS}，与巫毒同口径）。</li>
      * </ul>
      *
-     * <p>⚠ 中文名按作者裁定统一叫「<b>幽咆</b>」；作者素材的文件名是「音咆.png」，
-     * 我们只取那张图（落盘为 {@code textures/mob_effect/echo_roar.png}），<b>不改文件名、不改贴图</b>。</p>
+     * <h2>显示名口径（bg-fix，2026-10-05）</h2>
+     * <p>⚠ <b>旧说法（原文保留，未删）</b>：「中文名按作者裁定统一叫『幽咆』；作者素材的文件名是「音咆.png」，
+     * 我们只取那张图（落盘为 {@code textures/mob_effect/echo_roar.png}），<b>不改文件名、不改贴图</b>。」
+     * —— 那句是 {@code bg-16} §3.6 的旧裁定，<b>已被作者 2026-10-05 推翻</b>：
+     * 这个 buff 的<b>真正命名是「音咆」</b>（背景是上次会话把选项文字写成了"幽吹/音咆"混淆，不是作者的错）。</p>
+     * <p><b>现行口径（只改显示名）</b>：{@code zh_cn} 的语言键值 幽咆 → <b>音咆</b>、{@code en_us} → <b>Sonic Roar</b>；
+     * <b>语言键名 {@code effect.bettergold.echo_roar}、注册 id {@code echo_roar}、同步字段与 NBT 一律不动</b>
+     * （动了会碰存档与网络同步）。「<b>幽咆金</b>」是本模组的<b>金属名</b>（{@code echogold}），
+     * <b>不跟着改</b>（{@code item.bettergold.echogold_*}. 那 34 条语言键一个字都不动）。
+     * 「不改文件名、不改贴图」这条<b>仍然有效</b>（贴图 = {@code textures/mob_effect/echo_roar.png}）。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> ECHO_ROAR =
             EFFECTS.register("echo_roar", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x1B6B7A) {
@@ -223,6 +246,29 @@ public class AllEffects {
                     return duration % 20 == 0;
                 }
             });
+
+    /**
+     * <b>高燃 / 沉淀的每秒伤害公式（唯一实现）</b>（bg-fix 第 6 条，作者 2026-10-05 裁定「曲线整体后移一级」）。
+     *
+     * <pre>伤害 = max(0, 等级 − 1)   ，其中 等级 = amplifier + 1
+     *       ⇒ 等价于 max(0, amplifier)：1 级 0 点 / 2 级 1 点 / 3 级 2 点 …</pre>
+     *
+     * <p>作者原话：「削弱一下高燃和沉淀 buff……现在它们将跟寄生一样将火焰与窒息的 1 点伤害加成
+     * 转移到最高 2 级才能加成」；五条裁定里的第 2 条再钉死「1 级 0 点 / 2 级 1 点」。</p>
+     *
+     * <p>⚠ <b>旧口径（原文保留，未删）</b>：{@code amplifier + 2}（= 「等级 + 1 点」，1 级 2 点、2 级 3 点）。
+     * 现状实测口径 = {@code amplifier + 2} ⇒ 本条改动是「<b>1 级从 2 点降到 0 点</b>」，
+     * <b>不是</b>「净减 1 点」；若作者本意是净减 1 点（1 级 1 点 / 2 级 2 点 = {@code max(1, amplifier + 1)}），
+     * 改这一行即可（报告里已显式列出这个选择）。</p>
+     *
+     * <p>两个效果（{@link #HIGH_BURN} / {@link #SEDIMENT}）<b>共用这一处</b>，
+     * 不许各写一份公式（§2.4「同一个约束写在两处」的反面教训）；
+     * 寄生（{@code PARASITE}）与音咆（{@code ECHO_ROAR}）的曲线<b>不在本条范围内</b>，
+     * 它们仍是「伤害 = 等级」（{@code MetalFamily.*_DAMAGE_PER_LEVEL}）。</p>
+     */
+    public static float shiftedDamage(int amplifier) {
+        return Math.max(0, amplifier);
+    }
 
     private AllEffects() {
     }

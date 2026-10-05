@@ -1,0 +1,30 @@
+基线：exit=0 OK
+echo-name-zh                 exit=1(期望 1) id=bgfix-echo-name-zh(命中=True) => PASS
+echo-name-en                 exit=1(期望 1) id=bgfix-echo-name-en(命中=True) => PASS
+echo-metal-name              exit=1(期望 1) id=bgfix-echo-metal-name-untouched(命中=True) => PASS
+vine-special-metal           exit=1(期望 1) id=bgfix-vine-special-metal(命中=True) => PASS
+vine-old-broad               exit=1(期望 1) id=bgfix-vine-old-broad(命中=True) => PASS
+special-metal-predicate      exit=1(期望 1) id=bgfix-special-metal-predicate(命中=True) => PASS
+chorus-recipe                exit=1(期望 1) id=bgfix-chorus-recipe(命中=True) => PASS
+skeleton-drop-chance         exit=1(期望 1) id=bgfix-skeleton-drop(命中=True) => PASS
+skeleton-precedes-highburn   exit=1(期望 1) id=bgfix-skeleton-precedes-highburn(命中=True) => PASS
+skeleton-single-event        exit=1(期望 1) id=bgfix-skeleton-single-event(命中=True) => PASS
+skeleton-weapon-judgement    exit=1(期望 1) id=bgfix-skeleton-weapon-judgement(命中=True) => PASS
+shifted-impl                 exit=1(期望 1) id=bgfix-shifted-damage-impl(命中=True) => PASS
+shifted-used                 exit=1(期望 1) id=bgfix-shifted-damage-used(命中=True) => PASS
+shifted-frequency            exit=1(期望 1) id=bgfix-shifted-damage-frequency(命中=True) => PASS
+parasite-echo-unchanged      exit=1(期望 1) id=bgfix-parasite-echo-unchanged(命中=True) => PASS
+config-16-keys               exit=1(期望 1) id=bgfix-config-16-keys(命中=True) => PASS
+config-existing-keys         exit=1(期望 1) id=bgfix-config-existing-keys(命中=True) => PASS
+config-defaults              exit=1(期望 1) id=bgfix-config-defaults(命中=True) => PASS
+config-single-source         exit=1(期望 1) id=bgfix-config-single-source(命中=True) => PASS
+config-zero-never            exit=1(期望 1) id=bgfix-config-zero-never(命中=True) => PASS
+config-case-count            exit=1(期望 1) id=bgfix-config-case-count(命中=True) => PASS
+handbook-recipe              exit=1(期望 1) id=bgfix-handbook-recipe(命中=True) => PASS
+handbook-conditional         exit=1(期望 1) id=bgfix-handbook-conditional(命中=True) => PASS
+doc-bgfix                    exit=1(期望 1) id=bgfix-doc(命中=True) => PASS
+reverse-comment-only         exit=0(期望 0) id=<无>(命中=True) => PASS
+reverse-comment-only-2       exit=0(期望 0) id=<无>(命中=True) => PASS
+reverse-comment-only-3       exit=0(期望 0) id=<无>(命中=True) => PASS
+收尾基线：exit=0（期望 0）
+mismatches = 0

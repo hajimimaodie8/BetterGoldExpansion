@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/amethyst_energy_dust",
+  "display": {
+    "icon": {
+      "id": "bettergold:thundergold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.thundergold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.thundergold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:thundergold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

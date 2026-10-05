@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/indigo_ocean_heart",
+  "display": {
+    "icon": {
+      "id": "bettergold:indigoseagold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.indigoseagold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.indigoseagold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:indigoseagold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

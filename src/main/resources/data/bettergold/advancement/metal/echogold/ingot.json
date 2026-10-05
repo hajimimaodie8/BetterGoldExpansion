@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/bundled_echo_shard",
+  "display": {
+    "icon": {
+      "id": "bettergold:echogold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.echogold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.echogold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:echogold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

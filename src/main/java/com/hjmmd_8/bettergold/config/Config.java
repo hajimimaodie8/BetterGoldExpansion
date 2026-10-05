@@ -121,6 +121,248 @@ public class Config {
                     "server_broadcast: 额外再由服务端 ServerLevel.playSound 广播一次")
             .define("thunderSoundMode", "client_payload");
 
+    // ==================== bg-fix 第 7 条（2026-10-05）：8 族 × 2 = 16 条「触发概率 / 能力间隔」 ====================
+    //
+    // 作者原话（需求 §3.7）：
+    //   「某某金武器工具触发 Buff 概率（然后再次填写概率）／某某金盔甲盾牌触发 buff 的概率（然后在此填写概率）；
+    //     万坚金则是：万坚金武器工具触发能力概率（然后在此填写概率）／万坚金盔甲盾牌触发能力间隔
+    //     （然后在此填写关于乘法的比例）」
+    //
+    // 形状 = 8 族 × 2 = 16 条（7 族「特殊金属」各 2 条 + 万坚金 2 条）：
+    //   · 非万坚金 · 武器工具：**概率**（0–1），默认 1.0；幻惑金 0.16（它本来就是「16% 概率施加安抚」）
+    //   · 非万坚金 · 盔甲盾牌：**每件**概率（0–1），默认 0.25；幻惑金 0.04
+    //       有效概率 = min(1, 该族穿戴件数 × 本条)（穿满 4 件默认 = 100% / 16%，与 1.4/1.5 逐位相同）
+    //   · 万坚金 · 武器工具：**概率**（0–1），默认 1.0 = 「必定掉落一件金系物品」那条**能力**（爆金）
+    //       ⚠ 「礼品金票 6%」（{@code ModEvents.GIFT_TICKET_CHANCE}）是**另一条**，不在本次 16 条里
+    //   · 万坚金 · 盔甲盾牌：**乘法系数**（0–100），默认 1.0
+    //       间隔 = 基础 × 本条，基础 = {@code MetalFamily.absorptionIntervalTicks}（现行 320）——
+    //       基础**不写死进配置**（读族旗标），配置只提供系数
+    //
+    // ⚠ **唯一真源**：运行期只读这 16 条（见本类的 weaponBuffChance / armorBuffChance / absorptionInterval）；
+    //   族里的旧常量（{@code sootheOnAttackChance} / {@code sootheReflectPerPiece} /
+    //   {@code MetalEvents.counterChance} 里的 0.25F）**不再参与概率**，关卡
+    //   {@code [bgfix-config-single-source]} 守着这一点（配置改成 0 ⇒ 该 buff 永不触发）。
+    // ⚠ 键名一律英文 camelCase（照既有 voodooExtractRatio 风格），中文说明走 .comment(...)；
+    //   **既有 8 个键（logDirtBlock / magicNumber / magicNumberIntroduction / items / goldLootMode /
+    //   goldLootItems / voodooExtractRatio / voodooFlatPerLevel / thunderSoundMode）一个都不改名**
+    //   —— 配置键名是存档红线（改名 = 老玩家设置静默丢失）。
+
+    /** 烈燃金 · 武器工具触发高燃的概率（默认 1.0 = 必定，与 1.6.0 行为一致） */
+    public static final ModConfigSpec.DoubleValue FLAMEGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("烈燃金【武器工具】触发 Buff（高燃）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("flamegoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 烈燃金 · 盔甲盾牌反制高燃的每件概率（默认 0.25 = 每件 25%，穿满 4 件 100%） */
+    public static final ModConfigSpec.DoubleValue FLAMEGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("烈燃金【盔甲盾牌】反制 Buff（高燃）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "0 = 永不触发。")
+            .defineInRange("flamegoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 巫毒金 · 武器工具触发巫毒的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue VOODOOGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("巫毒金【武器工具】触发 Buff（巫毒）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("voodoogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 巫毒金 · 盔甲盾牌反制巫毒的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue VOODOOGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("巫毒金【盔甲盾牌】反制 Buff（巫毒）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("voodoogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 结雷金 · 武器工具触发落雷/颤栗的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue THUNDERGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("结雷金【武器工具】触发能力（落雷 + 3×3 伤害 + 颤栗）的概率。",
+                    "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("thundergoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 结雷金 · 盔甲盾牌反制颤栗的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue THUNDERGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("结雷金【盔甲盾牌】反制 Buff（颤栗）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("thundergoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 靛海金 · 武器工具触发沉淀的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("靛海金【武器工具】触发 Buff（沉淀）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("indigoseagoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 靛海金 · 盔甲盾牌反制沉淀的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("靛海金【盔甲盾牌】反制 Buff（沉淀）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("indigoseagoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 幻惑金 · 武器工具施加安抚的概率（默认 0.16 = 16%，与 1.5/1.6 现状逐位相同） */
+    public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("幻惑金【武器工具】触发 Buff（安抚）的概率。", "默认 0.16 = 16%。0 = 永不触发。")
+            .defineInRange("illusiongoldWeaponBuffChance", 0.16D, 0.0D, 1.0D);
+
+    /** 幻惑金 · 盔甲盾牌反制安抚的每件概率（默认 0.04 = 每件 4%，穿满 4 件 16%） */
+    public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("幻惑金【盔甲盾牌】反制 Buff（安抚）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.04 ⇒ 1 件 4%、4 件 16%。")
+            .defineInRange("illusiongoldArmorBuffChance", 0.04D, 0.0D, 1.0D);
+
+    /** 树棘金 · 武器工具触发寄生的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue THORNSGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("树棘金【武器工具】触发 Buff（寄生）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("thornsgoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 树棘金 · 盔甲盾牌反制寄生的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue THORNSGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("树棘金【盔甲盾牌】反制 Buff（寄生）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("thornsgoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 幽咆金 · 武器工具触发音咆的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue ECHOGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("幽咆金【武器工具】触发 Buff（音咆，内部 id echo_roar）的概率。",
+                    "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("echogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 幽咆金 · 盔甲盾牌反制音咆的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue ECHOGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("幽咆金【盔甲盾牌】反制 Buff（音咆）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("echogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /**
+     * 万坚金 · 武器工具触发**能力**的概率（默认 1.0 = 必定）。
+     *
+     * <p>「能力」指 1.4 起的那条<b>爆金</b>：万坚金武器工具命中时<b>必定掉落一件金系物品</b>
+     * （{@code ModEvents#onLivingIncomingDamage} + {@code rollGoldLoot}，受 {@code goldLootMode} /
+     * {@code goldLootItems} 过滤）。默认 1.0 ⇒ 与 1.6.0 行为逐位一致。</p>
+     *
+     * <p>⚠ 「礼品金票 6%」（{@code ModEvents.GIFT_TICKET_CHANCE}）是**另一条能力**，
+     * <b>不在本次 16 条里</b>，本轮未纳入（作者点名即可加第 17 个键）。</p>
+     */
+    public static final ModConfigSpec.DoubleValue STURDYGOLD_WEAPON_ABILITY_CHANCE = BUILDER
+            .comment("万坚金【武器工具】触发能力（爆金：命中必定掉落一件金系物品）的概率。",
+                    "0 = 永不触发；1 = 必定触发（默认，与 1.6.0 一致）。",
+                    "注：「礼品金票 6%」是另一条能力，不在本键范围内。")
+            .defineInRange("sturdygoldWeaponAbilityChance", 1.0D, 0.0D, 1.0D);
+
+    /**
+     * 万坚金 · 盔甲盾牌触发**能力**的间隔**乘法系数**（默认 1.0 = 间隔不变）。
+     *
+     * <p>作者的裁定原话是「间隔（然后在此填写关于乘法的比例）」⇒ 本条是**乘数**，不是 tick 数：
+     * {@code 间隔 = 基础 × 本条}，{@code 基础 = MetalFamily.absorptionIntervalTicks}（现行 320 tick = 16 秒）。</p>
+     *
+     * <p>例：填 2.0 ⇒ 每 640 tick（32 秒）给一份伤害吸收；填 0.5 ⇒ 每 160 tick（8 秒）一份；
+     * 填 0 ⇒ 被钳到最小 1 tick（= 每 tick 一份，慎用）。每次给的量（2 点）与上限
+     * （4 点 × 穿戴件数 + 持盾 4 点）**不受本键影响**。</p>
+     */
+    public static final ModConfigSpec.DoubleValue STURDYGOLD_ARMOR_ABILITY_INTERVAL_MULTIPLIER = BUILDER
+            .comment("万坚金【盔甲盾牌】触发能力（每 16 秒 1 份伤害吸收）的间隔乘法系数。",
+                    "间隔 = 基础(320 tick) × 本条；1.0 = 不变（默认），2.0 = 间隔翻倍，0.5 = 间隔减半。",
+                    "0 会被钳到最小 1 tick（每 tick 一份，慎用）。每次给的量与吸收上限不受本键影响。")
+            .defineInRange("sturdygoldArmorAbilityIntervalMultiplier", 1.0D, 0.0D, 100.0D);
+
+    /**
+     * 「武器工具触发概率」的**唯一读取入口**（bg-fix 第 7 条）。
+     *
+     * @param familyId 金属族 id（= {@code MetalFamily.id}；8 族之一）
+     * @return 0–1；配置读不出来时回落到该族的出厂默认值
+     * @throws IllegalArgumentException 未登记的族 id —— <b>故意抛</b>：新增一族若忘了补配置键，
+     *         要在运行期当场炸出来，而不是静默拿一个合法值继续跑（§4 第 21 条 / §2.6）
+     */
+    public static float weaponBuffChance(String familyId) {
+        return switch (familyId) {
+            case "flamegold" -> read(FLAMEGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "voodoogold" -> read(VOODOOGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "thundergold" -> read(THUNDERGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "indigoseagold" -> read(INDIGOSEAGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "illusiongold" -> read(ILLUSIONGOLD_WEAPON_BUFF_CHANCE, 0.16F);
+            case "thornsgold" -> read(THORNSGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "echogold" -> read(ECHOGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "sturdygold" -> read(STURDYGOLD_WEAPON_ABILITY_CHANCE, 1.0F);
+            default -> throw new IllegalArgumentException(
+                    "未登记配置项的金属族: " + familyId + "（bg-fix：8 族 × 2 条配置项，新增族必须同时补本类的 case）");
+        };
+    }
+
+    /**
+     * 「盔甲盾牌反制概率（**每件**）」的唯一读取入口（bg-fix 第 7 条）。
+     *
+     * <p>有效概率 = {@code min(1, 穿戴件数 × 本值)} —— 件数的乘与钳位在调用点
+     * （{@code MetalEvents#counterChance}）做，本方法只给"每件"的系数。</p>
+     *
+     * <p>万坚金返回 <b>0</b>：它没有"盔甲触发概率"这一条（盔甲能力是**间隔**，见
+     * {@link #absorptionInterval}），0 = 永不触发，与 {@code MetalEvents} 里的
+     * 「该族是否参与反制」判据一致 —— 这是**有意的语义值**，不是兜底。</p>
+     */
+    public static float armorBuffChance(String familyId) {
+        return switch (familyId) {
+            case "flamegold" -> read(FLAMEGOLD_ARMOR_BUFF_CHANCE, 0.25F);
+            case "voodoogold" -> read(VOODOOGOLD_ARMOR_BUFF_CHANCE, 0.25F);
+            case "thundergold" -> read(THUNDERGOLD_ARMOR_BUFF_CHANCE, 0.25F);
+            case "indigoseagold" -> read(INDIGOSEAGOLD_ARMOR_BUFF_CHANCE, 0.25F);
+            case "illusiongold" -> read(ILLUSIONGOLD_ARMOR_BUFF_CHANCE, 0.04F);
+            case "thornsgold" -> read(THORNSGOLD_ARMOR_BUFF_CHANCE, 0.25F);
+            case "echogold" -> read(ECHOGOLD_ARMOR_BUFF_CHANCE, 0.25F);
+            case "sturdygold" -> 0.0F;
+            default -> throw new IllegalArgumentException(
+                    "未登记配置项的金属族: " + familyId + "（bg-fix：8 族 × 2 条配置项，新增族必须同时补本类的 case）");
+        };
+    }
+
+    /**
+     * 万坚金盔甲/盾牌的能力间隔（tick）= <b>基础 × 配置系数</b>（bg-fix 第 7 条）。
+     *
+     * @param baseTicks 基础间隔，来自族旗标 {@code MetalFamily.absorptionIntervalTicks}（现行 320）；
+     *                  <b>不写死进配置</b> —— 配置只提供乘法系数（作者原话「关于乘法的比例」）
+     * @return 钳到 {@code >= 1} 的整数 tick（配置 0 ⇒ 1 tick = 每 tick 一份）
+     */
+    public static int absorptionInterval(int baseTicks) {
+        if (baseTicks <= 0) {
+            return 0;   // 该族没有这条机制（调用点也先判过一遍）
+        }
+        double multiplier = read(STURDYGOLD_ARMOR_ABILITY_INTERVAL_MULTIPLIER, 1.0D);
+        long ticks = Math.round(baseTicks * multiplier);
+        return (int) Math.max(1L, Math.min(ticks, Integer.MAX_VALUE));
+    }
+
+    /**
+     * 16 条配置项的**一行读数**（bg-fix 第 7 条；给启动自证与 A 级取证用）。
+     *
+     * <p>每一项都走与运行期<b>同一个入口</b>（{@link #weaponBuffChance} / {@link #armorBuffChance}），
+     * 所以日志里的数字就是真正生效的数字 —— 这比"文件里写了什么"强一档（§3.1 铁律）。</p>
+     *
+     * <p>格式示例：{@code bgfix16 flamegold[w=1.000 a=0.250] … sturdygoldArmorIntervalMultiplier=1.000}</p>
+     */
+    public static String describeEffectChances() {
+        StringBuilder sb = new StringBuilder("bgfix16");
+        for (String id : new String[] {"flamegold", "voodoogold", "thundergold", "indigoseagold",
+                "illusiongold", "thornsgold", "echogold", "sturdygold"}) {
+            sb.append(' ').append(id)
+                    .append("[w=").append(String.format(java.util.Locale.ROOT, "%.3f", weaponBuffChance(id)))
+                    .append(" a=").append(String.format(java.util.Locale.ROOT, "%.3f", armorBuffChance(id)))
+                    .append(']');
+        }
+        sb.append(" sturdygoldArmorIntervalMultiplier=")
+                .append(String.format(java.util.Locale.ROOT, "%.3f",
+                        read(STURDYGOLD_ARMOR_ABILITY_INTERVAL_MULTIPLIER, 1.0D)));
+        return sb.toString();
+    }
+
+    /** 配置读不出来时的兜底（配置尚未加载 / 被外部改坏）：回落到该族的出厂默认值 */
+    private static float read(ModConfigSpec.DoubleValue value, float fallback) {
+        try {
+            return value.get().floatValue();
+        } catch (RuntimeException | LinkageError e) {
+            return fallback;
+        }
+    }
+
+    private static double read(ModConfigSpec.DoubleValue value, double fallback) {
+        try {
+            return value.get();
+        } catch (RuntimeException | LinkageError e) {
+            return fallback;
+        }
+    }
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

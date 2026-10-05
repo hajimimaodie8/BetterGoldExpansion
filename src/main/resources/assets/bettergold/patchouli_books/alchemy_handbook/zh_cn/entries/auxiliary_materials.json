@@ -1,0 +1,27 @@
+{
+  "name": "bettergold.handbook.entry.auxiliary_materials",
+  "category": "bettergold:alchemy_start",
+  "icon": "bettergold:mixed_crystal_pile",
+  "sortnum": 2,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:mixed_crystal_pile",
+      "text": "bettergold.handbook.page.aux_1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:mixed_crystal_pile"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:alchemic_fuel",
+      "text": "bettergold.handbook.page.aux_2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:alchemic_fuel"
+    }
+  ]
+}

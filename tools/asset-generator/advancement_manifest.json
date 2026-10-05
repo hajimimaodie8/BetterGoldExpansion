@@ -1,0 +1,898 @@
+{
+  "count": 51,
+  "lang_prefix": "advancements.bettergold",
+  "advancements": [
+    {
+      "id": "bettergold:root",
+      "path": "root",
+      "key": "root",
+      "parent": null,
+      "icon": "minecraft:gold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "旧时代炼金术的继承者",
+      "description": "以炼制\"贵金\"为主要目标，出发！",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:alchemy_student_handbook"
+      ]
+    },
+    {
+      "id": "bettergold:alchemy/mixed_crystal_pile",
+      "path": "alchemy/mixed_crystal_pile",
+      "key": "mixed_crystal_pile",
+      "parent": "bettergold:root",
+      "icon": "bettergold:mixed_crystal_pile",
+      "frame": "task",
+      "fd": false,
+      "title": "炼制\"贵金\"所需I",
+      "description": "制作混合晶石堆",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:mixed_crystal_pile"
+      ]
+    },
+    {
+      "id": "bettergold:alchemy/alchemic_fuel",
+      "path": "alchemy/alchemic_fuel",
+      "key": "alchemic_fuel",
+      "parent": "bettergold:root",
+      "icon": "bettergold:alchemic_fuel",
+      "frame": "task",
+      "fd": false,
+      "title": "炼制\"贵金\"所需II",
+      "description": "制作炼金燃油",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:alchemic_fuel"
+      ]
+    },
+    {
+      "id": "bettergold:treasure/any_core_material",
+      "path": "treasure/any_core_material",
+      "key": "core_material",
+      "parent": "bettergold:root",
+      "icon": "bettergold:golden_cowrie",
+      "frame": "task",
+      "fd": false,
+      "title": "寻途千里的珍宝",
+      "description": "获得任意一种\"贵金\"核心材料",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:treasure/blazing_rod",
+      "path": "treasure/blazing_rod",
+      "key": "blazing_rod",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:blazing_rod",
+      "frame": "task",
+      "fd": false,
+      "title": "超 燃 大 火 杆 ！",
+      "description": "制作一个高燃烈焰棒",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:blazing_rod"
+      ]
+    },
+    {
+      "id": "bettergold:treasure/golden_cowrie",
+      "path": "treasure/golden_cowrie",
+      "key": "golden_cowrie",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:golden_cowrie",
+      "frame": "task",
+      "fd": false,
+      "title": "留于炽海的旧忆之贝",
+      "description": "获得一个金钱贝",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:treasure/glittering_vine",
+      "path": "treasure/glittering_vine",
+      "key": "glittering_vine",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:glittering_vine",
+      "frame": "task",
+      "fd": false,
+      "title": "暗中之藤，光芒乍现",
+      "description": "获得一个闪耀藤条",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:treasure/bundled_echo_shard",
+      "path": "treasure/bundled_echo_shard",
+      "key": "bundled_echo_shard",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:bundled_echo_shard",
+      "frame": "task",
+      "fd": false,
+      "title": "装填，捆绑，然后赶紧…",
+      "description": "制作一个集束回响碎片",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:bundled_echo_shard"
+      ]
+    },
+    {
+      "id": "bettergold:treasure/indigo_ocean_heart",
+      "path": "treasure/indigo_ocean_heart",
+      "key": "indigo_ocean_heart",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:indigo_ocean_heart",
+      "frame": "task",
+      "fd": false,
+      "title": "淀入深海",
+      "description": "制作一个靛蓝海洋之心",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:indigo_ocean_heart"
+      ]
+    },
+    {
+      "id": "bettergold:treasure/voodoo_feather",
+      "path": "treasure/voodoo_feather",
+      "key": "voodoo_feather",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:voodoo_feather",
+      "frame": "task",
+      "fd": false,
+      "title": "复制品般的无光之毛",
+      "description": "获得一个巫毒羽毛",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:treasure/amethyst_energy_dust",
+      "path": "treasure/amethyst_energy_dust",
+      "key": "amethyst_energy_dust",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:amethyst_energy_dust",
+      "frame": "task",
+      "fd": false,
+      "title": "红紫回旋 大·爆炸",
+      "description": "制作一个聚紫能晶尘",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:amethyst_energy_dust"
+      ]
+    },
+    {
+      "id": "bettergold:treasure/chorus_cherry_branch",
+      "path": "treasure/chorus_cherry_branch",
+      "key": "chorus_cherry_branch",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:chorus_cherry_branch",
+      "frame": "task",
+      "fd": false,
+      "title": "未外重叠的花香",
+      "description": "制作一个紫颂樱花枝",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:chorus_cherry_branch"
+      ]
+    },
+    {
+      "id": "bettergold:treasure/any_raw_metal",
+      "path": "treasure/any_raw_metal",
+      "key": "raw_metal",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:raw_sturdygold",
+      "frame": "task",
+      "fd": false,
+      "title": "齐活，烧炼，拿下！",
+      "description": "制作出任意一种\"贵金\"原料",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:raw_echogold",
+        "bettergold:raw_flamegold",
+        "bettergold:raw_illusiongold",
+        "bettergold:raw_indigoseagold",
+        "bettergold:raw_sturdygold",
+        "bettergold:raw_thornsgold",
+        "bettergold:raw_thundergold",
+        "bettergold:raw_voodoogold"
+      ]
+    },
+    {
+      "id": "bettergold:metal/flamegold/ingot",
+      "path": "metal/flamegold/ingot",
+      "key": "flamegold_ingot",
+      "parent": "bettergold:treasure/blazing_rod",
+      "icon": "bettergold:flamegold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "我 获 得 了 烈 燃 金 ！！！",
+      "description": "当务之急就是缺一个老虎在那向前奔跑…",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/flamegold/weapon",
+      "path": "metal/flamegold/weapon",
+      "key": "flamegold_weapon",
+      "parent": "bettergold:metal/flamegold/ingot",
+      "icon": "bettergold:flamegold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "高 温 恒 续",
+      "description": "获得任意一种烈燃金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/flamegold/armor",
+      "path": "metal/flamegold/armor",
+      "key": "flamegold_armor",
+      "parent": "bettergold:metal/flamegold/ingot",
+      "icon": "bettergold:flamegold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "何 你 火",
+      "description": "获得一整套烈燃金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/sturdygold/ingot",
+      "path": "metal/sturdygold/ingot",
+      "key": "sturdygold_ingot",
+      "parent": "bettergold:treasure/golden_cowrie",
+      "icon": "bettergold:sturdygold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "这以后将是我们人生中第一桶金",
+      "description": "我们可以用这个金属做很多事哦！",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/sturdygold/weapon",
+      "path": "metal/sturdygold/weapon",
+      "key": "sturdygold_weapon",
+      "parent": "bettergold:metal/sturdygold/ingot",
+      "icon": "bettergold:sturdygold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "染上黄金吧，指的是你的血",
+      "description": "获得任意一种万坚金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/sturdygold/armor",
+      "path": "metal/sturdygold/armor",
+      "key": "sturdygold_armor",
+      "parent": "bettergold:metal/sturdygold/weapon",
+      "icon": "bettergold:sturdygold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "连我的血也沾染了黄金啊",
+      "description": "获得一整套万坚金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/sturdygold/skeleton",
+      "path": "metal/sturdygold/skeleton",
+      "key": "sturdygold_skeleton",
+      "parent": "bettergold:metal/sturdygold/weapon",
+      "icon": "bettergold:golden_bone_meal",
+      "frame": "challenge",
+      "fd": false,
+      "title": "骷髅打金服",
+      "description": "用万坚金武器工具攻击骷髅使其掉落金骨粉",
+      "triggers": [
+        "minecraft:player_hurt_entity"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/thornsgold/ingot",
+      "path": "metal/thornsgold/ingot",
+      "key": "thornsgold_ingot",
+      "parent": "bettergold:treasure/glittering_vine",
+      "icon": "bettergold:thornsgold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "我被一块金属锭？扎到了？！",
+      "description": "可它明明看起来那么光滑…",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/thornsgold/weapon",
+      "path": "metal/thornsgold/weapon",
+      "key": "thornsgold_weapon",
+      "parent": "bettergold:metal/thornsgold/ingot",
+      "icon": "bettergold:thornsgold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "摄取之绿",
+      "description": "获得任意一种树棘金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/thornsgold/armor",
+      "path": "metal/thornsgold/armor",
+      "key": "thornsgold_armor",
+      "parent": "bettergold:metal/thornsgold/ingot",
+      "icon": "bettergold:thornsgold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "看似吉利服实则移动的仙人掌",
+      "description": "获得一整套树棘金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/echogold/ingot",
+      "path": "metal/echogold/ingot",
+      "key": "echogold_ingot",
+      "parent": "bettergold:treasure/bundled_echo_shard",
+      "icon": "bettergold:echogold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "就这样轰轰烈烈的登场",
+      "description": "感觉可以拿这玩意做大音箱！",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/echogold/weapon",
+      "path": "metal/echogold/weapon",
+      "key": "echogold_weapon",
+      "parent": "bettergold:metal/echogold/ingot",
+      "icon": "bettergold:echogold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "等着看好戏吧，关于鼓手的",
+      "description": "获得任意一种幽咆金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/echogold/armor",
+      "path": "metal/echogold/armor",
+      "key": "echogold_armor",
+      "parent": "bettergold:metal/echogold/ingot",
+      "icon": "bettergold:echogold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "苏打色的战甲配上劲爆的音乐",
+      "description": "获得一整套幽咆金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/indigoseagold/ingot",
+      "path": "metal/indigoseagold/ingot",
+      "key": "indigoseagold_ingot",
+      "parent": "bettergold:treasure/indigo_ocean_heart",
+      "icon": "bettergold:indigoseagold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "坠海浮靛",
+      "description": "这块金属～是水炼的，是水炼的",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/indigoseagold/weapon",
+      "path": "metal/indigoseagold/weapon",
+      "key": "indigoseagold_weapon",
+      "parent": "bettergold:metal/indigoseagold/ingot",
+      "icon": "bettergold:indigoseagold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "以强力水压重击",
+      "description": "获得任意一种靛海金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/indigoseagold/armor",
+      "path": "metal/indigoseagold/armor",
+      "key": "indigoseagold_armor",
+      "parent": "bettergold:metal/indigoseagold/ingot",
+      "icon": "bettergold:indigoseagold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "深海游行者",
+      "description": "获得一整套靛海金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/voodoogold/ingot",
+      "path": "metal/voodoogold/ingot",
+      "key": "voodoogold_ingot",
+      "parent": "bettergold:treasure/voodoo_feather",
+      "icon": "bettergold:voodoogold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "毒液渗透之物",
+      "description": "这块金属所散发出的毒素十分让人不安",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/voodoogold/weapon",
+      "path": "metal/voodoogold/weapon",
+      "key": "voodoogold_weapon",
+      "parent": "bettergold:metal/voodoogold/ingot",
+      "icon": "bettergold:voodoogold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "极具威胁的灭绝性毒素",
+      "description": "获得任意一种巫毒金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/voodoogold/armor",
+      "path": "metal/voodoogold/armor",
+      "key": "voodoogold_armor",
+      "parent": "bettergold:metal/voodoogold/ingot",
+      "icon": "bettergold:voodoogold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "你的全身发紫可能看着就不好惹",
+      "description": "获得一整套巫毒金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/thundergold/ingot",
+      "path": "metal/thundergold/ingot",
+      "key": "thundergold_ingot",
+      "parent": "bettergold:treasure/amethyst_energy_dust",
+      "icon": "bettergold:thundergold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "这块金属一定要是这种雷霆粉吗",
+      "description": "那不是粉色，是品红！",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/thundergold/weapon",
+      "path": "metal/thundergold/weapon",
+      "key": "thundergold_weapon",
+      "parent": "bettergold:metal/thundergold/ingot",
+      "icon": "bettergold:thundergold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "手段麻痹之雷",
+      "description": "获得任意一种结雷金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/thundergold/armor",
+      "path": "metal/thundergold/armor",
+      "key": "thundergold_armor",
+      "parent": "bettergold:metal/thundergold/ingot",
+      "icon": "bettergold:thundergold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "我只是个路过的避雷针",
+      "description": "获得一整套结雷金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/illusiongold/ingot",
+      "path": "metal/illusiongold/ingot",
+      "key": "illusiongold_ingot",
+      "parent": "bettergold:treasure/chorus_cherry_branch",
+      "icon": "bettergold:illusiongold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "永恒迷幻",
+      "description": "这块金属所散发出的花香，令人着迷",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/illusiongold/weapon",
+      "path": "metal/illusiongold/weapon",
+      "key": "illusiongold_weapon",
+      "parent": "bettergold:metal/illusiongold/ingot",
+      "icon": "bettergold:illusiongold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "要不要休息一下呀～",
+      "description": "获得任意一种幻惑金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/illusiongold/armor",
+      "path": "metal/illusiongold/armor",
+      "key": "illusiongold_armor",
+      "parent": "bettergold:metal/illusiongold/ingot",
+      "icon": "bettergold:illusiongold_chestplate",
+      "frame": "task",
+      "fd": false,
+      "title": "就这样静下心来吧～",
+      "description": "获得一整套幻惑金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:merchant/gold_ticket",
+      "path": "merchant/gold_ticket",
+      "key": "gift_gold_ticket",
+      "parent": "bettergold:metal/sturdygold/weapon",
+      "icon": "bettergold:gift_gold_ticket",
+      "frame": "task",
+      "fd": false,
+      "title": "奢华一票",
+      "description": "获得礼品金票",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:merchant/gift_box",
+      "path": "merchant/gift_box",
+      "key": "gift_box",
+      "parent": "bettergold:merchant/gold_ticket",
+      "icon": "bettergold:treasure_gift_box",
+      "frame": "task",
+      "fd": false,
+      "title": "这件商品很适合你哦～",
+      "description": "从易金商人那获得任意一种礼品盒",
+      "triggers": [
+        "minecraft:villager_trade"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:merchant/antique_tool",
+      "path": "merchant/antique_tool",
+      "key": "antique_tool",
+      "parent": "bettergold:merchant/gift_box",
+      "icon": "bettergold:antique_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "上古藏品",
+      "description": "获得任意一种古董武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:merchant/netherite_antique_tool",
+      "path": "merchant/netherite_antique_tool",
+      "key": "netherite_antique_tool",
+      "parent": "bettergold:merchant/antique_tool",
+      "icon": "bettergold:netherite_antique_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "皇骸永存",
+      "description": "好好保养这份藏品吧",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/gold_infused_dirt",
+      "path": "agriculture/gold_infused_dirt",
+      "key": "gold_infused_dirt",
+      "parent": "bettergold:root",
+      "icon": "bettergold:gold_infused_dirt",
+      "frame": "task",
+      "fd": false,
+      "title": "土地也要染上黄金",
+      "description": "制作金染土",
+      "triggers": [
+        "minecraft:recipe_crafted"
+      ],
+      "recipe_ids": [
+        "bettergold:gold_infused_dirt"
+      ]
+    },
+    {
+      "id": "bettergold:agriculture/eggplant_seeds",
+      "path": "agriculture/eggplant_seeds",
+      "key": "eggplant_seeds",
+      "parent": "bettergold:agriculture/gold_infused_dirt",
+      "icon": "bettergold:golden_eggplant_seeds",
+      "frame": "task",
+      "fd": false,
+      "title": "光辉岁月之种",
+      "description": "在遗迹堡垒里获得金钱茄种子",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/golden_egg",
+      "path": "agriculture/golden_egg",
+      "key": "golden_egg",
+      "parent": "bettergold:agriculture/gold_infused_dirt",
+      "icon": "bettergold:golden_egg",
+      "frame": "task",
+      "fd": false,
+      "title": "好大的金蛋～",
+      "description": "使用金种子喂给鸡从而获取金蛋",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/plant_gold_crop",
+      "path": "agriculture/plant_gold_crop",
+      "key": "plant_gold_crop",
+      "parent": "bettergold:agriculture/gold_infused_dirt",
+      "icon": "bettergold:golden_wheat",
+      "frame": "task",
+      "fd": false,
+      "title": "开垦我的金色土地",
+      "description": "为金染土进行耕地，并种植任意一种金作物",
+      "triggers": [
+        "minecraft:item_used_on_block",
+        "minecraft:placed_block"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/midas_feast_1",
+      "path": "agriculture/midas_feast_1",
+      "key": "midas_feast_1",
+      "parent": "bettergold:agriculture/plant_gold_crop",
+      "icon": "bettergold:golden_bread",
+      "frame": "task",
+      "fd": false,
+      "title": "米达斯之宴I",
+      "description": "获得所有金食物",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/sturdygold_feast_1",
+      "path": "agriculture/sturdygold_feast_1",
+      "key": "sturdygold_feast_1",
+      "parent": "bettergold:agriculture/midas_feast_1",
+      "icon": "bettergold:sturdygold_bread",
+      "frame": "task",
+      "fd": false,
+      "title": "再镀进化I",
+      "description": "获得所有万坚金食物",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/alchemical_meat",
+      "path": "agriculture/alchemical_meat",
+      "key": "alchemical_meat",
+      "parent": "bettergold:root",
+      "icon": "bettergold:alchemical_meat",
+      "frame": "task",
+      "fd": true,
+      "title": "也是吃上科技啊呸，炼金术之肉了",
+      "description": "获得炼金贝肉",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/midas_feast_2",
+      "path": "agriculture/midas_feast_2",
+      "key": "midas_feast_2",
+      "parent": "bettergold:agriculture/alchemical_meat",
+      "icon": "bettergold:alchemical_meat_skewer",
+      "frame": "task",
+      "fd": true,
+      "title": "米达斯之宴II",
+      "description": "获得所有乐事联动的金食物",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/sturdygold_feast_2",
+      "path": "agriculture/sturdygold_feast_2",
+      "key": "sturdygold_feast_2",
+      "parent": "bettergold:agriculture/midas_feast_2",
+      "icon": "bettergold:sturdygold_alchemical_meat_skewer",
+      "frame": "task",
+      "fd": true,
+      "title": "再镀进化II",
+      "description": "获得所有乐事联动的万坚金食物",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    }
+  ],
+  "lists": {
+    "core_materials": [
+      "bettergold:blazing_rod",
+      "bettergold:golden_cowrie",
+      "bettergold:glittering_vine",
+      "bettergold:bundled_echo_shard",
+      "bettergold:indigo_ocean_heart",
+      "bettergold:voodoo_feather",
+      "bettergold:amethyst_energy_dust",
+      "bettergold:chorus_cherry_branch"
+    ],
+    "raw_materials": [
+      "bettergold:raw_flamegold",
+      "bettergold:raw_voodoogold",
+      "bettergold:raw_thundergold",
+      "bettergold:raw_indigoseagold",
+      "bettergold:raw_illusiongold",
+      "bettergold:raw_thornsgold",
+      "bettergold:raw_echogold",
+      "bettergold:raw_sturdygold"
+    ],
+    "gear_suffix": [
+      "sword",
+      "axe",
+      "pickaxe",
+      "shovel",
+      "hoe",
+      "mace",
+      "bow",
+      "crossbow",
+      "trident",
+      "shield"
+    ],
+    "armor_suffix": [
+      "helmet",
+      "chestplate",
+      "leggings",
+      "boots"
+    ],
+    "metals": [
+      "flamegold",
+      "sturdygold",
+      "thornsgold",
+      "echogold",
+      "indigoseagold",
+      "voodoogold",
+      "thundergold",
+      "illusiongold"
+    ],
+    "gold_foods": [
+      "minecraft:golden_apple",
+      "minecraft:golden_carrot",
+      "bettergold:golden_chocolate_bar",
+      "bettergold:brewed_hot_cocoa",
+      "bettergold:golden_ice_cream",
+      "bettergold:golden_sugar_cane_stick",
+      "bettergold:golden_eggplant",
+      "bettergold:fried_golden_egg",
+      "bettergold:golden_chocolate_cookie",
+      "bettergold:golden_honey_cookie",
+      "bettergold:golden_bread",
+      "bettergold:golden_egg_sandwich"
+    ],
+    "sturdygold_foods": [
+      "bettergold:sturdygold_apple",
+      "bettergold:sturdygold_carrot",
+      "bettergold:sturdygold_chocolate_bar",
+      "bettergold:sturdygold_brewed_hot_cocoa",
+      "bettergold:sturdygold_ice_cream",
+      "bettergold:sturdygold_sugar_cane_stick",
+      "bettergold:sturdygold_eggplant",
+      "bettergold:sturdygold_bread",
+      "bettergold:sturdygold_fried_golden_egg",
+      "bettergold:sturdygold_chocolate_cookie",
+      "bettergold:sturdygold_honey_cookie",
+      "bettergold:sturdygold_egg_sandwich"
+    ],
+    "fd_gold_foods": [
+      "bettergold:alchemical_meat",
+      "bettergold:alchemical_meat_skewer",
+      "bettergold:alchemical_meat_sandwich",
+      "bettergold:golden_glow_custard",
+      "bettergold:golden_apple_cider",
+      "bettergold:golden_pie_crust",
+      "bettergold:golden_apple_pie_slice",
+      "bettergold:golden_chocolate_pie_slice",
+      "bettergold:golden_cake_slice"
+    ],
+    "fd_sturdygold_foods": [
+      "bettergold:sturdygold_alchemical_meat",
+      "bettergold:sturdygold_alchemical_meat_skewer",
+      "bettergold:sturdygold_alchemical_meat_sandwich",
+      "bettergold:sturdygold_glow_custard",
+      "bettergold:sturdygold_apple_cider",
+      "bettergold:sturdygold_apple_pie_slice",
+      "bettergold:sturdygold_chocolate_pie_slice",
+      "bettergold:sturdygold_cake_slice"
+    ]
+  }
+}

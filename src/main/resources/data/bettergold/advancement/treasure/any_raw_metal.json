@@ -1,0 +1,78 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:raw_sturdygold",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.raw_metal.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.raw_metal.description"
+    }
+  },
+  "criteria": {
+    "craft_flamegold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_flamegold"
+      }
+    },
+    "craft_voodoogold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_voodoogold"
+      }
+    },
+    "craft_thundergold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_thundergold"
+      }
+    },
+    "craft_indigoseagold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_indigoseagold"
+      }
+    },
+    "craft_illusiongold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_illusiongold"
+      }
+    },
+    "craft_thornsgold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_thornsgold"
+      }
+    },
+    "craft_echogold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_echogold"
+      }
+    },
+    "craft_sturdygold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_sturdygold"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft_flamegold",
+      "craft_voodoogold",
+      "craft_thundergold",
+      "craft_indigoseagold",
+      "craft_illusiongold",
+      "craft_thornsgold",
+      "craft_echogold",
+      "craft_sturdygold"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -76,5 +76,14 @@ public final class StartupSelfCheck {
                 "{} modVersion={} {}={} configFile={} fileExists={} {}KeyPresent={}",
                 MARKER, version, THUNDER_MODE_KEY, mode, configFile.toAbsolutePath(),
                 fileExists, THUNDER_MODE_KEY, keyPresent);
+
+        // ---------- bg-fix 第 7 条（2026-10-05）：16 条「触发概率 / 能力间隔」的启动读数 ----------
+        // 一行打出 8 族的武器/盔甲概率 + 万坚金间隔系数，走运行期同一个读取入口 ⇒
+        // 「改配置文件 ⇒ 重启 ⇒ 立即生效」这条验收可以直接在日志里复算（不需要进游戏看现象）。
+        try {
+            bettergold.LOGGER.info("{} {}", MARKER, Config.describeEffectChances());
+        } catch (RuntimeException | LinkageError e) {
+            bettergold.LOGGER.warn("{} bgfix16 读数失败: {}", MARKER, e.toString());
+        }
     }
 }

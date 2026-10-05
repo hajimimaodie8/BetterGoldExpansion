@@ -1,0 +1,72 @@
+{
+  "parent": "bettergold:metal/illusiongold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:illusiongold_chestplate",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.illusiongold_armor.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.illusiongold_armor.description"
+    }
+  },
+  "criteria": {
+    "armor_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:illusiongold_helmet"
+          }
+        ]
+      }
+    },
+    "armor_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:illusiongold_chestplate"
+          }
+        ]
+      }
+    },
+    "armor_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:illusiongold_leggings"
+          }
+        ]
+      }
+    },
+    "armor_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:illusiongold_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "armor_helmet"
+    ],
+    [
+      "armor_chestplate"
+    ],
+    [
+      "armor_leggings"
+    ],
+    [
+      "armor_boots"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

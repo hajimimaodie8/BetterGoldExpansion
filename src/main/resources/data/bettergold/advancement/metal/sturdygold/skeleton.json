@@ -1,0 +1,61 @@
+{
+  "parent": "bettergold:metal/sturdygold/weapon",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_bone_meal",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.sturdygold_skeleton.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.sturdygold_skeleton.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "hit": {
+      "trigger": "minecraft:player_hurt_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "#minecraft:skeletons"
+            }
+          }
+        ],
+        "damage": {
+          "type": {
+            "source_entity": {
+              "type": "minecraft:player",
+              "equipment": {
+                "mainhand": {
+                  "items": [
+                    "bettergold:sturdygold_sword",
+                    "bettergold:sturdygold_axe",
+                    "bettergold:sturdygold_pickaxe",
+                    "bettergold:sturdygold_shovel",
+                    "bettergold:sturdygold_hoe",
+                    "bettergold:sturdygold_mace",
+                    "bettergold:sturdygold_bow",
+                    "bettergold:sturdygold_crossbow",
+                    "bettergold:sturdygold_trident",
+                    "bettergold:sturdygold_shield"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "hit"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

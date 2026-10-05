@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:amethyst_energy_dust",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.amethyst_energy_dust.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.amethyst_energy_dust.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:amethyst_energy_dust"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

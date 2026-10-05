@@ -1,0 +1,42 @@
+{
+  "parent": "bettergold:root",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_cowrie",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.core_material.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.core_material.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:blazing_rod",
+              "bettergold:golden_cowrie",
+              "bettergold:glittering_vine",
+              "bettergold:bundled_echo_shard",
+              "bettergold:indigo_ocean_heart",
+              "bettergold:voodoo_feather",
+              "bettergold:amethyst_energy_dust",
+              "bettergold:chorus_cherry_branch"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

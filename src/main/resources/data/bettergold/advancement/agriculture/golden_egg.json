@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:agriculture/gold_infused_dirt",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_egg",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.golden_egg.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.golden_egg.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_egg"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

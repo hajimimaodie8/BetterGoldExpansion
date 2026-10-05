@@ -361,6 +361,16 @@ public final class MetalFamily {
     public final boolean cactusImmune;
 
     /**
+     * 建材：<b>踩踏 / 贴近</b>时让「对玩家发起敌意的中立生物」<b>瞬间变为被动形态</b>
+     * （幻惑金，bg-fix §七 第 8 条，作者 2026-10-05）。
+     *
+     * <p>触发路径<b>只有「踩踏 / 贴近」</b>：作者原话只写了这两个动作 ⇒ <b>破坏 / 右键不含</b>
+     * （对照：幻惑金建材的生命恢复是四个动作都触发）。判据与动作的完整公式见
+     * {@link MetalEvents#pacifyHostileNeutrals(net.minecraft.world.entity.LivingEntity)}。</p>
+     */
+    public final boolean contactPacifyNeutral;
+
+    /**
      * 器具：<b>无视水下的挖掘惩罚</b>（靛海金，bg-15w §九 9.3，作者 2026-10-03）。
      *
      * <p>原版惩罚在 {@code Player#getDigSpeed(BlockState, BlockPos)}：眼睛泡在水里时
@@ -395,6 +405,34 @@ public final class MetalFamily {
      * <b>是两个独立判断</b>，不要合并。</p>
      */
     public final boolean shieldBreakImmune;
+
+    // ==================== bg-fix（2026-10-05）：特殊金属判据 ====================
+
+    /**
+     * 万坚金（基础套装）的 id —— 「特殊金属 = 除万坚金以外的全部本模组金」的判据锚点。
+     *
+     * <p><b>bg-fix 第 3 条</b>（作者 2026-10-05 裁定）：闪耀藤条的挖掘判据收窄为「特殊金属」，
+     * 而「特殊金属」= 除万坚金以外的全部本模组金（烈燃 / 树棘 / 幽咆 / 靛海 / 巫毒 / 结雷 / 幻惑，共 7 族）。</p>
+     *
+     * <p>⚠ <b>为什么另立一个判据、不复用 {@link #specialWeaponMetal}</b>：那个字段的 javadoc 讲的是
+     * <b>盾牌</b>规则（格挡反 buff / 盾牌耐久），取值恰好也是"7 族真、万坚金假"，但那是<b>另一条口径</b>；
+     * 两者一旦有人为了盾牌去改旗标，复用就会把藤条判据一起改掉（§2.4「同一约束写两处」的反面教训）。</p>
+     */
+    public static final String STURDYGOLD_ID = "sturdygold";
+
+    /**
+     * 本族是不是「<b>特殊金属</b>」= 除万坚金以外的全部本模组金（作者 2026-10-05 裁定，bg-fix 第 3 条）。
+     *
+     * <p>当前用途：闪耀藤条掉落的工具判据
+     * （{@code AllLootModifiers.AddGlitteringVineModifier#isOurTool}）。</p>
+     *
+     * <p>⚠ <b>旧口径（原文保留，未删）</b>：bg-16 落地时判据是
+     * {@code family != null && (family.isTool(...) || family.isWeapon(...))}
+     * —— 「<b>任意一族</b>（含万坚金）」，作者 2026-10-05 把它<b>收窄</b>到特殊金属。</p>
+     */
+    public boolean isSpecialMetal() {
+        return !STURDYGOLD_ID.equals(this.id);
+    }
 
     public final DeferredItem<MetalWeapons.MetalMaceItem> mace;
     public final DeferredItem<MetalWeapons.MetalBowItem> bow;
@@ -611,6 +649,7 @@ public final class MetalFamily {
         // 1.6（bg-16）：两套新金属的 trait（Spec → 本类逐字复制，与上面那批同构）
         this.contactCactusThorns = spec.contactCactusThorns;
         this.contactSonicBoom = spec.contactSonicBoom;
+        this.contactPacifyNeutral = spec.contactPacifyNeutral;
         this.parasiteOnAttack = spec.parasiteOnAttack;
         this.echoRoarOnAttack = spec.echoRoarOnAttack;
         this.cactusResist = spec.cactusResist;
@@ -933,6 +972,8 @@ public final class MetalFamily {
         public boolean contactCactusThorns = false;
         /** 建材：四个动作 ⇒ 以**该方块中心**为心、3×3×3 内全部生物 3 点监守者声波伤害 + 粒子（幽咆金） */
         public boolean contactSonicBoom = false;
+        /** 建材：**踩踏 / 贴近** ⇒ 「对玩家发起敌意的中立生物」瞬间变被动（幻惑金；破坏 / 右键不含） */
+        public boolean contactPacifyNeutral = false;
         /** 器具：命中叠加 1 级 16 秒寄生（树棘金；等级无上限） */
         public boolean parasiteOnAttack = false;
         /** 器具：命中叠加 1 级 6 秒幽咆（幽咆金） */
@@ -1132,6 +1173,18 @@ public final class MetalFamily {
         /** 建材：四个动作 ⇒ 方块中心 3×3×3 内全部生物 3 点声波伤害 + 粒子（幽咆金） */
         public Spec contactSonicBoom() {
             this.contactSonicBoom = true;
+            return this;
+        }
+
+        /**
+         * 建材：<b>踩踏 / 贴近</b> ⇒ 「对玩家发起敌意的中立生物」瞬间变为被动形态（幻惑金）。
+         *
+         * <p>作者原话只写了「<b>在踩踏与贴近时</b>」⇒ 这一条<b>只在</b> {@code scanContact}
+         * （踩踏 / 贴近那条扫描）里被读，与被破坏 / 右键共用的 {@code applyContact} 无关
+         * （对照：幻惑金建材的生命恢复是四个动作都触发）。</p>
+         */
+        public Spec contactPacifyNeutral() {
+            this.contactPacifyNeutral = true;
             return this;
         }
 

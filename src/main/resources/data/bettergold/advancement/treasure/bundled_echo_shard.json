@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:bundled_echo_shard",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.bundled_echo_shard.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.bundled_echo_shard.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:bundled_echo_shard"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

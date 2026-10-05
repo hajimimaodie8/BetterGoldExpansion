@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:indigo_ocean_heart",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.indigo_ocean_heart.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.indigo_ocean_heart.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:indigo_ocean_heart"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

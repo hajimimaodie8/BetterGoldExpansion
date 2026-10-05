@@ -1,0 +1,96 @@
+{
+  "name": "bettergold.handbook.entry.core_materials",
+  "category": "bettergold:alchemy_start",
+  "icon": "bettergold:golden_cowrie",
+  "sortnum": 3,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.core_1"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:alchemy_materials_box",
+      "text": "bettergold.handbook.page.core_1_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:blazing_rod",
+      "text": "bettergold.handbook.page.core_2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:blazing_rod",
+      "recipe2": "bettergold:raw_flamegold"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:golden_cowrie",
+      "text": "bettergold.handbook.page.core_3"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:raw_sturdygold"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:glittering_vine",
+      "text": "bettergold.handbook.page.core_4"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:raw_thornsgold"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:bundled_echo_shard",
+      "text": "bettergold.handbook.page.core_5"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:bundled_echo_shard",
+      "recipe2": "bettergold:raw_echogold"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:indigo_ocean_heart",
+      "text": "bettergold.handbook.page.core_6"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:indigo_ocean_heart",
+      "recipe2": "bettergold:raw_indigoseagold"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:voodoo_feather",
+      "text": "bettergold.handbook.page.core_7"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:voodoo_feather_duplicate",
+      "recipe2": "bettergold:raw_voodoogold"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:amethyst_energy_dust",
+      "text": "bettergold.handbook.page.core_8"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:amethyst_energy_dust",
+      "recipe2": "bettergold:raw_thundergold"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:chorus_cherry_branch",
+      "text": "bettergold.handbook.page.core_9"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chorus_cherry_branch",
+      "recipe2": "bettergold:raw_illusiongold"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:glittering_vine",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.glittering_vine.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.glittering_vine.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:glittering_vine"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

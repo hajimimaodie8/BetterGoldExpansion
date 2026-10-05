@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:voodoo_feather",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.voodoo_feather.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.voodoo_feather.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:voodoo_feather"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

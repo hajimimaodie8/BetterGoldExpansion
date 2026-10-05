@@ -1,0 +1,44 @@
+{
+  "parent": "bettergold:agriculture/gold_infused_dirt",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_eggplant_seeds",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.eggplant_seeds.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.eggplant_seeds.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_eggplant_seeds"
+          }
+        ],
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": "minecraft:bastion_remnant"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

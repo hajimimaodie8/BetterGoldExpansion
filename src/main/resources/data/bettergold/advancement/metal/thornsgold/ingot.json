@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/glittering_vine",
+  "display": {
+    "icon": {
+      "id": "bettergold:thornsgold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.thornsgold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.thornsgold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:thornsgold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

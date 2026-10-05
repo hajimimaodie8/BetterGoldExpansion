@@ -1,0 +1,28 @@
+﻿PASS baseline-before              exit=0 expect=-
+PASS icon-not-exists              exit=1 expect=[bgach-item-exists]
+PASS trigger-not-whitelisted      exit=1 expect=[bgach-trigger-whitelist]
+PASS recipe-id-drift              exit=1 expect=[bgach-recipe-exists]
+PASS food-list-drift              exit=1 expect=[bgach-food-list]
+PASS display-lang-key-drift       exit=1 expect=[bgach-display-lang]
+PASS frame-challenge-extra        exit=1 expect=[bgach-frame-challenge]
+PASS hidden-true                  exit=1 expect=[bgach-no-hidden]
+PASS fd-condition-removed         exit=1 expect=[bgach-fd-condition]
+PASS fd-condition-wrong-body      exit=1 expect=[bgach-fd-condition-body]
+PASS fd-condition-on-non-fd       exit=1 expect=[bgach-fd-condition]
+PASS reparent-to-root             exit=1 expect=[bgach-root]
+PASS cycle-root-parent            exit=1 expect=[bgach-root]
+PASS gold-split-broken            exit=1 expect=[bgach-shape-gold-split]
+PASS treasure-children-broken     exit=1 expect=[bgach-shape-treasure-children]
+PASS requirements-mismatch        exit=1 expect=[bgach-requirements]
+FAIL requirements-or-vs-and       exit=1 expect=[bgach-requirements-semantics]
+FAIL feast-or-vs-and              exit=1 expect=[bgach-requirements-semantics]
+PASS delete-file                  exit=1 expect=[bgach-count]
+PASS lang-verbatim-drift          exit=1 expect=[bgach-lang-verbatim]
+PASS lang-key-missing             exit=1 expect=[bgach-lang-missing]
+PASS lang-empty-value             exit=1 expect=[bgach-lang-empty]
+PASS registry-source-drift        exit=1 expect=[bgach-item-exists]
+PASS comment-only-control         exit=0 expect=(green)
+PASS baseline-after               exit=0 expect=-
+������=25 mismatches=2
+MISMATCH requirements-or-vs-and: exit=1 ����=��/[bgach-requirements-semantics]��ʵ�� FAIL=[]
+MISMATCH feast-or-vs-and: exit=1 ����=��/[bgach-requirements-semantics]��ʵ�� FAIL=[]

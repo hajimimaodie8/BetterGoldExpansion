@@ -1,0 +1,16 @@
+B 级证据（bg-book §六 追加轮 + bg-fix §七 第 8 条）
+
+1) .\gradlew.bat compileJava   -> BUILD SUCCESSFUL
+2) .\gradlew.bat runData        -> BUILD SUCCESSFUL in 22s
+3) .\gradlew.bat processResources jar --rerun-tasks -> BUILD SUCCESSFUL in 9s
+   产物 bettergold-1.6.0.jar = 1326351 B（上一轮 1280676 B，+45675 = 三章数据 + 语言键）
+4) 五校验器（收尾、探针整块删除之后重跑）
+   validate_metal_data.py  exit 0 : 手册 10 条目 / 106 页 / 104 条配方引用；
+                                  §六 三章 32 页 / 16 条配方引用 / 43 个图标引用；bg-fix 0 问题
+   validate_metal_assets.py exit 0
+   validate_trim_assets.py  exit 0
+   check_jar_clean.py       exit 0 : *Probe* 0 / halt 0 / BG-PROBE 0 / jar 内 2372 文件
+   check_forced_chunks.py   exit 0 : data.Forced = []（双向 0）
+
+5) 生成器幂等性：重跑 generate_handbook_data.py 后第一轮 7 个骨架条目文件 SHA256 全部不变
+   （build/bgbook2-handbook-before.txt vs -after.txt 仅 6 个新增条目文件不同）

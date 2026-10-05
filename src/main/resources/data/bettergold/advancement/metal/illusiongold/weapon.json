@@ -1,0 +1,44 @@
+{
+  "parent": "bettergold:metal/illusiongold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:illusiongold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.illusiongold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.illusiongold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:illusiongold_sword",
+              "bettergold:illusiongold_axe",
+              "bettergold:illusiongold_pickaxe",
+              "bettergold:illusiongold_shovel",
+              "bettergold:illusiongold_hoe",
+              "bettergold:illusiongold_mace",
+              "bettergold:illusiongold_bow",
+              "bettergold:illusiongold_crossbow",
+              "bettergold:illusiongold_trident",
+              "bettergold:illusiongold_shield"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

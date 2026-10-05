@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:root",
+  "display": {
+    "icon": {
+      "id": "bettergold:mixed_crystal_pile",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.mixed_crystal_pile.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.mixed_crystal_pile.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:mixed_crystal_pile"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -746,8 +746,86 @@ public final class MetalEvents {
         var center = entity.blockPosition();
         for (var pos : net.minecraft.core.BlockPos.betweenClosed(
                 center.offset(-1, -1, -1), center.offset(1, 1, 1))) {
-            applyContact(entity, entity.level().getBlockState(pos).getBlock(), pos);
+            var block = entity.level().getBlockState(pos).getBlock();
+            applyContact(entity, block, pos);
+            // bg-fix §七 第 8 条（幻惑金建材）：**只在「踩踏 / 贴近」这一条路径**上把
+            // 「对玩家发起敌意的中立生物」变成被动形态。破坏 / 右键走 applyContact
+            // （onBreakBlock / onRightClickBlock），作者原话只写了这两个动作 ⇒ 它们不经这里。
+            MetalFamily family = MetalFamily.of(block);
+            if (family != null && family.contactPacifyNeutral) {
+                pacifyHostileNeutrals(entity);
+            }
         }
+    }
+
+    // ==================== bg-fix §七 第 8 条：幻惑金建材 ⇒ 敌对中立生物瞬间变被动 ====================
+
+    /**
+     * 「对玩家发起敌意状态的中立生物」的<b>完整判据</b>（bg-fix §七 第 8 条，作者 2026-10-05）。
+     *
+     * <pre>
+     * 对玩家发起敌意的中立生物(e) ⟺
+     *     e instanceof NeutralMob n
+     *   ∧ ( n.getTarget() instanceof Player                                   // ① 当前攻击目标就是玩家
+     *       ∨ ( n.isAngry() ∧ ∃p ∈ e.level().players() : n.isAngryAt(p) ) )    // ② 怒气计时 &gt; 0 且指向在场玩家
+     * </pre>
+     *
+     * <p><b>为什么这么写</b>（neoforge 21.1.228 patched sources）：</p>
+     * <ul>
+     *   <li>① 覆盖「正在打人」：{@code Mob#getTarget()} 返回 {@code this.target}（{@code Mob.java:231-235}）。</li>
+     *   <li>② 覆盖「有怒气、但这一刻还没锁定目标」：{@code NeutralMob#isAngry()} =
+     *       {@code getRemainingPersistentAngerTime() > 0}（{@code NeutralMob.java:92-93}）；
+     *       {@code NeutralMob#isAngryAt(LivingEntity)}（同文件 78-86）= {@code canAttack(目标) &&
+     *       (目标是玩家 && isAngryAtAllPlayers(level) || 目标 UUID == getPersistentAngerTarget())}
+     *       ⇒ 「怒气记录指向某个<b>在场玩家</b>」，并且把 {@code RULE_UNIVERSAL_ANGER}（全局愤怒）也算进来。</li>
+     *   <li>⚠ <b>只判 {@code getPersistentAngerTarget() != null} 是错的（过宽）</b>：那个 UUID 可能是
+     *       另一个生物、也可能是已经离线的玩家，而怒气计时可能早就归零。</li>
+     *   <li>⚠ <b>{@code AngerLevel} 这个 API 在 1.21.1 <u>不存在</u></b>（更高版本才有的枚举）——
+     *       判据必须落在真实的 {@code NeutralMob} 接口上。</li>
+     * </ul>
+     */
+    private static boolean isHostileNeutralTowardsPlayer(net.minecraft.world.entity.LivingEntity entity) {
+        if (!(entity instanceof net.minecraft.world.entity.NeutralMob neutral)) {
+            return false;
+        }
+        if (neutral.getTarget() instanceof net.minecraft.world.entity.player.Player) {
+            return true;
+        }
+        if (!neutral.isAngry()) {
+            return false;
+        }
+        for (var player : entity.level().players()) {
+            if (neutral.isAngryAt(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 把「对玩家发起敌意的中立生物」<b>瞬间变为被动形态</b>（幻惑金建材，踩踏 / 贴近）。
+     *
+     * <p>动作 = <b>原版单次调用</b> {@code NeutralMob#stopBeingAngry()}（{@code NeutralMob.java:109-114}）：
+     * 它的实现恰好是四件事 —— {@code setLastHurtByMob(null)} + {@code setPersistentAngerTarget(null)}
+     * + {@code setTarget(null)} + {@code setRemainingPersistentAngerTime(0)} ⇒ 攻击目标、怒气记录、
+     * 「最后打我的是谁」一次清空，怪物立刻回到被动形态，也<b>不会下一 tick 就重新报复</b>。</p>
+     *
+     * <p><b>为什么不必额外清 brain 记忆</b>：1.21.1 里实现 {@code NeutralMob} 的原版生物<b>只有 6 个</b>
+     * （蜜蜂 / 铁傀儡 / 北极熊 / 狼 / 末影人 / 僵尸猪灵），而<b>没有一个</b>把 {@code getTarget()}
+     * 改成读 {@code MemoryModuleType.ATTACK_TARGET}（那样做的是 {@code AbstractPiglin} / {@code Hoglin} /
+     * {@code Zoglin} / {@code Breeze} / {@code Warden} / {@code Axolotl} / {@code Frog}，它们都<b>不</b>
+     * 实现 {@code NeutralMob}）⇒ 对原版生物这一条调用已经充分。第三方模组若做出「脑驱动的
+     * {@code NeutralMob}」，届时在这里补一次清记忆即可（一行改动）。</p>
+     *
+     * @return {@code true} = 本次确实把它变成被动了（探针读数用）
+     */
+    private static boolean pacifyHostileNeutrals(net.minecraft.world.entity.LivingEntity entity) {
+        if (entity.level().isClientSide() || !entity.isAlive()
+                || !isHostileNeutralTowardsPlayer(entity)) {
+            return false;
+        }
+        ((net.minecraft.world.entity.NeutralMob) entity).stopBeingAngry();
+        return true;
     }
 
     /**
@@ -998,6 +1076,20 @@ public final class MetalEvents {
      */
     public static void applyFamilyWeaponEffect(MetalFamily family,
             net.minecraft.world.entity.LivingEntity attacker, net.minecraft.world.entity.LivingEntity target) {
+        // ---------- bg-fix 第 7 条：8 族 ×「武器工具触发概率」的**唯一闸门** ----------
+        //
+        // 概率的唯一真源 = 配置项（Config.weaponBuffChance(family.id)）：
+        //   默认 1.0（必定）= 与 1.6.0 逐位一致；幻惑金默认 0.16（它本来就是「16% 概率施加安抚」）。
+        // ⚠ 这一句**取代**了旧的 `family.sootheOnAttackChance` 掷骰（那个字段现在只当"这一族有没有安抚"的存在位）。
+        // ⚠ `chance < 1.0F` 才掷骰：默认 1.0 时**不消耗随机数** ⇒ 1.4/1.5/1.6 的随机数序列一个字节都不漂。
+        // ⚠ 配置成 0 ⇒ 直接 return：该族 buff 永不触发（A 级的"改 0 ⇒ 永不触发"反向对照就是这一句）。
+        float weaponChance = com.hjmmd_8.bettergold.config.Config.weaponBuffChance(family.id);
+        if (weaponChance <= 0.0F) {
+            return;
+        }
+        if (weaponChance < 1.0F && attacker.getRandom().nextFloat() >= weaponChance) {
+            return;
+        }
         if (family.autoSmelt) { // 烈燃金：1 级 16 秒高燃，可无限叠加（1.5 修正②：36 秒 → 16 秒）
             stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN,
                     MetalFamily.HIGH_BURN_TICKS);
@@ -1008,15 +1100,14 @@ public final class MetalEvents {
         } else if (family.sedimentOnAttack) { // 靛海金：每次命中叠加 1 级沉淀，16 秒，叠加无上限
             stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.SEDIMENT,
                     MetalFamily.SEDIMENT_TICKS);
-        } else if (family.sootheOnAttackChance > 0.0F) { // 幻惑金：16% 概率施加 1 秒安抚
-            if (attacker.getRandom().nextFloat() < family.sootheOnAttackChance) {
-                applySoothe(target, MetalFamily.SOOTHE_TICKS);
-            }
+        } else if (family.sootheOnAttackChance > 0.0F) { // 幻惑金：安抚（**概率已由方法开头的闸门处理**，
+            //                                                  这里不再掷第二次骰 —— 掷两次 = 0.16×0.16，静默变弱）
+            applySoothe(target, MetalFamily.SOOTHE_TICKS);
         } else if (family.parasiteOnAttack) { // 1.6 树棘金：叠 1 级 16 秒寄生（无上限）+ 记住施加者（回血用）
             stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.PARASITE,
                     MetalFamily.PARASITE_TICKS);
             markParasiteSource(target, attacker);
-        } else if (family.echoRoarOnAttack) { // 1.6 幽咆金：叠 1 级 6 秒幽咆
+        } else if (family.echoRoarOnAttack) { // 1.6 幽咆金：叠 1 级 6 秒音咆（内部 id echo_roar）
             stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.ECHO_ROAR,
                     MetalFamily.ECHO_ROAR_TICKS);
         }
@@ -1206,6 +1297,13 @@ public final class MetalEvents {
             if (family.absorptionIntervalTicks <= 0) {
                 continue;
             }
+            // bg-fix 第 7 条：间隔 = **基础 × 配置系数**。
+            //   基础 = 族旗标 family.absorptionIntervalTicks（现行只有万坚金 = 320 tick），
+            //   系数 = 配置项 sturdygoldArmorAbilityIntervalMultiplier（默认 1.0）。
+            //   ⚠ 旧口径是直接用 family.absorptionIntervalTicks 当间隔（没有系数）—— 系数是新增的一层，
+            //     默认 1.0 时逐位相同；配置 0 ⇒ 被钳到 1 tick。
+            final int interval = com.hjmmd_8.bettergold.config.Config
+                    .absorptionInterval(family.absorptionIntervalTicks);
             var instance = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_ABSORPTION);
             if (instance == null) {
                 continue;
@@ -1236,8 +1334,8 @@ public final class MetalEvents {
                     new net.minecraft.world.entity.ai.attributes.AttributeModifier(
                             ABSORPTION_CAP_ID, cap,
                             net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
-            // 错峰：用实体 id 抖动，避免同一 tick 上所有穿戴者一起结算
-            if ((entity.tickCount + entity.getId()) % family.absorptionIntervalTicks != 0) {
+            // 错峰：用实体 id 抖动，避免同一 tick 上所有穿戴者一起结算（interval 已含配置系数，见上）
+            if ((entity.tickCount + entity.getId()) % interval != 0) {
                 continue;
             }
             float now = entity.getAbsorptionAmount();
@@ -1524,21 +1622,39 @@ public final class MetalEvents {
     }
 
     /**
-     * 一个家族「被攻击后的反制几率」（按穿戴件数算）：
-     * 烈燃金 / 巫毒金 / 结雷金 / 靛海金 = 每件 25%（四件 100%）；幻惑金 = 每件 4%（四件 16%）；其余 0。
+     * 一个家族「被攻击后的反制几率」（按穿戴件数算）。
+     *
+     * <p><b>bg-fix 第 7 条（2026-10-05）：数值的唯一真源 = 配置项</b>
+     * （{@code Config.armorBuffChance(family.id)} = <b>每件</b>概率）：
+     * {@code 有效几率 = min(1, 穿戴件数 × 配置值)}。
+     * 默认 0.25（烈燃 / 巫毒 / 结雷 / 靛海 / 树棘 / 幽咆）、幻惑 0.04 —— 与 1.4/1.5/1.6 逐位相同。</p>
+     *
+     * <p>⚠ <b>旧口径（原文保留，未删）</b>：{@code capped * 0.25F}（幻惑 {@code capped * family.sootheReflectPerPiece}）；
+     * 那两个数现在<b>不再参与概率</b>（{@code sootheReflectPerPiece} 只当"幻惑金有没有这条反制"的存在位）。
+     * 配置改成 0 ⇒ 该族反制永不触发（A 级反向对照）。</p>
+     *
+     * <p>「这一族有没有反制」与「反制几率是多少」是<b>两件事</b>，别合并：前者由
+     * {@link #reflects(MetalFamily)} 按族旗标判定（万坚金没有 ⇒ 恒 0），后者才读配置。</p>
      */
     private static float counterChance(MetalFamily family, int pieces) {
-        int capped = Math.min(pieces, 4);
-        if (family.sootheReflectPerPiece > 0.0F) {
-            return capped * family.sootheReflectPerPiece;   // 幻惑金：每件 4%
+        if (!reflects(family)) {
+            return 0.0F;
         }
-        if (FLAME_ID.equals(family.id) || VOODOO_ID.equals(family.id)
+        int capped = Math.min(pieces, 4);
+        return Math.min(1.0F, capped * com.hjmmd_8.bettergold.config.Config.armorBuffChance(family.id));
+    }
+
+    /**
+     * 这一族有没有「被攻击后反制 buff」这条机制（<b>与概率值无关</b>）。
+     *
+     * <p>现行 = 7 套「特殊金属」（烈燃 / 巫毒 / 结雷 / 靛海 / 幻惑 / 树棘 / 幽咆），万坚金没有。</p>
+     */
+    private static boolean reflects(MetalFamily family) {
+        return family.sootheReflectPerPiece > 0.0F
+                || FLAME_ID.equals(family.id) || VOODOO_ID.equals(family.id)
                 || THUNDER_ID.equals(family.id) || family.sedimentReflect
                 // 1.6（bg-16）：树棘金 / 幽咆金盔甲也是「每件 25%、四件 100%」那一档
-                || family.parasiteReflect || family.echoRoarReflect) {
-            return capped * 0.25F;                          // 其余反制家族：每件 25%
-        }
-        return 0.0F;
+                || family.parasiteReflect || family.echoRoarReflect;
     }
 
     /**
@@ -1682,6 +1798,15 @@ public final class MetalEvents {
     // ==================== 高燃：死亡掉落换成熟食 ====================
 
     /**
+     * <b>bg-fix 第 5 条</b>：万坚金武器工具击杀「骷髅类」时掉一份金骨粉的概率 ——
+     * 作者 2026-10-05 裁定「<b>80% 掉率</b>（每次击杀有 80% 概率掉一份）」。
+     *
+     * <p>⚠ 这一条<b>不在</b> bg-fix 第 7 条的 16 条配置项里（那 16 条只管 8 族 × 武器/盔甲 的触发概率与间隔），
+     * 因此这里是一个普通常量；作者若要把它也做成配置项，是<b>第 17 个键</b>，属新增裁定（本轮未做，只报告）。</p>
+     */
+    public static final float SKELETON_GOLDEN_BONE_MEAL_CHANCE = 0.8F;
+
+    /**
      * <b>带高燃（或死亡时确实处于着火状态）的实体，掉落物里每一样「可熔炼」的物品都换成熔炼产物。</b>
      *
      * <h2>为什么原版那条路走不通</h2>
@@ -1717,6 +1842,40 @@ public final class MetalEvents {
         if (entity.level().isClientSide()) {
             return;
         }
+
+        // ---------- bg-fix 第 5 条（2026-10-05）：万坚金武器工具**击杀**「骷髅类」⇒ 80% 掉一份金骨粉 ----------
+        //
+        // 落点：就是这里（击杀掉落统一落点 = LivingDropsEvent），**没有另写事件**；
+        //       位置在下面「高燃掉熟食」的早退**之前** —— 那段早退只服务高燃，与本条无关
+        //       （放在它后面就会被"没着火就 return"整条吞掉，是真正的静默失效）。
+        //
+        // 触发粒度：**每次击杀**掷一次骰子（作者 2026-10-05 裁定原话「每次击杀有 80% 概率掉一份」），
+        //       不是每次命中 —— 逐次命中的话就是一台刷骨粉机，与"占比 80%"的语义不符。
+        //
+        // 「骷髅类型」的判据 = `instanceof AbstractSkeleton`：1.21.1 里 骷髅 / 流浪者 / 凋灵骷髅 /
+        //       沼骸（bogged）四种同属这一个抽象父类 ⇒ 语义正确、零维护成本。
+        //       （备选是自建实体类型标签 `#bettergold:skeletons`：好处是数据包可改，代价是多一个 data 文件 +
+        //        一条关卡；本需求没要求，故选类判据并在报告里写明二选一。）
+        //
+        // 武器判据 = 复用 `ModEvents.isSturdygoldAttackWeapon`（万坚金 剑/斧/镐/锹/锄/刀 + 重锤/弓/弩/三叉戟/盾牌），
+        //       与「万坚金攻击爆金」**共用同一处判据**，不再写第二份"什么算万坚金武器"（§2.4）。
+        //       取武器走 `weaponOf(source, killer)`（`DamageSource#getWeaponItem()`，远程 / 投掷也算）。
+        //
+        // 只 **ADD** 一份，**不动骷髅原有掉落**（作者只要"掉金骨粉"，没说替换）。
+        if (entity.level() instanceof net.minecraft.server.level.ServerLevel skeletonLevel
+                && entity instanceof net.minecraft.world.entity.monster.AbstractSkeleton
+                && event.getSource().getEntity() instanceof net.minecraft.world.entity.LivingEntity killer
+                && com.hjmmd_8.bettergold.event.ModEvents.isSturdygoldAttackWeapon(
+                        weaponOf(event.getSource(), killer))
+                && entity.getRandom().nextFloat() < SKELETON_GOLDEN_BONE_MEAL_CHANCE) {
+            var boneMeal = new net.minecraft.world.entity.item.ItemEntity(skeletonLevel,
+                    entity.getX(), entity.getY() + 0.5D, entity.getZ(),
+                    new net.minecraft.world.item.ItemStack(
+                            com.hjmmd_8.bettergold.registry.AllItems.GOLDEN_BONE_MEAL.get()));
+            boneMeal.setDefaultPickUpDelay();
+            event.getDrops().add(boneMeal);
+        }
+
         if (!entity.hasEffect(com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN) && !entity.isOnFire()) {
             return;
         }

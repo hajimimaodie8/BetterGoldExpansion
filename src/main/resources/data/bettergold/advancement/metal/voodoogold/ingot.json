@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/voodoo_feather",
+  "display": {
+    "icon": {
+      "id": "bettergold:voodoogold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.voodoogold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.voodoogold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:voodoogold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

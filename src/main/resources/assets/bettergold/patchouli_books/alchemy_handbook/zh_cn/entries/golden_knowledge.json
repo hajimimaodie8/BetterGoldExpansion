@@ -1,0 +1,101 @@
+{
+  "name": "bettergold.handbook.entry.golden_knowledge",
+  "category": "bettergold:alchemy_start",
+  "icon": "bettergold:sturdygold_ingot",
+  "sortnum": 4,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:flamegold_ingot",
+        "bettergold:flamegold_nugget",
+        "bettergold:sturdygold_ingot",
+        "bettergold:sturdygold_nugget",
+        "bettergold:thornsgold_ingot",
+        "bettergold:thornsgold_nugget",
+        "bettergold:echogold_ingot",
+        "bettergold:echogold_nugget",
+        "bettergold:indigoseagold_ingot",
+        "bettergold:indigoseagold_nugget",
+        "bettergold:voodoogold_ingot",
+        "bettergold:voodoogold_nugget",
+        "bettergold:thundergold_ingot",
+        "bettergold:thundergold_nugget",
+        "bettergold:illusiongold_ingot",
+        "bettergold:illusiongold_nugget"
+      ],
+      "text": "bettergold.handbook.page.knowledge_1_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:flamegold_upgrade_template",
+        "bettergold:sturdygold_upgrade_template",
+        "bettergold:thornsgold_upgrade_template",
+        "bettergold:echogold_upgrade_template",
+        "bettergold:indigoseagold_upgrade_template",
+        "bettergold:voodoogold_upgrade_template",
+        "bettergold:thundergold_upgrade_template",
+        "bettergold:illusiongold_upgrade_template"
+      ],
+      "text": "bettergold.handbook.page.knowledge_1_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:flamegold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_2_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:sturdygold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_2_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:thornsgold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_3_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:echogold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_3_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:indigoseagold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_4_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:voodoogold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_4_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:thundergold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_5_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:illusiongold_bricks"
+      ],
+      "text": "bettergold.handbook.page.knowledge_5_right"
+    }
+  ]
+}

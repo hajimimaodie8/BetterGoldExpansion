@@ -1,0 +1,29 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:blazing_rod",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.blazing_rod.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.blazing_rod.description"
+    }
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:blazing_rod"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "craft"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

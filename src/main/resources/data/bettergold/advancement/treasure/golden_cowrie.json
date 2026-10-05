@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_cowrie",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.golden_cowrie.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.golden_cowrie.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_cowrie"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

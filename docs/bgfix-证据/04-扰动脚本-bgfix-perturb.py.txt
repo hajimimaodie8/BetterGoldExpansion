@@ -1,0 +1,211 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""bg-fix 扰动实测：逐条证明 `[bgfix-*]` 断言真的会红（mcmod_experience §3.4）。
+
+做法（照本仓既有形态）：
+  · 对**真实工作树**上的源文件做**字节级**扰动（read_bytes/write_bytes，行尾零漂移）
+  · 跑**真关卡**（tools/asset-generator/validate_metal_data.py），期望 exit=1 且输出里出现该条 ASCII id
+  · 复原后**SHA256 逐字节自证**（不恢复原状就不许继续）
+  · 含一条「**只改注释、必须仍绿**」的反向对照（证明判据跑在去注释后的源码上）
+  · 开关 / 临时物都在 build/ 下，不进版本库
+
+用法： python build/bgfix-perturb.py
+"""
+from __future__ import annotations
+
+import hashlib
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+JAVA = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold"
+RES = REPO / "src" / "main" / "resources"
+LANG = RES / "assets" / "bettergold" / "lang"
+DATA = RES / "data"
+VALIDATOR = REPO / "tools" / "asset-generator" / "validate_metal_data.py"
+TMP = REPO / "build" / "bgfix-validator-out.txt"
+REPORT = REPO / "build" / "bgfix-perturb-report.txt"
+_LINES = []
+
+
+def say(s: str) -> None:
+    _LINES.append(s)
+    print(s.encode("ascii", "replace").decode("ascii"))
+
+P = {
+    "zh": LANG / "zh_cn.json",
+    "en": LANG / "en_us.json",
+    "glm": JAVA / "registry" / "AllLootModifiers.java",
+    "mf": JAVA / "material" / "MetalFamily.java",
+    "mev": JAVA / "material" / "MetalEvents.java",
+    "mod": JAVA / "event" / "ModEvents.java",
+    "fx": JAVA / "registry" / "AllEffects.java",
+    "cfg": JAVA / "config" / "Config.java",
+    "ccb": DATA / "bettergold" / "recipe" / "chorus_cherry_branch.json",
+    "hb": DATA / "bettergold" / "recipe" / "alchemy_student_handbook.json",
+    "spec": REPO / "docs" / "1.6-规格.md",
+}
+
+
+def sha(b: bytes) -> str:
+    return hashlib.sha256(b).hexdigest()
+
+
+def run_validator() -> tuple[int, str]:
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "utf-8"
+    with open(TMP, "wb") as fh:
+        proc = subprocess.run([sys.executable, str(VALIDATOR)], stdout=fh, stderr=subprocess.STDOUT,
+                              cwd=str(REPO), env=env)
+    text = TMP.read_text(encoding="utf-8", errors="replace")
+    return proc.returncode, text
+
+
+def mutate(path: Path, old: str, new: str, expect_count: int = 1) -> None:
+    """按**字节**替换（old/new 是 UTF-8 文本；行尾不动）"""
+    raw = path.read_bytes()
+    o = old.encode("utf-8")
+    n = new.encode("utf-8")
+    if raw.count(o) == 0:
+        raise AssertionError("扰动锚点缺失：%r @ %s" % (old[:60], path.name))
+    if expect_count >= 0 and raw.count(o) != expect_count:
+        raise AssertionError("扰动锚点数不符（%d 处，期望 %d）：%r @ %s"
+                             % (raw.count(o), expect_count, old[:60], path.name))
+    path.write_bytes(raw.replace(o, n))
+
+
+def main() -> int:
+    baseline_files = {k: p.read_bytes() for k, p in P.items()}
+    base_hashes = {k: sha(v) for k, v in baseline_files.items()}
+
+    code, out = run_validator()
+    if code != 0:
+        say("基线不是绿的（exit=%d）—— 扰动实测无意义，先修基线" % code)
+        _LINES.extend(out.splitlines()[-60:])
+        return 2
+    say("基线：exit=0 OK")
+
+    # (用例名, 文件键, 旧文本, 新文本, 期望命中的 ASCII id, 期望 exit)
+    cases = [
+        ("echo-name-zh", "zh", '"effect.bettergold.echo_roar": "音咆"',
+         '"effect.bettergold.echo_roar": "幽咆"', "bgfix-echo-name-zh", 1),
+        ("echo-name-en", "en", '"effect.bettergold.echo_roar": "Sonic Roar"',
+         '"effect.bettergold.echo_roar": "Echo Roar"', "bgfix-echo-name-en", 1),
+        ("echo-metal-name", "zh", '"item.bettergold.echogold_ingot": "幽咆金锭"',
+         '"item.bettergold.echogold_ingot": "音咆金锭"', "bgfix-echo-metal-name-untouched", 1),
+        ("vine-special-metal", "glm", "&& family.isSpecialMetal()", "",
+         "bgfix-vine-special-metal", 1),
+        ("vine-old-broad", "glm", "            return family != null && family.isSpecialMetal()",
+         "            if (tool.isEmpty()) {\n                return family != null && (family.isTool(tool.getItem()));\n            }\n"
+         "            return family != null && family.isSpecialMetal()",
+         "bgfix-vine-old-broad", 1),
+        ("special-metal-predicate", "mf", 'public static final String STURDYGOLD_ID = "sturdygold";',
+         'public static final String STURDYGOLD_ID = "gold_sturdy";',
+         "bgfix-special-metal-predicate", 1),
+        ("chorus-recipe", "ccb", '"item": "minecraft:ghast_tear"', '"item": "minecraft:cherry_sapling"',
+         "bgfix-chorus-recipe", 1),
+        ("skeleton-drop-chance", "mev", "SKELETON_GOLDEN_BONE_MEAL_CHANCE = 0.8F",
+         "SKELETON_GOLDEN_BONE_MEAL_CHANCE = 0.5F", "bgfix-skeleton-drop", 1),
+        ("skeleton-precedes-highburn", "mev",
+         "        // ---------- bg-fix 第 5 条（2026-10-05）：万坚金武器工具**击杀**「骷髅类」⇒ 80% 掉一份金骨粉 ----------",
+         "        if (!entity.hasEffect(com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN) && !entity.isOnFire()) {\n"
+         "            return;\n"
+         "        }\n"
+         "        // ---------- bg-fix 第 5 条（2026-10-05）：万坚金武器工具**击杀**「骷髅类」⇒ 80% 掉一份金骨粉 ----------",
+         "bgfix-skeleton-precedes-highburn", 1),
+        ("skeleton-single-event", "mev", "public static void onLivingDrops(",
+         "public static void onLivingDropsX(", "bgfix-skeleton-single-event", 1),
+        ("skeleton-weapon-judgement", "mod", "public static boolean isSturdygoldAttackWeapon(",
+         "private static boolean isSturdygoldAttackWeapon(", "bgfix-skeleton-weapon-judgement", 1),
+        ("shifted-impl", "fx", "return Math.max(0, amplifier);", "return Math.max(1, amplifier);",
+         "bgfix-shifted-damage-impl", 1),
+        ("shifted-used", "fx", "shiftedDamage(amplifier)", "amplifier + 2",
+         "bgfix-shifted-damage-used", 1, 2),
+        ("shifted-frequency", "fx", "return duration % 20 == 0;", "return duration % 10 == 0;",
+         "bgfix-shifted-damage-frequency", 1, 5),
+        ("parasite-echo-unchanged", "mev",
+         "float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;",
+         "float level = (amplifier + 2) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;",
+         "bgfix-parasite-echo-unchanged", 1),
+        ("config-16-keys", "cfg", '"flamegoldWeaponBuffChance"', '"flamegoldWeaponBuffChanceX"',
+         "bgfix-config-16-keys", 1),
+        ("config-existing-keys", "cfg", '"voodooExtractRatio"', '"voodooExtractRatioX"',
+         "bgfix-config-existing-keys", 1),
+        ("config-defaults", "cfg", '"illusiongoldWeaponBuffChance", 0.16D',
+         '"illusiongoldWeaponBuffChance", 0.20D', "bgfix-config-defaults", 1),
+        ("config-single-source", "mev", "armorBuffChance(family.id)", "0.25F",
+         "bgfix-config-single-source", 1, 2),
+        ("config-zero-never", "mev", "if (weaponChance <= 0.0F) {", "if (false) {",
+         "bgfix-config-zero-never", 1),
+        ("config-case-count", "cfg",
+         '            case "echogold" -> read(ECHOGOLD_WEAPON_BUFF_CHANCE, 1.0F);\n', "",
+         "bgfix-config-case-count", 1),
+        ("handbook-recipe", "hb", '"item": "minecraft:gold_ingot"', '"item": "minecraft:iron_ingot"',
+         "bgfix-handbook-recipe", 1),
+        ("handbook-conditional", "hb",
+         '  "neoforge:conditions": [\n    { "type": "neoforge:mod_loaded", "modid": "patchouli" }\n  ],\n', "",
+         "bgfix-handbook-conditional", 1),
+        ("doc-bgfix", "spec", "bg-fix", "bgf1x", "bgfix-doc", 1, -1),
+        # ---------- 反向对照：**只改注释**，必须仍绿 ----------
+        ("reverse-comment-only", "glm", "        private static boolean isOurTool(ItemStack tool) {",
+         "        // 反向对照：注释里写 family != null && (family.isTool( 与 amplifier + 2 必须仍绿\n"
+         "        private static boolean isOurTool(ItemStack tool) {",
+         "", 0),
+        ("reverse-comment-only-2", "fx", "    public static float shiftedDamage(int amplifier) {",
+         "    // 反向对照：注释里写 amplifier + 2 / duration % 20 == 0 / 不是 Math.max(0, amplifier) 必须仍绿\n"
+         "    public static float shiftedDamage(int amplifier) {",
+         "", 0),
+        ("reverse-comment-only-3", "mod", "    public static boolean isSturdygoldAttackWeapon(ItemStack stack) {",
+         "    // 反向对照：注释里写 private static boolean isSturdygoldAttackWeapon 必须仍绿\n"
+         "    public static boolean isSturdygoldAttackWeapon(ItemStack stack) {",
+         "", 0),
+    ]
+
+    mismatches = 0
+    try:
+        for case in cases:
+            name, key, old, new, expect_id, expect_exit = case[:6]
+            expect_count = case[6] if len(case) > 6 else 1
+            path = P[key]
+            mutate(path, old, new, expect_count)
+            code, out = run_validator()
+            hit = (expect_id in out) if expect_id else True
+            ok = (code == expect_exit) and hit
+            if not ok:
+                mismatches += 1
+            say("%-28s exit=%d(期望 %d) id=%s(命中=%s) => %s"
+                  % (name, code, expect_exit, expect_id or "<无>", hit, "PASS" if ok else "MISMATCH"))
+            if not ok:
+                tail = [ln for ln in out.splitlines() if "bgfix" in ln]
+                say("    !! 关卡输出尾: %s" % (tail[-1][:400] if tail else out[-400:]))
+            # 逐例复原 + 自证
+            path.write_bytes(baseline_files[key])
+            if sha(path.read_bytes()) != base_hashes[key]:
+                say("    !! 复原失败（SHA256 不符）: %s" % path)
+                return 3
+    finally:
+        for key, data in baseline_files.items():
+            if P[key].read_bytes() != data:
+                P[key].write_bytes(data)
+                say("收尾复原: %s" % P[key].name)
+
+    code, out = run_validator()
+    say("收尾基线：exit=%d（期望 0）" % code)
+    if code != 0:
+        mismatches += 1
+    # 全部文件 SHA256 总表
+    for key, h in base_hashes.items():
+        now = sha(P[key].read_bytes())
+        if now != h:
+            mismatches += 1
+            say("SHA256 漂移: %s %s -> %s" % (P[key].name, h[:12], now[:12]))
+    say("mismatches = %d" % mismatches)
+    REPORT.write_text("\n".join(_LINES) + "\n", encoding="utf-8")
+    return 0 if mismatches == 0 else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

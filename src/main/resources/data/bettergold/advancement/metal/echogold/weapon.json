@@ -1,0 +1,44 @@
+{
+  "parent": "bettergold:metal/echogold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:echogold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.echogold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.echogold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:echogold_sword",
+              "bettergold:echogold_axe",
+              "bettergold:echogold_pickaxe",
+              "bettergold:echogold_shovel",
+              "bettergold:echogold_hoe",
+              "bettergold:echogold_mace",
+              "bettergold:echogold_bow",
+              "bettergold:echogold_crossbow",
+              "bettergold:echogold_trident",
+              "bettergold:echogold_shield"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
