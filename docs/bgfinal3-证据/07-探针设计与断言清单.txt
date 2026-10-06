@@ -1,0 +1,35 @@
+bgfinal3 · 两个一次性探针的设计与断言清单（**源码副本未留档，如实记账**）
+
+⚠ **流程失误（本轮记账）**：收尾删探针包（`src/main/java/com/hjmmd_8/bettergold/probe/bgfinal3/`）时
+   **没有先复制源码**到 docs/ ⇒ 源码与 class 都已不可恢复（`build/` 是忽略目录、也不在 git 里）。
+   前几轮（bgfix2 / bgfinal）都留了 `0x-探针源码副本.java.txt`，本轮缺这一份；
+   补救 = 本文件（设计 + 判据 + tick 表 + 断言 id 全文），足以复算与重建。
+   **规则**：**先复制探针源码，再删包**。
+
+== 探针 A：BgFinal3Probe（专用服务端，@EventBusSubscriber(modid=bettergold.MODID)）==
+  开关文件：<gameDir>/bgfinal3-probe.enabled（FMLPaths.GAMEDIR = run/）
+  tick 表：20 setup（三块耕地：金染×2 + 普通×1、forceload (0,0)/(1,1)、revoke plant_carrot）
+          40 负向对照（普通耕地直接放原版小麦）→ 记 criterionDone=false
+          70 阳性（FakePlayer 手持金胡萝卜 → post RightClickBlock 到金染耕地）
+          110 断言 / 140 SUMMARY + setChunkForced(false) + 只调一次 halt(false)
+  断言：negative_controls / carrot_crop_really_placed / carrot_planted_criterion_done（**SKIP**，见下）
+  ★ SKIP 的依据：NeoForge 的 `PlayerAdvancements#award` 第一行 = `if (player instanceof FakePlayer) return false;`
+     （原文注释 "Forge: don't grant advancements for fake players"）⇒ 假人**永远**拿不到 criteria。
+
+== 探针 B：BgFinal3ClientProbe（客户端，@EventBusSubscriber(modid=..., value=Dist.CLIENT)）==
+  开关文件：<gameDir>/bgfinal3-client-probe.enabled（与上面**分开命名** —— 混用会让服务端探针在整合服务端里
+            也 armed，它的 halt 会把客户端世界关掉，本轮真踩过一次）
+  世界名守卫：进世界第一 tick 反射读 LevelName（`ServerLevel#getLevelData()` 的静态类型是 LevelData，没有
+            getLevelName()），要求 startswith("bgfinal3probe") 且 != 作者存档名，否则 ABORT 停手
+  tick 表（进入世界后才起算）：20 色卡资源 / 40 item 图集 / 60 armor_trims 图集 / 80 物品形态模型 /
+            100 穿戴计划 / 120 穿戴断言 / 140 种植场景 / 160 负向对照 / 190 负向断言 /
+            210 真玩家种植 / 250 取样（server.execute）/ 280 断言 / 300 SUMMARY
+  ★ 取样与断言**分成两个 tick**：`server.execute(...)` 是异步的，同一 tick 读字段会读到旧值（本轮踩过假 FAIL）
+  断言 id：probe_world_guard · palette_resource_restored · atlas_item_sprite_not_quartz ·
+           atlas_armor_sprite_not_quartz · item_form_model_uses_indigo_sprite · armor_form_equipped ·
+           carrot_negative_controls · carrot_crop_really_placed · carrot_planted_criterion_done
+  色卡判据的实现：`TextureAtlas#getTextures()` 里按 asset 名把 indigoseagold 与 quartz **配对**，
+           逐像素 SHA256 + 平均色/彩度比较（不依赖原版 jar；quartz 的精灵就在同一个图集里）
+  种植判据的实现：真 ServerPlayer 手持金胡萝卜 → post `PlayerInteractEvent.RightClickBlock`（= 服务端收到
+           use-item-on 包时 post 的那个事件）→ 读 `PlayerAdvancements#getOrStartProgress(holder)
+           .getCriterion("plant_carrot").isDone()`；每轮开始前 `revoke(holder, "plant_carrot")` 清残留

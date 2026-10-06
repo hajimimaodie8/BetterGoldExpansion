@@ -360,9 +360,15 @@ def main() -> int:
         bad("bgach-requirements-semantics",
             f"treasure/any_raw_metal 的 items 不是 8 种原料（实际 {sorted(set(_raw_items))}）")
     g = groups_of("agriculture/plant_gold_crop")
-    if sorted(len(x) for x in g) != [1, 2]:
+    # ⚠ **旧口径（原文保留，已被 2026-10-06 bgfinal3 取代）**：
+    #   `if sorted(len(x) for x in g) != [1, 2]:` ——「耕地(1) AND (金麦 OR 金钱茄)(2)」。
+    #   作者 2026-10-06 裁定「金胡萝卜也要算（`需要`）」⇒ 种植组从 2 条变 **3 条**。
+    #   新判据 = 1 组 1 条（耕地）AND 1 组 3 条（三种种子 OR）；具体成员集合由
+    #   `[bgfinal3-adv-carrot-planting]` 逐条钉住（这里只保证"组形状"没走样）。
+    if sorted(len(x) for x in g) != [1, 3]:
         bad("bgach-requirements-semantics",
-            f"agriculture/plant_gold_crop 应为「耕地(1) AND (金麦 OR 金钱茄)(2)」，实际 {g}")
+            f"agriculture/plant_gold_crop 应为「耕地(1) AND (金麦 OR 金钱茄 OR 金胡萝卜)(3)」"
+            f"（旧口径 2 条已被 2026-10-06 作者裁定取代），实际 {g}")
 
     # ---- 6. 物品存在性 ----
     refs: list[str] = []
@@ -526,6 +532,59 @@ def main() -> int:
         bad("bgach-no-knife-in-gear",
             f"刀被算进了「获得武器工具」的成就里（作者 §七.6：「乐事的刀不会触发有关获得器具的进度」）："
             f"{_knife_in_gear}")
+
+    # ---- bgfinal3（2026-10-06 作者裁定「需要」）：成就 ㊻ 的「种植」半边必须收进金胡萝卜 ----
+    # 背景：金胡萝卜**不是** `BlockItem#place` 种下去的（`ModEvents#onRightClickGoldenCarrot`
+    # 里 `setBlock` + `setCanceled` 自定义种）⇒ 判据虽然仍是原版 `placed_block`，但**必须**
+    # 由那段代码自己补一次 `CriteriaTriggers.PLACED_BLOCK.trigger(...)`（照 `BlockItem.java:78-85`
+    # 的姿势；源码侧断言在 `validate_metal_data.py` 的 `[bgfinal3-carrot-placed-block-trigger]`）。
+    # 本块只管**产物侧**：那条 criterion 真的进了 ㊻，且与另外两种种子在**同一个 OR 组**里。
+    _PLANT_PATH = "agriculture/plant_gold_crop"
+    _CARROT_BLOCK = f"{NS}:golden_carrot_crop"
+    _plant = advs.get(_PLANT_PATH, {})
+    _pcs = _plant.get("criteria") or {}
+    if not _pcs:
+        bad("bgfinal3-adv-carrot-planting",
+            f"读不到 {_PLANT_PATH} 的 criteria（反空转守护）")
+    _pc = _pcs.get("plant_carrot")
+    if not _pc:
+        bad("bgfinal3-adv-carrot-planting",
+            f"㊻ {_PLANT_PATH} 里没有 plant_carrot 这条 criteria"
+            f"（金胡萝卜的种植判据没进成就；实际 criteria = {sorted(_pcs)}）")
+    else:
+        if _pc.get("trigger") != "minecraft:placed_block":
+            bad("bgfinal3-adv-carrot-planting",
+                f"plant_carrot 的 trigger 不是 minecraft:placed_block（实际 {_pc.get('trigger')}）")
+        _locs = (_pc.get("conditions") or {}).get("location") or []
+        _blocks = [c.get("block") for c in _locs
+                   if c.get("condition") == "minecraft:block_state_property"]
+        if _blocks != [_CARROT_BLOCK]:
+            bad("bgfinal3-adv-carrot-planting",
+                f"plant_carrot 的 block_state_property 不是恰好 [{_CARROT_BLOCK}]（实际 {_blocks}）")
+    # 三种种子必须在同一个 requirement 组里（组内 OR）；且不许只剩两种
+    _plant_groups = _plant.get("requirements") or []
+    _seed_group = [g for g in _plant_groups if "plant_wheat" in g]
+    if len(_seed_group) != 1:
+        bad("bgfinal3-adv-carrot-planting",
+            f"㊻ 里含 plant_wheat 的 requirement 组不是恰好 1 个（实际 {len(_seed_group)}）")
+    elif set(_seed_group[0]) != {"plant_wheat", "plant_eggplant", "plant_carrot"}:
+        bad("bgfinal3-adv-carrot-planting",
+            f"㊻ 的「种植」组成员的集合不是 {{plant_wheat, plant_eggplant, plant_carrot}}"
+            f"（实际 {sorted(_seed_group[0])}）—— 三种种子必须是同一个 OR 组")
+    if len(_plant_groups) != 2:
+        bad("bgfinal3-adv-carrot-planting",
+            f"㊻ 的 requirement 组数不是 2（耕地 AND 种植；实际 {len(_plant_groups)}）")
+    # 真源侧：生成器里必须有这一条 + 方块 id 真源里必须真的注册了那个方块
+    _gen_src = read(Path(__file__).resolve().parent / "generate_advancements.py")
+    if f'c_plant_crop(f"{{NS}}:golden_carrot_crop")' not in _gen_src:
+        bad("bgfinal3-adv-carrot-planting",
+            "生成器 generate_advancements.py 里没有 `c_plant_crop(f\"{NS}:golden_carrot_crop\")`"
+            "（产物是生成的 ⇒ 只改产物改不动根）")
+    _allblocks_src = strip_comments((JAVA / "registry" / "AllBlocks.java").read_text(encoding="utf-8"))
+    if 'BLOCKS.register("golden_carrot_crop"' not in _allblocks_src:
+        bad("bgfinal3-adv-carrot-planting",
+            f"方块 id 真源 AllBlocks.java 里没有注册 golden_carrot_crop"
+            f"（那样 {_CARROT_BLOCK} 是个不存在的方块，判据永远不达成）")
 
     # ---- 输出 ----
     for p in problems:

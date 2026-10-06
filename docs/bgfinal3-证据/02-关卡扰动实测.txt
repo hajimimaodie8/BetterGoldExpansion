@@ -1,0 +1,113 @@
+== bgfinal3 扰动实测矩阵 ==
+扰动前 SHA256（8 个文件）：
+  9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d  src/main/resources/assets/bettergold/textures/trims/color_palettes/indigoseagold.png
+  40d884dca2426283dcdd2e76b099fd43fee9c06896930902b85b777032effef9  src/main/resources/assets/bettergold/lang/zh_cn.json
+  82eb344578b9f29ad90760081388ca17b1b32b8000a85ec883051d28f04d80d5  src/main/resources/assets/bettergold/lang/en_us.json
+  7b3ac419be90d927d1dbc0980bbda5a56ed5a81b660d11e698f7394ea7117501  tools/asset-generator/bgappend-requirements-snapshot/bg-book-8.md
+  904ca900ea6d042fb8e788ccc7298f95b0fa798774380d55dd6ea3d8fe933dd7  src/main/java/com/hjmmd_8/bettergold/event/ModEvents.java
+  5ac2e90eea3fb520773f0e5d364c687664438a08fbb2f2245b7af28ef7305f6d  src/main/resources/data/bettergold/advancement/agriculture/plant_gold_crop.json
+  7aa4ebcb93289dd620f271fd825ca7edf4f10fbe2ad762502c75589b801a1558  tools/asset-generator/generate_advancements.py
+  2445b43b2b39f6f896cb176a4bb3961ba317aaf0a427902cb8d53e791890dce7  tools/asset-generator/validate_trim_assets.py
+
+---- [BASE] 基线（未改任何文件）
+     validate_trim_assets.py            exit=0 (期望 0) hit_expected=True  OK
+     validate_metal_assets.py           exit=0 (期望 0) hit_expected=True  OK
+     validate_metal_data.py             exit=0 (期望 0) hit_expected=True  OK
+     validate_advancements.py           exit=0 (期望 0) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P01] 靛海金色卡换回原版 quartz 的字节（101 B）
+     validate_trim_assets.py            exit=1 (期望 1) hit_expected=True  OK
+     validate_metal_assets.py           exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P02] 靛海金色卡翻转最后 1 个字节
+     validate_trim_assets.py            exit=1 (期望 1) hit_expected=True  OK
+     validate_metal_assets.py           exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P03] zh_cn 回退成旧口径「全套的万坚金盔甲」
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P04] en_us 回退成旧口径「a full set of」
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P05] 冻结快照正文回退成旧口径（语言文件不改）
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P06] ModEvents 的「任意一件」被改成「全套」（一个 || 改成 &&）
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P07] ModEvents 少判一个部位（删掉护腿那一行）
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P08] 删掉 ModEvents 里那一次 PLACED_BLOCK 触发
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P09] 把触发挪到 setBlock 之前（判据会读到空气）
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P10] 去掉 ServerPlayer 守卫（改成无条件触发）
+     validate_metal_data.py             exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P11] 产物里 plant_carrot 的方块改成金麦（判据指错方块）
+     validate_advancements.py           exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P12] 产物里把 plant_carrot 从「种植」OR 组里踢出去
+     validate_advancements.py           exit=1 (期望 1) hit_expected=True  OK
+     validate_advancements.py           exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P13] 产物里整条 plant_carrot criteria 删掉
+     validate_advancements.py           exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [P14] 生成器里那条 criteria 被删（产物没重生成，判「根」有没有了）
+     validate_advancements.py           exit=1 (期望 1) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [R1] ① 只往 validate_trim_assets.py 加一句「靛海金等于 quartz 是预期的」注释
+     validate_trim_assets.py            exit=0 (期望 0) hit_expected=True  OK
+     validate_metal_assets.py           exit=0 (期望 0) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [R2] ② 只往 ModEvents 那个方法里加旧口径注释（全套 / 任意一件）
+     validate_metal_data.py             exit=0 (期望 0) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [R3] ③ 只往金胡萝卜分支里加一句「这里曾调用 PLACED_BLOCK.trigger」的注释
+     validate_metal_data.py             exit=0 (期望 0) hit_expected=True  OK
+     validate_advancements.py           exit=0 (期望 0) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [R4] ④ 只往生成器加注释（金胡萝卜 / placed_block 字样出现在注释里）
+     validate_advancements.py           exit=0 (期望 0) hit_expected=True  OK
+     validate_metal_data.py             exit=0 (期望 0) hit_expected=True  OK
+     复原 OK（8 个文件 SHA256 逐行相同）
+
+---- [FINAL-BASE] 收尾基线（全部复原后）
+     validate_trim_assets.py            exit=0 (期望 0) OK
+     validate_metal_assets.py           exit=0 (期望 0) OK
+     validate_metal_data.py             exit=0 (期望 0) OK
+     validate_advancements.py           exit=0 (期望 0) OK
+
+== 汇总：用例行数 33 / mismatches 0 ==
+== 8 个文件最终 SHA256（应与扰动前逐行相同）==
+  9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d  SAME  src/main/resources/assets/bettergold/textures/trims/color_palettes/indigoseagold.png
+  40d884dca2426283dcdd2e76b099fd43fee9c06896930902b85b777032effef9  SAME  src/main/resources/assets/bettergold/lang/zh_cn.json
+  82eb344578b9f29ad90760081388ca17b1b32b8000a85ec883051d28f04d80d5  SAME  src/main/resources/assets/bettergold/lang/en_us.json
+  7b3ac419be90d927d1dbc0980bbda5a56ed5a81b660d11e698f7394ea7117501  SAME  tools/asset-generator/bgappend-requirements-snapshot/bg-book-8.md
+  904ca900ea6d042fb8e788ccc7298f95b0fa798774380d55dd6ea3d8fe933dd7  SAME  src/main/java/com/hjmmd_8/bettergold/event/ModEvents.java
+  5ac2e90eea3fb520773f0e5d364c687664438a08fbb2f2245b7af28ef7305f6d  SAME  src/main/resources/data/bettergold/advancement/agriculture/plant_gold_crop.json
+  7aa4ebcb93289dd620f271fd825ca7edf4f10fbe2ad762502c75589b801a1558  SAME  tools/asset-generator/generate_advancements.py
+  2445b43b2b39f6f896cb176a4bb3961ba317aaf0a427902cb8d53e791890dce7  SAME  tools/asset-generator/validate_trim_assets.py

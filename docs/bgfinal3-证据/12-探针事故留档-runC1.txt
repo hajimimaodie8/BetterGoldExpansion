@@ -1,0 +1,1005 @@
+Reusing configuration cache.
+> Task :writeClientLegacyClasspath UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :prepareClientRun
+
+> Task :runClient
+WARN StatusConsoleListener Advanced terminal features are not available in this environment
+[15:22:18] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientdev, --version, 21.1.228, --assetIndex, 17, --assetsDir, C:\\Users\\Lenovo\\.gradle\\caches\\neoformruntime\\assets, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.228, --fml.neoFormVersion, 20240808.144430]
+[15:22:18] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: JVM identified as Microsoft OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[15:22:18] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Microsoft; OS Windows 11 arch amd64 version 10.0
+[15:22:18] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [minecraft,forgeclient,forgedatauserdev,testharness,forgeserverdev,forgeserveruserdev,forgejunitdev,forgeclientdev,forgeclientuserdev,forgeserver,forgejunituserdev,forgedatadev]
+[15:22:18] [main/DEBUG] [cp.mo.mo.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [mixin,slf4jfixer,runtime_enum_extender,accesstransformer,runtimedistcleaner]
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Discovering transformation services
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path GAMEDIR is E:\mc\mcmod\bettergold-template-1.21.1\run
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path MODSDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\mods
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\config
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is E:\mc\mcmod\bettergold-template-1.21.1\run\config\fml.toml
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main;bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main from env
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{bettergold=[E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main, E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main]}]
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Found additional transformation services from discovery services: 
+[15:22:18] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
+[15:22:18] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
+[15:22:18] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.6 got version 4.6
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [mixin,fml]
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loading service mixin
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loaded service mixin
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loading service fml
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML 4.0.42 loading
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML found ModLauncher version : 11.0.5+main.901c6ea8
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML found AccessTransformer version : 10.0.1+139da711
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML found EventBus version : null
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: Found Runtime Dist Cleaner
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loaded service fml
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Configuring option handling for services
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Received command line version data  : VersionInfo[neoForgeVersion=21.1.228, fmlVersion=4.0.42, mcVersion=1.21.1, neoFormVersion=20240808.144430]
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services initializing
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service mixin
+[15:22:18] [main/DEBUG] [mixin/]: MixinService [ModLauncher] was successfully booted in cpw.mods.cl.ModuleClassLoader@2de8284b
+[15:22:18] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/Lenovo/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%23138!/ Service=ModLauncher Env=CLIENT
+[15:22:18] [main/DEBUG] [mixin/]: Initialising Mixin Platform Manager
+[15:22:18] [main/DEBUG] [mixin/]: Adding mixin platform agents for container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[15:22:18] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[15:22:18] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[15:22:18] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[15:22:18] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service mixin
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service fml
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Setting up basic FML game directories
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path GAMEDIR is E:\mc\mcmod\bettergold-template-1.21.1\run
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path MODSDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\mods
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\config
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is E:\mc\mcmod\bettergold-template-1.21.1\run\config\fml.toml
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Loading configuration
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Preparing launch handler
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: Using forgeclientdev as launch service
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service fml
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services begin scanning
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service mixin
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service mixin
+[15:22:18] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service fml
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Initiating mod scan
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main;bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main from env
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{bettergold=[E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main, E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main]}]
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.ta.CommonDevLaunchHandler/]: Launching with NeoForge from E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 4 implementations of IModFileCandidateLocator:
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - [built-in] net.neoforged.fml.loading.moddiscovery.locators.NeoForgeDevProvider from loader-4.0.42.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.locators.ModsFolderLocator from loader-4.0.42.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.locators.MavenDirectoryLocator from loader-4.0.42.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	   -1000 - [built-in] net.neoforged.fml.loading.moddiscovery.locators.UserdevLocator from loader-4.0.42.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 2 implementations of IModFileReader:
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.readers.JarModsDotTomlModFileReader from loader-4.0.42.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	   -1000 - net.neoforged.fml.loading.moddiscovery.readers.NestedLibraryModReader from loader-4.0.42.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 1 implementations of IDependencyLocator:
+[15:22:18] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator from loader-4.0.42.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {minecraft} mods - versions {1.21.1}
+[15:22:18] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: NVIDIA GeForce RTX 5060 Laptop GPU/PCIe/SSE2 GL version 4.6.0 NVIDIA 592.01, NVIDIA Corporation
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {neoforge} mods - versions {21.1.228}
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\[JEI物品管理器] jei-1.21.1-neoforge-19.16.1.156.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file [JEI物品管理器] jei-1.21.1-neoforge-19.16.1.156.jar with {jei} mods - versions {19.16.1.156}
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\Patchouli-1.21.1-93-NEOFORGE.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file Patchouli-1.21.1-93-NEOFORGE.jar with {patchouli} mods - versions {1.21.1-93-NEOFORGE}
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModListHandler/CORE]: Found mod coordinates from lists: []
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {bettergold} mods - versions {1.6.0}
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {neoforge} mods - versions {21.1.228}
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\maven.modrinth\farmers-delight\1.21.1-1.3.4\27675ddfcb8cc37e6ea1ab6c15051c7949d94657\farmers-delight-1.21.1-1.3.4.jar
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file farmers-delight-1.21.1-1.3.4.jar with {farmersdelight} mods - versions {1.3.4}
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged.fancymodloader\earlydisplay\4.0.42\46555dbfff14e9e052f1f693aed14d542a74e111\earlydisplay-4.0.42.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged.fancymodloader\loader\4.0.42\76e15f98bf676fb44b36c5e776f52a55581ec43a\loader-4.0.42.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged.accesstransformers\at-modlauncher\10.0.1\5aba50202aceead086bc09fbc2751c9f05cb4890\at-modlauncher-10.0.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\accesstransformers\10.0.1\fd83b5725f76eae9115e9355fa1c456a6a441400\accesstransformers-10.0.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\bus\8.0.5\5b2d33285ab5d1554e9798ad98c40d6ea3868bd5\bus-8.0.5.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\coremods\7.0.3\9147e6f638b4272b3bd5fc8f92ad37802512c6c\coremods-7.0.3.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\cpw.mods\modlauncher\11.0.5\b8f0d49294f733fdb6173931b263553e943dc950\modlauncher-11.0.5.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\mergetool\2.0.0\52fe1949be64e3303aabaaa21e315f551db9c9f4\mergetool-2.0.0-api.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.electronwill.night-config\toml\3.8.3\90b2fd6efcb4a7d5b9810cf78f9d824994d717f2\toml-3.8.3.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.electronwill.night-config\core\3.8.3\b442a95f09e349927f5a945ecb594455870fcf4f\core-3.8.3.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\JarJarSelector\0.4.1\fb3cc7a58af22ad2880adb98af6d518128c47dae\JarJarSelector-0.4.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\JarJarMetadata\0.4.1\f8da03683dc81694556dc3e177c5e3bb77ae6fcb\JarJarMetadata-0.4.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.maven\maven-artifact\3.8.5\4433f50c07debefaed0553bd0068f4f48d449313\maven-artifact-3.8.5.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.jodah\typetools\0.6.3\a01aaa6ddaea9ec07ec4f209487b7a46a526283a\typetools-0.6.3.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.minecrell\terminalconsoleappender\1.3.0\b562e9bb61235c9520e26282cdee71f8f802d1fc\terminalconsoleappender-1.3.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.fabricmc\sponge-mixin\0.15.2+mixin.0.8.7\2af2f021d8e02a0220dc27a7a72b4666d66d44ca\sponge-mixin-0.15.2+mixin.0.8.7.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.openjdk.nashorn\nashorn-core\15.4\f67f5ffaa5f5130cf6fb9b133da00c7df3b532a5\nashorn-core-15.4.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.commons\commons-lang3\3.14.0\1ed471194b02f2c6cb734a0cd6f6f107c673afae\commons-lang3-3.14.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.sf.jopt-simple\jopt-simple\5.0.4\4fdac2fbe92dfad86aa6e9301736f6b4342a3f5c\jopt-simple-5.0.4.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\commons-io\commons-io\2.15.1\f11560da189ab563a5c8e351941415430e9304ea\commons-io-2.15.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\logging\1.2.7\24cb95ffb0e3433fd6e844c04e68009e504ca1c0\logging-1.2.7.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-slf4j2-impl\2.22.1\d7e6693c2606cb7e7335047d7bb96dec52db5665\log4j-slf4j2-impl-2.22.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-core\2.22.1\7183a25510a02ad00cc6a95d3b3d2a7d3c5a8dc4\log4j-core-2.22.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-api\2.22.1\bea6fede6328fabafd7e68363161a7ea6605abd1\log4j-api-2.22.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.guava\guava\32.1.2-jre\5e64ec7e056456bef3a4bc4c6fdaef71e8ab6318\guava-32.1.2-jre.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.10.1\b3add478d4382b78ea20b1671390a858002feb6c\gson-2.10.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.slf4j\slf4j-api\2.0.9\7cf2726fdcfbc8610f9a71fb3ed639871f315340\slf4j-api-2.0.9.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.antlr\antlr4-runtime\4.13.1\17125bae1d965624e265ef49552f6465a2bfa307\antlr4-runtime-4.13.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\srgutils\0.4.15\ca408b131759478f164e010fae0d73997e125fb5\srgutils-0.4.15.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.codehaus.plexus\plexus-utils\3.3.0\cf43b5391de623b36fe066a21127baef82c64022\plexus-utils-3.3.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.jline\jline-reader\3.20.0\8f15415b022a25b473e8e16c28ae913186ffb9c4\jline-reader-3.20.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.machinezoo.noexception\noexception\1.7.1\b65330c98e38a1f915fa54a6e5eca496505e3f0a\noexception-1.7.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.github.oshi\oshi-core\6.4.10\b1d8ab82d11d92fd639b56d639f8f46f739dd5fa\oshi-core-6.4.10.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.guava\failureaccess\1.0.1\1dcf1de382a0bf95a3d8b0849546c88bac1292c9\failureaccess-1.0.1.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.ibm.icu\icu4j\73.2\61ad4ef7f9131fcf6d25c34b817f90d6da06c9e9\icu4j-73.2.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\authlib\6.0.54\de8bc95660e1b2fe8793fd427a7a10dcec5b3ea7\authlib-6.0.54.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\blocklist\1.0.10\5c685c5ffa94c4cd39496c7184c1d122e515ecef\blocklist-1.0.10.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\brigadier\1.3.10\d15b53a14cf20fdcaa98f731af5dda654452c010\brigadier-1.3.10.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\datafixerupper\8.0.16\67d4de6d7f95d89bcf5862995fb854ebaec02a34\datafixerupper-8.0.16.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\patchy\2.2.10\da05971b07cbb379d002cf7eaec6a2048211fefc\patchy-2.2.10.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\text2speech\1.17.9\3cad216e3a7f0c19b4b394388bc9ffc446f13b14\text2speech-1.17.9.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\commons-codec\commons-codec\1.16.0\4e3eb3d79888d76b54e28b350915b5dc3919c9de\commons-codec-1.16.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\commons-logging\commons-logging\1.2\4bfc12adfe4842bf07b657f0369c4cb522955686\commons-logging-1.2.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-buffer\4.1.97.Final\f8f3d8644afa5e6e1a40a3a6aeb9d9aa970ecb4f\netty-buffer-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-codec\4.1.97.Final\384ba4d75670befbedb45c4d3b497a93639c206d\netty-codec-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-common\4.1.97.Final\7cceacaf11df8dc63f23d0fb58e9d4640fc88404\netty-common-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-handler\4.1.97.Final\abb86c6906bf512bf2b797a41cd7d2e8d3cd7c36\netty-handler-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-resolver\4.1.97.Final\cec8348108dc76c47cf87c669d514be52c922144\netty-resolver-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-transport-classes-epoll\4.1.97.Final\795da37ded759e862457a82d9d92c4d39ce8ecee\netty-transport-classes-epoll-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-transport-native-unix-common\4.1.97.Final\d469d84265ab70095b01b40886cabdd433b6e664\netty-transport-native-unix-common-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-transport\4.1.97.Final\f37380d23c9bb079bc702910833b2fd532c9abd0\netty-transport-4.1.97.Final.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\it.unimi.dsi\fastutil\8.5.12\c24946d46824bd528054bface3231d2ecb7e95e8\fastutil-8.5.12.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.java.dev.jna\jna-platform\5.14.0\28934d48aed814f11e4c584da55c49fa7032b31b\jna-platform-5.14.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.java.dev.jna\jna\5.14.0\67bf3eaea4f0718cb376a181a629e5f88fa1c9dd\jna-5.14.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.commons\commons-compress\1.26.0\659feffdd12280201c8aacb8f7be94f9a883c824\commons-compress-1.26.0.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.httpcomponents\httpclient\4.5.13\e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada\httpclient-4.5.13.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.httpcomponents\httpcore\4.4.16\51cf043c87253c9f58b539c9f7e44c8894223850\httpcore-4.4.16.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.jcraft\jorbis\0.0.17\8872d22b293e8f5d7d56ff92be966e6dc28ebdc6\jorbis-0.0.17.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.joml\joml\1.10.5\22566d58af70ad3d72308bab63b8339906deb649\joml-1.10.5.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-freetype\3.3.3\a0db6c84a8becc8ca05f9dbfa985edc348a824c7\lwjgl-freetype-3.3.3.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-freetype\3.3.3\15a8c1de7f51d07a92eae7ce1222557073a0c0c3\lwjgl-freetype-3.3.3-natives-windows-x86.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-glfw\3.3.3\efa1eb78c5ccd840e9f329717109b5e892d72f8e\lwjgl-glfw-3.3.3.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-glfw\3.3.3\32334f3fd5270a59bad9939a93115acb6de36dcf\lwjgl-glfw-3.3.3-natives-windows-x86.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-jemalloc\3.3.3\b543467b7ff3c6920539a88ee602d34098628be5\lwjgl-jemalloc-3.3.3.jar because it was already located earlier
+[15:22:18] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-jemalloc\3.3.3\426222fc027602a5f21b9c0fe79cde6a4c7a011f\lwjgl-jemalloc-3.3.3-natives-windows.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-openal\3.3.3\daada81ceb5fc0c291fbfdd4433cb8d9423577f2\lwjgl-openal-3.3.3.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-openal\3.3.3\87b8d5050e3adb46bb58fe1cb2669a4a48fce10d\lwjgl-openal-3.3.3-natives-windows-x86.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-opengl\3.3.3\2f6b0147078396a58979125a4c947664e98293a\lwjgl-opengl-3.3.3.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-opengl\3.3.3\65e956d3735a1abdc82eff4baec1b61174697d4b\lwjgl-opengl-3.3.3-natives-windows-arm64.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-stb\3.3.3\25dd6161988d7e65f71d5065c99902402ee32746\lwjgl-stb-3.3.3.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-stb\3.3.3\1d9facdf6541de114b0f963be33505b7679c78cb\lwjgl-stb-3.3.3-natives-windows.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-tinyfd\3.3.3\82d755ca94b102e9ca77283b9e2dc46d1b15fbe5\lwjgl-tinyfd-3.3.3.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl-tinyfd\3.3.3\a6697981b0449a5087c1d546fc08b4f73e8f98c9\lwjgl-tinyfd-3.3.3-natives-windows.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl\3.3.3\29589b5f87ed335a6c7e7ee6a5775f81f97ecb84\lwjgl-3.3.3.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lwjgl\lwjgl\3.3.3\9e670718e050aeaeea0c2d5b907cffb142f2e58f\lwjgl-3.3.3-natives-windows-x86.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lz4\lz4-java\1.8.0\4b986a99445e49ea5fbf5d149c4b63f6ed6c6780\lz4-java-1.8.0.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.jline\jline-terminal\3.20.0\d0ddcc708ddf527a3454c941b7b9225cc83a15ff\jline-terminal-3.20.0.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\b421526c5f297295adef1c886e5246c39d4ac629\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.code.findbugs\jsr305\3.0.2\25ea2e8b0c338a877313bd4672d3fe056ea78f0d\jsr305-3.0.2.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.checkerframework\checker-qual\3.33.0\de2b60b62da487644fc11f734e73c8b0b431238f\checker-qual-3.33.0.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.errorprone\error_prone_annotations\2.18.0\89b684257096f548fa39a7df9fdaa409d4d4df91\error_prone_annotations-2.18.0.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.j2objc\j2objc-annotations\2.8\c85270e307e7b822f1086b93689124b89768e273\j2objc-annotations-2.8.jar because it was already located earlier
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.UniqueModListBuilder/]: Found 2 mods for first modid neoforge, selecting most recent based on version data
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.UniqueModListBuilder/]: Selected file neoforge-21.1.228.jar for modid neoforge with version 21.1.228
+[15:22:19] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[15:22:19] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		bettergold 1.6.0 (bettergold)
+		Farmer's Delight 1.3.4 (farmersdelight)
+		Just Enough Items 19.16.1.156 (jei)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.228 (neoforge)
+		Patchouli 1.21.1-93-NEOFORGE (patchouli)
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {minecraft} mods - versions {1.21.1}
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar with languages [LanguageSpec[languageName=minecraft, acceptedVersions=1]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\maven.modrinth\farmers-delight\1.21.1-1.3.4\27675ddfcb8cc37e6ea1ab6c15051c7949d94657\farmers-delight-1.21.1-1.3.4.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file farmers-delight-1.21.1-1.3.4.jar with {farmersdelight} mods - versions {1.3.4}
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\maven.modrinth\farmers-delight\1.21.1-1.3.4\27675ddfcb8cc37e6ea1ab6c15051c7949d94657\farmers-delight-1.21.1-1.3.4.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[4,)]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=farmersdelight.mixins.json, requiredMods=[]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {bettergold} mods - versions {1.6.0}
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main with languages [LanguageSpec[languageName=javafml, acceptedVersions=[1,)]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=bettergold.mixins.json, requiredMods=[]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\Patchouli-1.21.1-93-NEOFORGE.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file Patchouli-1.21.1-93-NEOFORGE.jar with {patchouli} mods - versions {1.21.1-93-NEOFORGE}
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\run\mods\Patchouli-1.21.1-93-NEOFORGE.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[4,)]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=patchouli_xplat.mixins.json, requiredMods=[]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {neoforge} mods - versions {21.1.228}
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[3,]]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=neoforge.mixins.json, requiredMods=[]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\[JEI物品管理器] jei-1.21.1-neoforge-19.16.1.156.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file [JEI物品管理器] jei-1.21.1-neoforge-19.16.1.156.jar with {jei} mods - versions {19.16.1.156}
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\run\mods\[JEI物品管理器] jei-1.21.1-neoforge-19.16.1.156.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[4,)]]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file  with languages []
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service fml
+[15:22:19] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 3 implementations of IModLanguageLoader:
+[15:22:19] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.fml.javafmlmod.FMLJavaModLanguageProvider from loader-4.0.42.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.fml.lowcodemod.LowCodeModLanguageProvider from loader-4.0.42.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.fml.mclanguageprovider.MinecraftModLanguageProvider from loader-4.0.42.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.LanguageProviderLoader/CORE]: Found language provider javafml, version 4.0.42
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.LanguageProviderLoader/CORE]: Found language provider lowcodefml, version 4.0.42
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.LanguageProviderLoader/CORE]: Found language provider minecraft, version 4.0.42
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.ModSorter/]: Configured system mods: [minecraft, neoforge]
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.ModSorter/]: Found system mod: minecraft
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.ModSorter/]: Found system mod: neoforge
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.ModSorter/LOADING]: Found 11 mod requirements (8 mandatory, 3 optional)
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.ModSorter/LOADING]: Found 0 mod requirements missing (0 mandatory, 0 optional)
+[15:22:19] [main/DEBUG] [mixin/]: Adding mixin platform agents for container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f
+[15:22:19] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f
+[15:22:19] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f
+[15:22:19] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f
+[15:22:19] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f
+[15:22:19] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f
+[15:22:19] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent accepted container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading transformers
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service fml
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/LOADING]: Loading coremod transformers
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Not loading coremod script-engine since no mod requested it
+[15:22:19] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 1 implementations of ICoreMod:
+[15:22:19] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.neoforge.coremods.NeoForgeCoreMod from neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net.minecraft.world.level.biome.Biome, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@2b61a019 in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net.minecraft.world.level.levelgen.structure.Structure, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@2b61a019 in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net.minecraft.world.level.block.FlowerPotBlock, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@2b61a019 in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[15:22:19] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net/minecraft/world/entity/ai/village/VillageSiege, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/NaturalSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/npc/CatSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/server/commands/RaidCommand, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/server/commands/SummonCommand, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/levelgen/PatrolSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces$WoodlandMansionPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/monster/Evoker$EvokerSummonSpellGoal, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/EntityType, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/monster/Strider, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/animal/horse/SkeletonTrapGoal, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/npc/Villager, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/levelgen/structure/structures/OceanRuinPieces$OceanRuinPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/monster/Spider, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/levelgen/structure/structures/SwampHutPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/monster/Zombie, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/raid/Raid, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/monster/ZombieVillager, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/levelgen/PhantomSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/level/levelgen/structure/structures/OceanMonumentPieces$OceanMonumentPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67], Target[className=net/minecraft/world/entity/animal/frog/Tadpole, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@8692d67]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@2b61a019 in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.ReplaceFieldWithGetterAccess@2c43eb8 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/biome/Biome;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.ReplaceFieldWithGetterAccess@67440de6 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/structure/Structure;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.ReplaceFieldWithGetterAccess@889d9e8 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/block/FlowerPotBlock;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/ai/village/VillageSiege;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/NaturalSpawner;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/npc/CatSpawner;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/server/commands/RaidCommand;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/server/commands/SummonCommand;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/PatrolSpawner;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces$WoodlandMansionPiece;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/monster/Evoker$EvokerSummonSpellGoal;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/EntityType;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/monster/Strider;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/animal/horse/SkeletonTrapGoal;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/npc/Villager;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/structure/structures/OceanRuinPieces$OceanRuinPiece;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/monster/Spider;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/structure/structures/SwampHutPiece;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/monster/Zombie;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/raid/Raid;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/monster/ZombieVillager;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/PhantomSpawner;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/level/levelgen/structure/structures/OceanMonumentPieces$OceanMonumentPiece;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@5246a3b3 to Target : cpw.mods.modlauncher.api.TargetType@8692d67 {Lnet/minecraft/world/entity/animal/frog/Tadpole;} {} {V}
+[15:22:19] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service fml
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f]
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[FMLMixinPlatformAgent:null]
+[15:22:20] [main/DEBUG] [mixin/]: Compatibility level JAVA_21 specified by farmersdelight.mixins.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+[15:22:20] [main/INFO] [mixin/]: Compatibility level set to JAVA_21
+[15:22:20] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[15:22:20] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(mixin_synthetic)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(mixin_synthetic)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(mixin_synthetic)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(mixin_synthetic)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(mixin_synthetic)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(mixin_synthetic)
+[15:22:20] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(mixin_synthetic)
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixin_synthetic)]
+[15:22:20] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(farmersdelight)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(farmersdelight)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(farmersdelight)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(farmersdelight)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(farmersdelight)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(farmersdelight)
+[15:22:20] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(farmersdelight)
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(farmersdelight)]
+[15:22:20] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(minecraft)
+[15:22:20] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(minecraft)
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[15:22:20] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(patchouli)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(patchouli)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(patchouli)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(patchouli)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(patchouli)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(patchouli)
+[15:22:20] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(patchouli)
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(patchouli)]
+[15:22:20] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(bettergold)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(bettergold)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(bettergold)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(bettergold)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(bettergold)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(bettergold)
+[15:22:20] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(bettergold)
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(bettergold)]
+[15:22:20] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(jei)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(jei)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(jei)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(jei)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(jei)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(jei)
+[15:22:20] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(jei)
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(jei)]
+[15:22:20] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixinextras.neoforge)]
+[15:22:20] [main/DEBUG] [mixin/]: Registering mixin config: mixinextras.init.mixins.json source=SecureJarResource(mixinextras.neoforge)
+[15:22:20] [main/DEBUG] [mixin/]: inject() running with 9 agents
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@2a9bc08f]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[FMLMixinPlatformAgent:null]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixin_synthetic)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(farmersdelight)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(patchouli)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(bettergold)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(jei)]
+[15:22:20] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixinextras.neoforge)]
+[15:22:20] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientdev' with arguments [--version, 21.1.228, --gameDir, ., --assetsDir, C:\Users\Lenovo\.gradle\caches\neoformruntime\assets, --assetIndex, 17]
+[15:22:20] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[15:22:20] [main/DEBUG] [mixin/]: Selecting config farmersdelight.mixins.json
+[15:22:20] [main/DEBUG] [mixin/]: Selecting config patchouli_xplat.mixins.json
+[15:22:20] [main/WARN] [mixin/]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+[15:22:20] [main/DEBUG] [mixin/]: Selecting config bettergold.mixins.json
+[15:22:20] [main/DEBUG] [mixin/]: Selecting config neoforge.mixins.json
+[15:22:20] [main/DEBUG] [mixin/]: Selecting config mixinextras.init.mixins.json
+[15:22:20] [main/DEBUG] [MixinExtras|Service/]: com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3) is taking over from null
+[15:22:20] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
+[15:22:20] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
+[15:22:20] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
+[15:22:20] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
+[15:22:20] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
+[15:22:20] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
+[15:22:20] [main/DEBUG] [mixin/]: Preparing farmersdelight.mixins.json (14)
+[15:22:20] [main/DEBUG] [mixin/]: Preparing patchouli_xplat.mixins.json (10)
+[15:22:20] [main/DEBUG] [mixin/]: Preparing bettergold.mixins.json (2)
+[15:22:20] [main/DEBUG] [mixin/]: Preparing neoforge.mixins.json (2)
+[15:22:20] [main/DEBUG] [mixin/]: Preparing mixinextras.init.mixins.json (0)
+[15:22:20] [main/DEBUG] [mixin/]: Prepared 28 mixins in 0.353 sec (12.6ms avg) (0ms load, 0ms transform, 0ms plugin)
+[15:22:21] [main/DEBUG] [io.ne.ut.in.lo.InternalLoggerFactory/]: Using SLF4J as the default logging framework
+[15:22:21] [main/DEBUG] [io.ne.ut.ResourceLeakDetector/]: -Dio.netty.leakDetection.level: simple
+[15:22:21] [main/DEBUG] [io.ne.ut.ResourceLeakDetector/]: -Dio.netty.leakDetection.targetRecords: 4
+[15:22:21] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[15:22:21] [main/DEBUG] [mixin/]: Registering new injector for @SugarWrapper with com.llamalad7.mixinextras.sugar.impl.SugarWrapperInjectionInfo
+[15:22:21] [main/DEBUG] [mixin/]: Registering new injector for @FactoryRedirectWrapper with com.llamalad7.mixinextras.wrapper.factory.FactoryRedirectWrapperInjectionInfo
+[15:22:21] [main/DEBUG] [mixin/]: Registering new injector for @ExpressionInjectorWrapper with com.llamalad7.mixinextras.expression.impl.wrapper.ExpressionInjectorWrapperInjectionInfo
+[15:22:21] [main/DEBUG] [mixin/]: Mixing datafix.ItemStackComponentizationFixMixin from farmersdelight.mixins.json into net.minecraft.util.datafix.fixes.ItemStackComponentizationFix
+[15:22:21] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$fixCustomStacks$2(Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;)Lcom/mojang/serialization/Dynamic; to mdb3b2e5$farmersdelight$lambda$fixCustomStacks$2$0 in farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight
+[15:22:21] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$fixCustomStacks$1(Lcom/mojang/serialization/Dynamic;)Lcom/mojang/serialization/Dynamic; to mdb3b2e5$farmersdelight$lambda$fixCustomStacks$1$1 in farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight
+[15:22:21] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$fixCustomStacks$0(Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;)V to mdb3b2e5$farmersdelight$lambda$fixCustomStacks$0$2 in farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight
+[15:22:21] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight->@Inject::fixCustomStacks(Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V doesn't use it's CallbackInfo
+[15:22:22] [main/DEBUG] [mixin/]: Mixing datafix.V1460Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V1460
+[15:22:22] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$farmersdelight$registerHandlerInventory$1(Lcom/mojang/datafixers/schemas/Schema;Ljava/lang/String;)Lcom/mojang/datafixers/types/templates/TypeTemplate; to mdb3b2e5$farmersdelight$lambda$farmersdelight$registerHandlerInventory$1$0 in farmersdelight.mixins.json:datafix.V1460Mixin from mod farmersdelight
+[15:22:22] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$registerFarmersDelightBlockEntities$0(Lcom/mojang/datafixers/schemas/Schema;Ljava/lang/String;)Lcom/mojang/datafixers/types/templates/TypeTemplate; to mdb3b2e5$farmersdelight$lambda$registerFarmersDelightBlockEntities$0$1 in farmersdelight.mixins.json:datafix.V1460Mixin from mod farmersdelight
+[15:22:22] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:datafix.V1460Mixin from mod farmersdelight->@Inject::registerFarmersDelightBlockEntities(Lcom/mojang/datafixers/schemas/Schema;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:22] [main/DEBUG] [mixin/]: Mixing datafix.V3818_3Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V3818_3
+[15:22:22] [main/DEBUG] [mixin/]: Mixing client.MixinSystemReport from patchouli_xplat.mixins.json into net.minecraft.SystemReport
+[15:22:22] [main/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinSystemReport from mod patchouli->@Inject::patchouli_addContext(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V doesn't use it's CallbackInfo
+[15:22:22] [main/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinSystemReport from mod patchouli->@Inject::patchouli_addContext(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V has 0 override(s) in child classes
+[15:22:22] [main/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinSystemReport from mod patchouli->@Inject::patchouli_addContext(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V won't be passed a CallbackInfo as a result
+[15:22:22] [main/DEBUG] [os.ut.FileUtil/]: No oshi.properties file found from ClassLoader cpw.mods.modlauncher.TransformingClassLoader@6d9fb2d1
+[15:22:22] [Datafixer Bootstrap/INFO] [mojang/DataFixerBuilder]: 229 Datafixer optimizations took 315 milliseconds
+[15:22:23] [main/DEBUG] [os.ut.FileUtil/]: No oshi.architecture.properties file found from ClassLoader cpw.mods.modlauncher.TransformingClassLoader@6d9fb2d1
+[15:22:23] [main/DEBUG] [mixin/]: Mixing client.AccessorScreen from patchouli_xplat.mixins.json into net.minecraft.client.gui.screens.Screen
+[15:22:23] [main/DEBUG] [mixin/]: Mixing NourishmentAlwaysEatMixin from farmersdelight.mixins.json into net.minecraft.world.entity.player.Player
+[15:22:23] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:NourishmentAlwaysEatMixin from mod farmersdelight->@Inject::alwaysEatUnderNourishmentEffect(ZLorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:23] [main/DEBUG] [mixin/]: Mixing CanvasSignEditScreenMixin from farmersdelight.mixins.json into net.minecraft.client.player.LocalPlayer
+[15:22:23] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:CanvasSignEditScreenMixin from mod farmersdelight->@Inject::openCanvasSignEditScreen(Lnet/minecraft/world/level/block/entity/SignBlockEntity;ZLorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V does use it's CallbackInfo
+[15:22:23] [main/DEBUG] [mixin/]: Mixing client.MixinInventoryScreen from patchouli_xplat.mixins.json into net.minecraft.client.gui.screens.inventory.InventoryScreen
+[15:22:23] [main/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinInventoryScreen from mod patchouli->@Inject::onGuiInitPost(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V doesn't use it's CallbackInfo
+[15:22:23] [main/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinInventoryScreen from mod patchouli->@Inject::onGuiInitPost(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V has 0 override(s) in child classes
+[15:22:23] [main/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinInventoryScreen from mod patchouli->@Inject::onGuiInitPost(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V won't be passed a CallbackInfo as a result
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: Mixing MappedRegistryAccessor from neoforge.mixins.json into net.minecraft.core.MappedRegistry
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: Mixing CuttingBoardDispenserMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.DispenserBlock
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:CuttingBoardDispenserMixin from mod farmersdelight->@Inject::onCuttingBoardDispenseFromInject(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;Lnet/minecraft/world/level/block/entity/DispenserBlockEntity;Lnet/minecraft/core/dispenser/BlockSource;ILnet/minecraft/world/item/ItemStack;)V does use it's CallbackInfo
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: Mixing KeepRichSoilUntrampledMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FarmBlock
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:KeepRichSoilUntrampledMixin from mod farmersdelight->@Inject::turnToDirt(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V does use it's CallbackInfo
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: Mixing RopeFenceConnectionMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FenceBlock
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:RopeFenceConnectionMixin from mod farmersdelight->@Inject::denyConnectionToRopeFenceGate(Lnet/minecraft/world/level/block/state/BlockState;ZLnet/minecraft/core/Direction;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:RopeFenceConnectionMixin from mod farmersdelight->@Inject::denyConnectionToRopeFence(Lnet/minecraft/world/level/block/state/BlockState;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: Mixing CampfireBaleMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.CampfireBlock
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:CampfireBaleMixin from mod farmersdelight->@Inject::isFDSmokeSource(Lnet/minecraft/world/level/block/state/BlockState;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: Mixing KeepRichSoilTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: Renaming synthetic method lambda$cancelSetDirtIfRichSoil$0(Lnet/minecraft/world/level/block/state/BlockState;)Z to mdb3b2e5$farmersdelight$lambda$cancelSetDirtIfRichSoil$0$0 in farmersdelight.mixins.json:KeepRichSoilTreeMixin from mod farmersdelight
+[15:22:23] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:KeepRichSoilTreeMixin from mod farmersdelight->@Inject::cancelSetDirtIfRichSoil(Lnet/minecraft/world/level/LevelSimulatedReader;Ljava/util/function/BiConsumer;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/levelgen/feature/configurations/TreeConfiguration;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V does use it's CallbackInfo
+[15:22:24] [pool-10-thread-1/DEBUG] [mixin/]: Mixing BlockEntityTypeAccessor from neoforge.mixins.json into net.minecraft.world.level.block.entity.BlockEntityType
+[15:22:25] [pool-10-thread-1/DEBUG] [mixin/]: Mixing PlacePumpkinPieMixin from farmersdelight.mixins.json into net.minecraft.world.item.Item
+[15:22:25] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:PlacePumpkinPieMixin from mod farmersdelight->@Inject::usePumpkinPie(Lnet/minecraft/world/item/context/UseOnContext;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:25] [pool-10-thread-1/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: -Dio.netty.noUnsafe: false
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: Java version: 21
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: sun.misc.Unsafe.theUnsafe: available
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: sun.misc.Unsafe.copyMemory: available
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: sun.misc.Unsafe.storeFence: available
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: java.nio.Buffer.address: available
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: direct buffer constructor: unavailable: Reflective setAccessible(true) disabled
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: java.nio.Bits.unaligned: available, true
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent0/]: java.nio.DirectByteBuffer.<init>(long, {int,long}): unavailable
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: sun.misc.Unsafe: available
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: maxDirectMemory: 8438939648 bytes (maybe)
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.tmpdir: C:\Users\Lenovo\AppData\Local\Temp (java.io.tmpdir)
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.bitMode: 64 (sun.arch.data.model)
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: Platform: Windows
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.maxDirectMemory: -1 bytes
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.uninitializedArrayAllocationThreshold: -1
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.CleanerJava9/]: java.nio.ByteBuffer.cleaner(): available
+[15:22:25] [pool-10-thread-1/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.noPreferDirect: false
+[15:22:26] [pool-10-thread-1/DEBUG] [mixin/]: Mixing AccessorSmithingTransformRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTransformRecipe
+[15:22:26] [pool-10-thread-1/DEBUG] [mixin/]: Mixing AccessorSmithingTrimRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTrimRecipe
+[15:22:26] [pool-10-thread-1/DEBUG] [mixin/]: Mixing VillagersTargetRichSoilMixin from farmersdelight.mixins.json into net.minecraft.world.entity.ai.sensing.SecondaryPoiSensor
+[15:22:26] [pool-10-thread-1/DEBUG] [mixin/]: Mixing KeepRichSoilGiantTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.Feature
+[15:22:26] [pool-10-thread-1/DEBUG] [mixin/]: Renaming synthetic method lambda$keepRichSoil$0(Lnet/minecraft/world/level/block/state/BlockState;)Z to mdb3b2e5$farmersdelight$lambda$keepRichSoil$0$0 in farmersdelight.mixins.json:KeepRichSoilGiantTreeMixin from mod farmersdelight
+[15:22:26] [pool-10-thread-1/DEBUG] [mixin/]: farmersdelight.mixins.json:KeepRichSoilGiantTreeMixin from mod farmersdelight->@Inject::keepRichSoil(Lnet/minecraft/world/level/LevelSimulatedReader;Lnet/minecraft/core/BlockPos;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:27] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[15:22:27] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[15:22:27] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[15:22:27] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[15:22:27] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[15:22:27] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[15:22:27] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[15:22:27] [Render thread/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[15:22:27] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Dev
+[15:22:27] [Render thread/DEBUG] [mixin/]: Mixing client.AccessorKeyMapping from patchouli_xplat.mixins.json into net.minecraft.client.KeyMapping
+[15:22:27] [Render thread/DEBUG] [mixin/]: Renaming @Accessor method getAllKeyMappings()Ljava/util/Map; to getAllKeyMappings$patchouli_$md$b3b2e5$0 in patchouli_xplat.mixins.json:client.AccessorKeyMapping from mod patchouli
+[15:22:27] [Render thread/INFO] [minecraft/Minecraft]: Backend library: LWJGL version 3.3.3+5
+[15:22:28] [Render thread/DEBUG] [ne.ne.fm.ModWorkManager/LOADING]: Using 24 threads for parallel mod-loading
+[15:22:28] [Render thread/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [vectorwing.farmersdelight.FarmersDelight]
+[15:22:28] [Render thread/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [vazkii.patchouli.neoforge.common.NeoForgeModInitializer]
+[15:22:28] [Render thread/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [com.hjmmd_8.bettergold.bettergold, com.hjmmd_8.bettergold.bettergoldClient]
+[15:22:28] [Render thread/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [net.neoforged.neoforge.common.NeoForgeMod, net.neoforged.neoforge.client.ClientNeoForgeMod]
+[15:22:28] [Render thread/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [mezz.jei.neoforge.JustEnoughItems]
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file patchouli-client.toml for patchouli tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file jei-server.toml for jei tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.ne.in.ve.ne.NeoForgeVersion/CORE]: Found NeoForge version 21.1.228
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.ne.in.ve.ne.NeoForgeVersion/CORE]: Found FML version 4.0.42
+[15:22:28] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.228, for MC 1.21.1
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for patchouli
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vazkii.patchouli.neoforge.client.NeoForgeClientInitializer for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file farmersdelight-common.toml for farmersdelight tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file farmersdelight-client.toml for farmersdelight tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file neoforge-client.toml for neoforge tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file neoforge-server.toml for neoforge tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file neoforge-common.toml for neoforge tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvazkii/patchouli/neoforge/client/NeoForgeClientInitializer; to the mod event bus of mod patchouli
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vazkii.patchouli.neoforge.common.NeoForgeModInitializer for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvazkii/patchouli/neoforge/common/NeoForgeModInitializer; to the mod event bus of mod patchouli
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.pl.Services/]: Loaded mezz.jei.neoforge.platform.PlatformHelper@2cbcb569 for service interface mezz.jei.common.platform.IPlatformHelper
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for neoforge
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.server.command.ConfigCommand for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/server/command/ConfigCommand; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Loading config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-debug.ini
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.network.filters.GenericPacketSplitter for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Saving config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-debug.ini
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Loading config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-mod-id-format.ini
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Saving config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-mod-id-format.ini
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Loading config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-colors.ini
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Saving config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-colors.ini
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Loading config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-client.ini
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.co.co.fi.ConfigSerializer/]: Saving config file: E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei\jei-client.ini
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkAccessible: true
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkBounds: true
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.ut.ResourceLeakDetectorFactory/]: Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@271d2aaf
+[15:22:28] [modloading-worker-0/INFO] [me.je.li.lo.PluginCaller/]: Sending ConfigManager...
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending ConfigManager: jei:minecraft...
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending ConfigManager: farmersdelight:jei_plugin...
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending ConfigManager: patchouli:patchouli...
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending ConfigManager: jei:neoforge_gui...
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending ConfigManager: jei:debug...
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending ConfigManager: jei:gui...
+[15:22:28] [modloading-worker-0/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending ConfigManager: jei:internal...
+[15:22:28] [modloading-worker-0/INFO] [me.je.li.lo.PluginCaller/]: Sending ConfigManager took 4.565 ms
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for jei
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numHeapArenas: 48
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numDirectArenas: 48
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.pageSize: 8192
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxOrder: 9
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.chunkSize: 4194304
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.smallCacheSize: 256
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.normalCacheSize: 64
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimInterval: 8192
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimIntervalMillis: 0
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.useCacheForAllThreads: false
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.data.DataGenerators for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/data/DataGenerators; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.network.ModNetworking for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/network/ModNetworking; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.SkilletItem$SkilletEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/SkilletItem$SkilletEvents; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.KnifeItem$KnifeEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/KnifeItem$KnifeEvents; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.HorseFeedItem$HorseFeedEvent for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/HorseFeedItem$HorseFeedEvent; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment$BackstabbingEvent for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/enchantment/BackstabbingEnchantment$BackstabbingEvent; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.DogFoodItem$DogFoodEvent for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/DogFoodItem$DogFoodEvent; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.event.VillagerEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.allocator.type: pooled
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.threadLocalDirectBufferSize: 0
+[15:22:28] [modloading-worker-0/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.maxThreadLocalCharBufferSize: 16384
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/event/VillagerEvents; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.event.CommonModBusEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/event/CommonModBusEvents; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.event.CommonEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/event/CommonEvents; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.CuttingBoardBlockEntity for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/CuttingBoardBlockEntity; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/network/filters/GenericPacketSplitter; to the mod event bus of mod neoforge
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.network.NetworkInitialization for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/network/NetworkInitialization; to the mod event bus of mod neoforge
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.CookingPotBlockEntity for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.network.ConfigurationInitialization for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/network/ConfigurationInitialization; to the mod event bus of mod neoforge
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.common.MonsterRoomHooks for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/common/MonsterRoomHooks; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/CookingPotBlockEntity; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.common.DeferredSpawnEggItem$CommonHandler for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.CabinetBlockEntity for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/common/DeferredSpawnEggItem$CommonHandler; to the mod event bus of mod neoforge
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.common.DeferredSpawnEggItem$ColorRegisterHandler for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/CabinetBlockEntity; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.BasketBlockEntity for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/common/DeferredSpawnEggItem$ColorRegisterHandler; to the mod event bus of mod neoforge
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.client.model.data.ModelDataManager for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/BasketBlockEntity; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.CuttingBoardBlock$ToolCarvingEvent for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/client/model/data/ModelDataManager; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/CuttingBoardBlock$ToolCarvingEvent; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.client.event.TooltipEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.client.ParticleBoundsDebugRenderer for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/client/event/TooltipEvents; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.client.event.KeybindEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/client/event/KeybindEvents; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.client.event.ClientSetupEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/client/event/ClientSetupEvents; to the mod event bus of mod farmersdelight
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/client/ParticleBoundsDebugRenderer; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.client.ClientHooks$ClientEvents for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/client/ClientHooks$ClientEvents; to the mod event bus of mod neoforge
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.client.BlockEntityRenderBoundsDebugRenderer for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/client/BlockEntityRenderBoundsDebugRenderer; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.attachment.AttachmentSync for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/attachment/AttachmentSync; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.attachment.AttachmentInternals for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/attachment/AttachmentInternals; to the game event bus
+[15:22:28] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[15:22:28] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: 已注册金属族 8 套: [flamegold(烈燃金), voodoogold(巫毒金), thundergold(结雷金), indigoseagold(靛海金), illusiongold(幻惑金), thornsgold(树棘金), echogold(幽咆金), sturdygold(万坚金)]
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file bettergold-common.toml for bettergold tracking
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for bettergold
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.bettergoldClient for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/bettergoldClient; to the mod event bus of mod bettergold
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.client.ArmorTrimItemModels for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/client/ArmorTrimItemModels; to the mod event bus of mod bettergold
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.client.CreativeSectionBanners for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/client/CreativeSectionBanners; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.client.ThunderSoundClientHandler for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/client/ThunderSoundClientHandler; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.probe.bgfinal3.BgFinal3ClientProbe for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/probe/bgfinal3/BgFinal3ClientProbe; to the game event bus
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.probe.bgfinal3.BgFinal3Probe for @SubscribeEvent-annotated methods
+[15:22:28] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/probe/bgfinal3/BgFinal3Probe; to the game event bus
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loading configs type CLIENT
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\patchouli-client.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\patchouli-client.toml for changes
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\farmersdelight-client.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\farmersdelight-client.toml for changes
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.ne.co.NeoForgeConfig/FORGEMOD]: Loaded NeoForge config file neoforge-client.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-client.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-client.toml for changes
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loading configs type COMMON
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\farmersdelight-common.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\farmersdelight-common.toml for changes
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.ne.co.NeoForgeConfig/FORGEMOD]: Loaded NeoForge config file neoforge-common.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-common.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-common.toml for changes
+[15:22:29] [modloading-sync-worker/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[15:22:29] [modloading-sync-worker/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml
+[15:22:29] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml for changes
+[15:22:29] [Render thread/DEBUG] [mixin/]: Mixing ItemRendererTridentMixin from bettergold.mixins.json into net.minecraft.client.renderer.entity.ItemRenderer
+[15:22:29] [Render thread/DEBUG] [mixin/]: bettergold.mixins.json:ItemRendererTridentMixin from mod bettergold->@Inject::bettergold$ourTridentInHandModel(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;ILorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[15:22:29] [Render thread/DEBUG] [mixin/]: Mixing client.MixinLevelRenderer from patchouli_xplat.mixins.json into net.minecraft.client.renderer.LevelRenderer
+[15:22:29] [Render thread/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinLevelRenderer from mod patchouli->@Inject::onRender(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V doesn't use it's CallbackInfo
+[15:22:29] [Render thread/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinLevelRenderer from mod patchouli->@Inject::onRender(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V has 0 override(s) in child classes
+[15:22:29] [Render thread/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinLevelRenderer from mod patchouli->@Inject::onRender(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V won't be passed a CallbackInfo as a result
+[15:22:29] [Render thread/DEBUG] [mixin/]: Mixing HideBlockBreakProgressMixin from farmersdelight.mixins.json into net.minecraft.client.renderer.block.BlockRenderDispatcher
+[15:22:29] [Render thread/DEBUG] [mixin/]: farmersdelight.mixins.json:HideBlockBreakProgressMixin from mod farmersdelight->@Inject::hideBlockDamage(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/BlockAndTintGetter;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/neoforged/neoforge/client/model/data/ModelData;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V does use it's CallbackInfo
+[15:22:29] [Render thread/DEBUG] [mixin/]: Mixing client.AccessorMultiBufferSource from patchouli_xplat.mixins.json into net.minecraft.client.renderer.MultiBufferSource$BufferSource
+[15:22:29] [Render thread/INFO] [co.hj.be.bettergold/]: 1.5 武器轮：已为 8 件盾牌 + 8 件三叉戟登记自定义物品渲染器（MetalWeaponItemRenderer）
+[15:22:29] [Render thread/INFO] [ne.ne.ne.ga.GameTestHooks/]: Enabled Gametest Namespaces: [bettergold]
+[15:22:29] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, mod/farmersdelight, mod/patchouli, mod/bettergold, mod/neoforge, mod/jei
+[15:22:29] [Worker-Main-1/DEBUG] [patchouli/]: Instantiating xplat impl: vazkii.patchouli.neoforge.xplat.NeoForgeXplatImpl
+[15:22:29] [Worker-Main-1/INFO] [co.hj.be.bettergold/]: HELLO FROM COMMON SETUP
+[15:22:29] [Worker-Main-1/INFO] [co.hj.be.bettergold/]: DIRT BLOCK >> minecraft:dirt
+[15:22:29] [Worker-Main-1/INFO] [co.hj.be.bettergold/]: The magic number is... 42
+[15:22:29] [Worker-Main-1/INFO] [co.hj.be.bettergold/]: ITEM >> minecraft:iron_ingot
+[15:22:29] [Render thread/DEBUG] [ne.ne.fm.DeferredWorkQueue/LOADING]: Dispatching synchronous work for work queue Common setup: 3 jobs
+[15:22:29] [Render thread/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[15:22:29] [Render thread/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[15:22:29] [Render thread/DEBUG] [ne.ne.fm.DeferredWorkQueue/LOADING]: Synchronous work queue completed in 6.217 ms
+[15:22:29] [Worker-Main-1/INFO] [minecraft/UnihexProvider]: Found unifont_jp_patch-15.1.05.hex, loading
+[15:22:29] [Worker-Main-2/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.1.05.hex, loading
+[15:22:29] [Worker-Main-3/INFO] [co.hj.be.bettergold/]: HELLO FROM CLIENT SETUP
+[15:22:29] [Worker-Main-3/INFO] [co.hj.be.bettergold/]: MINECRAFT NAME >> Dev
+[15:22:29] [Render thread/DEBUG] [ne.ne.fm.DeferredWorkQueue/LOADING]: Dispatching synchronous work for work queue Sided setup: 3 jobs
+[15:22:29] [Render thread/INFO] [co.hj.be.bettergold/]: 1.5 武器轮：已为 32 件武器登记物品模型谓词（弓 pull/pulling、弩 pull/pulling/charged/firework、三叉戟 throwing、盾牌 blocking）
+[15:22:29] [Render thread/DEBUG] [ne.ne.fm.DeferredWorkQueue/LOADING]: Synchronous work queue completed in 59.56 ms
+[15:22:31] [Worker-Main-17/INFO] [co.hj.be.bettergold/]: 1.5 武器轮：已登记 16 个三叉戟 additional model（6 金属 × 手持/蓄力）
+[15:22:31] [Worker-Main-17/INFO] [co.hj.be.bettergold/]: [bettergold] 盔甲纹饰物品模型：已包装 57 件盔甲物品模型，我方纹饰材质 = [sturdygold, flamegold, thornsgold, echogold, unwanted_antique, indigoseagold, illusiongold, thundergold, voodoogold]
+[15:22:32] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
+[15:22:32] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[15:22:32] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device OpenAL Soft on 扬声器 (Realtek(R) Audio)
+[15:22:32] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/signs.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 2048x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 64x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x512x0 minecraft:textures/atlas/gui.png-atlas
+[15:22:33] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[15:22:33] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader preloaded 42 jsons
+[15:22:33] [Render thread/DEBUG] [patchouli/]: Not reloading resource pack-based books as client world is missing
+[15:22:33] [Render thread/INFO] [ne.ne.ne.cl.en.an.js.AnimationLoader/]: Loaded 0 entity animations
+[15:22:33] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 jei:textures/atlas/gui.png-atlas
+[15:22:33] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run dist=CLIENT
+[15:22:45] [Render thread/INFO] [minecraft/RecipeManager]: Loaded 1987 recipes
+[15:22:46] [Render thread/INFO] [minecraft/AdvancementTree]: Loaded 1668 advancements
+[15:22:46] [Render thread/INFO] [me.je.ne.st.StartEventObserver/]: JEI StartEventObserver received class net.neoforged.neoforge.event.TagsUpdatedEvent too early, ignoring
+[15:22:46] [Render thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bgfinal3probe
+[15:22:46] [Server thread/INFO] [minecraft/IntegratedServer]: Starting integrated minecraft server version 1.21.1
+[15:22:46] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[15:22:46] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loading configs type SERVER
+[15:22:46] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei-server.toml
+[15:22:46] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei-server.toml for changes
+[15:22:46] [Server thread/DEBUG] [ne.ne.ne.co.NeoForgeConfig/FORGEMOD]: Loaded NeoForge config file neoforge-server.toml
+[15:22:46] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-server.toml
+[15:22:46] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-server.toml for changes
+[15:22:47] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[15:22:47] [progressListener/INFO] [minecraft/LoggerChunkProgressListener]: 准备生成区域中：0%
+[15:22:47] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[15:22:47] [Server thread/INFO] [co.hj.be.bettergold/]: HELLO from server starting
+[15:22:47] [Server thread/INFO] [patchouli/]: Sending reload packet to clients
+[15:22:47] [progressListener/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 419 ms
+[15:22:47] [Server thread/INFO] [minecraft/IntegratedServer]: Changing view distance to 12, from 10
+[15:22:47] [Server thread/INFO] [minecraft/IntegratedServer]: Changing simulation distance to 12, from 0
+[15:22:47] [Render thread/DEBUG] [io.ne.ch.MultithreadEventLoopGroup/]: -Dio.netty.eventLoopThreads: 48
+[15:22:47] [Render thread/DEBUG] [io.ne.ut.co.GlobalEventExecutor/]: -Dio.netty.globalEventExecutor.quietPeriodSeconds: 1
+[15:22:47] [Render thread/DEBUG] [io.ne.ch.ni.NioEventLoop/]: -Dio.netty.noKeySetOptimization: false
+[15:22:47] [Render thread/DEBUG] [io.ne.ch.ni.NioEventLoop/]: -Dio.netty.selectorAutoRebuildThreshold: 512
+[15:22:47] [Render thread/DEBUG] [io.ne.ut.in.PlatformDependent/]: org.jctools-core.MpscChunkedArrayQueue: available
+[15:22:47] [Render thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.processId: 23000 (auto-detected)
+[15:22:47] [Render thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv4Stack: false
+[15:22:47] [Render thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv6Addresses: system
+[15:22:47] [Render thread/DEBUG] [io.ne.ut.NetUtilInitializations/]: Loopback interface: loopback_0 (Software Loopback Interface 1, 0:0:0:0:0:0:0:1)
+[15:22:47] [Render thread/DEBUG] [io.ne.ut.NetUtil/]: Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
+[15:22:47] [Render thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.machineId: a8:2b:dd:ff:fe:55:ab:73 (auto-detected)
+[15:22:48] [Render thread/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.maxCapacityPerThread: 4096
+[15:22:48] [Render thread/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.ratio: 8
+[15:22:48] [Render thread/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.chunkSize: 32
+[15:22:48] [Render thread/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.blocking: false
+[15:22:48] [Render thread/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.batchFastThreadLocalOnly: true
+[15:22:48] [Netty Server IO #1/DEBUG] [ne.ne.ne.ne.fi.NetworkFilters/]: Injected net.neoforged.neoforge.network.filters.GenericPacketSplitter@13e188ed into net.minecraft.network.Connection@8ffd003
+[15:22:48] [Netty Local Client IO #0/DEBUG] [ne.ne.ne.ne.fi.NetworkFilters/]: Injected net.neoforged.neoforge.network.filters.GenericPacketSplitter@46c49e24 into net.minecraft.network.Connection@9e5f13a
+[15:22:48] [Render thread/INFO] [me.je.ne.st.StartEventObserver/]: JEI StartEventObserver received class net.neoforged.neoforge.event.TagsUpdatedEvent
+[15:22:48] [Render thread/DEBUG] [mixin/]: Mixing client.AccessorClientAdvancements from patchouli_xplat.mixins.json into net.minecraft.client.multiplayer.ClientAdvancements
+[15:22:48] [Render thread/DEBUG] [mixin/]: Mixing client.MixinClientAdvancements from patchouli_xplat.mixins.json into net.minecraft.client.multiplayer.ClientAdvancements
+[15:22:48] [Render thread/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinClientAdvancements from mod patchouli->@Inject::patchouli_onSync(Lnet/minecraft/network/protocol/game/ClientboundUpdateAdvancementsPacket;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V doesn't use it's CallbackInfo
+[15:22:48] [Render thread/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinClientAdvancements from mod patchouli->@Inject::patchouli_onSync(Lnet/minecraft/network/protocol/game/ClientboundUpdateAdvancementsPacket;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V has 0 override(s) in child classes
+[15:22:48] [Render thread/DEBUG] [mixin/]: patchouli_xplat.mixins.json:client.MixinClientAdvancements from mod patchouli->@Inject::patchouli_onSync(Lnet/minecraft/network/protocol/game/ClientboundUpdateAdvancementsPacket;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V won't be passed a CallbackInfo as a result
+[15:22:48] [Netty Server IO #1/DEBUG] [ne.ne.ne.ne.fi.NetworkFilters/]: Injected net.neoforged.neoforge.network.filters.GenericPacketSplitter@3e4515d5 into net.minecraft.network.Connection@8ffd003
+[15:22:48] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:68297fd7] logged in with entity id 67 at (-247.5, 64.0, 42.5)
+[15:22:48] [Server thread/INFO] [minecraft/MinecraftServer]: Dev加入了游戏
+[15:22:48] [Render thread/INFO] [me.je.ne.st.StartEventObserver/]: JEI StartEventObserver received class net.neoforged.neoforge.client.event.RecipesUpdatedEvent
+[15:22:48] [Render thread/INFO] [me.je.ne.st.StartEventObserver/]: JEI StartEventObserver transitioning state from LISTENING to JEI_STARTED
+[15:22:48] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Starting JEI...
+[15:22:48] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering item subtypes...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: jei:minecraft...
+[15:22:48] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: jei:minecraft took 15.91 milliseconds
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: farmersdelight:jei_plugin...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: patchouli:patchouli...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: jei:neoforge_gui...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: jei:debug...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: jei:gui...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering item subtypes: jei:internal...
+[15:22:48] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering item subtypes took 20.43 ms
+[15:22:48] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering fluid subtypes...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering fluid subtypes: jei:minecraft...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering fluid subtypes: farmersdelight:jei_plugin...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering fluid subtypes: patchouli:patchouli...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering fluid subtypes: jei:neoforge_gui...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering fluid subtypes: jei:debug...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering fluid subtypes: jei:gui...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering fluid subtypes: jei:internal...
+[15:22:48] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering fluid subtypes took 3.538 ms
+[15:22:48] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering ingredients...
+[15:22:48] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: jei:minecraft...
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 402/402 new items from creative tab: 建筑方块
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 198/198 new items from creative tab: 染色方块
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 201/226 new items from creative tab: 自然方块
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 138/225 new items from creative tab: 功能方块
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 29/68 new items from creative tab: 红石方块
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Skipping creative tab: '已保存的快捷栏' because it is type: HOTBAR
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Skipping creative tab: '搜索物品' because it is type: SEARCH
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 101/113 new items from creative tab: 工具与实用物品
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 92/104 new items from creative tab: 战斗用品
+[15:22:48] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 196/199 new items from creative tab: 食物与饮品
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 259/273 new items from creative tab: 原材料
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 80/80 new items from creative tab: 刷怪蛋
+[15:22:49] [Render thread/WARN] [me.je.li.pl.va.in.ItemStackListFactory/]: Item Group has no display items and no search tab display items. Items from this group will be missing from the JEI ingredient list. 管理员用品
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Skipping creative tab: '生存模式物品栏' because it is type: INVENTORY
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 184/184 new items from creative tab: 农夫乐事
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.va.in.ItemStackListFactory/]: Added 358/358 new items from creative tab: 更有用的金
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: jei:minecraft took 135.1 milliseconds
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering ingredients: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering ingredients took 135.7 ms
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering search ingredient aliases...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering search ingredient aliases: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering search ingredient aliases: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering search ingredient aliases: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering search ingredient aliases: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering search ingredient aliases: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering search ingredient aliases: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering search ingredient aliases: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering search ingredient aliases took 744.2 μs
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering Mod Info...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Mod Info: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Mod Info: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Mod Info: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Mod Info: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Mod Info: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Mod Info: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Mod Info: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering Mod Info took 567.9 μs
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering categories...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: jei:minecraft...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: jei:minecraft took 75.20 milliseconds
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: farmersdelight:jei_plugin took 11.97 milliseconds
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering categories: jei:internal took 18.17 milliseconds
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering categories took 106.8 ms
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering vanilla category extensions...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering vanilla category extensions: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering vanilla category extensions: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering vanilla category extensions: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering vanilla category extensions: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering vanilla category extensions: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering vanilla category extensions: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering vanilla category extensions: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering vanilla category extensions took 5.909 ms
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering recipe catalysts...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipe catalysts: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipe catalysts: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipe catalysts: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipe catalysts: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipe catalysts: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipe catalysts: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipe catalysts: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering recipe catalysts took 1.051 ms
+[15:22:49] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building recipe registry...
+[15:22:49] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building recipe registry took 24.47 ms
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering advanced plugins...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering advanced plugins: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering advanced plugins: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering advanced plugins: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering advanced plugins: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering advanced plugins: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering advanced plugins: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering advanced plugins: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering advanced plugins took 616.0 μs
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering recipes...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:crafting, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:crafting, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:stonecutting, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:smelting, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:smoking, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:blasting, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:campfire_cooking, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:fuel, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:anvil, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:smithing, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:compostable, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:brewing, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe]
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: jei:minecraft took 181.6 milliseconds
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=farmersdelight:cooking, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=farmersdelight:cutting, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=farmersdelight:decomposition, recipeClass=class vectorwing.farmersdelight.integration.jei.resource.DecompositionDummy]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:crafting, recipeClass=class net.minecraft.world.item.crafting.RecipeHolder]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=jei:information, recipeClass=interface mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe]
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: farmersdelight:jei_plugin took 31.83 milliseconds
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: jei:internal...
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Beetroot Soup (c:beetroot_soup)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Suspicious Stew (c:suspicious_stew)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Honey (c:honey)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Milk (c:milk)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Experience (c:experience)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Rabbit Stew (c:rabbit_stew)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Potion (c:potion)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Mushroom Stew (c:mushroom_stew)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:fluid tag: Gaseous (c:gaseous)
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:tag_recipes/fluid, recipeClass=interface mezz.jei.library.plugins.jei.tags.ITagInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:item tag: Juice (c:drinks/juice)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:item tag: Candies (c:foods/candy)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:item tag: Wrenches (c:tools/wrench)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:item tag: Water (c:drinks/water)
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:tag_recipes/item, recipeClass=interface mezz.jei.library.plugins.jei.tags.ITagInfoRecipe]
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:strider_warm_blocks (minecraft:strider_warm_blocks)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:fire (minecraft:fire)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:incorrect_for_netherite_tool (minecraft:incorrect_for_netherite_tool)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: Relocation Not Supported (c:relocation_not_supported)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: Enderman Place On Blacklist (neoforge:enderman_place_on_blacklist)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:invalid_spawn_inside (minecraft:invalid_spawn_inside)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:incorrect_for_diamond_tool (minecraft:incorrect_for_diamond_tool)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: 掉落蛋糕切片 (farmersdelight:drops_cake_slice)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:air (minecraft:air)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:portals (minecraft:portals)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: Needs Netherite Tools (neoforge:needs_netherite_tool)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #minecraft:candle_cakes (minecraft:candle_cakes)
+[15:22:49] [Render thread/DEBUG] [me.je.li.pl.je.ta.TagInfoRecipeMaker/]: No valid ingredients found for minecraft:block tag: #c:mineable/knife (c:mineable/knife)
+[15:22:49] [Render thread/DEBUG] [me.je.li.re.RecipeManagerInternal/]: Adding recipes: RecipeType[uid=minecraft:tag_recipes/block, recipeClass=interface mezz.jei.library.plugins.jei.tags.ITagInfoRecipe]
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes: jei:internal took 14.61 milliseconds
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering recipes took 229.2 ms
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering recipes transfer handlers...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes transfer handlers: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes transfer handlers: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes transfer handlers: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes transfer handlers: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes transfer handlers: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes transfer handlers: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering recipes transfer handlers: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering recipes transfer handlers took 3.061 ms
+[15:22:49] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building runtime...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering gui handlers...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering gui handlers: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering gui handlers: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering gui handlers: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering gui handlers: jei:neoforge_gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering gui handlers: jei:debug...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering gui handlers: jei:gui...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering gui handlers: jei:internal...
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering gui handlers took 12.45 ms
+[15:22:49] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering Runtime...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: jei:minecraft...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: farmersdelight:jei_plugin...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: patchouli:patchouli...
+[15:22:49] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: jei:neoforge_gui...
+[15:22:49] [Render thread/INFO] [me.je.gu.st.JeiGuiStarter/]: Starting JEI GUI
+[15:22:49] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building ingredient list...
+[15:22:49] [Render thread/DEBUG] [me.je.gu.in.IngredientListElementFactory/]: Registering ingredients: ItemStack
+[15:22:49] [Render thread/DEBUG] [me.je.gu.in.IngredientListElementFactory/]: Registering ingredients: FluidStack
+[15:22:49] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building ingredient list took 16.80 ms
+[15:22:49] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building ingredient filter...
+[15:22:49] [Render thread/INFO] [me.je.gu.in.IngredientFilter/]: Adding 2240 ingredients
+[15:22:49] [Render thread/INFO] [me.je.gu.in.IngredientFilter/]: Added 2240 ingredients
+[15:22:49] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building ingredient filter took 229.7 ms
+[15:22:50] [Render thread/INFO] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: jei:neoforge_gui took 433.4 milliseconds
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: jei:debug...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: jei:gui...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Registering Runtime: jei:internal...
+[15:22:50] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Registering Runtime took 434.1 ms
+[15:22:50] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Building runtime took 461.0 ms
+[15:22:50] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Sending Runtime...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime: jei:minecraft...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime: farmersdelight:jei_plugin...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime: patchouli:patchouli...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime: jei:neoforge_gui...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime: jei:debug...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime: jei:gui...
+[15:22:50] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime: jei:internal...
+[15:22:50] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Sending Runtime took 484.4 μs
+[15:22:50] [Render thread/INFO] [me.je.co.ut.LoggedTimer/]: Starting JEI took 1.158 s
+[15:22:50] [Render thread/INFO] [minecraft/AdvancementTree]: Loaded 2 advancements
+[15:22:50] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 96.90 μs
+[15:22:50] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 120.0 μs
+[15:22:50] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 90.00 μs
+[15:22:50] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout probe_world_guard :: levelName=bgfinal3probe (期望本会话自己造的 ASCII 名 bgfinal3probe；负向排除作者存档名)
+[15:22:50] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK probe_world_guard PASS levelName=bgfinal3probe
+[15:22:50] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout palette_sha256 :: ours=9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d bytes=120 | quartz=db0d983a5f091b2db7574fcac21709372ca8efa62a7d02f9638014bb6559fd98 bytes=90
+[15:22:50] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK palette_resource_restored PASS 客户端资源管理器读到的 indigoseagold.png SHA256=9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d（期望作者原件 9c966b7f…；必须 != quartz db0d983a5f091b2db7574fcac21709372ca8efa62a7d02f9638014bb6559fd98）
+[15:22:51] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout atlas_item_names :: atlas=minecraft:textures/atlas/blocks.png totalSprites=2553 indigoseagoldSprites=[bettergold:item/indigoseagold_hoe, bettergold:block/indigoseagold_door_top, bettergold:item/indigoseagold_boots, bettergold:item/indigoseagold_door, bettergold:item/indigoseagold_crossbow_firework, minecraft:trims/items/boots_trim_indigoseagold, bettergold:block/indigoseagold_trapdoor, bettergold:item/indigoseagold_bow, bettergold:item/indigoseagold_shovel, bettergold:item/indigoseagold_nugget, bettergold:item/indigoseagold_leggings, bettergold:item/indigoseagold_lantern, bettergold:block/indigoseagold_pillar, bettergold:item/indigoseagold_knife, bettergold:item/indigoseagold_mace, bettergold:item/indigoseagold_axe, bettergold:item/indigoseagold_upgrade_template, bettergold:item/indigoseagold_ingot, bettergold:block/indigoseagold_door_bottom, bettergold:item/indigoseagold_crossbow_pulling_2, bettergold:item/indigoseagold_crossbow_pulling_1, bettergold:item/indigoseagold_crossbow_pulling_0, bettergold:item/indigoseagold_helmet, bettergold:item/indigoseagold_bow_pulling_2, bettergold:item/indigoseagold_bow_pulling_1, bettergold:item/indigoseagold_bow_pulling_0, bettergold:item/indigoseagold_chestplate, bettergold:item/indigoseagold_sword, bettergold:block/indigoseagold_lantern, bettergold:item/raw_indigoseagold, bettergold:item/indigoseagold_trident, bettergold:item/indigoseagold_chain, minecraft:trims/items/chestplate_trim_indigoseagold, bettergold:item/indigoseagold_crossbow, bettergold:block/indigoseagold_block, minecraft:trims/items/leggings_trim_indigoseagold, bettergold:block/indigoseagold_chain, bettergold:block/indigoseagold_bars, bettergold:item/indigoseagold_pickaxe, bettergold:item/indigoseagold_crossbow_arrow, minecraft:trims/items/helmet_trim_indigoseagold, bettergold:block/indigoseagold_bricks]
+[15:22:51] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout atlas_item_fingerprints :: item/indigoseagold_hoe(no-quartz-pair) block/indigoseagold_door_top(no-quartz-pair) item/indigoseagold_boots(no-quartz-pair) item/indigoseagold_door(no-quartz-pair) item/indigoseagold_crossbow_firework(no-quartz-pair) trims/items/boots_trim_indigoseagold ours=cbfa990d979ad8e4/16x16/avg=102,127,144/chroma=42 quartz=ebdc5188a5c0039b/16x16/avg=162,155,141/chroma=21 DIFF block/indigoseagold_trapdoor(no-quartz-pair) item/indigoseagold_bow(no-quartz-pair) item/indigoseagold_shovel(no-quartz-pair) item/indigoseagold_nugget(no-quartz-pair) item/indigoseagold_leggings(no-quartz-pair) item/indigoseagold_lantern(no-quartz-pair) block/indigoseagold_pillar(no-quartz-pair) item/indigoseagold_knife(no-quartz-pair) item/indigoseagold_mace(no-quartz-pair) item/indigoseagold_axe(no-quartz-pair) item/indigoseagold_upgrade_template(no-quartz-pair) item/indigoseagold_ingot(no-quartz-pair) block/indigoseagold_door_bottom(no-quartz-pair) item/indigoseagold_crossbow_pulling_2(no-quartz-pair) item/indigoseagold_crossbow_pulling_1(no-quartz-pair) item/indigoseagold_crossbow_pulling_0(no-quartz-pair) item/indigoseagold_helmet(no-quartz-pair) item/indigoseagold_bow_pulling_2(no-quartz-pair) item/indigoseagold_bow_pulling_1(no-quartz-pair) item/indigoseagold_bow_pulling_0(no-quartz-pair) item/indigoseagold_chestplate(no-quartz-pair) item/indigoseagold_sword(no-quartz-pair) block/indigoseagold_lantern(no-quartz-pair) item/raw_indigoseagold(no-quartz-pair) item/indigoseagold_trident(no-quartz-pair) item/indigoseagold_chain(no-quartz-pair) trims/items/chestplate_trim_indigoseagold ours=1fbeae1781afcadf/16x16/avg=170,179,150/chroma=29 quartz=92ab3a9f0ade0c47/16x16/avg=198,194,185/chroma=13 DIFF item/indigoseagold_crossbow(no-quartz-pair) block/indigoseagold_block(no-quartz-pair) trims/items/leggings_trim_indigoseagold ours=a5af15ef8adc15fc/16x16/avg=88,113,136/chroma=48 quartz=3d779c38ae41fa07/16x16/avg=144,138,126/chroma=18 DIFF block/indigoseagold_chain(no-quartz-pair) block/indigoseagold_bars(no-quartz-pair) item/indigoseagold_pickaxe(no-quartz-pair) item/indigoseagold_crossbow_arrow(no-quartz-pair) trims/items/helmet_trim_indigoseagold ours=66122ada0d951fd0/16x16/avg=173,182,152/chroma=30 quartz=123af2dcc3f7fdb8/16x16/avg=205,199,190/chroma=15 DIFF block/indigoseagold_bricks(no-quartz-pair) 
+[15:22:51] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK atlas_item_sprite_not_quartz PASS 形态 item：与 quartz 配对比较 4 对，逐像素不同的 = 4（必须全部不同 —— 相同就是 bg-15w .3 的白灰阶回退）
+[15:22:52] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout atlas_armor_names :: atlas=minecraft:textures/atlas/armor_trims.png totalSprites=829 indigoseagoldSprites=[minecraft:trims/models/armor/rib_indigoseagold, minecraft:trims/models/armor/host_indigoseagold, minecraft:trims/models/armor/ward_indigoseagold, minecraft:trims/models/armor/host_leggings_indigoseagold, minecraft:trims/models/armor/flow_leggings_indigoseagold, minecraft:trims/models/armor/vex_leggings_indigoseagold, minecraft:trims/models/armor/dune_indigoseagold, minecraft:trims/models/armor/shaper_leggings_indigoseagold, minecraft:trims/models/armor/wayfinder_leggings_indigoseagold, minecraft:trims/models/armor/raiser_leggings_indigoseagold, minecraft:trims/models/armor/wayfinder_indigoseagold, minecraft:trims/models/armor/wild_leggings_indigoseagold, minecraft:trims/models/armor/wild_indigoseagold, minecraft:trims/models/armor/tide_indigoseagold, minecraft:trims/models/armor/spire_leggings_indigoseagold, minecraft:trims/models/armor/raiser_indigoseagold, minecraft:trims/models/armor/rib_leggings_indigoseagold, minecraft:trims/models/armor/bolt_indigoseagold, minecraft:trims/models/armor/vex_indigoseagold, minecraft:trims/models/armor/eye_leggings_indigoseagold, minecraft:trims/models/armor/snout_indigoseagold, minecraft:trims/models/armor/spire_indigoseagold, minecraft:trims/models/armor/tide_leggings_indigoseagold, minecraft:trims/models/armor/eye_indigoseagold, minecraft:trims/models/armor/silence_leggings_indigoseagold, minecraft:trims/models/armor/snout_leggings_indigoseagold, minecraft:trims/models/armor/coast_leggings_indigoseagold, minecraft:trims/models/armor/ward_leggings_indigoseagold, minecraft:trims/models/armor/sentry_leggings_indigoseagold, minecraft:trims/models/armor/coast_indigoseagold, minecraft:trims/models/armor/flow_indigoseagold, minecraft:trims/models/armor/dune_leggings_indigoseagold, minecraft:trims/models/armor/sentry_indigoseagold, minecraft:trims/models/armor/bolt_leggings_indigoseagold, minecraft:trims/models/armor/shaper_indigoseagold, minecraft:trims/models/armor/silence_indigoseagold]
+[15:22:52] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout atlas_armor_fingerprints :: trims/models/armor/rib_indigoseagold ours=0ebf0595d19648b0/64x32/avg=67,109,169/chroma=102 quartz=61abc94a55de2b47/64x32/avg=145,140,123/chroma=22 DIFF trims/models/armor/host_indigoseagold ours=35a0d9c1d3da075d/64x32/avg=169,186,168/chroma=18 quartz=6583c0609db0afad/64x32/avg=222,214,200/chroma=22 DIFF trims/models/armor/ward_indigoseagold ours=99455df66a9499f0/64x32/avg=127,155,171/chroma=44 quartz=6aa5f99964f10cf5/64x32/avg=195,188,172/chroma=23 DIFF trims/models/armor/host_leggings_indigoseagold ours=1a75c1a1462a649f/64x32/avg=155,176,170/chroma=21 quartz=69e105d7ca2120e9/64x32/avg=215,206,191/chroma=24 DIFF trims/models/armor/flow_leggings_indigoseagold ours=1db53cbe71fd591e/64x32/avg=211,214,161/chroma=53 quartz=f81f5f4dafd3e63b/64x32/avg=240,233,223/chroma=17 DIFF trims/models/armor/vex_leggings_indigoseagold ours=b46a2c9dbcfc146f/64x32/avg=145,170,175/chroma=30 quartz=037064eb063f345a/64x32/avg=213,205,186/chroma=27 DIFF trims/models/armor/dune_indigoseagold ours=08d7495c6749a236/64x32/avg=198,206,165/chroma=41 quartz=64ee8aa1564cbf25/64x32/avg=240,231,220/chroma=20 DIFF trims/models/armor/shaper_leggings_indigoseagold ours=26218a0a87fa9270/64x32/avg=188,200,167/chroma=33 quartz=d0e4a6e80b2d384a/64x32/avg=235,227,214/chroma=21 DIFF trims/models/armor/wayfinder_leggings_indigoseagold ours=fe6faac09adf8e19/64x32/avg=175,191,170/chroma=21 quartz=eee2329d72d776e0/64x32/avg=230,222,207/chroma=23 DIFF trims/models/armor/raiser_leggings_indigoseagold ours=8f94341cbaafab85/64x32/avg=147,171,174/chroma=27 quartz=a42105d724a8bce5/64x32/avg=215,207,190/chroma=25 DIFF trims/models/armor/wayfinder_indigoseagold ours=bb115679a7ca1128/64x32/avg=173,189,170/chroma=19 quartz=0a88a80c79adb789/64x32/avg=229,220,205/chroma=24 DIFF trims/models/armor/wild_leggings_indigoseagold ours=859d07341e076619/64x32/avg=176,190,167/chroma=23 quartz=cfa8207d027cafeb/64x32/avg=223,215,203/chroma=20 DIFF trims/models/armor/wild_indigoseagold ours=cd6d99503f5cb53b/64x32/avg=164,182,169/chroma=18 quartz=f75e3e2740554778/64x32/avg=219,211,197/chroma=22 DIFF trims/models/armor/tide_indigoseagold ours=bf95e14dbaa79741/64x32/avg=188,199,167/chroma=32 quartz=cd9497bda3b1c311/64x32/avg=234,226,213/chroma=21 DIFF trims/models/armor/spire_leggings_indigoseagold ours=e5e7be0f34357772/64x32/avg=164,183,172/chroma=19 quartz=830fc1ac304ca90d/64x32/avg=224,215,199/chroma=25 DIFF trims/models/armor/raiser_indigoseagold ours=58b6428effe6a060/64x32/avg=143,169,175/chroma=32 quartz=4e332b77db659774/64x32/avg=215,207,189/chroma=26 DIFF trims/models/armor/rib_leggings_indigoseagold ours=df525763926c48cd/64x32/avg=57,101,168/chroma=111 quartz=caa9fc83fbf07ad8/64x32/avg=136,133,119/chroma=17 DIFF trims/models/armor/bolt_indigoseagold ours=8010381ab9f67567/64x32/avg=127,158,177/chroma=50 quartz=1d7098db26337d9f/64x32/avg=206,197,177/chroma=29 DIFF trims/models/armor/vex_indigoseagold ours=b90177a763fd2853/64x32/avg=161,180,170/chroma=19 quartz=9f2938d25946532b/64x32/avg=218,210,194/chroma=24 DIFF trims/models/armor/eye_leggings_indigoseagold ours=4647551c204f9418/64x32/avg=156,178,175/chroma=22 quartz=096f64eabf736197/64x32/avg=224,216,198/chroma=26 DIFF trims/models/armor/snout_indigoseagold ours=8aed30655d22944c/64x32/avg=164,183,171/chroma=19 quartz=0825586a4f260909/64x32/avg=222,214,199/chroma=23 DIFF trims/models/armor/spire_indigoseagold ours=de2c540966fe7ec5/64x32/avg=177,191,168/chroma=23 quartz=257a29e5663d23a4/64x32/avg=227,219,206/chroma=21 DIFF trims/models/armor/tide_leggings_indigoseagold ours=57ab6b8bdeb9eb98/64x32/avg=152,174,173/chroma=22 quartz=d2917bbe6a10ac2d/64x32/avg=217,209,192/chroma=25 DIFF trims/models/armor/eye_indigoseagold ours=8b2191fbe7318154/64x32/avg=174,189,169/chroma=20 quartz=5e3ac2e41647cd83/64x32/avg=226,218,204/chroma=22 DIFF trims/models/armor/silence_leggings_indigoseagold ours=40b1cfa7277a3a53/64x32/avg=87,122,161/chroma=74 quartz=e2da00d9ee2ac4f3/64x32/avg=159,153,137/chroma=22 DIFF trims/models/armor/snout_leggings_indigoseagold ours=b9b5e4b3bb68fc44/64x32/avg=195,202,162/chroma=40 quartz=c9e72ac4762e0fd2/64x32/avg=227,220,209/chroma=18 DIFF trims/models/armor/coast_leggings_indigoseagold ours=66f9dd8ef6efe491/64x32/avg=183,196,167/chroma=29 quartz=fdd66c2a059feeb3/64x32/avg=231,223,210/chroma=21 DIFF trims/models/armor/ward_leggings_indigoseagold ours=853fb02268fbbf8a/64x32/avg=143,169,176/chroma=33 quartz=aa2564e7ec9b08a2/64x32/avg=217,208,190/chroma=27 DIFF trims/models/armor/sentry_leggings_indigoseagold ours=616c0734f60ce125/64x32/avg=162,181,171/chroma=19 quartz=17dff1a09084d02c/64x32/avg=223,215,200/chroma=23 DIFF trims/models/armor/coast_indigoseagold ours=e2aedd95df437ae1/64x32/avg=169,185,168/chroma=17 quartz=cac895fc6a897bed/64x32/avg=219,212,198/chroma=21 DIFF trims/models/armor/flow_indigoseagold ours=9f5d442c68b9233c/64x32/avg=217,218,160/chroma=58 quartz=d9e6bc9e64fecab2/64x32/avg=241,234,226/chroma=15 DIFF trims/models/armor/dune_leggings_indigoseagold ours=7d3d3e557e3e9a97/64x32/avg=197,206,165/chroma=41 quartz=529b3dc851f89e09/64x32/avg=239,231,219/chroma=20 DIFF trims/models/armor/sentry_indigoseagold ours=8ed8c1ea918558e5/64x32/avg=185,197,167/chroma=30 quartz=99af1a6477035671/64x32/avg=233,225,211/chroma=22 DIFF trims/models/armor/bolt_leggings_indigoseagold ours=20b1809a94793e2a/64x32/avg=133,162,176/chroma=43 quartz=165c9a2f13f0673e/64x32/avg=209,200,180/chroma=29 DIFF trims/models/armor/shaper_indigoseagold ours=e7e857c98bd01a0d/64x32/avg=169,185,168/chroma=17 quartz=42f81203bd811c55/64x32/avg=219,212,198/chroma=21 DIFF trims/models/armor/silence_indigoseagold ours=29d4951d7147ccce/64x32/avg=86,121,163/chroma=77 quartz=c2572872c8240da9/64x32/avg=157,151,136/chroma=21 DIFF 
+[15:22:52] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK atlas_armor_sprite_not_quartz PASS 形态 armor：与 quartz 配对比较 36 对，逐像素不同的 = 36（必须全部不同 —— 相同就是 bg-15w .3 的白灰阶回退）
+[15:22:53] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout item_form_model :: baseClass=LayeredModel resolvedClass=LayeredModel quads=48 sprites=[bettergold:item/indigoseagold_chestplate, minecraft:trims/items/chestplate_trim_indigoseagold]
+[15:22:53] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK item_form_model_uses_indigo_sprite PASS 物品形态解出的模型层精灵含 indigoseagold=true 含 quartz=false（期望 true/false）
+[15:22:54] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout armor_form_equipped :: scheduled chest=bettergold:indigoseagold_chestplate
+[15:22:54] [Render thread/INFO] [minecraft/AdvancementTree]: Loaded 14 advancements
+[15:22:55] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout armor_form_equipped :: slotItem=bettergold:indigoseagold_chestplate trimAsset=indigoseagold
+[15:22:55] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK armor_form_equipped PASS 穿在胸口的纹饰材质 asset_name=indigoseagold（期望 indigoseagold）
+[15:22:56] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout carrot_setup :: scheduled (farmland BlockPos{x=2, y=120, z=2}/BlockPos{x=6, y=120, z=2}/BlockPos{x=10, y=120, z=2})
+[15:22:59] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK carrot_negative_controls PASS 两条负向对照（只耕地不种 / 种原版小麦）之后 plant_carrot 仍未达成 = true
+[15:23:00] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout carrot_positive_scheduled :: golden_carrot -> BlockPos{x=2, y=120, z=2}
+[15:23:02] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C CHECK carrot_crop_really_placed PASS 真玩家右键金染耕地后：事件被取消=true、上方真的是金胡萝卜作物=true
+[15:23:02] [Render thread/ERROR] [co.hj.be.bettergold/]: BGF3C CHECK carrot_planted_criterion_done FAIL 真 ServerPlayer 种下金胡萝卜后 plant_carrot criterion isDone=false（只有 ModEvents 补了 PLACED_BLOCK.trigger 才会达成）
+[15:23:02] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout carrot_detail :: setup(revoked -> isDone=false) player=true | negatives(tillOnlyBlock=minecraft:air normalCropBlock=minecraft:wheat criterionDone=false) | positive(canceled=true cropPlaced=true blockAbove=bettergold:golden_carrot_crop)
+[15:23:03] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C readout carrot_detail_final :: setup(revoked -> isDone=false) player=true | negatives(tillOnlyBlock=minecraft:air normalCropBlock=minecraft:wheat criterionDone=false) | positive(canceled=true cropPlaced=true blockAbove=bettergold:golden_carrot_crop) | assert(criterionDone=true)
+[15:23:03] [Render thread/INFO] [co.hj.be.bettergold/]: BGF3C SUMMARY pass=8 fail=1 skip=0 ticks=270 world=bgfinal3probe
+[15:24:59] [Server thread/INFO] [minecraft/IntegratedServer]: Saving and pausing game...
+[15:24:59] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfinal3probe]'/minecraft:overworld
+[15:24:59] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfinal3probe]'/minecraft:the_end
+[15:24:59] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfinal3probe]'/minecraft:the_nether
+[15:24:59] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bgfinal3probe
+[15:24:59] [Render thread/INFO] [minecraft/Minecraft]: Stopping!
+[15:24:59] [Render thread/INFO] [me.je.ne.st.StartEventObserver/]: JEI StartEventObserver received class net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent$LoggingOut
+[15:24:59] [Render thread/INFO] [me.je.ne.st.StartEventObserver/]: JEI StartEventObserver transitioning state from JEI_STARTED to LISTENING
+[15:24:59] [Render thread/INFO] [me.je.li.st.JeiStarter/]: Stopping JEI
+[15:24:59] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Sending Runtime Unavailable...
+[15:24:59] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime Unavailable: jei:minecraft...
+[15:24:59] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime Unavailable: farmersdelight:jei_plugin...
+[15:24:59] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime Unavailable: patchouli:patchouli...
+[15:24:59] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime Unavailable: jei:neoforge_gui...
+[15:24:59] [Render thread/INFO] [me.je.ne.pl.ne.NeoForgeGuiPlugin/]: Stopping JEI GUI
+[15:24:59] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime Unavailable: jei:debug...
+[15:24:59] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime Unavailable: jei:gui...
+[15:24:59] [Render thread/DEBUG] [me.je.li.lo.PluginCallerTimerRunnable/]: Sending Runtime Unavailable: jei:internal...
+[15:24:59] [Render thread/INFO] [me.je.li.lo.PluginCaller/]: Sending Runtime Unavailable took 1.953 ms
+[15:24:59] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: Dev lost connection: 连接中断
+[15:24:59] [Server thread/INFO] [minecraft/MinecraftServer]: Dev退出了游戏
+[15:24:59] [Server thread/INFO] [minecraft/ServerCommonPacketListenerImpl]: Stopping singleplayer server as player logged out
+[15:25:00] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[15:25:00] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[15:25:00] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[15:25:00] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfinal3probe]'/minecraft:overworld
+[15:25:01] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfinal3probe]'/minecraft:the_end
+[15:25:01] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfinal3probe]'/minecraft:the_nether
+[15:25:01] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bgfinal3probe
+[15:25:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (bgfinal3cprobe): All chunks are saved
+[15:25:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[15:25:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[15:25:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[15:25:01] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
+
+BUILD SUCCESSFUL in 2m 47s
+7 actionable tasks: 2 executed, 5 up-to-date
+Configuration cache entry reused.

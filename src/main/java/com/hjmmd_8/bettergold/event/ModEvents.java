@@ -6,7 +6,9 @@ import com.hjmmd_8.bettergold.registry.AllBlocks;
 import com.hjmmd_8.bettergold.registry.AllEffects;
 import com.hjmmd_8.bettergold.registry.AllItems;
 
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -740,6 +742,20 @@ public class ModEvents {
             BlockState cropState = AllBlocks.GOLDEN_CARROT_CROP.get().defaultBlockState();
             if (cropState.canSurvive(level, plantPos)) {
                 level.setBlock(plantPos, cropState, 3);
+                // bgfinal3（作者 2026-10-06 裁定「需要」）：补一次原版的 placed_block 触发。
+                // 金胡萝卜是**自定义事件**种下的（`setBlock` + `setCanceled`），既不走 `BlockItem#place`、
+                // 也没有可判的物品形态 ⇒ 原版那条 `placed_block` 判据**永远不会**触发（成就 ㊻ 的
+                // 「种植」半边只覆盖金麦种子 / 金钱茄种子）。
+                // 【读源码】`BlockItem.java:78-85`：原版在"方块真的放下、且 level 上的 blockstate
+                //   与放置态同块"之后才 `CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player,
+                //   blockpos, itemstack)` —— 只对 ServerPlayer、stack 用**手上那件**（itemInHand）；
+                //   `ItemUsedOnLocationTrigger.java:31-42`：`PLACED_BLOCK` 的真身就是它，
+                //   签名 `trigger(ServerPlayer, BlockPos, ItemStack)`，判据读的是 **`pos` 上的 BlockState**
+                //   （`LootItemBlockStatePropertyCondition.test`）⇒ 必须放在 `setBlock` **之后**。
+                // 时机照原版：与 `held.shrink(1)` 的相对顺序同原版（trigger 在 consume 之前）。
+                if (player instanceof ServerPlayer serverPlayer) {
+                    CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, plantPos, held);
+                }
                 // 种植音效（原版种子种植音效）
                 level.playSound(null, plantPos, net.minecraft.sounds.SoundEvents.CROP_PLANTED,
                         net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);

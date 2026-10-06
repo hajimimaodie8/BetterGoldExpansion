@@ -1,0 +1,30 @@
+bgfinal3 · ① 靛海金色卡的定位过程与三重 SHA256（可复算）
+
+素材 zip：E:\mc\mc资料\更有用的金 新约7.zip（44,661 B / 64 个条目）
+  含「色卡」的条目 = 2；含「靛海金」+「色卡」的条目 = **1**（`靛海金/靛海金纹饰色卡.png`，120 B）⇒ 无候选歧义
+  PNG 头：8×1 / bit depth 8 / color type 6(RGBA) / 非隔行 / chunk = IHDR+IDAT×2+IEND（CRC 全通过）
+  8 个像素：(255,242,149) (197,205,166) (138,169,184) (98,137,179) (59,105,174) (35,78,153) (24,56,114) (16,37,76)
+
+  ★ 旁证 1：zip 里 `幻惑金/幻惑金纹饰色卡.png` 的 SHA256 = 57ACB51622539B1DE41ABF064A7C1F6539E68F481A27259ED0C42EF18400EB98
+            == 仓库现存 assets/bettergold/textures/trims/color_palettes/illusiongold.png ⇒ 这个 zip 就是原始素材源
+  ★ 旁证 2：本张 SHA256 == docs/bg7-证据/04a-资源哈希-before.txt:720 记的「改动前」哈希（逐字符相同）
+
+三重 / 四重一致（本轮实测）：
+  zip 内条目        120 B  9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d
+  项目落点（改后）   120 B  9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d
+  jar 内条目        120 B  9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d
+  历史留档(bg7 04a)       9C966B7F80C2E2550064A822730A704E8A68AEAC9047FA9F1AABFDA7EB9E6B6D  ← 同一串
+
+落点（改前）= 360B62970F90100C661D7EE6641795019A544D5ED9DAD2864D0C003FCA96FE1E / 101 B（= 原版 quartz 白灰阶）
+其余 8 张色卡（改后哈希，与改前逐张相同）：
+  4286353DC9D806E200CF8E35B731F915858276787300A8F5C7F167A1E32E38C0  echogold.png
+  D75A970AA80CDBFCC1362A764729EEF7C49F7F75D79F530A0563665921F3F3B2  flamegold.png
+  57ACB51622539B1DE41ABF064A7C1F6539E68F481A27259ED0C42EF18400EB98  illusiongold.png
+  C886AB93FF22CE24DA48F3FB47985D156DCF27073E98CE31E117E83452709E20  sturdygold.png
+  2451A66D0C18DB61B1F2157C576CAF5543DED85EFFF937EF83319EB6A4B791B5  thornsgold.png
+  2AE858EC81198395242CA635114F621CFB5B47AB4E2A698463C5C06370572AD1  thundergold.png
+  A153620C95F88E156648669C8E7A51BCDE52EF4A910FE9A0179CA3B3240568D8  unwanted_antique.png
+  E90542C19EC0E02F2158C8AA4F98A5F9D28BF1290A04683C69E5D3D8AC1EEE19  voodoogold.png
+
+没动：data/bettergold/trim_material/indigoseagold.json（尤其 item_model_index）/ 两处图集置换 / ArmorTrimItemModels.java
+git status --porcelain 全程贴图类只有 1 个 M：src/main/resources/assets/bettergold/textures/trims/color_palettes/indigoseagold.png

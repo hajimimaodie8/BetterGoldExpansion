@@ -109,6 +109,17 @@
 源文件哈希 == jar 内条目哈希已实测；见 `docs/1.6-规格.md` §6.5）；**关卡已把它钉成文件级白名单 + SHA256 锚点**
 （`validate_metal_assets.py` 的 `[bg16-authorized-blank-texture]`）。**除这两张之外一律不许改/自己画**；
 再要换任何一张，必须让作者**点名到文件**并把原话写进规格。）
+（**第三次**贴图授权（`bgfinal3`，作者 2026-10-06 原话「**靛海金在这里，改手册，需要**」+ 交回素材 zip
+`E:\mc\mc资料\更有用的金 新约7.zip`）：把 `textures/trims/color_palettes/indigoseagold.png`
+**恢复**成该 zip 里 `靛海金/靛海金纹饰色卡.png` 的**字节原样**（8×1 / 8 位 / RGBA / 120 B，
+SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）——
+即撤销 `bg-15w` §7.3 那次白灰阶回退；**其余 8 张色卡一个像素都没动**、
+`trim_material/indigoseagold.json` 的 `item_model_index` **没动**、两处图集置换**没动**
+（文件名没变）；见 `docs/1.6-规格.md` §二十；**关卡**已把它钉成 SHA256 锚点 +
+「不许等于 quartz」的负向断言（`validate_metal_assets.py` / `validate_trim_assets.py` 的
+`[bgfinal3-indigosea-*]`）。
+⇒ ★ **本项目的贴图授权白名单现在是「两张文件 / 三次授权」**：`indigoseagold.png`（第一、三次）、
+`golden_trident_blank.png`（第二次）。**除这两张之外一律不许改、也不许自己画**。）
 
 **7）mixin 基础设施（`bg-15w` 续工轮起才有）**
 - 配置：`src/main/resources/bettergold.mixins.json`（`client: ["ItemRendererTridentMixin"]`）+

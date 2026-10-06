@@ -8,12 +8,17 @@
 不给参数时用 gradle 缓存里 1.21.1 client jar 的默认路径。
 """
 import io
+import hashlib
 import json
 import sys
 import zipfile
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
+
+# bgfinal3：本脚本从"只报告"升级为**带退出码的关卡**（扰动实测要求"改坏 ⇒ exit 1"）。
+# 退出码契约（与 validate_metal_assets.py 同族）：0 = 无违规 / 1 = 有违规 / 2 = 脚本自身出错。
+PROBLEMS: list[str] = []
 
 REPO = Path(__file__).resolve().parents[2]
 RES = REPO / "src" / "main" / "resources"
@@ -120,8 +125,13 @@ def main():
         #   「它没有自己的颜色了」，而不是文件缺失 / 图集没登记 / 图集烘坏。
         # 这是 bg-15w 续工轮 §7.3（作者当时授权「能调回来不」）那次回退的**现状**：
         # 需求 §一 里那句"f2efed -> 2a2822 灰蓝渐变"正是 quartz 灰阶。
-        # ⚠ 本项**刻意只报告、不做成阻塞断言**（作者尚未裁定是否恢复原色卡；
-        #   把"已知缺陷"写成契约会在修复时反过来拦住修复 —— mcmod_experience §2.2）。
+        # ⚠ **旧口径（原文保留、已被本轮取代）**：bg-fix2 当时"刻意只报告、不做成阻塞断言"
+        #   （理由 = 作者尚未裁定是否恢复原色卡；把"已知缺陷"写成契约会在修复时反过来拦住修复）。
+        #   ⇒ **2026-10-06 bgfinal3**：作者交回素材 zip、裁定恢复 ⇒ 本项**升级为阻塞断言**：
+        #     ① 靛海金的像素**不许**再等于 quartz（`[bgfinal3-indigosea-not-quartz]`）；
+        #     ② 必须等于作者原件那张的 SHA256（`[bgfinal3-indigosea-palette-restored]`）。
+        #   旧的两行"预期 = 仅 ['indigoseagold']"只作历史留档，不再打印（它会自相矛盾地
+        #   把"已知缺陷"当正常态）。
         _quartz_px = palette_pixels(
             z.read("assets/minecraft/textures/trims/color_palettes/quartz.png"))[1]
         _clones = []
@@ -132,10 +142,28 @@ def main():
                 _clones.append(_m)
         p("  [bgfix2-第1条] 与 quartz **逐像素完全相同**的我方色卡 = "
           f"{_clones if _clones else '无'}")
-        p("      预期 = 仅 ['indigoseagold']（= bg-15w 续工轮 §7.3 作者授权回退的现状；"
-          "其余 8 张都是各自金属的彩色渐变）")
-        p("      ⇒ 「色卡丢失」= 靛海金没有自己的颜色卡；**不是**文件/图集/override 的问题。"
-          "原始靛海金色卡从未进版本库、本机已不可恢复（本轮取证见 docs/1.6-规格.md 的 bg-fix2 节）。")
+        if _clones:
+            PROBLEMS.append(
+                "[bgfinal3-indigosea-not-quartz] 这些色卡仍与原版 quartz 逐像素相同"
+                f"（bg-15w §7.3 的白灰阶回退现状 = bgfix2 第 1 条报的 bug 本体）：{_clones}")
+        _indigo_path = (RES / "assets/bettergold/textures/trims/color_palettes/indigoseagold.png")
+        _indigo_bytes = _indigo_path.read_bytes()
+        _indigo_sha = hashlib.sha256(_indigo_bytes).hexdigest()
+        p(f"  [bgfinal3-indigosea-palette-restored] indigoseagold.png SHA256 = {_indigo_sha}")
+        p("      期望 = 9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d"
+          "（作者 2026-10-06 交回的 `靛海金/靛海金纹饰色卡.png` 字节原件；"
+          "也是 docs/bg7-证据/04a-资源哈希-before.txt:720 留档的那个「改动前」哈希）")
+        if _indigo_sha != "9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d":
+            PROBLEMS.append(
+                "[bgfinal3-indigosea-palette-restored] indigoseagold.png 的 SHA256 不是作者"
+                f"授权恢复的那一张（got {_indigo_sha}）")
+        _isz, _ipx = palette_pixels(_indigo_bytes)
+        if _isz != (8, 1) or len(_ipx) != 8:
+            PROBLEMS.append(
+                f"[bgfinal3-indigosea-palette-restored] indigoseagold.png 不是 8×1 的 8 像素"
+                f"（实际 {_isz} / {len(_ipx)} 像素；反空转守护）")
+        else:
+            p(f"      8 个像素 = {_ipx}")
 
     # ---------- 3. 图集置换 ----------
     p("")
@@ -206,6 +234,22 @@ def main():
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"\n[写出] {out}")
 
+    # ---------- bgfinal3：退出码 ----------
+    if PROBLEMS:
+        for _p in PROBLEMS:
+            print(f"FAIL {_p}")
+        print(f"纹饰素材关卡问题: {len(PROBLEMS)}")
+        return 1
+    print("OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），"
+          "其余 8 张各是自己的彩色渐变")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    try:
+        raise SystemExit(main())
+    except SystemExit:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        print(f"关卡自身出错（exit 2）：{exc!r}")
+        raise SystemExit(2)

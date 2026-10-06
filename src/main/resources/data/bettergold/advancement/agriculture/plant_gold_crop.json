@@ -55,6 +55,17 @@
           }
         ]
       }
+    },
+    "plant_carrot": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:block_state_property",
+            "block": "bettergold:golden_carrot_crop"
+          }
+        ]
+      }
     }
   },
   "requirements": [
@@ -63,7 +74,8 @@
     ],
     [
       "plant_wheat",
-      "plant_eggplant"
+      "plant_eggplant",
+      "plant_carrot"
     ]
   ],
   "sends_telemetry_event": false

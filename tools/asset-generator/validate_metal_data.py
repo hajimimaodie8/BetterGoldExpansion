@@ -3220,6 +3220,155 @@ for _needle, _why in ((u"bg-book §八", "docs/1.6-规格.md 里没有 bg-book �
     if _needle not in _bgfix_spec:
         _bgbook8_bad("bgbook8-doc", "%s（缺 %s）" % (_why, _needle))
 
+# ==================== ⑦ bgfinal3（2026-10-06）：三条作者裁定 ====================
+# 作者原话：「靛海金在这里，改手册，需要」⇒ 三件：① 色卡恢复（贴图，关卡在
+# `validate_metal_assets.py` / `validate_trim_assets.py`）② 手册「全套」→「任意一件」
+# （**改手册不改代码**）③ 金胡萝卜补一次原版 `placed_block` 触发（成就 ㊻ 的「种植」半边）。
+bgfinal3_problems = []
+
+
+def _bgfinal3_bad(tag: str, msg: str) -> None:
+    bgfinal3_problems.append("[%s] %s" % (tag, msg))
+
+
+# ---------- ⑦-1 手册：猪灵以物易物「翻倍」的触发条件 =「任意一件」（以代码实际为准） ----------
+# ⚠ **旧口径（原文保留）**：本手册文案原先写「此外**全套的**万坚金盔甲还能使猪灵以物易物的
+#   获取量翻倍」；而代码从来就是「**任意一件**」（`ModEvents#wearingAnySturdygoldArmor` 的
+#   javadoc 自写「单件即可，无需全套」，四个部位 `||` 相连）—— 这是 `docs/1.6-规格.md`
+#   §19.4 第 3 条记的「条件比手册宽」，体检报告第 3 节第 2 行把它列为「⚠等作者裁定」。
+#   **作者 2026-10-06 裁定：改手册（不是改代码）** ⇒ 本条按「以实际为准」把手册改成
+#   「任意一件」，并把「其余逐字不动」也钉住（等式而非包含）。
+#   ⇒ 手册文案**只许**在这一步之后仍然写「任意一件」；代码**不许**被反向改窄成一套。
+_BG3_BARTER_KEY = "bettergold.handbook.page.gear_sturdygold_2_left"
+_BG3_BARTER_ZH_HEAD = (u"使用万坚金升级而成的盔甲穿戴后会随着每隔 16 秒的时间为你的一颗心镀上黄金"
+                       u"来抵挡一些伤害，每一件盔甲所能补充的上限为 2 颗，自然而然的会随着会随着你穿戴着"
+                       u"每一件万坚金盔甲和万坚金盾牌来扩充金心的上限，此外")
+_BG3_BARTER_ZH_MID = u"任意一件万坚金盔甲"
+_BG3_BARTER_ZH_TAIL = u"还能使猪灵以物易物的获取量翻倍。"
+_BG3_BARTER_EN_HEAD = (u"Armor upgraded from Sturdygold gilds one of your hearts in gold every 16 seconds to "
+                       u"block some damage, and each piece adds a cap of 2 hearts. Naturally, every Sturdygold "
+                       u"armor piece and Sturdygold shield you wear expands the golden-heart cap -- and ")
+_BG3_BARTER_EN_MID = u"any single piece of Sturdygold armor"
+_BG3_BARTER_EN_TAIL = u" also doubles what you get from bartering with piglins."
+# 旧口径的两个短语：在两份语言文件 + 冻结快照里**都不许**再出现（负向判据）
+_BG3_BARTER_OLD_ZH = u"全套的万坚金盔甲"
+_BG3_BARTER_OLD_EN = u"a full set of Sturdygold armor"
+
+_bg3_zh_val = zh.get(_BG3_BARTER_KEY) or ""
+_bg3_en_val = en.get(_BG3_BARTER_KEY) or ""
+if _bg3_zh_val != (_BG3_BARTER_ZH_HEAD + _BG3_BARTER_ZH_MID + _BG3_BARTER_ZH_TAIL):
+    _bgfinal3_bad("bgfinal3-manual-barter-single-piece",
+                  u"手册 %s 的中文值不是「…此外任意一件万坚金盔甲还能使猪灵以物易物的获取量翻倍。」"
+                  u"（其余必须逐字不变；实际首 24 字：%s）" % (_BG3_BARTER_KEY, _bg3_zh_val[:24]))
+if _bg3_en_val != (_BG3_BARTER_EN_HEAD + _BG3_BARTER_EN_MID + _BG3_BARTER_EN_TAIL):
+    _bgfinal3_bad("bgfinal3-manual-barter-single-piece",
+                  u"手册 %s 的英文值不是「…and any single piece of Sturdygold armor also doubles…」"
+                  u"（中英必须同步改；实际首 24 字：%s）" % (_BG3_BARTER_KEY, _bg3_en_val[:24]))
+for _tag, _v in (("zh_cn.json", _bg3_zh_val), ("en_us.json", _bg3_en_val)):
+    if _BG3_BARTER_OLD_ZH in _v or _BG3_BARTER_OLD_EN in _v:
+        _bgfinal3_bad("bgfinal3-manual-barter-single-piece",
+                      u"%s 里还留着旧口径「全套」（已被作者 2026-10-06 裁定按代码实际改成「任意一件」）" % _tag)
+_bg3_snap_text = _BG8_SNAPSHOT.read_text(encoding="utf-8") if _BG8_SNAPSHOT.is_file() else ""
+# ⚠ 只查「冻结正文」那一段：`## 快照搬运记录` 表里**故意**留着旧口径原文（"原文不删"的口径），
+#   拿整份文件做负向判据会把自己的搬运记录当成违规（第一版就是这么红的）。
+_bg3_snap_body = _bg3_snap_text.split(u"## 快照搬运记录")[0] if _bg3_snap_text else ""
+if not _bg3_snap_text:
+    _bgfinal3_bad("bgfinal3-manual-barter-single-piece",
+                  u"读不到冻结快照（`[bgbook8-texts-verbatim]` 的期望值来源）：%s" % _BG8_SNAPSHOT)
+elif not _bg3_snap_body:
+    _bgfinal3_bad("bgfinal3-manual-barter-single-piece",
+                  u"冻结快照里找不到「## 快照搬运记录」分界（反空转守护）")
+else:
+    if _BG3_BARTER_OLD_ZH in _bg3_snap_body:
+        _bgfinal3_bad("bgfinal3-manual-barter-single-piece",
+                      u"冻结快照正文里还是旧口径「%s」⇒ 语言文件改了、快照没改（"
+                      u"`[bgbook8-texts-verbatim]` 会跟着红）" % _BG3_BARTER_OLD_ZH)
+    if _BG3_BARTER_ZH_TAIL not in _bg3_snap_body or _BG3_BARTER_ZH_MID not in _bg3_snap_body:
+        _bgfinal3_bad("bgfinal3-manual-barter-single-piece",
+                      u"冻结快照正文里没有新口径「%s」/「%s」" % (_BG3_BARTER_ZH_MID, _BG3_BARTER_ZH_TAIL))
+
+# 代码侧负向：`wearingAnySturdygoldArmor` 必须仍是「任意一件」（四个部位 `||`），
+# **不许**有人为了对齐手册而把它改成「全套」（那是削玩家收益的反向改动）。
+_bg3_barter_body = method_body(_bgfix_mod, "public static boolean wearingAnySturdygoldArmor(")
+if not _bg3_barter_body:
+    _bgfinal3_bad("bgfinal3-manual-follows-code",
+                  u"ModEvents 里找不到 wearingAnySturdygoldArmor 方法体（反空转守护）")
+else:
+    if _bg3_barter_body.count("getItemBySlot(") != 4:
+        _bgfinal3_bad("bgfinal3-manual-follows-code",
+                      u"wearingAnySturdygoldArmor 不再判 4 个部位（实际 %d 处 getItemBySlot）"
+                      % _bg3_barter_body.count("getItemBySlot("))
+    if "||" not in _bg3_barter_body:
+        _bgfinal3_bad("bgfinal3-manual-follows-code",
+                      u"wearingAnySturdygoldArmor 没有 `||`（「任意一件」的语义就是 OR）")
+    if "&&" in _bg3_barter_body:
+        _bgfinal3_bad("bgfinal3-manual-follows-code",
+                      u"wearingAnySturdygoldArmor 里出现了 `&&` ⇒ 被改成了「全套」（作者裁定的"
+                      u"是**改手册**、不是削玩家收益）")
+
+# ---------- ⑦-2 金胡萝卜：种下那一处必须补一次原版 `placed_block` 触发 ----------
+# 依据（【读源码】）：`BlockItem.java:78-85` 原版在"方块真的放下且 blockstate 一致"之后才
+# `CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player, blockpos, itemstack)`；
+# `ItemUsedOnLocationTrigger.java:31-42` = `PLACED_BLOCK` 的真身，签名 3 参、判据读 `pos` 上的 BlockState。
+# 金胡萝卜是自定义事件种下的（`setBlock` + `setCanceled`，不走 BlockItem#place、也没有物品形态可判）
+# ⇒ 不补这一次触发，成就 ㊻ 的「种植」半边只覆盖金麦种子 / 金钱茄种子。
+_bg3_carrot_body = method_body(_bgfix_mod, "public static void onRightClickGoldenCarrot(")
+if not _bg3_carrot_body:
+    _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                  u"ModEvents 里找不到 onRightClickGoldenCarrot 方法体（反空转守护）")
+else:
+    if _bgfix_mod.count("CriteriaTriggers.PLACED_BLOCK.trigger(") != 1:
+        _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                      u"ModEvents 里 `CriteriaTriggers.PLACED_BLOCK.trigger(` 不是恰好 1 处（实际 %d）"
+                      % _bgfix_mod.count("CriteriaTriggers.PLACED_BLOCK.trigger("))
+    _bg3_can_survive = method_body(_bg3_carrot_body, "if (cropState.canSurvive(level, plantPos))")
+    if not _bg3_can_survive:
+        _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                      u"找不到 `if (cropState.canSurvive(level, plantPos))` 块（反空转守护）")
+    else:
+        if "CriteriaTriggers.PLACED_BLOCK.trigger(" not in _bg3_can_survive:
+            _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                          u"那次 `PLACED_BLOCK.trigger` **不在**「种下金胡萝卜」的分支里"
+                          u"（必须落在 `canSurvive` ⇒ `setBlock` 之后的那一块内）")
+        if "level.setBlock(plantPos, cropState, 3)" not in _bg3_can_survive:
+            _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                          u"`setBlock` 不在 canSurvive 块里（判据读的是 pos 上的 BlockState，"
+                          u"必须在放置之后才触发）")
+        elif (_bg3_can_survive.find("level.setBlock(plantPos, cropState, 3)")
+              > _bg3_can_survive.find("CriteriaTriggers.PLACED_BLOCK.trigger(")):
+            _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                          u"触发在 `setBlock` **之前** ⇒ 判据读到的还是空气，永远不达成")
+        if "player instanceof ServerPlayer" not in _bg3_can_survive:
+            _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                          u"`PLACED_BLOCK.trigger` 没有 `player instanceof ServerPlayer` 守卫"
+                          u"（原版只对 ServerPlayer 触发）")
+        elif (_bg3_can_survive.find("player instanceof ServerPlayer")
+              > _bg3_can_survive.find("CriteriaTriggers.PLACED_BLOCK.trigger(")):
+            _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                          u"守卫写在触发**之后**（顺序反了）")
+        if "held.shrink(1)" in _bg3_can_survive and (
+                _bg3_can_survive.find("CriteriaTriggers.PLACED_BLOCK.trigger(")
+                > _bg3_can_survive.find("held.shrink(1)")):
+            _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                          u"触发写在 `held.shrink(1)` **之后**（原版是 trigger 在 consume 之前；"
+                          u"stack 用手上那件）")
+        if "trigger(serverPlayer, plantPos, held)" not in _bg3_can_survive:
+            _bgfinal3_bad("bgfinal3-carrot-placed-block-trigger",
+                          u"参数不对：必须是 `trigger(serverPlayer, plantPos, held)`"
+                          u"（= 原版 `trigger(ServerPlayer, BlockPos, ItemStack)`）")
+
+# ---------- ⑦-3 文档侧：§二十 的口径必须落档（含作者授权原话） ----------
+for _needle, _why in ((u"bgfinal3", "docs/1.6-规格.md 里没有 bgfinal3 这一轮的节"),
+                      (u"靛海金在这里", "没落档作者本次授权的**原话**"),
+                      (u"任意一件", "没写手册改成了「任意一件」（改手册不改代码）"),
+                      (u"PLACED_BLOCK", "没写金胡萝卜补的那次 placed_block 触发"),
+                      (u"9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d",
+                       "没写恢复后色卡的 SHA256 锚点")):
+    if _needle not in _bgfix_spec:
+        _bgfinal3_bad("bgfinal3-doc", u"%s（缺 %s）" % (_why, _needle))
+
+print(f"bgfinal3 三条裁定（靛海金文档口径 / 手册任意一件 / 金胡萝卜 placed_block）问题: "
+      f"{len(bgfinal3_problems)} {bgfinal3_problems[:8]}")
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
 print(f"bg-book 帕秋莉手册问题: {len(bgbook_problems)} {bgbook_problems[:8]}"
       f"（手册 {len(_entries_now)} 条目 / {_total_pages} 页 / {len(_recipe_refs)} 条配方引用）")
@@ -3240,4 +3389,5 @@ sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
                or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
+               or bgfinal3_problems
                or symmetric_problems or beacon_problems) else 0)

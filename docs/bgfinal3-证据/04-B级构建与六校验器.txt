@@ -1,0 +1,31 @@
+bgfinal3 · B 级构建与六校验器（命令 + 读数）
+
+---- compileJava+runData ----
+   [15:45:27] [main/INFO] [minecraft/DataGenerator]: All providers took: 0 ms
+   [15:45:27] [main/INFO] [minecraft/HashCache]: Caching: total files: 0, old count: 0, new count: 1, removed stale: 0, written: 0
+   
+   BUILD SUCCESSFUL in 16s
+   7 actionable tasks: 1 executed, 1 from cache, 5 up-to-date
+   Configuration cache entry reused.
+
+---- processResources jar --rerun-tasks ----
+   > Task :classes
+   > Task :jar
+   
+   BUILD SUCCESSFUL in 11s
+   4 actionable tasks: 4 executed
+   Configuration cache entry reused.
+
+---- 六校验器 ----
+   ---- validate_metal_assets.py EXIT=0 ----
+   ---- validate_metal_data.py EXIT=0 ----
+   ---- validate_trim_assets.py EXIT=0 ----
+   ---- check_jar_clean.py EXIT=0 ----
+   ---- check_forced_chunks.py EXIT=0 ----
+   ---- validate_advancements.py EXIT=0 ----
+
+---- jar 内色卡条目（三重 SHA256 的第三重）----
+   assets/bettergold/textures/trims/color_palettes/indigoseagold.png
+   bytes = 120  sha256 = 9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d
+   jar 内 *Probe* 路径数 = 0（探针已整块删除）
+   bettergold-1.6.0.jar = 1,340,130 B / 2026-10-06 15:45:39 / jar 内文件数 2388

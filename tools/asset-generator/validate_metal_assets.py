@@ -295,6 +295,111 @@ for rel, want in AUTHORIZED_BLANK_TEXTURE.items():
 print(f"bg-16 授权贴图（golden_trident_blank）问题: {len(blank_tex_hash_problems)} "
       f"{blank_tex_hash_problems[:4]}")
 
+# ==================== bgfinal3：作者"第三次贴图授权"的文件级白名单 ====================
+# 口径（作者 2026-10-06 原话「靛海金在这里，改手册，需要」+ 素材 zip `更有用的金 新约7.zip`）：
+#   assets/bettergold/textures/trims/color_palettes/indigoseagold.png 换成该 zip 里
+#   `靛海金/靛海金纹饰色卡.png` 的**字节原样**（8×1 / 8 位 / RGBA，120 B）。
+#
+# 历史链（三段，都是可复算的字节级事实）：
+#   ① 原始件 = SHA256 `9C966B7F…E6B6D`（docs/bg7-证据/04a-资源哈希-before.txt:720 留档的就是它）；
+#   ② bg-15w 续工轮 §7.3（作者当时原话「靛海金纹饰，这个甚至改得都不如之前的纯白边，能调回来不」）
+#      把它**回退成原版 quartz 的白灰阶** ⇒ SHA256 `360B62970F90…FE1E`（101 B）；
+#   ③ bg-fix2 第 1 条（2026-10-06）**只取证、未动贴图**，并刻意只写成报告行
+#      （「已知缺陷写成契约会在修复时反过来拦住修复」—— mcmod_experience §2.2 / §2.7）；
+#   ④ **bgfinal3（本轮）**：作者把原始素材 zip 交回来 ⇒ **恢复成 ① 的字节**。
+#
+# 这条断言把它钉成 **SHA256 锚点 + "不许等于 quartz" 的负向判据**：
+#   ① 内容必须回到作者那一张（哈希不符 ⇒ 有人又动过，或换了别的东西）；
+#   ② 尺寸必须是 8×1 / 8 位 / RGBA（纹饰色卡的结构硬约束）；
+#   ③ **负向**：8 个像素**不许逐像素等于原版 quartz** —— 那正是本次 bug 的判据
+#      （quartz 的 8 个像素是常量，直接写死在这里，不依赖原版 jar，任何环境都能复算）；
+#   ④ 反空转：必须真的解出 8 个像素，解不出就是判据自己坏了。
+# ⚠ 本项目"逐一授权改贴图"的**授权记录从此为三条**（**两个文件**）：
+#   ① bg-15w §7.3：indigoseagold.png（当时授权"回退成白灰阶"）
+#   ② bg-16：golden_trident_blank.png（作者「需要替换！」）
+#   ③ **bgfinal3（本轮）：indigoseagold.png 恢复成原件**（作者交回素材 zip）
+#   除这两张文件、这三次授权之外一律不许改或自己画（AGENTS.md 红线 6）。
+palette_hash_problems = []
+AUTHORIZED_PALETTE_TEXTURE = {
+    "textures/trims/color_palettes/indigoseagold.png":
+        "9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d",
+}
+# 原版 quartz 色卡（= bg-15w §7.3 回退后的那张"白灰阶"）的 8 个像素，逐字节常量。
+VANILLA_QUARTZ_PIXELS = [(242, 239, 237, 255), (246, 234, 223, 255), (227, 219, 196, 255),
+                         (182, 173, 150, 255), (144, 142, 128, 255), (101, 97, 86, 255),
+                         (69, 67, 60, 255), (42, 40, 34, 255)]
+
+
+def _png_decode_8x1(path: Path):
+    """极简 PNG 解码（8×1 / 8 位 / 非隔行）：返回 ((w, h), bitdepth, colortype, [(r,g,b,a)...])。"""
+    import struct
+    import zlib
+    data = path.read_bytes()
+    assert data[:8] == b"\x89PNG\r\n\x1a\n", f"not a png: {path}"
+    pos, idat, size, bitdepth, colortype = 8, b"", None, None, None
+    while pos < len(data):
+        ln = struct.unpack(">I", data[pos:pos + 4])[0]
+        typ = data[pos + 4:pos + 8]
+        chunk = data[pos + 8:pos + 8 + ln]
+        if typ == b"IHDR":
+            size = struct.unpack(">II", chunk[:8])
+            bitdepth, colortype = chunk[8], chunk[9]
+        elif typ == b"IDAT":
+            idat += chunk
+        pos += 12 + ln
+    raw = zlib.decompress(idat)
+    bpp = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[colortype]
+    stride = size[0] * bpp
+    out, prev = [], bytearray(stride)
+    for y in range(size[1]):
+        ft = raw[y * (stride + 1)]
+        line = bytearray(raw[y * (stride + 1) + 1:(y + 1) * (stride + 1)])
+        for i in range(stride):
+            a = line[i - bpp] if i >= bpp else 0
+            b = prev[i]
+            c = prev[i - bpp] if i >= bpp else 0
+            if ft == 1:
+                line[i] = (line[i] + a) & 0xFF
+            elif ft == 2:
+                line[i] = (line[i] + b) & 0xFF
+            elif ft == 3:
+                line[i] = (line[i] + (a + b) // 2) & 0xFF
+            elif ft == 4:
+                p = a + b - c
+                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                line[i] = (line[i] + pr) & 0xFF
+        for x in range(size[0]):
+            px = line[x * bpp:(x + 1) * bpp]
+            out.append(tuple(px) if bpp == 4 else (px[0], px[1], px[2], 255))
+        prev = line
+    return size, bitdepth, colortype, out
+
+
+for rel, want in AUTHORIZED_PALETTE_TEXTURE.items():
+    path = ASSETS / rel
+    if not path.is_file():
+        palette_hash_problems.append(f"缺 {rel}（反空转守护）")
+        continue
+    got = hashlib.sha256(path.read_bytes()).hexdigest()
+    if got != want:
+        palette_hash_problems.append(
+            f"{rel} 的 SHA256 不是作者授权恢复的那一张 [bgfinal3-indigosea-palette-restored] "
+            f"(got {got}, want {want})")
+    size, bd, ct, px = _png_decode_8x1(path)
+    if size != (8, 1) or bd != 8 or ct != 6:
+        palette_hash_problems.append(
+            f"{rel} 不是 8x1 / 8 位 / RGBA（实际 {size[0]}x{size[1]} bd={bd} ct={ct}）"
+            f" [bgfinal3-indigosea-palette-restored]")
+    if len(px) != 8:
+        palette_hash_problems.append(
+            f"{rel} 只解出 {len(px)} 个像素（应 8；反空转守护）[bgfinal3-indigosea-not-quartz]")
+    elif px == VANILLA_QUARTZ_PIXELS:
+        palette_hash_problems.append(
+            f"{rel} 逐像素等于原版 quartz 色卡（= bg-15w §7.3 的白灰阶回退现状，"
+            f"bgfix2 第 1 条报的 bug 本体）[bgfinal3-indigosea-not-quartz]")
+print(f"bgfinal3 授权色卡（靛海金纹饰）问题: {len(palette_hash_problems)} {palette_hash_problems[:4]}")
+
 sys.exit(1 if (bad_json or missing_tex or missing_special or missing_weapon_assets
                or missing_blank_assets or size_bad or trident_problems or mixin_problems
-               or blank_tex_hash_problems) else 0)
+               or blank_tex_hash_problems or palette_hash_problems) else 0)

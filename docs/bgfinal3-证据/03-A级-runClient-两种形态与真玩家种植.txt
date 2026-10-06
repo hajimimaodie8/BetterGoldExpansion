@@ -1,0 +1,47 @@
+bgfinal3 · ① 靛海金纹饰色卡（两种形态）+ ③ 真玩家种金胡萝卜 —— 真客户端两轮对照
+世界 = run/saves/bgfinal3cprobe（由本轮专用服务端以 level-name=bgfinal3probe 造出后复制）
+红线 5：只用 --quickPlaySingleplayer + 进世界第一 tick 断言世界名（下面 probe_world_guard 那行）
+
+⚠ 临时改动：为了让 Gradle 自己把 --quickPlaySingleplayer 带上（clientRunProgramArgs.txt 是 Gradle 的
+   生成产物、每次 runClient 都会被写回规范形态，抢在 JVM 读参数前贴进去是竞态 —— 本轮两次跑测因此
+   停在标题界面、探针零输出），临时在 build.gradle 的 runs.client 里加了一行 programArguments，
+   收尾逐字节复原（SHA256 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F）。
+
+==== 改后（含 ModEvents 的 PLACED_BLOCK.trigger）⇒ build/bgfinal3-evidence/runC2-client-after.log ====
+[15:28:34] BGF3C CHECK probe_world_guard PASS levelName=bgfinal3probe
+[15:28:34] BGF3C CHECK palette_resource_restored PASS �ͻ�����Դ������������ indigoseagold.png SHA256=9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d����������ԭ�� 9c966b7f�������� != quartz db0d983a5f091b2db7574fcac21709372ca8efa62a7d02f9638014bb6559fd98��
+[15:28:35] BGF3C CHECK atlas_item_sprite_not_quartz PASS ��̬ item���� quartz ��ԱȽ� 4 �ԣ������ز�ͬ�� = 4������ȫ����ͬ ���� ��ͬ���� bg-15w .3 �İ׻ҽ׻��ˣ�
+[15:28:36] BGF3C CHECK atlas_armor_sprite_not_quartz PASS ��̬ armor���� quartz ��ԱȽ� 36 �ԣ������ز�ͬ�� = 36������ȫ����ͬ ���� ��ͬ���� bg-15w .3 �İ׻ҽ׻��ˣ�
+[15:28:37] BGF3C CHECK item_form_model_uses_indigo_sprite PASS ��Ʒ��̬�����ģ�Ͳ㾫�麬 indigoseagold=true �� quartz=false������ true/false��
+[15:28:39] BGF3C CHECK armor_form_equipped PASS �����ؿڵ����β��� asset_name=indigoseagold������ indigoseagold��
+[15:28:43] BGF3C CHECK carrot_negative_controls PASS ����������գ�ֻ���ز��� / ��ԭ��С��֮�� plant_carrot ��δ��� = true
+[15:28:47] BGF3C CHECK carrot_crop_really_placed PASS ������Ҽ���Ⱦ���غ��¼���ȡ��=true���Ϸ�����ǽ���ܲ�����=true
+[15:28:47] BGF3C CHECK carrot_planted_criterion_done PASS �� ServerPlayer ���½���ܲ��� plant_carrot criterion isDone=true��ֻ�� ModEvents ���� PLACED_BLOCK.trigger �Ż��ɣ�
+[15:28:48] BGF3C SUMMARY pass=9 fail=0 skip=0 ticks=300 world=bgfinal3probe
+[15:28:36] BGF3C CHECK atlas_armor_sprite_not_quartz PASS ��̬ armor���� quartz ��ԱȽ� 36 �ԣ������ز�ͬ�� = 36������ȫ����ͬ ���� ��ͬ���� bg-15w .3 �İ׻ҽ׻��ˣ�
+[15:28:37] BGF3C CHECK item_form_model_uses_indigo_sprite PASS ��Ʒ��̬�����ģ�Ͳ㾫�麬 indigoseagold=true �� quartz=false������ true/false��
+[15:28:39] BGF3C CHECK armor_form_equipped PASS �����ؿڵ����β��� asset_name=indigoseagold������ indigoseagold��
+[15:28:43] BGF3C CHECK carrot_negative_controls PASS ����������գ�ֻ���ز��� / ��ԭ��С��֮�� plant_carrot ��δ��� = true
+[15:28:47] BGF3C CHECK carrot_crop_really_placed PASS ������Ҽ���Ⱦ���غ��¼���ȡ��=true���Ϸ�����ǽ���ܲ�����=true
+[15:28:47] BGF3C CHECK carrot_planted_criterion_done PASS �� ServerPlayer ���½���ܲ��� plant_carrot criterion isDone=true��ֻ�� ModEvents ���� PLACED_BLOCK.trigger �Ż��ɣ�
+[15:28:48] BGF3C SUMMARY pass=9 fail=0 skip=0 ticks=300 world=bgfinal3probe
+
+==== 改前对照（临时把那三行触发换成一句注释并重编译）⇒ build/bgfinal3-evidence/runC3-client-before.log ====
+[15:44:24] BGF3C CHECK probe_world_guard PASS levelName=bgfinal3probe
+[15:44:25] BGF3C CHECK palette_resource_restored PASS �ͻ�����Դ������������ indigoseagold.png SHA256=9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d����������ԭ�� 9c966b7f�������� != quartz db0d983a5f091b2db7574fcac21709372ca8efa62a7d02f9638014bb6559fd98��
+[15:44:26] BGF3C CHECK atlas_item_sprite_not_quartz PASS ��̬ item���� quartz ��ԱȽ� 4 �ԣ������ز�ͬ�� = 4������ȫ����ͬ ���� ��ͬ���� bg-15w .3 �İ׻ҽ׻��ˣ�
+[15:44:27] BGF3C CHECK atlas_armor_sprite_not_quartz PASS ��̬ armor���� quartz ��ԱȽ� 36 �ԣ������ز�ͬ�� = 36������ȫ����ͬ ���� ��ͬ���� bg-15w .3 �İ׻ҽ׻��ˣ�
+[15:44:28] BGF3C CHECK item_form_model_uses_indigo_sprite PASS ��Ʒ��̬�����ģ�Ͳ㾫�麬 indigoseagold=true �� quartz=false������ true/false��
+[15:44:30] BGF3C CHECK armor_form_equipped PASS �����ؿڵ����β��� asset_name=indigoseagold������ indigoseagold��
+[15:44:33] BGF3C CHECK carrot_negative_controls PASS ����������գ�ֻ���ز��� / ��ԭ��С��֮�� plant_carrot ��δ��� = true
+[15:44:38] BGF3C CHECK carrot_crop_really_placed PASS ������Ҽ���Ⱦ���غ��¼���ȡ��=true���Ϸ�����ǽ���ܲ�����=true
+[15:44:38] [Render thread/ERROR] [co.hj.be.bettergold/]: BGF3C CHECK carrot_planted_criterion_done FAIL �� ServerPlayer ���½���ܲ��� plant_carrot criterion isDone=false��ֻ�� ModEvents ���� PLACED_BLOCK.trigger �Ż��ɣ�
+[15:44:39] BGF3C SUMMARY pass=8 fail=1 skip=0 ticks=300 world=bgfinal3probe
+
+⇒ **两轮唯一差异 = carrot_planted_criterion_done**（改后 isDone=true / 改前 isDone=false）；
+  其余 8 条逐字相同（含两条负向对照与「作物真的种下」）。
+
+==== 中间态留档（两次探针自身事故，见 docs/1.6-规格.md §20.1.5 与 §20.3.4）====
+  ① runC1-client.log（第 1 次：服务端探针的开关文件被客户端整合服务端看到 ⇒ halt 把世界关掉、探针只跑到 tick 100）
+  ② runC1-client.log（第 2 次：探针在同一 tick 里 server.execute 取样 + 立刻断言 ⇒ 假 FAIL，
+     同一条日志里 assert(criterionDone=true) 与 FAIL 并存）

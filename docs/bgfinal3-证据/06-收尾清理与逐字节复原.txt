@@ -1,0 +1,47 @@
+bgfinal3 · 收尾清理与逐字节复原（SHA256 自证）
+生成时间：2026-10-06；工具：probe/bgfinal3/teardown.py（副本 docs/bgfinal3-证据/13）+ 头部穷举脚本
+
+== 1. 删掉的东西（只删本会话自己造的）==
+  src/main/java/com/hjmmd_8/bettergold/probe/bgfinal3/   已删（整包删除；**删前未复制源码 —— 见本文件第 5 节的记账**）
+  probe/bgfinal3/                                        已删（扰动/夹具/证据/收尾脚本；副本已进 docs/bgfinal3-证据/09~13）
+  run/bgfinal3-probe.enabled                             已删
+  run/bgfinal3-client-probe.enabled                      已删
+  run/bgfinal3probe（专用服务端探针世界）                 已删
+  run/saves/bgfinal3cprobe（客户端探针世界）               已删
+  run/config/jei/world/local/bgfinal3cprobe（JEI 残留）    已删（第三方 mod 常规残留；只删自己那个）
+  build/bgfinal3-zip（zip 解包临时目录）                   已删
+  ⚠ **没有**递归删整个 probe/、**没有**碰 run/saves 里任何别的世界、**没有**碰其它会话的探针残留
+     （run/config/jei/world/local 下仍有 bg15wprobe/bg16cprobe/… 等**别的轮次**留下的目录，按纪律不动）
+
+== 2. 逐字节复原（目标 SHA256 == 实际 SHA256）==
+  SAME     build/moddev/clientRunProgramArgs.txt            a365a5edf7abc44c576e5dd3f725a54d46658fcddc1e3a0257bec7c0ab2e4bdb（394 B 规范形态）
+  SAME     src/main/java/com/hjmmd_8/bettergold/event/ModEvents.java   904ca900ea6d042fb8e788ccc7298f95b0fa798774380d55dd6ea3d8fe933dd7
+  SAME     src/main/resources/assets/bettergold/lang/zh_cn.json        40d884dca2426283dcdd2e76b099fd43fee9c06896930902b85b777032effef9
+  SAME     src/main/resources/assets/bettergold/lang/en_us.json        82eb344578b9f29ad90760081388ca17b1b32b8000a85ec883051d28f04d80d5
+  SAME     src/main/resources/assets/bettergold/textures/trims/color_palettes/indigoseagold.png
+           9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d（这一张是**本轮授权后的目标值**，不是复原）
+  SAME     src/main/resources/data/bettergold/advancement/agriculture/plant_gold_crop.json
+           5ac2e90eea3fb520773f0e5d364c687664438a08fbb2f2245b7af28ef7305f6d
+  SAME     tools/asset-generator/bgappend-requirements-snapshot/bg-book-8.md   7b3ac419be90d927d1dbc0980bbda5a56ed5a81b660d11e698f7394ea7117501
+  SAME     tools/asset-generator/generate_advancements.py      7aa4ebcb93289dd620f271fd825ca7edf4f10fbe2ad762502c75589b801a1558
+  SAME     tools/asset-generator/validate_trim_assets.py       2445b43b2b39f6f896cb176a4bb3961ba317aaf0a427902cb8d53e791890dce7
+  SAME     build.gradle                                        2aac7860e5b1f03128d42637b9f002c7a44f37e269ee6b7bc9dfbe41ad478c2f
+           （A 级时临时在 runs.client 里加过一行 programArguments，收尾已删、哈希回中）
+
+== 3. run/server.properties：**被服务器自己重写**后的头部时间戳穷举抢救 ==
+  第一次复原后 SHA256 = 923efee9cd6c0a6e00d3fb5a15e22750309eab77e4a82a5fb00e6cfb9bdf7ba6（头部 = `#Tue Oct 06 15:43:40 CST 2026`）
+  以目标 SHA256 为准逐秒穷举（2026-09-25 ~ 10-08，其余 1379 B 固定）
+  ⇒ 命中 `#Mon Oct 05 17:40:32 CST 2026`，**SHA256 回到 a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4**
+     （与 docs/1.6-规格.md §18.6 第 6 条记的那串**同一个值**）
+
+== 4. 没被改动的（逐项实测）==
+  run/config/*.toml 13 个：哈希与本轮开始前记录的基线**逐张相同**（含 bettergold-common.toml 731371ec…）
+  run/saves 全量清单：before 29 行 / now 29 行，**逐行完全相同** ⇒ 作者存档「新的世界」全程未打开、未写入
+  git status --porcelain：只有本轮**有意**改动的 13 个文件 + 新目录 docs/bgfinal3-证据/（没有多余改动）
+  jar 内 *Probe* 路径数 = 0（探针没有进交付物）
+
+== 5. 记账：一处流程失误 ==
+  **收尾删探针包之前没有先把源码复制到 docs/** ⇒ `BgFinal3Probe.java` / `BgFinal3ClientProbe.java` 已不可恢复
+  （class 也随后续编译清理掉了）。前几轮（bgfix2 / bgfinal）都留了「探针源码副本」。
+  补救：`docs/bgfinal3-证据/07-探针设计与断言清单.txt`（tick 表 + 全部断言 id + 判据实现）。
+  **规则（已回流 ex/03 §3.13）**：**先复制探针源码，再删包**。

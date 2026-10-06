@@ -330,8 +330,14 @@ def build() -> list[dict]:
             "till": c_till_farmland(),
             "plant_wheat": c_plant_crop(f"{NS}:golden_wheat_crop"),
             "plant_eggplant": c_plant_crop(f"{NS}:golden_eggplant_crop"),
+            # bgfinal3（作者 2026-10-06 裁定「需要」）：金胡萝卜那半边补上。
+            # ⚠ 金胡萝卜**不是** `BlockItem#place` 种下去的，而是 `ModEvents#onRightClickGoldenCarrot`
+            #   里 `setBlock` + `setCanceled` 自定义种的 ⇒ 判据虽然同样是原版 `placed_block`，
+            #   但**必须**由那段代码自己补一次 `CriteriaTriggers.PLACED_BLOCK.trigger(...)`
+            #   （照 `BlockItem.java:78-85` 的姿势），否则这条 criteria 永远不达成。
+            "plant_carrot": c_plant_crop(f"{NS}:golden_carrot_crop"),
         },
-        [["till"], ["plant_wheat", "plant_eggplant"]])
+        [["till"], ["plant_wheat", "plant_eggplant", "plant_carrot"]])
     add("agriculture/midas_feast_1", "midas_feast_1", "米达斯之宴I", "获得所有金食物",
         f"{NS}:golden_bread", "agriculture/plant_gold_crop",
         {f"food_{f.replace(':', '_')}": c_inv([f]) for f in GOLD_FOODS},

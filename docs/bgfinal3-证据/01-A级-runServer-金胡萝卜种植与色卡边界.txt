@@ -1,0 +1,23 @@
+﻿bgfinal3 · ① 专用服务端 A 级（runServer + 临时探针，探针已整块删除）
+世界 = level-name=bgfinal3probe（临时改 run/server.properties，收尾逐字节复原到 SHA256 A2229937...）
+开关文件 = run/bgfinal3-probe.enabled（收尾删除）；forceload 双向 0（探针 SUMMARY 里 forcedChunksNow=0）
+
+★ 受试体边界（本轮踩到的硬边界，读源码得到）：
+  NeoForge 的 PlayerAdvancements#award 第一行就是
+    if (this.player instanceof net.neoforged.neoforge.common.util.FakePlayer) return false;
+  （原文注释 "Forge: don't grant advancements for fake players"）
+  ⇒ 专用服务端用 FakePlayer 当受试体时，**无论代码对不对，criteria 永远是 false**
+  ⇒ 成就判据那一档在本探针里按 SKIP 记账（不记成 PASS/FAIL），对照改由真客户端 + 真 ServerPlayer 做。
+
+日志：build/bgfinal3-evidence/runA-server.log（关键行如下，原文誊抄）
+
+[Server thread/INFO] BGF3 armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[Server thread/INFO] BGF3 readout world :: levelName=bgfinal3probe dim=minecraft:overworld
+[Server thread/INFO] BGF3 readout setup :: fakePlayer=[Minecraft] uuid=41c82c87-7afb-4024-ba57-13d2c99cae77 farmland=BlockPos{x=2, y=199, z=2}/BlockPos{x=6, y=199, z=2}/BlockPos{x=10, y=199, z=2}
+[Server thread/INFO] BGF3 readout revoke(setup) :: advancement=bettergold:agriculture/plant_gold_crop revokedCriterionCount=0
+[Server thread/INFO] BGF3 readout negative_controls :: tillOnlyAbove=minecraft:air normalAbove=minecraft:wheat criterionDone=false
+[Server thread/INFO] BGF3 readout positive :: canceled=true cropPlaced=true blockAbove=bettergold:golden_carrot_crop heldAfter=0xminecraft:air
+[Server thread/INFO] BGF3 CHECK negative_controls PASS ֻ���ز��� + ��ԭ��С��֮�� plant_carrot ��δ��� = true
+[Server thread/INFO] BGF3 CHECK carrot_crop_really_placed PASS �����ˣ��¼���ȡ��=true���Ϸ�����ǽ���ܲ�����=true
+[Server thread/WARN] BGF3 CHECK carrot_planted_criterion_done SKIP ר�÷���˵��������� FakePlayer���� NeoForge �� PlayerAdvancements#award ��һ�о��� "Forge: don't grant advancements for fake players"��instanceof FakePlayer ? return false�� ? criteria ��Ϊ false������ʵ�� criterionDone=false�����ɾ��оݵ����ֶ����ɿͻ���̽������ ServerPlayer ����
+[Server thread/INFO] BGF3 SUMMARY pass=2 fail=0 skip=1 ticks=140 forcedChunksNow=0
