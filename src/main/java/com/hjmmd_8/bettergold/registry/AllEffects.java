@@ -97,14 +97,22 @@ public class AllEffects {
      * ⇒ <b>现行口径：{@link #shiftedDamage}(amplifier) ≤ 0（即 1 级）时既不 {@code hurt}、也不刷燃烧</b>，
      * 1 级不再着火（<b>视觉效果随之改变，属预期结果</b>）；2 级及以上照旧点燃。
      * 端到端曲线由此与沉淀对齐为 <b>1 级 0 / 2 级 1 / 3 级 2 点/秒</b>。</p>
+     *
+     * <p>★★ <b>上面这一整段（"1 级不点燃 / 端到端 0/1/2"）已被 bg-fix2 第 5 条取代（2026-10-06），原文保留不删</b>：
+     * 作者 2026-10-06 原话「高燃和沉淀 buff 在 1 级时只会造成 1 点燃烧和窒息伤害，相对的 2 级则会变为 2 点」
+     * ⇒ 曲线回到 <b>{@code 伤害 = 等级}</b>（1/2/3 点/秒），于是 <b>1 级重新点燃</b>
+     * （{@code shiftedDamage} 恒 ≥ 1，那句 {@code if (damage > 0.0F)} 的"零分支"不再被 1 级命中）。
+     * 唯一真源仍是 {@link #shiftedDamage} 一处。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> HIGH_BURN =
             EFFECTS.register("high_burn", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFF7A18) {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                        // 1 级（amplifier 0 ⇒ shiftedDamage = 0）走进"不结算"分支：
-                        // 不 hurt、也不 setRemainingFireTicks ⇒ 原版燃烧没有可燃的计时可以借。
+                        // ⚠ 旧注释（原文保留）："1 级（amplifier 0 ⇒ shiftedDamage = 0）走进'不结算'分支"。
+                        // bg-fix2 第 5 条起 shiftedDamage 恒 ≥ 1 ⇒ 该分支只作为"点数确实为 0 时不着火"的
+                        // 结构性兜底保留在代码里（守卫不删：它是"0 点 ⇒ 不 hurt、不刷燃烧"这条唯一真源），
+                        // 现行 1/2/3 级都会走进去，各自 hurt(等级) + setRemainingFireTicks(20)。
                         float damage = shiftedDamage(amplifier);
                         if (damage > 0.0F) {
                             entity.hurt(serverLevel.damageSources().onFire(), damage);
@@ -155,7 +163,10 @@ public class AllEffects {
      *   <li><b>伤害 = 等级 − 1</b>（bg-fix 第 6 条，作者 2026-10-05 裁定：1 级 <b>0 点</b>、2 级 <b>1 点</b>、
      *       3 级 2 点）：与 {@link #HIGH_BURN 高燃} <b>共用同一处公式</b> {@link #shiftedDamage}(amplifier)
      *       —— 旧说法「伤害 = 等级 + 1（1 级 2 点、2 级 3 点），代码口径与 1.4 高燃逐字同构 {@code amplifier + 2}」
-     *       <b>已被推翻，原文保留在下一条</b>。</li>
+     *       <b>已被推翻，原文保留在下一条</b>。
+     *       ⚠ <b>本条（"等级 − 1"，1 级 0 点）又已被 bg-fix2 第 5 条取代</b>（原文保留、未删）：
+     *       现行 = <b>伤害 = 等级</b>（<b>1 级 1 点 / 2 级 2 点 / 3 级 3 点</b>，与寄生同口径）。
+     *       见 {@link #shiftedDamage} 的现行口径块与 {@code docs/1.6-规格.md} 的 bg-fix2 节。</li>
      *   <li>⚠ <b>旧口径（原文保留，未删）</b>：<b>伤害 = 等级 + 1</b>（1 级 2 点、2 级 3 点）。代码口径与 1.4 的
      *       {@code high_burn} 逐字同构：每秒（{@code duration % 20 == 0}）结算 {@code amplifier + 2} 点 ——
      *       {@code amplifier + 1} 是「等级」，再加 1 就是「等级 + 1」。</li>
@@ -297,9 +308,29 @@ public class AllEffects {
      * 不许各写一份公式（§2.4「同一个约束写在两处」的反面教训）；
      * 寄生（{@code PARASITE}）与音咆（{@code ECHO_ROAR}）的曲线<b>不在本条范围内</b>，
      * 它们仍是「伤害 = 等级」（{@code MetalFamily.*_DAMAGE_PER_LEVEL}）。</p>
+     *
+     * <hr>
+     *
+     * <p>★★ <b>现行口径（bg-fix2 第 5 条，作者 2026-10-06 原话：「我这边指的是高燃和沉淀 buff 在 1 级时
+     * 只会造成 1 点燃烧和窒息伤害，相对的 2 级则会变为 2 点」）——「等级 = 点数」</b>：</p>
+     *
+     * <pre>伤害 = 等级 = amplifier + 1        （1 级 1 点 / 2 级 2 点 / 3 级 3 点 …）
+     *      等价写法 <b>max(1, 等级)</b>  —— 与寄生（PARASITE）同口径</pre>
+     *
+     * <p>⇒ <b>上面那条「1 级 0 点 / 2 级 1 点」的口径（bg-fix §3.6 + 五条裁定第 2 条）已被本次取代</b>
+     * （原文一字未删，保留在本 javadoc 上半段与 {@code docs/1.6-规格.md} §11.2 / §11.6.2 / §16.3）。
+     * 失效原因分类：<b>「按旧口径做」</b> —— {@code bg-fix} 需求文档 §3.6 后来被作者本人改成
+     * 「1 级 1 点 / 2 级 2 点」（同一份文档的 §8.1），而代码停留在旧值 ⇒ 作者实测"没生效"。</p>
+     *
+     * <p>★ <b>连带结论（高燃 1 级恢复点燃）</b>：本方法返回值现在<b>恒 ≥ 1</b>，
+     * 于是 {@link #HIGH_BURN} 里那句 {@code if (damage > 0.0F)} 的「不结算分支」不再被 1 级命中 ——
+     * 1 级<b>重新</b> {@code hurt(onFire, 1.0)} + {@code setRemainingFireTicks(20)}（视觉上重新着火）。
+     * 那是 bg-final（2026-10-05）为让「1 级 0 点」端到端成立才引入的处置，随曲线一起作废（原文保留）。</p>
      */
     public static float shiftedDamage(int amplifier) {
-        return Math.max(0, amplifier);
+        // bg-fix2 第 5 条（2026-10-06 新口径）：等级 = 点数 ⇒ 1 级 1 点 / 2 级 2 点 / 3 级 3 点。
+        // 旧实现为 `Math.max(0, amplifier)`（= 1 级 0 / 2 级 1）—— 已作废，注释留档不删。
+        return Math.max(1, amplifier + 1);
     }
 
     private AllEffects() {

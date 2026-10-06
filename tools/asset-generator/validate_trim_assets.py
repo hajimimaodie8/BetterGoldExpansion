@@ -114,6 +114,29 @@ def main():
         size, px = palette_pixels(z.read("assets/minecraft/textures/trims/color_palettes/quartz.png"))
         p(f"    size={size} 像素={px}")
 
+        # ---------- 2b. bg-fix2 第 1 条（2026-10-06）：靛海金「色卡丢失」的取证 ----------
+        # 作者 2026-10-06 报「靛海金的纹饰色卡丢失了」。逐像素对照的结论是：
+        #   **靛海金现在那张"色卡"就是原版 quartz 的 8 个像素** ⇒ "丢失"指的是
+        #   「它没有自己的颜色了」，而不是文件缺失 / 图集没登记 / 图集烘坏。
+        # 这是 bg-15w 续工轮 §7.3（作者当时授权「能调回来不」）那次回退的**现状**：
+        # 需求 §一 里那句"f2efed -> 2a2822 灰蓝渐变"正是 quartz 灰阶。
+        # ⚠ 本项**刻意只报告、不做成阻塞断言**（作者尚未裁定是否恢复原色卡；
+        #   把"已知缺陷"写成契约会在修复时反过来拦住修复 —— mcmod_experience §2.2）。
+        _quartz_px = palette_pixels(
+            z.read("assets/minecraft/textures/trims/color_palettes/quartz.png"))[1]
+        _clones = []
+        for _m in OURS:
+            _sz, _px = palette_pixels(
+                (RES / "assets/bettergold/textures/trims/color_palettes" / f"{_m}.png").read_bytes())
+            if _px == _quartz_px:
+                _clones.append(_m)
+        p("  [bgfix2-第1条] 与 quartz **逐像素完全相同**的我方色卡 = "
+          f"{_clones if _clones else '无'}")
+        p("      预期 = 仅 ['indigoseagold']（= bg-15w 续工轮 §7.3 作者授权回退的现状；"
+          "其余 8 张都是各自金属的彩色渐变）")
+        p("      ⇒ 「色卡丢失」= 靛海金没有自己的颜色卡；**不是**文件/图集/override 的问题。"
+          "原始靛海金色卡从未进版本库、本机已不可恢复（本轮取证见 docs/1.6-规格.md 的 bg-fix2 节）。")
+
     # ---------- 3. 图集置换 ----------
     p("")
     p("== 3. 图集置换（两处，缺一不生效） ==")

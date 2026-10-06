@@ -92,6 +92,48 @@ public class ModEvents {
             net.minecraft.core.registries.Registries.ENCHANTMENT,
             net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("bettergold", "take_gold_food"));
 
+    // ==================== bg-fix2 第 4 条：金骨粉「攻击就掉 + 挤掉 80% 条目」 ====================
+
+    /**
+     * <b>bg-fix2 第 4 条（作者 2026-10-06 原话）</b>：「万坚金器具攻击骷髅类的生物是
+     * <b>攻击掉落金骨粉而不只是死亡掉落</b>，并且<b>金骨粉会挤掉 80% 万坚金器具所掉在内的物品，
+     * 但除了礼品金票</b>」。
+     *
+     * <p><b>判据（完整公式 —— 这是本条的唯一真源）</b></p>
+     *
+     * <pre>
+     * 触发：玩家用万坚金器具（isSturdygoldAttackWeapon）**命中**（LivingIncomingDamage，不要求击杀）
+     *       且 受害者 instanceof AbstractSkeleton（骷髅 / 流浪者 / 凋灵骷髅 / 沼骸）
+     * 池 P：本次命中会用的金系掉落池 = rollGoldLoot 的过滤后池
+     *       （白板万坚金 = BASE_GOLD_LOOT_POOL 4 条；带「取其金食」附魔再并入 GOLD_FOOD_LOOT_POOL）
+     * 挤掉：对 P 的**每一条**独立判定 —— 以 {@link #SKELETON_SQUEEZE_RATIO}（0.8）的概率被「挤掉」，
+     *       被挤掉的条目**替换为** bettergold:golden_bone_meal
+     * 豁免：**bettergold:gift_gold_ticket 永不被替换**（它在池里时原样保留）
+     * 产出：从「替换后」的池里等概率取 1 条（= 原有 rollGoldLoot 的取法，参数不变）
+     * ⇒ 金骨粉的出现概率 = 0.8（= 池里被替换条目数的期望占比）；正好对上作者的「百分之 80」
+     * </pre>
+     *
+     * <p><b>为什么不是「80% 概率直接把这一件换成金骨粉」</b>：作者说的是「挤掉 <b>80% 条目</b>」
+     * （条目 = 掉落列表里的每一样东西），所以按<b>逐条目</b>的概率算，而不是对最终那一次掷骰乘 0.8。
+     * 两者在"金骨粉占比 = 80%"这一点上等价，但前者保留了"剩下 20% 的条目照旧掉原物品"这一层
+     * （白板池 4 条 ⇒ 平均 3.2 条被替换、0.8 条保留）。</p>
+     *
+     * <p><b>礼品金票为什么"除了"</b>：它自己那条 6% 掷骰（{@link #GIFT_TICKET_CHANCE}，在本方法里
+     * 位于爆金之前）**一个字都不动**；并且万一数据包/配置把金票放进池里，它也不会被替换 ——
+     * 两条合起来就是作者要的"礼品金票不被挤掉"。</p>
+     *
+     * <p>⚠ <b>与死亡掉落的关系</b>：{@code MetalEvents#onLivingDrops} 里那条「击杀骷髅类 80% 掉一份金骨粉」
+     * <b>原样保留</b>（作者要的是"<b>不只是</b>死亡掉落"）⇒ 用万坚金武器打死骷髅时，命中那条与死亡那条
+     * 各自独立判定。两条的 80% 是两个不同的 80%（一个是"池里 80% 的条目"，一个是"击杀 80% 概率"），
+     * 已在 {@code docs/1.6-规格.md} 的 bg-fix2 节写清。</p>
+     */
+    public static final float SKELETON_SQUEEZE_RATIO = 0.8F;
+
+    /** 永远不被金骨粉挤掉的条目（作者点名：礼品金票） */
+    private static boolean isSqueezeExempt(Item item) {
+        return item == AllItems.GIFT_GOLD_TICKET.get();
+    }
+
     // ==================== 猪灵以物易物：产出翻倍 + 6% 金钱贝 ====================
 
     @SubscribeEvent
@@ -239,13 +281,33 @@ public class ModEvents {
             return;
         }
         // 功能触发（默认 100%）：必定掉落一件金系物品（白板掉基础四件；有"取其金食"附魔才掉金食物）
-        Item loot = rollGoldLoot(player, weapon);
+        //
+        // ---------- bg-fix2 第 4 条（2026-10-06）：骷髅类 ⇒ 金骨粉「攻击就掉 + 挤掉 80% 条目」 ----------
+        // 触发 = **命中**（就是这个事件，不要求击杀）；判据 = `instanceof AbstractSkeleton`（与
+        // MetalEvents#onLivingDrops 的死亡掉落同一条类判据）；"挤掉"的完整公式写在
+        // ModEvents#SKELETON_SQUEEZE_RATIO 的 javadoc 上（逐条目 0.8 概率换成金骨粉、礼品金票豁免）。
+        // ⚠ 死亡掉落那条（MetalEvents#onLivingDrops）原样保留 —— 作者要的是"**不只是**死亡掉落"。
+        // ⚠ 礼品金票自己那条 6% 掷骰在本方法里位于这一段**之前**，顺序与随机数序列都不动。
+        boolean skeletonVictim = victim instanceof net.minecraft.world.entity.monster.AbstractSkeleton;
+        String squeezeReadout = "";
+        Item loot;
+        if (skeletonVictim) {
+            loot = rollGoldLootAgainstSkeleton(player, weapon);
+            squeezeReadout = " skeletonSqueezed=" + lastSkeletonSqueezeCount + "/" + lastSkeletonPoolSize;
+        } else {
+            loot = rollGoldLoot(player, weapon);
+        }
         if (level instanceof ServerLevel serverLevel) {
             ItemEntity drop = new ItemEntity(serverLevel,
                     victim.getX(), victim.getY() + 0.5D, victim.getZ(),
                     new ItemStack(loot));
             drop.setDefaultPickUpDelay();
             serverLevel.addFreshEntity(drop);
+            // A 级探针读数（debug 级、一行一条，含"这一件是不是金骨粉"与池读数；不影响玩法）
+            com.hjmmd_8.bettergold.bettergold.LOGGER.debug(
+                    "BGFIX2-SKELETON-DROP item={} victim={}{}",
+                    net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(loot),
+                    victim.getType().toShortString(), squeezeReadout);
         }
     }
 
@@ -375,18 +437,61 @@ public class ModEvents {
                 && isAllowedByConfig(Items.ENCHANTED_GOLDEN_APPLE)) {
             return Items.ENCHANTED_GOLDEN_APPLE;
         }
-        // 构建按配置过滤后的掉落池
+        List<Item> pool = buildGoldLootPool(held, hasFoodEnchant);
+        if (pool.isEmpty()) {
+            return Items.GOLD_NUGGET; // 兜底：全被过滤时掉金粒
+        }
+        return pool.get(random.nextInt(pool.size()));
+    }
+
+    /** 按配置过滤后的金系掉落池（bg-fix2 第 4 条抽出来，供"挤掉 80% 条目"复用同一份清单） */
+    private static List<Item> buildGoldLootPool(ItemStack held, boolean hasFoodEnchant) {
         List<Item> pool = new java.util.ArrayList<>(BASE_GOLD_LOOT_POOL.stream()
                 .filter(ModEvents::isAllowedByConfig).toList());
         if (hasFoodEnchant) {
             pool.addAll(GOLD_FOOD_LOOT_POOL.stream()
                     .filter(ModEvents::isAllowedByConfig).toList());
         }
+        return pool;
+    }
+
+    /**
+     * <b>bg-fix2 第 4 条</b>：受害者是「骷髅类」时用的爆金掷骰 ——
+     * 先把池里 80% 的条目（逐条目独立判定、{@link #SKELETON_SQUEEZE_RATIO}）换成金骨粉，
+     * 再从替换后的池里等概率取一条（完整的判据与理由写在 {@link #SKELETON_SQUEEZE_RATIO} 的 javadoc 上）。
+     *
+     * <p>与 {@link #rollGoldLoot} 的差别只有"池的内容"这半段；
+     * <b>附魔金苹果那条 1% 特判不参与挤掉</b>（它是"取其金食"附魔的额外彩头，不是掉落列表条目），
+     * 但只在有该附魔时才可能命中，与骷髅无关时行为逐字不变。</p>
+     */
+    private static Item rollGoldLootAgainstSkeleton(Player player, ItemStack held) {
+        var random = player.getRandom();
+        boolean hasFoodEnchant = hasTakeGoldFood(held);
+        List<Item> pool = buildGoldLootPool(held, hasFoodEnchant);
         if (pool.isEmpty()) {
-            return Items.GOLD_NUGGET; // 兜底：全被过滤时掉金粒
+            return AllItems.GOLDEN_BONE_MEAL.get(); // 超级兜底：池被配置清空时，骷髅这里就是金骨粉
         }
+        int squeezed = 0;
+        for (int i = 0; i < pool.size(); i++) {
+            Item item = pool.get(i);
+            if (isSqueezeExempt(item)) {
+                continue;   // 礼品金票永不被挤掉
+            }
+            if (random.nextFloat() < SKELETON_SQUEEZE_RATIO) {
+                pool.set(i, AllItems.GOLDEN_BONE_MEAL.get());   // 「挤掉」= 换成金骨粉
+                squeezed++;
+            }
+        }
+        // 反空转守护（运行期）：我们自己是唯一写入者，这里的读数用于 A 级探针核对"确实挤过"
+        lastSkeletonSqueezeCount = squeezed;
+        lastSkeletonPoolSize = pool.size();
         return pool.get(random.nextInt(pool.size()));
     }
+
+    /** 仅供 A 级探针读取的"上一次骷髅挤掉读数"（池大小 / 被挤掉的条目数），不参与任何玩法判定 */
+    public static int lastSkeletonSqueezeCount = -1;
+    /** 同上：上一次的池大小 */
+    public static int lastSkeletonPoolSize = -1;
 
     /** 手持物品是否带有"取其金食"附魔 */
     private static boolean hasTakeGoldFood(ItemStack stack) {

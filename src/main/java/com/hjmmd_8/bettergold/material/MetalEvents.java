@@ -532,9 +532,38 @@ public final class MetalEvents {
      *   <li>建材那条：整段在 {@link #contactThrottled}（{@code SONIC_CONTACT_KEY}）之后
      *       ⇒ 同一块方块每 {@link MetalFamily.Spec#DEFAULT_CONTACT_COOLDOWN} tick 最多响一次；</li>
      *   <li>音咆那条：每次 {@code applyEffectTick} 只调一次（不是每个受害者各响一次）
-     *       ⇒ 每个挂着音咆的目标每 20 tick 最多响一次；没有目标挨打就不响
-     *       （{@code hitAny} 为假时直接跳过）。</li>
+     *       ⇒ 每个挂着音咆的目标每 20 tick 最多响一次。</li>
      * </ul>
+     * ⚠ <b>旧口径（原文保留，未删）</b>：「没有目标挨打就不响（{@code hitAny} 为假时直接跳过）」
+     * —— 见下面 bg-fix2 的判据。
+     *
+     * <p>★★ <b>bg-fix2 第 2 条（2026-10-06）：音效与伤害解耦 —— 判据改写（完整公式）</b></p>
+     *
+     * <pre>
+     * 触发（候选受害者判定，两处共用同一句话）：
+     *     某次结算里，3×3×3 AABB 内存在至少一个「候选受害者」：
+     *         非客户端 ∧ isAlive() ∧ 未被本键 contactThrottled 节流（= 本次真的要判定它）
+     * 播放：一次结算最多一次（建材 = 本次 sonicContact 调用内一次；音咆 = 每个 applyEffectTick 一次）
+     * 与 hurt 的返回值 <b>无关</b>
+     * </pre>
+     *
+     * <p><b>为什么必须解耦（这是作者"测好多遍都听不到"的根因）</b>：旧判据把播放挂在
+     * {@code victim.hurt(...)} 返回真上，而这些真实场景里它必然返回假 ——</p>
+     * <ol>
+     *   <li><b>创造模式玩家</b>：{@code Player#hurt} 第一道闸就是
+     *       {@code if (this.abilities.invulnerable && !source.is(BYPASSES_INVULNERABILITY)) return false;}
+     *       ⇒ 站在幽咆金建材上的创造模式玩家<b>永远不挨伤害</b>（这正是作者测试时的情形，
+     *       需求 §二 的验收也写了「在创造模式飞行到远处听一次」）；</li>
+     *   <li>无敌帧差额为 0 的目标（{@code amount <= lastHurt} ⇒ 只补差额，差额 0 ⇒ 返回假）；</li>
+     *   <li>任何免疫该伤害源的目标（同族的 {@code sonicResist} 盔甲、命令 {@code /effect} 等）。</li>
+     * </ol>
+     * 这三类目标<b>确实站在声波里、也确实看到了 {@code SONIC_BOOM} 粒子</b>，只是伤害被合法豁免 ——
+     * 音效是"这一次声波发生过"的表现，不是"扣了血"的奖励。
+     *
+     * <p><b>为什么不会变成"没打到也响"</b>：候选判定要求 AABB 里<b>确有存活实体</b>且本次未被节流；
+     * 空场（范围内没有任何生物、或全体都在 10 tick 冷却里）仍然一声不响。
+     * 与伤害/击退的那一层仍然各自独立：伤害没落地就<b>仍不推</b>（{@link #applyBlockSonicKnockback}
+     * 那句 {@code if (!victim.hurt(...)) continue;} 原样保留）。</p>
      *
      * <p><b>音量 / 音源</b>：{@code SoundEvents.WARDEN_SONIC_BOOM} 是原版音效
      * （{@code warden.sonic_boom}，原版 {@code Warden} 直接用 {@code level.playSound(...)} 广播，
@@ -542,7 +571,8 @@ public final class MetalEvents {
      * 音高 {@code 1.0F}，参数与原版一致；节流之后不会刷屏。</p>
      *
      * <p>只对**服务端**发（{@code ServerLevel#playSound} 走原版 {@code ClientboundSoundPacket}），
-     * 客户端无需额外代码。</p>
+     * 客户端无需额外代码。⚠ {@code SoundSource.HOSTILE} 受客户端「敌对生物」音量滑条控制 ——
+     * 作者若把那一档拉到 0 也会听不到（本轮改不了这一点，属客户端设置；已写进汇报的排错清单）。</p>
      */
     private static void playSonicBoomSound(net.minecraft.server.level.ServerLevel level,
             net.minecraft.core.BlockPos pos) {
@@ -586,20 +616,24 @@ public final class MetalEvents {
                     center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
         var area = new net.minecraft.world.phys.AABB(pos).inflate(MetalFamily.ECHO_ROAR_RADIUS);
+        net.minecraft.server.level.ServerLevel sonicLevel =
+                level instanceof net.minecraft.server.level.ServerLevel sl ? sl : null;
         boolean soundPlayed = false;
         for (var victim : level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, area)) {
             if (contactThrottled(victim, SONIC_CONTACT_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
                 continue;
             }
+            // ---------- bg-fix2 第 2 条（2026-10-06）：音效与伤害解耦 ----------
+            // 判据 = 「本次确实对着一个候选受害者判定过」（AABB 内有存活的、未被节流的实体）就响一次，
+            // **不看 hurt 的返回值**。旧口径（原文保留在方法 javadoc）：只有 hurt 落地才响 ——
+            // 而创造模式玩家 / 无敌帧差额为 0 / 免疫目标都让 hurt 返回假 ⇒ 作者站上去永远听不到。
+            if (!soundPlayed && sonicLevel != null) {
+                playSonicBoomSound(sonicLevel, pos);
+                soundPlayed = true;
+            }
             // 原版 SonicBoom.java:79-83 的第一层：伤害没落地（免疫 / 无敌帧差额为 0 / 已死）就不推。
             if (!victim.hurt(sonicBoomSource(level), MetalFamily.CONTACT_SONIC_DAMAGE)) {
                 continue;
-            }
-            if (!soundPlayed) {
-                // bg-fix §八.3：只在**真的有生物挨了这一下**时响一次（限频 = 本次接触判定内只响一次，
-                // 而整段判定本身已被 contactThrottled 约束到每 10 tick 一次）
-                playSonicBoomSound((net.minecraft.server.level.ServerLevel) level, pos);
-                soundPlayed = true;
             }
             applyBlockSonicKnockback(victim, center);
         }
@@ -684,17 +718,19 @@ public final class MetalEvents {
                 center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;
         var area = new net.minecraft.world.phys.AABB(pos).inflate(MetalFamily.ECHO_ROAR_RADIUS);
-        boolean hitAny = false;
+        // bg-fix2 第 2 条（2026-10-06）：判据从「有目标挨打（hitAny）」改成「本次确实对着候选受害者判定过」，
+        // 与 sonicContact 逐字同构 —— 音效不再被 hurt 的返回值挡住（创造模式 / 免疫 / 无敌帧差额 0）。
+        // ⚠ 旧变量名 hitAny 与旧判据（原文保留在 playSonicBoomSound 的 javadoc 里）。
+        boolean sawVictim = false;
         for (var victim : serverLevel.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, area)) {
             if (contactThrottled(victim, ECHO_ROAR_TICK_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
                 continue;
             }
-            if (victim.hurt(sonicBoomSource(serverLevel), level)) {
-                hitAny = true;
-            }
+            sawVictim = true;
+            victim.hurt(sonicBoomSource(serverLevel), level);
         }
-        // bg-fix §八.3：音咆 buff 每跳声波也出声（限频 = 每次结算最多一次、且必须有生物真的挨打）
-        if (hitAny) {
+        // bg-fix §八.3：音咆 buff 每跳声波也出声（限频 = 每次结算最多一次）
+        if (sawVictim) {
             playSonicBoomSound(serverLevel, pos);
         }
     }
@@ -1944,6 +1980,13 @@ public final class MetalEvents {
         //
         // 触发粒度：**每次击杀**掷一次骰子（作者 2026-10-05 裁定原话「每次击杀有 80% 概率掉一份」），
         //       不是每次命中 —— 逐次命中的话就是一台刷骨粉机，与"占比 80%"的语义不符。
+        //
+        // ⚠⚠ **上面那条"不是每次命中"的口径已被 bg-fix2 第 4 条取代（2026-10-06，原文保留不删）**：
+        //       作者新原话是「万坚金器具攻击骷髅类的生物是**攻击掉落金骨粉而不只是死亡掉落**，
+        //       并且金骨粉会挤掉 80% 万坚金器具所掉在内的物品，但除了礼品金票」
+        //       ⇒ **命中那条**落在 `ModEvents#onLivingIncomingDamage`（走"挤掉池里 80% 条目"的公式，
+        //       见 `ModEvents#SKELETON_SQUEEZE_RATIO` 的 javadoc）；**本条（死亡掉落）原样保留**，
+        //       因为作者要的是"**不只是**死亡掉落"。两条各自独立判定，两个 80% 是不同的东西。
         //
         // 「骷髅类型」的判据 = `instanceof AbstractSkeleton`：1.21.1 里 骷髅 / 流浪者 / 凋灵骷髅 /
         //       沼骸（bogged）四种同属这一个抽象父类 ⇒ 语义正确、零维护成本。

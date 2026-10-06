@@ -1,0 +1,64 @@
+﻿13:50:54 BGFIX2-PROBE armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+13:50:55 BGFIX2-PROBE setup :: READOUT difficulty=NORMAL forceload=2 platforms=2 fakePlayer=[Minecraft]
+13:50:56 BGFIX2-PROBE spawn :: READOUT cowEchoSurvival uuid=f562a140-010f-4d05-ba35-0fde669390ff hp=200.0 pos=(2.5, 200.0, 2.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT cowEchoInvulnerable uuid=7bfa942e-20f7-49d1-909e-54d0e84ebdd8 hp=200.0 pos=(6.5, 200.0, 2.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT cowSturdyControl uuid=ef9fe534-6ac6-43ab-bcc6-e3289fcbfa4c hp=200.0 pos=(2.5, 200.0, 6.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT cowBuff uuid=cb60f735-0946-4f57-a568-8e4b37cd4010 hp=200.0 pos=(8.5, 200.0, 8.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT burnL1 uuid=d1347d31-ef7b-4ad5-b01a-c3a5c3ce7d14 hp=200.0 pos=(4.5, 200.0, 4.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT burnL2 uuid=4435b7d3-5df8-4828-8eb9-87d2ae6c84eb hp=200.0 pos=(5.5, 200.0, 4.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT burnL3 uuid=363e3ddc-695a-484d-bcfa-b4b9e15eb665 hp=200.0 pos=(6.5, 200.0, 4.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT sedimentL1 uuid=b26179da-f9c7-432c-931f-ad7259e193c5 hp=200.0 pos=(4.5, 200.0, 6.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT sedimentL2 uuid=399fba2e-45d4-4dab-94b3-541e3470f7c6 hp=200.0 pos=(5.5, 200.0, 6.5)
+13:50:56 BGFIX2-PROBE spawn :: READOUT sedimentL3 uuid=dfef6626-1c9b-43a5-bdc7-3ecd321bb25a hp=200.0 pos=(6.5, 200.0, 6.5)
+13:50:57 BGFIX2-PROBE anti_vacuum_subjects_alive :: PASS alive=10/10 (�����������������������ȫ�춼�Ǽ�����)
+13:51:01 BGFIX2-PROBE buff_applied :: READOUT cowBuff hasEffect=true
+13:51:04 BGFIX2-PROBE sonic_counts :: READOUT total=35 brickA(damage lands)=16 brickB(invulnerable/hurt=false)=16 sturdyBrick=0 buffSpot=3 badParams=0
+13:51:04 BGFIX2-PROBE sonic_contact_survival :: PASS brickA ��Ч����=16������ >= 3��ÿ 10 tick һ�Σ�
+13:51:04 BGFIX2-PROBE sonic_contact_hurt_false :: PASS brickB��invulnerable / hurt �� false����Ч����=16������ >= 3��
+13:51:04 BGFIX2-PROBE sonic_negative_sturdygold :: PASS ����ש�ϵ���Ч����=0������ 0��
+13:51:04 BGFIX2-PROBE sonic_buff_per_tick :: PASS ���� buff ÿ 20 tick һ�Σ���Ч����=3������ >= 2��
+13:51:04 BGFIX2-PROBE sonic_params :: PASS �� HOSTILE / ����!=3.0 / ���!=1.0 ������=0������ 0��
+13:51:06 BGFIX2-PROBE curve_applied :: READOUT high_burn 1/2/3 amp=0/1/2 ; sediment 1/2/3 amp=0/1/2 ; hp=200.0/200.0/200.0
+13:51:17 BGFIX2-PROBE high_burn_L1 :: READOUT hpLoss=11.0 eventSum=11.0 expect=11.0 onFire=true remainingFireTicks=1
+13:51:17 BGFIX2-PROBE high_burn_L1_1_2_3 :: PASS �˵��˵�Ѫ eventSum=11.0������ 11.0��1 �� 1 �� / 2 �� 2 �� / 3 �� 3 ��ÿ�� �� 11 �룩
+13:51:17 BGFIX2-PROBE high_burn_L2 :: READOUT hpLoss=22.0 eventSum=22.0 expect=22.0 onFire=true remainingFireTicks=1
+13:51:17 BGFIX2-PROBE high_burn_L2_1_2_3 :: PASS �˵��˵�Ѫ eventSum=22.0������ 22.0��1 �� 1 �� / 2 �� 2 �� / 3 �� 3 ��ÿ�� �� 11 �룩
+13:51:17 BGFIX2-PROBE high_burn_L3 :: READOUT hpLoss=33.0 eventSum=33.0 expect=33.0 onFire=true remainingFireTicks=1
+13:51:17 BGFIX2-PROBE high_burn_L3_1_2_3 :: PASS �˵��˵�Ѫ eventSum=33.0������ 33.0��1 �� 1 �� / 2 �� 2 �� / 3 �� 3 ��ÿ�� �� 11 �룩
+13:51:17 BGFIX2-PROBE high_burn_L1_burns_again :: PASS L1 remainingFireTicks=1���ɿھ���ӦΪ 0 / ��δ�Ż�
+13:51:17 BGFIX2-PROBE sediment_L1 :: READOUT hpLoss=11.0 eventSum=11.0 expect=11.0
+13:51:17 BGFIX2-PROBE sediment_L1_1_2_3 :: PASS �˵��˵�Ѫ eventSum=11.0������ 11.0
+13:51:17 BGFIX2-PROBE sediment_L2 :: READOUT hpLoss=22.0 eventSum=22.0 expect=22.0
+13:51:17 BGFIX2-PROBE sediment_L2_1_2_3 :: PASS �˵��˵�Ѫ eventSum=22.0������ 22.0
+13:51:17 BGFIX2-PROBE sediment_L3 :: READOUT hpLoss=33.0 eventSum=33.0 expect=33.0
+13:51:17 BGFIX2-PROBE sediment_L3_1_2_3 :: PASS �˵��˵�Ѫ eventSum=33.0������ 33.0
+13:51:18 BGFIX2-PROBE anti_vacuum_skeletons_alive :: PASS alive=40/40��NORMAL �Ѷ������òŲ��ᱻ������
+13:51:20 BGFIX2-PROBE skeleton_hit_sample :: READOUT i=0 landed=true newDrops=1 newBoneMeal=1 lastSqueeze=4/4
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=0f3f02c3-344b-4978-942c-910e639c1799
+13:51:20 BGFIX2-PROBE skeleton_hit_sample :: READOUT i=1 landed=false newDrops=1 newBoneMeal=1 lastSqueeze=4/4
+13:51:20 BGFIX2-PROBE skeleton_hit_sample :: READOUT i=2 landed=true newDrops=2 newBoneMeal=1 lastSqueeze=2/4
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=c5312a32-3515-4ada-b4ea-b4226bfc1148
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=95858fe7-f5ca-4470-a5ed-6fa084e3e1d3
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=70e3c0ae-c871-49d4-997e-2b4153575f35
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=bed68ab6-522d-45b9-9d69-efaeed87f377
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=baba964c-86fe-4b0b-bd19-a0e65c23c4af
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=996db07d-2c0a-4358-83f9-23e382206ba2
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=8a419e1a-dfa3-41c3-9aae-78d1afad8953
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=8ad52357-63ff-46ac-9d9d-c3b727bf8708
+13:51:20 BGFIX2-PROBE skeleton_hit_not_landed :: READOUT uuid=e60ece2b-b2b2-4499-b82b-ca1e2330453a
+13:51:20 BGFIX2-PROBE skeleton_hits :: READOUT hits=30 boneMealHits=29 lastSqueeze=4/4
+13:51:20 BGFIX2-PROBE skeleton_negative_iron_sample :: READOUT landed=false newAny=0
+13:51:20 BGFIX2-PROBE skeleton_negative_iron :: READOUT hits=10 boneMealHits=0
+13:51:20 BGFIX2-PROBE skeleton_ticket_exempt :: PASS isSqueezeExempt(gift_gold_ticket)=true isSqueezeExempt(gold_ingot)=false
+13:51:25 BGFIX2-PROBE skeleton_attack_bone_meal :: PASS ���� 30 �Σ����� 29 �ε��Ƿۣ����� ~80%��
+13:51:25 BGFIX2-PROBE skeleton_negative_iron :: PASS �������� 10 �ε��Ƿ� 0 �Σ����� 0��
+13:51:25 BGFIX2-PROBE death_drop_kept :: READOUT MetalEvents.weaponOf ����ɼ�=true
+13:51:26 BGFIX2-PROBE vine_scope :: READOUT flamegold=drop(sword=true,pick=true) voodoogold=drop(sword=true,pick=true) thundergold=drop(sword=true,pick=true) indigoseagold=drop(sword=true,pick=true) illusiongold=drop(sword=true,pick=true) thornsgold=drop(sword=true,pick=true) echogold=drop(sword=true,pick=true) sturdygold=no-drop(sword=false,pick=false) iron_sword=false families=8
+13:51:26 BGFIX2-PROBE vine_all_but_sturdygold :: PASS 8 ����������ã�����������=0��families=8������=false������������ false������ 7 �� true������ false��
+13:51:27 BGFIX2-PROBE advancements_loaded :: READOUT total(all ns)=1668 bettergold=51 hidden=0 withInventoryChanged=47 withRecipeCrafted=1
+13:51:27 BGFIX2-PROBE adv_no_hidden :: PASS ��ģ��ɾ� 51 �������� 51����hidden=0������ 0��
+13:51:27 BGFIX2-PROBE adv_inventory_changed_count :: PASS �� inventory_changed �ĳɾ� = 47������ת������ >= 40��
+13:51:27 BGFIX2-PROBE adv_recipe_crafted_root_only :: PASS �� recipe_crafted �ĳɾ� = 1������ǡ�� 1 = root��
+13:51:27 BGFIX2-PROBE adv_predicate_methods :: READOUT criteria=[have] triggerClass=net.minecraft.advancements.critereon.InventoryChangeTrigger matchesCandidates=[]
+13:51:27 BGFIX2-PROBE adv_inventory_changed_predicate :: SKIP �Ҳ��� matches(5 ��)
+13:51:29 BGFIX2-PROBE SUMMARY pass=21 fail=0 skip=1 sonicTotal=152 forcedChunksNow=0

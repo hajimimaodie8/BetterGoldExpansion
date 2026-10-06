@@ -1871,10 +1871,16 @@ if "public static boolean isSturdygoldAttackWeapon(" not in _bgfix_mod:
                "ModEvents.isSturdygoldAttackWeapon 不是 public ⇒ 武器判据被写了两份")
 
 # ---------- 第 6 条 · 高燃 / 沉淀：曲线整体后移一级 ----------
+# ⚠ **本条的期望值已被 bg-fix2 第 5 条（2026-10-06）取代**（原文按"不删"规矩留在这里）：
+#    旧期望 = `return Math.max(0, amplifier);`（1 级 0 点 / 2 级 1 点）
+#    新期望 = `return Math.max(1, amplifier + 1);`（1 级 1 点 / 2 级 2 点 / 3 级 3 点）—— 见本文件末尾的
+#    `bg-fix2` 段（`[bgfix2-shifted-damage-level-eq-damage]`）。这里改成断言"**不是**旧口径"，
+#    免得同一条事实在两处各写一份期望值（§2.4）。
 if "public static float shiftedDamage(int amplifier)" not in _bgfix_fx:
     _bgfix_bad("bgfix-shifted-damage-impl", "AllEffects 里没有 shiftedDamage(int)（公式不是唯一实现）")
-elif "return Math.max(0, amplifier);" not in _bgfix_fx:
-    _bgfix_bad("bgfix-shifted-damage-impl", "shiftedDamage 的实现不是 max(0, amplifier)")
+elif "return Math.max(0, amplifier);" in _bgfix_fx:
+    _bgfix_bad("bgfix-shifted-damage-impl",
+               "shiftedDamage 还是旧口径 `max(0, amplifier)`（0/1/2）—— 已被 bg-fix2 第 5 条取代")
 if _bgfix_fx.count("shiftedDamage(amplifier)") != 2:
     _bgfix_bad("bgfix-shifted-damage-used",
                "shiftedDamage(amplifier) 出现 %d 次（高燃 + 沉淀必须各一次）"
@@ -2237,9 +2243,17 @@ else:
         _bgappend_bad("bgappend-sonic-sound-sites", "音咆 buff 每跳没有声波音效（§8.3 点名的第二处）")
     # ⚠ 判据用**守卫表达式**而不是变量名：`if (hitAny)` 被改成 `if (false)` 时调用点还在、
     #   关卡不能因此放过（扰动实测抓出来的：只查 "hitAny" 会漏掉这种"调用还在但永不执行"的改法）
-    if "if (hitAny)" not in _echo_body:
+    #
+    # ⚠⚠ **本条期望值已被 bg-fix2 第 2 条（2026-10-06）取代**（旧期望 `if (hitAny)` 原文保留在上面这段注释里）：
+    #    旧口径 = 只有 hurt 落地才响 ⇒ 创造模式玩家 hurt 恒 false ⇒ 站在幽咆金建材上永远听不到
+    #    （作者实测复报）。新口径 = **音效与伤害解耦**：守卫变量改成 `sawVictim`（= 本次确实对着一个
+    #    未被节流的候选受害者判定过），并且必须在 `victim.hurt(` **之前**置位。详见本文件末尾
+    #    `bg-fix2` 段的 `[bgfix2-sonic-decoupled]` / `[bgfix2-sonic-decoupled-echo]`。
+    if "if (sawVictim)" not in _echo_body:
         _bgappend_bad("bgappend-sonic-sound-throttled",
-                      "echoRoarTick 里没有 `if (hitAny)` 守卫（没有生物挨打也会响 = 空放）")
+                      "echoRoarTick 里没有 `if (sawVictim)` 守卫"
+                      "（旧判据 `hitAny` 已被 bg-fix2 第 2 条取代；现在要求"
+                      "「本次确实对着候选受害者判定过」就响）")
 
 # ---------- C. bg-fix §八.4：16 条配置项的**汉化**（`bettergold.configuration.<key>`） ----------
 #   真源 = Config.java 里那 16 个键（上面 bg-fix 段已逐个核实过）；这里只查"界面中文有没有"。
@@ -2484,9 +2498,10 @@ if not _hb_body:
     _bgfinal_bad("bgfinal-highburn-body", "AllEffects 里找不到高燃的 applyEffectTick 方法体（反空转守护）")
 if not _sd_body:
     _bgfinal_bad("bgfinal-highburn-body", "AllEffects 里找不到沉淀的 applyEffectTick 方法体（反空转守护）")
-if not _shifted_body or "Math.max(0, amplifier)" not in _shifted_body:
+if not _shifted_body or "Math.max(0, amplifier)" in _shifted_body:
     _bgfinal_bad("bgfinal-highburn-body",
-                 "shiftedDamage 不是 `Math.max(0, amplifier)`（1 级 = 0 点的唯一真源）")
+                 "shiftedDamage 还是 `Math.max(0, amplifier)`（1 级 = 0 点）—— 已被 bg-fix2 第 5 条取代，"
+                 "现行应为 `Math.max(1, amplifier + 1)`（1 级 1 点）")
 if _hb_body:
     _blk, _rest = _bgfinal_block(_hb_body, "if (damage > 0.0F)")
     if not _blk:
@@ -2527,6 +2542,334 @@ for _needle, _tag, _why in (
     if _needle not in _bgfix_spec:
         _bgfinal_bad(_tag, _why)
 
+# ===========================================================================
+# bg-fix2（会话标记 bg-fix2，2026-10-06）：六条「作者实测未生效」的复报
+# ===========================================================================
+# 每一条都带**稳定 ASCII id**（`[bgfix2-...]`），判据跑在**去注释**后的源码 / 已解析的 JSON 上。
+#
+# ⚠ 第 1 条（靛海金纹饰色卡）本轮**只取证、不改贴图**（红线：要改任何贴图先停下报告）。
+#   本段只钉「四处嫌疑都是干净的」这类**修复前后都成立**的不变量；
+#   「靛海金的色卡逐像素 == 原版 quartz」这条**现状取证**刻意**不**写成阻塞断言 ——
+#   把"已知缺陷"写成契约，会在作者裁定恢复色卡时反过来拦住修复
+#   （`mcmod_experience` §2.2 的「关卡把旧路径写成契约」教训）。它落在
+#   `validate_trim_assets.py` 的审计输出与 `docs/1.6-规格.md` 的 bg-fix2 节里。
+bgfix2_problems: list[str] = []
+
+
+def _bgfix2_bad(tag: str, msg: str) -> None:
+    bgfix2_problems.append("%s [%s]" % (msg, tag))
+
+
+_TRIM_MATERIAL = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "trim_material"
+_PALETTES = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures" / "trims" / "color_palettes"
+_ADV = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "advancement"
+_BGFIX2_TRIMS = ["sturdygold", "unwanted_antique", "flamegold", "voodoogold", "thundergold",
+                 "indigoseagold", "illusiongold", "thornsgold", "echogold"]
+
+
+def _png_ihdr(data: bytes):
+    """只读 IHDR：返回 (width, height, bitdepth, colortype)，不是 PNG 返回 None。"""
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    import struct
+    pos = 8
+    while pos + 8 <= len(data):
+        ln = struct.unpack(">I", data[pos:pos + 4])[0]
+        typ = data[pos + 4:pos + 8]
+        if typ == b"IHDR":
+            w, h = struct.unpack(">II", data[pos + 8:pos + 16])
+            return w, h, data[pos + 16], data[pos + 17]
+        pos += 12 + ln
+    return None
+
+
+# ---------- 第 5 条 · 高燃 / 沉淀 = 「等级 = 点数」（1 级 1 点 / 2 级 2 点） ----------
+_sd2_body = method_body(_bgfix_fx, "public static float shiftedDamage(")
+if not _sd2_body:
+    _bgfix2_bad("bgfix2-shifted-damage-level-eq-damage",
+                "AllEffects 里找不到 shiftedDamage 方法体（反空转守护）")
+else:
+    if "Math.max(1, amplifier + 1)" not in _sd2_body:
+        _bgfix2_bad("bgfix2-shifted-damage-level-eq-damage",
+                    "shiftedDamage 不是 `Math.max(1, amplifier + 1)`"
+                    "（= 等级 = 点数：1 级 1 点 / 2 级 2 点 / 3 级 3 点；与寄生同口径）")
+    if "Math.max(0, amplifier)" in _sd2_body:
+        _bgfix2_bad("bgfix2-shifted-damage-level-eq-damage",
+                    "shiftedDamage 里还留着旧口径 `Math.max(0, amplifier)`")
+    if _sd2_body.count("return ") != 1:
+        _bgfix2_bad("bgfix2-shifted-damage-level-eq-damage",
+                    "shiftedDamage 方法体里 return 不是恰好 1 处（公式不是唯一实现）")
+if _bgfix_fx.count("shiftedDamage(amplifier)") != 2:
+    _bgfix2_bad("bgfix2-shifted-damage-used-twice",
+                "shiftedDamage(amplifier) 出现 %d 次，期望恰好 2（高燃 + 沉淀各一次；反空转守护）"
+                % _bgfix_fx.count("shiftedDamage(amplifier)"))
+
+_hb2_class = method_body(_bgfix_fx, 'EFFECTS.register("high_burn"')
+_hb2_body = method_body(_hb2_class, "public boolean applyEffectTick(")
+if not _hb2_body:
+    _bgfix2_bad("bgfix2-highburn-level1-burns", "找不到高燃 applyEffectTick 方法体（反空转守护）")
+else:
+    _hb2_blk, _hb2_rest = _bgfinal_block(_hb2_body, "if (damage > 0.0F)")
+    if not _hb2_blk:
+        _bgfix2_bad("bgfix2-highburn-level1-burns",
+                    "高燃里找不到 `if (damage > 0.0F) { ... }` 守卫块")
+    else:
+        for _n in ("entity.hurt(", "setRemainingFireTicks", "HIGH_BURN_FIRE_TICKS"):
+            if _n not in _hb2_blk:
+                _bgfix2_bad("bgfix2-highburn-level1-burns",
+                            "守卫块里没有 %s（1 级必须既 hurt 又重新点燃）" % _n)
+    # 负向：不许再出现"点数为 0 就提前 return / 不点燃"这类按旧曲线写死的分支
+    for _n, _why in (("damage <= 0.0F", "又在按「点数为 0」提前收手"),
+                     ("damage == 0.0F", "又在按「点数为 0」提前收手"),
+                     ("<= 0) {", "又出现「点数 <= 0」的守卫")):
+        if _n in _hb2_body:
+            _bgfix2_bad("bgfix2-highburn-level1-burns", "%s：高燃里出现了 %s" % (_why, _n))
+_sd2_body_sediment = method_body(_bgfix_fx, 'EFFECTS.register("sediment"')
+_sd2_tick = method_body(_sd2_body_sediment, "public boolean applyEffectTick(")
+if not _sd2_tick:
+    _bgfix2_bad("bgfix2-sediment-level-eq-damage", "找不到沉淀 applyEffectTick 方法体（反空转守护）")
+elif "shiftedDamage(amplifier)" not in _sd2_tick:
+    _bgfix2_bad("bgfix2-sediment-level-eq-damage",
+                "沉淀没有用共用的 shiftedDamage(amplifier)（两条曲线必须同一处真源）")
+
+# ---------- 第 2 条 · 声波音效与伤害解耦（两处） ----------
+_sonic2 = method_body(_bgfix_mev, "private static void sonicContact(")
+if not _sonic2:
+    _bgfix2_bad("bgfix2-sonic-decoupled", "找不到 sonicContact 方法体（反空转守护）")
+else:
+    _i_snd = _sonic2.find("playSonicBoomSound(")
+    _i_hurt2 = _sonic2.find("victim.hurt(")
+    if _i_snd < 0:
+        _bgfix2_bad("bgfix2-sonic-decoupled", "sonicContact 里没有 playSonicBoomSound（建材那条没声）")
+    elif _i_hurt2 >= 0 and _i_snd > _i_hurt2:
+        _bgfix2_bad("bgfix2-sonic-decoupled",
+                    "音效调用点在 `victim.hurt(` **之后** -> 又变成「伤害没落地就不响」"
+                    "（创造模式玩家 hurt 恒 false，正是作者听不到的原因）")
+    if "contactThrottled(" not in _sonic2:
+        _bgfix2_bad("bgfix2-sonic-decoupled",
+                    "sonicContact 里没有 contactThrottled（会每 tick 刷屏 = 空放）")
+_echo2 = method_body(_bgfix_mev, "public static void echoRoarTick(")
+if not _echo2:
+    _bgfix2_bad("bgfix2-sonic-decoupled-echo", "找不到 echoRoarTick 方法体（反空转守护）")
+else:
+    if "playSonicBoomSound(" not in _echo2:
+        _bgfix2_bad("bgfix2-sonic-decoupled-echo", "音咆 buff 每跳没有声波音效（第二处）")
+    if "if (sawVictim)" not in _echo2:
+        _bgfix2_bad("bgfix2-sonic-decoupled-echo",
+                    "echoRoarTick 的守卫不是 `if (sawVictim)`（音效又被挂到 hurt 的返回值上）")
+    if "if (hitAny)" in _echo2:
+        _bgfix2_bad("bgfix2-sonic-decoupled-echo", "旧的 `if (hitAny)` 守卫还在（口径没换干净）")
+    _i_set = _echo2.find("sawVictim = true;")
+    _i_hurt3 = _echo2.find("victim.hurt(")
+    if _i_set < 0:
+        _bgfix2_bad("bgfix2-sonic-decoupled-echo", "没有 `sawVictim = true;`（反空转守护）")
+    elif _i_hurt3 >= 0 and _i_set > _i_hurt3:
+        _bgfix2_bad("bgfix2-sonic-decoupled-echo",
+                    "`sawVictim = true;` 在 victim.hurt( 之后 -> 又变成只有伤害落地才响")
+    if "contactThrottled(" not in _echo2:
+        _bgfix2_bad("bgfix2-sonic-decoupled-echo", "echoRoarTick 里没有节流（会每 tick 刷屏）")
+
+# ---------- 第 4 条 · 金骨粉「攻击就掉 + 挤掉 80% 条目（礼品金票豁免）」 ----------
+if _bgfix_mod.count("SKELETON_SQUEEZE_RATIO") < 2:
+    _bgfix2_bad("bgfix2-skeleton-squeeze-ratio",
+                "SKELETON_SQUEEZE_RATIO 出现次数 < 2（定义 + 使用；反空转守护）")
+if "SKELETON_SQUEEZE_RATIO = 0.8F" not in _bgfix_mod:
+    _bgfix2_bad("bgfix2-skeleton-squeeze-ratio", "挤掉比例不是 0.8F（作者要的「百分之 80」）")
+_income_body = method_body(_bgfix_mod, "public static void onLivingIncomingDamage(")
+if not _income_body:
+    _bgfix2_bad("bgfix2-skeleton-attack-squeeze",
+                "找不到 onLivingIncomingDamage 方法体（反空转守护）")
+else:
+    for _n, _why in (("AbstractSkeleton", "攻击那条没有「骷髅类」判据"),
+                     ("rollGoldLootAgainstSkeleton(", "攻击那条没有走「挤掉 80% 条目」的掷骰")):
+        if _n not in _income_body:
+            _bgfix2_bad("bgfix2-skeleton-attack-squeeze", "%s（缺 %s）" % (_why, _n))
+    # 顺序：骷髅判据必须在真正 addFreshEntity 之前（否则挤掉白算）
+    _i_skel = _income_body.find("AbstractSkeleton")
+    _i_add = _income_body.find("addFreshEntity(")
+    if _i_skel < 0 or _i_add < 0 or _i_skel > _i_add:
+        _bgfix2_bad("bgfix2-skeleton-attack-squeeze", "骷髅判据不在掉落之前（顺序错）")
+_squeeze_body = method_body(_bgfix_mod, "private static Item rollGoldLootAgainstSkeleton(")
+if not _squeeze_body:
+    _bgfix2_bad("bgfix2-skeleton-attack-squeeze",
+                "找不到 rollGoldLootAgainstSkeleton 方法体（反空转守护）")
+else:
+    for _n, _why in (("isSqueezeExempt(item)", "没有豁免判定（礼品金票会被一起挤掉）"),
+                     ("AllItems.GOLDEN_BONE_MEAL.get()", "没有真的换成金骨粉"),
+                     ("SKELETON_SQUEEZE_RATIO", "没有用那个 0.8 常量（变成拍脑袋的魔数）"),
+                     ("random.nextInt(pool.size())", "取法变了（原有 rollGoldLoot 是等概率取一条）"),
+                     ("pool.set(", "没有真的改池里的条目（「挤掉」没落地）"),
+                     ("buildGoldLootPool(", "没有复用同一份掉落池清单")):
+        if _n not in _squeeze_body:
+            _bgfix2_bad("bgfix2-skeleton-attack-squeeze", "%s（缺 %s）" % (_why, _n))
+_exempt_body = method_body(_bgfix_mod, "private static boolean isSqueezeExempt(")
+if not _exempt_body:
+    _bgfix2_bad("bgfix2-skeleton-ticket-exempt", "找不到 isSqueezeExempt 方法体（反空转守护）")
+elif "AllItems.GIFT_GOLD_TICKET.get()" not in _exempt_body:
+    _bgfix2_bad("bgfix2-skeleton-ticket-exempt",
+                "豁免的不是礼品金票（作者点名「但除了礼品金票」）")
+if "GIFT_TICKET_CHANCE = 0.06F" not in _bgfix_mod:
+    _bgfix2_bad("bgfix2-skeleton-ticket-untouched",
+                "礼品金票自己那条 6% 被改了（它不在「挤掉」范围内）")
+else:
+    _i_ticket = _income_body.find("GIFT_TICKET_CHANCE") if _income_body else -1
+    _i_squeeze_call = _income_body.find("rollGoldLootAgainstSkeleton(") if _income_body else -1
+    if _i_ticket < 0 or _i_squeeze_call < 0 or _i_ticket > _i_squeeze_call:
+        _bgfix2_bad("bgfix2-skeleton-ticket-untouched",
+                    "礼品金票那一掷不在挤掉之前（随机数顺序被改动）")
+# 死亡掉落那条**原样保留**（作者要的是「不只是死亡掉落」）
+if "SKELETON_GOLDEN_BONE_MEAL_CHANCE = 0.8F" not in _bgfix_mev:
+    _bgfix2_bad("bgfix2-skeleton-death-drop-kept",
+                "MetalEvents 的击杀掉落常量不在了（作者要的是「不只是死亡掉落」）")
+_drops_body = method_body(_bgfix_mev, "public static void onLivingDrops(")
+if not _drops_body:
+    _bgfix2_bad("bgfix2-skeleton-death-drop-kept", "找不到 onLivingDrops 方法体（反空转守护）")
+else:
+    for _n in ("AbstractSkeleton", "GOLDEN_BONE_MEAL.get()", "event.getDrops().add(",
+               "isSturdygoldAttackWeapon("):
+        if _n not in _drops_body:
+            _bgfix2_bad("bgfix2-skeleton-death-drop-kept", "击杀掉落那条被改坏了（缺 %s）" % _n)
+
+# ---------- 第 3 条 · 闪耀藤条：除万坚金外的全部（7 族） ----------
+_isour = method_body(_bgfix_glm, "private static boolean isOurTool(")
+if not _isour:
+    _bgfix2_bad("bgfix2-vine-all-but-sturdygold", "找不到 isOurTool 方法体（反空转守护）")
+else:
+    for _n, _why in (("family.isSpecialMetal()", "判据不是「特殊金属」"),
+                     ("family.isTool(", "少了器具那一半"),
+                     ("family.isWeapon(", "少了武器那一半")):
+        if _n not in _isour:
+            _bgfix2_bad("bgfix2-vine-all-but-sturdygold", "%s（缺 %s）" % (_why, _n))
+_is_special = method_body(_bgfix_mf, "public boolean isSpecialMetal(")
+if not _is_special:
+    _bgfix2_bad("bgfix2-vine-all-but-sturdygold", "找不到 isSpecialMetal 方法体（反空转守护）")
+elif "!STURDYGOLD_ID.equals(this.id)" not in _is_special:
+    _bgfix2_bad("bgfix2-vine-all-but-sturdygold",
+                "isSpecialMetal 不再是「排除万坚金」（作者：只有万坚金不挖）")
+# 反空转：八族（八族 - 1 = 7 族能掉）；低于 8 说明扫描表/注册表被改坏了
+# ⚠ 计数必须跑在 **AllMetals.java** 上（`new MetalFamily.Spec(` 的字面量形态）——
+#   MetalFamily.java 里只有嵌套类 `Spec` 的定义，在那里数它恒为 0（本段第一版就踩了这个 = 假红）。
+_spec_count = _bgfix_am.count("new MetalFamily.Spec(")
+if _spec_count != 8:
+    _bgfix2_bad("bgfix2-vine-all-but-sturdygold",
+                "AllMetals 里的 MetalFamily.Spec 不是 8 个（实际 %d；反空转守护）" % _spec_count)
+for _n, _why in (("BASE_CHANCE = 0.06F", "6% 基础概率被改"),
+                 ("CHANCE_PER_FORTUNE = 0.06F", "时运系数被改")):
+    if _n not in _bgfix_glm:
+        _bgfix2_bad("bgfix2-vine-chance", "%s（缺 %s）" % (_why, _n))
+
+# ---------- 第 6 条 · 成就：全开放（无 hidden）+ 制作改获得 ----------
+_adv_files = sorted(_ADV.rglob("*.json"))
+if len(_adv_files) != 51:
+    _bgfix2_bad("bgfix2-adv-51", "成就 JSON 数 = %d，期望 51（反空转守护）" % len(_adv_files))
+_hidden_files, _inv_files, _rc_files, _cond_files = [], [], [], []
+for _f in _adv_files:
+    _t = _f.read_text(encoding="utf-8")
+    if '"hidden"' in _t:
+        _hidden_files.append(_f.name)
+    if "inventory_changed" in _t:
+        _inv_files.append(_f.name)
+    if "recipe_crafted" in _t:
+        _rc_files.append(_f.name)
+    if "farmersdelight" in _t:
+        _cond_files.append(_f.name)
+if _hidden_files:
+    _bgfix2_bad("bgfix2-adv-no-hidden", "有 %d 个成就带了 hidden（作者要「全开放别隐藏」）：%s"
+                % (len(_hidden_files), _hidden_files[:5]))
+if len(_rc_files) != 1 or _rc_files[0] != "root.json":
+    _bgfix2_bad("bgfix2-adv-recipe-crafted-root-only",
+                "recipe_crafted 只许留在 root（手册物品是条件注册，见 §14.3）；实际 = %s" % _rc_files)
+# 「制作改获得」点名的 9 条（bg-ach §七.2）+ 一个反空转阈值：
+# 51 条里有很多本来就该用别的 trigger（villager_trade / player_hurt_entity / placed_block …），
+# 所以阈值取「≥ 40」只当反空转守护，真正的判据是下面那 9 条逐个用 inventory_changed。
+_BGFIX2_CRAFT_TO_HAVE = [
+    "alchemy/mixed_crystal_pile", "alchemy/alchemic_fuel", "treasure/blazing_rod",
+    "treasure/bundled_echo_shard", "treasure/indigo_ocean_heart",
+    "treasure/amethyst_energy_dust", "treasure/chorus_cherry_branch",
+    "treasure/any_raw_metal", "agriculture/gold_infused_dirt",
+]
+_missing_inv = [r for r in _BGFIX2_CRAFT_TO_HAVE
+                if not (_ADV / (r + ".json")).is_file()
+                or "inventory_changed" not in (_ADV / (r + ".json")).read_text(encoding="utf-8")]
+if _missing_inv:
+    _bgfix2_bad("bgfix2-adv-inventory-changed",
+                "这 %d 条成就没有用 inventory_changed（制作没改成获得）：%s"
+                % (len(_missing_inv), _missing_inv))
+if len(_inv_files) < 40:
+    _bgfix2_bad("bgfix2-adv-inventory-changed",
+                "只有 %d 个成就用 inventory_changed（< 40 ⇒ 反空转失败：扫描没扫到东西）"
+                % len(_inv_files))
+if len(_cond_files) != 3:
+    _bgfix2_bad("bgfix2-adv-fd-conditions",
+                "乐事条件加载的条数 = %d，期望恰好 3（㊾/㊿/51）" % len(_cond_files))
+
+# ---------- 第 1 条 · 纹饰色卡：四处嫌疑必须一直是干净的（修复前后都成立） ----------
+_trim_jsons = sorted(_TRIM_MATERIAL.glob("*.json"))
+if len(_trim_jsons) != 9:
+    _bgfix2_bad("bgfix2-trim-nine-materials",
+                "trim_material JSON 数 = %d，期望 9（反空转守护）" % len(_trim_jsons))
+_indexes, _missing_palette = [], []
+for _j in _trim_jsons:
+    _d = json.loads(_j.read_text(encoding="utf-8"))
+    _indexes.append(_d["item_model_index"])
+    _pal = _PALETTES / (_d["asset_name"] + ".png")
+    if not _pal.is_file():
+        _missing_palette.append(_d["asset_name"])
+        continue
+    _ihdr = _png_ihdr(_pal.read_bytes())
+    if _ihdr is None:
+        _bgfix2_bad("bgfix2-trim-palette-8x1", "%s 不是 PNG" % _pal.name)
+    elif _ihdr[0] != 8 or _ihdr[1] != 1 or _ihdr[2] != 8:
+        _bgfix2_bad("bgfix2-trim-palette-8x1",
+                    "%s 不是 8x1 / 8 位（实际 %s）" % (_pal.name, _ihdr))
+if _missing_palette:
+    _bgfix2_bad("bgfix2-trim-palette-present", "缺色卡：%s" % _missing_palette)
+if len(set(_indexes)) != len(_indexes):
+    _bgfix2_bad("bgfix2-trim-model-index-distinct",
+                "item_model_index 有撞车（撞车会让某件盔甲命中别人的 override）；实际 = %s" % _indexes)
+if any(0.1 - 1e-9 <= v <= 1.0 + 1e-9 for v in _indexes):
+    _bgfix2_bad("bgfix2-trim-model-index-outside-vanilla",
+                "有 item_model_index 落在原版 0.1~1.0 区间内（会命中原版 override）；实际 = %s" % _indexes)
+_armor_atlas = json.loads((REPO / "src" / "main" / "resources" / "assets" / "minecraft" /
+                           "atlases" / "armor_trims.json").read_text(encoding="utf-8"))
+_armor_perms = {}
+for _s in _armor_atlas["sources"]:
+    _armor_perms.update(_s.get("permutations", {}))
+_blocks_atlas = json.loads((REPO / "src" / "main" / "resources" / "assets" / "minecraft" /
+                            "atlases" / "blocks.json").read_text(encoding="utf-8"))
+_blocks_perms = {}
+for _s in _blocks_atlas["sources"]:
+    _blocks_perms.update(_s.get("permutations", {}))
+if len(_armor_perms) < 9 or len(_blocks_perms) < 9:
+    _bgfix2_bad("bgfix2-trim-atlas-both",
+                "图集置换条数 < 9（反空转守护）：armor_trims=%d blocks=%d"
+                % (len(_armor_perms), len(_blocks_perms)))
+for _m in _BGFIX2_TRIMS:
+    if _m not in _armor_perms:
+        _bgfix2_bad("bgfix2-trim-atlas-both", "armor_trims.json 缺 %s（穿在身上那条链）" % _m)
+    if _m not in _blocks_perms:
+        _bgfix2_bad("bgfix2-trim-atlas-both", "blocks.json 缺 %s（物品形态那条链）" % _m)
+_trim_models_src = strip_comments((JAVA / "client" / "ArmorTrimItemModels.java").read_text(encoding="utf-8"))
+if "MetalFamily.all()" not in _trim_models_src:
+    _bgfix2_bad("bgfix2-trim-model-generic",
+                "ArmorTrimItemModels 不是按家族表泛化（白名单可能漏了靛海金）")
+# 唯一允许写死的材质名 = unwanted_antique（1.3 的老古董，不属于任何 MetalFamily）
+for _m in [m for m in _BGFIX2_TRIMS if m != "unwanted_antique"]:
+    if '"%s"' % _m in _trim_models_src:
+        _bgfix2_bad("bgfix2-trim-model-generic",
+                    "ArmorTrimItemModels 里出现了写死的金属名 \"%s\"（应当由 MetalFamily.all() 泛化）"
+                    % _m)
+
+# ---------- 文档侧：bg-fix2 的新口径必须落档（docs/1.6-规格.md） ----------
+for _needle, _why in (("bg-fix2", "docs/1.6-规格.md 里没有 bg-fix2 这一轮的节"),
+                      ("Math.max(1, amplifier + 1)", "没写高燃 / 沉淀的现行公式"),
+                      ("1 级 1 点 / 2 级 2 点", "没写「等级 = 点数」这条新口径"),
+                      ("sawVictim", "没写音效与伤害解耦的新判据"),
+                      ("SKELETON_SQUEEZE_RATIO", "没写金骨粉「挤掉 80% 条目」的常量"),
+                      ("靛海金", "没写第 1 条（靛海金色卡）的取证结论")):
+    if _needle not in _bgfix_spec:
+        _bgfix2_bad("bgfix2-doc", "%s（缺 %s）" % (_why, _needle))
+
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
 print(f"bg-book 帕秋莉手册问题: {len(bgbook_problems)} {bgbook_problems[:8]}"
       f"（手册 {len(_entries_now)} 条目 / {_total_pages} 页 / {len(_recipe_refs)} 条配方引用）")
@@ -2537,9 +2880,11 @@ print(f"bg-append 追加轮（手册七处修正 / 声波音效 / 配置汉化 /
 print(f"bg-fix 1.6 七条修正问题: {len(bgfix_problems)} {bgfix_problems[:8]}")
 print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: "
       f"{len(bgfinal_problems)} {bgfinal_problems[:8]}")
+print(f"bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: "
+      f"{len(bgfix2_problems)} {bgfix2_problems[:8]}")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
-               or bgfinal_problems or bgappend_problems
+               or bgfinal_problems or bgappend_problems or bgfix2_problems
                or symmetric_problems or beacon_problems) else 0)

@@ -1,0 +1,48 @@
+bg-fix2 收尾清理与逐字节复原（2026-10-06 13:58:04）
+
+== 1. run/server.properties ==
+原始 SHA256（跑测前记录）: A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+本次跑测临时改: level-name=world -> bgfix2probe（其余 1439 字节不动）
+复原后 SHA256: A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+判定: 逐字节复原成功 ✓
+复原手法（值得记住）: 服务器每次启动都会重写头部时间戳注释行（#<Day> <Mon> <DD> <HH:MM:SS> CST <YYYY>）；以**目标 SHA256** 为判据穷举那一行（2026-09-25 ~ 10-08 逐秒、固定其余 1439 字节），命中 #Mon Oct 05 17:40:32 CST 2026。
+⚠ 本轮教训: 第二次启动前把备份删了，所以第二次服务器重写覆盖了原名；备份必须在第一次启动前做、中途不许删。
+
+== 2. 开关文件 ==
+run/bgfix2-probe.enabled 存在 = False（期望 False）
+
+== 3. 探针世界 ==
+run/bgfix2probe 存在 = False（期望 False，已整目录删除）
+
+== 4. 探针源码零命中 ==
+src 下 BgFix2Probe|BGFIX2-PROBE|bgfix2-probe 命中数 = 0（期望 0）
+src 下 .halt( 命中数（生产代码不许有关服能力） = 0（期望 0）
+probe/ 目录下剩余条目 = 0 个（只删了自己的 bgfix2 子目录，绝不递归删整个 probe/）
+探针源码副本已留档: docs/bgfix2-证据/07-探针源码副本.java.txt
+
+== 5. 作者存档（全程未打开） ==
+run/saves 下: 新的世界
+新的世界 文件数 = 29（跑测前后一致 = 29）
+新的世界 level.dat mtime = 2026-10-04 21:30:01.393524
+
+== 6. forceload 双向 0 ==
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True
+exit=0
+
+== 7. jar 内无探针残留 ==
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2374
+exit=0
+jar = 1329346 B / 2026-10-06 13:56:33.666763 / 9D595C1E3A27654CE3157041EDCFB9A7D84E8F0104785B5974BAA31CE42F0546
+
+== 8. 共享文件改动（只追加、删除 0 行） ==
+docs/1.6-规格.md       1969 行 -> 2253 行（§十八 新增，锚点 = §17.6 表末行，改前 git status 干净）
+tools/asset-generator/validate_metal_data.py   期望值更新 3 处 + 新增 [bgfix2-*] 段（只追加）
+tools/asset-generator/validate_trim_assets.py  新增 [bgfix2-第1条] 报告行（只追加）
+E:/mc/mcmod/mod_experience/ex/02-静默失效.md      156 -> 163 行（+7，删除 0）
+E:/mc/mcmod/mod_experience/ex/04-数值与API.md     81 -> 89 行（+8，删除 0）
+E:/mc/mcmod/mod_experience/ex/05-工具链与环境.md   112 -> 127 行（+15，删除 0）
+E:/mc/mcmod/mod_experience/mcmod_experience.md   161 -> 163 行（附录 D +1 行，删除 0）

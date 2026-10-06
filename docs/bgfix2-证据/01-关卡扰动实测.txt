@@ -1,0 +1,25 @@
+bg-fix2 关卡扰动实测（validate_metal_data.py；判据只匹配稳定 ASCII 断言 id）
+
+baseline-default             exit=0(want 0) ids=- OK
+fix2-5-a-old-curve           exit=1(want 1) ids=['bgfix2-shifted-damage-level-eq-damage', 'bgfix-shifted-damage-impl', 'bgfinal-highburn-body'] restored=True OK
+fix2-5-b-zero-guard          exit=1(want 1) ids=['bgfix2-highburn-level1-burns'] restored=True OK
+fix2-5-c-early-return-on-zero exit=1(want 1) ids=['bgfix2-highburn-level1-burns'] restored=True OK
+fix2-5-d-sediment-hardcoded  exit=1(want 1) ids=['bgfix2-sediment-level-eq-damage', 'bgfix2-shifted-damage-used-twice'] restored=True OK
+fix2-2-a-sound-after-hurt    exit=1(want 1) ids=['bgfix2-sonic-decoupled'] restored=True OK
+fix2-2-b-echo-old-guard      exit=1(want 1) ids=['bgfix2-sonic-decoupled-echo', 'bgappend-sonic-sound-throttled'] restored=True OK
+fix2-2-c-echo-set-after-hurt exit=1(want 1) ids=['bgfix2-sonic-decoupled-echo'] restored=True OK
+fix2-4-a-ratio               exit=1(want 1) ids=['bgfix2-skeleton-squeeze-ratio'] restored=True OK
+fix2-4-b-no-skeleton-branch  exit=1(want 1) ids=['bgfix2-skeleton-attack-squeeze'] restored=True OK
+fix2-4-c-wrong-exempt        exit=1(want 1) ids=['bgfix2-skeleton-ticket-exempt'] restored=True OK
+fix2-4-d-no-exemption        exit=1(want 1) ids=['bgfix2-skeleton-attack-squeeze'] restored=True OK
+fix2-3-a-broaden-to-all      exit=1(want 1) ids=['bgfix2-vine-all-but-sturdygold'] restored=True OK
+fix2-6-a-hidden              exit=1(want 1) ids=['bgfix2-adv-no-hidden'] restored=True OK
+fix2-6-b-recipe-crafted-back exit=1(want 1) ids=['bgfix2-adv-inventory-changed'] restored=True OK
+fix2-1-a-atlas-drop          exit=1(want 1) ids=['bgfix2-trim-atlas-both'] restored=True OK
+fix2-1-b-index-in-vanilla-range exit=1(want 1) ids=['bgfix2-trim-model-index-outside-vanilla'] restored=True OK
+fix2-1-d-index-collision-ours exit=1(want 1) ids=['bgfix2-trim-model-index-distinct'] restored=True OK
+fix2-1-c-palette-size        exit=1(want 1) ids=['bgfix2-trim-palette-8x1'] restored=True OK
+reverse-comment-only         exit=0(want 0) ids=- restored=True OK
+baseline-final               exit=0(want 0) ids=- OK
+
+mismatches = 0（0 = 每条都命中它该命中的 id，且逐字节复原成功）

@@ -1,0 +1,677 @@
+package com.hjmmd_8.bettergold.probe.bgfix2;
+
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.registry.AllBlocks;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+import com.hjmmd_8.bettergold.registry.AllItems;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.event.PlayLevelSoundEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * bg-fix2 A 级探针（**只读验证，不参与任何玩法**；收尾整块删除）。
+ *
+ * <p>会话隔离：整包 {@code com.hjmmd_8.bettergold.probe.bgfix2}，收尾只删这个子目录。</p>
+ * <p>开关文件：{@code <gameDir>/bgfix2-probe.enabled}（按 {@code FMLPaths.GAMEDIR} 算，
+ * 不是按工程根算 —— 踩过的坑见 ex/03 §3.2 规则 3）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgFix2Probe {
+
+    private static boolean armed;
+    private static boolean finished;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static int skip;
+
+    // ---- 受试体 ----
+    private static ServerLevel level;
+    private static Cow cowEchoSurvival;      // 站在幽咆金砖上、**伤害能落地**
+    private static Cow cowEchoInvulnerable;  // 站在幽咆金砖上、**伤害落不了地**（= 创造模式玩家那条分支）
+    private static Cow cowSturdyControl;     // 站在万坚金砖上（阴性对照）
+    private static Cow cowBuff;              // 挂音咆 buff（远离一切建材）
+    private static final List<Cow> burnCows = new ArrayList<>();     // 高燃 1/2/3 级
+    private static final List<Cow> sedimentCows = new ArrayList<>(); // 沉淀 1/2/3 级
+    private static final List<AbstractSkeleton> skeletons = new ArrayList<>();
+
+    private static final Map<UUID, Double> damageSum = new HashMap<>();
+
+    // ---- 音效计数（PlayLevelSoundEvent.AtPosition）----
+    private static int sonicTotal;
+    private static int sonicBadParams;
+    private static final List<double[]> sonicPositions = new ArrayList<>();
+    private static final BlockPos ECHO_BRICK_A = new BlockPos(2, 199, 2);
+    private static final BlockPos ECHO_BRICK_B = new BlockPos(6, 199, 2);
+    private static final BlockPos STURDY_BRICK = new BlockPos(2, 199, 6);
+    private static final BlockPos BUFF_SPOT = new BlockPos(8, 199, 8);
+
+    private static FakePlayer fakePlayer;
+
+    private BgFix2Probe() {
+    }
+
+    // ==================== 读数小工具 ====================
+
+    private static void report(String tag, boolean ok, String detail) {
+        if (ok) {
+            pass++;
+            bettergold.LOGGER.info("BGFIX2-PROBE {} :: PASS {}", tag, detail);
+        } else {
+            fail++;
+            bettergold.LOGGER.error("BGFIX2-PROBE {} :: FAIL {}", tag, detail);
+        }
+    }
+
+    private static void skipped(String tag, String detail) {
+        skip++;
+        bettergold.LOGGER.warn("BGFIX2-PROBE {} :: SKIP {}", tag, detail);
+    }
+
+    private static void readout(String tag, String detail) {
+        bettergold.LOGGER.info("BGFIX2-PROBE {} :: READOUT {}", tag, detail);
+    }
+
+    // ==================== 音效事件（A 级：服务端真的把音效播出去了） ====================
+
+    @SubscribeEvent
+    public static void onPlayLevelSound(PlayLevelSoundEvent.AtPosition event) {
+        if (!armed) {
+            return;
+        }
+        if (event.getSound() == null || event.getSound().value() != SoundEvents.WARDEN_SONIC_BOOM) {
+            return;
+        }
+        sonicTotal++;
+        if (event.getSource() != SoundSource.HOSTILE
+                || Math.abs(event.getOriginalVolume() - 3.0F) > 1e-6
+                || Math.abs(event.getOriginalPitch() - 1.0F) > 1e-6) {
+            sonicBadParams++;
+        }
+        sonicPositions.add(new double[] { event.getPosition().x, event.getPosition().y, event.getPosition().z });
+    }
+
+    @SubscribeEvent
+    public static void onLivingDamage(LivingDamageEvent.Post event) {
+        if (!armed) {
+            return;
+        }
+        damageSum.merge(event.getEntity().getUUID(), (double) event.getNewDamage(), Double::sum);
+    }
+
+    // ==================== 绝对 tick 表 ====================
+
+    private static final int T_SETUP = 20;
+    private static final int T_SPAWN = 40;
+    private static final int T_ALIVE = 60;
+    private static final int T_SOUND_ASSERT = 200;
+    private static final int T_BUFF = 140;
+    private static final int T_EFFECTS = 240;
+    private static final int T_EFFECTS_SAMPLE = 460;
+    private static final int T_SKELETON_SPAWN = 480;
+    private static final int T_SKELETON_HITS = 520;
+    private static final int T_SKELETON_ASSERT = 620;
+    private static final int T_VINE = 640;
+    private static final int T_TAIL = 660;
+    private static final int T_SUMMARY = 700;
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        MinecraftServer server = event.getServer();
+        if (finished) {
+            return;
+        }
+        if (!armed) {
+            Path flag = FMLPaths.GAMEDIR.get().resolve("bgfix2-probe.enabled");
+            if (!Files.isRegularFile(flag)) {
+                finished = true;   // 没开关文件：立刻收手（也不打日志，避免污染别人日志）
+                return;
+            }
+            armed = true;
+            bettergold.LOGGER.info("BGFIX2-PROBE armed=true gamedir={}", FMLPaths.GAMEDIR.get());
+        }
+        tick++;
+        if (tick == T_SETUP) {
+            setup(server);
+        } else if (tick == T_SPAWN) {
+            spawn(server);
+        } else if (tick == T_ALIVE) {
+            assertAlive();
+        } else if (tick == T_BUFF) {
+            applyBuff();
+        } else if (tick == T_SOUND_ASSERT) {
+            assertSounds();
+        } else if (tick == T_EFFECTS) {
+            applyCurveEffects();
+        } else if (tick == T_EFFECTS_SAMPLE) {
+            assertCurves();
+        } else if (tick == T_SKELETON_SPAWN) {
+            spawnSkeletons(server);
+        } else if (tick == T_SKELETON_HITS) {
+            skeletonHits();
+        } else if (tick == T_SKELETON_ASSERT) {
+            assertSkeletonDrops();
+        } else if (tick == T_VINE) {
+            assertVineScope();
+        } else if (tick == T_TAIL) {
+            assertAdvancements(server);
+        } else if (tick == T_SUMMARY) {
+            summary(server);
+        }
+    }
+
+    // ==================== 场景 ====================
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        server.setDifficulty(Difficulty.NORMAL, true);
+        level.setChunkForced(0, 0, true);
+        level.setChunkForced(1, 1, true);
+        // 平台一（接触 / buff）：y=199 石头地板，x,z 0..8；清空上方 6 格
+        for (int x = 0; x <= 8; x++) {
+            for (int z = 0; z <= 8; z++) {
+                level.setBlockAndUpdate(new BlockPos(x, 199, z), Blocks.STONE.defaultBlockState());
+                for (int y = 200; y <= 205; y++) {
+                    level.setBlockAndUpdate(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        level.setBlockAndUpdate(ECHO_BRICK_A,
+                BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("bettergold", "echogold_block"))
+                        .defaultBlockState());
+        level.setBlockAndUpdate(ECHO_BRICK_B,
+                BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("bettergold", "echogold_block"))
+                        .defaultBlockState());
+        level.setBlockAndUpdate(STURDY_BRICK,
+                BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("bettergold", "sturdygold_block"))
+                        .defaultBlockState());
+        // 平台二（骷髅）：x 16..28 / z 16..20
+        for (int x = 16; x <= 28; x++) {
+            for (int z = 16; z <= 20; z++) {
+                level.setBlockAndUpdate(new BlockPos(x, 199, z), Blocks.STONE.defaultBlockState());
+                for (int y = 200; y <= 205; y++) {
+                    level.setBlockAndUpdate(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        fakePlayer = FakePlayerFactory.getMinecraft(level);
+        readout("setup", "difficulty=NORMAL forceload=2 platforms=2 fakePlayer=" + fakePlayer.getName().getString());
+    }
+
+    private static Cow spawnCow(double x, double z, String name) {
+        Cow cow = EntityType.COW.create(level);
+        cow.moveTo(x, 200.0D, z, 0.0F, 0.0F);
+        cow.setNoAi(true);
+        if (cow.getAttribute(Attributes.MAX_HEALTH) != null) {
+            cow.getAttribute(Attributes.MAX_HEALTH).setBaseValue(200.0D);
+        }
+        cow.setHealth(200.0F);
+        level.addFreshEntity(cow);
+        readout("spawn", name + " uuid=" + cow.getUUID() + " hp=" + cow.getHealth() + " pos=" + cow.position());
+        return cow;
+    }
+
+    private static void spawn(MinecraftServer server) {
+        cowEchoSurvival = spawnCow(2.5D, 2.5D, "cowEchoSurvival");
+        cowEchoInvulnerable = spawnCow(6.5D, 2.5D, "cowEchoInvulnerable");
+        cowEchoInvulnerable.setInvulnerable(true);   // 复现「hurt(...) 恒返回 false」那条分支（创造模式玩家同一条）
+        cowSturdyControl = spawnCow(2.5D, 6.5D, "cowSturdyControl");
+        cowBuff = spawnCow(8.5D, 8.5D, "cowBuff");
+        // 高燃 / 沉淀：离任何建材 >= 2 格（3x3x3 扫描扫不到）
+        for (int i = 0; i < 3; i++) {
+            burnCows.add(spawnCow(4.5D + i, 4.5D, "burnL" + (i + 1)));
+        }
+        for (int i = 0; i < 3; i++) {
+            sedimentCows.add(spawnCow(4.5D + i, 6.5D, "sedimentL" + (i + 1)));
+        }
+    }
+
+    private static void assertAlive() {
+        int alive = 0;
+        List<Cow> all = new ArrayList<>(burnCows);
+        all.addAll(sedimentCows);
+        all.add(cowEchoSurvival);
+        all.add(cowEchoInvulnerable);
+        all.add(cowSturdyControl);
+        all.add(cowBuff);
+        for (Cow c : all) {
+            if (c != null && c.isAlive() && !c.isRemoved()) {
+                alive++;
+            }
+        }
+        report("anti_vacuum_subjects_alive", alive == all.size(),
+                "alive=" + alive + "/" + all.size() + " (受试体必须真的在世界里，否则全红都是假阴性)");
+    }
+
+    private static void applyBuff() {
+        if (cowBuff == null) {
+            skipped("buff_applied", "cowBuff=null");
+            return;
+        }
+        cowBuff.addEffect(new MobEffectInstance(AllEffects.ECHO_ROAR, 400, 0, false, true));
+        readout("buff_applied", "cowBuff hasEffect=" + cowBuff.hasEffect(AllEffects.ECHO_ROAR));
+    }
+
+    private static int countNear(BlockPos p, double radius) {
+        int n = 0;
+        for (double[] pos : sonicPositions) {
+            double dx = pos[0] - (p.getX() + 0.5D);
+            double dy = pos[1] - (p.getY() + 0.5D);
+            double dz = pos[2] - (p.getZ() + 0.5D);
+            if (dx * dx + dy * dy + dz * dz <= radius * radius) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    private static void assertSounds() {
+        int atA = countNear(ECHO_BRICK_A, 1.5D);
+        int atB = countNear(ECHO_BRICK_B, 1.5D);
+        int atSturdy = countNear(STURDY_BRICK, 1.5D);
+        int atBuff = countNear(BUFF_SPOT, 3.0D);
+        readout("sonic_counts", "total=" + sonicTotal + " brickA(damage lands)=" + atA
+                + " brickB(invulnerable/hurt=false)=" + atB
+                + " sturdyBrick=" + atSturdy + " buffSpot=" + atBuff
+                + " badParams=" + sonicBadParams);
+        report("sonic_contact_survival", atA >= 3, "brickA 音效次数=" + atA + "（期望 >= 3，每 10 tick 一次）");
+        // ★ 本条就是作者"听不到"的回归测试：伤害落不了地也必须响
+        report("sonic_contact_hurt_false", atB >= 3,
+                "brickB（invulnerable / hurt 恒 false）音效次数=" + atB + "（期望 >= 3）");
+        report("sonic_negative_sturdygold", atSturdy == 0, "万坚金砖上的音效次数=" + atSturdy + "（期望 0）");
+        report("sonic_buff_per_tick", atBuff >= 2, "音咆 buff 每 20 tick 一次，音效次数=" + atBuff + "（期望 >= 2）");
+        report("sonic_params", sonicBadParams == 0,
+                "非 HOSTILE / 音量!=3.0 / 音高!=1.0 的条数=" + sonicBadParams + "（期望 0）");
+    }
+
+    private static void applyCurveEffects() {
+        for (int i = 0; i < 3; i++) {
+            burnCows.get(i).addEffect(new MobEffectInstance(AllEffects.HIGH_BURN, 400, i, false, true));
+            sedimentCows.get(i).addEffect(new MobEffectInstance(AllEffects.SEDIMENT, 400, i, false, true));
+        }
+        readout("curve_applied", "high_burn 1/2/3 amp=0/1/2 ; sediment 1/2/3 amp=0/1/2 ; hp="
+                + burnCows.get(0).getHealth() + "/" + burnCows.get(1).getHealth() + "/" + burnCows.get(2).getHealth());
+    }
+
+    private static void assertCurves() {
+        // 11 秒（220 tick）窗：等级 = 点数 ⇒ 期望 11 / 22 / 33
+        for (int i = 0; i < 3; i++) {
+            Cow c = burnCows.get(i);
+            double lost = 200.0D - c.getHealth();
+            double sum = damageSum.getOrDefault(c.getUUID(), 0.0D);
+            double expect = 11.0D * (i + 1);
+            readout("high_burn_L" + (i + 1),
+                    "hpLoss=" + lost + " eventSum=" + sum + " expect=" + expect
+                            + " onFire=" + c.isOnFire() + " remainingFireTicks=" + c.getRemainingFireTicks());
+            report("high_burn_L" + (i + 1) + "_1_2_3", Math.abs(sum - expect) <= 2.0D,
+                    "端到端掉血 eventSum=" + sum + "，期望 " + expect + "（1 级 1 点 / 2 级 2 点 / 3 级 3 点每秒 × 11 秒）");
+        }
+        // 1 级恢复点燃（bg-final 的「1 级不点燃」已被取代）
+        report("high_burn_L1_burns_again", burnCows.get(0).getRemainingFireTicks() != 0,
+                "L1 remainingFireTicks=" + burnCows.get(0).getRemainingFireTicks() + "（旧口径下应为 0 / 从未着火）");
+        for (int i = 0; i < 3; i++) {
+            Cow c = sedimentCows.get(i);
+            double sum = damageSum.getOrDefault(c.getUUID(), 0.0D);
+            double expect = 11.0D * (i + 1);
+            readout("sediment_L" + (i + 1),
+                    "hpLoss=" + (200.0D - c.getHealth()) + " eventSum=" + sum + " expect=" + expect);
+            report("sediment_L" + (i + 1) + "_1_2_3", Math.abs(sum - expect) <= 2.0D,
+                    "端到端掉血 eventSum=" + sum + "，期望 " + expect);
+        }
+    }
+
+    private static void spawnSkeletons(MinecraftServer server) {
+        for (int i = 0; i < 40; i++) {
+            AbstractSkeleton skel = EntityType.SKELETON.create(level);
+            if (skel == null) {
+                continue;
+            }
+            skel.moveTo(17.5D + (i % 12), 200.0D, 17.5D + (i / 12) * 1.0D, 0.0F, 0.0F);
+            skel.setNoAi(true);
+            level.addFreshEntity(skel);
+            skeletons.add(skel);
+        }
+        int alive = 0;
+        for (AbstractSkeleton s : skeletons) {
+            if (s.isAlive() && !s.isRemoved()) {
+                alive++;
+            }
+        }
+        report("anti_vacuum_skeletons_alive", alive == skeletons.size(),
+                "alive=" + alive + "/" + skeletons.size() + "（NORMAL 难度下骷髅才不会被丢弃）");
+    }
+
+    private static final AABB PEN = new AABB(16.0D, 199.0D, 16.0D, 30.0D, 206.0D, 22.0D);
+
+    /** 记录围栏里现有掉落物的 UUID（用「前后差集」而不是「先 discard 再数」，避开 discard 的同 tick 可见性问题） */
+    private static java.util.Set<UUID> penDropIds() {
+        java.util.Set<UUID> ids = new java.util.HashSet<>();
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, PEN)) {
+            ids.add(ie.getUUID());
+        }
+        return ids;
+    }
+
+    private static int countNewBoneMeal(java.util.Set<UUID> before) {
+        int n = 0;
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, PEN)) {
+            if (!before.contains(ie.getUUID()) && ie.getItem().is(AllItems.GOLDEN_BONE_MEAL.get())) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    private static int countNewAny(java.util.Set<UUID> before) {
+        int n = 0;
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, PEN)) {
+            if (!before.contains(ie.getUUID())) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    private static void clearPenDrops() {
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, PEN)) {
+            ie.discard();
+        }
+    }
+
+    private static void skeletonHits() {
+        fakePlayer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new ItemStack(AllItems.STURDYGOLD_SWORD.get()));
+        int hits = 0;
+        int boneMeal = 0;
+        // 前 30 只用万坚金剑（期望 80% 掉金骨粉）；后 10 只留给铁剑阴性对照（**必须用没挨过打的新鲜骷髅**，
+        // 否则同一 tick 里第二刀会被 `amount <= lastHurt` 的无敌帧整条挡掉 ⇒ 阴性对照变成空转）
+        for (int i = 0; i < 30 && i < skeletons.size(); i++) {
+            AbstractSkeleton skel = skeletons.get(i);
+            if (!skel.isAlive()) {
+                continue;
+            }
+            java.util.Set<UUID> before = penDropIds();
+            boolean landed = skel.hurt(fakePlayer.damageSources().playerAttack(fakePlayer), 1.0F);
+            hits++;
+            int newAny = countNewAny(before);
+            int bm = countNewBoneMeal(before);
+            if (bm > 0) {
+                boneMeal++;
+            }
+            if (!landed) {
+                readout("skeleton_hit_not_landed", "uuid=" + skel.getUUID());
+            }
+            if (i < 3) {
+                readout("skeleton_hit_sample", "i=" + i + " landed=" + landed + " newDrops=" + newAny
+                        + " newBoneMeal=" + bm + " lastSqueeze="
+                        + com.hjmmd_8.bettergold.event.ModEvents.lastSkeletonSqueezeCount
+                        + "/" + com.hjmmd_8.bettergold.event.ModEvents.lastSkeletonPoolSize);
+            }
+        }
+        readout("skeleton_hits", "hits=" + hits + " boneMealHits=" + boneMeal
+                + " lastSqueeze=" + com.hjmmd_8.bettergold.event.ModEvents.lastSkeletonSqueezeCount
+                + "/" + com.hjmmd_8.bettergold.event.ModEvents.lastSkeletonPoolSize);
+        skeletonHitsResult = boneMeal;
+        skeletonHitCount = hits;
+        // ---- 阴性对照 1：铁剑（用后 10 只新鲜骷髅） ----
+        clearPenDrops();
+        fakePlayer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
+        int ironBoneMeal = 0;
+        int ironHits = 0;
+        for (int i = 30; i < skeletons.size(); i++) {
+            AbstractSkeleton skel = skeletons.get(i);
+            if (!skel.isAlive()) {
+                continue;
+            }
+            java.util.Set<UUID> before = penDropIds();
+            boolean landed = skel.hurt(fakePlayer.damageSources().playerAttack(fakePlayer), 1.0F);
+            ironHits++;
+            if (countNewBoneMeal(before) > 0) {
+                ironBoneMeal++;
+            }
+            if (i == 30) {
+                readout("skeleton_negative_iron_sample", "landed=" + landed + " newAny=" + countNewAny(before));
+            }
+        }
+        ironBoneMealHits = ironBoneMeal;
+        ironHitCount = ironHits;
+        readout("skeleton_negative_iron", "hits=" + ironHits + " boneMealHits=" + ironBoneMeal);
+        // ---- 礼品金票豁免（反射调私有判定） ----
+        try {
+            Method m = Class.forName("com.hjmmd_8.bettergold.event.ModEvents")
+                    .getDeclaredMethod("isSqueezeExempt", net.minecraft.world.item.Item.class);
+            m.setAccessible(true);
+            boolean ticket = (boolean) m.invoke(null, AllItems.GIFT_GOLD_TICKET.get());
+            boolean ingot = (boolean) m.invoke(null, Items.GOLD_INGOT);
+            report("skeleton_ticket_exempt", ticket && !ingot,
+                    "isSqueezeExempt(gift_gold_ticket)=" + ticket + " isSqueezeExempt(gold_ingot)=" + ingot);
+        } catch (Throwable t) {
+            skipped("skeleton_ticket_exempt", "反射失败: " + t);
+        }
+    }
+
+    private static int skeletonHitsResult = -1;
+    private static int skeletonHitCount = -1;
+    private static int ironBoneMealHits = -1;
+    private static int ironHitCount = -1;
+
+    private static void assertSkeletonDrops() {
+        if (skeletonHitCount <= 0) {
+            skipped("skeleton_attack_bone_meal", "没有有效的命中数");
+            return;
+        }
+        // 逐条目 0.8 ⇒ 金骨粉占比 = 0.8：30 次里期望 24，阈值取 >= 18（P(误红) < 0.005）
+        report("skeleton_attack_bone_meal", skeletonHitsResult >= 18,
+                "命中 " + skeletonHitCount + " 次，其中 " + skeletonHitsResult + " 次掉金骨粉（期望 ~80%）");
+        report("skeleton_negative_iron", ironHitCount > 0 && ironBoneMealHits == 0,
+                "铁剑命中 " + ironHitCount + " 次掉金骨粉 " + ironBoneMealHits + " 次（期望 0）");
+        // 死亡那条仍然在（作者：「不只是死亡掉落」）
+        try {
+            Method m = Class.forName("com.hjmmd_8.bettergold.material.MetalEvents")
+                    .getDeclaredMethod("weaponOf", net.minecraft.world.damagesource.DamageSource.class,
+                            LivingEntity.class);
+            readout("death_drop_kept", "MetalEvents.weaponOf 反射可见=" + (m != null));
+        } catch (Throwable t) {
+            readout("death_drop_kept", "reflection skipped: " + t);
+        }
+    }
+
+    // ==================== 第 3 条：藤条判据逐族真调用 ====================
+
+    private static void assertVineScope() {
+        try {
+            Class<?> mod = Class.forName("com.hjmmd_8.bettergold.registry.AllLootModifiers$AddGlitteringVineModifier");
+            Method m = mod.getDeclaredMethod("isOurTool", ItemStack.class);
+            m.setAccessible(true);
+            StringBuilder sb = new StringBuilder();
+            int wrong = 0;
+            List<MetalFamily> families = MetalFamily.all();
+            for (MetalFamily f : families) {
+                ItemStack swordStack = new ItemStack(
+                        BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("bettergold", f.id + "_sword")));
+                ItemStack pickStack = new ItemStack(
+                        BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("bettergold", f.id + "_pickaxe")));
+                boolean sword = (boolean) m.invoke(null, swordStack);
+                boolean pick = (boolean) m.invoke(null, pickStack);
+                boolean expect = f.isSpecialMetal();
+                if (sword != expect || pick != expect) {
+                    wrong++;
+                }
+                sb.append(f.id).append(expect ? "=drop" : "=no-drop").append("(sword=").append(sword)
+                        .append(",pick=").append(pick).append(") ");
+            }
+            boolean ironSword = (boolean) m.invoke(null, new ItemStack(Items.IRON_SWORD));
+            readout("vine_scope", sb + "iron_sword=" + ironSword + " families=" + families.size());
+            report("vine_all_but_sturdygold", wrong == 0 && families.size() == 8 && !ironSword,
+                    "8 族逐族真调用：不符的族数=" + wrong + "，families=" + families.size()
+                            + "，铁剑=" + ironSword + "（期望：万坚金 false、其余 7 族 true、铁剑 false）");
+        } catch (Throwable t) {
+            skipped("vine_all_but_sturdygold", "反射失败: " + t);
+        }
+    }
+
+    // ==================== 第 6 条：成就（全开放 + 获得即触发 + 老存档） ====================
+
+    private static void assertAdvancements(MinecraftServer server) {
+        var all = server.getAdvancements().getAllAdvancements();
+        List<net.minecraft.advancements.AdvancementHolder> ours = new ArrayList<>();
+        for (var h : all) {
+            if (h.id().getNamespace().equals("bettergold")) {
+                ours.add(h);
+            }
+        }
+        int hidden = 0;
+        for (var h : ours) {
+            if (h.value().display().isPresent() && h.value().display().get().isHidden()) {
+                hidden++;
+            }
+        }
+        int withRecipeCrafted = 0;
+        int withInventoryChanged = 0;
+        for (var h : ours) {
+            for (var crit : h.value().criteria().values()) {
+                String cn = crit.trigger().getClass().getName();
+                if (cn.contains("InventoryChangeTrigger")) {
+                    withInventoryChanged++;
+                    break;
+                }
+                if (cn.contains("RecipeCraftedTrigger")) {
+                    withRecipeCrafted++;
+                    break;
+                }
+            }
+        }
+        readout("advancements_loaded", "total(all ns)=" + all.size() + " bettergold=" + ours.size()
+                + " hidden=" + hidden + " withInventoryChanged=" + withInventoryChanged
+                + " withRecipeCrafted=" + withRecipeCrafted);
+        report("adv_no_hidden", ours.size() == 51 && hidden == 0,
+                "本模组成就 " + ours.size() + " 条（期望 51），hidden=" + hidden + "（期望 0）");
+        report("adv_inventory_changed_count", withInventoryChanged >= 40,
+                "用 inventory_changed 的成就 = " + withInventoryChanged + "（反空转：期望 >= 40）");
+        report("adv_recipe_crafted_root_only", withRecipeCrafted == 1,
+                "用 recipe_crafted 的成就 = " + withRecipeCrafted + "（期望恰好 1 = root）");
+
+        // ---- 「获得」谓词看的是"本次变化的那一格"（老存档语义的机器判据） ----
+        var holder = server.getAdvancements().get(ResourceLocation.fromNamespaceAndPath(
+                "bettergold", "treasure/blazing_rod"));
+        if (holder == null) {
+            skipped("adv_inventory_changed_predicate", "找不到 bettergold:treasure/blazing_rod");
+            return;
+        }
+        Object triggerInstance = null;
+        for (var crit : holder.value().criteria().values()) {
+            if (crit.trigger().getClass().getName().contains("InventoryChangeTrigger")) {
+                triggerInstance = crit.trigger();
+                break;
+            }
+        }
+        if (triggerInstance == null) {
+            skipped("adv_inventory_changed_predicate", "blazing_rod 的判据不是 InventoryChangeTrigger");
+            return;
+        }
+        try {
+            Method matches = null;
+            StringBuilder cands = new StringBuilder();
+            for (Class<?> c = triggerInstance.getClass(); c != null && matches == null; c = c.getSuperclass()) {
+                for (Method cand : c.getDeclaredMethods()) {
+                    if (cand.getName().equals("matches")) {
+                        cands.append(cand.getName()).append("/").append(cand.getParameterCount()).append(" ");
+                        if (cand.getParameterCount() == 5) {
+                            cand.setAccessible(true);
+                            matches = cand;
+                        }
+                    }
+                }
+            }
+            readout("adv_predicate_methods", "criteria=" + holder.value().criteria().keySet()
+                    + " triggerClass=" + triggerInstance.getClass().getName()
+                    + " matchesCandidates=[" + cands.toString().trim() + "]");
+            if (matches == null) {
+                skipped("adv_inventory_changed_predicate", "找不到 matches(5 参)");
+                return;
+            }
+            Object[] args = new Object[5];
+            int stackArg = -1;
+            Class<?>[] pt = matches.getParameterTypes();
+            for (int i = 0; i < pt.length; i++) {
+                if (pt[i] == ItemStack.class) {
+                    stackArg = i;
+                } else if (pt[i] == net.minecraft.world.entity.player.Inventory.class) {
+                    args[i] = fakePlayer.getInventory();
+                } else if (pt[i] == int.class) {
+                    args[i] = 0;
+                }
+            }
+            if (stackArg < 0) {
+                skipped("adv_inventory_changed_predicate", "matches 的形参里没有 ItemStack");
+                return;
+            }
+            // 「老存档」语义：背包里**已经**放着别的东西也不影响判定 —— 谓词只看传进来的那一格
+            fakePlayer.getInventory().setItem(0, new ItemStack(Items.GOLD_INGOT));
+            args[stackArg] = new ItemStack(BuiltInRegistries.ITEM.get(
+                    ResourceLocation.fromNamespaceAndPath("bettergold", "blazing_rod")));
+            boolean hit = (boolean) matches.invoke(triggerInstance, args);
+            args[stackArg] = new ItemStack(Items.GOLD_INGOT);
+            boolean miss = (boolean) matches.invoke(triggerInstance, args);
+            readout("adv_inventory_changed_predicate",
+                    "blazing_rod -> " + hit + " / gold_ingot -> " + miss
+                            + "（谓词只看传入的那一格，不看背包里已经有什么）");
+            report("adv_inventory_changed_predicate", hit && !miss,
+                    "blazing_rod=" + hit + "（期望 true，任何途径拿到都算）/ gold_ingot=" + miss + "（期望 false）");
+        } catch (Throwable t) {
+            skipped("adv_inventory_changed_predicate", "反射调用失败: " + t);
+        }
+    }
+
+    // ==================== 收尾 ====================
+
+    private static void summary(MinecraftServer server) {
+        finished = true;
+        try {
+            level.setChunkForced(0, 0, false);
+            level.setChunkForced(1, 1, false);
+        } catch (Throwable ignored) {
+        }
+        int forced = level.getForcedChunks().size();
+        bettergold.LOGGER.info("BGFIX2-PROBE SUMMARY pass={} fail={} skip={} sonicTotal={} forcedChunksNow={}",
+                pass, fail, skip, sonicTotal, forced);
+        armed = false;
+        server.halt(false);   // 只调一次
+    }
+}
