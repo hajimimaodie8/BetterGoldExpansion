@@ -1,0 +1,65 @@
+bg-book §八 · 手册「装备的强化」9 章 A 级（真客户端，Patchouli 自己加载出来的内容树）
+世界 = 本会话用专用服务端造出来的 ASCII 探针世界（复制进 run/saves/bgbook8cprobe）；
+红线 5：进世界后第一 tick 断言世界名（这里读到 level.dat 里的 bgbook8probe，且负向排除作者存档名）。
+
+⚠ 探针共跑 4 轮：① 世界名口径写成目录名 ⇒ 假红（读到 level.dat 的旧名）② 用全局 tick 计数 ⇒
+   世界加载完时 t=60/80/90 早过了、只剩世界名一条 ③ Gradle 每次会重写 clientRunProgramArgs.txt ⇒
+   args 必须**每次跑之前**重新贴 ④ 章1 的 6 页漏算 ⇒ gear_total_pages=80（用例算错，非产物问题）。
+   四轮的读数差异都在下面这份最终日志里可辨。
+
+==== build/bg8-run3-client.log（中间态（args 未生效 / 只到世界名）） ====
+   BG8C armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+
+==== build/bg8-run4-client.log（13 PASS / 1 FAIL（gear 页数漏算章1）） ====
+   BG8C armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+   BG8C CHECK probe_world_guard PASS levelName=bgbook8probe
+   BG8C CHECK book_registered PASS
+   BG8C readout books=1 keys=[bettergold:alchemy_handbook]
+   BG8C CHECK book_contents_no_error PASS
+   BG8C readout errored=false exception=null
+   BG8C readout categories=4 order=alchemy_start,gear_upgrade,golden_feast,merchant_antiques,
+   BG8C CHECK book_categories_four PASS
+   BG8C CHECK book_category_order PASS
+   BG8C readout entries=17 pages=148
+   BG8C CHECK book_entries_seventeen PASS
+   BG8C CHECK book_total_pages_148 PASS
+   BG8C CHECK gear_linkage_pages_6 PASS
+   BG8C readout gear_total_pages=80 forge_pages_checked=56
+   BG8C CHECK gear_chapters_pages_86 FAIL
+   BG8C CHECK gear_forge_order_ok PASS
+   BG8C readout recipe_refs=141 missing=[]
+   BG8C CHECK book_recipe_refs_all_present PASS
+   BG8C readout unresolved_names=0
+   BG8C CHECK book_entry_names_translated PASS
+   BG8C CHECK golden_knowledge_pages_8 PASS
+   BG8C CHECK retired_entries_gone PASS
+   BG8C readout use_item_sent mainhand=bettergold:alchemy_student_handbook
+   BG8C SUMMARY pass=13 fail=1 ticks=2227
+
+==== build/bg8-run5-client.log（最终：14 PASS / 0 FAIL） ====
+   BG8C armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+   BG8C CHECK probe_world_guard PASS levelName=bgbook8probe
+   BG8C CHECK book_registered PASS
+   BG8C readout books=1 keys=[bettergold:alchemy_handbook]
+   BG8C CHECK book_contents_no_error PASS
+   BG8C readout errored=false exception=null
+   BG8C readout categories=4 order=alchemy_start,gear_upgrade,golden_feast,merchant_antiques,
+   BG8C CHECK book_categories_four PASS
+   BG8C CHECK book_category_order PASS
+   BG8C readout entries=17 pages=148
+   BG8C CHECK book_entries_seventeen PASS
+   BG8C CHECK book_total_pages_148 PASS
+   BG8C CHECK gear_linkage_pages_6 PASS
+   BG8C readout gear_total_pages=86 forge_pages_checked=56
+   BG8C CHECK gear_chapters_pages_86 PASS
+   BG8C CHECK gear_forge_order_ok PASS
+   BG8C readout recipe_refs=141 missing=[]
+   BG8C CHECK book_recipe_refs_all_present PASS
+   BG8C readout unresolved_names=0
+   BG8C CHECK book_entry_names_translated PASS
+   BG8C CHECK golden_knowledge_pages_8 PASS
+   BG8C CHECK retired_entries_gone PASS
+   BG8C readout use_item_sent mainhand=bettergold:alchemy_student_handbook
+   BG8C readout screen=null
+   BG8C SUMMARY pass=14 fail=0 ticks=1871
+

@@ -1,0 +1,56 @@
+{
+  "name": "bettergold.handbook.entry.gear_illusiongold",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:illusiongold_sword",
+  "sortnum": 8,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_illusiongold_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_illusiongold_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_illusiongold_2_left"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_sword",
+      "recipe2": "bettergold:smithing_illusiongold_mace"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_trident",
+      "recipe2": "bettergold:smithing_illusiongold_bow"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_crossbow",
+      "recipe2": "bettergold:smithing_illusiongold_axe"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_pickaxe",
+      "recipe2": "bettergold:smithing_illusiongold_shovel"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_hoe",
+      "recipe2": "bettergold:smithing_illusiongold_shield"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_helmet",
+      "recipe2": "bettergold:smithing_illusiongold_chestplate"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_illusiongold_leggings",
+      "recipe2": "bettergold:smithing_illusiongold_boots"
+    }
+  ]
+}

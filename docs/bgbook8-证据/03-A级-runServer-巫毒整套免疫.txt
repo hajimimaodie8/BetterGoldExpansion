@@ -1,0 +1,50 @@
+bg-book §八 · §8.11 第 8 条（巫毒整套免疫中毒）A 级正负对照
+同一份探针、同一个探针世界、同一组坐标；两轮只差 MetalEvents#onLivingTick 那一个方法
+（改前 = git HEAD 版本，改后 = 本轮的修复版）。
+
+==== build/bg8-run1.log（改前基线（HEAD 的 MetalEvents）） ====
+   BG8P armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+   BG8P tick10 alive=true
+   BG8P readout armor_worn=true head=bettergold:voodoogold_helmet
+   BG8P CHECK anti_vacuum_armor_worn PASS
+   BG8P S1 voodoo=4 thunder=0 poison_before=true poison_after=true
+   BG8P CHECK S1_voodoo4_poison_removed FAIL
+   BG8P S2 voodoo=3 poison_after=true
+   BG8P CHECK S2_voodoo3_poison_kept PASS
+   BG8P S3 thunder=4 weakness_after=false tremble_after=false
+   BG8P CHECK S3_thunder4_weakness_removed PASS
+   BG8P CHECK S3_thunder4_tremble_removed PASS
+   BG8P S4 thunder=4 voodoo=0 poison_after=true
+   BG8P CHECK S4_thunder4_poison_kept PASS
+   BG8P S5 voodoo=2 thunder=2 poison_after=true weakness_after=true tremble_after=true
+   BG8P CHECK S5_mixed_below_threshold_poison_kept PASS
+   BG8P CHECK S5_mixed_below_threshold_weakness_kept PASS
+   BG8P CHECK S5_mixed_below_threshold_tremble_kept PASS
+   BG8P S6 voodoo=4 weakness_after=true tremble_after=true
+   BG8P CHECK S6_voodoo4_weakness_kept PASS
+   BG8P CHECK S6_voodoo4_tremble_kept PASS
+   BG8P SUMMARY pass=10 fail=1
+
+==== build/bg8-run2.log（改后（本轮修复）） ====
+   BG8P armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+   BG8P tick10 alive=true
+   BG8P readout armor_worn=true head=bettergold:voodoogold_helmet
+   BG8P CHECK anti_vacuum_armor_worn PASS
+   BG8P S1 voodoo=4 thunder=0 poison_before=true poison_after=false
+   BG8P CHECK S1_voodoo4_poison_removed PASS
+   BG8P S2 voodoo=3 poison_after=true
+   BG8P CHECK S2_voodoo3_poison_kept PASS
+   BG8P S3 thunder=4 weakness_after=false tremble_after=false
+   BG8P CHECK S3_thunder4_weakness_removed PASS
+   BG8P CHECK S3_thunder4_tremble_removed PASS
+   BG8P S4 thunder=4 voodoo=0 poison_after=true
+   BG8P CHECK S4_thunder4_poison_kept PASS
+   BG8P S5 voodoo=2 thunder=2 poison_after=true weakness_after=true tremble_after=true
+   BG8P CHECK S5_mixed_below_threshold_poison_kept PASS
+   BG8P CHECK S5_mixed_below_threshold_weakness_kept PASS
+   BG8P CHECK S5_mixed_below_threshold_tremble_kept PASS
+   BG8P S6 voodoo=4 weakness_after=true tremble_after=true
+   BG8P CHECK S6_voodoo4_weakness_kept PASS
+   BG8P CHECK S6_voodoo4_tremble_kept PASS
+   BG8P SUMMARY pass=11 fail=0
+

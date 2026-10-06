@@ -67,9 +67,17 @@ TOOLS = ["sword", "axe", "pickaxe", "shovel", "hoe", "knife"]
 ARMOR = ["helmet", "chestplate", "leggings", "boots"]
 
 # The four categories (order = sortnum, i.e. the order shown on the landing screen).
+#
+# ⚠ bg-book §八（2026-10-06）第 2 个类别**换了名字**（id 与图标**不动**）：
+#   旧 `bettergold.handbook.category.gear_upgrade.name` = 「装备的升级」
+#   新 = **「装备的强化」**（§8.1「手册四类变为：炼金的起步 / 装备的强化 / 金灿的盛宴 / 商人与古董」）
+#   - id 仍是 `gear_upgrade`：类别 id 是条目 `category` 字段的目标，改它没有任何收益、
+#     只会让 9 个新条目与 / 或老存档的"已读"记录找不到归属（存档兼容红线：能不动就不动）；
+#   - 旧名值**留在语言文件里作历史留档**（原文不删），由关卡负向断言守着"不许回到旧名"；
+#   - 类别说明（`.desc`）作者没改，仍是「"贵金"自然而然有着自己的专属装备。」。
 CATEGORIES = [
     ("alchemy_start", "raw_sturdygold", 0),          # 炼金的起步 (materials first)
-    ("gear_upgrade", "sturdygold_sword", 1),         # 装备的升级
+    ("gear_upgrade", "sturdygold_sword", 1),         # 装备的强化（§八 改名，id 未动）
     ("golden_feast", "sturdygold_apple", 2),         # 金灿的盛宴
     ("merchant_antiques", "gold_exchange_counter", 3),  # 商人与古董
 ]
@@ -192,6 +200,20 @@ def entry_upgrade_templates():
     return entry("upgrade_templates", "alchemy_start", "sturdygold_upgrade_template", 1, pages)
 
 
+# --------------------------------------------------------------------------------------
+# ⛔ bg-book §八（2026-10-06）：下面两个条目**已作废**（retired），不再写进数据树
+# --------------------------------------------------------------------------------------
+#
+# §8.1 要求「删除手册四类里的『装备的升级』类别（整个类别）」⇒ 它下面这两个条目
+# （器具 / 头怀腿靴）随之作废，它们的 42 个 Patchouli 页由「装备的强化」章节里
+# **每族 7 页的锻造方式**（剑/重锤/三叉戟/弓/弩/斧/镐/锹/锄/盾牌/头盔/胸甲/护腿/靴子）取代。
+#
+# ⚠ **内容不凭空消失**：两个构造函数**原样保留在下面**（不删），
+#   由 `RETIRED_ENTRIES` 引用并在 `main()` 里照常自证它们的页数（25 / 17）；
+#   全文对照（页型序列 / 页数 / 分组）另外落在 `docs/1.6-规格.md` §十九。
+#   ⇒ 以后谁要看"当年器具同框长什么样"，读这里即可，不必翻 git 历史。
+
+
 def entry_tools_per_family():
     pages = [text_page("%s.page.tools" % LANG)]
     groups = [
@@ -221,6 +243,10 @@ def entry_armor_per_family():
     return entry("armor_per_family", "gear_upgrade", "sturdygold_chestplate", 1, pages)
 
 
+RETIRED_ENTRIES = [entry_tools_per_family, entry_armor_per_family]
+
+
+
 def entry_golden_feast():
     pages = [text_page("%s.page.golden_feast" % LANG)]
     for item in FOOD_ITEMS:
@@ -245,8 +271,7 @@ def entry_antiques():
 ENTRIES = [
     entry_metal_tour,
     entry_upgrade_templates,
-    entry_tools_per_family,
-    entry_armor_per_family,
+    # ⛔ entry_tools_per_family / entry_armor_per_family —— §八 作废，见上方 RETIRED_ENTRIES
     entry_golden_feast,
     entry_merchant,
     entry_antiques,
@@ -375,18 +400,20 @@ def entry_core_materials():
 def entry_golden_knowledge():
     """章3 ·「贵金」的知识（封面图标 = 推断值，见上方注释）。
 
-    ⚠ 追加轮（§七）之后本条目**没有** `knowledge_1_left/right` 两把键了：
-    第 1 页按作者要求"汇总"，正文只剩一句 = `knowledge_1_summary`（挂在**左页 spotlights 的 text**），
-    两张图标各自带标题（`knowledge_1_ingot_title` / `knowledge_1_template_title`）——
-    这样右页没有正文，整页=一句话（见 docs/1.6-规格.md §17.1）。
+    ⛔ **bg-book §八（2026-10-06）删掉了本条目原来的第 1 页** —— §8.1「删除 章 3『贵金的知识』
+    第 1 页（我上一轮改成"汇总页"的那页）」⇒ 本条目 **10 页 → 8 页**（第 2~5 行 × 两页）。
+
+    * 该页的两张图标表（八族锭 / 八张升级模板）与两个标题常量
+      （`KNOWLEDGE_1_INGOT_TITLE` / `KNOWLEDGE_1_TEMPLATE_TITLE`）**原样保留在文件里**（原文不删）；
+    * 语言键 `knowledge_1_summary` / `knowledge_1_ingot_title` / `knowledge_1_template_title`
+      也留在两份语言文件里作**历史留档**，只是**没有任何页面再引用它们**
+      （关卡 `[bgbook8-k3-p1-gone]` 用负向断言守着）；
+    * `KNOWLEDGE_ROWS[0]` 同样保留，本函数**跳过 index == 1**（= 那一跨页）。
     """
     pages = []
     for index, (left_items, right_items) in enumerate(KNOWLEDGE_ROWS, start=1):
         if index == 1:
-            pages.append(spotlight_page(left_items, "%s.page.knowledge_1_summary" % LANG,
-                                       KNOWLEDGE_1_INGOT_TITLE))
-            pages.append(spotlight_page(right_items, None, KNOWLEDGE_1_TEMPLATE_TITLE))
-            continue
+            continue        # §八：这一跨页（汇总页）已删除，见 docstring
         pages.append(spotlight_page(left_items, "%s.page.knowledge_%d_left" % (LANG, index)))
         pages.append(spotlight_page(right_items, "%s.page.knowledge_%d_right" % (LANG, index)))
     return entry("golden_knowledge", "alchemy_start", "sturdygold_ingot", 4, pages)
@@ -396,6 +423,87 @@ CHAPTER_ENTRIES = [
     entry_auxiliary_materials,
     entry_core_materials,
     entry_golden_knowledge,
+]
+
+# --------------------------------------------------------------------------------------
+# bg-book §八 追加轮（2026-10-06）：「装备的强化」9 章（替掉「装备的升级」类别）
+# --------------------------------------------------------------------------------------
+#
+# 形状（与 §六 / §七 的既有口径一致，逐字文案由脚本从**仓库内冻结快照**
+# `tools/asset-generator/bgappend-requirements-snapshot/bg-book-8.md` 解析后注入语言键）：
+#
+#   章1 · 关于联动与金制胚底（封面 = 金重锤胚底）：**6 页**
+#        p1左 / p1右 / p2左 = 三段逐字文案（纯 `patchouli:text`，文档没给图标列）
+#        p2右 = crafting(重锤胚底 + 三叉戟胚底) / p3左 = crafting(弓 + 弩) / p3右 = crafting(盾牌)
+#   章2~9 · 八族「<金属>装备」（封面 = 该族金剑）：**每章 10 页**
+#        p1左 = 武器工具文案 / p1右 = 盾牌文案 / p2左 = 盔甲文案（均纯文本）
+#        后页 = 该族装备的锻造方式，**按固定顺序挂 14 件**
+#
+# ⚠ **门禁项（父代理 2026-10-06 裁定 = 照既有口径落）**：「14 件」**超过 Patchouli 的
+#   2 配方/页上限**（`PageDoubleRecipe` 只有 `recipe` / `recipe2` 两个槽，见模块 docstring）。
+#   作者 2026-10-04 已亲自裁定过同一件事：「每页 2 个配方是 Patchouli 的**结构上限**，
+#   不是我们的退化方案」⇒ 14 件 = **7 页 × 2 配方**（`FORGE_ORDER` 两两配对）。
+#
+# ⚠ **推断 / 记账项 D2（父代理裁定：引默认那条、只记账）**：后页 14 件里有 5 件
+#   （重锤 / 三叉戟 / 弓 / 弩 / 盾牌）在本仓**各存在两条配方**：
+#     · `smithing_<族>_<件>`      —— base = 金制胚底，带 `neoforge:not(mod_loaded(mut))`；
+#     · `smithing_mut_<族>_<件>`  —— base = `mut:golden_*`，带 `mod_loaded(mut)`。
+#   手册页只有 2 个槽、也只能引一个 id ⇒ 本轮**引默认那条**（与第一轮
+#   `entry_tools_per_family` 的引法一致）⇒ **装了 mut 的环境里这 5 页会指到未加载的配方**。
+#   备选（按环境拆两套页 / 改引 mut 版）都被父代理明确否掉，只记账在
+#   `docs/1.6-规格.md` §十九。
+GEAR_CATEGORY = "gear_upgrade"
+
+# 章1 的三张配方页，**按作者 §8.2 的表逐行读下来**的顺序（上/下 = recipe / recipe2）
+GEAR_BLANK_ROWS = [
+    ("golden_mace_blank", "golden_trident_blank"),   # 2 右：上 重锤 / 下 三叉戟
+    ("golden_bow_blank", "golden_crossbow_blank"),   # 3 左：上 弓 / 下 弩
+    ("golden_shield_blank", None),                   # 3 右：盾牌
+]
+
+# 「后页」的 14 件**固定顺序**（§8.3 正文逐字给出；§8.12 第 2 条把它列为推断值）
+FORGE_ORDER = ["sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe", "shovel",
+               "hoe", "shield", "helmet", "chestplate", "leggings", "boots"]
+
+# 9 章：(章节 id, 封面图标)。章1 = 联动与金制胚底；章2~9 = 八族装备，
+# 顺序 = METALS = 作者给的章节顺序（烈燃金 → 万坚金 → 树棘金 → 幽咆金 →
+#          靛海金 → 巫毒金 → 结雷金 → 幻惑金）。
+GEAR_CHAPTERS = [("linkage", "golden_mace_blank")] + \
+                [("%s" % metal, "%s_sword" % metal) for metal, _core in METALS]
+
+# 三个文案页的语言键后缀（顺序 = 文档的「1 左 / 1 右 / 2 左」）
+GEAR_TEXT_LABELS = ("1_left", "1_right", "2_left")
+
+
+def _gear_text_keys(chapter):
+    return ["%s.page.gear_%s_%s" % (LANG, chapter, label) for label in GEAR_TEXT_LABELS]
+
+
+def entry_gear_linkage():
+    pages = [text_page(_k) for _k in _gear_text_keys("linkage")]
+    for a, b in GEAR_BLANK_ROWS:
+        pages.append(crafting_page(a, b))
+    return entry("gear_linkage", GEAR_CATEGORY, "golden_mace_blank", 0, pages)
+
+
+def entry_gear_metal(metal, sortnum):
+    pages = [text_page(_k) for _k in _gear_text_keys(metal)]
+    for i in range(0, len(FORGE_ORDER), 2):
+        pages.append(smithing_page("smithing_%s_%s" % (metal, FORGE_ORDER[i]),
+                                   "smithing_%s_%s" % (metal, FORGE_ORDER[i + 1])))
+    return entry("gear_%s" % metal, GEAR_CATEGORY, "%s_sword" % metal, sortnum, pages)
+
+
+def _make_gear_metal_builder(metal, sortnum):
+    def build():
+        return entry_gear_metal(metal, sortnum)
+    build.__name__ = "entry_gear_%s" % metal
+    return build
+
+
+GEAR_ENTRIES = [entry_gear_linkage] + [
+    _make_gear_metal_builder(metal, index)
+    for index, (metal, _core) in enumerate(METALS, start=1)
 ]
 
 BOOK = {
@@ -440,7 +548,7 @@ def main():
                 os.path.join(ASSET_DIR, lang, "categories", "%s.json" % name),
                 category(name, icon, sortnum),
             )
-        for builder in ENTRIES + CHAPTER_ENTRIES:
+        for builder in ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES:
             data = builder()
             write_json(
                 os.path.join(ASSET_DIR, lang, "entries", "%s.json" % data["name"].rsplit(".", 1)[-1]),
@@ -449,19 +557,33 @@ def main():
 
     pages = sum(len(b()["pages"]) for b in ENTRIES)
     chapter_pages = sum(len(b()["pages"]) for b in CHAPTER_ENTRIES)
+    gear_pages = sum(len(b()["pages"]) for b in GEAR_ENTRIES)
+    retired_pages = sum(len(b()["pages"]) for b in RETIRED_ENTRIES)
     print(
         "handbook written: 1 book (data/) + %d categories + %d entries + %d pages x2 languages "
         "(assets/) -> %s + %s"
-        % (len(CATEGORIES), len(ENTRIES) + len(CHAPTER_ENTRIES), pages + chapter_pages,
-           BOOK_DIR, ASSET_DIR)
+        % (len(CATEGORIES), len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES),
+           pages + chapter_pages + gear_pages, BOOK_DIR, ASSET_DIR)
     )
     print(
         "  §6 chapters (bg-book append round): %d entries / %d pages "
-        "(aux=%d core=%d knowledge=%d; 1 row = 1 spread = 2 pages)"
+        "(aux=%d core=%d knowledge=%d; 1 row = 1 spread = 2 pages; knowledge 第1页 已被 §八 删除)"
         % (len(CHAPTER_ENTRIES), chapter_pages,
            len(entry_auxiliary_materials()["pages"]),
            len(entry_core_materials()["pages"]),
            len(entry_golden_knowledge()["pages"]))
+    )
+    print(
+        "  §8 gear chapters (bg-book §八): %d entries / %d pages "
+        "(linkage=%d, 八族各=%d；后页 14 件 = 7 页 x 2 配方 = Patchouli 的结构上限)"
+        % (len(GEAR_ENTRIES), gear_pages,
+           len(entry_gear_linkage()["pages"]),
+           len(GEAR_ENTRIES[1]()["pages"]))
+    )
+    print(
+        "  RETIRED (§八 作废，不写盘): tools_per_family=%d pages + armor_per_family=%d pages = %d"
+        % (len(entry_tools_per_family()["pages"]), len(entry_armor_per_family()["pages"]),
+           retired_pages)
     )
 
 

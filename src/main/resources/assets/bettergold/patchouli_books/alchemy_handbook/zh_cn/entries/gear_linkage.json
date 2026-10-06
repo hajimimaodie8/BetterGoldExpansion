@@ -1,0 +1,35 @@
+{
+  "name": "bettergold.handbook.entry.gear_linkage",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:golden_mace_blank",
+  "sortnum": 0,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_linkage_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_linkage_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_linkage_2_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_mace_blank",
+      "recipe2": "bettergold:golden_trident_blank"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_bow_blank",
+      "recipe2": "bettergold:golden_crossbow_blank"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_shield_blank"
+    }
+  ]
+}

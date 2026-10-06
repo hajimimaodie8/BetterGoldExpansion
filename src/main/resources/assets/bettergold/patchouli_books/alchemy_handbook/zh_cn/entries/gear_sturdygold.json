@@ -1,0 +1,56 @@
+{
+  "name": "bettergold.handbook.entry.gear_sturdygold",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:sturdygold_sword",
+  "sortnum": 2,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_sturdygold_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_sturdygold_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_sturdygold_2_left"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_sword",
+      "recipe2": "bettergold:smithing_sturdygold_mace"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_trident",
+      "recipe2": "bettergold:smithing_sturdygold_bow"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_crossbow",
+      "recipe2": "bettergold:smithing_sturdygold_axe"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_pickaxe",
+      "recipe2": "bettergold:smithing_sturdygold_shovel"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_hoe",
+      "recipe2": "bettergold:smithing_sturdygold_shield"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_helmet",
+      "recipe2": "bettergold:smithing_sturdygold_chestplate"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_sturdygold_leggings",
+      "recipe2": "bettergold:smithing_sturdygold_boots"
+    }
+  ]
+}

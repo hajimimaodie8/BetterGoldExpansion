@@ -1414,30 +1414,40 @@ _KNOWN_PAGE_TYPES = {"patchouli:text", "patchouli:crafting", "patchouli:smithing
                      "patchouli:stonecutting", "patchouli:image", "patchouli:empty", "patchouli:link",
                      "patchouli:relations", "patchouli:entity", "patchouli:quest", "patchouli:multiblock",
                      "patchouli:template"}
-_EXPECT_TOOL_PAGES = 1 + len(ALL_METALS) * 3   # 1 页开场文字 + 六件器具 ÷ 每页 2 个 = 3 页/套
-_EXPECT_ARMOR_PAGES = 1 + len(ALL_METALS) * 2  # 1 页开场文字 + 四件盔甲 ÷ 每页 2 个 = 2 页/套
+# ⛔ **bg-book §八（2026-10-06）作废并删除了下面两个条目**（§8.1「删除手册四类里的『装备的升级』
+#    类别（整个类别）」）⇒ 它们**不再是产物**，而是"必须不存在"（见下面的负向断言）。
+#    ⚠ 旧期望**原文保留在这里**（未删）：`_EXPECT_TOOL_PAGES = 1 + len(ALL_METALS) * 3`（= 25）、
+#      `_EXPECT_ARMOR_PAGES = 1 + len(ALL_METALS) * 2`（= 17）；两个条目的全文对照（页型序列 / 页数 /
+#      分组）落在 `docs/1.6-规格.md` §十九。
+_RETIRED_ENTRIES = ("tools_per_family", "armor_per_family")
 _entries_now = {}
 for _p in sorted((_ZH_BOOK / "entries").glob("*.json")) if (_ZH_BOOK / "entries").is_dir() else []:
     _entries_now[_p.stem] = json.loads(_p.read_text(encoding="utf-8"))
-_SKELETON_ENTRIES = ("metal_tour", "upgrade_templates", "tools_per_family",
-                     "armor_per_family", "golden_feast", "merchant", "antiques")
+# 第一轮骨架 7 项 − §八 作废 2 项 = **5**（另见 bgbook8 段的 9 个 gear 章节）
+_SKELETON_ENTRIES = ("metal_tour", "upgrade_templates",
+                     "golden_feast", "merchant", "antiques")
 # bg-book §六 追加轮（2026-10-05）：三章（副要材料 / 核心材料 / 知识）
 _BG2_ENTRY_NAMES = ("auxiliary_materials", "core_materials", "golden_knowledge")
+# bg-book §八 追加轮（2026-10-06）：「装备的强化」9 章（1 章联动/胚底 + 8 章金属）
+_BG8_ENTRY_NAMES = ("gear_linkage",) + tuple("gear_%s" % _c for _c in
+    ("flamegold", "sturdygold", "thornsgold", "echogold",
+     "indigoseagold", "voodoogold", "thundergold", "illusiongold"))
+for _retired in _RETIRED_ENTRIES:
+    for _side in (_ZH_BOOK, _EN_BOOK):
+        if (_side / "entries" / ("%s.json" % _retired)).exists():
+            _bgbook_bad("bgbook8-old-entries-gone",
+                        "§八 作废的条目 %s 又回到了产物里（%s）：它的 42 页已由「装备的强化」的"
+                        "每族 7 页锻造取代" % (_retired, _side.name))
 _missing_skeleton = [n for n in _SKELETON_ENTRIES if n not in _entries_now]
 if _missing_skeleton:
     _bgbook_bad("bgbook-entry-count",
-                "第一轮的骨架条目被删掉了（追加轮只许新增）：%s" % _missing_skeleton)
-if len(_entries_now) != len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES):
+                "第一轮的骨架条目被删掉了（§八 只作废 %s）：%s"
+                % (list(_RETIRED_ENTRIES), _missing_skeleton))
+if len(_entries_now) != len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES) + len(_BG8_ENTRY_NAMES):
     _bgbook_bad("bgbook-entry-count",
-                "条目数应为 %d（骨架 7 + §六 章节 3），实际 %d"
-                % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES), len(_entries_now)))
-for _entry, _expect in (("tools_per_family", _EXPECT_TOOL_PAGES), ("armor_per_family", _EXPECT_ARMOR_PAGES)):
-    _got = len(_entries_now.get(_entry, {}).get("pages", []))
-    if _got != _expect:
-        _bgbook_bad("bgbook-pages-per-family",
-                    "条目 %s 的页数 %d != 金属套数 × %d = %d"
-                    "（每页 2 个配方是 Patchouli 的结构上限；加金属时这里与生成器一起红）"
-                    % (_entry, _got, _expect // len(ALL_METALS), _expect))
+                "条目数应为 %d（骨架 5 + §六 章节 3 + §八 强化 9），实际 %d"
+                % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES) + len(_BG8_ENTRY_NAMES),
+                   len(_entries_now)))
 _valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
 _total_pages = 0
 _recipe_refs = set()
@@ -1462,7 +1472,7 @@ for _name, _e in sorted(_entries_now.items()):
                 _recipe_refs.add(_pg[_rk])
 if _total_pages < 60:
     _bgbook_bad("bgbook-anti-vacuum",
-                "手册总页数只有 %d（骨架应 ≥ 60 页；数据树被清空会命中这条）" % _total_pages)
+                "手册总页数只有 %d（§八 之后应 ≥ 148 页；数据树被清空会命中这条）" % _total_pages)
 _missing_recipe_files = sorted(
     r for r in _recipe_refs
     if not (_DATA / "bettergold" / "recipe" / (r.split(":", 1)[1] + ".json")).is_file())
@@ -1566,6 +1576,9 @@ _BG2_REQ_DOC = (REPO.parent / "mod_experience" / "开工需求"
 _BG2_SNAPSHOT_DIR = (REPO / "tools" / "asset-generator" / "bgappend-requirements-snapshot")
 _BG2_SNAPSHOT = _BG2_SNAPSHOT_DIR / "bg-book-6.1-6.3.md"
 # 章 → (封面图标, sortnum, 页型序列)。页型序列就是"一行 = 左页 + 右页"的机器形态。
+#   ⚠ **bg-book §八（2026-10-06）**：章3 的**第 1 页（汇总页）已被作者删除**（§8.1）⇒
+#     它的页型序列由 5 行（10 页）变成 **4 行（8 页）**，三章合计 32 → **30**。
+#     旧期望 `["patchouli:spotlight", "patchouli:spotlight"] * 5` 与 `!= 32` **原文保留在注释里**（未删）。
 _BG2_CHAPTERS = {
     "auxiliary_materials": ("mixed_crystal_pile", 2,
                             ["patchouli:spotlight", "patchouli:crafting"] * 2),
@@ -1573,7 +1586,7 @@ _BG2_CHAPTERS = {
                        ["patchouli:text", "patchouli:spotlight"]
                        + ["patchouli:spotlight", "patchouli:crafting"] * 8),
     "golden_knowledge": ("sturdygold_ingot", 4,
-                         ["patchouli:spotlight", "patchouli:spotlight"] * 5),
+                         ["patchouli:spotlight", "patchouli:spotlight"] * 4),
 }
 _bg2_pages_total = 0
 _bg2_recipe_refs = set()
@@ -1621,9 +1634,10 @@ for _cname, (_cicon, _csort, _cseq) in _BG2_CHAPTERS.items():
         _it = _pg.get("item")
         for _one in ([_it] if isinstance(_it, str) else (_it or [])):
             _bg2_item_refs.add(str(_one))
-if _bg2_pages_total != 32:
+if _bg2_pages_total != 30:
     _bgbook2_bad("bgbook2-chapter-pages",
-                 "三章合计应是 32 个 Patchouli 页（= 文档 2+9+5 = 16 行 × 2），实际 %d" % _bg2_pages_total)
+                 "三章合计应是 30 个 Patchouli 页（= 文档 2+9+4 = 15 行 × 2；"
+                 "§八 删掉了章3 的第 1 页 ⇒ 原期望 32 已作废），实际 %d" % _bg2_pages_total)
 _bg2_missing_recipes = sorted(
     _r for _r in _bg2_recipe_refs
     if not (_DATA / "bettergold" / "recipe" / (_r.split(":", 1)[1] + ".json")).is_file())
@@ -1640,9 +1654,13 @@ _bg2_missing_items = sorted(
 if _bg2_missing_items:
     _bgbook2_bad("bgbook2-item-refs",
                  "三章的图标引用了不存在的物品/方块（死链）：%s" % _bg2_missing_items[:5])
-if len(_bg2_item_refs) < 35:
+if len(_bg2_item_refs) != 19:
+    # ⚠ **§八 改变了这里的期望值**：章3 的第 1 页（两张轮换图标表 = 8 锭 + 8 模板）已删除 ⇒
+    #   唯一图标引用从 35 降到 **19**（章1 2 + 章2 9 + 章3 8）。旧阈值 35 原文保留在这里（未删）。
+    #   改成"恰好 19"比阈值更硬：任何"顺手加一个图标"都会当场红。
     _bgbook2_bad("bgbook2-item-refs",
-                 "三章只解析到 %d 个图标引用（应 35；反空转守护）" % len(_bg2_item_refs))
+                 "三章解析到 %d 个图标引用（应恰好 19；§八 删掉章3 第 1 页后由 35 降下来）"
+                 % len(_bg2_item_refs))
 
 # 逐字文案：**期望值来自冻结快照**（不是本脚本自己的表 —— 否则就是 §4 第 42 条那种空转）
 if not _BG2_SNAPSHOT.is_file():
@@ -2134,31 +2152,21 @@ _BG3_OLD_TEXT_KEYS = ["bettergold.handbook.page.knowledge_1_left",
 _BG3_ZH_E = _bgappend_jload(_BG3_ZH)
 _BG3_EN_E = _bgappend_jload(_BG3_EN)
 _BG3_PAGES = _BG3_ZH_E.get("pages") or []
-if len(_BG3_PAGES) != 10:
+# ⚠ **bg-book §八（2026-10-06）改变了本节的期望**：章3 的第 1 页（§七 改成"汇总页"的那一跨页）
+#   已被 §8.1 **整页删除** ⇒ 页数 10 → **8**。
+#   旧期望（原文保留，未删）与它下面那**六条**断言（`bgappend-book-k3-p1-ingots` /
+#   `-p1-ingot-title` / `-p1-summary` ×2 / `-p1-templates` / `-p1-template-title`）**已随该页作废**：
+#   它们守的两张轮换图标表（八族锭 / 八张升级模板）与两个标题现在**不该再出现在任何一页上**，
+#   改由 `[bgbook8-k3-p1-gone]`（bgbook8 段）用**负向**判据守住；上面 `_BG3_INGOT_IDS` /
+#   `_BG3_TEMPLATE_IDS` / `_BG3_INGOT_TITLE` / `_BG3_TEMPLATE_TITLE` 四个常量**原样保留**，
+#   正是给那条负向断言当"不该再出现"的清单用。
+#   旧代码形状（留档）：`if len(_BG3_PAGES) != 10: ... else: _p0, _p1 = _BG3_PAGES[0], _BG3_PAGES[1]`
+#   + 六条 `_bgappend_bad("bgappend-book-k3-p1-*", ...)`。
+if len(_BG3_PAGES) != 8:
     _bgappend_bad("bgappend-book-k3-pages",
-                  "章3（「贵金」的知识）的 Patchouli 页数不是 10（5 行 × 2；实际 %d）—— 反空转守护"
-                  % len(_BG3_PAGES))
+                  "章3（「贵金」的知识）的 Patchouli 页数不是 8（4 行 × 2；§八 删掉了第 1 页，"
+                  "旧期望 10 已作废；实际 %d）—— 反空转守护" % len(_BG3_PAGES))
 else:
-    # 第 1 页：左 = 八族**锭**的轮换表（§七.2），右 = 八族升级模板的轮换表（§七.4）
-    _p0, _p1 = _BG3_PAGES[0], _BG3_PAGES[1]
-    if _p0.get("item") != _BG3_INGOT_IDS:
-        _bgappend_bad("bgappend-book-k3-p1-ingots",
-                      "章3 第 1 页左页的图标不是「八族锭（按排版顺序）」（§七.2）：%r" % (_p0.get("item"),))
-    if _p0.get("title") != _BG3_INGOT_TITLE:
-        _bgappend_bad("bgappend-book-k3-p1-ingot-title",
-                      "章3 第 1 页左标题不是 %r（§七.2）：%r" % (_BG3_INGOT_TITLE, _p0.get("title")))
-    if _p0.get("text") != "bettergold.handbook.page.knowledge_1_summary":
-        _bgappend_bad("bgappend-book-k3-p1-summary",
-                      "章3 第 1 页（汇总页）的正文不是 knowledge_1_summary（§七.1）：%r" % (_p0.get("text"),))
-    if "text" in _p1:
-        _bgappend_bad("bgappend-book-k3-p1-summary",
-                      "章3 第 1 页右页不该有正文（§七.1 要求整页只留一句）：%r" % (_p1.get("text"),))
-    if _p1.get("item") != _BG3_TEMPLATE_IDS:
-        _bgappend_bad("bgappend-book-k3-p1-templates",
-                      "章3 第 1 页右页的图标不是「八族升级锻造模板」：%r" % (_p1.get("item"),))
-    if _p1.get("title") != _BG3_TEMPLATE_TITLE:
-        _bgappend_bad("bgappend-book-k3-p1-template-title",
-                      "章3 第 1 页右标题不是 %r（§七.4）：%r" % (_BG3_TEMPLATE_TITLE, _p1.get("title")))
     # §七.1：原来那两段长文案**不许再被任何一页引用**，也不许再出现在语言值里
     #   （键**留在 lang 里作历史留档**是允许的 —— 见该键注释；被引用/被复用才是回退）
     _bg3_refs = set()
@@ -2870,6 +2878,348 @@ for _needle, _why in (("bg-fix2", "docs/1.6-规格.md 里没有 bg-fix2 这一�
     if _needle not in _bgfix_spec:
         _bgfix2_bad("bgfix2-doc", "%s（缺 %s）" % (_why, _needle))
 
+# ==================== bg-book §八 追加轮（2026-10-06）：「装备的强化」9 章 ====================
+#
+# 需求：`开工需求\20261004-1733_bg-book_patchouli-handbook.md` 的 **§八**（`最后更新` 10-06 13:25）。
+# 三条口径（逐条都有出处）：
+#
+#   ① **每页 2 个配方是 Patchouli 的结构上限**（`PageDoubleRecipe` 只有 `recipe` / `recipe2`
+#      两个槽）⇒ §8.3~§8.10 的「后页…**按固定顺序挂 14 件**」= **门禁项**
+#      ⇒ 按作者 2026-10-04 亲自裁定的同一句话落成 **7 页 × 2 配方**（不是我们的退化方案）；
+#   ② 逐字文案的期望值来源 = **仓库内冻结快照**
+#      `tools/asset-generator/bgappend-requirements-snapshot/bg-book-8.md`
+#      （**不读**仓库外那份活页；口径见 §17.3.1 / `mcmod_experience` `ex\03` §3.10）；
+#   ③ 类别「装备的升级」⇒「**装备的强化**」：**id 与图标都不动**、只改显示名（值级更正），
+#      旧名值留在语言文件里作历史留档。
+#
+# ⚠ 另有 **1 条代码侧断言**（`[bgbook8-voodoo-poison-independent]`）：本轮由父代理授权**顺手修掉**
+#   的真 bug —— 巫毒金「穿满四件免疫中毒」原来**写在结雷金早退之后**、从未生效。
+bgbook8_problems: list[str] = []
+
+
+def _bgbook8_bad(tag: str, msg: str) -> None:
+    bgbook8_problems.append("%s [%s]" % (msg, tag))
+
+
+_BG8_SNAPSHOT = _BG2_SNAPSHOT_DIR / "bg-book-8.md"
+# 八族的**排版顺序**（= 作者给的章节顺序 = 生成器 `generate_handbook_data.py` 的 METALS 顺序）
+_BG8_METAL_ORDER = ["flamegold", "sturdygold", "thornsgold", "echogold",
+                    "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+_BG8_TEXT_LABELS = ("1_left", "1_right", "2_left")
+# 「后页」的 14 件**固定顺序**（§8.3 正文逐字给出；§8.12 第 2 条列为推断值）
+_BG8_FORGE_ORDER = ["sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe", "shovel",
+                    "hoe", "shield", "helmet", "chestplate", "leggings", "boots"]
+
+# ---------- 生成器覆盖（"每加一类东西问一句"）：两边的族清单 / 常量必须一致 ----------
+_BG8_GEN = _BGDOC_GEN
+if not _BG8_GEN.is_file():
+    _bgbook8_bad("bgbook8-generator", "读不到手册生成器：%s" % _BG8_GEN)
+else:
+    _bg8_gen_src = _BG8_GEN.read_text(encoding="utf-8")
+    _bg8_m = re.search(r"^METALS = \[(.*?)^\]", _bg8_gen_src, re.S | re.M)
+    if not _bg8_m:
+        _bgbook8_bad("bgbook8-generator", "读不到生成器的 METALS 清单（反空转守护）")
+    else:
+        _bg8_gen_order = re.findall(r'\("([a-z]+)",', _bg8_m.group(1))
+        if _bg8_gen_order != _BG8_METAL_ORDER:
+            _bgbook8_bad("bgbook8-generator",
+                         "生成器的 METALS 顺序 %s 与本关卡的排版顺序 %s 不一致（加/改族时只长一边）"
+                         % (_bg8_gen_order, _BG8_METAL_ORDER))
+        if len(_bg8_gen_order) != 8:
+            _bgbook8_bad("bgbook8-generator",
+                         "生成器的族数不是 8（实际 %d）—— 反空转守护" % len(_bg8_gen_order))
+    for _needle, _why in (("FORGE_ORDER = [", "生成器里没有 FORGE_ORDER（14 件固定顺序的真源）"),
+                          ("GEAR_BLANK_ROWS = [", "生成器里没有章1 的胚底配方表"),
+                          ("GEAR_CATEGORY = ", "生成器里没有 GEAR_CATEGORY"),
+                          ("RETIRED_ENTRIES", "生成器里没有把两个旧条目标成作废（RETIRED_ENTRIES）")):
+        if _needle not in _bg8_gen_src:
+            _bgbook8_bad("bgbook8-generator", _why)
+
+# ---------- ① 类别改名（id / 图标不动，只改显示名；旧名必须被替换） ----------
+_BG8_CAT_NAME_KEY = "bettergold.handbook.category.gear_upgrade.name"
+_BG8_CAT_ZH = _bgappend_jload(_ZH_BOOK / "categories" / "gear_upgrade.json")
+_BG8_CAT_EN = _bgappend_jload(_EN_BOOK / "categories" / "gear_upgrade.json")
+if (_BG8_CAT_ZH.get("sortnum"), _BG8_CAT_ZH.get("icon")) != (1, "bettergold:sturdygold_sword"):
+    _bgbook8_bad("bgbook8-gear-category",
+                 "「装备的强化」的 sortnum / 图标动了（应是 1 / bettergold:sturdygold_sword）：%r"
+                 % ((_BG8_CAT_ZH.get("sortnum"), _BG8_CAT_ZH.get("icon")),))
+for _e, _side in ((_BG8_CAT_ZH, "zh"), (_BG8_CAT_EN, "en")):
+    if _e.get("name") != _BG8_CAT_NAME_KEY:
+        _bgbook8_bad("bgbook8-gear-category", "%s 侧类别 name 不是 %s：%r"
+                     % (_side, _BG8_CAT_NAME_KEY, _e.get("name")))
+if zh.get(_BG8_CAT_NAME_KEY) != u"装备的强化":
+    _bgbook8_bad("bgbook8-gear-category",
+                 "类别中文名不是「装备的强化」（§8.1）：%r" % (zh.get(_BG8_CAT_NAME_KEY),))
+if zh.get(_BG8_CAT_NAME_KEY) == u"装备的升级":
+    _bgbook8_bad("bgbook8-gear-category", "类别中文名还是旧的「装备的升级」（§八 要求替换）")
+if not en.get(_BG8_CAT_NAME_KEY) or en.get(_BG8_CAT_NAME_KEY) == zh.get(_BG8_CAT_NAME_KEY):
+    _bgbook8_bad("bgbook8-gear-category",
+                 "类别英文名缺失或与中文逐字相同：%r" % (en.get(_BG8_CAT_NAME_KEY),))
+
+# ---------- ② 9 个章节条目：目录 / 图标 / sortnum / 页数 / 页型 / 配方逐条 ----------
+_BG8_CHAPTERS = (("linkage", "golden_mace_blank"),) + tuple(
+    (m, "%s_sword" % m) for m in _BG8_METAL_ORDER)
+_BG8_PAGES_TOTAL = 0
+_BG8_FORGE_REFS: set = set()
+_BG8_BLANK_REFS: set = set()
+for _idx, (_chap, _icon) in enumerate(_BG8_CHAPTERS):
+    _zh_p = _ZH_BOOK / "entries" / ("gear_%s.json" % _chap)
+    _en_p = _EN_BOOK / "entries" / ("gear_%s.json" % _chap)
+    if not _zh_p.is_file() or not _en_p.is_file():
+        _bgbook8_bad("bgbook8-chapters", "缺章节条目文件（zh/en 各需一份）：gear_%s" % _chap)
+        continue
+    _zh_e = json.loads(_zh_p.read_text(encoding="utf-8"))
+    _en_e = json.loads(_en_p.read_text(encoding="utf-8"))
+    if _zh_e.get("category") != "bettergold:gear_upgrade":
+        _bgbook8_bad("bgbook8-chapters",
+                     "gear_%s 不挂在「装备的强化」类别下：%r" % (_chap, _zh_e.get("category")))
+    if _zh_e.get("name") != "bettergold.handbook.entry.gear_%s" % _chap:
+        _bgbook8_bad("bgbook8-chapters",
+                     "gear_%s 的 name 不是 bettergold.handbook.entry.gear_%s" % (_chap, _chap))
+    if _zh_e.get("icon") != "bettergold:%s" % _icon:
+        _bgbook8_bad("bgbook8-chapters", "gear_%s 的封面图标不是 bettergold:%s：%r"
+                     % (_chap, _icon, _zh_e.get("icon")))
+    if _zh_e.get("sortnum") != _idx:
+        _bgbook8_bad("bgbook8-chapters", "gear_%s 的 sortnum 不是 %d" % (_chap, _idx))
+    if _zh_e.get("pages") != _en_e.get("pages"):
+        _bgbook8_bad("bgbook8-chapters", "gear_%s 的 zh/en 页列表不一致（结构必须双端相同）" % _chap)
+    _pages = _zh_e.get("pages") or []
+    _BG8_PAGES_TOTAL += len(_pages)
+    _want_count = 6 if _chap == "linkage" else 10
+    if len(_pages) != _want_count:
+        _bgbook8_bad("bgbook8-chapters",
+                     "gear_%s 的页数不是 %d（章1 = 3 文案 + 3 配方；八族 = 3 文案 + 7 锻造）：%d"
+                     % (_chap, _want_count, len(_pages)))
+        continue
+    _want_seq = ["patchouli:text"] * 3 + (["patchouli:crafting"] * 3 if _chap == "linkage"
+                                          else ["patchouli:smithing"] * 7)
+    _seq = [str(_p.get("type")) for _p in _pages]
+    if _seq != _want_seq:
+        _bgbook8_bad("bgbook8-page-types", "gear_%s 的页型序列不是 %s：%s" % (_chap, _want_seq, _seq))
+    for _i, _label in enumerate(_BG8_TEXT_LABELS):
+        _want_key = "bettergold.handbook.page.gear_%s_%s" % (_chap, _label)
+        if _pages[_i].get("text") != _want_key:
+            _bgbook8_bad("bgbook8-page-types", "gear_%s 第 %d 页的正文键不是 %s：%r"
+                         % (_chap, _i + 1, _want_key, _pages[_i].get("text")))
+    for _p in _pages:
+        for _overflow in ("recipe3", "recipe4", "recipes"):
+            if _overflow in _p:
+                _bgbook8_bad("bgbook8-page-types",
+                             "gear_%s 的页里出现 %s（Patchouli 只有 recipe / recipe2 两个槽）"
+                             % (_chap, _overflow))
+        if _p.get("type") not in _KNOWN_PAGE_TYPES:
+            _bgbook8_bad("bgbook8-page-types", "gear_%s 用了未知页面类型 %s" % (_chap, _p.get("type")))
+    if _chap == "linkage":
+        _want_blank = [("golden_mace_blank", "golden_trident_blank"),
+                       ("golden_bow_blank", "golden_crossbow_blank"),
+                       ("golden_shield_blank", None)]
+        for _i, (_a, _b) in enumerate(_want_blank):
+            _pg = _pages[3 + _i]
+            _want_a = "bettergold:%s" % _a
+            _want_b = ("bettergold:%s" % _b) if _b else None
+            if _pg.get("recipe") != _want_a or _pg.get("recipe2") != _want_b:
+                _bgbook8_bad("bgbook8-blank-recipes",
+                             "章1 第 %d 个配方页不是 (%s, %s)：%r" % (_i + 1, _want_a, _want_b, _pg))
+            # ⚠ 死链检查必须收集**页面上实际写的** id（不是期望值）—— 否则"把引用改成不存在的配方"
+            #   这条扰动会**打不中** `[bgbook8-recipe-refs]`（本轮扰动 P08 实测抓到的假绿）
+            for _rk in ("recipe", "recipe2"):
+                if isinstance(_pg.get(_rk), str):
+                    _BG8_BLANK_REFS.add(_pg[_rk])
+    else:
+        if len(_BG8_FORGE_ORDER) != 14:
+            _bgbook8_bad("bgbook8-forge-order",
+                         "FORGE_ORDER 不是 14 件（实际 %d）—— 反空转守护" % len(_BG8_FORGE_ORDER))
+        for _i in range(0, len(_BG8_FORGE_ORDER), 2):
+            _pg = _pages[3 + _i // 2]
+            _wa = "bettergold:smithing_%s_%s" % (_chap, _BG8_FORGE_ORDER[_i])
+            _wb = "bettergold:smithing_%s_%s" % (_chap, _BG8_FORGE_ORDER[_i + 1])
+            if _pg.get("recipe") != _wa or _pg.get("recipe2") != _wb:
+                _bgbook8_bad("bgbook8-forge-order",
+                             "gear_%s 的锻造页顺序不对：第 %d 页期望 (%s, %s)，实际 %r"
+                             % (_chap, _i // 2 + 1, _wa, _wb, _pg))
+            for _rk in ("recipe", "recipe2"):     # 同上：收集**实际**引用（死链检查用）
+                if isinstance(_pg.get(_rk), str):
+                    _BG8_FORGE_REFS.add(_pg[_rk])
+if _BG8_PAGES_TOTAL != 86:
+    _bgbook8_bad("bgbook8-chapters",
+                 "9 章合计页数不是 86（章1 6 + 八族 8×10）：%d —— 反空转守护" % _BG8_PAGES_TOTAL)
+if len(_BG8_FORGE_REFS) != 112:
+    _bgbook8_bad("bgbook8-forge-order",
+                 "锻造页的配方引用不是 8×14 = 112 条：%d —— 反空转守护" % len(_BG8_FORGE_REFS))
+if len(_BG8_BLANK_REFS) != 5:
+    _bgbook8_bad("bgbook8-blank-recipes",
+                 "章1 的胚底配方引用不是 5 条：%d —— 反空转守护" % len(_BG8_BLANK_REFS))
+_bg8_missing_recipes = sorted(
+    _r for _r in (_BG8_FORGE_REFS | _BG8_BLANK_REFS)
+    if not (_DATA / "bettergold" / "recipe" / (_r.split(":", 1)[1] + ".json")).is_file())
+if _bg8_missing_recipes:
+    _bgbook8_bad("bgbook8-recipe-refs",
+                 "§八 引用了不存在的配方（死链，游戏里那一页会空掉）：%s" % _bg8_missing_recipes[:5])
+
+# ---------- ③ 章3 第 1 页（§七 的汇总页）必须已经删除，且"作废"要能自证 ----------
+_bg8_all_pages = []
+for _e in _entries_now.values():
+    _bg8_all_pages.extend(_e.get("pages") or [])
+_bg8_stale_text = [p.get("text") for p in _bg8_all_pages
+                   if p.get("text") == "bettergold.handbook.page.knowledge_1_summary"]
+_bg8_stale_title = [p.get("title") for p in _bg8_all_pages
+                    if p.get("title") in (_BG3_INGOT_TITLE, _BG3_TEMPLATE_TITLE)]
+_bg8_stale_items = [p for p in _bg8_all_pages
+                    if p.get("item") in (_BG3_INGOT_IDS, _BG3_TEMPLATE_IDS)]
+if _bg8_stale_text or _bg8_stale_title or _bg8_stale_items:
+    _bgbook8_bad("bgbook8-k3-p1-gone",
+                 "§八 删掉的章3 第 1 页（§七 的汇总页）又回来了：text=%s title=%s 旧图标表=%d 页"
+                 % (_bg8_stale_text, _bg8_stale_title, len(_bg8_stale_items)))
+for _k in ("bettergold.handbook.page.knowledge_1_summary",):
+    # ⚠ **记账（以实际为准）**：`docs/1.6-规格.md` §17.1 写「`knowledge_1_left` / `knowledge_1_right`
+    #   两把键**留在语言文件里作历史留档**」，但**实测这两把键在两份语言文件里都不存在**
+    #   （`grep 'knowledge_1'` 只有 `knowledge_1_summary` 一条）⇒ 本断言只钉**确实存在**的那一把，
+    #   差异写进 §十九（不是本轮的改动，本轮没删过任何键）。
+    if _k not in zh or _k not in en:
+        _bgbook8_bad("bgbook8-k3-p1-gone", "历史留档键被删了（既定口径：原文不删）：%s" % _k)
+
+
+# ---------- ④ 逐字文案 + 语言键：期望值来自**仓库内冻结快照** ----------
+def _bg8_parse_snapshot() -> tuple:
+    """从冻结快照解析 (类别新名, [(章节 id, 章节名, {label: 逐字文案})])。
+
+    ⚠ 两处**解析形状**（都不是猜的）：
+      * markdown 表里的 `\\|` 是**转义竖线**（作者原文「更多锻造模板|重生」）——
+        必须先换哨兵再切列，否则那一行整体错位（本轮语言键注入脚本第一版就踩了）；
+      * 数据行判据 = 第一格是「1 左 / 1 右 / 2 左 / 2 右 / 3 左 / 3 右 / 后页」，
+        **不许**依赖"含不含某个字"（那是 §17.3.1 记的上一轮的坑）。
+    """
+    _lines = _BG8_SNAPSHOT.read_text(encoding="utf-8").split("\n")
+
+    def _clean(_c: str) -> str:
+        return re.sub(r"\*\*(.+?)\*\*", r"\1", _c.replace("\\|", "|")).strip()
+
+    _cat = ""
+    for _l in _lines:
+        if u"手册四类变为" in _l:
+            _names = [_clean(x) for x in _l.split(u"：", 1)[1].rstrip(u"。").split("/")]
+            if len(_names) == 4:
+                _cat = _names[1]
+    _out = []
+
+    def _table(_start: int):
+        _rows, _i = [], _start
+        while _i < len(_lines) and not _lines[_i].startswith("#### ") \
+                and not _lines[_i].startswith("##### "):
+            _l = _lines[_i]
+            if _l.startswith("|") and "|---" not in _l:
+                _safe = _l.replace("\\|", "\x01")
+                _cells = [c.replace("\x01", "|") for c in _safe.split("|")[1:-1]]
+                if len(_cells) >= 2:
+                    _rows.append((_cells[0].strip(), _cells[1]))
+            _i += 1
+        return _rows
+
+    for _i, _l in enumerate(_lines):
+        if re.match(r"^#### 8\.2 章节 1 · ", _l):
+            _m = re.match(r"^#### 8\.2 章节 1 · (.+?)（封面：", _l)
+            _rows = _table(_i + 1)
+            _texts = [c for (a, c) in _rows if a in (u"1 左", u"1 右", u"2 左")]
+            if _m and len(_texts) == 3:
+                _out.append(("linkage", _clean(_m.group(1)),
+                             dict(zip(_BG8_TEXT_LABELS, [_clean(t) for t in _texts]))))
+    _metal_at = [_i for _i, _l in enumerate(_lines) if re.match(r"^##### 章节 \d+ · ", _l)]
+    for _k, _i in enumerate(_metal_at):
+        _m = re.match(r"^##### 章节 \d+ · (.+?)（封面：", _lines[_i])
+        _rows = _table(_i + 1)
+        _texts = [c for (a, c) in _rows if a in (u"1 左", u"1 右", u"2 左")]
+        if _k < len(_BG8_METAL_ORDER) and _m and len(_texts) == 3:
+            _out.append((_BG8_METAL_ORDER[_k], _clean(_m.group(1)),
+                         dict(zip(_BG8_TEXT_LABELS, [_clean(t) for t in _texts]))))
+    return _cat, _out
+
+
+if not _BG8_SNAPSHOT.is_file():
+    _bgbook8_bad("bgbook8-texts-verbatim", "读不到冻结快照（逐字文案的期望值来源）：%s" % _BG8_SNAPSHOT)
+else:
+    _bg8_cat, _bg8_parsed = _bg8_parse_snapshot()
+    if _bg8_cat and _bg8_cat != zh.get(_BG8_CAT_NAME_KEY):
+        _bgbook8_bad("bgbook8-gear-category",
+                     "快照里的类别新名 %r 与语言文件里的 %r 不一致" % (_bg8_cat, zh.get(_BG8_CAT_NAME_KEY)))
+    if len(_bg8_parsed) != 9:
+        _bgbook8_bad("bgbook8-texts-verbatim",
+                     "从冻结快照解析到 %d 章（应 9 = 1 + 8；反空转守护）" % len(_bg8_parsed))
+    _bg8_texts, _bg8_bad_names = [], []
+    for _chap, _name, _texts in _bg8_parsed:
+        for _label in _BG8_TEXT_LABELS:
+            _k = "bettergold.handbook.page.gear_%s_%s" % (_chap, _label)
+            _v = _texts.get(_label, "")
+            _bg8_texts.append(_v)
+            if zh.get(_k) != _v:
+                _bgbook8_bad("bgbook8-texts-verbatim",
+                             "快照里的逐字文案没有按原样落在 %s 里（首 30 字：%s）" % (_k, _v[:30]))
+        _nk = "bettergold.handbook.entry.gear_%s" % _chap
+        if zh.get(_nk) != _name:
+            _bg8_bad_names.append((_nk, _name, zh.get(_nk)))
+    if _bg8_bad_names:
+        _bgbook8_bad("bgbook8-lang-bilingual",
+                     "章节名与快照标题不一致：%s" % (_bg8_bad_names[:2],))
+    if len(_bg8_texts) != 27 or sum(len(_t) for _t in _bg8_texts) < 1000:
+        _bgbook8_bad("bgbook8-texts-verbatim",
+                     "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 27 段 = 3 + 8×3、总字数 >= 1000；"
+                     "反空转守护）" % (len(_bg8_texts), sum(len(_t) for _t in _bg8_texts)))
+    _bg8_missing_texts = [_t for _t in _bg8_texts if _t not in set(zh.values())]
+    if _bg8_missing_texts:
+        _bgbook8_bad("bgbook8-texts-verbatim",
+                     "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
+                     % (len(_bg8_missing_texts), len(_bg8_texts), _bg8_missing_texts[0][:40]))
+    # 语言键：9 个条目名 + 27 段文案 = **36** 条，中英双端都要有（en 不许等于 zh、不许为空）
+    _bg8_keys = (["bettergold.handbook.entry.gear_%s" % _c for _c, _n, _t in _bg8_parsed]
+                 + ["bettergold.handbook.page.gear_%s_%s" % (_c, _l) for _c, _n, _t in _bg8_parsed
+                    for _l in _BG8_TEXT_LABELS])
+    if len(_bg8_keys) != 36:
+        _bgbook8_bad("bgbook8-lang-bilingual",
+                     "§八 的语言键清单是 %d 条（应 36 = 9 + 27；反空转守护）" % len(_bg8_keys))
+    for _k in _bg8_keys:
+        if _k not in zh or _k not in en:
+            _bgbook8_bad("bgbook8-lang-bilingual", "§八 语言键缺中文或英文：%s" % _k)
+        elif not en[_k].strip() or en[_k] == zh[_k]:
+            _bgbook8_bad("bgbook8-lang-bilingual",
+                         "§八 的英文值缺失或与中文逐字相同（作者只给了中文，需要忠实英译）：%s" % _k)
+
+# ---------- ⑤ 代码侧（父代理 2026-10-06 授权顺手修的真 bug）：巫毒整套免疫中毒必须**独立判定** ----------
+#  旧形状（原文留档）：结雷金先 `if (wornPieces(entity, family) < 4) return;`，
+#  巫毒那条 `wornPieces(entity, voodooFamily) >= 4` 写在它**之后** ⇒ 只穿满 4 件巫毒金时
+#  永远走不到，手册 §八 写的「全套巫毒金 ⇒ 免疫中毒」**从未实现**。
+#  现行形状：两条各自 `if (x != null && wornPieces(...) >= 4)`，方法体里**只许有 1 处 `return;`**
+#  （tickCount / 客户端那道早退）⇒ 任何一处改回 `< 4 ⇒ return` 都会当场红。
+_bg8_living_tick = method_body(_bgfix_mev, "public static void onLivingTick(")
+if not _bg8_living_tick:
+    _bgbook8_bad("bgbook8-voodoo-poison-independent", "找不到 onLivingTick 方法体（反空转守护）")
+else:
+    _bg8_guards = re.findall(r"wornPieces\(entity, \w+\)[^;\n]*", _bg8_living_tick)
+    if len(_bg8_guards) != 2:
+        _bgbook8_bad("bgbook8-voodoo-poison-independent",
+                     "onLivingTick 里的 wornPieces 判定不是 2 处（结雷金 / 巫毒金各一处；实际 %d）：%s"
+                     % (len(_bg8_guards), _bg8_guards))
+    for _g in _bg8_guards:
+        if ">= 4" not in _g:
+            _bgbook8_bad("bgbook8-voodoo-poison-independent",
+                         "整套类免疫用了早退形状（%r）—— 旧 bug 正是「结雷金 < 4 ⇒ return」"
+                         "把巫毒那条中毒免疫挡在后面；两条必须各判各的（if (x != null && ... >= 4)）" % _g)
+    for _needle in ("if (family != null && wornPieces(entity, family) >= 4)",
+                    "if (voodooFamily != null && wornPieces(entity, voodooFamily) >= 4)"):
+        if _needle not in _bg8_living_tick:
+            _bgbook8_bad("bgbook8-voodoo-poison-independent", "守卫不在位：%s" % _needle)
+    if _bg8_living_tick.count("return;") != 1:
+        _bgbook8_bad("bgbook8-voodoo-poison-independent",
+                     "onLivingTick 里的 return; 不是恰好 1 处（只许 tickCount / 客户端那道早退）：%d"
+                     % _bg8_living_tick.count("return;"))
+
+# ---------- ⑥ 文档侧：§八 的口径必须落档 ----------
+for _needle, _why in ((u"bg-book §八", "docs/1.6-规格.md 里没有 bg-book §八 这一轮的节"),
+                      (u"后页 = 7 页 × 2 配方", "没写明门禁项的落法（14 件 = 7 页 × 2 配方）"),
+                      (u"以实际为准", "没写明 §8.11 十六条的处置口径（以实际为准 + 代码侧待办）"),
+                      (u"代码侧待办", "没列代码侧待办"),
+                      (u"巫毒", "没写第 8 条那个真 bug（巫毒整套免疫中毒）的修法与 A 级对照")):
+    if _needle not in _bgfix_spec:
+        _bgbook8_bad("bgbook8-doc", "%s（缺 %s）" % (_why, _needle))
+
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
 print(f"bg-book 帕秋莉手册问题: {len(bgbook_problems)} {bgbook_problems[:8]}"
       f"（手册 {len(_entries_now)} 条目 / {_total_pages} 页 / {len(_recipe_refs)} 条配方引用）")
@@ -2882,9 +3232,12 @@ print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级�
       f"{len(bgfinal_problems)} {bgfinal_problems[:8]}")
 print(f"bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: "
       f"{len(bgfix2_problems)} {bgfix2_problems[:8]}")
+print(f"bg-book §八 追加轮（「装备的强化」9 章 / 类别改名 / 巫毒整套免疫中毒）问题: "
+      f"{len(bgbook8_problems)} {bgbook8_problems[:8]}"
+      f"（9 章 {_BG8_PAGES_TOTAL} 页 / 锻造引用 {len(_BG8_FORGE_REFS)} 条 / 胚底引用 {len(_BG8_BLANK_REFS)} 条）")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
-               or bgfinal_problems or bgappend_problems or bgfix2_problems
+               or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
                or symmetric_problems or beacon_problems) else 0)

@@ -1,0 +1,56 @@
+{
+  "name": "bettergold.handbook.entry.gear_thornsgold",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:thornsgold_sword",
+  "sortnum": 3,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_thornsgold_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_thornsgold_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_thornsgold_2_left"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_sword",
+      "recipe2": "bettergold:smithing_thornsgold_mace"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_trident",
+      "recipe2": "bettergold:smithing_thornsgold_bow"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_crossbow",
+      "recipe2": "bettergold:smithing_thornsgold_axe"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_pickaxe",
+      "recipe2": "bettergold:smithing_thornsgold_shovel"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_hoe",
+      "recipe2": "bettergold:smithing_thornsgold_shield"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_helmet",
+      "recipe2": "bettergold:smithing_thornsgold_chestplate"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_thornsgold_leggings",
+      "recipe2": "bettergold:smithing_thornsgold_boots"
+    }
+  ]
+}

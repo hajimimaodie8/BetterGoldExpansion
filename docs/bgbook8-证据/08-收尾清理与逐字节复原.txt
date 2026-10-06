@@ -1,0 +1,26 @@
+bg-book §八 收尾清理与逐字节复原
+
+探针（整块删除，绝不递归删 probe/）：
+   src/main/java/com/hjmmd_8/bettergold/probe/bgbook8/{BgBook8Probe,BgBook8ClientProbe}.java
+   ⇒ 该目录（以及其上的 probe/）本轮创建、本轮删除；grep PROBE 别名零命中
+开关文件：run/bgbook8-probe.enabled、run/bgbook8c-probe.enabled（已删）
+探针世界：run/bgbook8probe（专用服务端造的世界）、run/saves/bgbook8cprobe（复制进 saves 的那份）—— 都已删
+临时改过的共享文件（逐字节复原 + SHA256 相中）：
+   src/main/java/com/hjmmd_8/bettergold/bettergold.java
+       跑测前 E2C293DA27E15943BA6221A5DEB54D941A91E8CEBEA7F4175CB6A3C72FD3FC9B（9,392 B）
+       收尾后 同值（临时注册两行已摘掉）
+   run/server.properties
+       目标 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4（1,440 B）
+       ⇒ 临时改 level-name=bgbook8probe 后，服务器**自己重写了头部时间戳行**
+         （收尾实测 0DB6AF19…，与 §18.6 记的同一种现象）
+       ⇒ 按 §18.6 第 6 条的抢救法：以目标 SHA256 为准、对头部那一行做穷举
+         （2026-09-25~10-08 逐秒），命中 `#Mon Oct 05 17:40:32 CST 2026`
+         ⇒ 逐字节复原成功、SHA256 回到 A2229937…（脚本副本见 09）
+   build/moddev/clientRunProgramArgs.txt
+       目标 A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB（394 B）
+       ⇒ 临时贴过 --quickPlaySingleplayer（478 B，1BC4B4ED…）；
+         **Gradle 每次跑完都会把它重写回 394 B 的规范形态** ⇒ 收尾核对 = A365A5ED… ✓
+         ⚠ 教训：这份文件必须**每次 runClient 之前重新贴**（Gradle 会覆盖），否则客户端只停在标题界面
+作者的 run/saves/新的世界：29 个文件、mtime 全停 2026-10-04 21:30:01 —— 全程未打开、未写入
+forceload：探针里一次都没加；check_forced_chunks.py（收尾）exit 0，data.Forced = []
+生产代码 halt( 零命中（收尾 grep）；jar 内 *Probe* 0 / 含 halt 字节的 class 0（check_jar_clean exit 0）

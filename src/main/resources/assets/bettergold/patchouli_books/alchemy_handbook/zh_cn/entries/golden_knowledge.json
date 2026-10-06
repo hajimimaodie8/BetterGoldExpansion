@@ -8,35 +8,6 @@
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:flamegold_ingot",
-        "bettergold:sturdygold_ingot",
-        "bettergold:thornsgold_ingot",
-        "bettergold:echogold_ingot",
-        "bettergold:indigoseagold_ingot",
-        "bettergold:voodoogold_ingot",
-        "bettergold:thundergold_ingot",
-        "bettergold:illusiongold_ingot"
-      ],
-      "text": "bettergold.handbook.page.knowledge_1_summary",
-      "title": "各种各样的\"贵金\"锭"
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": [
-        "bettergold:flamegold_upgrade_template",
-        "bettergold:sturdygold_upgrade_template",
-        "bettergold:thornsgold_upgrade_template",
-        "bettergold:echogold_upgrade_template",
-        "bettergold:indigoseagold_upgrade_template",
-        "bettergold:voodoogold_upgrade_template",
-        "bettergold:thundergold_upgrade_template",
-        "bettergold:illusiongold_upgrade_template"
-      ],
-      "title": "\"贵金\"装备的升级锻造模版"
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": [
         "bettergold:flamegold_bricks"
       ],
       "text": "bettergold.handbook.page.knowledge_2_left"

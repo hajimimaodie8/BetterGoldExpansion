@@ -1844,22 +1844,50 @@ public final class MetalEvents {
         }
     }
 
-    /** 结雷金穿满四件：完全免疫虚弱与颤栗（每 tick 清一次，等价于免疫） */
+    /**
+     * 盔甲的「穿满四件」类免疫，**两条互相独立**（各判各的）：
+     *
+     * <ul>
+     *   <li>① <b>结雷金</b>穿满四件：完全免疫虚弱与颤栗（每 10 tick 清一次，等价于免疫）；</li>
+     *   <li>② <b>巫毒金</b>穿满四件：完全免疫中毒。</li>
+     * </ul>
+     *
+     * <p>⚠ <b>被本轮（bg-book §八）修掉的旧口径 —— 原文保留、未删</b>：巫毒那条判定原来
+     * <b>写在结雷金的早退之后</b>，形状是</p>
+     *
+     * <pre>
+     * var family = MetalFamily.byId(THUNDER_ID);
+     * if (family == null || wornPieces(entity, family) &lt; 4) {
+     *     return;                       // &lt;-- 结雷金没穿满四件就在这里返回了
+     * }
+     * ...
+     * if (voodooFamily != null &amp;&amp; wornPieces(entity, voodooFamily) &gt;= 4) {
+     *     entity.removeEffect(MobEffects.POISON);
+     * }
+     * </pre>
+     *
+     * <p>⇒ <b>只穿满 4 件巫毒金完全不生效</b>（必须<u>同时</u>穿满 4 件结雷金才会走到那一句）——
+     * 手册 §八 写的「全套巫毒金 ⇒ 免疫中毒」因此<b>从未实现</b>（A 级正负对照见
+     * {@code docs/bgbook8-证据/}）。两条效果本来<b>互不依赖</b>，修法就是各判各的
+     * （最小改动：把「<code>&lt; 4 ⇒ return</code>」改成对结雷金那一组加条件，不重构别的）。</p>
+     */
     @SubscribeEvent
     public static void onLivingTick(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
         var entity = event.getEntity();
         if (entity.tickCount % 10 != 0 || entity.level().isClientSide) {
             return;
         }
+        // ① 结雷金穿满四件：完全免疫虚弱与颤栗
         var family = MetalFamily.byId(THUNDER_ID);
-        if (family == null || wornPieces(entity, family) < 4) {
-            return;
+        if (family != null && wornPieces(entity, family) >= 4) {
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.WEAKNESS);
+            entity.removeEffect(com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE);
         }
-        entity.removeEffect(net.minecraft.world.effect.MobEffects.WEAKNESS);
-        entity.removeEffect(com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE);
+        // ② 巫毒金穿满四件：完全免疫中毒（**独立判定**——
+        //    ⚠ 不许再把它挂在①的早退之后，那会让"只穿满巫毒金"静默失效，见上面的旧口径块）
         var voodooFamily = MetalFamily.byId(VOODOO_ID);
         if (voodooFamily != null && wornPieces(entity, voodooFamily) >= 4) {
-            entity.removeEffect(net.minecraft.world.effect.MobEffects.POISON);   // 全套巫毒金：免疫中毒
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.POISON);
         }
     }
 

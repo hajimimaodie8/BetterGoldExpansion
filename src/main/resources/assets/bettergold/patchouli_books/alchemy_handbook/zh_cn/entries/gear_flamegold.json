@@ -1,0 +1,56 @@
+{
+  "name": "bettergold.handbook.entry.gear_flamegold",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:flamegold_sword",
+  "sortnum": 1,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_flamegold_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_flamegold_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_flamegold_2_left"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_sword",
+      "recipe2": "bettergold:smithing_flamegold_mace"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_trident",
+      "recipe2": "bettergold:smithing_flamegold_bow"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_crossbow",
+      "recipe2": "bettergold:smithing_flamegold_axe"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_pickaxe",
+      "recipe2": "bettergold:smithing_flamegold_shovel"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_hoe",
+      "recipe2": "bettergold:smithing_flamegold_shield"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_helmet",
+      "recipe2": "bettergold:smithing_flamegold_chestplate"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_flamegold_leggings",
+      "recipe2": "bettergold:smithing_flamegold_boots"
+    }
+  ]
+}
