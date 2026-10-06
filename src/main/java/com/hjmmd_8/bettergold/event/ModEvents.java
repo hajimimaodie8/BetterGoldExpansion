@@ -349,11 +349,58 @@ public class ModEvents {
         float chance = 0.06F + 0.06F * fortune;
         if (random.nextFloat() < chance && !event.getDrops().isEmpty()) {
             int count = 1 + fortune / 2;
-            event.getDrops().clear();
-            event.setDroppedExperience(0);
+            // ---------- bg-book §九（2026-10-06 20:02）§9.7：两类方块**只掉尘埃、不就地转换** ----------
+            //
+            // 作者原话：「顺便再让古董工具挖掘下界合金块与各种贵金建筑方块时不会直接就地转化为
+            // 下界合金尘埃，但尘埃该掉落的还是会掉落」。
+            //
+            // <b>完整判据</b>（= 本轮写进 `docs/1.6-规格.md` §21 的那份公式）：
+            // <ol>
+            //   <li><b>转换</b> = 清空 {@code event.getDrops()} + 经验置 0（把方块本身变成尘埃）；</li>
+            //   <li><b>掉落</b> = 额外生成 {@code count} 个下界合金尘埃
+            //       —— 与 ① 在**同一次**「6% + 6%×时运」判定里；</li>
+            //   <li><b>例外集合 E</b> = {@code minecraft:netherite_block}
+            //       ∪ 八族**建材**（{@code MetalFamily.of(block) != null} = 该族 {@code allBlocks}
+            //       的 11 种形态：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼）；</li>
+            //   <li>对 E：<b>关掉 ①、保留 ②</b>（方块照常掉自己 + 额外掉尘埃）；
+            //       对非 E（例如石头）：① ② 都保留 —— 与改前**逐位一致**（随机数序列不动）。</li>
+            // </ol>
+            //
+            // ⚠ <b>改前 ① 与 ② 是同一个入口</b>（判定没中就什么都不发生、判定命中就"清空 + 掉尘埃"）
+            //   ⇒ §9.7 的「拆开」按**最小改动**落：只把 {@code clear()} 那两行放进 {@code if (!exempt)}，
+            //   判定本身、数量公式、随机数调用顺序**一个字都不动**。
+            // ⚠ <b>旧口径就地标注</b>：改前那版（无条件清空）原文保留在上面的注释里（本段不删那句
+            //   「6%（+时运）概率把掉落物替换成下界合金尘埃」），它是"普通方块"分支的现行口径。
+            // ⚠ `!event.getDrops().isEmpty()` 这道既有守卫**原样保留**（最小改动）：
+            //   对 E 而言"掉落为空的方块"本来就不存在（下界合金块与贵金建材都能正常掉落自己）。
+            boolean conversionExempt = isDustConversionExempt(event.getState());
+            if (!conversionExempt) {
+                event.getDrops().clear();
+                event.setDroppedExperience(0);
+            }
             dropItem(level, event.getPos().getX() + 0.5D, event.getPos().getY() + 0.5D, event.getPos().getZ() + 0.5D,
                     new ItemStack(AllItems.NETHERITE_DUST.get(), count));
         }
+    }
+
+    /**
+     * <b>bg-book §9.7 的例外集合 E</b>：这两类方块**不就地转换为下界合金尘埃**（但尘埃照掉）。
+     *
+     * <ul>
+     *   <li>{@code minecraft:netherite_block}（下界合金块）；</li>
+     *   <li>八族「贵金」**建筑方块**的全部 11 种形态 ——
+     *       判据直接用 {@link com.hjmmd_8.bettergold.material.MetalFamily#of(net.minecraft.world.level.block.Block)}
+     *       的家族索引（它由每族 {@code allBlocks} 建立，正好是那 11 种），
+     *       <b>不写死清单</b>：以后再加一族金属，它的建材自动进 E
+     *       （写死清单就是 AGENTS 红线 2「生成器清单漏项」的同一种形态）。</li>
+     * </ul>
+     *
+     * <p>验收（A 级，见 {@code docs/bgbook9-证据/}）：① 古董工具挖下界合金块 ⇒ 方块照常掉自己、
+     * 不变成尘埃，但仍有几率额外掉尘埃；② 对各贵金建筑方块同样；③ 对普通方块（石头）⇒ 转换照旧。</p>
+     */
+    private static boolean isDustConversionExempt(net.minecraft.world.level.block.state.BlockState state) {
+        return state.is(net.minecraft.world.level.block.Blocks.NETHERITE_BLOCK)
+                || com.hjmmd_8.bettergold.material.MetalFamily.of(state.getBlock()) != null;
     }
 
     /** 攻击型：下界合金古董的剑/斧/刀（非镐/锹/锄即视为剑斧刀，含农夫乐事小刀） */

@@ -1,0 +1,38 @@
+﻿BG9C armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+BG9C readout books=1 keys=[bettergold:alchemy_handbook]
+BG9C CHECK book_registered PASS
+BG9C CHECK book_contents_no_error PASS
+BG9C readout errored=false exception=null
+BG9C readout categories=4 order=[alchemy_start, gear_upgrade, golden_feast, merchant_antiques]
+BG9C CHECK book_categories_four PASS
+BG9C CHECK book_category_order PASS
+BG9C readout entries=18 pages=157
+BG9C CHECK book_entries_eighteen PASS
+BG9C CHECK book_total_pages_157 PASS
+BG9C CHECK s9_entry_merchant_intro_pages_3 PASS
+BG9C CHECK s9_entry_merchant_gift_box_pages_7 PASS
+BG9C CHECK s9_entry_merchant_antique_gear_pages_10 PASS
+BG9C CHECK s9_three_entries_ok PASS
+BG9C readout spotlight item="bettergold:gift_gold_ticket" stacks=1 empty=0
+BG9C readout spotlight item="bettergold:treasure_gift_box" stacks=1 empty=0
+BG9C readout spotlight item="bettergold:curio_box" stacks=1 empty=0
+BG9C readout spotlight item="bettergold:unwanted_antique" stacks=1 empty=0
+BG9C readout spotlight item="bettergold:idol_gift_box" stacks=1 empty=0
+BG9C readout spotlight item="bettergold:gourmet_box" stacks=1 empty=0
+BG9C readout spotlight item="bettergold:alchemy_materials_box" stacks=1 empty=0
+BG9C readout spotlight item=["bettergold:antique_sword","bettergold:antique_axe","bettergold:antique_pickaxe","bettergold:antique_shovel","bettergold:antique_hoe","bettergold:antique_knife"] stacks=6 empty=0
+BG9C readout spotlight item=["bettergold:netherite_antique_sword","bettergold:netherite_antique_knife"] stacks=2 empty=0
+BG9C readout spotlight item=["bettergold:netherite_antique_axe","bettergold:netherite_antique_pickaxe","bettergold:netherite_antique_shovel","bettergold:netherite_antique_hoe"] stacks=4 empty=0
+BG9C readout s9_text_keys=18 unresolved=0 {}
+BG9C readout s9_recipe_refs=11 missing=[]
+BG9C readout s9_item_refs=19 missing=[]
+BG9C CHECK s9_texts_translated FAIL
+BG9C CHECK s9_recipes_resolved PASS
+BG9C CHECK s9_items_resolved PASS
+BG9C readout book_recipe_refs=152 missing=[]
+BG9C CHECK book_recipe_refs_all_resolved PASS
+BG9C readout unresolved_names=0
+BG9C CHECK book_entry_names_translated PASS
+BG9C readout use_item_sent mainhand=bettergold:alchemy_student_handbook
+BG9C CHECK handbook_item_resolves PASS
+BG9C SUMMARY pass=15 fail=1 ticks=60

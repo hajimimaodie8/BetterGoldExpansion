@@ -1,0 +1,51 @@
+== 一、临时改动逐字节复原（目标哈希 vs 现在）==
+build.gradle                                         OK  want=2aac7860e5b1 got=2aac7860e5b1
+src/main/java/com/hjmmd_8/bettergold/bettergold.java OK  want=e2c293da27e1 got=e2c293da27e1
+run/server.properties                                OK  want=a2229937ba8a got=a2229937ba8a
+build/moddev/clientRunProgramArgs.txt                OK  want=a365a5edf7ab got=a365a5edf7ab
+
+== 二、探针是否清干净 ==
+probe/ 目录存在？ False
+run/*.enabled 数量 = 0
+源码里 BG9P/BG9C/bgbook9 命中： 'src\\main\\java\\com\\hjmmd_8\\bettergold\\event\\ModEvents.java'
+run/saves 内容 = ['新的世界']
+
+== 三、本轮改动的文件（sha256）==
+2b393188d6bc57f0d03998e772c808d0b36b62dada12203eddc846dbc0a6b243  10235  tools/asset-generator/bgappend-requirements-snapshot/bg-book-9.md
+03b18aef51355eae567cdf40d22c31d19547f9bbde2153986c42bac6ef9ac597  38081  tools/asset-generator/generate_handbook_data.py
+a3af4b2f95b8220496e0d43ba18f6cea3922e597cb5856d7a642838853a57b7d  257260  tools/asset-generator/validate_metal_data.py
+601cb17d152e3c2e0c56ff161160b5ded019c3d7a4d52ee3d5b9afb7d12b4585  49289  src/main/java/com/hjmmd_8/bettergold/event/ModEvents.java
+4dd6964ce7d6b2f36056d13f694bbc08cfbb4bbfe792b6e72eb31fe05caeab22  63536  src/main/resources/assets/bettergold/lang/zh_cn.json
+26c9e0d3c8ec5bd4915d8adbd4213f1661d13ae38f053f394fd46e64e9a313cf  66617  src/main/resources/assets/bettergold/lang/en_us.json
+ac4c6f37d9fe2573aced67b8a4c5481b693d5b257f2aae1829eb4e30f80ed348  318321  docs/1.6-规格.md
+
+== 四、手册产物自证 ==
+zh_cn 条目数 = 18（auxiliary_materials, core_materials, gear_echogold, gear_flamegold, gear_illusiongold, gear_indigoseagold, gear_linkage, gear_sturdygold, gear_thornsgold, gear_thundergold, gear_voodoogold, golden_feast, golden_knowledge, merchant_antique_gear, merchant_gift_box, merchant_intro, metal_tour, upgrade_templates）
+merchant_intro         pages=3 type_seq=['patchouli:text', 'patchouli:crafting', 'patchouli:spotlight']
+merchant_gift_box      pages=7 type_seq=['patchouli:text', 'patchouli:spotlight', 'patchouli:spotlight', 'patchouli:spotlight', 'patchouli:spotlight', 'patchouli:spotlight', 'patchouli:spotlight']
+merchant_antique_gear  pages=10 type_seq=['patchouli:spotlight', 'patchouli:smithing', 'patchouli:smithing', 'patchouli:smithing', 'patchouli:smithing', 'patchouli:spotlight', 'patchouli:spotlight', 'patchouli:text', 'patchouli:crafting', 'patchouli:text']
+旧占位 merchant.json    存在？ False
+旧占位 antiques.json    存在？ False
+
+== 五、证据文件 ==
+  01-关卡扰动实测.txt  (2535 B)
+  02-B级构建与六校验器.txt  (10506 B)
+  03-A级-runServer-不就地转换与礼物盒抽样.txt  (2826 B)
+  04-A级-runClient-手册内容树.txt  (2345 B)
+  04b-A级-runClient-第一轮用例错留档.txt  (2332 B)
+  05-扰动脚本副本.py  (11832 B)
+  06-语言键注入脚本副本.py  (15175 B)
+  07-快照搬运脚本副本.py  (7862 B)
+  08-收尾清理与逐字节复原.txt  (1348 B)
+  09-跑测临时改动脚本副本.py  (2832 B)
+  10-逐文件SHA256-manifest脚本.py  (2770 B)
+  11-探针源码副本-BgBook9ClientProbe.txt  (14493 B)
+  11-探针源码副本-BgBook9Probe.txt  (14028 B)
+  12-行尾与哈希实测.txt  (2752 B)
+  13-扰动前manifest.txt  (7848 B)
+  14-作者存档改前清单.txt  (3197 B)
+  15-回退改写脚本副本.py  (2508 B)
+  16-行尾与哈希实测脚本副本.py  (1560 B)
+  17-server.properties头部复原脚本.py  (2856 B)
+  18-收尾脚本副本.py  (6017 B)
+  19-证据收集脚本副本.py  (2155 B)

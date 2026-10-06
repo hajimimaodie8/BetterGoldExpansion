@@ -1,0 +1,23 @@
+{
+  "name": "bettergold.handbook.entry.merchant_intro",
+  "category": "bettergold:merchant_antiques",
+  "icon": "bettergold:gold_exchange_counter",
+  "sortnum": 0,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.merchant_intro_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:gold_exchange_counter",
+      "text": "bettergold.handbook.page.merchant_intro_1_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:gift_gold_ticket",
+      "text": "bettergold.handbook.page.merchant_intro_2_left"
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+﻿=== bg-book §九 B 级：compileJava / runData / processResources jar --rerun-tasks ===
+Calculating task graph as configuration cache cannot be reused because file 'build.gradle' has changed.
+BUILD SUCCESSFUL in 2s
+compileJava exit=0
+[21:25:43] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main;bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main from env
+[21:25:43] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{bettergold=[E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main, E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main]}]
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main;bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main from env
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{bettergold=[E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main, E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main]}]
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.ta.CommonDevLaunchHandler/]: Launching with NeoForge from E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.UniqueModListBuilder/]: Found 2 mods for first modid neoforge, selecting most recent based on version data
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.UniqueModListBuilder/]: Selected file neoforge-21.1.228.jar for modid neoforge with version 21.1.228
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar with languages [LanguageSpec[languageName=minecraft, acceptedVersions=1]]
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main with languages [LanguageSpec[languageName=javafml, acceptedVersions=[1,)]]
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[21:25:44] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[3,]]]
+[21:25:53] [modloading-worker-0/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+[21:25:53] [modloading-worker-0/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+[21:25:53] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.data.DataGenerators for @SubscribeEvent-annotated methods
+[21:25:53] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/data/DataGenerators; to the mod event bus of mod farmersdelight
+[21:25:55] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[21:25:55] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[21:25:55] [main/INFO] [minecraft/DataGenerator]: All providers took: 0 ms
+BUILD SUCCESSFUL in 16s
+runData exit=0
+Loaded 145 artifacts from E:\mc\mcmod\bettergold-template-1.21.1\build\tmp\createMinecraftArtifacts\nfrt_artifact_manifest.properties
+BUILD SUCCESSFUL in 19s
+jar exit=0
+
+=== 六校验器 ===
+----- validate_metal_data.py exit=0 -----
+bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: 0 []
+bg-book §八 追加轮（「装备的强化」9 章 / 类别改名 / 巫毒整套免疫中毒）问题: 0 []（9 章 86 页 / 锻造引用 112 条 / 胚底引用 5 条）
+bg-book §九 追加轮（「商人与古董」3 章 / §9.7 不就地转换 / 空引号占位）问题: 0 []（3 章 20 页 / 配方引用 11 条 / 图标引用 19 个）
+----- validate_metal_assets.py exit=0 -----
+echogold     item=29  block=10  armor=2
+bg-16 授权贴图（golden_trident_blank）问题: 0 []
+bgfinal3 授权色卡（靛海金纹饰）问题: 0 []
+----- validate_trim_assets.py exit=0 -----
+
+[写出] E:\mc\mcmod\bettergold-template-1.21.1\build\p15fix-asset-audit.txt
+OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+----- validate_advancements.py exit=0 -----
+OK [bgach] 树：根 5 孩子、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；1 条 challenge
+OK [bgach] 物品引用 118 个全部存在于注册表真源；食物清单与 Java 真源逐条一致
+OK [bgfinal-adv-lang] 102 条英文值全部是真英译（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 0 条）
+----- check_jar_clean.py exit=0 -----
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2390
+----- check_forced_chunks.py exit=0 -----
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True
+
+
+=== 收尾后最终复跑（spec/回流 定稿之后）===
+
+
+=== 收尾后最终复跑（spec / 经验回流 定稿之后）
+validate_metal_data.py exit=0
+检查语言键 307 个（8 套金属的全部物品与方块 + 5 件胚底）
+缺中文: 0 []
+缺英文: 0 []
+缺战利品表: 0 []
+小刀标签缺成员: 0 []
+武器附魔标签缺成员/多余胚底: 0 []
+bg-15w 续工轮（tooltip 键 + 双向条件配方 + 胚底条件可见）问题: 0 []
+装备分区顺序（§9.1 更正 §8.1）问题: 0 []
+游泳速度 SWIM_SPEED（§8.3 新口径）问题: 0 []
+bg-15w §八 追加轮② 问题合计: 0 []
+六套金属标签一致性（34 个标签 × 8 套金属）问题: 0 []
+信标基座标签 #minecraft:beacon_base_blocks 问题: 0 []
+  （期望 26 条 = 六套金属 × 3 + 2 条金系；实际有效成员 26 条）
+§9.2 重复原料配方（六套各一张 + 三张 legacy 必须消失）问题: 0 []
+§9.3 靛海金器具免水下挖掘惩罚问题: 0 []
+bg-15w §九 追加轮③ 问题合计: 0 []
+bgfinal3 三条裁定（靛海金文档口径 / 手册任意一件 / 金胡萝卜 placed_block）问题: 0 []
+bg-16 两处修正（横幅落点 / 安抚对玩家）问题: 0 []
+bg-book 帕秋莉手册问题: 0 []（手册 18 条目 / 157 页 / 152 条配方引用）
+bg-book §六 追加轮（三章逐页补全）问题: 0 []（三章 30 页 / 16 条配方引用 / 19 个图标引用）
+bg-append 追加轮（手册七处修正 / 声波音效 / 配置汉化 / 金玫瑰丛）问题: 0 []
+bg-fix 1.6 七条修正问题: 0 []
+bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: 0 []
+bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: 0 []
+bg-book §八 追加轮（「装备的强化」9 章 / 类别改名 / 巫毒整套免疫中毒）问题: 0 []（9 章 86 页 / 锻造引用 112 条 / 胚底引用 5 条）
+bg-book §九 追加轮（「商人与古董」3 章 / §9.7 不就地转换 / 空引号占位）问题: 0 []（3 章 20 页 / 配方引用 11 条 / 图标引用 19 个）
+
+
+=== 收尾后最终复跑（spec/回流 定稿之后）===
+validate_metal_data.py exit=0
+检查语言键 307 个（8 套金属的全部物品与方块 + 5 件胚底）
+缺中文: 0 []
+缺英文: 0 []
+缺战利品表: 0 []
+小刀标签缺成员: 0 []
+武器附魔标签缺成员/多余胚底: 0 []
+bg-15w 续工轮（tooltip 键 + 双向条件配方 + 胚底条件可见）问题: 0 []
+装备分区顺序（§9.1 更正 §8.1）问题: 0 []
+游泳速度 SWIM_SPEED（§8.3 新口径）问题: 0 []
+bg-15w §八 追加轮② 问题合计: 0 []
+六套金属标签一致性（34 个标签 × 8 套金属）问题: 0 []
+信标基座标签 #minecraft:beacon_base_blocks 问题: 0 []
+  （期望 26 条 = 六套金属 × 3 + 2 条金系；实际有效成员 26 条）
+§9.2 重复原料配方（六套各一张 + 三张 legacy 必须消失）问题: 0 []
+§9.3 靛海金器具免水下挖掘惩罚问题: 0 []
+bg-15w §九 追加轮③ 问题合计: 0 []
+bgfinal3 三条裁定（靛海金文档口径 / 手册任意一件 / 金胡萝卜 placed_block）问题: 0 []
+bg-16 两处修正（横幅落点 / 安抚对玩家）问题: 0 []
+bg-book 帕秋莉手册问题: 0 []（手册 18 条目 / 157 页 / 152 条配方引用）
+bg-book §六 追加轮（三章逐页补全）问题: 0 []（三章 30 页 / 16 条配方引用 / 19 个图标引用）
+bg-append 追加轮（手册七处修正 / 声波音效 / 配置汉化 / 金玫瑰丛）问题: 0 []
+bg-fix 1.6 七条修正问题: 0 []
+bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: 0 []
+bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: 0 []
+bg-book §八 追加轮（「装备的强化」9 章 / 类别改名 / 巫毒整套免疫中毒）问题: 0 []（9 章 86 页 / 锻造引用 112 条 / 胚底引用 5 条）
+bg-book §九 追加轮（「商人与古董」3 章 / §9.7 不就地转换 / 空引号占位）问题: 0 []（3 章 20 页 / 配方引用 11 条 / 图标引用 19 个）

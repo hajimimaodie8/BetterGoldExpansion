@@ -1,0 +1,48 @@
+﻿BG9P armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+BG9P readout levelName=bgbook9probe (worldDir should be bgbook9probe)
+BG9P CHECK probe_world_guard PASS
+BG9P readout family_building_blocks=88 expected=88
+BG9P CHECK family_building_block_count_88 PASS
+BG9P readout tool=bettergold:netherite_antique_pickaxe fortune=3 chance=0.24 count=2
+BG9P readout test_pos=BlockPos{x=8, y=100, z=8} forcedChunks=1
+BG9P CHECK chunk_forceloaded PASS
+BG9P readout netherite_block iter1 self=1 dust=2 entities_seen=19
+BG9P readout netherite_block iter2 self=1 dust=0 entities_seen=18
+BG9P readout netherite_block iter3 self=1 dust=0 entities_seen=18
+BG9P readout netherite_block iters=80 self_hits=80 dust_hits=15 both_hits=15
+BG9P CHECK iters_netherite_block_80 PASS
+BG9P CHECK exempt_netherite_block_self_always_drops PASS
+BG9P CHECK exempt_netherite_block_dust_still_drops PASS
+BG9P CHECK exempt_netherite_block_dust_is_extra PASS
+BG9P readout sturdygold_bricks iter1 self=1 dust=0 entities_seen=20
+BG9P readout sturdygold_bricks iter2 self=1 dust=2 entities_seen=21
+BG9P readout sturdygold_bricks iter3 self=1 dust=0 entities_seen=20
+BG9P readout sturdygold_bricks iters=80 self_hits=80 dust_hits=17 both_hits=17
+BG9P CHECK iters_sturdygold_bricks_80 PASS
+BG9P CHECK exempt_sturdygold_bricks_self_always_drops PASS
+BG9P CHECK exempt_sturdygold_bricks_dust_still_drops PASS
+BG9P CHECK exempt_sturdygold_bricks_dust_is_extra PASS
+BG9P readout flamegold_lantern iter1 self=1 dust=0 entities_seen=20
+BG9P readout flamegold_lantern iter2 self=1 dust=0 entities_seen=20
+BG9P readout flamegold_lantern iter3 self=1 dust=2 entities_seen=21
+BG9P readout flamegold_lantern iters=80 self_hits=80 dust_hits=13 both_hits=13
+BG9P CHECK iters_flamegold_lantern_80 PASS
+BG9P CHECK exempt_flamegold_lantern_self_always_drops PASS
+BG9P CHECK exempt_flamegold_lantern_dust_still_drops PASS
+BG9P CHECK exempt_flamegold_lantern_dust_is_extra PASS
+BG9P readout stone_control iter1 self=0 dust=2 entities_seen=20
+BG9P readout stone_control iter2 self=1 dust=0 entities_seen=20
+BG9P readout stone_control iter3 self=1 dust=0 entities_seen=20
+BG9P readout stone_control iters=80 self_hits=62 dust_hits=18 both_hits=0
+BG9P CHECK iters_stone_control_80 PASS
+BG9P CHECK control_stone_control_conversion_still_works PASS
+BG9P CHECK control_stone_control_never_both PASS
+BG9P CHECK control_stone_control_conversion_clears_self PASS
+BG9P readout treasure_box opened=2000 items=26820 distinct=78 smithing_templates=0 non_minecraft=0
+BG9P readout template_ids_sample=[]
+BG9P CHECK box_anti_vacuum PASS
+BG9P readout S96_2_smithing_templates_from_box=0
+BG9P readout S96_3_non_minecraft_items=0
+BG9P readout forceload_before=1 after=0
+BG9P CHECK forceload_released PASS
+BG9P SUMMARY pass=21 fail=0 ticks=710

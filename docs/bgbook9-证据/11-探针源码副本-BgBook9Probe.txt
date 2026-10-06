@@ -1,0 +1,340 @@
+package com.hjmmd_8.bettergold.probe.bgbook9;
+
+import com.hjmmd_8.bettergold.registry.AllItems;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * bg-book §九 的**临时探针**（一次性；收尾整块删除，见 docs/bgbook9-证据/）。
+ *
+ * <p>两件事，都是 A 级（真跑游戏、有日志与可复算数字）：</p>
+ * <ol>
+ *   <li><b>§9.7 正负对照</b>：用「下界合金古董镐」（黄泉引骸镐，Fortune III）挖
+ *       ① 下界合金块 ② 万坚金砖块 ③ 烈燃金灯笼（= §9.7 的例外集合 E）
+ *       与 ④ 石头（= 非 E 的对照）—— <b>逐 tick 一块、下一 tick 取样</b>
+ *       （mcmod_experience §3 规则 20：范围内实体要先 forceload 并等几 tick）；</li>
+ *   <li><b>万宝礼物盒读数</b>：开 2000 次，统计「出了几件锻造模板」「有没有非 minecraft 命名空间的物品」
+ *       —— 这是 §9.6 第 2 / 第 3 条「以实际为准」改写手册文案的实测依据。</li>
+ * </ol>
+ *
+ * <p>⚠ <b>绝不进生产代码</b>：本类整块位于 {@code probe/bgbook9/}，收尾删除并 grep 零命中。</p>
+ */
+public final class BgBook9Probe {
+
+    private static final String TAG = "BG9P";
+    private static final int T_GUARD = 20;
+    private static final int T_SETUP = 60;          // 之后每 tick 走状态机
+    private static final int ITER = 80;             // 每类方块 80 次
+    private static final int BOX_TOTAL = 2000;
+    private static final int BOX_PER_TICK = 250;
+
+    private static boolean armed;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+
+    private static ServerLevel level;
+    private static FakePlayer fp;
+    private static ItemStack pick;
+    private static final BlockPos POS = new BlockPos(8, 100, 8);
+
+    /** 4 个测例：(名字, 方块, 该方块"自己"的掉落物)；后两个在 setup 里填 */
+    private static final Object[][] TYPES = new Object[][]{
+            {"netherite_block", Blocks.NETHERITE_BLOCK, Items.NETHERITE_BLOCK.asItem()},
+            {"sturdygold_bricks", null, null},
+            {"flamegold_lantern", null, null},
+            {"stone_control", Blocks.STONE, Items.COBBLESTONE},
+    };
+    private static final int[] SELF_HITS = new int[4];
+    private static final int[] DUST_HITS = new int[4];
+    private static final int[] BOTH_HITS = new int[4];
+    private static final int[] DONE = new int[4];
+
+    private static int phase;                       // 0 未开始 / 2 方块 / 3 礼物盒 / 4 汇总
+    private static int bIdx;
+    private static int bStep;
+    private static boolean pending;
+
+    private static int boxOpened;
+    private static int boxItems;
+    private static int boxTemplates;
+    private static int boxNonMinecraft;
+    private static final Set<String> boxIds = new LinkedHashSet<>();
+    private static final List<String> boxTemplateIds = new ArrayList<>();
+
+    private BgBook9Probe() {
+    }
+
+    public static void armIfEnabled() {
+        if (!Files.exists(FMLPaths.GAMEDIR.get().resolve("bgbook9-probe.enabled"))) {
+            log("armed=false (no switch file)");
+            return;
+        }
+        armed = true;
+        NeoForge.EVENT_BUS.register(BgBook9Probe.class);
+        log("armed=true gamedir=" + FMLPaths.GAMEDIR.get());
+    }
+
+    private static void log(String msg) {
+        System.out.println(TAG + " " + msg);
+    }
+
+    private static void check(String id, boolean ok) {
+        if (ok) {
+            pass++;
+        } else {
+            fail++;
+        }
+        log("CHECK " + id + " " + (ok ? "PASS" : "FAIL"));
+    }
+
+    private static void readout(String msg) {
+        log("readout " + msg);
+    }
+
+    // ------------------------------------------------------------------ 探针主体
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!armed) {
+            return;
+        }
+        tick++;
+        MinecraftServer server = event.getServer();
+
+        if (tick == T_GUARD) {
+            String name = server.getWorldData().getLevelName();
+            readout("levelName=" + name + " (worldDir should be bgbook9probe)");
+            boolean ok = "bgbook9probe".equals(name)
+                    && !name.contains("\u65b0\u7684\u4e16\u754c");
+            check("probe_world_guard", ok);
+            if (!ok) {
+                log("ABORT: wrong world, stopping probe actions");
+                armed = false;
+                server.halt(false);
+            }
+            return;
+        }
+        if (tick == T_SETUP) {
+            setup(server);
+            phase = 2;
+            return;
+        }
+        if (phase == 2) {
+            stepBlocks();
+            return;
+        }
+        if (phase == 3) {
+            if (boxOpened < BOX_TOTAL) {
+                runBoxes();
+            } else {
+                assertBoxes();
+                phase = 4;
+            }
+            return;
+        }
+        if (phase == 4) {
+            summary(server);
+        }
+    }
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        level.setChunkForced(POS.getX() >> 4, POS.getZ() >> 4, true);   // = /forceload add
+        fp = FakePlayerFactory.getMinecraft(level);
+        fp.moveTo(POS.getX() + 0.5D, POS.getY() + 1.0D, POS.getZ() + 0.5D, 0.0F, 0.0F);
+        pick = new ItemStack(AllItems.NETHERITE_ANTIQUE_PICKAXE.get());
+        var ench = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        pick.enchant(ench.getOrThrow(Enchantments.FORTUNE), 3);
+        fp.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        Block bricks = com.hjmmd_8.bettergold.material.MetalFamily.byId("sturdygold").bricks.get();
+        Block lantern = com.hjmmd_8.bettergold.material.MetalFamily.byId("flamegold").lantern.get();
+        TYPES[1][1] = bricks;
+        TYPES[1][2] = bricks.asItem();
+        TYPES[2][1] = lantern;
+        TYPES[2][2] = lantern.asItem();
+        // 例外集合的**域**读数：八族 allBlocks 的家族索引命中数（§9.8 推断值 3 = 11 形态 × 8 族）
+        int familyBlocks = 0;
+        Set<Block> seen = new LinkedHashSet<>();
+        for (var fam : com.hjmmd_8.bettergold.material.MetalFamily.all()) {
+            for (var h : fam.allBlocks) {
+                if (seen.add(h.get())) {
+                    familyBlocks++;
+                }
+            }
+        }
+        readout("family_building_blocks=" + familyBlocks + " expected=88");
+        check("family_building_block_count_88", familyBlocks == 88);
+        readout("tool=" + BuiltInRegistries.ITEM.getKey(pick.getItem())
+                + " fortune=3 chance=0.24 count=2");
+        readout("test_pos=" + POS + " forcedChunks=" + level.getForcedChunks().size());
+        check("chunk_forceloaded", !level.getForcedChunks().isEmpty());
+    }
+
+    private static void stepBlocks() {
+        if (pending) {
+            measure(bIdx);
+            pending = false;
+            if (bStep >= ITER) {
+                assertDust(bIdx);
+                bIdx++;
+                bStep = 0;
+                if (bIdx >= TYPES.length) {
+                    phase = 3;
+                }
+            }
+            return;
+        }
+        if (bStep < ITER) {
+            breakOne(bIdx);
+            bStep++;
+            pending = true;
+        }
+    }
+
+    private static void breakOne(int typeIdx) {
+        Block block = (Block) TYPES[typeIdx][1];
+        level.setBlockAndUpdate(POS, block.defaultBlockState());
+        BlockState state = level.getBlockState(POS);
+        fp.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        state.getBlock().playerDestroy(level, (Player) fp, POS, state, null, pick);
+        DONE[typeIdx]++;
+    }
+
+    /** 取样：清点 POS 附近的 ItemEntity（分类后丢弃，避免累积） */
+    private static void measure(int typeIdx) {
+        Item self = (Item) TYPES[typeIdx][2];
+        int selfCount = 0;
+        int dustCount = 0;
+        List<Entity> all = new ArrayList<>();
+        level.getEntities().getAll().forEach(all::add);
+        for (Entity e : all) {
+            if (!(e instanceof ItemEntity ie)) {
+                continue;
+            }
+            if (ie.blockPosition().distManhattan(POS) > 6) {
+                continue;
+            }
+            if (ie.getItem().is(self)) {
+                selfCount += ie.getItem().getCount();
+            }
+            if (ie.getItem().is(AllItems.NETHERITE_DUST.get())) {
+                dustCount += ie.getItem().getCount();
+            }
+            ie.discard();
+        }
+        if (selfCount > 0) {
+            SELF_HITS[typeIdx]++;
+        }
+        if (dustCount > 0) {
+            DUST_HITS[typeIdx]++;
+        }
+        if (selfCount > 0 && dustCount > 0) {
+            BOTH_HITS[typeIdx]++;
+        }
+        if (DONE[typeIdx] <= 3) {
+            readout(TYPES[typeIdx][0] + " iter" + DONE[typeIdx]
+                    + " self=" + selfCount + " dust=" + dustCount
+                    + " entities_seen=" + all.size());
+        }
+    }
+
+    private static void assertDust(int typeIdx) {
+        String name = (String) TYPES[typeIdx][0];
+        readout(name + " iters=" + DONE[typeIdx] + " self_hits=" + SELF_HITS[typeIdx]
+                + " dust_hits=" + DUST_HITS[typeIdx] + " both_hits=" + BOTH_HITS[typeIdx]);
+        check("iters_" + name + "_80", DONE[typeIdx] == ITER);
+        if (typeIdx < 3) {
+            // §9.7 的例外集合：① 方块照常掉自己（一次都没被"就地转换"清掉）
+            check("exempt_" + name + "_self_always_drops", SELF_HITS[typeIdx] == DONE[typeIdx]);
+            // ② 尘埃照掉（6% + 6%×3 = 24% 的判定没有被一起关掉）
+            check("exempt_" + name + "_dust_still_drops", DUST_HITS[typeIdx] > 0);
+            // ③ 两者并存（"额外掉一份"而不是"替换"）
+            check("exempt_" + name + "_dust_is_extra", BOTH_HITS[typeIdx] == DUST_HITS[typeIdx]);
+        } else {
+            // 对照：普通方块**照旧就地转换** ⇒ 出了尘埃的那些次，方块自己一定不掉
+            check("control_" + name + "_conversion_still_works", DUST_HITS[typeIdx] > 0);
+            check("control_" + name + "_never_both", BOTH_HITS[typeIdx] == 0);
+            check("control_" + name + "_conversion_clears_self", SELF_HITS[typeIdx] < DONE[typeIdx]);
+        }
+    }
+
+    private static void runBoxes() {
+        Item box = AllItems.TREASURE_GIFT_BOX.get();
+        for (int i = 0; i < BOX_PER_TICK; i++) {
+            fp.getInventory().clearContent();
+            ItemStack st = new ItemStack(box);
+            fp.setItemInHand(InteractionHand.MAIN_HAND, st);
+            box.use(level, fp, InteractionHand.MAIN_HAND);
+            boxOpened++;
+            for (ItemStack got : fp.getInventory().items) {
+                if (got.isEmpty()) {
+                    continue;
+                }
+                boxItems += got.getCount();
+                ResourceLocation id = BuiltInRegistries.ITEM.getKey(got.getItem());
+                boxIds.add(id.toString());
+                if (!"minecraft".equals(id.getNamespace())) {
+                    boxNonMinecraft++;
+                }
+                if (id.getPath().contains("smithing_template")) {
+                    boxTemplates++;
+                    if (boxTemplateIds.size() < 6) {
+                        boxTemplateIds.add(id.toString());
+                    }
+                }
+            }
+        }
+    }
+
+    private static void assertBoxes() {
+        readout("treasure_box opened=" + boxOpened + " items=" + boxItems
+                + " distinct=" + boxIds.size() + " smithing_templates=" + boxTemplates
+                + " non_minecraft=" + boxNonMinecraft);
+        readout("template_ids_sample=" + boxTemplateIds);
+        check("box_anti_vacuum", boxOpened == BOX_TOTAL && boxItems > 0);
+        // ⚠ 这两行是 §9.6 第 2 / 第 3 条的**实测依据**：手册原来写「不会开出锻造模板 / 不联通第三方」，
+        //   而代码是"没有任何过滤"。读数专供 §21.3 的第 2/3 条（以及"代码侧待办"）。
+        readout("S96_2_smithing_templates_from_box=" + boxTemplates);
+        readout("S96_3_non_minecraft_items=" + boxNonMinecraft);
+    }
+
+    private static void summary(MinecraftServer server) {
+        int before = level.getForcedChunks().size();
+        level.setChunkForced(POS.getX() >> 4, POS.getZ() >> 4, false);   // forceload 双向 0
+        int after = level.getForcedChunks().size();
+        readout("forceload_before=" + before + " after=" + after);
+        check("forceload_released", after == 0);
+        log("SUMMARY pass=" + pass + " fail=" + fail + " ticks=" + tick);
+        armed = false;
+        server.halt(false);          // ⚠ 只调一次（docs/构建与跑测注意事项.md 三·4）
+    }
+}

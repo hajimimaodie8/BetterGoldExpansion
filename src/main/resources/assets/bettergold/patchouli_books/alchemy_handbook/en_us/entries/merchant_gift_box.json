@@ -1,0 +1,43 @@
+{
+  "name": "bettergold.handbook.entry.merchant_gift_box",
+  "category": "bettergold:merchant_antiques",
+  "icon": "bettergold:treasure_gift_box",
+  "sortnum": 1,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.merchant_gift_box_1_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:treasure_gift_box",
+      "text": "bettergold.handbook.page.merchant_gift_box_1_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:curio_box",
+      "text": "bettergold.handbook.page.merchant_gift_box_2_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:unwanted_antique",
+      "text": "bettergold.handbook.page.merchant_gift_box_2_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:idol_gift_box",
+      "text": "bettergold.handbook.page.merchant_gift_box_3_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:gourmet_box",
+      "text": "bettergold.handbook.page.merchant_gift_box_3_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:alchemy_materials_box",
+      "text": "bettergold.handbook.page.merchant_gift_box_4_left"
+    }
+  ]
+}

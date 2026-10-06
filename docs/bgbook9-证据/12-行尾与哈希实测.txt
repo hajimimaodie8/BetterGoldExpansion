@@ -1,0 +1,14 @@
+docs/1.6-规格.md                                                                                       CRLF=0      LF=3058   size=318321   sha256=ac4c6f37d9fe2573aced67b8a4c5481b693d5b257f2aae1829eb4e30f80ed348
+tools/asset-generator/generate_handbook_data.py                                                      CRLF=0      LF=742    size=38081    sha256=03b18aef51355eae567cdf40d22c31d19547f9bbde2153986c42bac6ef9ac597
+tools/asset-generator/validate_metal_data.py                                                         CRLF=0      LF=3882   size=257260   sha256=a3af4b2f95b8220496e0d43ba18f6cea3922e597cb5856d7a642838853a57b7d
+src/main/java/com/hjmmd_8/bettergold/event/ModEvents.java                                            CRLF=0      LF=893    size=49289    sha256=601cb17d152e3c2e0c56ff161160b5ded019c3d7a4d52ee3d5b9afb7d12b4585
+src/main/java/com/hjmmd_8/bettergold/bettergold.java                                                 CRLF=0      LF=150    size=9392     sha256=e2c293da27e15943ba6221a5deb54d941a91e8cebea7f4175cb6a3c72fd3fc9b
+src/main/resources/assets/bettergold/lang/zh_cn.json                                                 CRLF=0      LF=678    size=63536    sha256=4dd6964ce7d6b2f36056d13f694bbc08cfbb4bbfe792b6e72eb31fe05caeab22
+src/main/resources/assets/bettergold/lang/en_us.json                                                 CRLF=0      LF=678    size=66617    sha256=26c9e0d3c8ec5bd4915d8adbd4213f1661d13ae38f053f394fd46e64e9a313cf
+tools/asset-generator/bgappend-requirements-snapshot/bg-book-8.md                                    CRLF=0      LF=123    size=13563    sha256=7b3ac419be90d927d1dbc0980bbda5a56ed5a81b660d11e698f7394ea7117501
+tools/asset-generator/bgappend-requirements-snapshot/bg-book-6.1-6.3.md                              CRLF=0      LF=63     size=9208     sha256=afa115a431d92b18ae6e6eddb0767c9a684c826b260cd5490231c19e06944c75
+src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/merchant.json    MISSING
+src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/antiques.json    MISSING
+build/moddev/clientRunProgramArgs.txt                                                                CRLF=0      LF=23     size=394      sha256=a365a5edf7abc44c576e5dd3f725a54d46658fcddc1e3a0257bec7c0ab2e4bdb
+run/server.properties                                                                                CRLF=63     LF=0      size=1440     sha256=a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4
+E:\mc\mcmod\mod_experience\开工需求\20261004-1733_bg-book_patchouli-handbook.md                          CRLF=1      LF=644    size=58643    sha256=a73521440ff479b9cc7378e5b8aa761c35fdd30075057436777890873d7ccdd7

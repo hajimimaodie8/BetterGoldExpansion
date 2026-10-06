@@ -1,0 +1,75 @@
+{
+  "name": "bettergold.handbook.entry.merchant_antique_gear",
+  "category": "bettergold:merchant_antiques",
+  "icon": "bettergold:netherite_antique_sword",
+  "sortnum": 2,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:antique_sword",
+        "bettergold:antique_axe",
+        "bettergold:antique_pickaxe",
+        "bettergold:antique_shovel",
+        "bettergold:antique_hoe",
+        "bettergold:antique_knife"
+      ],
+      "text": "bettergold.handbook.page.merchant_antique_gear_1_left",
+      "title": "bettergold.handbook.page.merchant_antique_gear_1_left_title"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_template_antique",
+      "recipe2": "bettergold:smithing_template_echo_shard"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:upgrade_netherite_antique_sword",
+      "recipe2": "bettergold:upgrade_netherite_antique_axe"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:upgrade_netherite_antique_pickaxe",
+      "recipe2": "bettergold:upgrade_netherite_antique_shovel"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:upgrade_netherite_antique_hoe",
+      "recipe2": "bettergold:upgrade_netherite_antique_knife"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:netherite_antique_sword",
+        "bettergold:netherite_antique_knife"
+      ],
+      "text": "bettergold.handbook.page.merchant_antique_gear_2_left",
+      "title": "bettergold.handbook.page.merchant_antique_gear_2_left_title"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:netherite_antique_axe",
+        "bettergold:netherite_antique_pickaxe",
+        "bettergold:netherite_antique_shovel",
+        "bettergold:netherite_antique_hoe"
+      ],
+      "text": "bettergold.handbook.page.merchant_antique_gear_2_right",
+      "title": "bettergold.handbook.page.merchant_antique_gear_2_right_title"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.merchant_antique_gear_3_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:netherite_dust_to_small_scrap",
+      "recipe2": "bettergold:small_scrap_to_scrap"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.merchant_antique_gear_4_left"
+    }
+  ]
+}

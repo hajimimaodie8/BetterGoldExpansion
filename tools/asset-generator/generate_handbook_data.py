@@ -129,12 +129,17 @@ def smithing_page(recipe_a, recipe_b, title_key=None):
     return page
 
 
-def crafting_page(recipe_a, recipe_b=None, title_key=None):
+def crafting_page(recipe_a, recipe_b=None, title_key=None, text_key=None):
+    """⚠ 配方页也能带**正文**：读 Patchouli jar 的字节码实测
+    ``PageDoubleRecipe extends PageWithText`` ⇒ ``text`` 字段存在（§六 的结论，本轮复用）。
+    """
     page = {"type": "patchouli:crafting", "recipe": "bettergold:%s" % recipe_a}
     if recipe_b:
         page["recipe2"] = "bettergold:%s" % recipe_b
     if title_key:
         page["title"] = title_key
+    if text_key:
+        page["text"] = text_key
     return page
 
 
@@ -268,13 +273,28 @@ def entry_antiques():
     return entry("antiques", "merchant_antiques", "unwanted_antique", 1, pages)
 
 
+# --------------------------------------------------------------------------------------
+# ⛔ bg-book §九（2026-10-06 20:02）：上面两个「商人与古董」旧占位条目**已作废**，不再写进数据树
+# --------------------------------------------------------------------------------------
+#
+# §9.1 要求「删除『商人与古董』类别下我之前设的旧占位两节」（作者原话「**之前你设的那两个就可以
+# 就此毙掉了**」）⇒ 它们的 11 个 Patchouli 页（merchant 6 + antiques 5）由下面的 **3 章 20 页**取代。
+#
+# ⚠ **内容不凭空消失**：两个构造函数**原样保留在上面**（不删），
+#   由下面的 `RETIRED_ENTRIES` 引用并在 `main()` 里照常自证它们的页数（6 / 5 = 11）；
+#   全文对照（页型序列 / 页数）另外落在 `docs/1.6-规格.md` §21。
+#   ⇒ 以后谁要看"当年那两个占位长什么样"，读这里即可，不必翻 git 历史。
+#
+# ⚠ 这行**必须**写在两个函数定义之后（列表字面量在定义时求值）——
+#   写在上面的 RETIRED_ENTRIES 里会 NameError。
+RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_merchant, entry_antiques]
+
 ENTRIES = [
     entry_metal_tour,
     entry_upgrade_templates,
     # ⛔ entry_tools_per_family / entry_armor_per_family —— §八 作废，见上方 RETIRED_ENTRIES
     entry_golden_feast,
-    entry_merchant,
-    entry_antiques,
+    # ⛔ entry_merchant / entry_antiques —— §九 作废，见上方 RETIRED_ENTRIES
 ]
 
 # --------------------------------------------------------------------------------------
@@ -506,6 +526,126 @@ GEAR_ENTRIES = [entry_gear_linkage] + [
     for index, (metal, _core) in enumerate(METALS, start=1)
 ]
 
+# --------------------------------------------------------------------------------------
+# bg-book §九 追加轮（2026-10-06 20:02）：「商人与古董」3 章（替掉该类别旧占位两节）
+# --------------------------------------------------------------------------------------
+#
+# 形状**沿用 §八**（同一份需求文档的表格形状：每一行标签 = **一个 Patchouli 页**，
+# 相邻两页在书里组成一屏「跨页」）：
+#
+#   章1 · 关于易金商人（封面 = 易金柜台）：**3 页**
+#       1 左 text / 1 右 crafting(易金柜台) + 正文 / 2 左 spotlight(礼品金票) + 正文
+#   章2 · 礼品盒（封面 = 万宝礼物盒）：**7 页**
+#       1 左 text（唯一没有图标的一页）/ 1 右~4 左 = spotlight(盒/老古董) + 正文
+#   章3 · 古董器具（封面 = 万古烬骸剑）：**10 页**
+#       1 左 spotlight(古董 剑/斧/镐/锹/锄/刀) + 正文 + 页眉
+#       1 右 **上**：两种升级模板配方 = **1 页**（`smithing_template_antique` +
+#              `smithing_template_echo_shard`，两份产物同为 `netherite_antique_upgrade_smithing_template`）
+#       1 右 **下**：六种器具的升级配方 = **3 页 × 2**（顺序照 1 左的「剑/斧/镐/锹/锄/刀」）
+#       2 左 spotlight(万古烬骸剑 / 幽冥断骸刀) + 正文 + 页眉
+#       2 右 spotlight(斧/镐/锹/锄) + 正文 + 页眉
+#       3 左 text / 3 右 crafting(尘埃→小碎片 + 小碎片→碎片) / 4 左 text（备注）
+#
+# ⚠ **门禁项**（照 §八 的同一条口径，不是我们的退化方案）：作者在 §9.4 第 1 页右写了
+#   「两种配方随时间不断变换」+「六种器具的配方随时间不断变换」= **8 个配方槽**，
+#   而 Patchouli 的配方页**只有 recipe / recipe2 两个槽** ⇒ 只能落成 1 + 3 = 4 页。
+#
+# ⚠ **推断 / 记账 E1**：「**随时间不断变换**」在 Patchouli 的**配方页**上表达不了
+#   （只有 `PageSpotlight` 会按 `ticksInBook / 20` 轮换图标，`PageDoubleRecipe` 没有这个行为）
+#   ⇒ 配方部分按「**全部并列展示**」落地；图标部分（1 左 / 2 左 / 2 右）**照轮换**。
+#   记账在 `docs/1.6-规格.md` §21（作者一句话可改）。
+#
+# ⚠ **推断 / 记账 E2**：六件里 `upgrade_netherite_antique_knife` 与 `bettergold:antique_knife` /
+#   `bettergold:netherite_antique_knife` **只在装了农夫乐事时存在**
+#   （`fd/FdItems` 的 `DeferredRegister` 由 `FdModule` 按环境挂载；recipe 自带
+#   `neoforge:mod_loaded(farmersdelight)` 条件）⇒ **没装乐事时**：刀具那两页空、轮换图标里
+#   刀具会取不到 ⇒ 手册树是**单份静态 JSON**、不能按环境分岔 ⇒ **记账**
+#   （作者一句话可改成"只挂 5 件"）。§八 的 D2（mut 配方二选一）是同一类记账。
+MERCHANT_CATEGORY = "merchant_antiques"
+
+# 章3 的六件器具，**顺序 = §9.4 第 1 页左逐字给出的「剑/斧/镐/锹/锄/刀」**（不是推断值）
+ANTIQUE_TRUE_ORDER = ["sword", "axe", "pickaxe", "shovel", "hoe", "knife"]
+# §9.4 第 1 页右的「两种配方」= 两份产出**同一张升级模板**的锻造配方（已核实产物 id 相同）
+ANTIQUE_TEMPLATE_RECIPES = ["smithing_template_antique", "smithing_template_echo_shard"]
+# §9.4 第 3 页右：尘埃 → 小碎片；小碎片 → 碎片
+ANTIQUE_SCRAP_RECIPES = ["netherite_dust_to_small_scrap", "small_scrap_to_scrap"]
+# 三张「轮换图标」页（作者写了「按此顺序不断替换」/「随时间不断替换」）
+ANTIQUE_1_LEFT_ITEMS = ["bettergold:antique_%s" % _t for _t in ANTIQUE_TRUE_ORDER]
+ANTIQUE_2_LEFT_ITEMS = ["bettergold:netherite_antique_sword",
+                        "bettergold:netherite_antique_knife"]
+ANTIQUE_2_RIGHT_ITEMS = ["bettergold:netherite_antique_%s" % _t
+                         for _t in ("axe", "pickaxe", "shovel", "hoe")]
+
+# 章2 的 7 行：(页标签, 该页图标物品 或 None)
+MERCHANT_GIFT_ROWS = [
+    ("1_left", None),
+    ("1_right", "treasure_gift_box"),
+    ("2_left", "curio_box"),
+    ("2_right", "unwanted_antique"),
+    ("3_left", "idol_gift_box"),
+    ("3_right", "gourmet_box"),
+    ("4_left", "alchemy_materials_box"),
+]
+
+
+def _ph(entry_id, label):
+    """该页正文的语言键"""
+    return "%s.page.%s_%s" % (LANG, entry_id, label)
+
+
+def _pht(entry_id, label):
+    """该页**页眉**（作者写的「上边字体『…』」）的语言键 —— 用键而不是字面中文，
+    这样 en_us 侧也能有英文页眉（§七 当时用的是字面中文，本轮改成键并记账）。"""
+    return "%s.page.%s_%s_title" % (LANG, entry_id, label)
+
+
+def entry_merchant_intro():
+    """章1 · 关于易金商人（封面 = 易金柜台）。3 页。"""
+    pages = [
+        text_page(_ph("merchant_intro", "1_left")),
+        # 「（上边挂：易金柜台配方）」⇒ 配方页本来就自带正文槽（PageDoubleRecipe extends PageWithText）
+        crafting_page("gold_exchange_counter", None, None, _ph("merchant_intro", "1_right")),
+        # 「（中上边挂：礼品金票）」
+        spotlight_page("bettergold:gift_gold_ticket", _ph("merchant_intro", "2_left")),
+    ]
+    return entry("merchant_intro", MERCHANT_CATEGORY, "gold_exchange_counter", 0, pages)
+
+
+def entry_merchant_gift_box():
+    """章2 · 礼品盒（封面 = 万宝礼物盒）。7 页（1 行 = 1 页）。"""
+    pages = []
+    for label, icon in MERCHANT_GIFT_ROWS:
+        key = _ph("merchant_gift_box", label)
+        if icon is None:
+            pages.append(text_page(key))
+        else:
+            pages.append(spotlight_page("bettergold:%s" % icon, key))
+    return entry("merchant_gift_box", MERCHANT_CATEGORY, "treasure_gift_box", 1, pages)
+
+
+def entry_merchant_antique_gear():
+    """章3 · 古董器具（封面 = 万古烬骸剑）。10 页（1 右 那一行展开成 4 个配方页）。"""
+    pages = [
+        spotlight_page(ANTIQUE_1_LEFT_ITEMS, _ph("merchant_antique_gear", "1_left"),
+                       _pht("merchant_antique_gear", "1_left")),
+        smithing_page(ANTIQUE_TEMPLATE_RECIPES[0], ANTIQUE_TEMPLATE_RECIPES[1]),
+    ]
+    for _i in range(0, len(ANTIQUE_TRUE_ORDER), 2):
+        pages.append(smithing_page(
+            "upgrade_netherite_antique_%s" % ANTIQUE_TRUE_ORDER[_i],
+            "upgrade_netherite_antique_%s" % ANTIQUE_TRUE_ORDER[_i + 1]))
+    pages.append(spotlight_page(ANTIQUE_2_LEFT_ITEMS, _ph("merchant_antique_gear", "2_left"),
+                                _pht("merchant_antique_gear", "2_left")))
+    pages.append(spotlight_page(ANTIQUE_2_RIGHT_ITEMS, _ph("merchant_antique_gear", "2_right"),
+                                _pht("merchant_antique_gear", "2_right")))
+    pages.append(text_page(_ph("merchant_antique_gear", "3_left")))
+    pages.append(crafting_page(ANTIQUE_SCRAP_RECIPES[0], ANTIQUE_SCRAP_RECIPES[1]))
+    pages.append(text_page(_ph("merchant_antique_gear", "4_left")))
+    return entry("merchant_antique_gear", MERCHANT_CATEGORY, "netherite_antique_sword", 2, pages)
+
+
+MERCHANT_ENTRIES = [entry_merchant_intro, entry_merchant_gift_box, entry_merchant_antique_gear]
+
 BOOK = {
     "name": "%s.name" % LANG,
     "subtitle": "%s.subtitle" % LANG,
@@ -548,7 +688,7 @@ def main():
                 os.path.join(ASSET_DIR, lang, "categories", "%s.json" % name),
                 category(name, icon, sortnum),
             )
-        for builder in ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES:
+        for builder in ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES + MERCHANT_ENTRIES:
             data = builder()
             write_json(
                 os.path.join(ASSET_DIR, lang, "entries", "%s.json" % data["name"].rsplit(".", 1)[-1]),
@@ -558,12 +698,14 @@ def main():
     pages = sum(len(b()["pages"]) for b in ENTRIES)
     chapter_pages = sum(len(b()["pages"]) for b in CHAPTER_ENTRIES)
     gear_pages = sum(len(b()["pages"]) for b in GEAR_ENTRIES)
+    merchant_pages = sum(len(b()["pages"]) for b in MERCHANT_ENTRIES)
     retired_pages = sum(len(b()["pages"]) for b in RETIRED_ENTRIES)
     print(
         "handbook written: 1 book (data/) + %d categories + %d entries + %d pages x2 languages "
         "(assets/) -> %s + %s"
-        % (len(CATEGORIES), len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES),
-           pages + chapter_pages + gear_pages, BOOK_DIR, ASSET_DIR)
+        % (len(CATEGORIES),
+           len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES) + len(MERCHANT_ENTRIES),
+           pages + chapter_pages + gear_pages + merchant_pages, BOOK_DIR, ASSET_DIR)
     )
     print(
         "  §6 chapters (bg-book append round): %d entries / %d pages "
@@ -581,9 +723,18 @@ def main():
            len(GEAR_ENTRIES[1]()["pages"]))
     )
     print(
-        "  RETIRED (§八 作废，不写盘): tools_per_family=%d pages + armor_per_family=%d pages = %d"
+        "  §9 merchant/antiques chapters (bg-book §九): %d entries / %d pages "
+        "(intro=%d, gift_box=%d, antique_gear=%d; 1 右 那一行 = 1+3 个配方页 = Patchouli 的结构上限)"
+        % (len(MERCHANT_ENTRIES), merchant_pages,
+           len(entry_merchant_intro()["pages"]),
+           len(entry_merchant_gift_box()["pages"]),
+           len(entry_merchant_antique_gear()["pages"]))
+    )
+    print(
+        "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位，不写盘): "
+        "tools=%d + armor=%d + merchant=%d + antiques=%d = %d"
         % (len(entry_tools_per_family()["pages"]), len(entry_armor_per_family()["pages"]),
-           retired_pages)
+           len(entry_merchant()["pages"]), len(entry_antiques()["pages"]), retired_pages)
     )
 
 

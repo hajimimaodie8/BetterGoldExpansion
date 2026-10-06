@@ -1423,30 +1423,47 @@ _RETIRED_ENTRIES = ("tools_per_family", "armor_per_family")
 _entries_now = {}
 for _p in sorted((_ZH_BOOK / "entries").glob("*.json")) if (_ZH_BOOK / "entries").is_dir() else []:
     _entries_now[_p.stem] = json.loads(_p.read_text(encoding="utf-8"))
-# 第一轮骨架 7 项 − §八 作废 2 项 = **5**（另见 bgbook8 段的 9 个 gear 章节）
+# 第一轮骨架 7 项 − §八 作废 2 项 − §九 作废 2 项 = **3**
+#   ⛔ §九（2026-10-06 20:02）作废的是「商人与古董」类别下的两个旧占位
+#      `merchant` / `antiques`（§9.1 作者原话「之前你设的那两个就可以就此毙掉了」），
+#      由 §九 的 3 章（`merchant_intro` / `merchant_gift_box` / `merchant_antique_gear`）取代。
+#   ⚠ 旧期望 `("metal_tour", "upgrade_templates", "golden_feast", "merchant", "antiques")`
+#     **原文保留在这里**（未删）；两个旧条目的全文对照落在 `docs/1.6-规格.md` §21。
 _SKELETON_ENTRIES = ("metal_tour", "upgrade_templates",
-                     "golden_feast", "merchant", "antiques")
+                     "golden_feast")
 # bg-book §六 追加轮（2026-10-05）：三章（副要材料 / 核心材料 / 知识）
 _BG2_ENTRY_NAMES = ("auxiliary_materials", "core_materials", "golden_knowledge")
 # bg-book §八 追加轮（2026-10-06）：「装备的强化」9 章（1 章联动/胚底 + 8 章金属）
 _BG8_ENTRY_NAMES = ("gear_linkage",) + tuple("gear_%s" % _c for _c in
     ("flamegold", "sturdygold", "thornsgold", "echogold",
      "indigoseagold", "voodoogold", "thundergold", "illusiongold"))
+# bg-book §九 追加轮（2026-10-06 20:02）：「商人与古董」3 章（替掉该类别旧占位两节）
+_BG9_ENTRY_NAMES = ("merchant_intro", "merchant_gift_box", "merchant_antique_gear")
+# ⛔ §九 作废的两个旧占位（必须不存在于产物里；见上面的 `_bgbook9_bad` 段）
+_BG9_RETIRED_ENTRIES = ("merchant", "antiques")
 for _retired in _RETIRED_ENTRIES:
     for _side in (_ZH_BOOK, _EN_BOOK):
         if (_side / "entries" / ("%s.json" % _retired)).exists():
             _bgbook_bad("bgbook8-old-entries-gone",
                         "§八 作废的条目 %s 又回到了产物里（%s）：它的 42 页已由「装备的强化」的"
                         "每族 7 页锻造取代" % (_retired, _side.name))
+for _retired in _BG9_RETIRED_ENTRIES:
+    for _side in (_ZH_BOOK, _EN_BOOK):
+        if (_side / "entries" / ("%s.json" % _retired)).exists():
+            _bgbook_bad("bgbook9-old-placeholders-gone",
+                        "§九 作废的「商人与古董」旧占位 %s 又回到了产物里（%s）：它的 11 页已由"
+                        "「关于易金商人 / 礼品盒 / 古董器具」3 章 20 页取代" % (_retired, _side.name))
 _missing_skeleton = [n for n in _SKELETON_ENTRIES if n not in _entries_now]
 if _missing_skeleton:
     _bgbook_bad("bgbook-entry-count",
-                "第一轮的骨架条目被删掉了（§八 只作废 %s）：%s"
-                % (list(_RETIRED_ENTRIES), _missing_skeleton))
-if len(_entries_now) != len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES) + len(_BG8_ENTRY_NAMES):
+                "第一轮的骨架条目被删掉了（§八 只作废 %s、§九 只作废 %s）：%s"
+                % (list(_RETIRED_ENTRIES), list(_BG9_RETIRED_ENTRIES), _missing_skeleton))
+if len(_entries_now) != (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
+                         + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES)):
     _bgbook_bad("bgbook-entry-count",
-                "条目数应为 %d（骨架 5 + §六 章节 3 + §八 强化 9），实际 %d"
-                % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES) + len(_BG8_ENTRY_NAMES),
+                "条目数应为 %d（骨架 3 + §六 章节 3 + §八 强化 9 + §九 商人与古董 3），实际 %d"
+                % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
+                   + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES),
                    len(_entries_now)))
 _valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
 _total_pages = 0
@@ -3367,6 +3384,475 @@ for _needle, _why in ((u"bgfinal3", "docs/1.6-规格.md 里没有 bgfinal3 这�
     if _needle not in _bgfix_spec:
         _bgfinal3_bad("bgfinal3-doc", u"%s（缺 %s）" % (_why, _needle))
 
+# ==================== ⑧ bg-book §九 追加轮（2026-10-06 20:02）：「商人与古董」3 章 ====================
+#
+# 需求：`开工需求\20261004-1733_bg-book_patchouli-handbook.md` 的 **§九**（`最后更新` 10-06 20:02）。
+# 三条口径（逐条有出处）：
+#
+#   ① **形状沿用 §八**：文档表格里**每一个行标签 = 一个 Patchouli 页**（相邻两页在书里组成一屏）；
+#   ② 逐字文案 / 页眉 / 章节名的期望值来源 = **仓库内冻结快照**
+#      `tools/asset-generator/bgappend-requirements-snapshot/bg-book-9.md`（**不读**仓库外活页）；
+#   ③ 作者在 §9.4 第 1 页右写的「两种配方」+「六种器具的配方」= **8 个配方槽**，
+#      而 Patchouli 的配方页**只有 recipe / recipe2 两个槽** ⇒ 门禁项，落成 **1 页 + 3 页**。
+#
+# ⚠ 本节还有 **1 组代码侧断言**（`[bgbook9-dust-*]`）：§9.7 是本轮**唯一**的行为要求
+#   （父代理 2026-10-06 授权"最小改动实现"）——「古董工具挖下界合金块 / 贵金建材**不就地转换、
+#   但尘埃照掉**」。完整判据见 `docs/1.6-规格.md` §21 与本关卡读的那份方法体。
+bgbook9_problems: list[str] = []
+
+
+def _bgbook9_bad(tag: str, msg: str) -> None:
+    bgbook9_problems.append("%s [%s]" % (msg, tag))
+
+
+_BG9_SNAPSHOT = _BG2_SNAPSHOT_DIR / "bg-book-9.md"
+_BG9_LANG = "bettergold.handbook"
+# (条目 id, 封面图标, sortnum, 页数, 页型序列)
+_BG9_ENTRY_META = (
+    ("merchant_intro", "gold_exchange_counter", 0, 3,
+     ["patchouli:text", "patchouli:crafting", "patchouli:spotlight"]),
+    ("merchant_gift_box", "treasure_gift_box", 1, 7,
+     ["patchouli:text"] + ["patchouli:spotlight"] * 6),
+    ("merchant_antique_gear", "netherite_antique_sword", 2, 10,
+     ["patchouli:spotlight", "patchouli:smithing", "patchouli:smithing", "patchouli:smithing",
+      "patchouli:smithing", "patchouli:spotlight", "patchouli:spotlight", "patchouli:text",
+      "patchouli:crafting", "patchouli:text"]),
+)
+# 有**正文**的页（其余页要么是纯配方页、要么正文在别的页上）
+_BG9_PROSE_SUFFIX = {
+    "merchant_intro": ["1_left", "1_right", "2_left"],
+    "merchant_gift_box": ["1_left", "1_right", "2_left", "2_right", "3_left", "3_right", "4_left"],
+    "merchant_antique_gear": ["1_left", "2_left", "2_right", "3_left", "4_left"],
+}
+# 六件器具的**顺序**（§9.4 第 1 页左逐字：「剑/斧/镐/锹/锄/刀」）
+_BG9_ANTIQUE_TRUE_ORDER = ["sword", "axe", "pickaxe", "shovel", "hoe", "knife"]
+# 章3 第 1 页右的「两种配方」= 两份产物**同为 netherite_antique_upgrade_smithing_template** 的锻造配方
+_BG9_TEMPLATE_RECIPES = ("smithing_template_antique", "smithing_template_echo_shard")
+# 章3 第 3 页右：尘埃 → 小碎片；小碎片 → 碎片
+_BG9_SCRAP_RECIPES = ("netherite_dust_to_small_scrap", "small_scrap_to_scrap")
+# 章1 / 章2 / 章3 的 spotlight 图标表（逐页，None = 该页不是 spotlight）
+_BG9_SPOTLIGHT_EXPECT = {
+    "merchant_intro": [None, None, ["bettergold:gift_gold_ticket"]],
+    "merchant_gift_box": [None,
+                          ["bettergold:treasure_gift_box"], ["bettergold:curio_box"],
+                          ["bettergold:unwanted_antique"], ["bettergold:idol_gift_box"],
+                          ["bettergold:gourmet_box"], ["bettergold:alchemy_materials_box"]],
+    "merchant_antique_gear": [
+        ["bettergold:antique_%s" % _t for _t in _BG9_ANTIQUE_TRUE_ORDER], None, None, None, None,
+        ["bettergold:netherite_antique_sword", "bettergold:netherite_antique_knife"],
+        ["bettergold:netherite_antique_%s" % _t for _t in ("axe", "pickaxe", "shovel", "hoe")],
+        None, None, None],
+}
+# 三张带页眉的页（作者写了「上边字体『…』」）—— 页眉也由**快照**解析出期望值
+_BG9_TITLE_LABELS = {"merchant_antique_gear": ["1_left", "2_left", "2_right"]}
+
+# ---------- 生成器覆盖（"每加一类东西问一句"）：常量必须一致 ----------
+_BG9_GEN = _BGDOC_GEN
+if not _BG9_GEN.is_file():
+    _bgbook9_bad("bgbook9-generator", "读不到手册生成器：%s" % _BG9_GEN)
+else:
+    _bg9_gen_src = _BG9_GEN.read_text(encoding="utf-8")
+    for _needle, _why in (
+            ("MERCHANT_ENTRIES = [", "生成器里没有 §九 的 3 章清单（MERCHANT_ENTRIES）"),
+            ("ANTIQUE_TRUE_ORDER = [", "生成器里没有章3 六件器具的顺序真源"),
+            ("ANTIQUE_TEMPLATE_RECIPES = [", "生成器里没有章3「两种配方」的表"),
+            ("ANTIQUE_SCRAP_RECIPES = [", "生成器里没有章3 尘埃/碎片配方表"),
+            ("MERCHANT_GIFT_ROWS = [", "生成器里没有章2 的 7 行表"),
+            ("RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_merchant, entry_antiques]",
+             "生成器没有把 §九 作废的两个旧占位并进 RETIRED_ENTRIES")):
+        if _needle not in _bg9_gen_src:
+            _bgbook9_bad("bgbook9-generator", _why)
+    _bg9_m = re.search(r"^ANTIQUE_TRUE_ORDER = \[(.*?)\]", _bg9_gen_src, re.M)
+    if not _bg9_m:
+        _bgbook9_bad("bgbook9-generator", "读不到生成器的 ANTIQUE_TRUE_ORDER（反空转守护）")
+    else:
+        _bg9_order = re.findall(r'"([a-z]+)"', _bg9_m.group(1))
+        if _bg9_order != _BG9_ANTIQUE_TRUE_ORDER:
+            _bgbook9_bad("bgbook9-generator",
+                         "生成器的六件器具顺序 %s 与本关卡的 %s 不一致（§9.4 第 1 页左逐字给出的是"
+                         "剑/斧/镐/锹/锄/刀）" % (_bg9_order, _BG9_ANTIQUE_TRUE_ORDER))
+    if len(_BG9_ANTIQUE_TRUE_ORDER) != 6:
+        _bgbook9_bad("bgbook9-generator", "六件器具不是 6 件 —— 反空转守护")
+    # 生成器里**不许**出现 §9.7 的代码侧判据（那是 `ModEvents` 的落点，不是数据生成器的）。
+    # ⚠ 判据必须跑在**去掉 Python 注释**的源码上 —— 否则注释里提一句就会让这条假红
+    #   （本轮扰动 P19「只加注释必须仍绿」实测抓到的就是这个形状；`strip_comments` 只认
+    #   `//` 与 `/* */`，对 Python 的 `#` 无效，所以这里另剥一次）。
+    _bg9_gen_nocomment = re.sub(r"#[^\n]*", "", _bg9_gen_src)
+    if "isDustConversionExempt" in _bg9_gen_nocomment:
+        _bgbook9_bad("bgbook9-generator",
+                     "生成器里出现了 isDustConversionExempt（§9.7 是 **Java 侧**的判据，"
+                     "不该跑进数据生成器）")
+
+# ---------- ① 3 个条目：目录 / 图标 / sortnum / 页数 / 页型 / 正文键 / 图标表 / 配方逐条 ----------
+_BG9_PAGES_TOTAL = 0
+_BG9_RECIPE_REFS: set = set()
+_BG9_SPOTLIGHT_REFS: set = set()
+_BG9_TEXT_KEYS: list = []
+for _eid, _icon, _sort, _cnt, _seq in _BG9_ENTRY_META:
+    _zh_p = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    _en_p = _EN_BOOK / "entries" / ("%s.json" % _eid)
+    if not _zh_p.is_file() or not _en_p.is_file():
+        _bgbook9_bad("bgbook9-chapters", "缺条目文件（zh/en 各需一份）：%s" % _eid)
+        continue
+    _zh_e = json.loads(_zh_p.read_text(encoding="utf-8"))
+    _en_e = json.loads(_en_p.read_text(encoding="utf-8"))
+    if _zh_e.get("category") != "bettergold:merchant_antiques":
+        _bgbook9_bad("bgbook9-chapters",
+                     "%s 不挂在「商人与古董」类别下：%r" % (_eid, _zh_e.get("category")))
+    if _zh_e.get("name") != "%s.entry.%s" % (_BG9_LANG, _eid):
+        _bgbook9_bad("bgbook9-chapters",
+                     "%s 的 name 不是 %s.entry.%s" % (_eid, _BG9_LANG, _eid))
+    if _zh_e.get("icon") != "bettergold:%s" % _icon:
+        _bgbook9_bad("bgbook9-chapters",
+                     "%s 的封面图标不是 bettergold:%s：%r" % (_eid, _icon, _zh_e.get("icon")))
+    if _zh_e.get("sortnum") != _sort:
+        _bgbook9_bad("bgbook9-chapters", "%s 的 sortnum 不是 %d" % (_eid, _sort))
+    if _zh_e.get("pages") != _en_e.get("pages"):
+        _bgbook9_bad("bgbook9-chapters", "%s 的 zh/en 页列表不一致（结构必须双端相同）" % _eid)
+    _pages = _zh_e.get("pages") or []
+    _BG9_PAGES_TOTAL += len(_pages)
+    if len(_pages) != _cnt:
+        _bgbook9_bad("bgbook9-chapters",
+                     "%s 的页数不是 %d（章1 = 3 页；章2 = 7 页；章3 = 10 页 = 1 + 1 + 3 + 5）：%d"
+                     % (_eid, _cnt, len(_pages)))
+        continue
+    _seq_now = [str(_p.get("type")) for _p in _pages]
+    if _seq_now != _seq:
+        _bgbook9_bad("bgbook9-page-types", "%s 的页型序列不是 %s：%s" % (_eid, _seq, _seq_now))
+    for _i, _suffix in enumerate(_BG9_PROSE_SUFFIX[_eid]):
+        _key = "%s.page.%s_%s" % (_BG9_LANG, _eid, _suffix)
+        _BG9_TEXT_KEYS.append(_key)
+        _pg_i = None
+        for _n, _p in enumerate(_pages):
+            if _p.get("text") == _key:
+                _pg_i = _n
+        if _pg_i is None:
+            _bgbook9_bad("bgbook9-page-types",
+                         "%s 的第 %d 个正文页（%s）没有引用 %s" % (_eid, _i + 1, _suffix, _key))
+    for _n, _p in enumerate(_pages):
+        for _overflow in ("recipe3", "recipe4", "recipes"):
+            if _overflow in _p:
+                _bgbook9_bad("bgbook9-page-types",
+                             "%s 的页里出现 %s（Patchouli 只有 recipe / recipe2 两个槽）"
+                             % (_eid, _overflow))
+        if _p.get("type") not in _KNOWN_PAGE_TYPES:
+            _bgbook9_bad("bgbook9-page-types", "%s 用了未知页面类型 %s" % (_eid, _p.get("type")))
+        _want_items = _BG9_SPOTLIGHT_EXPECT[_eid][_n]
+        if _want_items is not None:
+            _it = _p.get("item")
+            _got_items = [_it] if isinstance(_it, str) else list(_it or [])
+            if _got_items != _want_items:
+                _bgbook9_bad("bgbook9-icons",
+                             "%s 第 %d 页的 spotlight 图标表不是 %s：%s"
+                             % (_eid, _n + 1, _want_items, _got_items))
+            for _one in _got_items:
+                _BG9_SPOTLIGHT_REFS.add(str(_one))
+        elif _p.get("type") == "patchouli:spotlight":
+            _bgbook9_bad("bgbook9-icons",
+                         "%s 第 %d 页多了一张没在 §九 里的 spotlight 图标表" % (_eid, _n + 1))
+        for _rk in ("recipe", "recipe2"):          # 收集**实际**引用（死链检查用，别收集期望值）
+            if isinstance(_p.get(_rk), str):
+                _BG9_RECIPE_REFS.add(_p[_rk])
+
+if _BG9_PAGES_TOTAL != 20:
+    _bgbook9_bad("bgbook9-chapters",
+                 "3 章合计页数不是 20（3 + 7 + 10）：%d —— 反空转守护" % _BG9_PAGES_TOTAL)
+
+# ---------- ② 配方：逐页钉住（含门禁项的 1 + 3 落法） ----------
+def _bg9_pages(eid: str) -> list:
+    _p = _ZH_BOOK / "entries" / ("%s.json" % eid)
+    if not _p.is_file():
+        return []
+    return json.loads(_p.read_text(encoding="utf-8")).get("pages") or []
+
+
+_bg9_intro_pages = _bg9_pages("merchant_intro")
+if len(_bg9_intro_pages) == 3:
+    if _bg9_intro_pages[1].get("recipe") != "bettergold:gold_exchange_counter" \
+            or "recipe2" in _bg9_intro_pages[1]:
+        _bgbook9_bad("bgbook9-recipes",
+                     "章1「（上边挂：易金柜台配方）」那一页不是单配方 gold_exchange_counter：%r"
+                     % (_bg9_intro_pages[1],))
+
+_bg9_antq_pages = _bg9_pages("merchant_antique_gear")
+if len(_bg9_antq_pages) == 10:
+    _want_tpl = ("bettergold:%s" % _BG9_TEMPLATE_RECIPES[0], "bettergold:%s" % _BG9_TEMPLATE_RECIPES[1])
+    if (_bg9_antq_pages[1].get("recipe"), _bg9_antq_pages[1].get("recipe2")) != _want_tpl:
+        _bgbook9_bad("bgbook9-recipes",
+                     "章3 第 2 页不是「两种」升级模板配方 %s：%r" % (_want_tpl, _bg9_antq_pages[1]))
+    for _i in range(0, 6, 2):
+        _pg = _bg9_antq_pages[2 + _i // 2]
+        _wa = "bettergold:upgrade_netherite_antique_%s" % _BG9_ANTIQUE_TRUE_ORDER[_i]
+        _wb = "bettergold:upgrade_netherite_antique_%s" % _BG9_ANTIQUE_TRUE_ORDER[_i + 1]
+        if (_pg.get("recipe"), _pg.get("recipe2")) != (_wa, _wb):
+            _bgbook9_bad("bgbook9-recipes",
+                         "章3 六件器具的升级配方顺序不对：第 %d 页期望 (%s, %s)，实际 %r"
+                         % (_i // 2 + 1, _wa, _wb, _pg))
+    _want_scrap = ("bettergold:%s" % _BG9_SCRAP_RECIPES[0], "bettergold:%s" % _BG9_SCRAP_RECIPES[1])
+    if (_bg9_antq_pages[8].get("recipe"), _bg9_antq_pages[8].get("recipe2")) != _want_scrap:
+        _bgbook9_bad("bgbook9-recipes",
+                     "章3「尘埃 → 小碎片 / 小碎片 → 碎片」那一页不是 %s：%r"
+                     % (_want_scrap, _bg9_antq_pages[8]))
+if len(_BG9_RECIPE_REFS) != 11:
+    _bgbook9_bad("bgbook9-recipes",
+                 "§九 的配方引用不是 11 条（1 易金柜台 + 2 升级模板 + 6 器具升级 + 2 尘埃/碎片）：%d"
+                 % len(_BG9_RECIPE_REFS))
+_bg9_missing_recipes = sorted(
+    _r for _r in _BG9_RECIPE_REFS
+    if not (_DATA / "bettergold" / "recipe" / (_r.split(":", 1)[1] + ".json")).is_file())
+if _bg9_missing_recipes:
+    _bgbook9_bad("bgbook9-recipe-refs",
+                 "§九 引用了不存在的配方（死链，游戏里那一页会空掉）：%s" % _bg9_missing_recipes[:5])
+if len(_BG9_SPOTLIGHT_REFS) != 19:
+    # 章1 1 + 章2 6 + 章3（6 + 2 + 4）= 19 个**互不重复**的图标引用；反空转守护
+    _bgbook9_bad("bgbook9-icons",
+                 "§九 的 spotlight 图标引用不是 19 个：%d —— 反空转守护" % len(_BG9_SPOTLIGHT_REFS))
+_bg9_missing_items = sorted(
+    _i for _i in _BG9_SPOTLIGHT_REFS
+    if ("item.bettergold.%s" % _i.split(":", 1)[1]) not in zh
+    and ("block.bettergold.%s" % _i.split(":", 1)[1]) not in zh)
+if _bg9_missing_items:
+    _bgbook9_bad("bgbook9-icons",
+                 "§九 的 spotlight 引用了没有语言键的物品/方块（图标会取不到）：%s"
+                 % _bg9_missing_items[:5])
+
+# ---------- ③ 逐字文案 / 页眉 / 章节名：期望值来自**仓库内冻结快照** ----------
+def _bg9_parse_snapshot() -> tuple:
+    """从冻结快照解析 (章节 id, 章节名, [(页后缀, 逐字文案 or None, 页眉 or None)])。
+
+    解析形状与本轮的语言键注入脚本**逐字同款**（改一处必须同步两处）。
+    """
+    _lines = _BG9_SNAPSHOT.read_text(encoding="utf-8").split("\n")
+    _ids = {1: "merchant_intro", 2: "merchant_gift_box", 3: "merchant_antique_gear"}
+    _suffix = {u"1 左": "1_left", u"1 右": "1_right", u"2 左": "2_left", u"2 右": "2_right",
+               u"3 左": "3_left", u"3 右": "3_right", u"4 左": "4_left"}
+
+    def _clean(_c: str) -> str:
+        _c = _c.split(u"<br>⚠")[0]        # 设计会话的批注（§9.3 第2页右）
+        return re.sub(r"\*\*(.+?)\*\*", r"\1", _c).strip()
+
+    def _prose(_c: str):
+        _b = _clean(_c)
+        if _b.startswith(u"（"):
+            _cut = _b.find(u"）")
+            if _cut >= 0:
+                _b = _b[_cut + 1:].strip()
+        if not _b or _b.startswith((u"上：", u"下：", u"放出")):
+            return None
+        return _b
+
+    _out, _cur, _name, _rows = [], None, None, []
+
+    def _flush():
+        if _cur:
+            _out.append((_cur, _name, list(_rows)))
+
+    for _ln in _lines:
+        _m = re.match(r"^#### 9\.\d 章节 (\d) · (.+?)(（封面：.*）)?$", _ln)
+        if _m:
+            _flush()
+            _cur, _name, _rows = _ids[int(_m.group(1))], _m.group(2).strip(), []
+            continue
+        if _ln.startswith("#### ") or _ln.startswith("## "):
+            _flush()
+            _cur, _name, _rows = None, None, []
+            continue
+        if not _ln.startswith("|") or "|---" in _ln:
+            continue
+        _safe = _ln.replace("\\|", "\x01")
+        _cells = [_c.replace("\x01", "|") for _c in _safe.split("|")[1:-1]]
+        if len(_cells) < 2:
+            continue
+        _label = _cells[0].strip().replace("*", "")
+        if _label in _suffix:
+            _tm = re.search(u"上边字体「(.+?)」", _cells[1])
+            _rows.append((_suffix[_label], _prose(_cells[1]),
+                          _tm.group(1) if _tm else None))
+    _flush()
+    return _out
+
+
+if not _BG9_SNAPSHOT.is_file():
+    _bgbook9_bad("bgbook9-texts-verbatim", "读不到冻结快照（逐字文案的期望值来源）：%s" % _BG9_SNAPSHOT)
+else:
+    _bg9_parsed = _bg9_parse_snapshot()
+    if len(_bg9_parsed) != 3:
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "从冻结快照解析到 %d 章（应 3 = 关于易金商人 / 礼品盒 / 古董器具；反空转守护）"
+                     % len(_bg9_parsed))
+    _bg9_texts, _bg9_titles, _bg9_names = [], [], []
+    for _eid, _name, _rows in _bg9_parsed:
+        _bg9_names.append(_name)
+        _nk = "%s.entry.%s" % (_BG9_LANG, _eid)
+        if zh.get(_nk) != _name:
+            _bgbook9_bad("bgbook9-texts-verbatim",
+                         "快照里的章节名 %r 没有按原样落在 %s 里（实际 %r）" % (_name, _nk, zh.get(_nk)))
+        _want_labels = _BG9_PROSE_SUFFIX.get(_eid, [])
+        for _suffix, _p, _t in _rows:
+            if _p is not None:
+                if _suffix not in _want_labels:
+                    _bgbook9_bad("bgbook9-texts-verbatim",
+                                 "%s 的快照里多出一页正文（%s）—— 与本关卡的页表不符" % (_eid, _suffix))
+                _k = "%s.page.%s_%s" % (_BG9_LANG, _eid, _suffix)
+                _bg9_texts.append(_p)
+                if zh.get(_k) != _p:
+                    _bgbook9_bad("bgbook9-texts-verbatim",
+                                 "快照里的逐字文案没有按原样落在 %s 里（首 30 字：%s）" % (_k, _p[:30]))
+            if _t is not None:
+                _tk = "%s.page.%s_%s_title" % (_BG9_LANG, _eid, _suffix)
+                _bg9_titles.append(_t)
+                if zh.get(_tk) != _t:
+                    _bgbook9_bad("bgbook9-texts-verbatim",
+                                 "快照里的页眉 %r 没有按原样落在 %s 里（实际 %r）"
+                                 % (_t, _tk, zh.get(_tk)))
+    if len(_bg9_texts) != 15 or sum(len(_t) for _t in _bg9_texts) < 600:
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 15 段 = 3 + 7 + 5、"
+                     "总字数 >= 600；反空转守护）"
+                     % (len(_bg9_texts), sum(len(_t) for _t in _bg9_texts)))
+    if len(_bg9_titles) != 3 or _bg9_titles != [u"古董武器工具", u"下界合金古董武器", u"下界合金古董工具"]:
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "从冻结快照解析到的页眉不是那三条「上边字体『…』」：%r" % (_bg9_titles,))
+    _bg9_missing_texts = [_t for _t in _bg9_texts if _t not in set(zh.values())]
+    if _bg9_missing_texts:
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
+                     % (len(_bg9_missing_texts), len(_bg9_texts), _bg9_missing_texts[0][:40]))
+    # ⚠ **待作者补原文**：§9.3 第 2 页右那处**空引号**（文档里写成 `〔待补〕` 占位）
+    #   ⇒ 本轮**不自行编文案**，逐字把占位落进语言文件，并在这里**钉住它仍然存在**
+    #   （谁把它填成自己编的章节名，这条就当场红）—— 口径写进 `docs/1.6-规格.md` §21。
+    _BG9_PLACEHOLDER = u"〔待补〕"
+    _bg9_todo_key = "%s.page.merchant_gift_box_2_right" % _BG9_LANG
+    if _BG9_PLACEHOLDER not in (zh.get(_bg9_todo_key) or ""):
+        _bgbook9_bad("bgbook9-todo-placeholder",
+                     "空引号那一处（%s）里的占位 %r 不见了 —— 作者还没补原文，"
+                     "不许自己编章节名（口径见 §21）" % (_bg9_todo_key, _BG9_PLACEHOLDER))
+    if _BG9_PLACEHOLDER not in _BG9_SNAPSHOT.read_text(encoding="utf-8"):
+        _bgbook9_bad("bgbook9-todo-placeholder",
+                     "冻结快照里也没有占位 %r ⇒ 快照被改写成了作者没给过的文案" % _BG9_PLACEHOLDER)
+    if u"待作者补原文" not in _bgfix_spec:
+        _bgbook9_bad("bgbook9-todo-placeholder",
+                     "docs/1.6-规格.md 没写明那一处是**待作者补原文**")
+    # 语言键：3 条目名 + 15 正文 + 3 页眉 = **21** 条，中英双端都要有（en 不许等于 zh / 不许为空）
+    _bg9_keys = (["%s.entry.%s" % (_BG9_LANG, _e) for _e, _i, _s, _c, _q in _BG9_ENTRY_META]
+                 + list(_BG9_TEXT_KEYS)
+                 + ["%s.page.%s_%s_title" % (_BG9_LANG, _e, _l)
+                    for _e, _ls in _BG9_TITLE_LABELS.items() for _l in _ls])
+    if len(_bg9_keys) != 21:
+        _bgbook9_bad("bgbook9-lang-bilingual",
+                     "§九 的语言键清单是 %d 条（应 21 = 3 + 15 + 3；反空转守护）" % len(_bg9_keys))
+    for _k in _bg9_keys:
+        if _k not in zh or _k not in en:
+            _bgbook9_bad("bgbook9-lang-bilingual", "§九 语言键缺中文或英文：%s" % _k)
+        elif not en[_k].strip() or en[_k] == zh[_k]:
+            _bgbook9_bad("bgbook9-lang-bilingual",
+                         "§九 的英文值缺失或与中文逐字相同（作者只给了中文，需要忠实英译）：%s" % _k)
+    # ⚠ 值级更正**只有一处**（§9.2 第 2 页左的「主要货币」，依据 VillageTrades:49-50）：
+    #   旧口径不许出现在语言文件里，但**必须**留在快照的《快照搬运记录》里（原文不删）。
+    _BG9_OLD_EMERALD = u"易金商人的支出与支入的货币并不是绿宝石"
+    if _BG9_OLD_EMERALD in set(zh.values()):
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "值级更正前的旧口径 %r 还在 zh_cn.json 里（应只留在快照的搬运记录里）"
+                     % _BG9_OLD_EMERALD)
+    _bg9_snap_all = _BG9_SNAPSHOT.read_text(encoding="utf-8")
+    if _BG9_OLD_EMERALD not in _bg9_snap_all:
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "旧口径原文 %r 没有留在快照里（既定口径：原文不删）" % _BG9_OLD_EMERALD)
+    # ⚠ **被退回的那次改写**（§9.3 第 1 页右："不会开出锻造模板 / 不联通第三方"那两句）：
+    #   本轮第一版按父代理口令改成了「并不能保证避开锻造模板…」，**随后被本轮的 A 级实测推翻前提**
+    #   （探针开 2000 次万宝礼物盒 ⇒ `smithing_templates=0`）⇒ 现行值 = **作者原文**。
+    #   三条判据：① 正文必须是作者原文；② **快照正文**里不许再出现被退回的那版；
+    #   ③ 被退回的那版**必须**留在快照的《快照搬运记录》里（原文不删 + 全过程记账）。
+    _BG9_AUTHOR_TEMPLATE = u"不会在该礼品盒内开出锻造模板"
+    _BG9_REVERTED_TEMPLATE = u"并不能保证避开锻造模板"
+    if _BG9_AUTHOR_TEMPLATE not in (zh.get("%s.page.merchant_gift_box_1_right" % _BG9_LANG) or ""):
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "手册里「不会在该礼品盒内开出锻造模板」那句不是**作者原文**了"
+                     "（本轮已按 A 级实测 0/2000 回退，见 §21.3 第 2/3 条）")
+    _bg9_snap_body = _bg9_snap_all.split(u"## 快照搬运记录")[0]
+    if not _bg9_snap_body:
+        _bgbook9_bad("bgbook9-texts-verbatim", "快照里找不到《快照搬运记录》分界（反空转守护）")
+    elif _BG9_REVERTED_TEMPLATE in _bg9_snap_body:
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "快照正文里还是那版**被退回的改写**「%s」（现行值必须是作者原文）"
+                     % _BG9_REVERTED_TEMPLATE)
+    if _BG9_REVERTED_TEMPLATE not in _bg9_snap_all:
+        _bgbook9_bad("bgbook9-texts-verbatim",
+                     "被退回的那版改写没有留在快照的《快照搬运记录》里"
+                     "（口径：改了又退回也要原文不删 + 记账）")
+
+# ---------- ④ 代码侧（§9.7，本轮唯一的行为要求）：古董工具挖「下界合金块 / 贵金建材」**只掉尘埃、不转换** ----------
+_bg9_blockdrops = method_body(_bgfix_mod, "public static void onBlockDrops(")
+if not _bg9_blockdrops:
+    _bgbook9_bad("bgbook9-dust-convert-exempt", "找不到 onBlockDrops 方法体（反空转守护）")
+else:
+    # ⚠ `clear()` 在 onBlockDrops 里有**两**处是**正确**的：① 远古残骸那条（镐 + 远古残骸 ⇒
+    #   1~3 碎片，**不受 §9.7 影响**、保持无条件）；② 尘埃那条（本轮被例外集合守卫包住）。
+    #   ⇒ 判据写成"恰好 2 处 + 其中**恰好 1 处**被 `if (!conversionExempt)` 守卫"。
+    if _bg9_blockdrops.count("event.getDrops().clear();") != 2:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "onBlockDrops 里 `event.getDrops().clear();` 不是恰好 2 处（远古残骸那条 + 尘埃那条；"
+                     "实际 %d）" % _bg9_blockdrops.count("event.getDrops().clear();"))
+    _bg9_guarded = re.findall(r"if \(!conversionExempt\) \{\s*event\.getDrops\(\)\.clear\(\);",
+                              _bg9_blockdrops)
+    if len(_bg9_guarded) != 1:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "被 `if (!conversionExempt)` 守卫的 `clear()` 不是恰好 1 处（实际 %d）⇒ 要么"
+                     "下界合金块 / 贵金建材**仍会被就地转换**（§9.7 的 ① 没关掉），要么把远古残骸"
+                     "那条也一起关掉了" % len(_bg9_guarded))
+    if "isDustConversionExempt(event.getState())" not in _bg9_blockdrops:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "onBlockDrops 没有按**方块状态**判例外集合（必须 `event.getState()`）")
+    if "new ItemStack(AllItems.NETHERITE_DUST.get(), count)" not in _bg9_blockdrops:
+        _bgbook9_bad("bgbook9-dust-extra-drop",
+                     "尘埃那一行不见了 ⇒ §9.7 的 ② 「尘埃该掉落还是会掉落」被一起关掉了")
+    for _needle, _why in (("float chance = 0.06F + 0.06F * fortune;",
+                           "概率公式被改了（应是 0.06 + 0.06×时运）"),
+                          ("int count = 1 + fortune / 2;",
+                           "数量公式被改了（应是 1 + 时运/2）"),
+                          ("Blocks.ANCIENT_DEBRIS",
+                           "黄泉引骸镐的「远古残骸 → 1~3 碎片」那条不见了（它不受 §9.7 影响）"),
+                          ("random.nextFloat() < chance && !event.getDrops().isEmpty()",
+                           "判定式被改了（§9.7 只许动 `clear()` 那两行，判定 / 随机数序列不许动）")):
+        if _needle not in _bg9_blockdrops:
+            _bgbook9_bad("bgbook9-dust-convert-exempt", _why)
+_bg9_exempt = method_body(_bgfix_mod, "private static boolean isDustConversionExempt(")
+if not _bg9_exempt:
+    _bgbook9_bad("bgbook9-dust-convert-exempt", "找不到 isDustConversionExempt 方法体（反空转守护）")
+else:
+    if "Blocks.NETHERITE_BLOCK" not in _bg9_exempt:
+        _bgbook9_bad("bgbook9-dust-convert-exempt", "例外集合里没有「下界合金块」")
+    if "MetalFamily.of(state.getBlock()) != null" not in _bg9_exempt:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "例外集合没有走 `MetalFamily.of(block)` 的**家族索引**"
+                     "（= 八族建材；写死清单会漏项 —— AGENTS 红线 2 的同一种形态）")
+    for _banned in ("_bricks", "_bricks_stairs", "_lantern", "_trapdoor", "_bars"):
+        if _banned in _bg9_exempt:
+            _bgbook9_bad("bgbook9-dust-convert-exempt",
+                         "例外集合里出现了写死的方块名后缀 %r ⇒ 以后加一族金属 / 加一种形态就会漏"
+                         % _banned)
+# 跨文件不变量：家族索引覆盖的正是**11 种形态**（§9.8 推断值 3 的那张清单）
+_bg9_mf_src = strip_comments((JAVA / "material" / "MetalFamily.java").read_text(encoding="utf-8"))
+_bg9_allblocks = re.search(r"this\.allBlocks = List\.of\((.*?)\);", _bg9_mf_src, re.S)
+if not _bg9_allblocks:
+    _bgbook9_bad("bgbook9-dust-convert-exempt", "读不到 MetalFamily 的 allBlocks 清单（反空转守护）")
+else:
+    _bg9_forms = re.findall(r"this\.(\w+)", _bg9_allblocks.group(1))
+    if len(_bg9_forms) != 11:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "MetalFamily.allBlocks 不是 11 种形态（实际 %d：%s）—— §9.7 的例外集合"
+                     "＝八族建材×11，形态数变了本关卡要跟着改" % (len(_bg9_forms), _bg9_forms))
+
+# ---------- ⑤ 文档侧：§九 的口径必须落档 ----------
+for _needle, _why in ((u"bg-book §九", "docs/1.6-规格.md 里没有 bg-book §九 这一轮的节"),
+                      (u"待作者补原文", "没写明空引号那一处**待作者补原文**"),
+                      (u"不就地转换", "没写 §9.7 的新行为要求（不就地转换）"),
+                      (u"以实际为准", "没写明十二条核对的处置口径（以实际为准 + 代码侧待办）"),
+                      (u"代码侧待办", "没列代码侧待办"),
+                      (u"锻造模板", "没写「万宝礼物盒不过滤锻造模板」这条**代码侧待办**")):
+    if _needle not in _bgfix_spec:
+        _bgbook9_bad("bgbook9-doc", "%s（缺 %s）" % (_why, _needle))
+
 print(f"bgfinal3 三条裁定（靛海金文档口径 / 手册任意一件 / 金胡萝卜 placed_block）问题: "
       f"{len(bgfinal3_problems)} {bgfinal3_problems[:8]}")
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
@@ -3384,10 +3870,13 @@ print(f"bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / �
 print(f"bg-book §八 追加轮（「装备的强化」9 章 / 类别改名 / 巫毒整套免疫中毒）问题: "
       f"{len(bgbook8_problems)} {bgbook8_problems[:8]}"
       f"（9 章 {_BG8_PAGES_TOTAL} 页 / 锻造引用 {len(_BG8_FORGE_REFS)} 条 / 胚底引用 {len(_BG8_BLANK_REFS)} 条）")
+print(f"bg-book §九 追加轮（「商人与古董」3 章 / §9.7 不就地转换 / 空引号占位）问题: "
+      f"{len(bgbook9_problems)} {bgbook9_problems[:8]}"
+      f"（3 章 {_BG9_PAGES_TOTAL} 页 / 配方引用 {len(_BG9_RECIPE_REFS)} 条 / 图标引用 {len(_BG9_SPOTLIGHT_REFS)} 个）")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
                or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
-               or bgfinal3_problems
+               or bgfinal3_problems or bgbook9_problems
                or symmetric_problems or beacon_problems) else 0)

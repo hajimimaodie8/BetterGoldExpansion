@@ -1,0 +1,17 @@
+build.gradle                                         want=2aac7860e5b1f031 got=2aac7860e5b1f031 OK
+src/main/java/com/hjmmd_8/bettergold/bettergold.java want=e2c293da27e15943 got=e2c293da27e15943 OK
+run/server.properties                                want=a2229937ba8ab742 got=a2229937ba8ab742 OK
+build/moddev/clientRunProgramArgs.txt                want=a365a5edf7abc44c got=a365a5edf7abc44c OK
+probe world already absent: run/bgbook9probe
+probe world already absent: run/saves/bgbook9cprobe
+run/saves 跑前 29 个文件 / 现在 29 个；仅在跑前=[] 仅在现在=[] 内容不同=[]
+evidence copied: bgbook9-perturb-result.txt -> 01-关卡扰动实测.txt
+evidence copied: bgbook9-run1-bg9p.txt -> 03-A级-runServer-不就地转换与礼物盒抽样.txt
+evidence copied: bgbook9-perturb.py -> 05-扰动脚本副本.py
+evidence copied: bgbook9-inject-lang.py -> 06-语言键注入脚本副本.py
+evidence copied: bgbook9-make-snapshot.py -> 07-快照搬运脚本副本.py
+evidence copied: bgbook9-fixture.py -> 09-跑测临时改动脚本副本.py
+evidence copied: bgbook9-manifest.py -> 10-逐文件SHA256-manifest脚本.py
+evidence copied: bgbook9-revert-fix1.py -> 15-回退改写脚本副本.py
+evidence copied: bgbook9-pre-manifest.txt -> 13-扰动前manifest.txt
+evidence copied: bgbook9-le.py -> 16-行尾与哈希实测脚本副本.py

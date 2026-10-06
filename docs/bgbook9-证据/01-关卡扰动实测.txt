@@ -1,0 +1,24 @@
+BASELINE-1 exit=0 (expect 0) -> OK
+P01 merchant_intro 的封面图标被改                               OK          exit=1 expected-id-hit=True
+P02 删掉 merchant_gift_box 条目（条目数 18->17）                  OK          exit=1 expected-id-hit=True
+P03 merchant_intro 少一页（3->2）                             OK          exit=1 expected-id-hit=True
+P04 配方页的页型被换成 text                                       OK          exit=1 expected-id-hit=True
+P05 正文键被改（2_left -> 1_left）                              OK          exit=1 expected-id-hit=True
+P06 章2 的 spotlight 图标被换                                  OK          exit=1 expected-id-hit=True
+P07 章3 六件器具的配方顺序被换（剑<->斧）                                OK          exit=1 expected-id-hit=True
+P08 配方指向不存在的 id（死链）                                      OK          exit=1 expected-id-hit=True
+P09 zh 里的一段逐字文案被改动                                       OK          exit=1 expected-id-hit=True
+P10 en 缺一个 §九 语言键（键名被改）                                  OK          exit=1 expected-id-hit=True
+P11 空引号那处被填成自编章节名（占位被覆盖）                                 OK          exit=1 expected-id-hit=True
+P12 冻结快照里的作者原文被改动（逐字文案的期望值来源）                            OK          exit=1 expected-id-hit=True
+P13 生成器的六件器具顺序被换                                         OK          exit=1 expected-id-hit=True
+P14 §九 作废的旧占位又回到产物里                                      OK          exit=1 expected-id-hit=True
+P15 §9.7 的例外守卫被反转（!conversionExempt -> conversionExempt） OK          exit=1 expected-id-hit=True
+P16 §9.7 的例外集合改成写死方块名（不再走家族索引）                           OK          exit=1 expected-id-hit=True
+P17 §9.7 把「尘埃照掉」那一行删掉                                    OK          exit=1 expected-id-hit=True
+P18 文档里的门禁口径句被改（不就地转换 -> 就地转换）                           OK          exit=1 expected-id-hit=True
+P20 把被退回的改写塞回快照正文                                        OK          exit=1 expected-id-hit=True
+P19 REVERSE CONTROL: 只加注释（必须仍绿）                          OK          exit=0 (must be 0)
+BASELINE-2 exit=0 (expect 0) -> OK
+
+cases=22 mismatches=0

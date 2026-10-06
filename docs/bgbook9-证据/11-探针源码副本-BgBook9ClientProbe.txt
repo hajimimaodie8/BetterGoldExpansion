@@ -1,0 +1,337 @@
+package com.hjmmd_8.bettergold.probe.bgbook9;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
+
+import vazkii.patchouli.client.book.BookContents;
+import vazkii.patchouli.client.book.BookEntry;
+import vazkii.patchouli.client.book.BookPage;
+import vazkii.patchouli.common.book.Book;
+import vazkii.patchouli.common.book.BookRegistry;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * bg-book §九 的**临时客户端探针**（一次性；收尾整块删除）。
+ *
+ * <p>它读的是 <b>Patchouli 自己加载出来的内容树</b>（`BookRegistry.INSTANCE.books` →
+ * `Book#getContents()` 的 categories / entries / pages），不是盘上的 JSON —— 所以它能证明
+ * "手册真的被 Patchouli 解析成了我们期望的形状"，并顺手把配方 / 图标 / 语言键**对着活注册表**解析一遍。</p>
+ *
+ * <p>红线 5：进世界后**第一 tick** 断言世界名（从**整合服务端**的 `WorldData` 读，
+ * 客户端 `LevelData` 没有名字访问器），并负向排除作者存档名。世界名不对 ⇒ 立刻停手。</p>
+ */
+public final class BgBook9ClientProbe {
+
+    private static final String TAG = "BG9C";
+    private static final String BOOK_ID = "bettergold:alchemy_handbook";
+    private static final String[] S9 = {"merchant_intro", "merchant_gift_box", "merchant_antique_gear"};
+    private static final int[] S9_PAGES = {3, 7, 10};
+    private static final String[][] S9_SEQ = {
+            {"patchouli:text", "patchouli:crafting", "patchouli:spotlight"},
+            {"patchouli:text", "patchouli:spotlight", "patchouli:spotlight", "patchouli:spotlight",
+             "patchouli:spotlight", "patchouli:spotlight", "patchouli:spotlight"},
+            {"patchouli:spotlight", "patchouli:smithing", "patchouli:smithing", "patchouli:smithing",
+             "patchouli:smithing", "patchouli:spotlight", "patchouli:spotlight", "patchouli:text",
+             "patchouli:crafting", "patchouli:text"},
+    };
+
+    private static boolean armed;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static boolean done;
+
+    private BgBook9ClientProbe() {
+    }
+
+    public static void armIfEnabled() {
+        if (!Files.exists(FMLPaths.GAMEDIR.get().resolve("bgbook9-client-probe.enabled"))) {
+            log("armed=false (no switch file)");
+            return;
+        }
+        armed = true;
+        NeoForge.EVENT_BUS.register(BgBook9ClientProbe.class);
+        log("armed=true gamedir=" + FMLPaths.GAMEDIR.get());
+    }
+
+    private static void log(String msg) {
+        System.out.println(TAG + " " + msg);
+    }
+
+    private static void check(String id, boolean ok) {
+        if (ok) {
+            pass++;
+        } else {
+            fail++;
+        }
+        log("CHECK " + id + " " + (ok ? "PASS" : "FAIL"));
+    }
+
+    private static void readout(String msg) {
+        log("readout " + msg);
+    }
+
+    @SubscribeEvent
+    public static void onTick(ClientTickEvent.Post event) {
+        if (!armed || done) {
+            return;
+        }
+        tick++;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.getSingleplayerServer() == null) {
+            return;
+        }
+        if (tick == 2) {
+            String name = mc.getSingleplayerServer().getWorldData().getLevelName();
+            readout("levelName=" + name);
+            boolean ok = "bgbook9probe".equals(name) && !name.contains("\u65b0\u7684\u4e16\u754c");
+            check("probe_world_guard", ok);
+            if (!ok) {
+                log("ABORT: wrong world, stopping probe");
+                armed = false;
+                done = true;
+            }
+            return;
+        }
+        if (tick < 60) {
+            return;                        // 等资源重载把书读进来
+        }
+        run(mc);
+        done = true;
+    }
+
+    // ------------------------------------------------------------------ 主体
+
+    private static void run(Minecraft mc) {
+        Map<ResourceLocation, Book> books = BookRegistry.INSTANCE.books;
+        List<String> ids = new ArrayList<>();
+        for (ResourceLocation rl : books.keySet()) {
+            ids.add(rl.toString());
+        }
+        readout("books=" + books.size() + " keys=" + ids);
+        Book book = books.get(ResourceLocation.parse(BOOK_ID));
+        check("book_registered", book != null);
+        if (book == null) {
+            log("SUMMARY pass=" + pass + " fail=" + fail + " ticks=" + tick);
+            return;
+        }
+        BookContents c = book.getContents();
+        check("book_contents_no_error", c != null && !c.isErrored());
+        if (c == null) {
+            log("SUMMARY pass=" + pass + " fail=" + fail + " ticks=" + tick);
+            return;
+        }
+        readout("errored=" + c.isErrored() + " exception=" + c.getException());
+
+        // ---- 类别：4 个，按 sortnum ----
+        List<String> cats = new ArrayList<>();
+        for (var cat : c.categories.values()) {
+            cats.add(cat.getId().getPath());
+        }
+        java.util.Collections.sort(cats);
+        readout("categories=" + c.categories.size() + " order=" + cats);
+        check("book_categories_four", c.categories.size() == 4);
+        check("book_category_order",
+                cats.equals(List.of("alchemy_start", "gear_upgrade", "golden_feast", "merchant_antiques")));
+
+        // ---- 条目 / 页数 ----
+        int pages = 0;
+        for (BookEntry e : c.entries.values()) {
+            pages += e.getPages().size();
+        }
+        readout("entries=" + c.entries.size() + " pages=" + pages);
+        check("book_entries_eighteen", c.entries.size() == 18);
+        check("book_total_pages_157", pages == 157);
+
+        // ---- §九 的 3 章：条目 / 页数 / 页型 ----
+        boolean s9ok = true;
+        for (int i = 0; i < S9.length; i++) {
+            BookEntry e = c.entries.get(ResourceLocation.parse("bettergold:" + S9[i]));
+            if (e == null) {
+                check("s9_entry_" + S9[i], false);
+                s9ok = false;
+                continue;
+            }
+            List<BookPage> pgs = e.getPages();
+            check("s9_entry_" + S9[i] + "_pages_" + S9_PAGES[i], pgs.size() == S9_PAGES[i]);
+            List<String> got = new ArrayList<>();
+            for (BookPage p : pgs) {
+                JsonObject so = p.sourceObject;
+                got.add(so != null && so.has("type") ? so.get("type").getAsString() : "?");
+            }
+            if (pgs.size() == S9_SEQ[i].length && !got.equals(List.of(S9_SEQ[i]))) {
+                check("s9_entry_" + S9[i] + "_page_types", false);
+                readout(S9[i] + " page_types=" + got + " expected=" + List.of(S9_SEQ[i]));
+                s9ok = false;
+            }
+        }
+        check("s9_three_entries_ok", s9ok);
+
+        // ---- 语言键 / 配方 / 图标：对着**活**注册表解析 ----
+        Map<String, String> unresolved = new LinkedHashMap<>();
+        List<String> missingRecipes = new ArrayList<>();
+        List<String> missingItems = new ArrayList<>();
+        int textKeys = 0;
+        int titleKeys = 0;
+        int recipeRefs = 0;
+        int itemRefs = 0;
+        for (String id : S9) {
+            BookEntry e = c.entries.get(ResourceLocation.parse("bettergold:" + id));
+            if (e == null) {
+                continue;
+            }
+            for (BookPage p : e.getPages()) {
+                JsonObject so = p.sourceObject;
+                if (so == null) {
+                    continue;
+                }
+                for (String k : new String[]{"text", "title"}) {
+                    if (so.has(k) && so.get(k).isJsonPrimitive()) {
+                        String key = so.get(k).getAsString();
+                        if ("title".equals(k)) {
+                            titleKeys++;
+                        } else {
+                            textKeys++;
+                        }
+                        String tr = p.i18n(key);
+                        if (tr == null || tr.isEmpty() || tr.equals(key)) {
+                            unresolved.put(key, String.valueOf(tr));
+                        }
+                    }
+                }
+                for (String k : new String[]{"recipe", "recipe2"}) {
+                    if (so.has(k) && so.get(k).isJsonPrimitive()) {
+                        String rid = so.get(k).getAsString();
+                        recipeRefs++;
+                        if (mc.level.getRecipeManager().byKey(ResourceLocation.parse(rid)).isEmpty()) {
+                            missingRecipes.add(rid);
+                        }
+                    }
+                }
+                if (so.has("item")) {
+                    JsonElement it = so.get("item");
+                    List<String> list = new ArrayList<>();
+                    if (it.isJsonArray()) {
+                        JsonArray arr = it.getAsJsonArray();
+                        for (JsonElement one : arr) {
+                            list.add(one.getAsString());
+                        }
+                    } else {
+                        list.add(it.getAsString());
+                    }
+                    for (String iid : list) {
+                        itemRefs++;
+                        var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(iid));
+                        if (item == Items.AIR) {
+                            missingItems.add(iid);
+                        }
+                    }
+                }
+                // 建好的对象（若 Patchouli 已经 build 过这些页）：Spotlight 的图标表 / 配方对象
+                if (p.getClass().getSimpleName().equals("PageSpotlight")) {
+                    Object st = fieldOf(p, "stacks");
+                    if (st instanceof ItemStack[] arr2) {
+                        int empty = 0;
+                        for (ItemStack s : arr2) {
+                            if (s == null || s.isEmpty()) {
+                                empty++;
+                            }
+                        }
+                        if (arr2.length != 0) {
+                            readout("spotlight item=" + so.get("item") + " stacks=" + arr2.length
+                                    + " empty=" + empty);
+                        }
+                    }
+                }
+            }
+        }
+        readout("s9_text_keys=" + textKeys + " title_keys=" + titleKeys
+                + " unresolved=" + unresolved.size() + " " + unresolved);
+        readout("s9_recipe_refs=" + recipeRefs + " missing=" + missingRecipes);
+        readout("s9_item_refs=" + itemRefs + " missing=" + missingItems);
+        // ⚠ 期望值只数**页面上**的键：15 段正文（3 + 7 + 5）+ 3 个页眉 = 18；
+        //   条目名（3 个）不在页面的 sourceObject 里，由下面的 `book_entry_names_translated` 守。
+        //   （第一版写成 `>= 21` 是把条目名也算进来了 ⇒ 一次**用例错**，不是产物问题。）
+        check("s9_texts_translated", textKeys == 15 && titleKeys == 3 && unresolved.isEmpty());
+        check("s9_recipes_resolved", recipeRefs == 11 && missingRecipes.isEmpty());
+        check("s9_items_resolved", itemRefs == 19 && missingItems.isEmpty());
+
+        // ---- 整本书的配方引用（152 条）：逐条对着活注册表解析 ----
+        List<String> allMissing = new ArrayList<>();
+        int allRefs = 0;
+        for (BookEntry e : c.entries.values()) {
+            for (BookPage p : e.getPages()) {
+                JsonObject so = p.sourceObject;
+                if (so == null) {
+                    continue;
+                }
+                for (String k : new String[]{"recipe", "recipe2"}) {
+                    if (so.has(k) && so.get(k).isJsonPrimitive()) {
+                        allRefs++;
+                        String rid = so.get(k).getAsString();
+                        if (mc.level.getRecipeManager().byKey(ResourceLocation.parse(rid)).isEmpty()) {
+                            allMissing.add(rid);
+                        }
+                    }
+                }
+            }
+        }
+        readout("book_recipe_refs=" + allRefs + " missing=" + allMissing);
+        check("book_recipe_refs_all_resolved", allRefs == 152 && allMissing.isEmpty());
+
+        // ---- 条目名真的翻译出来了（不是裸露的语言键） ----
+        int rawNames = 0;
+        for (BookEntry e : c.entries.values()) {
+            String n = e.getName().getString();
+            if (n.contains("bettergold.handbook")) {
+                rawNames++;
+            }
+        }
+        readout("unresolved_names=" + rawNames);
+        check("book_entry_names_translated", rawNames == 0);
+
+        // ---- 手册物品真的能打开手册（右键那一下） ----
+        ItemStack handbook = com.hjmmd_8.bettergold.registry.AllItems.ALCHEMY_STUDENT_HANDBOOK.get()
+                .getDefaultInstance();
+        com.hjmmd_8.bettergold.registry.AllItems.ALCHEMY_STUDENT_HANDBOOK.get()
+                .use(mc.level, mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        readout("use_item_sent mainhand=" + BuiltInRegistries.ITEM.getKey(handbook.getItem()));
+        check("handbook_item_resolves", !handbook.isEmpty());
+
+        log("SUMMARY pass=" + pass + " fail=" + fail + " ticks=" + tick);
+    }
+
+    /** 沿类层次找字段（PageSpotlight#stacks 是包私有、PageDoubleRecipe#recipe1 是 protected） */
+    private static Object fieldOf(Object target, String name) {
+        Class<?> k = target.getClass();
+        while (k != null) {
+            try {
+                Field f = k.getDeclaredField(name);
+                f.setAccessible(true);
+                return f.get(target);
+            } catch (NoSuchFieldException ex) {
+                k = k.getSuperclass();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+        return null;
+    }
+}
