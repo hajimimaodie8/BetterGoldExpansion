@@ -49,6 +49,33 @@ BEACON_NON_FAMILY = ["bettergold:gold_bricks", "bettergold:gold_pillar"]
 TOOLS = {"swords": "sword", "pickaxes": "pickaxe", "axes": "axe", "shovels": "shovel", "hoes": "hoe"}
 ARMOR = {"head_armor": "helmet", "chest_armor": "chestplate", "leg_armor": "leggings", "foot_armor": "boots"}
 
+# --------------------------------------------------------------------------------------
+# bg-fix3（2026-10-07）：**带"可选条目"的物品标签**（条目写成 {"id": ..., "required": false}）
+# --------------------------------------------------------------------------------------
+# 依据（【读源码】patched 1.21.1，落在 docs/1.6-规格.md §二十二）：
+#   * `TagEntry.FULL_CODEC` 有 `"required"` 字段（`Codec.BOOL.optionalFieldOf("required", true)`）；
+#   * `TagLoader` 里"**必需**条目缺失" ⇒ `LOGGER.error("Couldn't load tag … as it is missing …")`
+#     并**整条 tag 丢弃**；写 `required:false` 的条目缺失 ⇒ `TagEntry#build` 返回 true、**静默跳过**，
+#     tag 照常加载（可能为空集）。
+#
+# 用途：成就判据里要引用"**只在装了某个可选模组时才存在**的物品"时（乐事小刀 / 帕秋莉手册物品），
+#   唯一既能把物品纳入判据、又不会在"没装"时把整份 JSON 弄坏的写法 = **成就的 items 指向本标签**
+#   （`ItemPredicate.items` 是 `HolderSet` ⇒ 接受 `"#ns:tag"` 这种**单个字符串**形式），
+#   标签里那些条目写成 `required:false`。
+#   ⚠ 不许把 tag 塞进 `items` 的**列表**里同别的 id 混写：`HolderSetCodec` 的
+#     `ExtraCodecs.ensureHomogenous(Holder::kind)` 只接受同一种 Holder 形态 ⇒ 混合列表解码失败。
+#   ⚠ 也不许"用 neoforge:conditions 把整个成就文件关掉"：那样没装乐事时这 8 条成就**整个消失**。
+OPTIONAL_ITEM_TAG_VALUES: dict[str, list[dict]] = {}
+# 8 把乐事小刀（`<族>_knife`，FdItems 反射注册 ⇒ 没装 FD 时物品不存在）
+#   → 8 条「获得任意一种 XX金武器工具」成就的 `have_knife` 判据各读自己那一张标签。
+for _m in ALL_METALS:
+    OPTIONAL_ITEM_TAG_VALUES["%s_knives" % _m] = [
+        {"id": "bettergold:%s_knife" % _m, "required": False}]
+# 手册物品（bg-book：**没装 Patchouli 时根本不注册**）→ 根成就「旧时代炼金术的继承者」的
+#   判据由 `recipe_crafted` 改成 `inventory_changed`（作者 2026-10-07「触发条件是**获得**」）。
+OPTIONAL_ITEM_TAG_VALUES["handbook"] = [
+    {"id": "bettergold:alchemy_student_handbook", "required": False}]
+
 # 目标文件 -> 要并入的物品/方块 id 列表
 def build_plan() -> dict[Path, list[str]]:
     plan: dict[Path, list[str]] = {}
@@ -103,6 +130,29 @@ def merge(path: Path, values: list[str], apply: bool) -> tuple[int, int]:
     return len(added), len(current) + len(added)
 
 
+def write_optional_tag(path: Path, values: list[dict], apply: bool) -> tuple[int, int]:
+    """写一张**完全由本生成器拥有**的可选条目标签（内容≠计划就整份重写）。
+
+    ⚠ 与 `merge()` 的"只增不删"不同：这 9 张标签没有任何手写历史（bg-fix3 新建），
+    所以按"生成器是唯一真源"整份重写 —— 手改回去下次重跑就会被纠正。
+    ⇒ 返回 (写入前的条目数, 写入后的条目数)。
+    """
+    want = {"replace": False, "values": list(values)}
+    before = 0
+    if path.is_file():
+        try:
+            before = len(json.loads(path.read_text(encoding="utf-8")).get("values", []))
+        except Exception:  # noqa: BLE001  坏文件也照样被重写
+            before = 0
+        if json.loads(path.read_text(encoding="utf-8")) == want:
+            return before, len(values)
+    if apply:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(want, ensure_ascii=False, indent=2) + "\n",
+                        encoding="utf-8", newline="\n")
+    return before, len(values)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
@@ -117,6 +167,18 @@ def main() -> None:
         flag = "" if added else "  (已是最新)"
         print(f"{str(rel):<58} +{added:<3} 共 {size}{flag}")
     print(f"{'已写入' if args.apply else '演练'}: 共新增 {total_added} 条标签归属")
+
+    # bg-fix3：9 张"可选条目"标签（8 把乐事小刀 + 手册物品），见文件头 `OPTIONAL_ITEM_TAG_VALUES`
+    optional_changed = 0
+    for name, values in sorted(OPTIONAL_ITEM_TAG_VALUES.items()):
+        path = DATA / "bettergold" / "tags" / "item" / ("%s.json" % name)
+        before, after = write_optional_tag(path, values, args.apply)
+        if before != after:
+            optional_changed += 1
+        print(f"{'可选标签 ' + str(path.relative_to(DATA)):<58} {before} -> {after}"
+              f"{'' if before != after else '  (已是最新)'}")
+    print(f"{'已写入' if args.apply else '演练'}: 可选条目标签 {len(OPTIONAL_ITEM_TAG_VALUES)} 张，"
+          f"其中内容变化 {optional_changed} 张")
 
 
 if __name__ == "__main__":

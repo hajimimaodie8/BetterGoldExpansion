@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:metal/flamegold/ingot",
+  "parent": "bettergold:metal/flamegold/weapon",
   "display": {
     "icon": {
       "id": "bettergold:flamegold_chestplate",
@@ -10,7 +10,8 @@
     },
     "description": {
       "translate": "advancements.bettergold.flamegold_armor.description"
-    }
+    },
+    "frame": "challenge"
   },
   "criteria": {
     "armor_helmet": {

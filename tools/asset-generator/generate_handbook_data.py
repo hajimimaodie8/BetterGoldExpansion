@@ -183,6 +183,26 @@ def entry(name, category_name, icon, sortnum, pages):
 # --------------------------------------------------------------------------------------
 
 
+# --------------------------------------------------------------------------------------
+# ⛔ bg-fix3 §三（作者 2026-10-07）：「将手册中"**贵金的材料链**"与"**升级锻造模版**"两部分删去」
+# --------------------------------------------------------------------------------------
+#
+# 取证（先做过才动手）：手册**实际数据里真的有这两节** ——
+#   * 「贵金的材料链」  = 条目 `metal_tour`（条目名的语言键值逐字就是这五个字），9 页；
+#   * 「升级锻造模板」  = 条目 `upgrade_templates`（作者写「模版」、语言键里是「模板」，同一样东西），5 页；
+#   两者都挂在类别 `alchemy_start`（炼金的起步）下，sortnum 0 / 1。
+#   ⇒ 不是"数据侧本来没有"：这是**上一轮骨架轮**留下的两个条目（§10.4 的"随便写点什么"骨架）。
+#   （对照：作者 10-05 提过的「装备的升级」类别 + 章3 第 1 页 已在 §八 处理掉了 —— 那是**另一批**。）
+#
+# ⚠ **内容不凭空消失**：两个构造函数**原样保留在下面**（一行都没删），
+#   由 `RETIRED_ENTRIES` 引用、并在 `main()` 里照常自证它们的页数（9 / 5）；
+#   全文对照（页型序列 / 页数 / 图标 / 配方引用）落在 `docs/1.6-规格.md` §二十二。
+#   ⇒ 以后谁要看"当年那条材料链 / 那张模板表长什么样"，读这里即可，不必翻 git 历史。
+# ⚠ 它们引用的语言键（`entry.metal_tour` / `page.metal_tour` / `page.metal_chain` /
+#   `entry.upgrade_templates` / `page.upgrade_templates`）**原样留在两份语言文件里**作历史留档。
+RETIRED_BY_BGFIX3 = ["metal_tour", "upgrade_templates"]
+
+
 def entry_metal_tour():
     pages = [text_page("%s.page.metal_tour" % LANG)]
     for metal, core in METALS:
@@ -248,7 +268,9 @@ def entry_armor_per_family():
     return entry("armor_per_family", "gear_upgrade", "sturdygold_chestplate", 1, pages)
 
 
-RETIRED_ENTRIES = [entry_tools_per_family, entry_armor_per_family]
+RETIRED_ENTRIES = [entry_tools_per_family, entry_armor_per_family,
+                   # ⛔ bg-fix3 §三（2026-10-07）：这两个条目已作废，见上方那段取证注释
+                   entry_metal_tour, entry_upgrade_templates]
 
 
 
@@ -290,10 +312,12 @@ def entry_antiques():
 RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_merchant, entry_antiques]
 
 ENTRIES = [
-    entry_metal_tour,
-    entry_upgrade_templates,
-    # ⛔ entry_tools_per_family / entry_armor_per_family —— §八 作废，见上方 RETIRED_ENTRIES
+    # ⛔ entry_metal_tour —— bg-fix3 §三 作废（作者 2026-10-07「贵金的材料链」），见上方注释
+    # ⛔ entry_upgrade_templates —— bg-fix3 §三 作废（作者 2026-10-07「升级锻造模版」）
+    # ⚠ 旧结构原文保留：本轮之前这里依次是
+    #     [entry_metal_tour, entry_upgrade_templates, entry_golden_feast]（骨架 3 条）。
     entry_golden_feast,
+    # ⛔ entry_tools_per_family / entry_armor_per_family —— §八 作废，见上方 RETIRED_ENTRIES
     # ⛔ entry_merchant / entry_antiques —— §九 作废，见上方 RETIRED_ENTRIES
 ]
 
@@ -731,10 +755,12 @@ def main():
            len(entry_merchant_antique_gear()["pages"]))
     )
     print(
-        "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位，不写盘): "
-        "tools=%d + armor=%d + merchant=%d + antiques=%d = %d"
+        "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位 + bg-fix3 §三 两个骨架条目，不写盘): "
+        "tools=%d + armor=%d + merchant=%d + antiques=%d + metal_tour=%d + upgrade_templates=%d = %d"
         % (len(entry_tools_per_family()["pages"]), len(entry_armor_per_family()["pages"]),
-           len(entry_merchant()["pages"]), len(entry_antiques()["pages"]), retired_pages)
+           len(entry_merchant()["pages"]), len(entry_antiques()["pages"]),
+           len(entry_metal_tour()["pages"]), len(entry_upgrade_templates()["pages"]),
+           retired_pages)
     )
 
 

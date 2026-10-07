@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:root",
+  "parent": "bettergold:alchemy/mixed_crystal_pile",
   "display": {
     "icon": {
       "id": "bettergold:alchemic_fuel",

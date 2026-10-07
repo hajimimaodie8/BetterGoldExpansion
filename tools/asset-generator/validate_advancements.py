@@ -41,7 +41,13 @@ EXPECTED_COUNT = 51
 FD_CONDITION = [{"type": "neoforge:mod_loaded", "modid": "farmersdelight"}]
 FD_PATHS = {"agriculture/alchemical_meat", "agriculture/midas_feast_2",
             "agriculture/sturdygold_feast_2"}
-CHALLENGE_PATHS = {"metal/sturdygold/skeleton"}
+# ⛔ **bg-fix3 §五②（作者 2026-10-07）**：「贵金相关的进度排版…**盔甲部分属于挑战进度**」
+#   ⇒ challenge 从 1 条变成 **9 条**（8 条 armor + 骷髅打金服）。
+#   ⚠ 旧期望原文保留（未删）：`CHALLENGE_PATHS = {"metal/sturdygold/skeleton"}`（只有万坚金的骷髅那条）。
+CHALLENGE_PATHS = {"metal/sturdygold/skeleton"} | {
+    f"metal/{m}/armor" for m in
+    ("flamegold", "sturdygold", "thornsgold", "echogold",
+     "indigoseagold", "voodoogold", "thundergold", "illusiongold")}
 TRIGGER_WHITELIST = {
     "minecraft:inventory_changed", "minecraft:recipe_crafted", "minecraft:villager_trade",
     "minecraft:player_hurt_entity", "minecraft:placed_block", "minecraft:item_used_on_block",
@@ -49,6 +55,25 @@ TRIGGER_WHITELIST = {
 # 本仓只用到这两个原版物品（金苹果 / 金胡萝卜是原版金食物）
 VANILLA_ITEMS = {"minecraft:gold_ingot", "minecraft:golden_apple", "minecraft:golden_carrot"}
 VANILLA_TAGS = {"#minecraft:hoes", "#minecraft:skeletons"}
+
+# ==================== bg-fix3（2026-10-07）新增的两族自检 ====================
+# ① 乐事小刀：8 条武器成就各有一条 `have_knife` 判据，`items` 指向**该族自己的**物品标签。
+# ② 手册：根成就的判据从 `recipe_crafted` 改成 `inventory_changed` + `#bettergold:handbook` 标签。
+# 两条都用"**带 `required:false` 条目的标签**"承载"只在装了可选模组时才存在的物品" —— 依据是
+# 读 patched 1.21.1 源码得到的三条硬事实（见 docs/1.6-规格.md §二十二）：
+#   * `TagEntry.FULL_CODEC` 有 `required` 字段（默认 true）；写 false 的条目缺失⇒静默跳过；
+#   * `HolderSetCodec.lookupTag`：**标签本身不存在** ⇒ `Missing tag` ⇒ 整份 JSON 解析失败
+#     ⇒ 所以标签文件必须**无条件存在**（不能用 neoforge:conditions 关掉）；
+#   * `HolderSetCodec.homogenousList` 的 `ensureHomogenous(Holder::kind)` ⇒ `items` 的**列表**
+#     里不许混进 `#tag` ⇒ 标签必须写成**单个字符串**。
+METALS_ORDER = ("flamegold", "sturdygold", "thornsgold", "echogold",
+                "indigoseagold", "voodoogold", "thundergold", "illusiongold")
+BGFIX3_KNIFE_TAGS = {f"#{NS}:{m}_knives": m for m in METALS_ORDER}
+BGFIX3_HANDBOOK_TAG = f"#{NS}:handbook"
+BGFIX3_HANDBOOK_ITEM = f"{NS}:alchemy_student_handbook"
+BGFIX3_TAG_FILES = {f"{m}_knives": [f"{NS}:{m}_knife"] for m in METALS_ORDER}
+BGFIX3_TAG_FILES["handbook"] = [BGFIX3_HANDBOOK_ITEM]
+TAG_DIR = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "tags" / "item"
 
 # 1.6 收尾轮 bg-final 第 2 件：**英文值必须是真英译**（旧口径 = 复制中文，已推翻）。
 # 唯一的豁免口子是"纯符号 / 数字类标题"——当前**一条都没有**（空集）。
@@ -111,6 +136,18 @@ def registry_ids() -> set[str]:
             ids.add(f"{NS}:{f}")
     # 金属族注册用的也是同一个 ITEMS.register，上面的正则已覆盖 `this.id + "_ingot"` 之外的写法；
     # 但 `this.id + "_x"` 是拼出来的 ⇒ 由上面的 metals×suffixes 组合补齐（两路互为印证）。
+    #
+    # bg-fix3 §四：**手册物品**的 id 走的既不是「金属族组合」也不是 `.register("字面量")` ——
+    #   `patchouli/HandbookModule.java` 里是 `items.register(ITEM_PATH, …)`（常量），而且它
+    #   **只在装了 Patchouli 时才注册**（AGENTS.md 红线 10 的口径 B）。
+    #   ⇒ 真源 = 那个常量本身（解析不到就报红，不能让"条件注册的物品"变成不可核实的黑洞）。
+    _handbook_src = strip_comments(read(JAVA / "patchouli" / "HandbookModule.java"))
+    _hm = re.search(r'ITEM_PATH\s*=\s*"([a-z0-9_]+)"', _handbook_src)
+    if not _hm:
+        bad("bgach-registry-anti-vacuum",
+            "patchouli/HandbookModule.java 里解析不到 ITEM_PATH（真源解析器坏了？）")
+    else:
+        ids.add(f"{NS}:{_hm.group(1)}")
     for must in (f"{NS}:mixed_crystal_pile", f"{NS}:golden_cowrie", f"{NS}:gilded_gold_ticket",
                  f"{NS}:gift_gold_ticket", f"{NS}:golden_bone_meal",
                  f"{NS}:treasure_gift_box", f"{NS}:alchemy_materials_box",
@@ -251,12 +288,26 @@ def main() -> int:
             bad("bgach-tree-manifest", f"{k} 的 parent 与清单不一致：{v.get('parent')} vs {want}")
     # 三条"形状"硬断言（需求 §2.1 的核定树）
     root_kids = sorted(children.get(f"{NS}:root", []))
-    want_root_kids = sorted([f"{NS}:alchemy/mixed_crystal_pile", f"{NS}:alchemy/alchemic_fuel",
-                             f"{NS}:treasure/any_core_material",
+    # ⛔ **bg-fix3 §五（作者 2026-10-07）把根链改成"链式"** ⇒ root 的孩子从 5 条变 **3 条**
+    #   （炼制I + 两条农业成就；炼制II 与寻途挂到链上去了）。
+    #   ⚠ 旧期望原文保留（未删）：原来这里是 5 条并列
+    #     `{alchemy/mixed_crystal_pile, alchemy/alchemic_fuel, treasure/any_core_material,
+    #       agriculture/gold_infused_dirt, agriculture/alchemical_meat}`。
+    want_root_kids = sorted([f"{NS}:alchemy/mixed_crystal_pile",
                              f"{NS}:agriculture/gold_infused_dirt",
                              f"{NS}:agriculture/alchemical_meat"])
     if root_kids != want_root_kids:
-        bad("bgach-shape-root-children", f"根的孩子不是 5 条并列：{root_kids}")
+        bad("bgach-shape-root-children",
+            f"根的孩子不是「炼制I + 两条农业成就」这 3 条（bg-fix3 §五 链式；旧口径 5 条并列已作废）："
+            f"{root_kids}")
+    # bg-fix3 §五：根链逐节咬合 root -> 炼制I -> 炼制II -> 寻途（作者 2026-10-07 重述的链）
+    for _child, _parent in (("alchemy/mixed_crystal_pile", "root"),
+                            ("alchemy/alchemic_fuel", "alchemy/mixed_crystal_pile"),
+                            ("treasure/any_core_material", "alchemy/alchemic_fuel")):
+        _got = advs.get(_child, {}).get("parent")
+        if _got != f"{NS}:{_parent}":
+            bad("bgfix3-root-chain",
+                f"{_child} 的 parent 应是 {_parent}（bg-fix3 §五 的链式根链），实际 {_got}")
     tr_kids = sorted(children.get(f"{NS}:treasure/any_core_material", []))
     if len(tr_kids) != 9:
         bad("bgach-shape-treasure-children", f"「寻途千里的珍宝」的孩子应为 9 条（实际 {len(tr_kids)}）")
@@ -265,6 +316,30 @@ def main() -> int:
                              f"{NS}:merchant/gold_ticket"])
     if gold_kids != want_gold_kids:
         bad("bgach-shape-gold-split", f"「染上黄金吧」的 3 个孩子不对：{gold_kids}")
+
+    # ---- 2b. bg-fix3 §五①：每条金属分支的四级必须是「核心材料 → 锭 → 武器工具 → 盔甲」----
+    #   ⚠ 旧口径（原文保留，未删）：除万坚金外的 7 族把「盔甲」挂在**锭**下（与武器并列），
+    #     只有万坚金那条挂在武器下；作者 2026-10-07 给的排版是四级链 ⇒ 八族一律挂武器下。
+    _core_of = {"flamegold": "treasure/blazing_rod",
+                "sturdygold": "treasure/golden_cowrie",
+                "thornsgold": "treasure/glittering_vine",
+                "echogold": "treasure/bundled_echo_shard",
+                "indigoseagold": "treasure/indigo_ocean_heart",
+                "voodoogold": "treasure/voodoo_feather",
+                "thundergold": "treasure/amethyst_energy_dust",
+                "illusiongold": "treasure/chorus_cherry_branch"}
+    if len(_core_of) != 8:
+        bad("bgfix3-metal-chain", "四族链的核心材料表不是 8 条 —— 反空转守护")
+    for _m, _core in _core_of.items():
+        _want = {f"metal/{_m}/ingot": f"{NS}:{_core}",
+                 f"metal/{_m}/weapon": f"{NS}:metal/{_m}/ingot",
+                 f"metal/{_m}/armor": f"{NS}:metal/{_m}/weapon"}
+        for _path, _parent in _want.items():
+            _got = advs.get(_path, {}).get("parent")
+            if _got != _parent:
+                bad("bgfix3-metal-chain",
+                    f"{_path} 的 parent 应是 {_parent}（四级链：核心材料 -> 锭 -> 武器工具 -> 盔甲），"
+                    f"实际 {_got}")
 
     # ---- 3. display / 文案键 ----
     for k, v in advs.items():
@@ -377,8 +452,50 @@ def main() -> int:
         icon = (v.get("display") or {}).get("icon", {}).get("id")
         if icon:
             refs.append(icon)
+    # bg-fix3：本模组自己的两张物品标签（成就判据用）—— 必须
+    #   ① 以**单个字符串**形式出现在 `items` 里（不许混进列表）；
+    #   ② 标签文件**无条件存在**（写 neoforge:conditions 关掉它 ⇒ `Missing tag` ⇒ 整份 JSON 死）；
+    #   ③ 条目恰好是计划里那几件、且**每一件都写 `required: false`**（没装可选模组时静默跳过）。
+    bgfix3_tag_refs = sorted(r for r in set(refs) if r.startswith(f"#{NS}:"))
+    if sorted(bgfix3_tag_refs) != sorted(set(BGFIX3_KNIFE_TAGS) | {BGFIX3_HANDBOOK_TAG}):
+        bad("bgfix3-adv-tag-refs",
+            f"成就里引用的 bettergold 标签集合不对：{bgfix3_tag_refs}"
+            f"（期望 {sorted(set(BGFIX3_KNIFE_TAGS) | {BGFIX3_HANDBOOK_TAG})}）")
+    for _tag in bgfix3_tag_refs:
+        _short = _tag[len(f"#{NS}:"):]
+        _tagfile = TAG_DIR / f"{_short}.json"
+        if not _tagfile.is_file():
+            bad("bgfix3-adv-tag-file", f"成就引用了 {_tag}，但标签文件不存在：{_tagfile}")
+            continue
+        _tj = json.loads(read(_tagfile))
+        if "neoforge:conditions" in _tj:
+            bad("bgfix3-adv-tag-file",
+                f"{_tag} 的标签文件带了 neoforge:conditions —— 条件不满足时**标签不存在**，"
+                f"而 `HolderSetCodec.lookupTag` 对不存在的标签直接报 `Missing tag` ⇒ 整份成就 JSON 被丢弃")
+        _vals = _tj.get("values") or []
+        _ids, _bad_req = [], []
+        for _entry in _vals:
+            if isinstance(_entry, dict):
+                _ids.append(_entry.get("id"))
+                if _entry.get("required") is not False:
+                    _bad_req.append(_entry)
+            else:
+                _ids.append(_entry)
+                _bad_req.append(_entry)
+        if _bad_req:
+            bad("bgfix3-adv-tag-optional",
+                f"{_tag} 里有条目没写 `\"required\": false`：{_bad_req}"
+                f"（该物品只在装了可选模组时才注册 ⇒ 必需条目缺失会让**整条标签报错丢弃**）")
+        if sorted(_ids) != sorted(BGFIX3_TAG_FILES.get(_short, [])):
+            bad("bgfix3-adv-tag-members",
+                f"{_tag} 的条目不是 {BGFIX3_TAG_FILES.get(_short, [])}，实际 {_ids}")
+        for _i in _ids:
+            if _i not in reg:
+                bad("bgfix3-adv-tag-item", f"{_tag} 里的 {_i} 不在注册表真源里（打错 id 就永远不匹配）")
     for r in sorted(set(refs)):
         if r.startswith("#"):
+            if r in bgfix3_tag_refs:
+                continue
             if r not in VANILLA_TAGS:
                 bad("bgach-tag-ref", f"用到未核实的标签 {r}")
             continue
@@ -393,15 +510,18 @@ def main() -> int:
         bad("bgach-namespace", f"引用了非本模组/原版的 id {r}")
 
     # ---- 7. recipe_crafted 的配方必须真的存在 ----
+    # ⛔ **bg-fix3 §四（作者 2026-10-07）之后，全 51 条成就一条 `recipe_crafted` 都没有了** ——
+    #   根（旧时代炼金术的继承者）也改成了「获得」⇒ `recipe_crafted` 的**配方存在性**检查
+    #   随之变成空集。旧口径原文保留（未删）：
+    #     「if not recipe_refs: bad("bgach-recipe-anti-vacuum", "一条 recipe_crafted 都没有
+    #       （root 至少有一条）")」+ 逐条查 `data/bettergold/recipe/<path>.json` 是否存在。
+    #   现在的判据反过来：**必须是空集**（谁把 recipe_crafted 写回来，这里当场红）。
     recipe_refs = sorted({c["conditions"]["recipe_id"]
                           for v in advs.values() for c in (v.get("criteria") or {}).values()
                           if c.get("trigger") == "minecraft:recipe_crafted"})
-    if not recipe_refs:
-        bad("bgach-recipe-anti-vacuum", "一条 recipe_crafted 都没有（root 至少有一条）")
-    for r in recipe_refs:
-        short = r.split(":", 1)[1]
-        if not (RECIPE / f"{short}.json").is_file():
-            bad("bgach-recipe-exists", f"{r} 在 data/bettergold/recipe/ 下没有对应 JSON")
+    if recipe_refs:
+        bad("bgfix3-recipe-crafted-none",
+            f"仍有成就用 recipe_crafted（bg-fix3 §四 之后应为 0 条；root 也已改成「获得」）：{recipe_refs}")
 
     # ---- 8. 食物清单必须等于 Java 真源现算的清单 ----
     derived = {"midas_feast_1": foods["gold"], "sturdygold_feast_1": foods["sturdygold"],
@@ -502,36 +622,87 @@ def main() -> int:
             f"merchant/gift_box 的判据被动过了（§七.2 的唯一例外必须保持 villager_trade）："
             f"{[c.get('trigger') for c in _giftbox.values()]}")
     # 图纸里其余还带 recipe_crafted 的，只允许是 root 那一条（范围自描述、防止这条断言空转）
+    # ⛔ bg-fix3 §四：**只允许是 root** 这条已被取代 —— 现在**一条都不许有**（root 也改了）。
+    #   ⚠ 旧期望原文保留（未删）：`if _recipe_left != ["root"]: bad("bgach-recipe-crafted-scope", …)`
     _recipe_left = sorted(k for k, v in advs.items()
                           if "minecraft:recipe_crafted" in [c.get("trigger") for c in
                                                             (v.get("criteria") or {}).values()])
-    if _recipe_left != ["root"]:
-        bad("bgach-recipe-crafted-scope",
-            f"还带 recipe_crafted 的成就应只有 root（实际 {_recipe_left}）")
+    if _recipe_left != []:
+        bad("bgfix3-recipe-crafted-scope",
+            f"还带 recipe_crafted 的成就应为**空集**（bg-fix3 §四 把 root 也改成了「获得」；"
+            f"旧口径只许 root 一条）：{_recipe_left}")
 
-    # §七.6：**刀不算器具** —— 8 条「获得任意一种 XX金武器工具」的 criteria 里一个 `_knife` 都不许有。
+    # ---- 5d. bg-fix3 §二：**乐事小刀必须能触发**「获得任意一种 XX金武器工具」----
+    # ⛔ 旧口径（`bg-ach §7.6`，作者 2026-10-05「乐事的刀不会触发有关获得器具的进度」）被作者
+    #   2026-10-07 明确推翻：「**乐事联动的刀仍然无法触发**获得任意一种器具的成就」= 缺陷。
+    #   ⚠ 旧断言原文保留（未删）：`[bgach-no-knife-in-gear]` 反向守着"8 条成就里一个刀都没有"。
+    # 现行判据（三件一起）：① 每条武器成就都有 `have_knife` 判据、指向**该族自己的**标签；
+    #   ② 那条判据的 `items` 是**单个字符串**的标签引用（列表混写会让 `ensureHomogenous` 失败）；
+    #   ③ requirements = 恰好 1 组、组内恰好 {have, have_knife}（组内 OR ⇒ 10 件武器工具**或**小刀）。
     KNIVES = set(manifest["lists"]["knives"])
     if len(KNIVES) != 8:
-        bad("bgach-no-knife-in-gear", f"清单里的刀不是 8 把（实际 {len(KNIVES)}）—— 反空转守护")
-    _weapon_paths = [f"metal/{m}/weapon" for m in
-                     ["flamegold", "sturdygold", "thornsgold", "echogold",
-                      "indigoseagold", "voodoogold", "thundergold", "illusiongold"]]
-    if len(_weapon_paths) != 8:
-        bad("bgach-no-knife-in-gear", "8 条武器工具成就的路径清单不是 8 条 —— 反空转守护")
+        bad("bgfix3-knife-in-gear", f"清单里的刀不是 8 把（实际 {len(KNIVES)}）—— 反空转守护")
     _gear_items: set[str] = set()
-    for p in _weapon_paths:
-        for _c in (advs.get(p, {}).get("criteria") or {}).values():
+    _knife_ok = 0
+    for _m in METALS_ORDER:
+        _p = f"metal/{_m}/weapon"
+        _crits = (advs.get(_p, {}).get("criteria") or {})
+        if len(_crits) < 2:
+            bad("bgfix3-knife-in-gear", f"{_p} 的 criteria 少于 2 条（应有 have + have_knife）：{sorted(_crits)}")
+            continue
+        for _name, _c in _crits.items():
             for _pred in (_c.get("conditions") or {}).get("items") or []:
                 _it = _pred.get("items")
-                _gear_items.update([_it] if isinstance(_it, str) else (_it or []))
+                if _name == "have":
+                    _gear_items.update([_it] if isinstance(_it, str) else (_it or []))
+        _knife_crit = _crits.get("have_knife")
+        if not _knife_crit:
+            bad("bgfix3-knife-in-gear",
+                f"{_p} 没有 `have_knife` 判据（乐事小刀无法触发这条成就）：{sorted(_crits)}")
+            continue
+        if _knife_crit.get("trigger") != "minecraft:inventory_changed":
+            bad("bgfix3-knife-in-gear",
+                f"{_p}.have_knife 的 trigger 不是 inventory_changed：{_knife_crit.get('trigger')}")
+        _knife_items = [p.get("items") for p in
+                        (_knife_crit.get("conditions") or {}).get("items") or []]
+        _want_tag = f"#{NS}:{_m}_knives"
+        if _knife_items != [_want_tag]:
+            bad("bgfix3-knife-in-gear",
+                f"{_p}.have_knife 的 items 必须恰好是单个标签字符串 [{_want_tag}]"
+                f"（混写列表 / 裸 id 都会在『没装乐事』时把整份 JSON 弄坏），实际 {_knife_items}")
+        else:
+            _knife_ok += 1
+        _reqs = advs.get(_p, {}).get("requirements") or []
+        if len(_reqs) != 1 or sorted(_reqs[0]) != ["have", "have_knife"]:
+            bad("bgfix3-knife-in-gear",
+                f"{_p} 的 requirements 必须是 1 组 {{have, have_knife}}（组内 OR：10 件武器工具**或**小刀），"
+                f"实际 {_reqs}")
+    if _knife_ok != 8:
+        bad("bgfix3-knife-in-gear", f"8 条武器成就里只有 {_knife_ok} 条把刀正确纳入 —— 反空转守护")
     if len(_gear_items) < 40:
-        bad("bgach-no-knife-in-gear",
-            f"8 条武器成就只解析到 {len(_gear_items)} 个物品（应 >= 40）—— 反空转守护")
-    _knife_in_gear = sorted(_gear_items & KNIVES)
-    if _knife_in_gear:
-        bad("bgach-no-knife-in-gear",
-            f"刀被算进了「获得武器工具」的成就里（作者 §七.6：「乐事的刀不会触发有关获得器具的进度」）："
-            f"{_knife_in_gear}")
+        bad("bgfix3-knife-in-gear",
+            f"8 条武器成就的 `have` 判据只解析到 {len(_gear_items)} 个物品（应 >= 40）—— 反空转守护")
+
+    # ---- 5e. bg-fix3 §四：根成就的判据 = 「**获得**新生代炼金术学员手册」----
+    #   ⚠ 旧口径原文保留（未删）：root 用 `{"craft_handbook": c_recipe("bettergold:alchemy_student_handbook")}`
+    #     —— 理由是"手册物品没装 Patchouli 时不注册，而 recipe_id 是裸 RL 不查注册表"（§14.3）。
+    #   现行：`inventory_changed` + `items` = 单个标签引用 `#bettergold:handbook`
+    #     （标签里那一行 `required:false` ⇒ 没装 Patchouli 时判据永不达成、但**不报错**）。
+    _root_crit = advs.get("root", {}).get("criteria") or {}
+    if len(_root_crit) != 1:
+        bad("bgfix3-root-obtain", f"root 应恰好 1 条判据（实际 {sorted(_root_crit)}）")
+    else:
+        _rk, _rc = next(iter(_root_crit.items()))
+        if _rc.get("trigger") != "minecraft:inventory_changed":
+            bad("bgfix3-root-obtain",
+                f"root 的判据 trigger 不是 inventory_changed（作者 2026-10-07「触发条件是获得」）："
+                f"{_rc.get('trigger')}")
+        _ri = [p.get("items") for p in (_rc.get("conditions") or {}).get("items") or []]
+        if _ri != [BGFIX3_HANDBOOK_TAG]:
+            bad("bgfix3-root-obtain",
+                f"root 判据的 items 必须恰好是 [{BGFIX3_HANDBOOK_TAG}]，实际 {_ri}")
+        if _rk != "have_handbook":
+            bad("bgfix3-root-obtain", f"root 的判据名应是 have_handbook（可读性），实际 {_rk!r}")
 
     # ---- bgfinal3（2026-10-06 作者裁定「需要」）：成就 ㊻ 的「种植」半边必须收进金胡萝卜 ----
     # 背景：金胡萝卜**不是** `BlockItem#place` 种下去的（`ModEvents#onRightClickGoldenCarrot`
@@ -593,9 +764,18 @@ def main() -> int:
         print(f"bg-ach 进度系统问题: {len(problems)}")
         return 1
     print(f"OK [bgach] 51 个成就 / {total_criteria} 条 criteria / 触发类型 "
-          f"{sorted(used_triggers)} / 配方引用 {len(recipe_refs)} 条 / 语言键 {lang_n} 条")
-    print("OK [bgach] 树：根 5 孩子、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；1 条 challenge")
-    print("OK [bgach] 物品引用 %d 个全部存在于注册表真源；食物清单与 Java 真源逐条一致" % len(set(refs)))
+          f"{sorted(used_triggers)} / recipe_crafted {len(recipe_refs)} 条 / 语言键 {lang_n} 条")
+    # ⚠ bg-fix3 §五 之后树形状与 challenge 数都变了；旧口径的措辞（「根 5 孩子…1 条 challenge」）
+    #   原文保留在这里作历史留档。
+    print(f"OK [bgach] 树（bg-fix3 §五 链式）：根 3 孩子（炼制I + 两条农业）、"
+          f"根链 root -> 炼制I -> 炼制II -> 寻途、寻途 9 孩子、染上黄金 3 孩子；"
+          f"3 条乐事条件；challenge {len(challenge)} 条（八族盔甲 + 骷髅打金服）")
+    print(f"OK [bgfix3-knife-in-gear] 8 条武器成就各带 `have_knife`（items = 该族 "
+          f"`#bettergold:<族>_knives` 标签，标签条目一律 required:false）⇒ 装了乐事时小刀计入")
+    print(f"OK [bgfix3-root-obtain] root 判据 = inventory_changed + `{BGFIX3_HANDBOOK_TAG}`；"
+          f"全仓 recipe_crafted = 0 条")
+    print("OK [bgach] 物品引用 %d 个（含 %d 张本模组标签）全部存在于注册表真源；"
+          "食物清单与 Java 真源逐条一致" % (len(set(refs)), len(bgfix3_tag_refs)))
     print(f"OK [bgfinal-adv-lang] {len(en_adv)} 条英文值全部是真英译"
           f"（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 {len(SYMBOL_ONLY_OK)} 条）")
     return 0

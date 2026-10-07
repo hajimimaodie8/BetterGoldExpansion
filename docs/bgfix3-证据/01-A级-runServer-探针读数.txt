@@ -1,0 +1,356 @@
+# 改后最终基线（142 PASS / 0 FAIL / 0 SKIP）
+# 来源日志：build\bgfix3-runA2.log（JVM 控制台按 GBK 写出 ⇒ 本副本按 GBK 解码后落 UTF-8）
+# 探针行为行数：352
+
+[21:53:32] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run flag=E:\mc\mcmod\bettergold-template-1.21.1\run\bgfix3-probe.enabled
+[21:53:32] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE probe_world_guard :: PASS levelName=bgfix3probe expect=bgfix3probe authorWorld=新的世界
+[21:53:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE forced_chunks :: READOUT forced=1
+[21:53:34] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE probe_player :: READOUT class=com.hjmmd_8.bettergold.probe.bgfix3.BgFix3Probe$ProbePlayer isFakePlayer=false（真 ServerPlayer 子类；从不加进世界、从不 tick）
+[21:53:34] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE probe_connection :: READOUT dummy connection 已装上：net.minecraft.server.network.ServerGamePacketListenerImpl（send 全部 no-op）
+[21:53:34] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE setup_platform :: READOUT pos=BlockPos{x=8, y=200, z=8} air5x3x5 + stone below
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_head :: READOUT path=Block.getDrops(state, level, pos, null, null, tool) -> LootTable#getRandomItems -> CommonHooks.modifyLoot -> AddGlitteringVineModifier; rolls/case=400
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_sword :: PASS bettergold:flamegold_sword leaves=24/400 vine=30/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_axe :: PASS bettergold:flamegold_axe leaves=25/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_pickaxe :: PASS bettergold:flamegold_pickaxe leaves=18/400 vine=25/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_shovel :: PASS bettergold:flamegold_shovel leaves=20/400 vine=26/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_hoe :: PASS bettergold:flamegold_hoe leaves=30/400 vine=29/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_knife :: PASS bettergold:flamegold_knife leaves=25/400 vine=29/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_mace :: PASS bettergold:flamegold_mace leaves=27/400 vine=29/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_bow :: PASS bettergold:flamegold_bow leaves=29/400 vine=28/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_crossbow :: PASS bettergold:flamegold_crossbow leaves=24/400 vine=20/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_trident :: PASS bettergold:flamegold_trident leaves=23/400 vine=26/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_flamegold_shield :: PASS bettergold:flamegold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_sword :: PASS bettergold:sturdygold_sword leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_axe :: PASS bettergold:sturdygold_axe leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_pickaxe :: PASS bettergold:sturdygold_pickaxe leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_shovel :: PASS bettergold:sturdygold_shovel leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_hoe :: PASS bettergold:sturdygold_hoe leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_knife :: PASS bettergold:sturdygold_knife leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_mace :: PASS bettergold:sturdygold_mace leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_bow :: PASS bettergold:sturdygold_bow leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_crossbow :: PASS bettergold:sturdygold_crossbow leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_trident :: PASS bettergold:sturdygold_trident leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_sturdygold_shield :: PASS bettergold:sturdygold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_sword :: PASS bettergold:thornsgold_sword leaves=21/400 vine=18/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_axe :: PASS bettergold:thornsgold_axe leaves=22/400 vine=25/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_pickaxe :: PASS bettergold:thornsgold_pickaxe leaves=27/400 vine=31/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_shovel :: PASS bettergold:thornsgold_shovel leaves=24/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_hoe :: PASS bettergold:thornsgold_hoe leaves=28/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_knife :: PASS bettergold:thornsgold_knife leaves=23/400 vine=32/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_mace :: PASS bettergold:thornsgold_mace leaves=27/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_bow :: PASS bettergold:thornsgold_bow leaves=24/400 vine=20/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_crossbow :: PASS bettergold:thornsgold_crossbow leaves=31/400 vine=18/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_trident :: PASS bettergold:thornsgold_trident leaves=24/400 vine=22/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thornsgold_shield :: PASS bettergold:thornsgold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_sword :: PASS bettergold:echogold_sword leaves=26/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_axe :: PASS bettergold:echogold_axe leaves=26/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_pickaxe :: PASS bettergold:echogold_pickaxe leaves=19/400 vine=20/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_shovel :: PASS bettergold:echogold_shovel leaves=31/400 vine=16/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_hoe :: PASS bettergold:echogold_hoe leaves=20/400 vine=31/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_knife :: PASS bettergold:echogold_knife leaves=34/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_mace :: PASS bettergold:echogold_mace leaves=28/400 vine=37/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_bow :: PASS bettergold:echogold_bow leaves=33/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_crossbow :: PASS bettergold:echogold_crossbow leaves=33/400 vine=25/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_trident :: PASS bettergold:echogold_trident leaves=24/400 vine=22/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_echogold_shield :: PASS bettergold:echogold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_sword :: PASS bettergold:indigoseagold_sword leaves=24/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_axe :: PASS bettergold:indigoseagold_axe leaves=25/400 vine=30/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_pickaxe :: PASS bettergold:indigoseagold_pickaxe leaves=22/400 vine=16/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_shovel :: PASS bettergold:indigoseagold_shovel leaves=28/400 vine=25/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_hoe :: PASS bettergold:indigoseagold_hoe leaves=26/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_knife :: PASS bettergold:indigoseagold_knife leaves=22/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_mace :: PASS bettergold:indigoseagold_mace leaves=21/400 vine=20/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_bow :: PASS bettergold:indigoseagold_bow leaves=23/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_crossbow :: PASS bettergold:indigoseagold_crossbow leaves=24/400 vine=20/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_trident :: PASS bettergold:indigoseagold_trident leaves=31/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_indigoseagold_shield :: PASS bettergold:indigoseagold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_sword :: PASS bettergold:voodoogold_sword leaves=20/400 vine=22/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_axe :: PASS bettergold:voodoogold_axe leaves=25/400 vine=16/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_pickaxe :: PASS bettergold:voodoogold_pickaxe leaves=24/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_shovel :: PASS bettergold:voodoogold_shovel leaves=29/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_hoe :: PASS bettergold:voodoogold_hoe leaves=22/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_knife :: PASS bettergold:voodoogold_knife leaves=21/400 vine=35/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_mace :: PASS bettergold:voodoogold_mace leaves=26/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_bow :: PASS bettergold:voodoogold_bow leaves=28/400 vine=20/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_crossbow :: PASS bettergold:voodoogold_crossbow leaves=22/400 vine=17/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_trident :: PASS bettergold:voodoogold_trident leaves=24/400 vine=30/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_voodoogold_shield :: PASS bettergold:voodoogold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_sword :: PASS bettergold:thundergold_sword leaves=37/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_axe :: PASS bettergold:thundergold_axe leaves=24/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_pickaxe :: PASS bettergold:thundergold_pickaxe leaves=33/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_shovel :: PASS bettergold:thundergold_shovel leaves=26/400 vine=14/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_hoe :: PASS bettergold:thundergold_hoe leaves=20/400 vine=28/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_knife :: PASS bettergold:thundergold_knife leaves=18/400 vine=28/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_mace :: PASS bettergold:thundergold_mace leaves=27/400 vine=25/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_bow :: PASS bettergold:thundergold_bow leaves=17/400 vine=23/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_crossbow :: PASS bettergold:thundergold_crossbow leaves=28/400 vine=20/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_trident :: PASS bettergold:thundergold_trident leaves=19/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_thundergold_shield :: PASS bettergold:thundergold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_sword :: PASS bettergold:illusiongold_sword leaves=24/400 vine=28/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_axe :: PASS bettergold:illusiongold_axe leaves=24/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_pickaxe :: PASS bettergold:illusiongold_pickaxe leaves=30/400 vine=25/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_shovel :: PASS bettergold:illusiongold_shovel leaves=24/400 vine=27/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_hoe :: PASS bettergold:illusiongold_hoe leaves=26/400 vine=21/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_knife :: PASS bettergold:illusiongold_knife leaves=20/400 vine=17/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_mace :: PASS bettergold:illusiongold_mace leaves=22/400 vine=31/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_bow :: PASS bettergold:illusiongold_bow leaves=24/400 vine=26/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_crossbow :: PASS bettergold:illusiongold_crossbow leaves=26/400 vine=24/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_trident :: PASS bettergold:illusiongold_trident leaves=23/400 vine=27/400 expectDrop=true
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_matrix_illusiongold_shield :: PASS bettergold:illusiongold_shield leaves=0/400 vine=0/400 expectDrop=false
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_control_iron_sword :: PASS iron_sword leaves=0/400 expect=0
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_control_diamond_pickaxe :: PASS diamond_pickaxe leaves=0/400 expect=0
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_control_empty_hand :: PASS empty-hand leaves=0/400 expect=0
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_control_non_target_block :: PASS thornsgold_pickaxe stone=0/400 expect=0（不是树叶/藤蔓）
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_fortune_l0 :: PASS fortune=0 p=0.06 expect=120.0 hits=123/2000 dev=3.0 4sigma=42.5
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_fortune_l1 :: PASS fortune=1 p=0.12 expect=240.0 hits=254/2000 dev=14.0 4sigma=58.1
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_fortune_l2 :: PASS fortune=2 p=0.18 expect=360.0 hits=360/2000 dev=0.0 4sigma=68.7
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_fortune_l3 :: PASS fortune=3 p=0.24 expect=480.0 hits=486/2000 dev=6.0 4sigma=76.4
+[21:53:35] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_fortune_monotonic :: PASS hits=123,254,360,486（应严格递增）
+[21:53:36] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_real_thornsgold_sword_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=bettergold:thornsgold_sword mainhand=bettergold:thornsgold_sword
+[21:53:37] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_real_thornsgold_sword :: PASS 真世界 ItemEntity：vine=3 other(树叶自身掉落)=7（200 次真 destroyBlock；expectVine=true）
+[21:53:37] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_real_sturdygold_sword_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=bettergold:sturdygold_sword mainhand=bettergold:sturdygold_sword
+[21:53:38] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_real_sturdygold_sword :: PASS 真世界 ItemEntity：vine=0 other(树叶自身掉落)=7（200 次真 destroyBlock；expectVine=false）
+[21:53:38] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_real_iron_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=minecraft:air mainhand=minecraft:air
+[21:53:39] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE drop_real_iron :: PASS 真世界 ItemEntity：vine=0 other(树叶自身掉落)=10（200 次真 destroyBlock；expectVine=false）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_predicate_have_knife :: READOUT triggerInstance=TriggerInstance items=[size=1 hasKnife=true] 
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_predicate_have :: READOUT triggerInstance=TriggerInstance items=[size=10 hasKnife=false] 
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listeners :: READOUT INVENTORY_CHANGED listeners(player)=1753 playersEntries=1
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:metal/flamegold/ingot#have
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:root#have_handbook
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:metal/flamegold/weapon#have
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:metal/flamegold/weapon#have_knife
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:metal/flamegold/armor#armor_chestplate
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:metal/flamegold/armor#armor_helmet
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:metal/flamegold/armor#armor_leggings
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_entry :: READOUT bettergold:metal/flamegold/armor#armor_boots
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_direct_award :: READOUT award(have)=true done=true（真授予链；用来把『派发』与『授予』分开定位）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_predicate_test :: READOUT ItemPredicate.test(flamegold_knife)=true
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_loaded_count :: PASS bettergold advancements loaded=51 expect=51（farmersdelight=true；<期望 = 有文件解析失败被丢弃）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_hidden_none :: PASS hidden=0
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_challenge_nine :: PASS challenge=9 -> [metal/thundergold/armor, metal/sturdygold/armor, metal/indigoseagold/armor, metal/thornsgold/armor, metal/illusiongold/armor, metal/voodoogold/armor, metal/echogold/armor, metal/flamegold/armor, metal/sturdygold/skeleton] expect=9（八族盔甲 + 骷髅打金服）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_recipe_crafted_none :: PASS recipe_crafted criteria=0 expect=0（bg-fix3 §四：root 也改「获得」）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tree_metal_flamegold_ingot :: PASS metal/flamegold/ingot.parent=bettergold:treasure/blazing_rod expect=bettergold:treasure/blazing_rod
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tree_metal_flamegold_weapon :: PASS metal/flamegold/weapon.parent=bettergold:metal/flamegold/ingot expect=bettergold:metal/flamegold/ingot
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tree_metal_flamegold_armor :: PASS metal/flamegold/armor.parent=bettergold:metal/flamegold/weapon expect=bettergold:metal/flamegold/weapon
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tree_alchemy_mixed_crystal_pile :: PASS alchemy/mixed_crystal_pile.parent=bettergold:root expect=bettergold:root
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tree_alchemy_alchemic_fuel :: PASS alchemy/alchemic_fuel.parent=bettergold:alchemy/mixed_crystal_pile expect=bettergold:alchemy/mixed_crystal_pile
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tree_treasure_any_core_material :: PASS treasure/any_core_material.parent=bettergold:alchemy/alchemic_fuel expect=bettergold:alchemy/alchemic_fuel
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_metal_chain_all_eight :: PASS 八族四级链齐全数=8/8
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE env_mods :: READOUT patchouli=true farmersdelight=true
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_flamegold_knives :: PASS #bettergold:flamegold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_sturdygold_knives :: PASS #bettergold:sturdygold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_thornsgold_knives :: PASS #bettergold:thornsgold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_echogold_knives :: PASS #bettergold:echogold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_indigoseagold_knives :: PASS #bettergold:indigoseagold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_voodoogold_knives :: PASS #bettergold:voodoogold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_thundergold_knives :: PASS #bettergold:thundergold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_illusiongold_knives :: PASS #bettergold:illusiongold_knives present=true size=1 expect=1（required:false ? 没装乐事时为空集且不报错）
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_tag_handbook :: PASS #bettergold:handbook present=true size=1 expect=1
+[21:53:40] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_handbook_item_env :: PASS alchemy_student_handbook registered=true expect=true（口径 B：没装 Patchouli 就不注册）
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_knife_criterion :: READOUT before trigger: isDone=false have_knife=false have=false 
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_for :: READOUT bettergold:metal/flamegold/weapon#have 自己的 TriggerInstance.matches=false（手工调用：inventory/stack/0/36/0）
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_for :: READOUT bettergold:metal/flamegold/weapon#have_knife 自己的 TriggerInstance.matches=true（手工调用：inventory/stack/0/36/0）
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_knife_criterion :: READOUT after trigger: isDone=true have_knife=true have=false 
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE diag_listener_for :: READOUT bettergold:metal/flamegold/weapon **没有**登记在 INVENTORY_CHANGED 上（found=0）
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_flamegold :: PASS 获得 bettergold:flamegold_knife -> metal/flamegold/weapon done=true
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_sturdygold :: PASS 获得 bettergold:sturdygold_knife -> metal/sturdygold/weapon done=true
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_thornsgold :: PASS 获得 bettergold:thornsgold_knife -> metal/thornsgold/weapon done=true
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_echogold :: PASS 获得 bettergold:echogold_knife -> metal/echogold/weapon done=true
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_indigoseagold :: PASS 获得 bettergold:indigoseagold_knife -> metal/indigoseagold/weapon done=true
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_voodoogold :: PASS 获得 bettergold:voodoogold_knife -> metal/voodoogold/weapon done=true
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_thundergold :: PASS 获得 bettergold:thundergold_knife -> metal/thundergold/weapon done=true
+[21:53:41] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_knife_illusiongold :: PASS 获得 bettergold:illusiongold_knife -> metal/illusiongold/weapon done=true
+[21:53:42] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_root_obtain :: PASS 获得 alchemy_student_handbook -> root done=true（作者 2026-10-07：触发条件是「获得」）
+[21:53:42] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_root_not_by_recipe_crafted :: PASS triggerRecipeCrafted 后 root done=false expect=false（新口径的负向对照）
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_flamegold :: PASS metal/flamegold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_sturdygold :: PASS metal/sturdygold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_thornsgold :: PASS metal/thornsgold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_echogold :: PASS metal/echogold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_indigoseagold :: PASS metal/indigoseagold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_voodoogold :: PASS metal/voodoogold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_thundergold :: PASS metal/thundergold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:43] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_armor_illusiongold :: PASS metal/illusiongold/armor frameIsChallenge=true 3件时 locked=true 4件时 done=true
+[21:53:44] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_negative_iron_sword :: PASS 铁剑后八族武器成就 = flamegold=false sturdygold=false thornsgold=false echogold=false indigoseagold=false voodoogold=false thundergold=false illusiongold=false expect 全 false
+[21:53:44] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE adv_negative_cross_metal_knife :: PASS 万坚金刀 -> flamegold/weapon=false（expect false） sturdygold/weapon=true（expect true）
+[21:53:44] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE obtain_broadcast_failures :: READOUT broadcastChanges 抛异常次数=0（本探针不 tick 玩家、也没有 connection ? 预期会抛；判据走真 INVENTORY_CHANGED 触发器）
+[21:53:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE forced_chunks_after :: READOUT forced=0 expect=0
+[21:53:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE MATRIX-BEGIN 
+BGFIX3-PROBE MATRIX flamegold/sword/leaves=24
+BGFIX3-PROBE MATRIX flamegold/sword/vine=30
+BGFIX3-PROBE MATRIX flamegold/axe/leaves=25
+BGFIX3-PROBE MATRIX flamegold/axe/vine=23
+BGFIX3-PROBE MATRIX flamegold/pickaxe/leaves=18
+BGFIX3-PROBE MATRIX flamegold/pickaxe/vine=25
+BGFIX3-PROBE MATRIX flamegold/shovel/leaves=20
+BGFIX3-PROBE MATRIX flamegold/shovel/vine=26
+BGFIX3-PROBE MATRIX flamegold/hoe/leaves=30
+BGFIX3-PROBE MATRIX flamegold/hoe/vine=29
+BGFIX3-PROBE MATRIX flamegold/knife/leaves=25
+BGFIX3-PROBE MATRIX flamegold/knife/vine=29
+BGFIX3-PROBE MATRIX flamegold/mace/leaves=27
+BGFIX3-PROBE MATRIX flamegold/mace/vine=29
+BGFIX3-PROBE MATRIX flamegold/bow/leaves=29
+BGFIX3-PROBE MATRIX flamegold/bow/vine=28
+BGFIX3-PROBE MATRIX flamegold/crossbow/leaves=24
+BGFIX3-PROBE MATRIX flamegold/crossbow/vine=20
+BGFIX3-PROBE MATRIX flamegold/trident/leaves=23
+BGFIX3-PROBE MATRIX flamegold/trident/vine=26
+BGFIX3-PROBE MATRIX flamegold/shield/leaves=0
+BGFIX3-PROBE MATRIX flamegold/shield/vine=0
+BGFIX3-PROBE MATRIX sturdygold/sword/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/sword/vine=0
+BGFIX3-PROBE MATRIX sturdygold/axe/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/axe/vine=0
+BGFIX3-PROBE MATRIX sturdygold/pickaxe/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/pickaxe/vine=0
+BGFIX3-PROBE MATRIX sturdygold/shovel/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/shovel/vine=0
+BGFIX3-PROBE MATRIX sturdygold/hoe/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/hoe/vine=0
+BGFIX3-PROBE MATRIX sturdygold/knife/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/knife/vine=0
+BGFIX3-PROBE MATRIX sturdygold/mace/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/mace/vine=0
+BGFIX3-PROBE MATRIX sturdygold/bow/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/bow/vine=0
+BGFIX3-PROBE MATRIX sturdygold/crossbow/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/crossbow/vine=0
+BGFIX3-PROBE MATRIX sturdygold/trident/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/trident/vine=0
+BGFIX3-PROBE MATRIX sturdygold/shield/leaves=0
+BGFIX3-PROBE MATRIX sturdygold/shield/vine=0
+BGFIX3-PROBE MATRIX thornsgold/sword/leaves=21
+BGFIX3-PROBE MATRIX thornsgold/sword/vine=18
+BGFIX3-PROBE MATRIX thornsgold/axe/leaves=22
+BGFIX3-PROBE MATRIX thornsgold/axe/vine=25
+BGFIX3-PROBE MATRIX thornsgold/pickaxe/leaves=27
+BGFIX3-PROBE MATRIX thornsgold/pickaxe/vine=31
+BGFIX3-PROBE MATRIX thornsgold/shovel/leaves=24
+BGFIX3-PROBE MATRIX thornsgold/shovel/vine=24
+BGFIX3-PROBE MATRIX thornsgold/hoe/leaves=28
+BGFIX3-PROBE MATRIX thornsgold/hoe/vine=24
+BGFIX3-PROBE MATRIX thornsgold/knife/leaves=23
+BGFIX3-PROBE MATRIX thornsgold/knife/vine=32
+BGFIX3-PROBE MATRIX thornsgold/mace/leaves=27
+BGFIX3-PROBE MATRIX thornsgold/mace/vine=21
+BGFIX3-PROBE MATRIX thornsgold/bow/leaves=24
+BGFIX3-PROBE MATRIX thornsgold/bow/vine=20
+BGFIX3-PROBE MATRIX thornsgold/crossbow/leaves=31
+BGFIX3-PROBE MATRIX thornsgold/crossbow/vine=18
+BGFIX3-PROBE MATRIX thornsgold/trident/leaves=24
+BGFIX3-PROBE MATRIX thornsgold/trident/vine=22
+BGFIX3-PROBE MATRIX thornsgold/shield/leaves=0
+BGFIX3-PROBE MATRIX thornsgold/shield/vine=0
+BGFIX3-PROBE MATRIX echogold/sword/leaves=26
+BGFIX3-PROBE MATRIX echogold/sword/vine=23
+BGFIX3-PROBE MATRIX echogold/axe/leaves=26
+BGFIX3-PROBE MATRIX echogold/axe/vine=23
+BGFIX3-PROBE MATRIX echogold/pickaxe/leaves=19
+BGFIX3-PROBE MATRIX echogold/pickaxe/vine=20
+BGFIX3-PROBE MATRIX echogold/shovel/leaves=31
+BGFIX3-PROBE MATRIX echogold/shovel/vine=16
+BGFIX3-PROBE MATRIX echogold/hoe/leaves=20
+BGFIX3-PROBE MATRIX echogold/hoe/vine=31
+BGFIX3-PROBE MATRIX echogold/knife/leaves=34
+BGFIX3-PROBE MATRIX echogold/knife/vine=23
+BGFIX3-PROBE MATRIX echogold/mace/leaves=28
+BGFIX3-PROBE MATRIX echogold/mace/vine=37
+BGFIX3-PROBE MATRIX echogold/bow/leaves=33
+BGFIX3-PROBE MATRIX echogold/bow/vine=21
+BGFIX3-PROBE MATRIX echogold/crossbow/leaves=33
+BGFIX3-PROBE MATRIX echogold/crossbow/vine=25
+BGFIX3-PROBE MATRIX echogold/trident/leaves=24
+BGFIX3-PROBE MATRIX echogold/trident/vine=22
+BGFIX3-PROBE MATRIX echogold/shield/leaves=0
+BGFIX3-PROBE MATRIX echogold/shield/vine=0
+BGFIX3-PROBE MATRIX indigoseagold/sword/leaves=24
+BGFIX3-PROBE MATRIX indigoseagold/sword/vine=21
+BGFIX3-PROBE MATRIX indigoseagold/axe/leaves=25
+BGFIX3-PROBE MATRIX indigoseagold/axe/vine=30
+BGFIX3-PROBE MATRIX indigoseagold/pickaxe/leaves=22
+BGFIX3-PROBE MATRIX indigoseagold/pickaxe/vine=16
+BGFIX3-PROBE MATRIX indigoseagold/shovel/leaves=28
+BGFIX3-PROBE MATRIX indigoseagold/shovel/vine=25
+BGFIX3-PROBE MATRIX indigoseagold/hoe/leaves=26
+BGFIX3-PROBE MATRIX indigoseagold/hoe/vine=23
+BGFIX3-PROBE MATRIX indigoseagold/knife/leaves=22
+BGFIX3-PROBE MATRIX indigoseagold/knife/vine=21
+BGFIX3-PROBE MATRIX indigoseagold/mace/leaves=21
+BGFIX3-PROBE MATRIX indigoseagold/mace/vine=20
+BGFIX3-PROBE MATRIX indigoseagold/bow/leaves=23
+BGFIX3-PROBE MATRIX indigoseagold/bow/vine=23
+BGFIX3-PROBE MATRIX indigoseagold/crossbow/leaves=24
+BGFIX3-PROBE MATRIX indigoseagold/crossbow/vine=20
+BGFIX3-PROBE MATRIX indigoseagold/trident/leaves=31
+BGFIX3-PROBE MATRIX indigoseagold/trident/vine=21
+BGFIX3-PROBE MATRIX indigoseagold/shield/leaves=0
+BGFIX3-PROBE MATRIX indigoseagold/shield/vine=0
+BGFIX3-PROBE MATRIX voodoogold/sword/leaves=20
+BGFIX3-PROBE MATRIX voodoogold/sword/vine=22
+BGFIX3-PROBE MATRIX voodoogold/axe/leaves=25
+BGFIX3-PROBE MATRIX voodoogold/axe/vine=16
+BGFIX3-PROBE MATRIX voodoogold/pickaxe/leaves=24
+BGFIX3-PROBE MATRIX voodoogold/pickaxe/vine=23
+BGFIX3-PROBE MATRIX voodoogold/shovel/leaves=29
+BGFIX3-PROBE MATRIX voodoogold/shovel/vine=23
+BGFIX3-PROBE MATRIX voodoogold/hoe/leaves=22
+BGFIX3-PROBE MATRIX voodoogold/hoe/vine=24
+BGFIX3-PROBE MATRIX voodoogold/knife/leaves=21
+BGFIX3-PROBE MATRIX voodoogold/knife/vine=35
+BGFIX3-PROBE MATRIX voodoogold/mace/leaves=26
+BGFIX3-PROBE MATRIX voodoogold/mace/vine=24
+BGFIX3-PROBE MATRIX voodoogold/bow/leaves=28
+BGFIX3-PROBE MATRIX voodoogold/bow/vine=20
+BGFIX3-PROBE MATRIX voodoogold/crossbow/leaves=22
+BGFIX3-PROBE MATRIX voodoogold/crossbow/vine=17
+BGFIX3-PROBE MATRIX voodoogold/trident/leaves=24
+BGFIX3-PROBE MATRIX voodoogold/trident/vine=30
+BGFIX3-PROBE MATRIX voodoogold/shield/leaves=0
+BGFIX3-PROBE MATRIX voodoogold/shield/vine=0
+BGFIX3-PROBE MATRIX thundergold/sword/leaves=37
+BGFIX3-PROBE MATRIX thundergold/sword/vine=24
+BGFIX3-PROBE MATRIX thundergold/axe/leaves=24
+BGFIX3-PROBE MATRIX thundergold/axe/vine=21
+BGFIX3-PROBE MATRIX thundergold/pickaxe/leaves=33
+BGFIX3-PROBE MATRIX thundergold/pickaxe/vine=24
+BGFIX3-PROBE MATRIX thundergold/shovel/leaves=26
+BGFIX3-PROBE MATRIX thundergold/shovel/vine=14
+BGFIX3-PROBE MATRIX thundergold/hoe/leaves=20
+BGFIX3-PROBE MATRIX thundergold/hoe/vine=28
+BGFIX3-PROBE MATRIX thundergold/knife/leaves=18
+BGFIX3-PROBE MATRIX thundergold/knife/vine=28
+BGFIX3-PROBE MATRIX thundergold/mace/leaves=27
+BGFIX3-PROBE MATRIX thundergold/mace/vine=25
+BGFIX3-PROBE MATRIX thundergold/bow/leaves=17
+BGFIX3-PROBE MATRIX thundergold/bow/vine=23
+BGFIX3-PROBE MATRIX thundergold/crossbow/leaves=28
+BGFIX3-PROBE MATRIX thundergold/crossbow/vine=20
+BGFIX3-PROBE MATRIX thundergold/trident/leaves=19
+BGFIX3-PROBE MATRIX thundergold/trident/vine=21
+BGFIX3-PROBE MATRIX thundergold/shield/leaves=0
+BGFIX3-PROBE MATRIX thundergold/shield/vine=0
+BGFIX3-PROBE MATRIX illusiongold/sword/leaves=24
+BGFIX3-PROBE MATRIX illusiongold/sword/vine=28
+BGFIX3-PROBE MATRIX illusiongold/axe/leaves=24
+BGFIX3-PROBE MATRIX illusiongold/axe/vine=24
+BGFIX3-PROBE MATRIX illusiongold/pickaxe/leaves=30
+BGFIX3-PROBE MATRIX illusiongold/pickaxe/vine=25
+BGFIX3-PROBE MATRIX illusiongold/shovel/leaves=24
+BGFIX3-PROBE MATRIX illusiongold/shovel/vine=27
+BGFIX3-PROBE MATRIX illusiongold/hoe/leaves=26
+BGFIX3-PROBE MATRIX illusiongold/hoe/vine=21
+BGFIX3-PROBE MATRIX illusiongold/knife/leaves=20
+BGFIX3-PROBE MATRIX illusiongold/knife/vine=17
+BGFIX3-PROBE MATRIX illusiongold/mace/leaves=22
+BGFIX3-PROBE MATRIX illusiongold/mace/vine=31
+BGFIX3-PROBE MATRIX illusiongold/bow/leaves=24
+BGFIX3-PROBE MATRIX illusiongold/bow/vine=26
+BGFIX3-PROBE MATRIX illusiongold/crossbow/leaves=26
+BGFIX3-PROBE MATRIX illusiongold/crossbow/vine=24
+BGFIX3-PROBE MATRIX illusiongold/trident/leaves=23
+BGFIX3-PROBE MATRIX illusiongold/trident/vine=27
+BGFIX3-PROBE MATRIX illusiongold/shield/leaves=0
+BGFIX3-PROBE MATRIX illusiongold/shield/vine=0
+[21:53:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE obtain_dispatch_diag :: READOUT 奖励阶段抛异常次数=0 last= broadcastChanges 抛异常=0
+[21:53:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE SUMMARY pass=142 fail=0 skip=0 aborts=[] levelName=bgfix3probe
+[21:53:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX3-PROBE halting

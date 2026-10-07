@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:root",
+  "parent": "bettergold:alchemy/alchemic_fuel",
   "display": {
     "icon": {
       "id": "bettergold:golden_cowrie",

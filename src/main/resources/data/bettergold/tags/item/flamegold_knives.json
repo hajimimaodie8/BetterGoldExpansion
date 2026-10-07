@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "bettergold:flamegold_knife",
+      "required": false
+    }
+  ]
+}

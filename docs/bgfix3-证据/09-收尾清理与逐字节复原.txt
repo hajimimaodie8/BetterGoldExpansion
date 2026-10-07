@@ -1,0 +1,76 @@
+# 收尾清理与逐字节复原（bg-fix3）
+
+## 1) 探针 / 开关 / 世界
+src/main/java/com/hjmmd_8/bettergold/probe 目录存在 = False
+run/bgfix3-probe.enabled 存在 = False
+run/bgfix3probe 世界目录存在 = False
+probe 源码副本（**删前先复制**）= docs/bgfix3-证据/05-探针源码副本.java.txt 44909 B
+
+## 2) 探针标识符 grep（src 全树）
+扫描 .java 文件 70 个；命中数 = 0 []
+
+## 3) 四条目标哈希（逐字节复原）
+run/server.properties = a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4
+  期望 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+build.gradle          = 2aac7860e5b1f03128d42637b9f002c7a44f37e269ee6b7bc9dfbe41ad478c2f
+  期望 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+run/mods/Patchouli jar = 646777 B / 959af52ed6640c316c3a8469203420be4aeea11ad6603890ba83bf48f5d9f993
+  期望 646777 / 959AF52ED6640C316C3A8469203420BE4AEEA11AD6603890BA83BF48F5D9F993
+build/moddev/clientRunProgramArgs.txt = 本轮未碰（不用客户端）
+
+## 4) 作者存档 run/saves/新的世界
+跑前/跑后文件数 = 29 / 29
+逐行相同（相对路径 + 长度 + SHA256）⇒ **作者存档一个字节未变**
+run/saves 顶层 = ['新的世界']
+
+run 顶层目录 = ['config', 'crash-reports', 'defaultconfigs', 'downloads', 'logs', 'mods', 'patchouli_books', 'resourcepacks', 'saves', 'server', 'world']
+
+## 5) 临时改动（本轮做过、已复原）
+* `run/server.properties` 的 `level-name`：`world` → `bgfix3probe` → **逐字节复原**（备份路线一次到位，无时间戳漂移）
+* `build.gradle` 的 FD `localRuntime`：注掉一次（做「没装乐事」那档）→ **逐字节复原**
+* `run/mods` 的 Patchouli jar：移出一次（做「没装 Patchouli」那档）→ **移回，哈希相同**
+* `build/moddev/clientRunProgramArgs.txt`：**未碰**
+* 贴图：**0 字节**改动
+
+## 6) 本轮新增 / 修改的产物与代码（git status 摘要）
+条目数 = 40
+   M "docs/1.6-\350\247\204\346\240\274.md"
+   D src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/metal_tour.json
+   D src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/upgrade_templates.json
+   D src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/metal_tour.json
+   D src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/upgrade_templates.json
+   M src/main/resources/data/bettergold/advancement/alchemy/alchemic_fuel.json
+   M src/main/resources/data/bettergold/advancement/metal/echogold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/echogold/weapon.json
+   M src/main/resources/data/bettergold/advancement/metal/flamegold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/flamegold/weapon.json
+   M src/main/resources/data/bettergold/advancement/metal/illusiongold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/illusiongold/weapon.json
+   M src/main/resources/data/bettergold/advancement/metal/indigoseagold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/indigoseagold/weapon.json
+   M src/main/resources/data/bettergold/advancement/metal/sturdygold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/sturdygold/weapon.json
+   M src/main/resources/data/bettergold/advancement/metal/thornsgold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/thornsgold/weapon.json
+   M src/main/resources/data/bettergold/advancement/metal/thundergold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/thundergold/weapon.json
+   M src/main/resources/data/bettergold/advancement/metal/voodoogold/armor.json
+   M src/main/resources/data/bettergold/advancement/metal/voodoogold/weapon.json
+   M src/main/resources/data/bettergold/advancement/root.json
+   M src/main/resources/data/bettergold/advancement/treasure/any_core_material.json
+   M tools/asset-generator/advancement_manifest.json
+   M tools/asset-generator/generate_advancements.py
+   M tools/asset-generator/generate_handbook_data.py
+   M tools/asset-generator/generate_metal_tags.py
+   M tools/asset-generator/validate_advancements.py
+   M tools/asset-generator/validate_metal_data.py
+  ?? "docs/bgfix3-\350\257\201\346\215\256/"
+  ?? src/main/resources/data/bettergold/tags/item/echogold_knives.json
+  ?? src/main/resources/data/bettergold/tags/item/flamegold_knives.json
+  ?? src/main/resources/data/bettergold/tags/item/handbook.json
+  ?? src/main/resources/data/bettergold/tags/item/illusiongold_knives.json
+  ?? src/main/resources/data/bettergold/tags/item/indigoseagold_knives.json
+  ?? src/main/resources/data/bettergold/tags/item/sturdygold_knives.json
+  ?? src/main/resources/data/bettergold/tags/item/thornsgold_knives.json
+  ?? src/main/resources/data/bettergold/tags/item/thundergold_knives.json
+  ?? src/main/resources/data/bettergold/tags/item/voodoogold_knives.json

@@ -1429,8 +1429,16 @@ for _p in sorted((_ZH_BOOK / "entries").glob("*.json")) if (_ZH_BOOK / "entries"
 #      由 §九 的 3 章（`merchant_intro` / `merchant_gift_box` / `merchant_antique_gear`）取代。
 #   ⚠ 旧期望 `("metal_tour", "upgrade_templates", "golden_feast", "merchant", "antiques")`
 #     **原文保留在这里**（未删）；两个旧条目的全文对照落在 `docs/1.6-规格.md` §21。
-_SKELETON_ENTRIES = ("metal_tour", "upgrade_templates",
-                     "golden_feast")
+# ⛔ **bg-fix3 §三（作者 2026-10-07）：「将手册中『贵金的材料链』与『升级锻造模版』两部分删去」**
+#   ⇒ 骨架里剩下的 `metal_tour` / `upgrade_templates` **本轮也作废**（它们才是那两个"部分"：
+#     条目名的语言键值逐字就是「贵金的材料链」/「升级锻造模板」）。
+#   ⚠ 旧期望原文保留（未删）：`_SKELETON_ENTRIES = ("metal_tour", "upgrade_templates", "golden_feast")`。
+#   ⇒ 骨架只剩 **1** 条（`golden_feast`）；两个条目的全文对照落在 `docs/1.6-规格.md` §二十二。
+_SKELETON_ENTRIES = ("golden_feast",)
+# bg-fix3 §三 作废的两个骨架条目：产物里**必须不存在**（负向断言），生成器里**必须仍在**
+# RETIRED_ENTRIES 且页数照常算得出来（8 族材料链 9 页 / 8 张模板 5 页）。
+_BGFIX3_RETIRED_ENTRIES = ("metal_tour", "upgrade_templates")
+_BGFIX3_RETIRED_PAGES = {"metal_tour": 9, "upgrade_templates": 5}
 # bg-book §六 追加轮（2026-10-05）：三章（副要材料 / 核心材料 / 知识）
 _BG2_ENTRY_NAMES = ("auxiliary_materials", "core_materials", "golden_knowledge")
 # bg-book §八 追加轮（2026-10-06）：「装备的强化」9 章（1 章联动/胚底 + 8 章金属）
@@ -1453,6 +1461,50 @@ for _retired in _BG9_RETIRED_ENTRIES:
             _bgbook_bad("bgbook9-old-placeholders-gone",
                         "§九 作废的「商人与古董」旧占位 %s 又回到了产物里（%s）：它的 11 页已由"
                         "「关于易金商人 / 礼品盒 / 古董器具」3 章 20 页取代" % (_retired, _side.name))
+# ⛔ bg-fix3 §三：两个骨架条目（「贵金的材料链」/「升级锻造模板」）的负向断言 + 生成器侧守卫。
+for _retired in _BGFIX3_RETIRED_ENTRIES:
+    for _side in (_ZH_BOOK, _EN_BOOK):
+        if (_side / "entries" / ("%s.json" % _retired)).exists():
+            _bgbook_bad("bgfix3-old-skeleton-gone",
+                        "bg-fix3 §三 作废的骨架条目 %s 又回到了产物里（%s）：作者 2026-10-07 要求把"
+                        "「贵金的材料链 / 升级锻造模版」两部分删去" % (_retired, _side.name))
+_bgbook_gen_src = Path(__file__).resolve().parent / "generate_handbook_data.py"
+_bgbook_gen_txt = _bgbook_gen_src.read_text(encoding="utf-8")
+# ⚠ **负向字符串检查必须跑在"去注释"的源码上**（mcmod_experience ex/03 §3.15 ①）：
+#   本轮实测 —— 生成器里留了一句"旧结构原文保留"的注释
+#   `# [entry_metal_tour, entry_upgrade_templates, entry_golden_feast]`，
+#   它让"ENTRIES 列表里不许出现 entry_metal_tour,"这条**负向**断言**假红**。
+#   生成器是 Python ⇒ 工程通用的 strip_comments() 只认 `//` 与 `/* */`，这里要**另剥一次 `#`**。
+_bgbook_gen_code = re.sub(r"#[^\n]*", "", _bgbook_gen_txt)
+# 生成器里这两个函数必须**原样保留**（内容不凭空消失）且仍在 `RETIRED_ENTRIES` 里；
+# 同时 `ENTRIES = [ … ]` 那一段里**不许**再引用它们（否则下次重跑又把它们写回产物）。
+#
+# ⚠ **本轮扰动实测抓到的一条假绿**（记在 docs/1.6-规格.md §二十二）：第一版这里是
+#   `src.split("ENTRIES = [")[1].split("]")[0]` —— 而 `RETIRED_ENTRIES = [` **也含**
+#   子串 `ENTRIES = [`，于是 `[1]` 取到的是 **RETIRED 那个列表**、`ENTRIES` 块根本没被检查：
+#   扰动 P15（把 `entry_metal_tour,` 塞回 ENTRIES）**仍然绿**。
+#   ⇒ 改法：**行锚定**地切出 ENTRIES 块（`^ENTRIES = \[$` … `^\]$`），并配反空转守护。
+_bgbook_entries_match = re.search(r"(?ms)^ENTRIES = \[$(.*?)^\]\s*$", _bgbook_gen_code)
+if _bgbook_entries_match is None:
+    _bgbook_bad("bgfix3-generator-retired",
+                "生成器里切不出 `ENTRIES = [ … ]` 块（行锚定正则失配 ⇒ 下面的负向断言会空转）")
+_bgbook_entries_block = _bgbook_entries_match.group(1) if _bgbook_entries_match else ""
+if _bgbook_entries_match is not None and "entry_golden_feast" not in _bgbook_entries_block:
+    _bgbook_bad("bgfix3-generator-retired",
+                "切出来的 ENTRIES 块里没有 entry_golden_feast（切错块了 ⇒ 反空转守护）")
+_bgbook_retired_match = re.search(r"(?ms)^RETIRED_ENTRIES = \[(.*?)^\]", _bgbook_gen_code)
+_bgbook_retired_block = _bgbook_retired_match.group(1) if _bgbook_retired_match else ""
+for _retired in _BGFIX3_RETIRED_ENTRIES:
+    if f"def entry_{_retired}(" not in _bgbook_gen_code:
+        _bgbook_bad("bgfix3-generator-retired",
+                    "生成器里 `entry_%s` 的构造函数被删掉了 —— 作废内容必须**原样保留**（不凭空消失）"
+                    % _retired)
+    if f"entry_{_retired}," in _bgbook_entries_block:
+        _bgbook_bad("bgfix3-generator-retired",
+                    "生成器的 `ENTRIES` 列表里又出现了 `entry_%s`（下次重跑会把它写回产物）" % _retired)
+    if f"entry_{_retired}" not in _bgbook_retired_block:
+        _bgbook_bad("bgfix3-generator-retired",
+                    "生成器的 `RETIRED_ENTRIES` 里没有 `entry_%s`（作废条目失去唯一的留档入口）" % _retired)
 _missing_skeleton = [n for n in _SKELETON_ENTRIES if n not in _entries_now]
 if _missing_skeleton:
     _bgbook_bad("bgbook-entry-count",
@@ -1461,10 +1513,11 @@ if _missing_skeleton:
 if len(_entries_now) != (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
                          + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES)):
     _bgbook_bad("bgbook-entry-count",
-                "条目数应为 %d（骨架 3 + §六 章节 3 + §八 强化 9 + §九 商人与古董 3），实际 %d"
+                "条目数应为 %d（骨架 %d + §六 章节 3 + §八 强化 9 + §九 商人与古董 3；"
+                "bg-fix3 §三 又作废 2 条骨架条目），实际 %d"
                 % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
                    + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES),
-                   len(_entries_now)))
+                   len(_SKELETON_ENTRIES), len(_entries_now)))
 _valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
 _total_pages = 0
 _recipe_refs = set()
@@ -1487,9 +1540,12 @@ for _name, _e in sorted(_entries_now.items()):
         for _rk in ("recipe", "recipe2"):
             if _rk in _pg:
                 _recipe_refs.add(_pg[_rk])
-if _total_pages < 60:
+if _total_pages < 143:
+    # ⚠ **bg-fix3 §三 改变了这里的期望值**：作废 `metal_tour`(9) + `upgrade_templates`(5) = −14 页
+    #   ⇒ 157 → **143**。旧阈值（≥60，消息里写「§八 之后应 ≥ 148 页」）原文留在这里作历史留档。
     _bgbook_bad("bgbook-anti-vacuum",
-                "手册总页数只有 %d（§八 之后应 ≥ 148 页；数据树被清空会命中这条）" % _total_pages)
+                "手册总页数只有 %d（bg-fix3 §三 之后应为 143 页 = 157 − 14；数据树被清空会命中这条）"
+                % _total_pages)
 _missing_recipe_files = sorted(
     r for r in _recipe_refs
     if not (_DATA / "bettergold" / "recipe" / (r.split(":", 1)[1] + ".json")).is_file())
@@ -2801,9 +2857,15 @@ for _f in _adv_files:
 if _hidden_files:
     _bgfix2_bad("bgfix2-adv-no-hidden", "有 %d 个成就带了 hidden（作者要「全开放别隐藏」）：%s"
                 % (len(_hidden_files), _hidden_files[:5]))
-if len(_rc_files) != 1 or _rc_files[0] != "root.json":
+# ⛔ **bg-fix3 §四（作者 2026-10-07）改变了这里的期望值**：root 也改成「获得」⇒
+#   `recipe_crafted` 在产物里**一条都不剩**。
+#   ⚠ 旧期望原文保留（未删）：`if len(_rc_files) != 1 or _rc_files[0] != "root.json":`
+#     `_bgfix2_bad("bgfix2-adv-recipe-crafted-root-only", "recipe_crafted 只许留在 root"
+#     "（手册物品是条件注册，见 §14.3）；实际 = %s")`。
+if _rc_files:
     _bgfix2_bad("bgfix2-adv-recipe-crafted-root-only",
-                "recipe_crafted 只许留在 root（手册物品是条件注册，见 §14.3）；实际 = %s" % _rc_files)
+                "recipe_crafted 在 bg-fix3 §四 之后应**一条都不剩**（root 也改成 inventory_changed 了；"
+                "旧口径是「只许留在 root」）；实际 = %s" % _rc_files)
 # 「制作改获得」点名的 9 条（bg-ach §七.2）+ 一个反空转阈值：
 # 51 条里有很多本来就该用别的 trigger（villager_trade / player_hurt_entity / placed_block …），
 # 所以阈值取「≥ 40」只当反空转守护，真正的判据是下面那 9 条逐个用 inventory_changed。
@@ -3853,6 +3915,66 @@ for _needle, _why in ((u"bg-book §九", "docs/1.6-规格.md 里没有 bg-book �
     if _needle not in _bgfix_spec:
         _bgbook9_bad("bgbook9-doc", "%s（缺 %s）" % (_why, _needle))
 
+# ==================== bg-fix3（2026-10-07）：六条修正（第三批）====================
+#
+# 本段只放"跨文件 / 文档落档"这一类判据（产物侧的判据在 `validate_advancements.py`
+# 与上面的 bg-book 段里；生成器侧的作废守卫在 `bgfix3-generator-retired`）。
+bgfix3_problems: list[str] = []
+
+
+def _bgfix3_bad(tag: str, msg: str) -> None:
+    bgfix3_problems.append("%s [%s]" % (msg, tag))
+
+
+# ---------- ① 新标签的"可选条目"机制本身必须还在生成器里（唯一真源） ----------
+#   ⚠ 第一版这里假定"计划表是一张 8 键字面量字典"，于是用正则数键数 ⇒ 实际生成器是
+#     **按 `ALL_METALS` 循环**填表的（`OPTIONAL_ITEM_TAG_VALUES["%s_knives" % _m] = [...]`）
+#     ⇒ 数出 0 张、**假红**。改成：源码侧只钉"那几行字面量还在"，**张数由产物侧数**（下面）。
+_bgfix3_tags_src = strip_comments(
+    (Path(__file__).resolve().parent / "generate_metal_tags.py").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("OPTIONAL_ITEM_TAG_VALUES", "标签生成器里没有 `OPTIONAL_ITEM_TAG_VALUES` 这张计划表"),
+        ('"%s_knives" % _m', "计划表里没有按族生成的 `<族>_knives` 标签"),
+        ('"handbook"', "计划表里没有 `handbook` 标签（root 改「获得」靠的就是它）"),
+        ('"required": False', "可选条目没有写成 `\"required\": false`（没装可选模组时整条标签会被丢弃）"),
+        ("for _m in ALL_METALS", "刀标签不是按 8 族循环生成的（写死清单会漏族 —— AGENTS 红线 2）")):
+    if _needle not in _bgfix3_tags_src:
+        _bgfix3_bad("bgfix3-tag-generator", "%s（缺 %s）" % (_why, _needle))
+
+# 产物侧：9 张"可选条目标签"必须在，且每张**恰好 1 条** value 写成 `required: false`
+_bgfix3_tag_dir = _DATA / "bettergold" / "tags" / "item"
+_bgfix3_tag_paths = sorted(_bgfix3_tag_dir.glob("*_knives.json")) + \
+                    [_bgfix3_tag_dir / "handbook.json"]
+if len(_bgfix3_tag_paths) != 9:
+    _bgfix3_bad("bgfix3-tag-generator",
+                "可选条目标签文件不是 9 张（8 族刀 + handbook），实际 %d：%s"
+                % (len(_bgfix3_tag_paths), [p.name for p in _bgfix3_tag_paths]))
+for _tp in _bgfix3_tag_paths:
+    if not _tp.is_file():
+        _bgfix3_bad("bgfix3-tag-generator", "缺标签文件 %s" % _tp.name)
+        continue
+    _tobj = json.loads(_tp.read_text(encoding="utf-8"))
+    _tvals = _tobj.get("values") or []
+    if len(_tvals) != 1 or not isinstance(_tvals[0], dict) \
+            or _tvals[0].get("required") is not False:
+        _bgfix3_bad("bgfix3-tag-generator",
+                    "%s 的 values 不是「恰好 1 条 {\"id\": …, \"required\": false}」：%s"
+                    % (_tp.name, _tvals))
+
+# ---------- ② 文档侧：§二十二 的口径必须落档 ----------
+_bgfix3_spec = (REPO / "docs" / "1.6-规格.md").read_text(encoding="utf-8")
+for _needle, _why in (
+        ("bg-fix3", "docs/1.6-规格.md 里没有 bg-fix3 节"),
+        ("贵金的材料链", "没写手册被删掉的那两节名（贵金的材料链）"),
+        ("升级锻造模板", "没写手册被删掉的那两节名（升级锻造模板）"),
+        ("have_knife", "没写乐事小刀的落法（have_knife 判据）"),
+        ("#bettergold:handbook", "没写 root 改「获得」的标签落法"),
+        ('"required": false', "没写 required:false 这条机制（没装可选模组时不报错）"),
+        ("链式", "没写根链改链式这条口径"),
+        ("旧口径", "没写旧口径就地标注的位置")):
+    if _needle not in _bgfix3_spec:
+        _bgfix3_bad("bgfix3-doc", "%s（缺 %s）" % (_why, _needle))
+
 print(f"bgfinal3 三条裁定（靛海金文档口径 / 手册任意一件 / 金胡萝卜 placed_block）问题: "
       f"{len(bgfinal3_problems)} {bgfinal3_problems[:8]}")
 print(f"bg-16 两处修正（横幅落点 / 安抚对玩家）问题: {len(bg16_problems)} {bg16_problems[:8]}")
@@ -3873,10 +3995,12 @@ print(f"bg-book §八 追加轮（「装备的强化」9 章 / 类别改名 / �
 print(f"bg-book §九 追加轮（「商人与古董」3 章 / §9.7 不就地转换 / 空引号占位）问题: "
       f"{len(bgbook9_problems)} {bgbook9_problems[:8]}"
       f"（3 章 {_BG9_PAGES_TOTAL} 页 / 配方引用 {len(_BG9_RECIPE_REFS)} 条 / 图标引用 {len(_BG9_SPOTLIGHT_REFS)} 个）")
+print(f"bg-fix3 六条修正（藤条判据 / 乐事刀 / 手册删两节 / root 改获得 / 排版 / 标签机制）问题: "
+      f"{len(bgfix3_problems)} {bgfix3_problems[:8]}")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
                or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
-               or bgfinal3_problems or bgbook9_problems
+               or bgfinal3_problems or bgbook9_problems or bgfix3_problems
                or symmetric_problems or beacon_problems) else 0)

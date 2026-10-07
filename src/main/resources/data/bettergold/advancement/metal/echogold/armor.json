@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:metal/echogold/ingot",
+  "parent": "bettergold:metal/echogold/weapon",
   "display": {
     "icon": {
       "id": "bettergold:echogold_chestplate",
@@ -10,7 +10,8 @@
     },
     "description": {
       "translate": "advancements.bettergold.echogold_armor.description"
-    }
+    },
+    "frame": "challenge"
   },
   "criteria": {
     "armor_helmet": {

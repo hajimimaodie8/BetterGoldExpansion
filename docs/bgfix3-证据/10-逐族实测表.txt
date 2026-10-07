@@ -1,0 +1,113 @@
+# ①/② 逐族 × 逐类 实测表（A 级 · runServer · 每格 400 次真 GLM 路径）
+
+来源：build/bgfix3-runA2.log（GBK 解码后的 BGFIX3-PROBE DROP 行）。
+判据路径：Block.getDrops(state, level, pos, null, null, tool) -> BlockBehaviour#getDrops（填 BLOCK_STATE+TOOL）
+        -> LootTable#getRandomItems -> CommonHooks.modifyLoot -> AddGlitteringVineModifier#doApply。
+
+| 用例 | 树叶 400 次 | 藤蔓 400 次 | 期望 | 结论 |
+|---|---|---|---|---|
+| 烈燃金 剑 | 24 | 30 | drop=true | PASS |
+| 烈燃金 斧 | 25 | 23 | drop=true | PASS |
+| 烈燃金 镐 | 18 | 25 | drop=true | PASS |
+| 烈燃金 锹 | 20 | 26 | drop=true | PASS |
+| 烈燃金 锄 | 30 | 29 | drop=true | PASS |
+| 烈燃金 刀(乐事) | 25 | 29 | drop=true | PASS |
+| 烈燃金 重锤 | 27 | 29 | drop=true | PASS |
+| 烈燃金 弓 | 29 | 28 | drop=true | PASS |
+| 烈燃金 弩 | 24 | 20 | drop=true | PASS |
+| 烈燃金 三叉戟 | 23 | 26 | drop=true | PASS |
+| 烈燃金 盾牌 | 0 | 0 | drop=false | PASS |
+| 万坚金 剑 | 0 | 0 | drop=false | PASS |
+| 万坚金 斧 | 0 | 0 | drop=false | PASS |
+| 万坚金 镐 | 0 | 0 | drop=false | PASS |
+| 万坚金 锹 | 0 | 0 | drop=false | PASS |
+| 万坚金 锄 | 0 | 0 | drop=false | PASS |
+| 万坚金 刀(乐事) | 0 | 0 | drop=false | PASS |
+| 万坚金 重锤 | 0 | 0 | drop=false | PASS |
+| 万坚金 弓 | 0 | 0 | drop=false | PASS |
+| 万坚金 弩 | 0 | 0 | drop=false | PASS |
+| 万坚金 三叉戟 | 0 | 0 | drop=false | PASS |
+| 万坚金 盾牌 | 0 | 0 | drop=false | PASS |
+| 树棘金 剑 | 21 | 18 | drop=true | PASS |
+| 树棘金 斧 | 22 | 25 | drop=true | PASS |
+| 树棘金 镐 | 27 | 31 | drop=true | PASS |
+| 树棘金 锹 | 24 | 24 | drop=true | PASS |
+| 树棘金 锄 | 28 | 24 | drop=true | PASS |
+| 树棘金 刀(乐事) | 23 | 32 | drop=true | PASS |
+| 树棘金 重锤 | 27 | 21 | drop=true | PASS |
+| 树棘金 弓 | 24 | 20 | drop=true | PASS |
+| 树棘金 弩 | 31 | 18 | drop=true | PASS |
+| 树棘金 三叉戟 | 24 | 22 | drop=true | PASS |
+| 树棘金 盾牌 | 0 | 0 | drop=false | PASS |
+| 幽咆金 剑 | 26 | 23 | drop=true | PASS |
+| 幽咆金 斧 | 26 | 23 | drop=true | PASS |
+| 幽咆金 镐 | 19 | 20 | drop=true | PASS |
+| 幽咆金 锹 | 31 | 16 | drop=true | PASS |
+| 幽咆金 锄 | 20 | 31 | drop=true | PASS |
+| 幽咆金 刀(乐事) | 34 | 23 | drop=true | PASS |
+| 幽咆金 重锤 | 28 | 37 | drop=true | PASS |
+| 幽咆金 弓 | 33 | 21 | drop=true | PASS |
+| 幽咆金 弩 | 33 | 25 | drop=true | PASS |
+| 幽咆金 三叉戟 | 24 | 22 | drop=true | PASS |
+| 幽咆金 盾牌 | 0 | 0 | drop=false | PASS |
+| 靛海金 剑 | 24 | 21 | drop=true | PASS |
+| 靛海金 斧 | 25 | 30 | drop=true | PASS |
+| 靛海金 镐 | 22 | 16 | drop=true | PASS |
+| 靛海金 锹 | 28 | 25 | drop=true | PASS |
+| 靛海金 锄 | 26 | 23 | drop=true | PASS |
+| 靛海金 刀(乐事) | 22 | 21 | drop=true | PASS |
+| 靛海金 重锤 | 21 | 20 | drop=true | PASS |
+| 靛海金 弓 | 23 | 23 | drop=true | PASS |
+| 靛海金 弩 | 24 | 20 | drop=true | PASS |
+| 靛海金 三叉戟 | 31 | 21 | drop=true | PASS |
+| 靛海金 盾牌 | 0 | 0 | drop=false | PASS |
+| 巫毒金 剑 | 20 | 22 | drop=true | PASS |
+| 巫毒金 斧 | 25 | 16 | drop=true | PASS |
+| 巫毒金 镐 | 24 | 23 | drop=true | PASS |
+| 巫毒金 锹 | 29 | 23 | drop=true | PASS |
+| 巫毒金 锄 | 22 | 24 | drop=true | PASS |
+| 巫毒金 刀(乐事) | 21 | 35 | drop=true | PASS |
+| 巫毒金 重锤 | 26 | 24 | drop=true | PASS |
+| 巫毒金 弓 | 28 | 20 | drop=true | PASS |
+| 巫毒金 弩 | 22 | 17 | drop=true | PASS |
+| 巫毒金 三叉戟 | 24 | 30 | drop=true | PASS |
+| 巫毒金 盾牌 | 0 | 0 | drop=false | PASS |
+| 结雷金 剑 | 37 | 24 | drop=true | PASS |
+| 结雷金 斧 | 24 | 21 | drop=true | PASS |
+| 结雷金 镐 | 33 | 24 | drop=true | PASS |
+| 结雷金 锹 | 26 | 14 | drop=true | PASS |
+| 结雷金 锄 | 20 | 28 | drop=true | PASS |
+| 结雷金 刀(乐事) | 18 | 28 | drop=true | PASS |
+| 结雷金 重锤 | 27 | 25 | drop=true | PASS |
+| 结雷金 弓 | 17 | 23 | drop=true | PASS |
+| 结雷金 弩 | 28 | 20 | drop=true | PASS |
+| 结雷金 三叉戟 | 19 | 21 | drop=true | PASS |
+| 结雷金 盾牌 | 0 | 0 | drop=false | PASS |
+| 幻惑金 剑 | 24 | 28 | drop=true | PASS |
+| 幻惑金 斧 | 24 | 24 | drop=true | PASS |
+| 幻惑金 镐 | 30 | 25 | drop=true | PASS |
+| 幻惑金 锹 | 24 | 27 | drop=true | PASS |
+| 幻惑金 锄 | 26 | 21 | drop=true | PASS |
+| 幻惑金 刀(乐事) | 20 | 17 | drop=true | PASS |
+| 幻惑金 重锤 | 22 | 31 | drop=true | PASS |
+| 幻惑金 弓 | 24 | 26 | drop=true | PASS |
+| 幻惑金 弩 | 26 | 24 | drop=true | PASS |
+| 幻惑金 三叉戟 | 23 | 27 | drop=true | PASS |
+| 幻惑金 盾牌 | 0 | 0 | drop=false | PASS |
+
+其余读数（同一份日志）：
+* drop_control_iron_sword :: PASS iron_sword leaves=0/400 expect=0
+* drop_control_diamond_pickaxe :: PASS diamond_pickaxe leaves=0/400 expect=0
+* drop_control_empty_hand :: PASS empty-hand leaves=0/400 expect=0
+* drop_control_non_target_block :: PASS thornsgold_pickaxe stone=0/400 expect=0（不是树叶/藤蔓）
+* drop_fortune_l0 :: PASS fortune=0 p=0.06 expect=120.0 hits=123/2000 dev=3.0 4sigma=42.5
+* drop_fortune_l1 :: PASS fortune=1 p=0.12 expect=240.0 hits=254/2000 dev=14.0 4sigma=58.1
+* drop_fortune_l2 :: PASS fortune=2 p=0.18 expect=360.0 hits=360/2000 dev=0.0 4sigma=68.7
+* drop_fortune_l3 :: PASS fortune=3 p=0.24 expect=480.0 hits=486/2000 dev=6.0 4sigma=76.4
+* drop_fortune_monotonic :: PASS hits=123,254,360,486（应严格递增）
+* drop_real_thornsgold_sword_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=bettergold:thornsgold_sword mainhand=bettergold:thornsgold_sword
+* drop_real_thornsgold_sword :: PASS 真世界 ItemEntity：vine=3 other(树叶自身掉落)=7（200 次真 destroyBlock；expectVine=true）
+* drop_real_sturdygold_sword_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=bettergold:sturdygold_sword mainhand=bettergold:sturdygold_sword
+* drop_real_sturdygold_sword :: PASS 真世界 ItemEntity：vine=0 other(树叶自身掉落)=7（200 次真 destroyBlock；expectVine=false）
+* drop_real_iron_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=minecraft:air mainhand=minecraft:air
+* drop_real_iron :: PASS 真世界 ItemEntity：vine=0 other(树叶自身掉落)=10（200 次真 destroyBlock；expectVine=false）

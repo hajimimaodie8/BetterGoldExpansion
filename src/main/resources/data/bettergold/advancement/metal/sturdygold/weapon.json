@@ -33,11 +33,22 @@
           }
         ]
       }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:sturdygold_knives"
+          }
+        ]
+      }
     }
   },
   "requirements": [
     [
-      "have"
+      "have",
+      "have_knife"
     ]
   ],
   "sends_telemetry_event": false

@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:metal/indigoseagold/ingot",
+  "parent": "bettergold:metal/indigoseagold/weapon",
   "display": {
     "icon": {
       "id": "bettergold:indigoseagold_chestplate",
@@ -10,7 +10,8 @@
     },
     "description": {
       "translate": "advancements.bettergold.indigoseagold_armor.description"
-    }
+    },
+    "frame": "challenge"
   },
   "criteria": {
     "armor_helmet": {

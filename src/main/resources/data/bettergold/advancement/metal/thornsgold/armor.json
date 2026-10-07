@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:metal/thornsgold/ingot",
+  "parent": "bettergold:metal/thornsgold/weapon",
   "display": {
     "icon": {
       "id": "bettergold:thornsgold_chestplate",
@@ -10,7 +10,8 @@
     },
     "description": {
       "translate": "advancements.bettergold.thornsgold_armor.description"
-    }
+    },
+    "frame": "challenge"
   },
   "criteria": {
     "armor_helmet": {

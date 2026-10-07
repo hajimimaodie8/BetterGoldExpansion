@@ -13,16 +13,20 @@
     "background": "minecraft:textures/block/gold_block.png"
   },
   "criteria": {
-    "craft_handbook": {
-      "trigger": "minecraft:recipe_crafted",
+    "have_handbook": {
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "recipe_id": "bettergold:alchemy_student_handbook"
+        "items": [
+          {
+            "items": "#bettergold:handbook"
+          }
+        ]
       }
     }
   },
   "requirements": [
     [
-      "craft_handbook"
+      "have_handbook"
     ]
   ],
   "sends_telemetry_event": false

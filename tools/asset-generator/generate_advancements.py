@@ -66,10 +66,35 @@ def gear(metal: str) -> list[str]:
 #   本轮把它**显式钉成断言**（validate_advancements.py 的 `[bgach-no-knife-in-gear]`），
 #   免得以后有人"顺手"把 knife 加回 GEAR_SUFFIX 而静默改变 8 条成就的口径。
 #
-# ⚠ 已知不一致（记录在 docs/1.6-规格.md §18.3，**没有自行改手册**）：手册「器具同框」那一页
-#   （bg-book §3.4 / 生成器 `TOOLS = [sword, axe, pickaxe, shovel, hoe, knife]`）把刀算作器具，
-#   而进度这边不算 —— 两处口径不同，作者一句话即可统一。
+# ⛔⛔ **bg-fix3 §二（作者 2026-10-07）把上面这条口径整个作废**：
+#   作者原话「**乐事联动的刀仍然无法触发获得任意一种器具的成就**」＝**缺陷**（不是"不应该触发"）。
+#   ⇒ 现行口径：**乐事小刀必须能触发**这 8 条「获得任意一种 XX金武器工具」成就。
+#   ⚠ 旧口径原文**逐字保留在上面**（未删），只在此就地标注作废；全文对照落在
+#     `docs/1.6-规格.md` §二十二。
+#   ⚠ `GEAR_SUFFIX` **仍然不含 knife**（它是"该族 10 件武器工具"的清单，刀走另一条判据）——
+#     刀的纳入方式是给每条武器成就加一条 `have_knife` 判据，见 `WEAPON_KNIFE_TAG`。
 KNIVES = [f"{NS}:{m}_knife" for m in METALS]
+
+# bg-fix3 §二：每条武器成就的"刀"判据读的物品标签（`<族>_knives`）。
+#   **为什么不把 8 个 `_knife` id 直接写进 `have` 的 items 列表**（本轮实测的硬约束）：
+#   `ItemPredicate.items` 是 `RegistryCodecs.homogeneousList(Registries.ITEM)` ⇒ **解析期**就要在
+#   冻结的物品注册表里查到 id，查不到 ⇒ 报 `Unknown element` 并**丢掉整份成就 JSON**
+#   （mcmod_experience `ex/04` 第 65 条；手册物品在 root 上踩过同一条）。
+#   而乐事小刀**只在装了 FD 时**才注册（`fd/FdItems` 反射创建）⇒ 直接写裸 id 会让 8 条成就
+#   在"没装乐事"的环境里**整批消失**。
+#   ⇒ 唯一安全形态 = `items` 指向**一张标签**（`HolderSet` 的 tag 分支，写 `"#ns:tag"` 单个字符串），
+#     标签里那一行写成 `{"id": ..., "required": false}` ⇒ 没装 FD 时**静默跳过**、标签照常加载
+#     （空集 ⇒ 判据永不达成，但**不报错、不丢文件**）。标签由 `generate_metal_tags.py` 生成。
+def weapon_knife_tag(metal: str) -> str:
+    return f"{NS}:{metal}_knives"
+
+
+# ⚠ **旧口径原文保留（未删），bg-fix3 §二 之后它已经不成立了**：
+#   「已知不一致（记录在 docs/1.6-规格.md §18.3，**没有自行改手册**）：手册「器具同框」那一页
+#    （bg-book §3.4 / 生成器 `TOOLS = [sword, axe, pickaxe, shovel, hoe, knife]`）把刀算作器具，
+#    而进度这边不算 —— 两处口径不同，作者一句话即可统一。」
+#   ⇒ 2026-10-07 作者的那句话就是「**乐事联动的刀仍然无法触发获得任意一种器具的成就**」：
+#     刀算器具 ⇒ **两处口径现已一致**（手册含刀、进度也含刀），§17.5 第 4 条随之关闭。
 
 
 def armor(metal: str) -> list[str]:
@@ -138,6 +163,23 @@ def c_inv(items: list[str], structure: str | None = None) -> dict:
     return {"trigger": "minecraft:inventory_changed", "conditions": cond}
 
 
+def c_inv_tag(tag_id: str) -> dict:
+    """``inventory_changed``：``items`` 指向**一个物品标签**（`HolderSet` 的 tag 分支）。
+
+    bg-fix3（2026-10-07）新增 —— 用来引用"**只在装了某个可选模组时才存在**的物品"：
+    标签里那一行写 ``{"id": ..., "required": false}``（见 ``generate_metal_tags.py``），
+    没装时静默跳过、标签照常加载 ⇒ **判据永不达成，但不报错、不丢文件**。
+    ⚠ 必须写成一个**单元素列表**（= 一个 ``ItemPredicate``）：``items.size() == 1`` 时
+    `InventoryChangeTrigger` 只拿"本次变化的那一格"去比（`InventoryChangeTrigger.java:108`）。
+    ⚠ ``tag_id`` 必须是**完整的** `namespace:path`（不是裸 path）—— 少了命名空间会解析成
+    `#handbook` 这种不存在的标签，而 `HolderSetCodec.lookupTag` 对"标签不存在"是
+    `DataResult.error("Missing tag: …")` ⇒ **整份成就 JSON 被丢掉**（实测踩过一次）。
+    """
+    assert ":" in tag_id, f"标签 id 必须是 namespace:path，收到 {tag_id!r}"
+    return {"trigger": "minecraft:inventory_changed",
+            "conditions": {"items": [{"items": f"#{tag_id}"}]}}
+
+
 def c_recipe(recipe_id: str) -> dict:
     return {"trigger": "minecraft:recipe_crafted", "conditions": {"recipe_id": recipe_id}}
 
@@ -200,21 +242,43 @@ def build() -> list[dict]:
     #   **唯一例外** = merchant/gift_box（仍是 `villager_trade`，见 §3.4）。
     #   ⚠ 作者给的**标题 / 简介文案一个字都没动**（§5.3 陷阱 4「逐字用」）：简介里那句「制作 X」
     #     保留为原文、与判定口径分离 —— 这是本轮记在 docs/1.6-规格.md §18.2 的已知差异。
+    #
+    # ⛔ **bg-fix3 §四（作者 2026-10-07）：根也要改「获得」** ——
+    #   作者原话「旧时代的炼金术师继承者进度**触发条件是获得**新生代炼金术学员手册」。
+    #   ⚠ 旧口径原文保留（它曾是 §七.2 里**唯一**故意留着 `recipe_crafted` 的一条）：
+    #     `{"craft_handbook": c_recipe(f"{NS}:alchemy_student_handbook")}`，理由 =「手册物品在
+    #     **没装 Patchouli 时根本不注册**，而 `recipe_crafted.recipe_id` 是**裸 ResourceLocation**
+    #     （不查注册表）⇒ 不会引起解析失败」（§14.3）。
+    #   ⇒ 现行落法：`inventory_changed` + `items` 指向标签 `#bettergold:handbook`
+    #     （标签里那一行 `{"id":"bettergold:alchemy_student_handbook","required":false}`）
+    #     —— 既满足"获得即触发"，又保持"没装 Patchouli 时不报错、其余 50 条照常加载"。
+    #   ⇒ **全 51 条成就从此一条 `recipe_crafted` 都没有了**（关卡 `[bgfix3-recipe-crafted-none]` 守着）。
     add("root", "root", "旧时代炼金术的继承者", "以炼制\"贵金\"为主要目标，出发！",
         "minecraft:gold_ingot", None,
-        {"craft_handbook": c_recipe(f"{NS}:alchemy_student_handbook")},
-        [["craft_handbook"]])
+        {"have_handbook": c_inv_tag(f"{NS}:handbook")},
+        [["have_handbook"]])
     add("alchemy/mixed_crystal_pile", "mixed_crystal_pile",
         "炼制\"贵金\"所需I", "制作混合晶石堆", f"{NS}:mixed_crystal_pile", "root",
         {"have": c_inv([f"{NS}:mixed_crystal_pile"])}, [["have"]])
+    # ⛔ **bg-fix3 §五（作者 2026-10-07）把根链改成"链式"** ——
+    #   作者本轮重述的根链：「旧时代的炼金术继承者 — 炼制"贵金"所需I — 炼制"贵金"所需II —
+    #   寻途千里的珍宝 — 9 个分支，八个金属相关，一个齐活，烧炼，拿下！」
+    #   ⚠ **与上一轮裁定冲突**：上一轮（bg-ach §14.1 / §17.4 第 4 条）按作者的「**并列**」把
+    #     炼制I / 炼制II / 寻途 都挂在 root 下（原文保留在上面那条 add 的 history 里，未删）。
+    #   ⇒ 现行：`mixed_crystal_pile`（root 下）→ `alchemic_fuel` → `any_core_material`（寻途）。
+    #   ⚠ 作者一句话即可改回并列（把这两条的 parent 改回 "root"）。
+    #   ⚠ **需求没覆盖的新选择（本轮取值，记在 docs/1.6-规格.md §22 与汇报里）**：
+    #     作者只重述了 4 节链、没提两条农业成就 ⇒ 「土地也要染上黄金」与「也是吃上科技啊呸」
+    #     **仍留在 root 下**（否则它们会变成从 root 不可达的孤点）。
     add("alchemy/alchemic_fuel", "alchemic_fuel",
-        "炼制\"贵金\"所需II", "制作炼金燃油", f"{NS}:alchemic_fuel", "root",
+        "炼制\"贵金\"所需II", "制作炼金燃油", f"{NS}:alchemic_fuel", "alchemy/mixed_crystal_pile",
         {"have": c_inv([f"{NS}:alchemic_fuel"])}, [["have"]])
 
     # ---- §3.2 珍宝与 8 个核心材料（10）
+    # ⛔ bg-fix3 §五：寻途的 parent 由 "root" 改成链上一节（炼制所需II）—— 旧口径原文见上。
     add("treasure/any_core_material", "core_material",
         "寻途千里的珍宝", "获得任意一种\"贵金\"核心材料",
-        f"{NS}:golden_cowrie", "root",
+        f"{NS}:golden_cowrie", "alchemy/alchemic_fuel",
         {"have": c_inv([CORE_MATERIALS])}, [["have"]])
     treasure_parent = "treasure/any_core_material"
     add("treasure/blazing_rod", "blazing_rod", "超 燃 大 火 杆 ！", "制作一个高燃烈焰棒",
@@ -272,16 +336,29 @@ def build() -> list[dict]:
         ingot = f"{base}/ingot"
         add(ingot, f"{metal}_ingot", ingot_title, ingot_desc, f"{NS}:{metal}_ingot", core_parent,
             {"have": c_inv([f"{NS}:{metal}_ingot"])}, [["have"]])
+        # ⛔ bg-fix3 §二（2026-10-07）：刀的纳入方式 = 给这条武器成就**再加一条判据**
+        #   `have_knife`（items 指向该族的 `<族>_knives` 标签），两条判据放进**同一个
+        #   requirement 组**（组内 OR）⇒ 「10 件武器工具 **或** 乐事小刀」都算获得。
+        #   ⚠ 旧口径（原文保留，未删）：本轮之前这里只有 `{"have": c_inv([gear(metal)])}` +
+        #     `[["have"]]`，刀被 `[bgach-no-knife-in-gear]` 的负向断言挡在外面。
         add(f"{base}/weapon", f"{metal}_weapon", weapon_title,
             f"获得任意一种{ {'flamegold': '烈燃金', 'sturdygold': '万坚金', 'thornsgold': '树棘金',
                               'echogold': '幽咆金', 'indigoseagold': '靛海金', 'voodoogold': '巫毒金',
                               'thundergold': '结雷金', 'illusiongold': '幻惑金'}[metal] }武器工具",
             f"{NS}:{metal}_sword", ingot,
-            {"have": c_inv([gear(metal)])}, [["have"]])
+            {"have": c_inv([gear(metal)]),
+             "have_knife": c_inv_tag(weapon_knife_tag(metal))},
+            [["have", "have_knife"]])
         # ★ 作者 2026-10-05 核定：**只有万坚金那条**把「整套盔甲」挂在「染上黄金吧」（武器）之下
         #   —— 因为那一条在武器处一分为三（骷髅打金服 / 整套盔甲 / 奢华一票→商人线）；
         #   其余 7 套的武器与盔甲都是「锭」的两个并列孩子。
-        armor_parent = f"{base}/weapon" if metal == "sturdygold" else ingot
+        # ⛔ **bg-fix3 §五（作者 2026-10-07）把上面这条推翻**：作者本轮给的排版是
+        #   「原材料 - 材料锭 - 材料剑 - 材料盔甲」= **四级链** ⇒ **八族一律** 盔甲挂在武器之下
+        #   （旧口径原文保留在上面，未删）。
+        armor_parent = f"{base}/weapon"
+        # ⛔ bg-fix3 §五②：**八条盔甲全部改成「挑战进度」**（frame=challenge）。
+        #   旧口径（原文保留）：`frame` 省略 = 默认 `task`，全 51 条里只有
+        #   `metal/sturdygold/skeleton`（骷髅打金服）是 challenge。
         add(f"{base}/armor", f"{metal}_armor", armor_title,
             f"获得一整套{ {'flamegold': '烈燃金', 'sturdygold': '万坚金', 'thornsgold': '树棘金',
                             'echogold': '幽咆金', 'indigoseagold': '靛海金', 'voodoogold': '巫毒金',
@@ -290,7 +367,8 @@ def build() -> list[dict]:
             {f"armor_{s}": c_inv([f"{NS}:{metal}_{s}"]) for s in ARMOR_SUFFIX},
             # ⚠ requirements 的语义：**组内是 OR、组间是 AND**（`AdvancementRequirements#test`）
             #   ⇒ "一整套"必须是「每个部位各自一组」，写成一个大组就等于"任意一件"。
-            [[f"armor_{s}"] for s in ARMOR_SUFFIX])
+            [[f"armor_{s}"] for s in ARMOR_SUFFIX],
+            frame="challenge")
         if metal == "sturdygold":
             # ⑲ 骷髅打金服（紫色挑战）—— parent 挂在「染上黄金吧」之下（作者 2026-10-05 核定）
             add(f"{base}/skeleton", "sturdygold_skeleton", "骷髅打金服",
@@ -671,8 +749,13 @@ def main() -> int:
             "gear_suffix": GEAR_SUFFIX, "armor_suffix": ARMOR_SUFFIX, "metals": METALS,
             "gold_foods": GOLD_FOODS, "sturdygold_foods": STURDYGOLD_FOODS,
             "fd_gold_foods": FD_GOLD_FOODS, "fd_sturdygold_foods": FD_STURDYGOLD_FOODS,
-            # §七.6：刀**不是**器具 ⇒ 关卡用这份清单反向断言"8 条武器成就里一个刀都没有"
+            # bg-fix3 §二 起：刀**算**器具 ⇒ 这份清单是"必须被 `have_knife` 判据覆盖"的正向清单
+            #   （旧口径原文保留：它曾经是"8 条武器成就里一个刀都不许有"的负向清单）。
             "knives": KNIVES,
+            # bg-fix3 §二/§四：两条判据读的**物品标签**（`generate_metal_tags.py` 生成，
+            #   条目一律 `required:false` ⇒ 没装对应可选模组时不报错）。
+            "knife_tags": {m: weapon_knife_tag(m) for m in METALS},
+            "handbook_tag": f"{NS}:handbook",
         },
     }
     MANIFEST.write_bytes((json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
@@ -682,6 +765,16 @@ def main() -> int:
     print(f"清单: {MANIFEST.relative_to(REPO)}")
     print(f"带乐事条件的成就: {[a['path'] for a in A if a['fd']]}")
     print(f"challenge: {[a['path'] for a in A if a['frame'] != 'task']}")
+    # bg-fix3：两条"标签判据"的自证读数（刀/手册标签各覆盖几条成就、recipe_crafted 还剩几条）
+    _all_knife_tags = [f"#{weapon_knife_tag(m)}" for m in METALS]
+    _knife_crits = [a["path"] for a in A
+                    if any(t in json.dumps(a["criteria"], ensure_ascii=False) for t in _all_knife_tags)]
+    print(f"带『乐事小刀』判据的成就: {len(_knife_crits)} 条 → {_knife_crits}")
+    _handbook_crits = [a["path"] for a in A
+                       if f"#{NS}:handbook" in json.dumps(a["criteria"], ensure_ascii=False)]
+    print(f"带『手册』标签判据的成就: {_handbook_crits}")
+    print(f"仍是 recipe_crafted 的成就: "
+          f"{[a['path'] for a in A if any(c['trigger'] == 'minecraft:recipe_crafted' for c in a['criteria'].values())]}")
     print(f"语言键: {len(A) * 2} 条/语言（{LANG_PREFIX}.<key>.title/.description）")
 
     if "--lang" in sys.argv:

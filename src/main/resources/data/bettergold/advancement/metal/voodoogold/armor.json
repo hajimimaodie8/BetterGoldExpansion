@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:metal/voodoogold/ingot",
+  "parent": "bettergold:metal/voodoogold/weapon",
   "display": {
     "icon": {
       "id": "bettergold:voodoogold_chestplate",
@@ -10,7 +10,8 @@
     },
     "description": {
       "translate": "advancements.bettergold.voodoogold_armor.description"
-    }
+    },
+    "frame": "challenge"
   },
   "criteria": {
     "armor_helmet": {

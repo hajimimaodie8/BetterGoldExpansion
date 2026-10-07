@@ -10,7 +10,8 @@
     },
     "description": {
       "translate": "advancements.bettergold.sturdygold_armor.description"
-    }
+    },
+    "frame": "challenge"
   },
   "criteria": {
     "armor_helmet": {

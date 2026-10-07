@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:metal/illusiongold/ingot",
+  "parent": "bettergold:metal/illusiongold/weapon",
   "display": {
     "icon": {
       "id": "bettergold:illusiongold_chestplate",
@@ -10,7 +10,8 @@
     },
     "description": {
       "translate": "advancements.bettergold.illusiongold_armor.description"
-    }
+    },
+    "frame": "challenge"
   },
   "criteria": {
     "armor_helmet": {
