@@ -1,0 +1,59 @@
+{
+  "name": "bettergold.handbook.entry.golden_feast_foods",
+  "category": "bettergold:golden_feast",
+  "icon": "bettergold:golden_chocolate_bar",
+  "sortnum": 1,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_chocolate_bar",
+      "text": "bettergold.handbook.page.golden_feast_foods_1_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:brewed_hot_cocoa",
+      "text": "bettergold.handbook.page.golden_feast_foods_1_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_ice_cream",
+      "text": "bettergold.handbook.page.golden_feast_foods_2_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_sugar_cane_stick",
+      "text": "bettergold.handbook.page.golden_feast_foods_2_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:golden_egg",
+      "text": "bettergold.handbook.page.golden_feast_foods_3_left"
+    },
+    {
+      "type": "patchouli:smelting",
+      "recipe": "bettergold:fried_golden_egg_from_smelting",
+      "text": "bettergold.handbook.page.golden_feast_foods_3_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_chocolate_cookie",
+      "text": "bettergold.handbook.page.golden_feast_foods_4_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_honey_cookie",
+      "text": "bettergold.handbook.page.golden_feast_foods_4_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_egg_sandwich",
+      "text": "bettergold.handbook.page.golden_feast_foods_5_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_horse_feed",
+      "text": "bettergold.handbook.page.golden_feast_foods_5_right"
+    }
+  ]
+}

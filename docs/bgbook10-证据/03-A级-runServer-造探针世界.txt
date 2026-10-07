@@ -1,0 +1,4 @@
+﻿BG10P armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run expectWorld=bgbook10probe
+BG10P CHECK probe_world_guard PASS levelName=bgbook10probe
+BG10P SUMMARY world-created levelName=bgbook10probe ticks=60
+BG10P halting server cleanly

@@ -1,0 +1,67 @@
+﻿=== B 级：compileJava / runData / processResources jar --rerun-tasks ===
+[22:32:54] [main/DEBUG] [mixin/]: Mixing MappedRegistryAccessor from neoforge.mixins.json into net.minecraft.core.MappedRegistry
+[22:32:54] [main/DEBUG] [mixin/]: Mixing NourishmentAlwaysEatMixin from farmersdelight.mixins.json into net.minecraft.world.entity.player.Player
+[22:32:55] [main/DEBUG] [mixin/]: Mixing CuttingBoardDispenserMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.DispenserBlock
+[22:32:55] [main/DEBUG] [mixin/]: Mixing KeepRichSoilUntrampledMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FarmBlock
+[22:32:55] [main/DEBUG] [mixin/]: Mixing RopeFenceConnectionMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FenceBlock
+[22:32:55] [main/DEBUG] [mixin/]: Mixing CampfireBaleMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.CampfireBlock
+[22:32:55] [main/DEBUG] [mixin/]: Mixing KeepRichSoilTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer
+[22:32:55] [main/DEBUG] [mixin/]: Mixing BlockEntityTypeAccessor from neoforge.mixins.json into net.minecraft.world.level.block.entity.BlockEntityType
+[22:32:57] [main/DEBUG] [mixin/]: Mixing PlacePumpkinPieMixin from farmersdelight.mixins.json into net.minecraft.world.item.Item
+[22:32:57] [main/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+[22:32:58] [main/DEBUG] [mixin/]: Mixing datafix.ItemStackComponentizationFixMixin from farmersdelight.mixins.json into net.minecraft.util.datafix.fixes.ItemStackComponentizationFix
+[22:32:58] [main/DEBUG] [mixin/]: Mixing datafix.V1460Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V1460
+[22:32:59] [main/DEBUG] [mixin/]: Mixing datafix.V3818_3Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V3818_3
+[22:33:00] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTransformRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTransformRecipe
+[22:33:00] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTrimRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTrimRecipe
+[22:33:00] [main/DEBUG] [mixin/]: Mixing VillagersTargetRichSoilMixin from farmersdelight.mixins.json into net.minecraft.world.entity.ai.sensing.SecondaryPoiSensor
+[22:33:00] [main/DEBUG] [mixin/]: Mixing KeepRichSoilGiantTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.Feature
+[22:33:02] [modloading-worker-0/DEBUG] [mixin/]: Mixing client.AccessorScreen from patchouli_xplat.mixins.json into net.minecraft.client.gui.screens.Screen
+[22:33:02] [modloading-worker-0/DEBUG] [mixin/]: Mixing CanvasSignEditScreenMixin from farmersdelight.mixins.json into net.minecraft.client.player.LocalPlayer
+[22:33:02] [modloading-worker-0/DEBUG] [mixin/]: Mixing client.AccessorKeyMapping from patchouli_xplat.mixins.json into net.minecraft.client.KeyMapping
+[22:33:02] [modloading-worker-0/DEBUG] [mixin/]: Mixing client.MixinInventoryScreen from patchouli_xplat.mixins.json into net.minecraft.client.gui.screens.inventory.InventoryScreen
+BUILD SUCCESSFUL in 30s
+8 actionable tasks: 8 executed
+jar bytes=1354815 sha256=DC421DC7278E01CFF77E6AD83D75ED4FD601A5E30FD16144923C229680B1DCDC
+=== 六校验器 ===
+--- validate_metal_assets.py EXIT=0
+indigoseagold item=29  block=10  armor=2
+illusiongold item=29  block=10  armor=2
+thornsgold   item=29  block=10  armor=2
+echogold     item=29  block=10  armor=2
+bg-16 授权贴图（golden_trident_blank）问题: 0 []
+bgfinal3 授权色卡（靛海金纹饰）问题: 0 []
+--- validate_metal_data.py EXIT=0
+bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: 0 []
+bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: 0 []
+bg-book §八 追加轮（「装备的强化」9 章 / 类别改名 / 巫毒整套免疫中毒）问题: 0 []（9 章 86 页 / 锻造引用 112 条 / 胚底引用 5 条）
+bg-book §九 追加轮（「商人与古董」3 章 / §9.7 不就地转换 / 空引号占位）问题: 0 []（3 章 20 页 / 配方引用 11 条 / 图标引用 19 个）
+bg-fix3 六条修正（藤条判据 / 乐事刀 / 手册删两节 / root 改获得 / 排版 / 标签机制）问题: 0 []
+bg-book §十 追加轮（「金灿的盛宴」5 章 / 两个门禁项 / 两处待作者补）问题: 0 []（5 章 54 页 / 配方引用 40 条 / 图标引用 15 个）
+--- validate_trim_assets.py EXIT=0
+  FD jar 里 data/minecraft/tags/item/enchantable/{bow,crossbow,trident,mace,sword,sharp_weapon,
+  weapon,fire_aspect,durability,mining,mining_loot,vanishing}.json 都靠它拼出来；
+  1.5 的靛海金刀 / 幻惑金刀原先不在这个标签里 ⇒ 只有那两把不能附魔。
+
+[写出] E:\mc\mcmod\bettergold-template-1.21.1\build\p15fix-asset-audit.txt
+OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+--- validate_advancements.py EXIT=0
+OK [bgach] 51 个成就 / 123 条 criteria / 触发类型 ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:villager_trade'] / recipe_crafted 0 条 / 语言键 102 条
+OK [bgach] 树（bg-fix3 §五 链式）：根 3 孩子（炼制I + 两条农业）、根链 root -> 炼制I -> 炼制II -> 寻途、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；challenge 9 条（八族盔甲 + 骷髅打金服）
+OK [bgfix3-knife-in-gear] 8 条武器成就各带 `have_knife`（items = 该族 `#bettergold:<族>_knives` 标签，标签条目一律 required:false）⇒ 装了乐事时小刀计入
+OK [bgfix3-root-obtain] root 判据 = inventory_changed + `#bettergold:handbook`；全仓 recipe_crafted = 0 条
+OK [bgach] 物品引用 127 个（含 9 张本模组标签）全部存在于注册表真源；食物清单与 Java 真源逐条一致
+OK [bgfinal-adv-lang] 102 条英文值全部是真英译（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 0 条）
+--- check_jar_clean.py EXIT=0
+产物 bettergold-1.6.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+  ⚠ build/libs 里有 2 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+jar 内 *Probe* 路径 = 0 []
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2403
+--- check_forced_chunks.py EXIT=0
+chunks.dat top-level keys = ['data', 'DataVersion']
+chunks.dat data keys      = ['Forced']
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True

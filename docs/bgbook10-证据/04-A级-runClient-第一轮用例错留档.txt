@@ -1,0 +1,48 @@
+﻿BG10C armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+BG10C readout books=1 keys=[bettergold:alchemy_handbook]
+BG10C CHECK book_registered PASS
+BG10C CHECK book_contents_no_error PASS
+BG10C readout errored=false exception=null
+BG10C readout categories=4 order=[alchemy_start, gear_upgrade, golden_feast, merchant_antiques]
+BG10C CHECK book_categories_four PASS
+BG10C CHECK book_category_order PASS
+BG10C readout entries=20 pages=190
+BG10C CHECK book_entries_twenty PASS
+BG10C CHECK book_total_pages_190 PASS
+BG10C CHECK book_old_placeholder_gone PASS
+BG10C CHECK s10_entry_golden_feast_crops_pages_10 PASS
+BG10C CHECK s10_entry_golden_feast_foods_pages_10 PASS
+BG10C CHECK s10_entry_golden_feast_sturdy_pages_14 PASS
+BG10C CHECK s10_entry_golden_feast_fd_foods_pages_10 PASS
+BG10C CHECK s10_entry_golden_feast_fd_sturdy_pages_10 PASS
+BG10C CHECK s10_five_entries_ok PASS
+BG10C readout ch4_cover=bettergold:alchemical_meat ch5_cover=bettergold:alchemical_meat iconClass4=vazkii.patchouli.client.book.BookIcon$StackIcon
+BG10C CHECK s10_ch5_cover_is_placeholder PASS
+BG10C readout spotlight golden_feast_crops#1 item="bettergold:gold_infused_dirt" stacks=1 empty=0
+BG10C readout spotlight golden_feast_crops#3 item=["minecraft:golden_carrot","bettergold:golden_wheat_seeds","bettergold:golden_eggplant_seeds"] stacks=3 empty=0
+BG10C readout spotlight golden_feast_crops#5 item=["bettergold:golden_wheat","bettergold:golden_bread","bettergold:golden_wheat_block"] stacks=3 empty=0
+BG10C readout spotlight golden_feast_crops#7 item="bettergold:golden_eggplant" stacks=1 empty=0
+BG10C readout spotlight golden_feast_crops#9 item="bettergold:golden_bone_meal" stacks=1 empty=0
+BG10C readout spotlight golden_feast_foods#2 item="bettergold:brewed_hot_cocoa" stacks=1 empty=0
+BG10C readout spotlight golden_feast_foods#5 item="bettergold:golden_egg" stacks=1 empty=0
+BG10C readout spotlight golden_feast_sturdy#5 item="bettergold:sturdygold_brewed_hot_cocoa" stacks=1 empty=0
+BG10C readout spotlight golden_feast_fd_foods#1 item="bettergold:alchemical_meat" stacks=1 empty=0
+BG10C readout spotlight golden_feast_fd_foods#4 item="bettergold:golden_glow_custard" stacks=1 empty=0
+BG10C readout spotlight golden_feast_fd_foods#5 item="bettergold:golden_apple_cider" stacks=1 empty=0
+BG10C readout s10_text_keys=49 title_keys=2 unresolved=0 {}
+BG10C readout s10_recipe_refs=40 missing=[]
+BG10C readout s10_item_refs=15 missing=[]
+BG10C readout s10_spotlight_pages=11 empty_stacks=0
+BG10C readout s10_downgrade_problems=[]
+BG10C CHECK s10_texts_translated PASS
+BG10C CHECK s10_recipes_resolved PASS
+BG10C CHECK s10_items_resolved PASS
+BG10C CHECK s10_spotlight_all_resolved FAIL
+BG10C CHECK s10_downgrades_as_designed PASS
+BG10C readout book_recipe_refs=184 missing=[]
+BG10C CHECK book_recipe_refs_all_resolved FAIL
+BG10C readout unresolved_names=0
+BG10C CHECK book_entry_names_translated PASS
+BG10C readout use_item_sent mainhand=bettergold:alchemy_student_handbook
+BG10C CHECK handbook_item_resolves PASS
+BG10C SUMMARY pass=20 fail=2 ticks=60

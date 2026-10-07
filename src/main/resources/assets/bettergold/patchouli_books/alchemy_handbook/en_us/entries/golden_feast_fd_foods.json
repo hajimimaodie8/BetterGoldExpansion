@@ -1,0 +1,58 @@
+{
+  "name": "bettergold.handbook.entry.golden_feast_fd_foods",
+  "category": "bettergold:golden_feast",
+  "icon": "bettergold:alchemical_meat",
+  "sortnum": 3,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:alchemical_meat",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:alchemical_meat_skewer",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_1_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:alchemical_meat_sandwich",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_2_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:golden_glow_custard",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_2_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:golden_apple_cider",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_3_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_pie_crust",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_3_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_apple_pie",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_4_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_chocolate_pie",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_4_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_cake",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_5_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.golden_feast_fd_foods_5_right"
+    }
+  ]
+}

@@ -143,6 +143,23 @@ def crafting_page(recipe_a, recipe_b=None, title_key=None, text_key=None):
     return page
 
 
+def smelting_page(recipe_a, recipe_b=None, title_key=None, text_key=None):
+    """熔炉页。字段形状与 ``crafting_page`` **逐字相同**（同属 ``PageDoubleRecipe`` 家族：
+    只有 ``recipe`` / ``recipe2`` 两个槽 + ``title`` / ``text``）。
+
+    §十 用到它一次：章2 第3页右「煎金蛋的配方」= ``fried_golden_egg_from_smelting``
+    （作者原文写的是"丢进**熔炉**烧制" ⇒ 取 ``_from_smelting`` 那条，不是烟熏/营火）。
+    """
+    page = {"type": "patchouli:smelting", "recipe": "bettergold:%s" % recipe_a}
+    if recipe_b:
+        page["recipe2"] = "bettergold:%s" % recipe_b
+    if title_key:
+        page["title"] = title_key
+    if text_key:
+        page["text"] = text_key
+    return page
+
+
 def spotlight_page(item, text_key=None, title_key=None):
     """⚠ 两个可选参数的语义不同，别写反（会静默变成正文而不是页眉）：
 
@@ -314,9 +331,15 @@ RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_merchant, entry_antiques]
 ENTRIES = [
     # ⛔ entry_metal_tour —— bg-fix3 §三 作废（作者 2026-10-07「贵金的材料链」），见上方注释
     # ⛔ entry_upgrade_templates —— bg-fix3 §三 作废（作者 2026-10-07「升级锻造模版」）
+    # ⛔ entry_golden_feast —— **bg-book §十 作废**（作者 2026-10-07 21:03：「关于金灿盛宴的章节
+    #    也填完了……你之前添加的那个也一样直接毙掉吧」）⇒ 它的 7 页由 §十 的 **5 章 54 页**取代。
+    #    见下方 §十 区块与 `RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_golden_feast]`。
     # ⚠ 旧结构原文保留：本轮之前这里依次是
-    #     [entry_metal_tour, entry_upgrade_templates, entry_golden_feast]（骨架 3 条）。
-    entry_golden_feast,
+    #     [entry_metal_tour, entry_upgrade_templates, entry_golden_feast]（骨架 3 条），
+    #     再往前是 7 条（含 entry_tools_per_family / entry_armor_per_family /
+    #     entry_merchant / entry_antiques）。
+    #     ⇒ 本轮之后**第一轮骨架 7 条全部作废**，`ENTRIES` 空列表（但**列表本身必须留着**：
+    #       `[bgfix3-generator-retired]` 要按 `^ENTRIES = \[$ … ^\]$` 行锚定切出它做负向断言）。
     # ⛔ entry_tools_per_family / entry_armor_per_family —— §八 作废，见上方 RETIRED_ENTRIES
     # ⛔ entry_merchant / entry_antiques —— §九 作废，见上方 RETIRED_ENTRIES
 ]
@@ -670,6 +693,189 @@ def entry_merchant_antique_gear():
 
 MERCHANT_ENTRIES = [entry_merchant_intro, entry_merchant_gift_box, entry_merchant_antique_gear]
 
+# --------------------------------------------------------------------------------------
+# bg-book §十 追加轮（2026-10-07 21:05）：「金灿的盛宴」5 章（替掉该类别旧占位条目）
+# --------------------------------------------------------------------------------------
+#
+# 形状**沿用 §八 / §九**：作者表是 `| 页 | 左侧 | 右侧 |`，标题里写的是「第 N 页左 / 右」
+#   ⇒ **一行 = 一屏（跨页）= 2 个 Patchouli 页**（5 / 5 / 7 / 5 / 5 行 ⇒
+#   **10 / 10 / 14 / 10 / 10 = 54 页**）。逐字文案的期望值来源 = 仓库内冻结快照
+#   `tools/asset-generator/bgappend-requirements-snapshot/bg-book-10.md`（**不读**仓库外活页）。
+#
+# ⚠⚠ **两个门禁项（需求没覆盖 —— 需求文档 §十 没写"这两类配方 Patchouli 表达不了"）**：
+#
+#   G1 · **酿造台配方**（章2 第1页右「金酿热可可的酿造配方」/ 章3 第3页左「万坚金酿热可可的
+#        酿造台配方」）—— 实现在 **Java 侧**：`ModBrewing.java:20-34` 监听
+#        `RegisterBrewingRecipesEvent` 注册（`Ingredient(玻璃瓶) + 巧克力棒 → 成品`），
+#        **不是 `RecipeManager` 里的配方**（`data/bettergold/recipe/` 下 **0 个** 酿造配方文件）
+#        ⇒ Patchouli 的配方页要的是 `ResourceLocation`（`PageDoubleRecipeRegistry#getRecipe`
+#        = `recipeManager.byKey(id).filter(type)`）⇒ **任何配方页都表达不了**。
+#
+#   G2 · **厨锅配方**（章4 第1页左「炼金贝肉的配方」/ 第2页右「金光浆果蛋奶沙司的配方」/
+#        第3页左「金苹果酒的配方」）—— 类型是 `farmersdelight:cooking`，而 Patchouli
+#        1.21.1-93 的 **16 个内置页型**里没有厨锅页（`ClientBookRegistry` 的注册表逐个列出：
+#        text / crafting / smelting / blasting / smoking / campfire / smithing / stonecutting /
+#        image / spotlight / empty / multiblock / link / relations / entity / quest）。
+#        ⚠ `smelting` / `campfire` 之类**不能顶替** —— 那是别的机器，不静默换机器。
+#
+#   ⇒ 两处的落法**同一条**：**该页降级成 `patchouli:spotlight`**（图标槽照作者写的挂**成品**），
+#     **正文照逐字用**（作者原文本来就把"由什么制成"逐条写全了 ⇒ 信息没丢，
+#     丢的只是"配方图的九宫格"）。落点集中在 `_BG10_SPOTLIGHT_DOWNGRADES`，一处可查、一处可改。
+#
+# ⚠⚠ **两处「待作者补原文」（占位照落，绝不自己编）**：
+#   ① **章 5 的章节封面**（作者只给章名、没给封面；需求 §10.8 第 1 条「不要自己填」）
+#      ⇒ 取**最接近的既有图 = 章 4 的封面**（`_BG10_COVER_PLACEHOLDER`），
+#        关卡 `[bgbook10-ch5-cover-todo]` **正向钉住「章5 封面 == 章4 封面」**；
+#   ② **章4 第5页右 / 章5 第5页右** = 需求文档那一格逐字写的 `（作者未指定）`
+#      （作者原话："某格原文没提 ⇒ **留空并写 `（作者未指定）`**"）
+#      ⇒ 落成一页 `patchouli:text`，正文 = 那个标记**逐字本身**，
+#        关卡 `[bgbook10-todo-cell]` **正向钉住它还在**（谁自己编内容填进去，构建当场红）。
+#
+# ⚠ **记账（不是错）**：章4 / 章5 引用的配方**全部**带 `mod_loaded(farmersdelight)`
+#   （`alchemical_meat_skewer` / `alchemical_meat_sandwich` / `golden_pie_crust` /
+#   `upgrade_sturdygold_*` / `golden_apple_pie` / `golden_chocolate_pie` / `golden_cake`）
+#   ⇒ **没装乐事时那两章是 FD 专属内容**（物品本身也不存在）。口径照 §八 D2：**照挂 + 记账**
+#   （dev 环境装了乐事 ⇒ A 级读数里全部解析成功）。
+FEAST_CATEGORY = "golden_feast"
+# ⚠ 章 5 封面 = **占位**（作者未给）⇒ 沿用章 4 的封面图。
+#   作者补齐后：改这一行 + 关卡 `[bgbook10-ch5-cover-todo]` 那条正向断言（两处），重跑即可。
+_BG10_COVER_PLACEHOLDER = "alchemical_meat"
+# 章1 第2页左 / 第3页左的**轮换图标表**（作者写了"并随着时间不断的更换 / 不断替换"）
+FEAST_CROP_ROTATION = ["minecraft:golden_carrot",
+                       "bettergold:golden_wheat_seeds",
+                       "bettergold:golden_eggplant_seeds"]
+FEAST_WHEAT_ROTATION = ["bettergold:golden_wheat",
+                        "bettergold:golden_bread",
+                        "bettergold:golden_wheat_block"]
+# G1 + G2 的**全部落点**（页 → 降级后 spotlight 的图标物品）—— 关卡逐条与产物核对
+_BG10_SPOTLIGHT_DOWNGRADES = {
+    # G1 · 酿造台配方（Java 注册，无 ResourceLocation）
+    "golden_feast_foods": {"1_right": "bettergold:brewed_hot_cocoa"},
+    "golden_feast_sturdy": {"3_left": "bettergold:sturdygold_brewed_hot_cocoa"},
+    # G2 · farmersdelight:cooking（Patchouli 无厨锅页型）
+    "golden_feast_fd_foods": {"1_left": "bettergold:alchemical_meat",
+                              "2_right": "bettergold:golden_glow_custard",
+                              "3_left": "bettergold:golden_apple_cider"},
+}
+
+
+def _bg10_text(entry_id, label):
+    """该页是**纯文案页**（作者那一格没写图标）⇒ `patchouli:text`，无图标。"""
+    return text_page(_ph(entry_id, label))
+
+
+def entry_golden_feast_crops():
+    """章1 · 金染土与金作物（封面 = 金染土）。10 页（5 行 × 2）。"""
+    eid = "golden_feast_crops"
+    pages = [
+        spotlight_page("bettergold:gold_infused_dirt", _ph(eid, "1_left")),
+        crafting_page("gold_infused_dirt"),                       # 该格只有配方指令，无正文
+        spotlight_page(FEAST_CROP_ROTATION, _ph(eid, "2_left"), _pht(eid, "2_left")),
+        crafting_page("golden_wheat_seeds"),
+        spotlight_page(FEAST_WHEAT_ROTATION, _ph(eid, "3_left"), _pht(eid, "3_left")),
+        crafting_page("golden_bread", "golden_wheat_block"),      # 「上边放…下边放…」= 一页两槽
+        spotlight_page("bettergold:golden_eggplant", _ph(eid, "4_left")),
+        crafting_page("raw_sturdygold_eggplant"),                 # 万坚金原料的金钱茄变体版
+        spotlight_page("bettergold:golden_bone_meal", _ph(eid, "5_left")),
+        crafting_page("golden_bone_meal"),
+    ]
+    return entry(eid, FEAST_CATEGORY, "gold_infused_dirt", 0, pages)
+
+
+def entry_golden_feast_foods():
+    """章2 · 其他种类的金食物（封面 = 金钱巧克力棒）。10 页（5 行 × 2）。"""
+    eid = "golden_feast_foods"
+    pages = [
+        crafting_page("golden_chocolate_bar", None, None, _ph(eid, "1_left")),
+        # ⚠ G1：酿造台配方（Java 注册）⇒ 降级 spotlight，图标 = 成品
+        spotlight_page("bettergold:brewed_hot_cocoa", _ph(eid, "1_right")),
+        crafting_page("golden_ice_cream", None, None, _ph(eid, "2_left")),
+        crafting_page("golden_sugar_cane_stick", None, None, _ph(eid, "2_right")),
+        spotlight_page("bettergold:golden_egg", _ph(eid, "3_left")),
+        smelting_page("fried_golden_egg_from_smelting", None, None, _ph(eid, "3_right")),
+        crafting_page("golden_chocolate_cookie", None, None, _ph(eid, "4_left")),
+        crafting_page("golden_honey_cookie", None, None, _ph(eid, "4_right")),
+        crafting_page("golden_egg_sandwich", None, None, _ph(eid, "5_left")),
+        crafting_page("golden_horse_feed", None, None, _ph(eid, "5_right")),
+    ]
+    return entry(eid, FEAST_CATEGORY, "golden_chocolate_bar", 1, pages)
+
+
+def entry_golden_feast_sturdy():
+    """章3 · 万坚金化的金食物（封面 = 万坚金巧克力棒）。14 页（7 行 × 2）。"""
+    eid = "golden_feast_sturdy"
+    pages = [
+        _bg10_text(eid, "1_left"),                                # 作者那一格没写图标
+        crafting_page("sturdygold_apple", None, None, _ph(eid, "1_right")),
+        crafting_page("sturdygold_carrot", None, None, _ph(eid, "2_left")),
+        crafting_page("sturdygold_chocolate_bar", None, None, _ph(eid, "2_right")),
+        # ⚠ G1：酿造台配方 ⇒ 降级 spotlight，图标 = 成品
+        spotlight_page("bettergold:sturdygold_brewed_hot_cocoa", _ph(eid, "3_left")),
+        crafting_page("sturdygold_ice_cream", None, None, _ph(eid, "3_right")),
+        crafting_page("sturdygold_sugar_cane_stick", None, None, _ph(eid, "4_left")),
+        crafting_page("sturdygold_eggplant", None, None, _ph(eid, "4_right")),
+        crafting_page("upgrade_sturdygold_chocolate_cookie", None, None, _ph(eid, "5_left")),
+        crafting_page("upgrade_sturdygold_honey_cookie", None, None, _ph(eid, "5_right")),
+        crafting_page("upgrade_sturdygold_bread", None, None, _ph(eid, "6_left")),
+        crafting_page("upgrade_sturdygold_fried_golden_egg", None, None, _ph(eid, "6_right")),
+        crafting_page("upgrade_sturdygold_egg_sandwich", None, None, _ph(eid, "7_left")),
+        crafting_page("upgrade_sturdygold_horse_feed", None, None, _ph(eid, "7_right")),
+    ]
+    return entry(eid, FEAST_CATEGORY, "sturdygold_chocolate_bar", 2, pages)
+
+
+def entry_golden_feast_fd_foods():
+    """章4 · 乐事联动的金食物（封面 = 炼金贝肉）。10 页（5 行 × 2）。"""
+    eid = "golden_feast_fd_foods"
+    pages = [
+        # ⚠ G2：厨锅配方 ⇒ 降级 spotlight，图标 = 成品
+        spotlight_page("bettergold:alchemical_meat", _ph(eid, "1_left")),
+        crafting_page("alchemical_meat_skewer", None, None, _ph(eid, "1_right")),
+        crafting_page("alchemical_meat_sandwich", None, None, _ph(eid, "2_left")),
+        spotlight_page("bettergold:golden_glow_custard", _ph(eid, "2_right")),   # G2
+        spotlight_page("bettergold:golden_apple_cider", _ph(eid, "3_left")),     # G2
+        crafting_page("golden_pie_crust", None, None, _ph(eid, "3_right")),
+        crafting_page("golden_apple_pie", None, None, _ph(eid, "4_left")),
+        crafting_page("golden_chocolate_pie", None, None, _ph(eid, "4_right")),
+        crafting_page("golden_cake", None, None, _ph(eid, "5_left")),
+        # ★「（作者未指定）」⇒ 占位页（正文 = 那个标记逐字本身；待作者补原文）
+        text_page(_ph(eid, "5_right")),
+    ]
+    return entry(eid, FEAST_CATEGORY, "alchemical_meat", 3, pages)
+
+
+def entry_golden_feast_fd_sturdy():
+    """章5 · 乐事联动的万坚金食物（封面 = ⚠ **占位**，作者未给）。10 页（5 行 × 2）。"""
+    eid = "golden_feast_fd_sturdy"
+    pages = [
+        _bg10_text(eid, "1_left"),                                # 作者那一格没写图标
+        crafting_page("upgrade_sturdygold_alchemical_meat", None, None, _ph(eid, "1_right")),
+        crafting_page("upgrade_sturdygold_alchemical_meat_skewer", None, None, _ph(eid, "2_left")),
+        crafting_page("upgrade_sturdygold_alchemical_meat_sandwich", None, None, _ph(eid, "2_right")),
+        crafting_page("upgrade_sturdygold_glow_custard", None, None, _ph(eid, "3_left")),
+        crafting_page("upgrade_sturdygold_apple_cider", None, None, _ph(eid, "3_right")),
+        crafting_page("upgrade_sturdygold_apple_pie", None, None, _ph(eid, "4_left")),
+        crafting_page("upgrade_sturdygold_chocolate_pie", None, None, _ph(eid, "4_right")),
+        crafting_page("upgrade_sturdygold_cake", None, None, _ph(eid, "5_left")),
+        text_page(_ph(eid, "5_right")),                           # ★ 同上，待作者补原文
+    ]
+    # ⚠ 封面 = **占位**（`_BG10_COVER_PLACEHOLDER`，= 章 4 封面）；作者补封面后改这一处。
+    return entry(eid, FEAST_CATEGORY, _BG10_COVER_PLACEHOLDER, 4, pages)
+
+
+FEAST_ENTRIES = [entry_golden_feast_crops, entry_golden_feast_foods, entry_golden_feast_sturdy,
+                 entry_golden_feast_fd_foods, entry_golden_feast_fd_sturdy]
+
+# ⛔ **bg-book §十（作者 2026-10-07 21:03）**：第一轮骨架留下的最后一个占位条目
+#    `entry_golden_feast`（「金灿的盛宴」类别下的旧占位，7 页 = 1 文案 + 6 spotlight）
+#    **本轮也作废** —— 作者原话「你之前添加的那个也一样直接毙掉吧」。
+#    ⚠ **内容不凭空消失**：构造函数**原样保留在上面**（一行没删），并进 `RETIRED_ENTRIES`
+#      并在 `main()` 里照常自证它的页数（7）；全文对照落在 `docs/1.6-规格.md` §24。
+#    ⚠ 它引用的语言键（`entry.golden_feast` / `page.golden_feast`）**原样留在两份语言文件里**。
+#    ⚠ 这行**必须**写在 `entry_golden_feast` 定义之后（列表字面量在定义时求值）。
+RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_golden_feast]
+
+
 BOOK = {
     "name": "%s.name" % LANG,
     "subtitle": "%s.subtitle" % LANG,
@@ -712,7 +918,7 @@ def main():
                 os.path.join(ASSET_DIR, lang, "categories", "%s.json" % name),
                 category(name, icon, sortnum),
             )
-        for builder in ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES + MERCHANT_ENTRIES:
+        for builder in ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES + MERCHANT_ENTRIES + FEAST_ENTRIES:
             data = builder()
             write_json(
                 os.path.join(ASSET_DIR, lang, "entries", "%s.json" % data["name"].rsplit(".", 1)[-1]),
@@ -723,13 +929,15 @@ def main():
     chapter_pages = sum(len(b()["pages"]) for b in CHAPTER_ENTRIES)
     gear_pages = sum(len(b()["pages"]) for b in GEAR_ENTRIES)
     merchant_pages = sum(len(b()["pages"]) for b in MERCHANT_ENTRIES)
+    feast_pages = sum(len(b()["pages"]) for b in FEAST_ENTRIES)
     retired_pages = sum(len(b()["pages"]) for b in RETIRED_ENTRIES)
     print(
         "handbook written: 1 book (data/) + %d categories + %d entries + %d pages x2 languages "
         "(assets/) -> %s + %s"
         % (len(CATEGORIES),
-           len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES) + len(MERCHANT_ENTRIES),
-           pages + chapter_pages + gear_pages + merchant_pages, BOOK_DIR, ASSET_DIR)
+           len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES) + len(MERCHANT_ENTRIES)
+           + len(FEAST_ENTRIES),
+           pages + chapter_pages + gear_pages + merchant_pages + feast_pages, BOOK_DIR, ASSET_DIR)
     )
     print(
         "  §6 chapters (bg-book append round): %d entries / %d pages "
@@ -755,12 +963,25 @@ def main():
            len(entry_merchant_antique_gear()["pages"]))
     )
     print(
-        "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位 + bg-fix3 §三 两个骨架条目，不写盘): "
-        "tools=%d + armor=%d + merchant=%d + antiques=%d + metal_tour=%d + upgrade_templates=%d = %d"
+        "  §10 golden feast chapters (bg-book §十): %d entries / %d pages "
+        "(crops=%d, foods=%d, sturdy=%d, fd_foods=%d, fd_sturdy=%d; 1 行 = 1 屏 = 2 页; "
+        "G1 酿造页 2 + G2 厨锅页 3 降级为 spotlight；章5 封面 = 占位)"
+        % (len(FEAST_ENTRIES), feast_pages,
+           len(entry_golden_feast_crops()["pages"]),
+           len(entry_golden_feast_foods()["pages"]),
+           len(entry_golden_feast_sturdy()["pages"]),
+           len(entry_golden_feast_fd_foods()["pages"]),
+           len(entry_golden_feast_fd_sturdy()["pages"]))
+    )
+    print(
+        "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位 + bg-fix3 §三 两个骨架条目 "
+        "+ §十 最后一个骨架占位 golden_feast，不写盘): "
+        "tools=%d + armor=%d + merchant=%d + antiques=%d + metal_tour=%d + upgrade_templates=%d "
+        "+ golden_feast=%d = %d"
         % (len(entry_tools_per_family()["pages"]), len(entry_armor_per_family()["pages"]),
            len(entry_merchant()["pages"]), len(entry_antiques()["pages"]),
            len(entry_metal_tour()["pages"]), len(entry_upgrade_templates()["pages"]),
-           retired_pages)
+           len(entry_golden_feast()["pages"]), retired_pages)
     )
 
 

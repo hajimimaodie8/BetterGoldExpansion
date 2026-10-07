@@ -1,0 +1,78 @@
+{
+  "name": "bettergold.handbook.entry.golden_feast_sturdy",
+  "category": "bettergold:golden_feast",
+  "icon": "bettergold:sturdygold_chocolate_bar",
+  "sortnum": 2,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:sturdygold_apple",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_1_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:sturdygold_carrot",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_2_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:sturdygold_chocolate_bar",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_2_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:sturdygold_brewed_hot_cocoa",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_3_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:sturdygold_ice_cream",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_3_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:sturdygold_sugar_cane_stick",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_4_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:sturdygold_eggplant",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_4_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:upgrade_sturdygold_chocolate_cookie",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_5_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:upgrade_sturdygold_honey_cookie",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_5_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:upgrade_sturdygold_bread",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_6_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:upgrade_sturdygold_fried_golden_egg",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_6_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:upgrade_sturdygold_egg_sandwich",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_7_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:upgrade_sturdygold_horse_feed",
+      "text": "bettergold.handbook.page.golden_feast_sturdy_7_right"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+﻿=== bg-book §十 最终状态自检 ===
+手册条目数 / 页数        = 20 / 190（生成器自报与数据侧校验器一致）
+§十 5 章页数             = 10 + 10 + 14 + 10 + 10 = 54
+§十 配方引用 / 图标引用   = 40 / 15
+整本书配方引用（A 级活注册表）= 184，missing=[]
+语言键                   = 677 -> 733（+56 = 5 章节名 + 49 正文 + 2 页眉），中英双端
+六校验器                 = 全部 exit 0
+扰动矩阵                 = 2 基线 + 27 条改坏 + 3 条反向对照 = 32 次运行，mismatches = 0
+A 级 runServer           = 1 PASS（probe_world_guard levelName=bgbook10probe）+ 干净 halt
+A 级 runClient           = 22 PASS / 0 FAIL（ticks=60）
+快照搬运                 = §10.3~§10.8 与需求文档逐字节相同（4863 字符 / 61 行）
+jar                      = build/libs/bettergold-1.6.0.jar 1354815 B / DC421DC7...（见 02）
+未验证/人眼              见 docs/1.6-规格.md §24.9

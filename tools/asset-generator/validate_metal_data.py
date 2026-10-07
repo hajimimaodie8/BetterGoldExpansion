@@ -1434,7 +1434,16 @@ for _p in sorted((_ZH_BOOK / "entries").glob("*.json")) if (_ZH_BOOK / "entries"
 #     条目名的语言键值逐字就是「贵金的材料链」/「升级锻造模板」）。
 #   ⚠ 旧期望原文保留（未删）：`_SKELETON_ENTRIES = ("metal_tour", "upgrade_templates", "golden_feast")`。
 #   ⇒ 骨架只剩 **1** 条（`golden_feast`）；两个条目的全文对照落在 `docs/1.6-规格.md` §二十二。
-_SKELETON_ENTRIES = ("golden_feast",)
+# ⛔ **bg-book §十（作者 2026-10-07 21:03）：「关于金灿盛宴的章节也填完了……你之前添加的那个也
+#   一样直接毙掉吧」** ⇒ 骨架里剩下的最后一条 `golden_feast` **本轮也作废**（它的 7 页由 §十 的
+#   5 章 54 页取代）。
+#   ⚠ 旧期望原文保留（未删）：`_SKELETON_ENTRIES = ("golden_feast",)`。
+#   ⇒ **第一轮骨架 7 条全部作废**，骨架清单变成**空元组**（`ENTRIES` 列表本身仍然留在生成器里）。
+_SKELETON_ENTRIES = ()
+# bg-book §十 作废的骨架占位条目：产物里**必须不存在**（负向断言），生成器里**必须仍在**
+# RETIRED_ENTRIES 且页数照常算得出来（7 页 = 1 文案 + 6 spotlight）。
+_BG10_RETIRED_ENTRIES = ("golden_feast",)
+_BG10_RETIRED_PAGES = {"golden_feast": 7}
 # bg-fix3 §三 作废的两个骨架条目：产物里**必须不存在**（负向断言），生成器里**必须仍在**
 # RETIRED_ENTRIES 且页数照常算得出来（8 族材料链 9 页 / 8 张模板 5 页）。
 _BGFIX3_RETIRED_ENTRIES = ("metal_tour", "upgrade_templates")
@@ -1447,6 +1456,9 @@ _BG8_ENTRY_NAMES = ("gear_linkage",) + tuple("gear_%s" % _c for _c in
      "indigoseagold", "voodoogold", "thundergold", "illusiongold"))
 # bg-book §九 追加轮（2026-10-06 20:02）：「商人与古董」3 章（替掉该类别旧占位两节）
 _BG9_ENTRY_NAMES = ("merchant_intro", "merchant_gift_box", "merchant_antique_gear")
+# bg-book §十 追加轮（2026-10-07 21:05）：「金灿的盛宴」5 章（替掉该类别旧占位条目 golden_feast）
+_BG10_ENTRY_NAMES = ("golden_feast_crops", "golden_feast_foods", "golden_feast_sturdy",
+                     "golden_feast_fd_foods", "golden_feast_fd_sturdy")
 # ⛔ §九 作废的两个旧占位（必须不存在于产物里；见上面的 `_bgbook9_bad` 段）
 _BG9_RETIRED_ENTRIES = ("merchant", "antiques")
 for _retired in _RETIRED_ENTRIES:
@@ -1489,9 +1501,19 @@ if _bgbook_entries_match is None:
     _bgbook_bad("bgfix3-generator-retired",
                 "生成器里切不出 `ENTRIES = [ … ]` 块（行锚定正则失配 ⇒ 下面的负向断言会空转）")
 _bgbook_entries_block = _bgbook_entries_match.group(1) if _bgbook_entries_match else ""
-if _bgbook_entries_match is not None and "entry_golden_feast" not in _bgbook_entries_block:
+# ⚠ **bg-book §十 起 `ENTRIES` 是空列表**（第一轮骨架 7 条全部作废）⇒ 原来那条反空转守护
+#   「切出来的块里必须有 `entry_golden_feast`」**不再成立**（§十 把它也作废了）。
+#   ⇒ 改用**原始源码（含注释）**里的稳定标记来锚定切块的正确性：
+#     `_bgbook_gen_code` 是**去注释**的（负向断言必须跑在去注释源码上，见上面的教训），
+#     所以这条反空转守护**必须**读 raw（`_bgbook_gen_txt`）—— 两者是**两把不同的尺子**。
+_bgbook_entries_raw_match = re.search(r"(?ms)^ENTRIES = \[$(.*?)^\]\s*$", _bgbook_gen_txt)
+_bgbook_entries_raw = _bgbook_entries_raw_match.group(1) if _bgbook_entries_raw_match else ""
+if _bgbook_entries_raw_match is None:
     _bgbook_bad("bgfix3-generator-retired",
-                "切出来的 ENTRIES 块里没有 entry_golden_feast（切错块了 ⇒ 反空转守护）")
+                "生成器**原始源码**里切不出 `ENTRIES = [ … ]` 块（行锚定正则失配 ⇒ 负向断言空转）")
+elif u"bg-book §十 作废" not in _bgbook_entries_raw:
+    _bgbook_bad("bgfix3-generator-retired",
+                "切出来的 `ENTRIES` 块里没有 §十 那条作废注释（切错块了 ⇒ 反空转守护失效）")
 _bgbook_retired_match = re.search(r"(?ms)^RETIRED_ENTRIES = \[(.*?)^\]", _bgbook_gen_code)
 _bgbook_retired_block = _bgbook_retired_match.group(1) if _bgbook_retired_match else ""
 for _retired in _BGFIX3_RETIRED_ENTRIES:
@@ -1505,18 +1527,29 @@ for _retired in _BGFIX3_RETIRED_ENTRIES:
     if f"entry_{_retired}" not in _bgbook_retired_block:
         _bgbook_bad("bgfix3-generator-retired",
                     "生成器的 `RETIRED_ENTRIES` 里没有 `entry_%s`（作废条目失去唯一的留档入口）" % _retired)
+# ⛔ bg-book §十：第一轮骨架**最后一个**占位条目 `golden_feast`（「金灿的盛宴」旧占位）
+#   本轮也作废（作者 2026-10-07 原话「你之前添加的那个也一样直接毙掉吧」）。
+for _retired in _BG10_RETIRED_ENTRIES:
+    for _side in (_ZH_BOOK, _EN_BOOK):
+        if (_side / "entries" / ("%s.json" % _retired)).exists():
+            _bgbook_bad("bgbook10-old-placeholder-gone",
+                        "§十 作废的「金灿的盛宴」旧占位条目 %s 又回到了产物里（%s）：它的 7 页已由"
+                        "「金染土与金作物 / 其他种类的金食物 / 万坚金化的金食物 / 乐事联动的金食物 /"
+                        " 乐事联动的万坚金食物」5 章 54 页取代" % (_retired, _side.name))
 _missing_skeleton = [n for n in _SKELETON_ENTRIES if n not in _entries_now]
 if _missing_skeleton:
     _bgbook_bad("bgbook-entry-count",
-                "第一轮的骨架条目被删掉了（§八 只作废 %s、§九 只作废 %s）：%s"
-                % (list(_RETIRED_ENTRIES), list(_BG9_RETIRED_ENTRIES), _missing_skeleton))
+                "第一轮的骨架条目被删掉了（§八 只作废 %s、§九 只作废 %s、§十 只作废 %s）：%s"
+                % (list(_RETIRED_ENTRIES), list(_BG9_RETIRED_ENTRIES),
+                   list(_BG10_RETIRED_ENTRIES), _missing_skeleton))
 if len(_entries_now) != (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
-                         + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES)):
+                         + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES)
+                         + len(_BG10_ENTRY_NAMES)):
     _bgbook_bad("bgbook-entry-count",
-                "条目数应为 %d（骨架 %d + §六 章节 3 + §八 强化 9 + §九 商人与古董 3；"
-                "bg-fix3 §三 又作废 2 条骨架条目），实际 %d"
+                "条目数应为 %d（骨架 %d + §六 章节 3 + §八 强化 9 + §九 商人与古董 3 + §十 金灿的盛宴 5；"
+                "bg-fix3 §三 作废 2 条骨架条目、§十 作废最后 1 条骨架条目），实际 %d"
                 % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
-                   + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES),
+                   + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES) + len(_BG10_ENTRY_NAMES),
                    len(_SKELETON_ENTRIES), len(_entries_now)))
 _valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
 _total_pages = 0
@@ -1540,12 +1573,13 @@ for _name, _e in sorted(_entries_now.items()):
         for _rk in ("recipe", "recipe2"):
             if _rk in _pg:
                 _recipe_refs.add(_pg[_rk])
-if _total_pages < 143:
-    # ⚠ **bg-fix3 §三 改变了这里的期望值**：作废 `metal_tour`(9) + `upgrade_templates`(5) = −14 页
-    #   ⇒ 157 → **143**。旧阈值（≥60，消息里写「§八 之后应 ≥ 148 页」）原文留在这里作历史留档。
+if _total_pages < 190:
+    # ⚠ **bg-book §十 改变了这里的期望值**：作废 `golden_feast`(7) + 新增 5 章 54 页 = +47 页
+    #   ⇒ 143 → **190**。旧阈值（≥143，注释里写「bg-fix3 §三 之后应为 143 页 = 157 − 14」）
+    #   原文留在这里作历史留档。
     _bgbook_bad("bgbook-anti-vacuum",
-                "手册总页数只有 %d（bg-fix3 §三 之后应为 143 页 = 157 − 14；数据树被清空会命中这条）"
-                % _total_pages)
+                "手册总页数只有 %d（bg-book §十 之后应为 190 页 = 143 − 7 + 54；"
+                "数据树被清空会命中这条）" % _total_pages)
 _missing_recipe_files = sorted(
     r for r in _recipe_refs
     if not (_DATA / "bettergold" / "recipe" / (r.split(":", 1)[1] + ".json")).is_file())
@@ -3985,6 +4019,498 @@ print(f"bg-book §六 追加轮（三章逐页补全）问题: {len(bgbook2_prob
 print(f"bg-append 追加轮（手册七处修正 / 声波音效 / 配置汉化 / 金玫瑰丛）问题: "
       f"{len(bgappend_problems)} {bgappend_problems[:8]}")
 print(f"bg-fix 1.6 七条修正问题: {len(bgfix_problems)} {bgfix_problems[:8]}")
+# ==================== bg-book §十（2026-10-07 21:05）：「金灿的盛宴」5 章 ====================
+#
+# 形状：作者表是 `| 页 | 左侧 | 右侧 |`（作者写「第 N 页左 / 右」）⇒ **一行 = 一屏 = 2 个 Patchouli 页**
+#   ⇒ 5 / 5 / 7 / 5 / 5 行 = **10 / 10 / 14 / 10 / 10 = 54 页**。
+# 逐字文案的期望值来源 = 仓库内**冻结快照**
+#   `tools/asset-generator/bgappend-requirements-snapshot/bg-book-10.md`（**不读**仓库外活页）。
+#
+# ⚠⚠ **两个门禁项（需求 §十 没写）** —— 都由本段逐页钉住：
+#   G1 · **酿造台配方**（章2 第1页右 / 章3 第3页左）：Java 注册（`ModBrewing`，
+#        `RegisterBrewingRecipesEvent`）⇒ **不是 RecipeManager 配方** ⇒ 任何配方页都表达不了
+#        ⇒ 降级 `patchouli:spotlight`（图标 = 成品）。
+#   G2 · **`farmersdelight:cooking` 厨锅配方**（章4 第1页左 / 第2页右 / 第3页左）：
+#        Patchouli 1.21.1-93 的 16 个内置页型里没有厨锅页 ⇒ 同样降级 `patchouli:spotlight`。
+#   ⇒ 那 5 页**必须**是 spotlight 且图标 = `_BG10_DOWNGRADES` 表里的那一件；
+#     谁把它们改回配方页（或换成 smelting/campfire 顶替），构建当场红。
+#
+# ⚠ **两处「待作者补原文」**：章5 封面（作者未给 ⇒ 沿用章4 封面，正向钉住）
+#   与 章4/章5 第5页右 的 `（作者未指定）`（占位页，正向钉住它还在）。
+bgbook10_problems: list[str] = []
+
+
+def _bgbook10_bad(tag: str, msg: str) -> None:
+    bgbook10_problems.append("%s [%s]" % (msg, tag))
+
+
+_BG10_SNAPSHOT = _BG2_SNAPSHOT_DIR / "bg-book-10.md"
+_BG10_LANG = "bettergold.handbook"
+_BG10_PLACEHOLDER = u"（作者未指定）"
+_BG10_EN_PLACEHOLDER = u"(not specified by the author)"
+_BG10_COVER_PLACEHOLDER = "alchemical_meat"        # = 章4 封面（作者补章5封面后改这里 + 生成器）
+
+# (条目 id, 封面图标, sortnum, 页数, 页型序列) —— 页型序列**逐页**钉住
+_BG10_ENTRY_META = (
+    ("golden_feast_crops", "gold_infused_dirt", 0, 10,
+     ["patchouli:spotlight", "patchouli:crafting"] * 5),
+    ("golden_feast_foods", "golden_chocolate_bar", 1, 10,
+     ["patchouli:crafting", "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
+      "patchouli:spotlight", "patchouli:smelting", "patchouli:crafting", "patchouli:crafting",
+      "patchouli:crafting", "patchouli:crafting"]),
+    ("golden_feast_sturdy", "sturdygold_chocolate_bar", 2, 14,
+     ["patchouli:text"] + ["patchouli:crafting"] * 3 + ["patchouli:spotlight"]
+     + ["patchouli:crafting"] * 9),
+    ("golden_feast_fd_foods", "alchemical_meat", 3, 10,
+     ["patchouli:spotlight", "patchouli:crafting", "patchouli:crafting", "patchouli:spotlight",
+      "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting", "patchouli:crafting",
+      "patchouli:crafting", "patchouli:text"]),
+    ("golden_feast_fd_sturdy", _BG10_COVER_PLACEHOLDER, 4, 10,
+     ["patchouli:text"] + ["patchouli:crafting"] * 8 + ["patchouli:text"]),
+)
+# 有**正文**的页后缀（逐条目，顺序 = 快照顺序；共 49）
+_BG10_PROSE_SUFFIX = {
+    "golden_feast_crops": ["1_left", "2_left", "3_left", "4_left", "5_left"],
+    "golden_feast_foods": ["1_left", "1_right", "2_left", "2_right", "3_left", "3_right",
+                           "4_left", "4_right", "5_left", "5_right"],
+    "golden_feast_sturdy": ["%d_%s" % (r, s) for r in range(1, 8) for s in ("left", "right")],
+    "golden_feast_fd_foods": ["1_left", "1_right", "2_left", "2_right", "3_left", "3_right",
+                              "4_left", "4_right", "5_left", "5_right"],
+    "golden_feast_fd_sturdy": ["1_left", "1_right", "2_left", "2_right", "3_left", "3_right",
+                               "4_left", "4_right", "5_left", "5_right"],
+}
+# spotlight 的**图标表**（逐页；None = 该页不是 spotlight）
+_BG10_SPOTLIGHT_EXPECT = {
+    "golden_feast_crops": [
+        ["bettergold:gold_infused_dirt"], None,
+        ["minecraft:golden_carrot", "bettergold:golden_wheat_seeds",
+         "bettergold:golden_eggplant_seeds"], None,
+        ["bettergold:golden_wheat", "bettergold:golden_bread", "bettergold:golden_wheat_block"],
+        None,
+        ["bettergold:golden_eggplant"], None,
+        ["bettergold:golden_bone_meal"], None],
+    "golden_feast_foods": [
+        None, ["bettergold:brewed_hot_cocoa"],            # G1 降级
+        None, None,
+        ["bettergold:golden_egg"], None,
+        None, None, None, None],
+    "golden_feast_sturdy": [
+        None, None, None, None,
+        ["bettergold:sturdygold_brewed_hot_cocoa"],        # G1 降级
+        None, None, None, None, None, None, None, None, None],
+    "golden_feast_fd_foods": [
+        ["bettergold:alchemical_meat"],                   # G2 降级
+        None, None,
+        ["bettergold:golden_glow_custard"],               # G2 降级
+        ["bettergold:golden_apple_cider"],                # G2 降级
+        None, None, None, None, None],
+    "golden_feast_fd_sturdy": [None] * 10,
+}
+# 配方（逐页；None = 该页不是配方页；tuple = recipe / recipe2）
+_BG10_RECIPE_EXPECT = {
+    "golden_feast_crops": [
+        None, ("gold_infused_dirt",), None, ("golden_wheat_seeds",), None,
+        ("golden_bread", "golden_wheat_block"), None, ("raw_sturdygold_eggplant",), None,
+        ("golden_bone_meal",)],
+    "golden_feast_foods": [
+        ("golden_chocolate_bar",), None, ("golden_ice_cream",), ("golden_sugar_cane_stick",), None,
+        ("fried_golden_egg_from_smelting",), ("golden_chocolate_cookie",),
+        ("golden_honey_cookie",), ("golden_egg_sandwich",), ("golden_horse_feed",)],
+    "golden_feast_sturdy": [
+        None, ("sturdygold_apple",), ("sturdygold_carrot",), ("sturdygold_chocolate_bar",), None,
+        ("sturdygold_ice_cream",), ("sturdygold_sugar_cane_stick",), ("sturdygold_eggplant",),
+        ("upgrade_sturdygold_chocolate_cookie",), ("upgrade_sturdygold_honey_cookie",),
+        ("upgrade_sturdygold_bread",), ("upgrade_sturdygold_fried_golden_egg",),
+        ("upgrade_sturdygold_egg_sandwich",), ("upgrade_sturdygold_horse_feed",)],
+    "golden_feast_fd_foods": [
+        None, ("alchemical_meat_skewer",), ("alchemical_meat_sandwich",), None, None,
+        ("golden_pie_crust",), ("golden_apple_pie",), ("golden_chocolate_pie",),
+        ("golden_cake",), None],
+    "golden_feast_fd_sturdy": [
+        None, ("upgrade_sturdygold_alchemical_meat",),
+        ("upgrade_sturdygold_alchemical_meat_skewer",),
+        ("upgrade_sturdygold_alchemical_meat_sandwich",),
+        ("upgrade_sturdygold_glow_custard",), ("upgrade_sturdygold_apple_cider",),
+        ("upgrade_sturdygold_apple_pie",), ("upgrade_sturdygold_chocolate_pie",),
+        ("upgrade_sturdygold_cake",), None],
+}
+# G1/G2 的**全部落点**（页后缀 → 降级后 spotlight 的图标物品）—— 与生成器的表逐条同款
+_BG10_DOWNGRADES = {
+    "golden_feast_foods": {"1_right": "bettergold:brewed_hot_cocoa"},
+    "golden_feast_sturdy": {"3_left": "bettergold:sturdygold_brewed_hot_cocoa"},
+    "golden_feast_fd_foods": {"1_left": "bettergold:alchemical_meat",
+                              "2_right": "bettergold:golden_glow_custard",
+                              "3_left": "bettergold:golden_apple_cider"},
+}
+# 页眉：条目 id → [(页后缀, 页眉逐字)]
+_BG10_TITLE_LABELS = {"golden_feast_crops": ["2_left", "3_left"]}
+
+
+def _bg10_parse_snapshot() -> list:
+    """从冻结快照解析 [(条目 id, 章节名, 封面字面, [(页后缀, 逐字文案 or None, 页眉 or None)])]。
+
+    解析形状与本轮的语言键注入脚本**逐字同款**（改一处必须同步两处）。
+    """
+    _lines = _BG10_SNAPSHOT.read_text(encoding="utf-8").split("\n")
+    _ids = {1: "golden_feast_crops", 2: "golden_feast_foods", 3: "golden_feast_sturdy",
+            4: "golden_feast_fd_foods", 5: "golden_feast_fd_sturdy"}
+    _head = re.compile(u"^#### 10\\.\\d+ 章节 (\\d) · (.+?)(（\\*{0,2}封面：(.*?)\\*{0,2}）)?$")
+    _recipe_leads = (u"就放", u"上边放", u"下边放", u"上：", u"下：", u"放出")
+
+    def _clean(_c):
+        _c = _c.split(u"<br>⚠")[0]
+        return re.sub(r"\*\*(.+?)\*\*", r"\1", _c).strip()
+
+    def _prose(_c):
+        _raw = _clean(_c)
+        if _raw == _BG10_PLACEHOLDER:      # ★ 作者自己写的"这一格没内容"标记 ⇒ 占位页
+            return _BG10_PLACEHOLDER
+        _b = _raw
+        if _b.startswith(u"（"):
+            _cut = _b.find(u"）")
+            if _cut >= 0:
+                _b = _b[_cut + 1:].strip()
+        if not _b or _b.startswith(_recipe_leads):
+            return None
+        return _b
+
+    _out, _cur, _name, _cover, _rows = [], None, None, None, []
+
+    def _flush():
+        if _cur:
+            _out.append((_cur, _name, _cover, list(_rows)))
+
+    for _ln in _lines:
+        _m = _head.match(_ln)
+        if _m:
+            _flush()
+            _cur, _name, _cover, _rows = _ids[int(_m.group(1))], _m.group(2).strip(), _m.group(4), []
+            continue
+        if re.match(r"^#{2,6} ", _ln):
+            _flush()
+            _cur, _name, _cover, _rows = None, None, None, []
+            continue
+        if not _ln.startswith("|") or "|---" in _ln:
+            continue
+        _safe = _ln.replace("\\|", "\x01")
+        _cells = [_c.replace("\x01", "|") for _c in _safe.split("|")[1:-1]]
+        if len(_cells) < 3:
+            continue
+        _label = _cells[0].strip().replace("*", "")
+        if not _label.isdigit():
+            continue
+        for _col, _side in ((1, "left"), (2, "right")):
+            _tm = re.search(u"(?:上边字体|字体名为)「(.+?)」", _cells[_col])
+            _rows.append(("%s_%s" % (_label, _side), _prose(_cells[_col]),
+                          _tm.group(1) if _tm else None))
+    _flush()
+    return _out
+
+
+if not _BG10_SNAPSHOT.is_file():
+    _bgbook10_bad("bgbook10-texts-verbatim",
+                  "读不到冻结快照（逐字文案的期望值来源）：%s" % _BG10_SNAPSHOT)
+    _bg10_parsed = []
+else:
+    _bg10_parsed = _bg10_parse_snapshot()
+    if len(_bg10_parsed) != 5:
+        _bgbook10_bad("bgbook10-texts-verbatim",
+                      "从冻结快照解析到 %d 章（应 5 = 金染土与金作物 / 其他种类的金食物 / "
+                      "万坚金化的金食物 / 乐事联动的金食物 / 乐事联动的万坚金食物；反空转守护）"
+                      % len(_bg10_parsed))
+
+# ---------- ① 快照 → 期望值（章节名 / 逐字文案 / 页眉）----------
+_bg10_texts, _bg10_titles, _bg10_names = [], [], []
+_bg10_prose_seen = 0
+for _eid, _name, _cover, _rows in _bg10_parsed:
+    _bg10_names.append(_name)
+    _nk = "%s.entry.%s" % (_BG10_LANG, _eid)
+    if zh.get(_nk) != _name:
+        _bgbook10_bad("bgbook10-texts-verbatim",
+                      "快照里的章节名 %r 没有按原样落在 %s 里（实际 %r）" % (_name, _nk, zh.get(_nk)))
+    _want_labels = _BG10_PROSE_SUFFIX.get(_eid, [])
+    _got_labels = [s for s, p, t in _rows if p is not None]
+    if _got_labels != _want_labels:
+        _bgbook10_bad("bgbook10-texts-verbatim",
+                      "%s 的正文页与期望不符：期望 %s，实际 %s" % (_eid, _want_labels, _got_labels))
+    for _suffix, _p, _t in _rows:
+        if _p is not None:
+            _bg10_prose_seen += 1
+            _k = "%s.page.%s_%s" % (_BG10_LANG, _eid, _suffix)
+            _bg10_texts.append(_p)
+            if zh.get(_k) != _p:
+                _bgbook10_bad("bgbook10-texts-verbatim",
+                              "快照里的逐字文案没有按原样落在 %s 里（首 30 字：%s）" % (_k, _p[:30]))
+        if _t is not None:
+            _tk = "%s.page.%s_%s_title" % (_BG10_LANG, _eid, _suffix)
+            _bg10_titles.append(_t)
+            if zh.get(_tk) != _t:
+                _bgbook10_bad("bgbook10-texts-verbatim",
+                              "快照里的页眉 %r 没有按原样落在 %s 里（实际 %r）"
+                              % (_t, _tk, zh.get(_tk)))
+if _bg10_prose_seen != 49 or sum(len(_t) for _t in _bg10_texts) < 2000:
+    _bgbook10_bad("bgbook10-texts-verbatim",
+                  "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 49 段 = 5+10+14+10+10、"
+                  "总字数 >= 2000；反空转守护）"
+                  % (_bg10_prose_seen, sum(len(_t) for _t in _bg10_texts)))
+if _bg10_titles != [u"可种植的金作物", u"金麦相关"]:
+    _bgbook10_bad("bgbook10-texts-verbatim",
+                  "从冻结快照解析到的页眉不是那两条「字体名为『…』」：%r" % (_bg10_titles,))
+_bg10_missing = [_t for _t in _bg10_texts if _t not in set(zh.values())]
+if _bg10_missing:
+    _bgbook10_bad("bgbook10-texts-verbatim",
+                  "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
+                  % (len(_bg10_missing), len(_bg10_texts), _bg10_missing[0][:40]))
+
+# ---------- ② 5 个条目：类别 / 图标 / sortnum / 页数 / 页型 / 正文键 / 图标表 / 配方逐条 ----------
+_BG10_PAGES_TOTAL = 0
+_BG10_RECIPE_REFS: set = set()
+_BG10_SPOTLIGHT_REFS: set = set()
+_BG10_TEXT_KEYS: list = []
+for _eid, _icon, _sort, _cnt, _seq in _BG10_ENTRY_META:
+    _zh_p = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    _en_p = _EN_BOOK / "entries" / ("%s.json" % _eid)
+    if not _zh_p.is_file() or not _en_p.is_file():
+        _bgbook10_bad("bgbook10-chapters", "缺条目文件（zh/en 各需一份）：%s" % _eid)
+        continue
+    _zh_e = json.loads(_zh_p.read_text(encoding="utf-8"))
+    _en_e = json.loads(_en_p.read_text(encoding="utf-8"))
+    if _zh_e.get("category") != "bettergold:golden_feast":
+        _bgbook10_bad("bgbook10-chapters",
+                      "%s 不挂在「金灿的盛宴」类别下：%r" % (_eid, _zh_e.get("category")))
+    if _zh_e.get("name") != "%s.entry.%s" % (_BG10_LANG, _eid):
+        _bgbook10_bad("bgbook10-chapters",
+                      "%s 的 name 不是 %s.entry.%s" % (_eid, _BG10_LANG, _eid))
+    if _zh_e.get("icon") != "bettergold:%s" % _icon:
+        _bgbook10_bad("bgbook10-chapters",
+                      "%s 的封面图标不是 bettergold:%s：%r" % (_eid, _icon, _zh_e.get("icon")))
+    if _zh_e.get("sortnum") != _sort:
+        _bgbook10_bad("bgbook10-chapters", "%s 的 sortnum 不是 %d" % (_eid, _sort))
+    if _zh_e.get("pages") != _en_e.get("pages"):
+        _bgbook10_bad("bgbook10-chapters", "%s 的 zh/en 页列表不一致（结构必须双端相同）" % _eid)
+    _pages = _zh_e.get("pages") or []
+    _BG10_PAGES_TOTAL += len(_pages)
+    if len(_pages) != _cnt:
+        _bgbook10_bad("bgbook10-chapters",
+                      "%s 的页数不是 %d（一行 = 一屏 = 2 页：章1 5行 / 章2 5行 / 章3 7行 / "
+                      "章4 5行 / 章5 5行）：%d" % (_eid, _cnt, len(_pages)))
+        continue
+    _seq_now = [str(_p.get("type")) for _p in _pages]
+    if _seq_now != _seq:
+        _bgbook10_bad("bgbook10-page-types", "%s 的页型序列不是 %s：%s" % (_eid, _seq, _seq_now))
+    # 正文键：快照里那一页有正文 ⇒ 产物那一页必须**引用了该键**
+    for _i, _suffix in enumerate(_BG10_PROSE_SUFFIX[_eid]):
+        _key = "%s.page.%s_%s" % (_BG10_LANG, _eid, _suffix)
+        _BG10_TEXT_KEYS.append(_key)
+        _page = next((_p for _p in _pages
+                      if _p.get("text") == _key or _p.get("text") == _key), None)
+        if _page is None:
+            _bgbook10_bad("bgbook10-page-types",
+                          "%s 的第 %d 页没有引用正文键 %s（逐字文案会落空）" % (_eid, _i + 1, _key))
+    # 页眉键（只有章1 的第2/3 左页有）
+    for _label in _BG10_TITLE_LABELS.get(_eid, []):
+        _tk = "%s.page.%s_%s_title" % (_BG10_LANG, _eid, _label)
+        if _tk not in [str(_p.get("title") or "") for _p in _pages]:
+            _bgbook10_bad("bgbook10-page-types", "%s 的 %s 页没有挂页眉键 %s" % (_eid, _label, _tk))
+    # spotlight 图标表逐页
+    for _i, _want_items in enumerate(_BG10_SPOTLIGHT_EXPECT[_eid]):
+        _page = _pages[_i]
+        if _want_items is None:
+            if _page.get("type") == "patchouli:spotlight":
+                _bgbook10_bad("bgbook10-spotlight",
+                              "%s 第 %d 页不该是 spotlight（页型表里它是别的）：%s"
+                              % (_eid, _i + 1, _page))
+            continue
+        if _page.get("type") != "patchouli:spotlight":
+            _bgbook10_bad("bgbook10-spotlight",
+                          "%s 第 %d 页应是 spotlight（图标 %s），实际 %s"
+                          % (_eid, _i + 1, _want_items, _page.get("type")))
+            continue
+        _got_items = _page.get("item")
+        _got_items = _got_items if isinstance(_got_items, list) else [_got_items]
+        if _got_items != _want_items:
+            _bgbook10_bad("bgbook10-spotlight",
+                          "%s 第 %d 页的图标表不是 %s：%s" % (_eid, _i + 1, _want_items, _got_items))
+        _BG10_SPOTLIGHT_REFS.update(_want_items)
+    # 配方逐页
+    for _i, _want_rec in enumerate(_BG10_RECIPE_EXPECT[_eid]):
+        _page = _pages[_i]
+        _got_rec = tuple(str(_page.get(_k)).split(":", 1)[1]
+                         for _k in ("recipe", "recipe2") if _page.get(_k))
+        _want_tuple = tuple(_want_rec) if _want_rec else ()
+        if _got_rec != _want_tuple:
+            _bgbook10_bad("bgbook10-recipes",
+                          "%s 第 %d 页的配方不是 %s：%s" % (_eid, _i + 1, _want_tuple, _got_rec))
+        _BG10_RECIPE_REFS.update(_got_rec)
+if _BG10_PAGES_TOTAL != 54:
+    _bgbook10_bad("bgbook10-chapters",
+                  "§十 5 章的页数合计不是 54（10+10+14+10+10）：%d" % _BG10_PAGES_TOTAL)
+if len(_BG10_RECIPE_REFS) != 40:
+    _bgbook10_bad("bgbook10-recipes",
+                  "§十 引用的配方不是 40 条（章1 6 + 章2 8 + 章3 12 + 章4 6 + 章5 8）：%d"
+                  % len(_BG10_RECIPE_REFS))
+if len(_BG10_SPOTLIGHT_REFS) != 15:
+    _bgbook10_bad("bgbook10-spotlight",
+                  "§十 的 spotlight 图标不是 15 个（章1 9 + 章2 2 + 章3 1 + 章4 3）：%d"
+                  % len(_BG10_SPOTLIGHT_REFS))
+# 死链：收集**页面上实际写的** id（不是期望表）
+for _eid, _i, _s, _c, _q in _BG10_ENTRY_META:
+    _p_zh = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    if not _p_zh.is_file():
+        continue
+    for _pg in json.loads(_p_zh.read_text(encoding="utf-8")).get("pages", []):
+        for _rk in ("recipe", "recipe2"):
+            _rid = _pg.get(_rk)
+            if not _rid:
+                continue
+            _rf = _DATA / "bettergold" / "recipe" / (_rid.split(":", 1)[1] + ".json")
+            if not _rf.is_file():
+                _bgbook10_bad("bgbook10-recipe-refs", "死链：%s（%s 引用了不存在的配方）"
+                              % (_rid, _eid))
+            _ti = _pg.get("item")
+            for _iid in (_ti if isinstance(_ti, list) else [_ti]):
+                if not _iid or ":" not in str(_iid):
+                    continue
+
+# ---------- ③ G1 / G2 的 5 页降级（本轮的**门禁项**）----------
+_bg10_downgraded = 0
+for _eid, _pages_map in _BG10_DOWNGRADES.items():
+    _p_zh = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    if not _p_zh.is_file():
+        _bgbook10_bad("bgbook10-page-types", "缺条目文件：%s" % _eid)
+        continue
+    _pages = json.loads(_p_zh.read_text(encoding="utf-8")).get("pages", [])
+    for _label, _want_item in _pages_map.items():
+        _idx = _BG10_PROSE_SUFFIX[_eid].index(_label)
+        _page = _pages[_idx]
+        if _page.get("type") != "patchouli:spotlight":
+            _bgbook10_bad("bgbook10-page-types",
+                          "§十 门禁项：%s 的 %s 应是 spotlight（该配方 Patchouli 表达不了："
+                          "酿造台配方是 Java 注册 / 厨锅配方无页型），实际 %s"
+                          % (_eid, _label, _page.get("type")))
+            continue
+        _got_items = _page.get("item")
+        _got_items = _got_items if isinstance(_got_items, list) else [_got_items]
+        if _got_items != [_want_item]:
+            _bgbook10_bad("bgbook10-page-types",
+                          "§十 门禁项：%s 的 %s 图标应是 %s（成品），实际 %s"
+                          % (_eid, _label, _want_item, _got_items))
+        if "recipe" in _page or "recipe2" in _page:
+            _bgbook10_bad("bgbook10-page-types",
+                          "§十 门禁项：%s 的 %s 还带着 recipe 字段（不许假装能渲染）" % (_eid, _label))
+        _bg10_downgraded += 1
+if _bg10_downgraded != 5:
+    _bgbook10_bad("bgbook10-page-types",
+                  "§十 的降级页只有 %d 页（应 5 = 酿造 2 + 厨锅 3；反空转守护）" % _bg10_downgraded)
+
+# ---------- ④ 生成器覆盖（"每加一类东西问一句"）----------
+_BG10_GEN = _BGDOC_GEN
+if not _BG10_GEN.is_file():
+    _bgbook10_bad("bgbook10-generator", "读不到手册生成器：%s" % _BG10_GEN)
+else:
+    _bg10_gen = _BG10_GEN.read_text(encoding="utf-8")
+    _bg10_gen_code = re.sub(r"#[^\n]*", "", _bg10_gen)
+    # ⚠ **这一轮的 needle 一律跑在"去注释"的源码上**（`_bg10_gen_code`）——
+    #   扰动实测抓到的**假绿**：`RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_golden_feast]`
+    #   在 §十 区块的**上方注释**里也逐字出现过一次（`#    见下方 §十 区块与 …`），
+    #   于是"把真正那一行删掉"时本检查**照样绿**（取到的是注释里那一份）。
+    #   ⇒ 口径：**正向结构 needle 必须跑在去注释源码上**（与 `ex/03 §3.15 ①` 的负向口径同源）。
+    for _needle, _why in (
+            ("FEAST_ENTRIES = [", "生成器里没有 §十 的 5 章清单（FEAST_ENTRIES）"),
+            ("FEAST_CATEGORY = \"golden_feast\"", "生成器里没有 §十 的类别常量"),
+            ("_BG10_COVER_PLACEHOLDER = \"alchemical_meat\"",
+             "生成器里章5 封面的**占位**常量不见了（作者还没给封面，不许自己填）"),
+            ("_BG10_SPOTLIGHT_DOWNGRADES = {", "生成器里没有 G1/G2 的降级落点表"),
+            ("FEAST_CROP_ROTATION = [", "生成器里没有章1 第2页的轮换图标表"),
+            ("FEAST_WHEAT_ROTATION = [", "生成器里没有章1 第3页的轮换图标表"),
+            ("def entry_golden_feast_crops(", "生成器里没有章1 的构造函数"),
+            ("def entry_golden_feast_foods(", "生成器里没有章2 的构造函数"),
+            ("def entry_golden_feast_sturdy(", "生成器里没有章3 的构造函数"),
+            ("def entry_golden_feast_fd_foods(", "生成器里没有章4 的构造函数"),
+            ("def entry_golden_feast_fd_sturdy(", "生成器里没有章5 的构造函数"),
+            ("def entry_golden_feast(", "生成器里作废的旧占位构造函数被删掉了（不凭空消失）"),
+            ("RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_golden_feast]",
+             "生成器没有把 §十 作废的旧占位并进 RETIRED_ENTRIES")):
+        if _needle not in _bg10_gen_code:
+            _bgbook10_bad("bgbook10-generator", _why)
+    # ENTRIES 块里**不许**再引用 entry_golden_feast（否则下次重跑又把它写回产物）
+    _bg10_entries = re.search(r"(?ms)^ENTRIES = \[$(.*?)^\]\s*$", _bg10_gen_code)
+    if _bg10_entries is None:
+        _bgbook10_bad("bgbook10-generator", "切不出 ENTRIES 块（反空转守护）")
+    elif "entry_golden_feast," in _bg10_entries.group(1):
+        _bgbook10_bad("bgbook10-generator",
+                      "生成器的 `ENTRIES` 列表里又出现了 `entry_golden_feast`（下次重跑会把它写回产物）")
+    if " + FEAST_ENTRIES:" not in _bg10_gen and "+ FEAST_ENTRIES:" not in _bg10_gen:
+        _bgbook10_bad("bgbook10-generator", "`main()` 的写盘循环里没有 FEAST_ENTRIES（不会产出）")
+
+# ---------- ⑤ 两处「待作者补原文」（正向钉住占位仍在）----------
+_bg10_todo_keys = ["%s.page.golden_feast_fd_foods_5_right" % _BG10_LANG,
+                   "%s.page.golden_feast_fd_sturdy_5_right" % _BG10_LANG]
+for _k in _bg10_todo_keys:
+    if (zh.get(_k) or "") != _BG10_PLACEHOLDER:
+        _bgbook10_bad("bgbook10-todo-cell",
+                      "「作者未指定」那一格（%s）里的占位 %r 不见了 —— 作者还没补原文，"
+                      "不许自己编内容（口径见 §24）" % (_k, _BG10_PLACEHOLDER))
+    if (en.get(_k) or "") != _BG10_EN_PLACEHOLDER:
+        _bgbook10_bad("bgbook10-todo-cell",
+                      "「作者未指定」那一格的英译不是 %r：%r"
+                      % (_BG10_EN_PLACEHOLDER, en.get(_k)))
+if _BG10_PLACEHOLDER not in (_BG10_SNAPSHOT.read_text(encoding="utf-8")
+                             if _BG10_SNAPSHOT.is_file() else ""):
+    _bgbook10_bad("bgbook10-todo-cell",
+                  "冻结快照里也没有占位 %r ⇒ 快照被改写成了作者没给过的文案" % _BG10_PLACEHOLDER)
+# 章5 封面：**占位**必须仍在（= 沿用章4 封面），且快照仍写着"作者未给"
+_bg10_c4 = _ZH_BOOK / "entries" / "golden_feast_fd_foods.json"
+_bg10_c5 = _ZH_BOOK / "entries" / "golden_feast_fd_sturdy.json"
+if _bg10_c4.is_file() and _bg10_c5.is_file():
+    _i4 = json.loads(_bg10_c4.read_text(encoding="utf-8")).get("icon")
+    _i5 = json.loads(_bg10_c5.read_text(encoding="utf-8")).get("icon")
+    if _i5 != _i4:
+        _bgbook10_bad("bgbook10-ch5-cover-todo",
+                      "章5 的封面 %r 不再是章4 的封面 %r ⇒ 要么作者已经补了封面（那就要**同时**"
+                      "改生成器的 `_BG10_COVER_PLACEHOLDER` 与本关卡这条正向断言），要么是"
+                      "有人自己填了一张 —— 需求 §10.8 第 1 条明说「不要自己填」" % (_i5, _i4))
+    if _i5 != "bettergold:%s" % _BG10_COVER_PLACEHOLDER:
+        _bgbook10_bad("bgbook10-ch5-cover-todo",
+                      "章5 的封面不是占位 %r：%r" % (_BG10_COVER_PLACEHOLDER, _i5))
+_bg10_snap_all = _BG10_SNAPSHOT.read_text(encoding="utf-8") if _BG10_SNAPSHOT.is_file() else ""
+if u"作者未给，待补" not in _bg10_snap_all:
+    _bgbook10_bad("bgbook10-ch5-cover-todo",
+                  "冻结快照 §10.7 标题里的「作者未给，待补」不见了（作者还没给章5 封面）")
+
+# ---------- ⑥ 语言键：5 条目名 + 49 正文 + 2 页眉 = 56，中英双端都要有 ----------
+_bg10_keys = (["%s.entry.%s" % (_BG10_LANG, _e) for _e, _i, _s, _c, _q in _BG10_ENTRY_META]
+              + list(_BG10_TEXT_KEYS)
+              + ["%s.page.%s_%s_title" % (_BG10_LANG, _e, _l)
+                 for _e, _ls in _BG10_TITLE_LABELS.items() for _l in _ls])
+if len(_bg10_keys) != 56:
+    _bgbook10_bad("bgbook10-lang-bilingual",
+                  "§十 的语言键清单是 %d 条（应 56 = 5 + 49 + 2；反空转守护）" % len(_bg10_keys))
+for _k in _bg10_keys:
+    if _k not in zh or _k not in en:
+        _bgbook10_bad("bgbook10-lang-bilingual", "§十 语言键缺中文或英文：%s" % _k)
+    elif not en[_k].strip() or en[_k] == zh[_k]:
+        _bgbook10_bad("bgbook10-lang-bilingual",
+                      "§十 的英文值缺失或与中文逐字相同（作者只给了中文，需要忠实英译）：%s" % _k)
+# 作废的旧占位条目的语言键**必须原样留着**（原文不删）
+for _k in ("%s.entry.golden_feast" % _BG10_LANG, "%s.page.golden_feast" % _BG10_LANG):
+    if _k not in zh:
+        _bgbook10_bad("bgbook10-lang-bilingual",
+                      "作废的旧占位条目的语言键 %s 被删掉了（既定口径：原文不删）" % _k)
+
+# ---------- ⑦ 文档侧：§24 的口径必须落档 ----------
+for _needle, _why in ((u"bg-book §十", u"docs/1.6-规格.md 里没有 bg-book §十 这一轮的节"),
+                      (u"待作者补原文", u"没写明那两处**待作者补原文**"),
+                      (u"门禁项", u"没写 G1/G2 两个门禁项"),
+                      (u"酿造台", u"没写「酿造台配方 Patchouli 表达不了」这条门禁"),
+                      (u"厨锅", u"没写「厨锅配方没有页型」这条门禁"),
+                      (u"（作者未指定）", u"没写那一格用的占位标记"),
+                      (u"饱和度", u"没写手册「饱和度 = nutrition × saturationModifier」这条换算"),
+                      (u"nutrition", u"没写 nutrition 的**参数类型是 int**（3 处 .5 的共因）"),
+                      (u"以实际为准", u"没写「以实测/代码为准 + 记账」这条处置口径")):
+    if _needle not in _bgfix_spec:
+        _bgbook10_bad("bgbook10-doc", "%s（缺 %s）" % (_why, _needle))
+
 print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: "
       f"{len(bgfinal_problems)} {bgfinal_problems[:8]}")
 print(f"bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: "
@@ -3997,10 +4523,14 @@ print(f"bg-book §九 追加轮（「商人与古董」3 章 / §9.7 不就地�
       f"（3 章 {_BG9_PAGES_TOTAL} 页 / 配方引用 {len(_BG9_RECIPE_REFS)} 条 / 图标引用 {len(_BG9_SPOTLIGHT_REFS)} 个）")
 print(f"bg-fix3 六条修正（藤条判据 / 乐事刀 / 手册删两节 / root 改获得 / 排版 / 标签机制）问题: "
       f"{len(bgfix3_problems)} {bgfix3_problems[:8]}")
+print(f"bg-book §十 追加轮（「金灿的盛宴」5 章 / 两个门禁项 / 两处待作者补）问题: "
+      f"{len(bgbook10_problems)} {bgbook10_problems[:8]}"
+      f"（5 章 {_BG10_PAGES_TOTAL} 页 / 配方引用 {len(_BG10_RECIPE_REFS)} 条 / "
+      f"图标引用 {len(_BG10_SPOTLIGHT_REFS)} 个）")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
                or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
-               or bgfinal3_problems or bgbook9_problems or bgfix3_problems
+               or bgfinal3_problems or bgbook9_problems or bgfix3_problems or bgbook10_problems
                or symmetric_problems or beacon_problems) else 0)

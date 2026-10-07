@@ -1,0 +1,71 @@
+package com.hjmmd_8.bettergold.probe.bgbook10;
+
+import net.minecraft.server.MinecraftServer;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import java.nio.file.Files;
+
+/**
+ * bg-book §十 的**临时服务端探针**（一次性；收尾整块删除）。
+ *
+ * <p>它只做一件事：**造一个属于本会话的 ASCII 探针世界并干净退出**
+ * （红线 5：绝不用 UI 自动化建世界；探针世界名里绝不能出现作者存档名）。
+ * 第 20 tick 断言世界名；第 60 tick {@code server.halt(false)}（**全仓只此一处**）。</p>
+ *
+ * <p>手册内容树的 A 级读数在客户端探针 {@code BgBook10ClientProbe} 里。</p>
+ */
+public final class BgBook10Probe {
+
+    private static final String TAG = "BG10P";
+    private static final String PROBE_WORLD = "bgbook10probe";
+
+    private static boolean armed;
+    private static int tick;
+    private static boolean halted;
+
+    private BgBook10Probe() {
+    }
+
+    public static void armIfEnabled() {
+        if (!Files.exists(FMLPaths.GAMEDIR.get().resolve("bgbook10-server-probe.enabled"))) {
+            log("armed=false (no switch file)");
+            return;
+        }
+        armed = true;
+        NeoForge.EVENT_BUS.register(BgBook10Probe.class);
+        log("armed=true gamedir=" + FMLPaths.GAMEDIR.get() + " expectWorld=" + PROBE_WORLD);
+    }
+
+    private static void log(String msg) {
+        System.out.println(TAG + " " + msg);
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!armed) {
+            return;
+        }
+        tick++;
+        MinecraftServer server = event.getServer();
+        if (tick == 20) {
+            String name = server.getWorldData().getLevelName();
+            boolean ok = PROBE_WORLD.equals(name) && !name.contains("\u65b0\u7684\u4e16\u754c");
+            log("CHECK probe_world_guard " + (ok ? "PASS" : "FAIL") + " levelName=" + name);
+            if (!ok) {
+                log("ABORT: wrong world, NOT touching it any further");
+                armed = false;
+                return;
+            }
+        }
+        if (tick >= 60 && !halted) {
+            halted = true;
+            log("SUMMARY world-created levelName=" + server.getWorldData().getLevelName()
+                    + " ticks=" + tick);
+            log("halting server cleanly");
+            server.halt(false);
+        }
+    }
+}

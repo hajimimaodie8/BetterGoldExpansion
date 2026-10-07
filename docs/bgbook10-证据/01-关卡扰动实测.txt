@@ -1,0 +1,47 @@
+=== bg-book §十 扰动矩阵 (30 用例 + 2 基线) ===
+行尾实测：全部用例改的文件均为 LF（本轮无 CRLF 用例）
+[基线（改前）] exit=0 OK
+[P01 章1 的封面图标被换] exit=1 OK id=bgbook10-chapters
+[P02 删掉 golden_feast_foods 条目（条目数 20->19）] exit=1 OK id=bgbook-entry-count
+[P03 golden_feast_crops 少一页（10->9）] exit=1 OK id=bgbook10-chapters
+[P04 sortnum 被改（章2 1 -> 5）] exit=1 OK id=bgbook10-chapters
+[P05 配方页的页型被换成 text] exit=1 OK id=bgbook10-page-types
+[P06 正文键被改（1_left -> 2_left）] exit=1 OK id=bgbook10-page-types
+[P07 ★G1 酿造页被改回配方页（spotlight -> crafting + recipe）] exit=1 OK id=bgbook10-page-types
+[P08 ★G2 厨锅页被换页型（spotlight -> smelting）] exit=1 OK id=bgbook10-page-types
+[P09 一个门禁页消失（行整块删掉，页数 10->9）] exit=1 OK id=bgbook10-chapters
+[P10 章1 的轮换图标被换（数组里的一项）] exit=1 OK id=bgbook10-spotlight
+[P11 章3 的 spotlight 图标被换] exit=1 OK id=bgbook10-spotlight
+[P12 章1 第3页右的第二个配方被删（一页两配方上限用例）] exit=1 OK id=bgbook10-recipes
+[P13 配方指向不存在的 id（死链）] exit=1 OK id=bgbook10-recipe-refs
+[P14 recipe3 越界键被塞进配方页（Patchouli 只有 recipe/recipe2 两槽）] exit=1 OK id=bgbook-page-recipe-cap
+[P15 zh 里的一段逐字文案被改动] exit=1 OK id=bgbook10-texts-verbatim
+[P16 en 缺一个 §十 语言键（键名被改）] exit=1 OK id=bgbook10-lang-bilingual
+[P17 ★待补格被填成自编内容] exit=1 OK id=bgbook10-todo-cell
+[P18 ★章5 封面被自己填了一张（占位被替换）] exit=1 OK id=bgbook10-ch5-cover-todo
+[P19 冻结快照 §10.7 的「作者未给，待补」被删] exit=1 OK id=bgbook10-ch5-cover-todo
+[P20 冻结快照里一段作者原文被改动（逐字文案的期望值来源）] exit=1 OK id=bgbook10-texts-verbatim
+[P21 生成器里 §十 的 5 章清单被改名] exit=1 OK id=bgbook10-generator
+[P22 生成器的 ENTRIES 里又出现了旧占位 entry_golden_feast] exit=1 OK id=bgbook10-generator
+[P23 生成器里章5 封面的占位常量被改（作者还没给封面）] exit=1 OK id=bgbook10-generator
+[P24 生成器把旧占位从 RETIRED_ENTRIES 里摘掉（**代码行 + 注释里那一份都要改**）] exit=1 OK id=bgbook10-generator
+[P25 §十 作废的旧占位又回到产物里] exit=1 OK id=bgbook10-old-placeholder-gone
+[P26 docs §24 的门禁项字样被全部删掉] exit=1 OK id=bgbook10-doc
+[P27 docs §24 里 nutrition 的字样被全部删掉] exit=1 OK id=bgbook10-doc
+[P28 ★反向对照：只加一行注释（必须仍 exit 0）] exit=0 OK(仍绿)
+[P29 ★反向对照：只改文档里的一句说明（必须仍 exit 0）] exit=0 OK(仍绿)
+[P30 ★反向对照：只改**注释里**那一份 needle，真正的代码行保留（必须仍 exit 0）—— 这条钉住『正向 needle 必须跑在去注释源码上』的修正] exit=0 OK(仍绿)
+[基线（收尾）] exit=0 OK
+--- 逐字节复原核对（SHA256）---
+  docs/1.6-规格.md                                                         SAME c705f7e150a92456
+  src/main/resources/assets/bettergold/lang/en_us.json                   SAME 84e7fbb13460a1bd
+  src/main/resources/assets/bettergold/lang/zh_cn.json                   SAME a9cc01c452578b21
+  src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_feast_crops.json SAME b94f2b4034774e79
+  src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_feast_fd_foods.json SAME 5b1bfcf99546e466
+  src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_feast_fd_sturdy.json SAME 5b8c871cafb8cb98
+  src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_feast_foods.json SAME aa50b4c60e215734
+  src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_feast_sturdy.json SAME 4cb54798a5db7654
+  tools/asset-generator/bgappend-requirements-snapshot/bg-book-10.md     SAME f442f3222339b6d2
+  tools/asset-generator/generate_handbook_data.py                        SAME f90668f860d00de1
+
+mismatches = 0

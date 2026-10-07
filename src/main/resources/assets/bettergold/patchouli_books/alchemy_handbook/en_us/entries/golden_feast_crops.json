@@ -1,0 +1,65 @@
+{
+  "name": "bettergold.handbook.entry.golden_feast_crops",
+  "category": "bettergold:golden_feast",
+  "icon": "bettergold:gold_infused_dirt",
+  "sortnum": 0,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:gold_infused_dirt",
+      "text": "bettergold.handbook.page.golden_feast_crops_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:gold_infused_dirt"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "minecraft:golden_carrot",
+        "bettergold:golden_wheat_seeds",
+        "bettergold:golden_eggplant_seeds"
+      ],
+      "text": "bettergold.handbook.page.golden_feast_crops_2_left",
+      "title": "bettergold.handbook.page.golden_feast_crops_2_left_title"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_wheat_seeds"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:golden_wheat",
+        "bettergold:golden_bread",
+        "bettergold:golden_wheat_block"
+      ],
+      "text": "bettergold.handbook.page.golden_feast_crops_3_left",
+      "title": "bettergold.handbook.page.golden_feast_crops_3_left_title"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_bread",
+      "recipe2": "bettergold:golden_wheat_block"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:golden_eggplant",
+      "text": "bettergold.handbook.page.golden_feast_crops_4_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:raw_sturdygold_eggplant"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:golden_bone_meal",
+      "text": "bettergold.handbook.page.golden_feast_crops_5_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:golden_bone_meal"
+    }
+  ]
+}
