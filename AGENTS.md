@@ -166,6 +166,15 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
 所以门槛**精确等于**分母。口径已就地标注（原文保留）在 `docs/1.5-规格.md` §12.2 与
 `docs/1.6-规格.md` §6.4/§7.4/§8.2；关卡 `[bg16-crossbow-caliber]` 按新口径守着（含"非本模组物品不得被本 mixin 影响"的负向断言）。
 
+**9b）第三个 mixin：进度树「8 条金属线」的上下次序（`bgfix5`，2026-10-08）**
+`mixin/AdvancementNodeChildrenOrderMixin.java`（`@ModifyReturnValue` on `AdvancementNode#children()`，
+`require = 1` + 完整描述符，登记在 **`mixins`** 双端列表）+ `advancement/AdvancementTreeOrder.java`。
+**守卫是"恰好一个父节点 id 的全等判断"**（`bettergold:treasure/any_core_material`），不匹配时**原样返回同一个实例**
+⇒ 原版树 / 别的模组 / 本模组其它兄弟组一个字节不变。**排序键从唯一真源 `CreativeSections.METAL_ORDER` 派生**
+（族名从数据现推）⇒ 全仓**没有第二份 8 族列表**。⚠ 本模组**另外三个兄弟组仍随机**
+（`bettergold:root` / `metal/sturdygold/weapon` / `agriculture/gold_infused_dirt`）＝刻意范围外，待作者一句话可扩。
+细节、A 级（同一构建 3 次读数）与记账见 `docs/1.6-规格.md` §26；跨项目条目见 `mod_experience ex/04` 第 103/104 条。
+
 **10）可选依赖有「两种口径」，对类加载的要求正好相反 —— 别互相照抄（`bg-book`，2026-10-04）**
 - **A · 总是注册、功能软依赖**：本仓对**农夫乐事**就是用这条（`fd/FdModule.isLoaded()` 只决定"挂不挂模块"，
   刀这一类物品始终存在；FD 的类靠**反射**绕开 ⇒ 允许在字段初始化器里引用对方类型）。

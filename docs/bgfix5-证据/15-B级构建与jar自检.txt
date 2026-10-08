@@ -1,0 +1,13 @@
+﻿bgfix5 · B 级构建 + 六校验器
+====================================================================================================
+
+## jar：build\libs\bettergold-1.6.0.jar
+  大小 = 1367795 B
+  SHA256 = CBAAE6ADBC5F64696AE9FBE64DCFC6C28B8C374146B204E627FBBCBBE8CA1448
+
+## jar 内新条目自检：
+  com/hjmmd_8/bettergold/advancement/AdvancementTreeOrder.class              4312 B
+  com/hjmmd_8/bettergold/mixin/AdvancementNodeChildrenOrderMixin.class       1633 B
+  bettergold.mixins.json                                                      316 B
+
+## 六校验器：

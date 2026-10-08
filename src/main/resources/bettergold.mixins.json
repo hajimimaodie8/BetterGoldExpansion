@@ -4,7 +4,8 @@
   "package": "com.hjmmd_8.bettergold.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "CrossbowChargeDurationMixin"
+    "CrossbowChargeDurationMixin",
+    "AdvancementNodeChildrenOrderMixin"
   ],
   "client": [
     "ItemRendererTridentMixin"

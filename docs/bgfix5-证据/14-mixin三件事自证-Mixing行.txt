@@ -1,0 +1,82 @@
+﻿bgfix5 · mixin 三件事的自证（Mixing 行 + 列表键 + require）
+====================================================================================================
+
+## runServer A1 的 Mixing 行：
+[20:58:13] [main/DEBUG] [mixin/]: Mixing MappedRegistryAccessor from neoforge.mixins.json into net.minecraft.core.MappedRegistry
+[20:58:13] [main/DEBUG] [mixin/]: Mixing NourishmentAlwaysEatMixin from farmersdelight.mixins.json into net.minecraft.world.entity.player.Player
+[20:58:13] [main/DEBUG] [mixin/]: Mixing CuttingBoardDispenserMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.DispenserBlock
+[20:58:13] [main/DEBUG] [mixin/]: Mixing KeepRichSoilUntrampledMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FarmBlock
+[20:58:13] [main/DEBUG] [mixin/]: Mixing RopeFenceConnectionMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FenceBlock
+[20:58:13] [main/DEBUG] [mixin/]: Mixing CampfireBaleMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.CampfireBlock
+[20:58:14] [main/DEBUG] [mixin/]: Mixing KeepRichSoilTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer
+[20:58:14] [main/DEBUG] [mixin/]: Mixing BlockEntityTypeAccessor from neoforge.mixins.json into net.minecraft.world.level.block.entity.BlockEntityType
+[20:58:15] [main/DEBUG] [mixin/]: Mixing PlacePumpkinPieMixin from farmersdelight.mixins.json into net.minecraft.world.item.Item
+[20:58:15] [main/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+[20:58:16] [main/DEBUG] [mixin/]: Mixing datafix.ItemStackComponentizationFixMixin from farmersdelight.mixins.json into net.minecraft.util.datafix.fixes.ItemStackComponentizationFix
+[20:58:16] [main/DEBUG] [mixin/]: Mixing datafix.V1460Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V1460
+[20:58:16] [main/DEBUG] [mixin/]: Mixing datafix.V3818_3Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V3818_3
+[20:58:18] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTransformRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTransformRecipe
+[20:58:18] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTrimRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTrimRecipe
+[20:58:18] [main/DEBUG] [mixin/]: Mixing VillagersTargetRichSoilMixin from farmersdelight.mixins.json into net.minecraft.world.entity.ai.sensing.SecondaryPoiSensor
+[20:58:18] [main/DEBUG] [mixin/]: Mixing KeepRichSoilGiantTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.Feature
+[20:58:20] [modloading-worker-0/DEBUG] [mixin/]: Mixing AdvancementNodeChildrenOrderMixin from bettergold.mixins.json into net.minecraft.advancements.AdvancementNode
+
+## runServer A2 的 Mixing 行：
+[20:58:47] [main/DEBUG] [mixin/]: Mixing MappedRegistryAccessor from neoforge.mixins.json into net.minecraft.core.MappedRegistry
+[20:58:47] [main/DEBUG] [mixin/]: Mixing NourishmentAlwaysEatMixin from farmersdelight.mixins.json into net.minecraft.world.entity.player.Player
+[20:58:48] [main/DEBUG] [mixin/]: Mixing CuttingBoardDispenserMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.DispenserBlock
+[20:58:48] [main/DEBUG] [mixin/]: Mixing KeepRichSoilUntrampledMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FarmBlock
+[20:58:48] [main/DEBUG] [mixin/]: Mixing RopeFenceConnectionMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FenceBlock
+[20:58:48] [main/DEBUG] [mixin/]: Mixing CampfireBaleMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.CampfireBlock
+[20:58:48] [main/DEBUG] [mixin/]: Mixing KeepRichSoilTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer
+[20:58:49] [main/DEBUG] [mixin/]: Mixing BlockEntityTypeAccessor from neoforge.mixins.json into net.minecraft.world.level.block.entity.BlockEntityType
+[20:58:50] [main/DEBUG] [mixin/]: Mixing PlacePumpkinPieMixin from farmersdelight.mixins.json into net.minecraft.world.item.Item
+[20:58:50] [main/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+[20:58:50] [main/DEBUG] [mixin/]: Mixing datafix.ItemStackComponentizationFixMixin from farmersdelight.mixins.json into net.minecraft.util.datafix.fixes.ItemStackComponentizationFix
+[20:58:50] [main/DEBUG] [mixin/]: Mixing datafix.V1460Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V1460
+[20:58:51] [main/DEBUG] [mixin/]: Mixing datafix.V3818_3Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V3818_3
+[20:58:51] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTransformRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTransformRecipe
+[20:58:52] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTrimRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTrimRecipe
+[20:58:52] [main/DEBUG] [mixin/]: Mixing VillagersTargetRichSoilMixin from farmersdelight.mixins.json into net.minecraft.world.entity.ai.sensing.SecondaryPoiSensor
+[20:58:52] [main/DEBUG] [mixin/]: Mixing KeepRichSoilGiantTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.Feature
+[20:58:54] [modloading-worker-0/DEBUG] [mixin/]: Mixing AdvancementNodeChildrenOrderMixin from bettergold.mixins.json into net.minecraft.advancements.AdvancementNode
+
+## runServer A3 的 Mixing 行：
+[20:59:14] [main/DEBUG] [mixin/]: Mixing MappedRegistryAccessor from neoforge.mixins.json into net.minecraft.core.MappedRegistry
+[20:59:14] [main/DEBUG] [mixin/]: Mixing NourishmentAlwaysEatMixin from farmersdelight.mixins.json into net.minecraft.world.entity.player.Player
+[20:59:14] [main/DEBUG] [mixin/]: Mixing CuttingBoardDispenserMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.DispenserBlock
+[20:59:15] [main/DEBUG] [mixin/]: Mixing KeepRichSoilUntrampledMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FarmBlock
+[20:59:15] [main/DEBUG] [mixin/]: Mixing RopeFenceConnectionMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FenceBlock
+[20:59:15] [main/DEBUG] [mixin/]: Mixing CampfireBaleMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.CampfireBlock
+[20:59:15] [main/DEBUG] [mixin/]: Mixing KeepRichSoilTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer
+[20:59:15] [main/DEBUG] [mixin/]: Mixing BlockEntityTypeAccessor from neoforge.mixins.json into net.minecraft.world.level.block.entity.BlockEntityType
+[20:59:16] [main/DEBUG] [mixin/]: Mixing PlacePumpkinPieMixin from farmersdelight.mixins.json into net.minecraft.world.item.Item
+[20:59:16] [main/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+[20:59:17] [main/DEBUG] [mixin/]: Mixing datafix.ItemStackComponentizationFixMixin from farmersdelight.mixins.json into net.minecraft.util.datafix.fixes.ItemStackComponentizationFix
+[20:59:17] [main/DEBUG] [mixin/]: Mixing datafix.V1460Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V1460
+[20:59:17] [main/DEBUG] [mixin/]: Mixing datafix.V3818_3Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V3818_3
+[20:59:18] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTransformRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTransformRecipe
+[20:59:18] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTrimRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTrimRecipe
+[20:59:18] [main/DEBUG] [mixin/]: Mixing VillagersTargetRichSoilMixin from farmersdelight.mixins.json into net.minecraft.world.entity.ai.sensing.SecondaryPoiSensor
+[20:59:18] [main/DEBUG] [mixin/]: Mixing KeepRichSoilGiantTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.Feature
+[20:59:20] [modloading-worker-0/DEBUG] [mixin/]: Mixing AdvancementNodeChildrenOrderMixin from bettergold.mixins.json into net.minecraft.advancements.AdvancementNode
+
+## runData 冒烟（.log 在 build/bgfix5-rundata.err 与终端输出）—— Mixing 行：
+
+## bettergold.mixins.json 现状（键名必须是 mixins）：
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.hjmmd_8.bettergold.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CrossbowChargeDurationMixin",
+    "AdvancementNodeChildrenOrderMixin"
+  ],
+  "client": [
+    "ItemRendererTridentMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

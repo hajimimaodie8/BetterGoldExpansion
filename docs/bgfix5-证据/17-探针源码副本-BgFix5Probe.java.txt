@@ -1,0 +1,316 @@
+package com.hjmmd_8.bettergold.probe.bgfix5;
+
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import com.hjmmd_8.bettergold.advancement.AdvancementTreeOrder;
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.material.CreativeSections;
+
+import net.minecraft.advancements.AdvancementNode;
+import net.minecraft.advancements.AdvancementTree;
+import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * bgfix5 A 级实机探针（**只读**：不建世界、不动方块、不发实体、不收成就；收尾整块删除）。
+ *
+ * <p>会话隔离：整包 {@code com.hjmmd_8.bettergold.probe.bgfix5}，收尾只删这个子目录。</p>
+ * <p>开关文件：{@code <gameDir>/bgfix5-probe.enabled}（按 {@link FMLPaths#GAMEDIR} 算）。</p>
+ * <p>世界守卫：第 1 tick 反射读 {@code getLevelName()}，**必须**是 {@code bgfix5probe}；
+ * 不等 ⇒ 打 {@code ABORT} 并停止一切动作（**不调 halt** —— 万一真进了作者的存档，
+ * halt 会走正常存盘把它重写一遍，那正是红线 5 的事故形态）。</p>
+ *
+ * <h2>本轮要证的（同一份构建连跑 3 次，读数必须逐字相同）</h2>
+ * <ol>
+ *   <li><b>呈现次序</b>：{@code bettergold:treasure/any_core_material} 的 9 个孩子按
+ *       {@code display.getY()} 升序 ⇒ 前 8 条 = 彩虹序（= {@code CreativeSections.METAL_ORDER}）、
+ *       第 9 条 = {@code any_raw_metal}（非族节点，排最后）。</li>
+ *   <li><b>守卫真的只命中一处</b>：同一个父节点的 {@code children()} 返回的是
+ *       {@code java.util.ArrayList}（被 mixin 换过），而**其它父节点**返回的仍是原版
+ *       {@code it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet}（没被碰）。</li>
+ *   <li><b>另外三个兄弟组仍随机</b>：{@code bettergold:root} /
+ *       {@code bettergold:metal/sturdygold/weapon} / {@code bettergold:agriculture/gold_infused_dirt}
+ *       的 y 次序不保证稳定（证明"我们只动了那一处"）。</li>
+ *   <li>环境读数：identityHashCode（证"随机源还活着"，但我们的次序不受它影响）、
+ *       forced chunks（本探针**从不** forceload）。</li>
+ * </ol>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgFix5Probe {
+
+    private static final String TAG = "BGFIX5-PROBE";
+    private static final String PROBE_WORLD = "bgfix5probe";
+    private static final String AUTHOR_WORLD = "\u65b0\u7684\u4e16\u754c";   // 新的世界
+
+    private static final String GUARD_PARENT = "bettergold:treasure/any_core_material";
+    private static final String[] OTHER_GROUPS = {
+            "bettergold:root",
+            "bettergold:metal/sturdygold/weapon",
+            "bettergold:agriculture/gold_infused_dirt"};
+
+    // ---- 绝对 tick 表（ex/03 §3.2 规则 11：不用"距上一步多少 tick"的累加偏移）----
+    private static final int T_GUARD = 1;
+    private static final int T_ORDER = 20;
+    private static final int T_OTHER_GROUPS = 30;
+    private static final int T_SUMMARY = 50;
+
+    private static boolean armed;
+    private static boolean aborted;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static int skip;
+    private static MinecraftServer server;
+    private static ServerLevel level;
+    private static String levelName = "?";
+
+    private static final List<String> problems = new ArrayList<>();
+    private static final List<String> aborts = new ArrayList<>();
+    private static final List<String> readouts = new ArrayList<>();
+
+    private BgFix5Probe() {
+    }
+
+    // ==================== 读数小工具 ====================
+
+    private static void report(String rawId, boolean ok, String detail) {
+        String key = rawId.replace('/', '_');
+        if (ok) {
+            pass++;
+            bettergold.LOGGER.info("{} {} :: PASS {}", TAG, key, detail);
+        } else {
+            fail++;
+            problems.add(key + " :: " + detail);
+            bettergold.LOGGER.error("{} {} :: FAIL {}", TAG, key, detail);
+        }
+    }
+
+    private static void skipped(String rawId, String detail) {
+        skip++;
+        bettergold.LOGGER.warn("{} {} :: SKIP {}", TAG, rawId.replace('/', '_'), detail);
+    }
+
+    private static void readout(String rawId, String detail) {
+        readouts.add(rawId.replace('/', '_'));
+        bettergold.LOGGER.info("{} {} :: READOUT {}", TAG, rawId.replace('/', '_'), detail);
+    }
+
+    private static void abort(String why) {
+        aborts.add(why);
+        if (!aborted) {
+            aborted = true;
+            bettergold.LOGGER.error("{} ABORT {}（停止一切动作；**不调 halt**，避免把当前世界存盘）", TAG, why);
+        }
+    }
+
+    // ==================== 主循环 ====================
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if (!armed) {
+            Path flag = FMLPaths.GAMEDIR.get().resolve("bgfix5-probe.enabled");
+            if (!Files.isRegularFile(flag)) {
+                return;
+            }
+            armed = true;
+            server = event.getServer();
+            level = server.overworld();
+            bettergold.LOGGER.info("{} armed=true gamedir={} flag={}", TAG, FMLPaths.GAMEDIR.get(), flag);
+        }
+        if (aborted) {
+            return;
+        }
+        tick++;
+        try {
+            dispatch();
+        } catch (Throwable t) {
+            fail++;
+            problems.add("阶段 tick=" + tick + " 抛异常：" + t);
+            bettergold.LOGGER.error("{} 阶段 tick={} 抛异常", TAG, tick, t);
+        }
+    }
+
+    private static void dispatch() {
+        if (tick == T_GUARD) {
+            guardWorld();
+        } else if (tick == T_ORDER) {
+            orderReadout();
+        } else if (tick == T_OTHER_GROUPS) {
+            otherGroupsReadout();
+        } else if (tick == T_SUMMARY) {
+            summary();
+        }
+    }
+
+    // ==================== 世界守卫（红线 5）====================
+
+    private static void guardWorld() {
+        Object data = level.getLevelData();
+        try {
+            Method m = data.getClass().getMethod("getLevelName");
+            levelName = String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            abort("probe_world_guard 读不到世界名：" + t.getClass().getSimpleName() + " " + t.getMessage());
+            return;
+        }
+        boolean ok = PROBE_WORLD.equals(levelName);
+        report("probe_world_guard", ok,
+                "levelName=" + levelName + " expect=" + PROBE_WORLD + " authorWorld=" + AUTHOR_WORLD);
+        if (PROBE_WORLD.equals(AUTHOR_WORLD) || levelName.equals(AUTHOR_WORLD)) {
+            abort("世界名 = 作者存档名（红线 5）");
+        } else if (!ok) {
+            abort("世界名不是本轮自己的 ASCII 探针世界");
+        }
+    }
+
+    // ==================== ② 进度树：白名单父节点的 9 个孩子 ====================
+
+    private static AdvancementNode lookup(AdvancementTree tree, String id) {
+        AdvancementNode node = tree.get(ResourceLocation.parse(id));
+        if (node == null) {
+            report("tree_node_exists_" + id.replace(':', '_').replace('/', '_'), false,
+                    "进度树里找不到节点 " + id);
+            return null;
+        }
+        return node;
+    }
+
+    private static double yOf(AdvancementNode node) {
+        return node.advancement().display().map(DisplayInfo::getY).orElse(Float.MAX_VALUE).doubleValue();
+    }
+
+    private static String familyOf(AdvancementNode node) {
+        int rank = AdvancementTreeOrder.rankOf(node);
+        return rank >= CreativeSections.METAL_ORDER.size()
+                ? "(非族节点)" : CreativeSections.METAL_ORDER.get(rank);
+    }
+
+    private static void orderReadout() {
+        AdvancementTree tree = server.getAdvancements().tree();
+        AdvancementNode parent = lookup(tree, GUARD_PARENT);
+        if (parent == null) {
+            return;
+        }
+
+        List<AdvancementNode> kids = new ArrayList<>();
+        for (AdvancementNode child : parent.children()) {
+            kids.add(child);
+        }
+
+        // (a) mixin 换了没有：白名单父节点的 children() 应当是 ArrayList（mixin 的排序拷贝）
+        String cls = parent.children().getClass().getName();
+        report("tree_guard_children_class", "java.util.ArrayList".equals(cls),
+                "guardedParent children() class=" + cls + "（mixin 生效时应为 java.util.ArrayList）");
+
+        // (b) 迭代序（= mixin 给出的排序结果）
+        StringBuilder iter = new StringBuilder();
+        for (AdvancementNode child : parent.children()) {
+            iter.append(child.holder().id()).append(' ');
+        }
+        readout("tree_guard_iter_order", "children() 迭代序 = " + iter.toString().trim());
+
+        // (c) 呈现次序 = 按 display.getY() 升序
+        List<AdvancementNode> byY = new ArrayList<>(kids);
+        byY.sort(Comparator.comparingDouble(BgFix5Probe::yOf)
+                .thenComparing(n -> n.holder().id().toString()));
+        StringBuilder ys = new StringBuilder();
+        StringBuilder fams = new StringBuilder();
+        List<String> yIds = new ArrayList<>();
+        for (AdvancementNode child : byY) {
+            yIds.add(child.holder().id().toString());
+            fams.append(familyOf(child)).append(' ');
+            ys.append(String.format("%s(y=%.1f,ih=%08x) ", child.holder().id(), yOf(child),
+                    System.identityHashCode(child)));
+        }
+        readout("tree_guard_y_ascending", "按 display.getY() 升序 = " + ys.toString().trim());
+        readout("tree_guard_family_by_y", "按 y 升序的族 = " + fams.toString().trim());
+
+        // 期望：按 (rank, id) 排（= 排序键给出的全序）
+        List<AdvancementNode> expected = new ArrayList<>(kids);
+        expected.sort(Comparator.comparingInt(AdvancementTreeOrder::rankOf)
+                .thenComparing(n -> n.holder().id().toString()));
+        List<String> expIds = new ArrayList<>();
+        for (AdvancementNode child : expected) {
+            expIds.add(child.holder().id().toString());
+        }
+        report("tree_guard_y_order_matches_sort_key", yIds.equals(expIds),
+                "y 升序 " + yIds + " vs 排序键序 " + expIds);
+
+        // 前 8 条必须是 8 族（每族一次）、且顺序 == 真源 METAL_ORDER；第 9 条必须是非族节点
+        List<String> fams8 = new ArrayList<>();
+        for (int i = 0; i < byY.size() && i < 8; i++) {
+            fams8.add(familyOf(byY.get(i)));
+        }
+        List<String> want8 = new ArrayList<>(CreativeSections.METAL_ORDER);
+        report("tree_guard_first_eight_are_rainbow", fams8.equals(want8),
+                "前 8 条族 = " + fams8 + " expect(METAL_ORDER) = " + want8);
+        if (byY.size() != 9) {
+            report("tree_guard_child_count", false, "孩子数不是 9（实际 " + byY.size() + "）");
+        } else {
+            report("tree_guard_child_count", true, "孩子数 = 9");
+            report("tree_guard_last_is_non_family", "(非族节点)".equals(familyOf(byY.get(8))),
+                    "第 9 条 = " + byY.get(8).holder().id() + " rank=" + AdvancementTreeOrder.rankOf(byY.get(8))
+                            + "（应 = METAL_ORDER.size() = " + CreativeSections.METAL_ORDER.size() + "）");
+        }
+        readout("tree_metal_order_readout", "CreativeSections.METAL_ORDER=" + CreativeSections.METAL_ORDER);
+    }
+
+    // ==================== ③ 其它兄弟组：证明"没被我们碰" ====================
+
+    private static void otherGroupsReadout() {
+        AdvancementTree tree = server.getAdvancements().tree();
+        for (String groupId : OTHER_GROUPS) {
+            AdvancementNode group = tree.get(ResourceLocation.parse(groupId));
+            if (group == null) {
+                skipped("tree_other_group_" + groupId, "进度树里找不到 " + groupId);
+                continue;
+            }
+            List<AdvancementNode> kids = new ArrayList<>();
+            for (AdvancementNode child : group.children()) {
+                kids.add(child);
+            }
+            kids.sort(Comparator.comparingDouble(BgFix5Probe::yOf)
+                    .thenComparing(n -> n.holder().id().toString()));
+            StringBuilder sb = new StringBuilder();
+            List<String> yIds = new ArrayList<>();
+            for (AdvancementNode child : kids) {
+                yIds.add(child.holder().id().toString());
+                sb.append(String.format("%s(y=%.1f,ih=%08x) ", child.holder().id(), yOf(child),
+                        System.identityHashCode(child)));
+            }
+            readout("tree_other_group_" + groupId.replace(':', '_').replace('/', '_'),
+                    "y 升序 = " + sb.toString().trim() + " | yIds=" + yIds);
+            // 负向断言：**没有**被 mixin 换成 ArrayList（证明守卫只命中白名单那一个父节点）
+            String cls = group.children().getClass().getName();
+            report("tree_other_group_not_reordered_" + groupId.replace(':', '_').replace('/', '_'),
+                    !"java.util.ArrayList".equals(cls),
+                    groupId + " children() class=" + cls + "（非白名单 ⇒ 必须仍是原版的哈希集合）");
+        }
+    }
+
+    // ==================== 收尾 ====================
+
+    private static void summary() {
+        readout("forced_chunks", "forced=" + level.getForcedChunks().size()
+                + "（本探针从不 forceload，双向 0）");
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} skip={} aborts={} levelName={} readouts={}",
+                TAG, pass, fail, skip, aborts, levelName, readouts.size());
+        for (String p : problems) {
+            bettergold.LOGGER.error("{} PROBLEM {}", TAG, p);
+        }
+        bettergold.LOGGER.info("{} halting", TAG);
+        armed = false;
+        server.halt(false); // 只调一次
+    }
+}

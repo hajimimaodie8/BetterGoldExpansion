@@ -1,0 +1,52 @@
+bgfix5 · 取色源文件 SHA256 / 尺寸（只读；本轮贴图 0 字节改动）
+========================================================================================================
+
+## trims/color_palettes/<族>.png
+  flamegold        trims/color_palettes/flamegold.png      120 B  8x1       mode=RGBA  sha256=D75A970AA80CDBFCC1362A764729EEF7C49F7F75D79F530A0563665921F3F3B2
+  sturdygold       trims/color_palettes/sturdygold.png      120 B  8x1       mode=RGBA  sha256=C886AB93FF22CE24DA48F3FB47985D156DCF27073E98CE31E117E83452709E20
+  thornsgold       trims/color_palettes/thornsgold.png      120 B  8x1       mode=RGBA  sha256=2451A66D0C18DB61B1F2157C576CAF5543DED85EFFF937EF83319EB6A4B791B5
+  echogold         trims/color_palettes/echogold.png      120 B  8x1       mode=RGBA  sha256=4286353DC9D806E200CF8E35B731F915858276787300A8F5C7F167A1E32E38C0
+  indigoseagold    trims/color_palettes/indigoseagold.png      120 B  8x1       mode=RGBA  sha256=9C966B7F80C2E2550064A822730A704E8A68AEAC9047FA9F1AABFDA7EB9E6B6D
+  voodoogold       trims/color_palettes/voodoogold.png      120 B  8x1       mode=RGBA  sha256=E90542C19EC0E02F2158C8AA4F98A5F9D28BF1290A04683C69E5D3D8AC1EEE19
+  thundergold      trims/color_palettes/thundergold.png      120 B  8x1       mode=RGBA  sha256=2AE858EC81198395242CA635114F621CFB5B47AB4E2A698463C5C06370572AD1
+  illusiongold     trims/color_palettes/illusiongold.png      120 B  8x1       mode=RGBA  sha256=57ACB51622539B1DE41ABF064A7C1F6539E68F481A27259ED0C42EF18400EB98
+
+## item/<族>_ingot.png
+  flamegold        item/flamegold_ingot.png            420 B  16x16     mode=RGBA  sha256=2DB942543746951A6840C19DCEBA408BCF441CD66C0885FC066AB5C2B32978D3
+  sturdygold       item/sturdygold_ingot.png           409 B  16x16     mode=RGBA  sha256=42964B116CFF62F17C348A54D3907BE826FB39EFEC0F50F8675439E8B8EFE086
+  thornsgold       item/thornsgold_ingot.png           476 B  16x16     mode=RGBA  sha256=372484515F092BA9932F64A39DFFC09AC465F7BA32DF34C75933FF2102D1B4AC
+  echogold         item/echogold_ingot.png             453 B  16x16     mode=RGBA  sha256=C1406C8448B5F2CF1738D96C2D1D316065757ABB606C028CD205B0AA54F96BE1
+  indigoseagold    item/indigoseagold_ingot.png        430 B  16x16     mode=RGBA  sha256=67D0FF7C46A46F8D4A8B86CFBADD516498FB169AA2A31EE2B3E3C0AA6FFAE7EE
+  voodoogold       item/voodoogold_ingot.png           428 B  16x16     mode=RGBA  sha256=2B8FC3495BB2B26438A07E4019006F0A81F4EF41338895642D7011C746C86254
+  thundergold      item/thundergold_ingot.png          426 B  16x16     mode=RGBA  sha256=69F1B3B7C46A24DBE4CBD52EFA372B4E2D3183F559994F85ECD6A8B9415D6AF6
+  illusiongold     item/illusiongold_ingot.png         425 B  16x16     mode=RGBA  sha256=529F84D756722039DABB8D0E39E7084FAF6DF31F0CD47293C9B86F41A938522A
+
+## item/<族>_nugget.png
+  flamegold        item/flamegold_nugget.png           241 B  16x16     mode=RGBA  sha256=C01FD01E339CE71F3B3BC3932EB136C9B584FCC9960E318F8C12EA6E321C4540
+  sturdygold       item/sturdygold_nugget.png          255 B  16x16     mode=RGBA  sha256=4825C6CCA10E2E3EC67CD7B63A2BDE3AC9D272DCC3CE5CE9A7C28B59DF1A0AE1
+  thornsgold       item/thornsgold_nugget.png          269 B  16x16     mode=RGBA  sha256=3480FF817285E2E4DD71F54DFF0749A2BD48F47550EB1AAB89D24B0C96D1CBB9
+  echogold         item/echogold_nugget.png            260 B  16x16     mode=RGBA  sha256=B29D77FFBC5570E54B3FF88108AA0017DEAC63017AA51A20EB82770F53368DB6
+  indigoseagold    item/indigoseagold_nugget.png       267 B  16x16     mode=RGBA  sha256=ADE72B3B5BC7AB09EEE2E9B832BDF4B8832362B6BA884179291FBDE901C23948
+  voodoogold       item/voodoogold_nugget.png          265 B  16x16     mode=RGBA  sha256=25E2ED1A783E4D4E0C707AE08845CD705B7028F2EE3C805F62AE00700DE3D9E2
+  thundergold      item/thundergold_nugget.png         265 B  16x16     mode=RGBA  sha256=174B8CF3B26B089E3D5D9D544D1BD9229F06F578B77BBBDBE7D8ADDF2894D4FB
+  illusiongold     item/illusiongold_nugget.png        272 B  16x16     mode=RGBA  sha256=1744EB85AC10776FE4F5492F263F888ED16085F3BCA78AFBB22EF103B0EC7D6B
+
+## block/<族>_block.png
+  flamegold        block/flamegold_block.png           458 B  16x16     mode=RGBA  sha256=5B808D633BB85FA71AFAC79B6F985D8B881CB82837E80F48A8362FF6F11A6506
+  sturdygold       block/sturdygold_block.png          417 B  16x16     mode=RGBA  sha256=483DC3CA5B8716439FA20ABCF4F9BBBD0690B2902B1B374F8DFCD2EE07BFFF1C
+  thornsgold       block/thornsgold_block.png          502 B  16x16     mode=RGBA  sha256=08DD020B3620759D623E0EEB86D3018C11397D515D26205256965B3945065ADF
+  echogold         block/echogold_block.png            513 B  16x16     mode=RGBA  sha256=6A8909101F77AD15177D015E77DF6A02FB68FFE5A31B64192B5AAF6998D48F8A
+  indigoseagold    block/indigoseagold_block.png       540 B  16x16     mode=RGBA  sha256=5AB5C450864FD3CBE356D73BBB084F75649A45B08AB66CBE54B800CFF030BA8A
+  voodoogold       block/voodoogold_block.png          443 B  16x16     mode=RGBA  sha256=F3B26EF272D540053E80B97220C532092C193DD312602C8FB33FDEB3BA0CE1B2
+  thundergold      block/thundergold_block.png         465 B  16x16     mode=RGBA  sha256=CF78FF4D968D36FC11C68A7FCA02A805236DDB71C6CEEBA432759E09A4FBD1DA
+  illusiongold     block/illusiongold_block.png        492 B  16x16     mode=RGBA  sha256=3372B50AAFB7548EC962AB5CF30223C309EE6BEB32136BA0FDEE4A84AAD3FC49
+
+## models/armor/<族>_layer_1.png
+  flamegold        models/armor/flamegold_layer_1.png     1574 B  64x32     mode=RGBA  sha256=5B125B4B7869C678453CDFDE31E525A601B906DF497841849A3FD208C1F16666
+  sturdygold       models/armor/sturdygold_layer_1.png     1615 B  64x32     mode=RGBA  sha256=A1D7EFDC0EEF8EFC8CEF15339DA1F044058CF24D06BCF6C447B9DC26E5F0A97B
+  thornsgold       models/armor/thornsgold_layer_1.png     1627 B  64x32     mode=RGBA  sha256=E9B30B1A62E0F1B35A01EA334A59AD9886FD42FE5366EB0CAF9B995E63CA3AAC
+  echogold         models/armor/echogold_layer_1.png     1708 B  64x32     mode=RGBA  sha256=48D26A143A80A8F0F90C177FA860BA9005A30F08172E5933A1F8FC261D752F6B
+  indigoseagold    models/armor/indigoseagold_layer_1.png     1688 B  64x32     mode=RGBA  sha256=1C96ED815246DFBBCCB15ACC06B500D73660D94D82A7821F4FE4616DD63C8596
+  voodoogold       models/armor/voodoogold_layer_1.png     1623 B  64x32     mode=RGBA  sha256=ECA2A47C48BBC59F874A9219DC23747192982B68BFF420C47C3072E608D3F0CB
+  thundergold      models/armor/thundergold_layer_1.png     1712 B  64x32     mode=RGBA  sha256=4EB8D217CD3A91BFC4D504BF3F0ADEB20FF8C62E1974CEA7B05EFD8FF7495CE5
+  illusiongold     models/armor/illusiongold_layer_1.png     1714 B  64x32     mode=RGBA  sha256=0B83C4289352F6A04324F1837FB7ED9F9B6FD608F527C52145EDC534A84B7C56

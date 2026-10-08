@@ -4601,6 +4601,10 @@ def _fx4_snapshot_k3() -> dict:
 _fx4_k3_titles = _fx4_snapshot_k3()
 
 # ---------- ② 顺序真源（一个真源 + 两处/四处同序） ----------
+# ⚠ **bgfix5（2026-10-08）就地标注（原文保留不删）**：这里的"两处/四处同序"本轮**扩成「五处同序」** ——
+#    第 5 处 = **进度树的兄弟实际呈现次序**（原先由 `ReferenceOpenHashSet` 迭代序决定、每次运行都不同）。
+#    判据在本文件末尾的 `[bgfix5-tree-order-single-source]` / `[bgfix5-metal-order-five-places]` 段；
+#    落点 = 新 mixin `mixin/AdvancementNodeChildrenOrderMixin` + 排序类 `advancement/AdvancementTreeOrder`。
 _FX4_CREATIVE = JAVA / "material" / "CreativeSections.java"
 _fx4_creative_src = strip_comments(_FX4_CREATIVE.read_text(encoding="utf-8"))
 _fx4_src_order = None
@@ -4792,6 +4796,201 @@ for _needle, _why in ((u"bg-fix4", u"docs/1.6-规格.md 里没有 bg-fix4 这一
     if _needle not in _bgfix_spec:
         _bgfix4_bad("bgfix4-doc", "%s（缺 %s）" % (_why, _needle))
 
+# ==========================================================================================
+# bgfix5（2026-10-08）：把「8 条金属线」在进度界面里的上下次序**真正固定**，并按彩虹色排列
+# ==========================================================================================
+# 作者原话（逐字）：「**那8个次序好像必须要这样，排成彩虹色的话，应该好看一些**」
+# 解读（父代理已确认）：① 这 8 条次序**必须固定**（不能是每次 JVM 随机）；② 理想排列 = 按**彩虹色**（色相升序）。
+# ★ 本轮实测：8 族色相升序 == 现行 `METAL_ORDER` == 作者 2026-10-08 的列表
+#   （六条独立口径全一致，见 `docs/bgfix5-证据/01~03`）⇒ **不挪任何族**，只需把进度树钉住。
+# ★ 落点（上一轮的**门禁项**收口）：
+#   ① 新排序类 `advancement/AdvancementTreeOrder.java`（位次从真源 `METAL_ORDER` 派生，**不写第二份 8 族列表**）；
+#   ② 新 mixin `mixin/AdvancementNodeChildrenOrderMixin.java`（`@ModifyReturnValue` on
+#      `AdvancementNode#children()Ljava/lang/Iterable;`，`require = 1`，**只有一个白名单父节点**）；
+#   ③ `bettergold.mixins.json` 的 **`mixins`** 双端列表（不是 `common`）。
+# 稳定 ASCII id：`[bgfix5-...]`。判据一律跑在**去注释**源码 / 已解析 JSON 上。
+# ⚠ 旧口径原文保留在上面（`# ---------- ② 顺序真源（一个真源 + 两处/四处同序） ----------` 处已就地标注）。
+bgfix5_problems: list[str] = []
+
+
+def _bgfix5_bad(tag: str, msg: str) -> None:
+    bgfix5_problems.append("%s [%s]" % (msg, tag))
+
+
+_FX5_ORDER_CLASS = JAVA / "advancement" / "AdvancementTreeOrder.java"
+_FX5_MIXIN_CLASS = JAVA / "mixin" / "AdvancementNodeChildrenOrderMixin.java"
+_FX5_MIXIN_JSON = REPO / "src" / "main" / "resources" / "bettergold.mixins.json"
+_FX5_MIXIN_SIMPLE = "AdvancementNodeChildrenOrderMixin"
+_FX5_GUARDED_PARENT = "bettergold:treasure/any_core_material"
+
+# ---------- ① 数据侧：8 条线各 1 个"线起点"节点，且全部挂在**唯一**那个父节点下 ----------
+_fx5_line_parent = {}
+for _m in _FX4_METALS:
+    _p = _ADV / "metal" / _m / "ingot.json"
+    if not _p.is_file():
+        _bgfix5_bad("bgfix5-tree-order-single-source", "读不到 %s（反空转守护）" % _p)
+        continue
+    _par = json.loads(_p.read_text(encoding="utf-8")).get("parent")
+    if not _par:
+        _bgfix5_bad("bgfix5-tree-order-single-source", "%s 没有 parent（反空转守护）" % _p)
+        continue
+    _fx5_line_parent[_m] = _par
+
+if len(_fx5_line_parent) != 8:
+    _bgfix5_bad("bgfix5-tree-order-single-source",
+                "只认出 %d 条金属线（应 8）—— 反空转守护：%s" % (len(_fx5_line_parent), _fx5_line_parent))
+if len(set(_fx5_line_parent.values())) != len(_fx5_line_parent):
+    _bgfix5_bad("bgfix5-tree-order-single-source",
+                "有两条线共用同一个起点节点（族 ↔ 节点 不是一对一）：%s" % (_fx5_line_parent,))
+for _m, _par in sorted(_fx5_line_parent.items()):
+    # `metal/<族>/ingot.json` 的 parent = 该族的**线起点节点**（核心材料节点）；
+    # 而那个起点节点自己的 parent 必须就是唯一白名单父节点（= 8 条线的共同父节点）。
+    _fx5_start_file = _ADV / (_par.split(":", 1)[1] + ".json")
+    if not _fx5_start_file.is_file():
+        _bgfix5_bad("bgfix5-tree-order-single-source",
+                    "%s 的线起点节点 %s 找不到对应 json（反空转守护）" % (_m, _par))
+        continue
+    _fx5_start_parent = json.loads(_fx5_start_file.read_text(encoding="utf-8")).get("parent")
+    if _fx5_start_parent != _FX5_GUARDED_PARENT:
+        _bgfix5_bad("bgfix5-tree-order-single-source",
+                    "%s 的线起点 %s 的 parent 是 %s，≠ 唯一白名单父节点 %s"
+                    % (_m, _par, _fx5_start_parent, _FX5_GUARDED_PARENT))
+
+# 8 条线 + 非族节点（`any_raw_metal`）必须正好是这个父节点的全部孩子
+_fx5_children = []
+for _p in sorted(_ADV.rglob("*.json")):
+    try:
+        _j = json.loads(_p.read_text(encoding="utf-8"))
+    except Exception:
+        continue
+    if _j.get("parent") == _FX5_GUARDED_PARENT:
+        _fx5_children.append("bettergold:" + _p.relative_to(_ADV).as_posix()[:-5])
+_fx5_children = sorted(_fx5_children)
+_fx5_extra = [c for c in _fx5_children if c not in _fx5_line_parent.values()
+              and c != "bettergold:treasure/any_raw_metal"]
+if len(_fx5_children) != 9:
+    _bgfix5_bad("bgfix5-tree-order-single-source",
+                "白名单父节点的孩子不是 9 个（实际 %d）：%s" % (len(_fx5_children), _fx5_children))
+if _fx5_extra:
+    _bgfix5_bad("bgfix5-tree-order-single-source",
+                "白名单父节点下出现了不在预期内的孩子（排序键只覆盖 8 族 + any_raw_metal）：%s" % (_fx5_extra,))
+if "bettergold:treasure/any_raw_metal" not in _fx5_children:
+    _bgfix5_bad("bgfix5-tree-order-single-source",
+                "非族节点 bettergold:treasure/any_raw_metal 不在白名单父节点下 —— 它必须存在并取 rank = METAL_ORDER.size()（排最后）")
+
+# ---------- ② 排序类：位次来自真源、守卫是**全等**、且没有任何族名字面量 ----------
+_fx5_order_src_raw = _FX5_ORDER_CLASS.read_text(encoding="utf-8") if _FX5_ORDER_CLASS.is_file() else ""
+_fx5_order_src = strip_comments(_fx5_order_src_raw)
+if not _fx5_order_src:
+    _bgfix5_bad("bgfix5-tree-order-single-source", "读不到排序类 %s" % _FX5_ORDER_CLASS)
+else:
+    for _needle, _why in (
+            ('"%s"' % _FX5_GUARDED_PARENT, "没有写死唯一白名单父节点 id %s" % _FX5_GUARDED_PARENT),
+            ("GUARDED_PARENT.equals(parentId)", "守卫不是「全等比较」（必须 GUARDED_PARENT.equals(parentId)）"),
+            ("CreativeSections.METAL_ORDER.indexOf(", "位次不是从真源 `CreativeSections.METAL_ORDER` 派生"),
+    ):
+        if _needle not in _fx5_order_src:
+            _bgfix5_bad("bgfix5-tree-order-single-source", "%s（缺 %s）" % (_why, _needle))
+    # 「这是一个真源、不许有第二份 8 族列表」：整份源码里 `"bettergold:` 形式的字面量只许有 1 个
+    _fx5_ns_lits = re.findall(r'"bettergold:', _fx5_order_src)
+    if len(_fx5_ns_lits) != 1:
+        _bgfix5_bad("bgfix5-tree-order-single-source",
+                    "排序类里的 `\"bettergold:` 字面量不是 1 个（实际 %d 个）—— 白名单父节点只许有一个 id"
+                    % len(_fx5_ns_lits))
+    for _m in _FX4_METALS:
+        if '"%s"' % _m in _fx5_order_src:
+            _bgfix5_bad("bgfix5-tree-order-single-source",
+                        "排序类里出现了族名字面量 \"%s\" —— 顺序只能来自真源 `METAL_ORDER`，不许有第二份列表" % _m)
+    # 守卫不许是"命名空间前缀 / 正则"：order() 方法体里不许出现 startsWith / matches
+    _fx5_order_body = method_body(_fx5_order_src, "public static Iterable<AdvancementNode> order(")
+    if not _fx5_order_body:
+        _bgfix5_bad("bgfix5-tree-order-single-source", "取不到 order(...) 方法体（反空转守护）")
+    else:
+        if "isGuardedParent(parentId)" not in _fx5_order_body:
+            _bgfix5_bad("bgfix5-tree-order-single-source",
+                        "order(...) 的第一道守卫不是 isGuardedParent(parentId)")
+        for _bad_word in ("startsWith(", ".matches("):
+            if _bad_word in _fx5_order_body:
+                _bgfix5_bad("bgfix5-tree-order-single-source",
+                            "order(...) 里出现了 %s —— 守卫必须是**全等**，不许前缀/正则匹配（否则会重排别的树）"
+                            % _bad_word)
+
+# ---------- ③ mixin：完整描述符 + require 写死 + 不许族名字面量 ----------
+_fx5_mixin_src = strip_comments(_FX5_MIXIN_CLASS.read_text(encoding="utf-8")) if _FX5_MIXIN_CLASS.is_file() else ""
+if not _fx5_mixin_src:
+    _bgfix5_bad("bgfix5-tree-order-single-source", "读不到 mixin 类 %s" % _FX5_MIXIN_CLASS)
+else:
+    for _needle, _why in (
+            ("@ModifyReturnValue", "mixin 没用 MixinExtras 的 @ModifyReturnValue"),
+            ("children()Ljava/lang/Iterable;", "mixin 没写 `children()` 的完整描述符（改签名必须当场报错）"),
+            ("require = 1", "mixin 的 require 没写死成 1"),
+            ("AdvancementTreeOrder.order(", "mixin 没有转交给排序类（守卫必须只有一处真源）"),
+            ("@Mixin(AdvancementNode.class)", "mixin 的目标类不是 AdvancementNode"),
+    ):
+        if _needle not in _fx5_mixin_src:
+            _bgfix5_bad("bgfix5-tree-order-single-source", "%s（缺 %s）" % (_why, _needle))
+    for _m in _FX4_METALS:
+        if '"%s"' % _m in _fx5_mixin_src:
+            _bgfix5_bad("bgfix5-tree-order-single-source",
+                        "mixin 里出现了族名字面量 \"%s\" —— 不许有第二份 8 族列表" % _m)
+
+# ---------- ④ mixins.json：双端列表的键名必须是 `mixins`（不是 common） ----------
+if not _FX5_MIXIN_JSON.is_file():
+    _bgfix5_bad("bgfix5-tree-order-single-source", "读不到 %s" % _FX5_MIXIN_JSON)
+else:
+    _fx5_mj = json.loads(_FX5_MIXIN_JSON.read_text(encoding="utf-8"))
+    if not _fx5_mj.get("mixins"):
+        _bgfix5_bad("bgfix5-tree-order-single-source",
+                    "`mixins` 列表是空的 —— 反空转守护（空列表 = 没有任何东西需要 apply，`required: true` 也不会报错）")
+    if _FX5_MIXIN_SIMPLE not in _fx5_mj.get("mixins", []):
+        _bgfix5_bad("bgfix5-tree-order-single-source",
+                    "%s 不在 `mixins` 双端列表里（写进 client/server/common 都会**静默不加载**）"
+                    % _FX5_MIXIN_SIMPLE)
+    for _bad_key in ("common", "client", "server"):
+        if _FX5_MIXIN_SIMPLE in _fx5_mj.get(_bad_key, []):
+            _bgfix5_bad("bgfix5-tree-order-single-source",
+                        "%s 出现在 `%s` 列表里 —— 双端类必须在 `mixins` 里（`common` 这个键会被整个静默忽略）"
+                        % (_FX5_MIXIN_SIMPLE, _bad_key))
+    if _fx5_mj.get("required") is not True:
+        _bgfix5_bad("bgfix5-tree-order-single-source", "mixins.json 的 required 不是 true")
+
+# ---------- ⑤ 「五处同序」总断言：这一处（进度树）与真源同源 ----------
+_fx5_truth_order = None
+_fx5_mo = re.search(r"METAL_ORDER\s*=\s*List\.of\((.*?)\);", _fx4_creative_src, re.S)
+if _fx5_mo:
+    _fx5_truth_order = re.findall(r'"([a-z_]+)"', _fx5_mo.group(1))
+else:
+    _bgfix5_bad("bgfix5-metal-order-five-places",
+                "解析不到顺序真源 `CreativeSections.METAL_ORDER`（反空转守护）")
+if _fx5_truth_order is not None:
+    if _fx5_truth_order != _FX4_METALS:
+        _bgfix5_bad("bgfix5-metal-order-five-places",
+                    "顺序真源 %s ≠ 作者 2026-10-08 顺序 %s" % (_fx5_truth_order, _FX4_METALS))
+    # 第 5 处只能通过"真源下标"表达 ⇒ 排序类必须引用真源（上面已核）；这里再核一次**顺序本身可表达**：
+    # 8 条线的起点节点互不相同 + 都能从 `metal/<族>/ingot` 反推族名（=> rank 一定落在 0..7）
+    if len(set(_fx5_line_parent.values())) != 8:
+        _bgfix5_bad("bgfix5-metal-order-five-places",
+                    "8 条线不能映射到 8 个不同的位次（排序键表达不了全序）")
+    if len(_fx5_truth_order) != 8:
+        _bgfix5_bad("bgfix5-metal-order-five-places",
+                    "顺序真源不是 8 个族（实际 %d）—— 反空转守护" % len(_fx5_truth_order))
+
+# ---------- ⑥ 文档侧：本轮口径必须落档 ----------
+for _needle, _why in ((u"bgfix5", u"docs/1.6-规格.md 里没有 bgfix5 这一轮的节"),
+                      (u"五处同序", u"没写「四处同序 → 五处同序」的扩展"),
+                      (u"AdvancementNodeChildrenOrderMixin", u"没写本轮新增的 mixin 类名"),
+                      (u"仍随机", u"没写明「本模组其它兄弟组仍然随机」这条记账"),
+                      (u"材料区位次", u"没写「材料区位次 / 8 族次序 若是两套必须各写真源」这条风险")):
+    if _needle not in _bgfix_spec:
+        _bgfix5_bad("bgfix5-doc", "%s（缺 %s）" % (_why, _needle))
+
+print(f"bg-fix4 第四批（古董刀成就 / 顺序真源两处同序 / 章3 第1页复原 / 建材页 11 项 / 创造页顺序待补）"
+      f"问题: {len(bgfix4_problems)} {bgfix4_problems[:8]}"
+      f"（章3 {len(_BG3_PAGES)} 页 / 建材页字幕 {_fx4_build_ok}/8 / 图标引用 {len(_bg2_item_refs)} 个）")
+print(f"bg-fix5（进度树 8 条线次序真正固定 / 彩虹序 = 现行序 / 五处同序）"
+      f"问题: {len(bgfix5_problems)} {bgfix5_problems[:8]}"
+      f"（白名单父节点孩子 {len(_fx5_children)} 个 / 线起点映射 {len(_fx5_line_parent)} 族）")
+
 print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: "
       f"{len(bgfinal_problems)} {bgfinal_problems[:8]}")
 print(f"bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: "
@@ -4817,5 +5016,5 @@ sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
                or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
                or bgfinal3_problems or bgbook9_problems or bgfix3_problems or bgbook10_problems
-               or bgfix4_problems
+               or bgfix4_problems or bgfix5_problems
                or symmetric_problems or beacon_problems) else 0)

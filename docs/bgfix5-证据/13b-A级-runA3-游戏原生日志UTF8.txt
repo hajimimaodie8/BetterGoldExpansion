@@ -1,0 +1,90 @@
+[0810月2026 20:59:10.275] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserverdev, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.228, --fml.neoFormVersion, 20240808.144430, --nogui]
+[0810月2026 20:59:10.279] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: JVM identified as Microsoft OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[0810月2026 20:59:10.282] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Microsoft; OS Windows 11 arch amd64 version 10.0
+[0810月2026 20:59:10.459] [main/INFO] [net.neoforged.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserverdev
+[0810月2026 20:59:10.567] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/Lenovo/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%2394!/ Service=ModLauncher Env=SERVER
+[0810月2026 20:59:11.224] [main/INFO] [net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[0810月2026 20:59:11.227] [main/INFO] [net.neoforged.fml.loading.moddiscovery.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		bettergold 1.6.0 (bettergold)
+		Farmer's Delight 1.3.4 (farmersdelight)
+		Just Enough Items 19.16.1.156 (jei)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.228 (neoforge)
+		Patchouli 1.21.1-93-NEOFORGE (patchouli)
+[0810月2026 20:59:12.641] [main/INFO] [mixin/]: Compatibility level set to JAVA_21
+[0810月2026 20:59:12.653] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserverdev' with arguments [--gameDir, ., --nogui]
+[0810月2026 20:59:12.793] [main/WARN] [mixin/]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+[0810月2026 20:59:14.286] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[0810月2026 20:59:19.680] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[0810月2026 20:59:19.682] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[0810月2026 20:59:19.684] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[0810月2026 20:59:19.685] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[0810月2026 20:59:19.687] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[0810月2026 20:59:19.778] [modloading-worker-0/INFO] [net.neoforged.neoforge.common.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.228, for MC 1.21.1
+[0810月2026 20:59:19.938] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[0810月2026 20:59:19.961] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 已注册金属族 8 套: [flamegold(烈燃金), voodoogold(巫毒金), thundergold(结雷金), indigoseagold(靛海金), illusiongold(幻惑金), thornsgold(树棘金), echogold(幽咆金), sturdygold(万坚金)]
+[0810月2026 20:59:20.521] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[0810月2026 20:59:20.522] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[0810月2026 20:59:20.538] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO FROM COMMON SETUP
+[0810月2026 20:59:20.538] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: DIRT BLOCK >> minecraft:dirt
+[0810月2026 20:59:20.538] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: The magic number is... 42
+[0810月2026 20:59:20.540] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: ITEM >> minecraft:iron_ingot
+[0810月2026 20:59:20.543] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[0810月2026 20:59:20.545] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[0810月2026 20:59:20.637] [main/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[0810月2026 20:59:20.724] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23127!/assets/.mcassetsroot' uses unexpected schema
+[0810月2026 20:59:20.724] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23127!/data/.mcassetsroot' uses unexpected schema
+[0810月2026 20:59:21.981] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 1987 recipes
+[0810月2026 20:59:22.176] [main/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 1668 advancements
+[0810月2026 20:59:22.727] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.21.1
+[0810月2026 20:59:22.728] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[0810月2026 20:59:22.728] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: SURVIVAL
+[0810月2026 20:59:22.728] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[0810月2026 20:59:22.794] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25565
+[0810月2026 20:59:22.998] [Server thread/INFO] [net.minecraft.server.network.ServerConnectionListener/]: Using default channel type
+[0810月2026 20:59:23.035] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[0810月2026 20:59:23.035] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: The server will make no attempt to authenticate usernames. Beware.
+[0810月2026 20:59:23.035] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[0810月2026 20:59:23.035] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: To change this, set "online-mode" to "true" in the server.properties file.
+[0810月2026 20:59:23.084] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "bgfix5probe"
+[0810月2026 20:59:23.662] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[0810月2026 20:59:23.873] [worldgen/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[0810月2026 20:59:23.999] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 337 ms
+[0810月2026 20:59:23.999] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (0.944s)! For help, type "help"
+[0810月2026 20:59:24.030] [Server thread/INFO] [net.neoforged.neoforge.gametest.GameTestHooks/]: Enabled Gametest Namespaces: [bettergold]
+[0810月2026 20:59:24.038] [Server thread/INFO] [net.neoforged.neoforge.server.permission.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[0810月2026 20:59:24.041] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO from server starting
+[0810月2026 20:59:24.041] [Server thread/INFO] [patchouli/]: Sending reload packet to clients
+[0810月2026 20:59:24.087] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run flag=E:\mc\mcmod\bettergold-template-1.21.1\run\bgfix5-probe.enabled
+[0810月2026 20:59:24.087] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE probe_world_guard :: PASS levelName=bgfix5probe expect=bgfix5probe authorWorld=新的世界
+[0810月2026 20:59:25.016] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_children_class :: PASS guardedParent children() class=java.util.ArrayList（mixin 生效时应为 java.util.ArrayList）
+[0810月2026 20:59:25.017] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_iter_order :: READOUT children() 迭代序 = bettergold:treasure/blazing_rod bettergold:treasure/golden_cowrie bettergold:treasure/glittering_vine bettergold:treasure/bundled_echo_shard bettergold:treasure/indigo_ocean_heart bettergold:treasure/voodoo_feather bettergold:treasure/amethyst_energy_dust bettergold:treasure/chorus_cherry_branch bettergold:treasure/any_raw_metal
+[0810月2026 20:59:25.018] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_y_ascending :: READOUT 按 display.getY() 升序 = bettergold:treasure/blazing_rod(y=0.0,ih=0b6b06da) bettergold:treasure/golden_cowrie(y=2.0,ih=131111ff) bettergold:treasure/glittering_vine(y=4.0,ih=0a080b51) bettergold:treasure/bundled_echo_shard(y=5.0,ih=5ce49280) bettergold:treasure/indigo_ocean_heart(y=6.0,ih=75b70b69) bettergold:treasure/voodoo_feather(y=7.0,ih=2c7fc2d9) bettergold:treasure/amethyst_energy_dust(y=8.0,ih=167c48ce) bettergold:treasure/chorus_cherry_branch(y=9.0,ih=5ee080de) bettergold:treasure/any_raw_metal(y=10.0,ih=398cf908)
+[0810月2026 20:59:25.019] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_family_by_y :: READOUT 按 y 升序的族 = flamegold sturdygold thornsgold echogold indigoseagold voodoogold thundergold illusiongold (非族节点)
+[0810月2026 20:59:25.019] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_y_order_matches_sort_key :: PASS y 升序 [bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/any_raw_metal] vs 排序键序 [bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/any_raw_metal]
+[0810月2026 20:59:25.019] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_first_eight_are_rainbow :: PASS 前 8 条族 = [flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold] expect(METAL_ORDER) = [flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold]
+[0810月2026 20:59:25.020] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_child_count :: PASS 孩子数 = 9
+[0810月2026 20:59:25.020] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_guard_last_is_non_family :: PASS 第 9 条 = bettergold:treasure/any_raw_metal rank=8（应 = METAL_ORDER.size() = 8）
+[0810月2026 20:59:25.020] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_metal_order_readout :: READOUT CreativeSections.METAL_ORDER=[flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold]
+[0810月2026 20:59:25.517] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_other_group_bettergold_root :: READOUT y 升序 = bettergold:agriculture/alchemical_meat(y=4.0,ih=06724cba) bettergold:alchemy/mixed_crystal_pile(y=5.0,ih=4e4d3e48) bettergold:agriculture/gold_infused_dirt(y=12.0,ih=39df2da5) | yIds=[bettergold:agriculture/alchemical_meat, bettergold:alchemy/mixed_crystal_pile, bettergold:agriculture/gold_infused_dirt]
+[0810月2026 20:59:25.517] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_other_group_not_reordered_bettergold_root :: PASS bettergold:root children() class=it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet（非白名单 ⇒ 必须仍是原版的哈希集合）
+[0810月2026 20:59:25.518] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_other_group_bettergold_metal_sturdygold_weapon :: READOUT y 升序 = bettergold:merchant/gold_ticket(y=1.0,ih=4a20f6ea) bettergold:metal/sturdygold/skeleton(y=2.0,ih=167382d2) bettergold:metal/sturdygold/armor(y=3.0,ih=61d2aa0f) | yIds=[bettergold:merchant/gold_ticket, bettergold:metal/sturdygold/skeleton, bettergold:metal/sturdygold/armor]
+[0810月2026 20:59:25.518] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_other_group_not_reordered_bettergold_metal_sturdygold_weapon :: PASS bettergold:metal/sturdygold/weapon children() class=it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet（非白名单 ⇒ 必须仍是原版的哈希集合）
+[0810月2026 20:59:25.518] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_other_group_bettergold_agriculture_gold_infused_dirt :: READOUT y 升序 = bettergold:agriculture/plant_gold_crop(y=11.0,ih=6c3f4afc) bettergold:agriculture/golden_egg(y=12.0,ih=58b11643) bettergold:agriculture/eggplant_seeds(y=13.0,ih=52179411) | yIds=[bettergold:agriculture/plant_gold_crop, bettergold:agriculture/golden_egg, bettergold:agriculture/eggplant_seeds]
+[0810月2026 20:59:25.518] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE tree_other_group_not_reordered_bettergold_agriculture_gold_infused_dirt :: PASS bettergold:agriculture/gold_infused_dirt children() class=it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet（非白名单 ⇒ 必须仍是原版的哈希集合）
+[0810月2026 20:59:26.515] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE forced_chunks :: READOUT forced=0（本探针从不 forceload，双向 0）
+[0810月2026 20:59:26.516] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE SUMMARY pass=9 fail=0 skip=0 aborts=[] levelName=bgfix5probe readouts=8
+[0810月2026 20:59:26.516] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX5-PROBE halting
+[0810月2026 20:59:26.560] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
+[0810月2026 20:59:26.561] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
+[0810月2026 20:59:26.561] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
+[0810月2026 20:59:26.634] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[bgfix5probe]'/minecraft:overworld
+[0810月2026 20:59:26.712] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[bgfix5probe]'/minecraft:the_nether
+[0810月2026 20:59:26.723] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[bgfix5probe]'/minecraft:the_end
+[0810月2026 20:59:26.749] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (bgfix5probe): All chunks are saved
+[0810月2026 20:59:26.750] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[0810月2026 20:59:26.750] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[0810月2026 20:59:26.750] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage: All dimensions are saved

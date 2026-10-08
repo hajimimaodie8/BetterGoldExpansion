@@ -1,0 +1,139 @@
+========================================================================================================
+bgfix5 · 「8 族金属顺序」影响面清单（scan = docs/bgfix5-证据/05-顺序影响面扫描.py）
+真源 = src/main/java/com/hjmmd_8/bettergold/material/CreativeSections.java 的 `METAL_ORDER`
+作者顺序 = flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold
+========================================================================================================
+
+§A · 契约位逐个复核（每个文件用它自己的形态抽顺序）
+--------------------------------------------------------------------------------------------------------
+  OK  ① 真源 CreativeSections.METAL_ORDER：== 作者顺序（8 族齐全）
+  OK  Config.java 的 defineInRange 声明序（共 19 个键）：== 作者顺序（8 族齐全）
+  OK  ③ generate_advancements.py 的 METALS：== 作者顺序（8 族齐全）
+  OK  ④ generate_handbook_data.py 的 METALS：== 作者顺序（8 族齐全）
+  OK  advancement_manifest.json 的 lists.metals（产物）：== 作者顺序（8 族齐全）
+
+  — 关卡（校验器）里的**期望常量副本**（故意各写一份，不读真源自比）：
+  OK  ⑤ validate_metal_data.py 的 _FX4_METALS：== 作者顺序（8 族齐全）
+  OK  ⑥ validate_metal_data.py 的 _BG8_METAL_ORDER：== 作者顺序（8 族齐全）
+  OK  ⑦ validate_metal_data.py 的 _expected_order：== 作者顺序（8 族齐全）
+  OK  ⑨ validate_advancements.py 的 METALS_ORDER：== 作者顺序（8 族齐全）
+  --  ⑧ validate_advancements.py 没有 `METALS` 这个常量（它用 METALS_ORDER 元组）⇒ 无需复核
+  --  ⑩ generate_metal_tags.py 的 METALS：只含 7 族（**不是** 8 族显示顺序契约；本仓多处把万坚金单列）→ ['flamegold', 'voodoogold', 'thundergold', 'indigoseagold', 'illusiongold', 'thornsgold', 'echogold']
+  --  ⑪ generate_metal_trims.py 的 METALS：只含 7 族（**不是** 8 族显示顺序契约；本仓多处把万坚金单列）→ ['flamegold', 'voodoogold', 'thundergold', 'indigoseagold', 'illusiongold', 'thornsgold', 'echogold']
+  !!  ⑫ generate_weapon_data.py 的 METALS（**生成/产物顺序，不是显示顺序契约**）：!= 作者顺序 → ['sturdygold', 'flamegold', 'voodoogold', 'thundergold', 'indigoseagold', 'illusiongold', 'thornsgold', 'echogold']
+  --  ⑬ validate_metal_assets.py 的 METALS：只含 7 族（**不是** 8 族显示顺序契约；本仓多处把万坚金单列）→ ['flamegold', 'voodoogold', 'thundergold', 'indigoseagold', 'illusiongold', 'thornsgold', 'echogold']
+  ??  ⑭ validate_trim_assets.py 的 METALS：解析不到 METALS
+
+  — 手册产物（由 ④ 重生成；顺序体现在图标数组的轮换序）：
+  族 ↔ 进度节点映射（**从 metal/<族>/ingot.json 的 parent 现算**，不硬编码）：
+    flamegold        -> bettergold:treasure/blazing_rod
+    sturdygold       -> bettergold:treasure/golden_cowrie
+    thornsgold       -> bettergold:treasure/glittering_vine
+    echogold         -> bettergold:treasure/bundled_echo_shard
+    indigoseagold    -> bettergold:treasure/indigo_ocean_heart
+    voodoogold       -> bettergold:treasure/voodoo_feather
+    thundergold      -> bettergold:treasure/amethyst_energy_dust
+    illusiongold     -> bettergold:treasure/chorus_cherry_branch
+  OK  core_materials.json（zh_cn，Patchouli 图标出现序）：== 作者顺序（8 族齐全）
+  OK  core_materials.json（en_us，Patchouli 图标出现序）：== 作者顺序（8 族齐全）
+  OK  golden_knowledge.json（zh_cn，Patchouli 图标出现序）：== 作者顺序（8 族齐全）
+  OK  golden_knowledge.json（en_us，Patchouli 图标出现序）：== 作者顺序（8 族齐全）
+
+  — 进度树（本轮新增的第 5 个同序位；**兄弟集合的迭代序由 JVM 随机**，数据侧无排序位）：
+    守卫父节点 = bettergold:treasure/any_core_material（本模组唯一要固定兄弟序的父节点）
+    运行期兄弟集合（9 个，JSON 里没有顺序可言）：
+      - bettergold:treasure/amethyst_energy_dust => 族 thundergold
+      - bettergold:treasure/any_raw_metal        (非族节点)
+      - bettergold:treasure/blazing_rod          => 族 flamegold
+      - bettergold:treasure/bundled_echo_shard   => 族 echogold
+      - bettergold:treasure/chorus_cherry_branch => 族 illusiongold
+      - bettergold:treasure/glittering_vine      => 族 thornsgold
+      - bettergold:treasure/golden_cowrie        => 族 sturdygold
+      - bettergold:treasure/indigo_ocean_heart   => 族 indigoseagold
+      - bettergold:treasure/voodoo_feather       => 族 voodoogold
+
+§B · 全仓粗扫（首次出现序；仅作「还有谁提到这些族」的完整性检查）
+--------------------------------------------------------------------------------------------------------
+  提到 ≥2 个族的文件 170 个；其中 8 族齐全 100 个（首次出现序 == 作者顺序的 20 个）。
+  ⚠ `docs/*-证据/` 下的运行日志与历史留档**首次出现序不是契约**（它们的顺序是当时那次运行的顺序）。
+  8 族齐全 且 首次出现序 != 作者顺序 的（按 §A 复核后大多属于「非契约」）：
+    - docs\bg16-证据\03-B级构建.txt
+    - docs\bg16-证据\11-收尾清理与五校验器.txt
+    - docs\bg16-证据\18-A级-runServer-仙人掌核心材料.txt
+    - docs\bgach-证据\01-A级-runServer探针日志.txt
+    - docs\bgach-证据\07-B级-runData.txt
+    - docs\bgappend-证据\05-B级构建与六校验器.txt
+    - docs\bgbook-证据\02-B级构建与五校验器.txt
+    - docs\bgbook10-证据\12-行尾实测.txt
+    - docs\bgbook10-证据\13-扰动后manifest.txt
+    - docs\bgbook2-证据\02-A级-runServer-探针读数.txt
+    - docs\bgbook2-证据\04-A级-runClient-探针读数.txt
+    - docs\bgbook8-证据\02-B级构建与六校验器.txt
+    - docs\bgbook9-证据\20-最终状态自检.txt
+    - docs\bgfinal-证据\05-B级构建与六校验器.txt
+    - docs\bgfinal3-证据\05-色卡定位与三重SHA256.txt
+    - docs\bgfinal3-证据\12-探针事故留档-runC1.txt
+    - docs\bgfix-证据\01-A级-run1c默认配置-探针读数.txt
+    - docs\bgfix-证据\02-A级-run2配置改0与系数2-探针读数.txt
+    - docs\bgfix2-证据\02-A级-runServer-探针读数.txt
+    - docs\bgfix2-证据\02b-A级-runServer-探针读数-第一次.txt
+    - docs\bgfix3-证据\06-B级构建与六校验器.txt
+    - docs\bgfix3-证据\09-收尾清理与逐字节复原.txt
+    - docs\bgfix4-证据\00-改前基线-bettergold-common.toml.txt
+    - docs\bgfix4-证据\01-A级-runA-探针读数.txt
+    - docs\bgfix4-证据\02-A级-runA2-同环境第二轮.txt
+    - docs\bgfix4-证据\03-A级-runA3-新配置与新TOML.txt
+    - docs\bgfix4-证据\04-A级-runC-没装乐事.txt
+    - docs\bgfix4-证据\06-A级-runClient-Patchouli页面.txt
+    - docs\bgfix4-证据\18-成就生成器自证.txt
+    - docs\bgfix4-证据\19-标签生成器自证.txt
+    - src\main\java\com\hjmmd_8\bettergold\config\Config.java
+    - src\main\java\com\hjmmd_8\bettergold\material\AllMetals.java
+    - src\main\resources\assets\bettergold\lang\en_us.json
+    - src\main\resources\assets\bettergold\lang\zh_cn.json
+    - src\main\resources\assets\bettergold\patchouli_books\alchemy_handbook\en_us\entries\golden_knowledge.json
+    - src\main\resources\assets\bettergold\patchouli_books\alchemy_handbook\zh_cn\entries\golden_knowledge.json
+    - src\main\resources\assets\minecraft\atlases\armor_trims.json
+    - src\main\resources\assets\minecraft\atlases\blocks.json
+    - src\main\resources\data\bettergold\advancement\treasure\any_raw_metal.json
+    - src\main\resources\data\bettergold\tags\block\storage_blocks.json
+    - src\main\resources\data\bettergold\tags\item\ingots.json
+    - src\main\resources\data\bettergold\tags\item\nuggets.json
+    - src\main\resources\data\bettergold\tags\item\raw_materials.json
+    - src\main\resources\data\bettergold\tags\item\storage_blocks.json
+    - src\main\resources\data\c\tags\item\tools\knife.json
+    - src\main\resources\data\farmersdelight\tags\item\tools\knives.json
+    - src\main\resources\data\minecraft\tags\block\beacon_base_blocks.json
+    - src\main\resources\data\minecraft\tags\block\mineable\pickaxe.json
+    - src\main\resources\data\minecraft\tags\block\needs_diamond_tool.json
+    - src\main\resources\data\minecraft\tags\block\walls.json
+    - src\main\resources\data\minecraft\tags\item\axes.json
+    - src\main\resources\data\minecraft\tags\item\chest_armor.json
+    - src\main\resources\data\minecraft\tags\item\enchantable\bow.json
+    - src\main\resources\data\minecraft\tags\item\enchantable\crossbow.json
+    - src\main\resources\data\minecraft\tags\item\enchantable\durability.json
+    - src\main\resources\data\minecraft\tags\item\enchantable\mace.json
+    - src\main\resources\data\minecraft\tags\item\enchantable\sharp_weapon.json
+    - src\main\resources\data\minecraft\tags\item\enchantable\trident.json
+    - src\main\resources\data\minecraft\tags\item\enchantable\weapon.json
+    - src\main\resources\data\minecraft\tags\item\foot_armor.json
+    - src\main\resources\data\minecraft\tags\item\head_armor.json
+    - src\main\resources\data\minecraft\tags\item\hoes.json
+    - src\main\resources\data\minecraft\tags\item\leg_armor.json
+    - src\main\resources\data\minecraft\tags\item\pickaxes.json
+    - src\main\resources\data\minecraft\tags\item\shovels.json
+    - src\main\resources\data\minecraft\tags\item\swords.json
+    - src\main\resources\data\minecraft\tags\item\trim_materials.json
+    - tools\asset-generator\advancement_manifest.json
+    - tools\asset-generator\generate_metal_assets.py
+    - tools\asset-generator\generate_metal_data.py
+    - tools\asset-generator\generate_metal_recipes.py
+    - tools\asset-generator\generate_metal_tags.py
+    - tools\asset-generator\generate_metal_trims.py
+    - tools\asset-generator\generate_weapon_assets.py
+    - tools\asset-generator\generate_weapon_data.py
+    - tools\asset-generator\generate_weapon_lang.py
+    - tools\asset-generator\validate_advancements.py
+    - tools\asset-generator\validate_metal_assets.py
+    - tools\asset-generator\validate_metal_data.py
+    - tools\asset-generator\validate_trim_assets.py
