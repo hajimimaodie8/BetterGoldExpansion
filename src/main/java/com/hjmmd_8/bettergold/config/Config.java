@@ -147,6 +147,21 @@ public class Config {
     //   goldLootItems / voodooExtractRatio / voodooFlatPerLevel / thunderSoundMode）一个都不改名**
     //   —— 配置键名是存档红线（改名 = 老玩家设置静默丢失）。
 
+    // ==================== bg-fix4 §二：16 条的**声明顺序** ====================
+    //
+    // ★ **顺序真源 = `CreativeSections.METAL_ORDER`**（那一行注释原文：「金属出场顺序只在这里维护一行」）。
+    //   作者 2026-10-08 原话：「关于贵金进度的上下排版还需要重做,需要改成这种从上到下分别是:
+    //   烈燃金 / 万坚金 / 树棘金 / 幽咆金 / 靛海金 / 巫毒金 / 结雷金 / 幻惑金。**模组设置也要用这种规律排序**」
+    //   ⇒ 本类这 16 条**按那个列表逐族声明**：NeoForge 配置界面与 `bettergold-common.toml` 的条目顺序
+    //     = 声明顺序 = 创造页金属顺序（`CreativeSections.METAL_ORDER`）。
+    //
+    // ⚠ **旧顺序（原文留档，已被 2026-10-08 取代）**：flamegold → voodoogold → thundergold →
+    //   indigoseagold → illusiongold → thornsgold → echogold → sturdygold（1.6.0 的原样，未列过顺序，
+    //   只是"谁先写的谁在前"）。
+    // ⚠ **键名 / 默认值 / 取值范围 / .comment 文案一个字都没改**（配置键名是存档红线，见上）。
+    // ⚠ 关卡 `[bgfix4-metal-order-single-source]` 守着"本类 16 键的声明顺序 == METAL_ORDER"
+    //    （以及生成器侧 `generate_advancements.py` / `generate_handbook_data.py` 的 METALS 同序）。
+
     /** 烈燃金 · 武器工具触发高燃的概率（默认 1.0 = 必定，与 1.6.0 行为一致） */
     public static final ModConfigSpec.DoubleValue FLAMEGOLD_WEAPON_BUFF_CHANCE = BUILDER
             .comment("烈燃金【武器工具】触发 Buff（高燃）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
@@ -158,74 +173,6 @@ public class Config {
                     "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
                     "0 = 永不触发。")
             .defineInRange("flamegoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
-
-    /** 巫毒金 · 武器工具触发巫毒的概率（默认 1.0） */
-    public static final ModConfigSpec.DoubleValue VOODOOGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("巫毒金【武器工具】触发 Buff（巫毒）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
-            .defineInRange("voodoogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
-
-    /** 巫毒金 · 盔甲盾牌反制巫毒的每件概率（默认 0.25） */
-    public static final ModConfigSpec.DoubleValue VOODOOGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("巫毒金【盔甲盾牌】反制 Buff（巫毒）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
-            .defineInRange("voodoogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
-
-    /** 结雷金 · 武器工具触发落雷/颤栗的概率（默认 1.0） */
-    public static final ModConfigSpec.DoubleValue THUNDERGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("结雷金【武器工具】触发能力（落雷 + 3×3 伤害 + 颤栗）的概率。",
-                    "0 = 永不触发；1 = 必定触发（默认）。")
-            .defineInRange("thundergoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
-
-    /** 结雷金 · 盔甲盾牌反制颤栗的每件概率（默认 0.25） */
-    public static final ModConfigSpec.DoubleValue THUNDERGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("结雷金【盔甲盾牌】反制 Buff（颤栗）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
-            .defineInRange("thundergoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
-
-    /** 靛海金 · 武器工具触发沉淀的概率（默认 1.0） */
-    public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("靛海金【武器工具】触发 Buff（沉淀）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
-            .defineInRange("indigoseagoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
-
-    /** 靛海金 · 盔甲盾牌反制沉淀的每件概率（默认 0.25） */
-    public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("靛海金【盔甲盾牌】反制 Buff（沉淀）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
-            .defineInRange("indigoseagoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
-
-    /** 幻惑金 · 武器工具施加安抚的概率（默认 0.16 = 16%，与 1.5/1.6 现状逐位相同） */
-    public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("幻惑金【武器工具】触发 Buff（安抚）的概率。", "默认 0.16 = 16%。0 = 永不触发。")
-            .defineInRange("illusiongoldWeaponBuffChance", 0.16D, 0.0D, 1.0D);
-
-    /** 幻惑金 · 盔甲盾牌反制安抚的每件概率（默认 0.04 = 每件 4%，穿满 4 件 16%） */
-    public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("幻惑金【盔甲盾牌】反制 Buff（安抚）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.04 ⇒ 1 件 4%、4 件 16%。")
-            .defineInRange("illusiongoldArmorBuffChance", 0.04D, 0.0D, 1.0D);
-
-    /** 树棘金 · 武器工具触发寄生的概率（默认 1.0） */
-    public static final ModConfigSpec.DoubleValue THORNSGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("树棘金【武器工具】触发 Buff（寄生）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
-            .defineInRange("thornsgoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
-
-    /** 树棘金 · 盔甲盾牌反制寄生的每件概率（默认 0.25） */
-    public static final ModConfigSpec.DoubleValue THORNSGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("树棘金【盔甲盾牌】反制 Buff（寄生）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
-            .defineInRange("thornsgoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
-
-    /** 幽咆金 · 武器工具触发音咆的概率（默认 1.0） */
-    public static final ModConfigSpec.DoubleValue ECHOGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("幽咆金【武器工具】触发 Buff（音咆，内部 id echo_roar）的概率。",
-                    "0 = 永不触发；1 = 必定触发（默认）。")
-            .defineInRange("echogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
-
-    /** 幽咆金 · 盔甲盾牌反制音咆的每件概率（默认 0.25） */
-    public static final ModConfigSpec.DoubleValue ECHOGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("幽咆金【盔甲盾牌】反制 Buff（音咆）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
-            .defineInRange("echogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /**
      * 万坚金 · 武器工具触发**能力**的概率（默认 1.0 = 必定）。
@@ -258,6 +205,74 @@ public class Config {
                     "间隔 = 基础(320 tick) × 本条；1.0 = 不变（默认），2.0 = 间隔翻倍，0.5 = 间隔减半。",
                     "0 会被钳到最小 1 tick（每 tick 一份，慎用）。每次给的量与吸收上限不受本键影响。")
             .defineInRange("sturdygoldArmorAbilityIntervalMultiplier", 1.0D, 0.0D, 100.0D);
+
+    /** 树棘金 · 武器工具触发寄生的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue THORNSGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("树棘金【武器工具】触发 Buff（寄生）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("thornsgoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 树棘金 · 盔甲盾牌反制寄生的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue THORNSGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("树棘金【盔甲盾牌】反制 Buff（寄生）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("thornsgoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 幽咆金 · 武器工具触发音咆的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue ECHOGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("幽咆金【武器工具】触发 Buff（音咆，内部 id echo_roar）的概率。",
+                    "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("echogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 幽咆金 · 盔甲盾牌反制音咆的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue ECHOGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("幽咆金【盔甲盾牌】反制 Buff（音咆）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("echogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 靛海金 · 武器工具触发沉淀的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("靛海金【武器工具】触发 Buff（沉淀）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("indigoseagoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 靛海金 · 盔甲盾牌反制沉淀的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("靛海金【盔甲盾牌】反制 Buff（沉淀）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("indigoseagoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 巫毒金 · 武器工具触发巫毒的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue VOODOOGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("巫毒金【武器工具】触发 Buff（巫毒）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("voodoogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 巫毒金 · 盔甲盾牌反制巫毒的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue VOODOOGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("巫毒金【盔甲盾牌】反制 Buff（巫毒）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("voodoogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 结雷金 · 武器工具触发落雷/颤栗的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue THUNDERGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("结雷金【武器工具】触发能力（落雷 + 3×3 伤害 + 颤栗）的概率。",
+                    "0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("thundergoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 结雷金 · 盔甲盾牌反制颤栗的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue THUNDERGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("结雷金【盔甲盾牌】反制 Buff（颤栗）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .defineInRange("thundergoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 幻惑金 · 武器工具施加安抚的概率（默认 0.16 = 16%，与 1.5/1.6 现状逐位相同） */
+    public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("幻惑金【武器工具】触发 Buff（安抚）的概率。", "默认 0.16 = 16%。0 = 永不触发。")
+            .defineInRange("illusiongoldWeaponBuffChance", 0.16D, 0.0D, 1.0D);
+
+    /** 幻惑金 · 盔甲盾牌反制安抚的每件概率（默认 0.04 = 每件 4%，穿满 4 件 16%） */
+    public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("幻惑金【盔甲盾牌】反制 Buff（安抚）的【每件】概率。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.04 ⇒ 1 件 4%、4 件 16%。")
+            .defineInRange("illusiongoldArmorBuffChance", 0.04D, 0.0D, 1.0D);
 
     /**
      * 「武器工具触发概率」的**唯一读取入口**（bg-fix 第 7 条）。

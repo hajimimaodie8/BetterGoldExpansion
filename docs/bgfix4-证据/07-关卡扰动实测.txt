@@ -1,0 +1,44 @@
+﻿=== ���� ===
+BASELINE validate_advancements exit=0
+BASELINE validate_metal_data exit=0
+OK    P01-isOurTool �ӻ� isSpecialMetal ����: exit=1 (���� 1) hit_expected=True [bgfix4-vine-all-metals]
+OK    P02-isOurTool ����������һ��: exit=1 (���� 1) hit_expected=True [bgfix4-vine-all-metals]
+OK    P03-�����������ʱ���: exit=1 (���� 1) hit_expected=True [bgfix2-vine-chance]
+OK    P04-˳����Դ��METAL_ORDER����һλ: exit=1 (���� 1) hit_expected=True [bgfix4-metal-order-single-source]
+OK    P05-�ɾ��������� METALS ����: exit=1 (���� 1) hit_expected=True [bgfix4-metal-order-single-source]
+OK    P06-�ֲ��������� METALS ����: exit=1 (���� 1) hit_expected=True [bgfix4-metal-order-single-source]
+OK    P07-�������ص��ɽ���˳����������֮ǰ��: exit=1 (���� 1) hit_expected=True [bgfix4-building-order-single-source]
+OK    P08-��������һ�ֽ�����̬: exit=1 (���� 1) hit_expected=True [bgappend-book-block-order]
+OK    P09-��Ļ����ֵ����: exit=1 (���� 1) hit_expected=True [bgfix4-build-title-verbatim]
+OK    P10-��ĻӢ��ֵ���ĳ���������ͬ: exit=1 (���� 1) hit_expected=True [bgfix4-build-title-verbatim]
+OK    P11-����ҳչʾ����һ�������: exit=1 (���� 1) hit_expected=True [bgfix4-build-title-verbatim]
+OK    P12-��ԭҳ�Ķ����һ��: exit=1 (���� 1) hit_expected=True [bgfix4-k3p1-restored]
+OK    P13-����ҳ title ָ���: exit=1 (���� 1) hit_expected=True [bgfix4-build-title-verbatim]
+OK    P14-�Ŷ����������� OR ���ﱻ�õ�: exit=1 (���� 1) hit_expected=True [bgfix4-antique-knife-in-gear]
+OK    P15-��ڤ�Ϻ��������ĳ���� AND: exit=1 (���� 1) hit_expected=True [bgfix4-antique-knife-in-gear]
+OK    P16-�Ŷ������о�ָ�򲻴��ڵı�ǩ: exit=1 (���� 1) hit_expected=True [bgfix4-antique-knife-in-gear]
+OK    P17-ɾ��һ�ŹŶ�����ǩ�ļ�: exit=1 (���� 1) hit_expected=True [bgfix3-tag-generator]
+OK    P18-��ǩ��Ŀ�ĳ� required:true: exit=1 (���� 1) hit_expected=True [bgfix3-adv-tag-optional]
+OK    P19-�����Ĩ����������须��all ģʽ��: exit=1 (���� 1) hit_expected=True [bgfix4-doc]
+OK    P20-�����Ĩ���Ž���Ĺؼ��� ReferenceOpenHashSet: exit=1 (���� 1) hit_expected=True [bgfix4-doc]
+OK    R01-�� isOurTool ���ע�������ᵽ isSpecialMetal()���������̣�: exit=0 (���� 0) hit_expected=True [None]
+OK    R02-�������������Ϸ���ע��д���ɽ���˳�򣨱������̣�: exit=0 (���� 0) hit_expected=True [None]
+OK    R03-�� Config.java ��ע��д����Ľ���˳�򣨱������̣�: exit=0 (���� 0) hit_expected=True [None]
+=== ��β���� ===
+BASELINE-END validate_advancements exit=0
+BASELINE-END validate_metal_data exit=0
+=== ���ֽڸ�ԭ�˶ԣ�SHA256��===
+OK   src\main\java\com\hjmmd_8\bettergold\registry\AllLootModifiers.java dbcdf73404d84ee0
+OK   src\main\java\com\hjmmd_8\bettergold\material\CreativeSections.java b0d897c77cacf5a3
+OK   tools\asset-generator\generate_advancements.py 3b6f1ee1f4b35bda
+OK   tools\asset-generator\generate_handbook_data.py d8af3a47a8cc00b6
+OK   src\main\resources\assets\bettergold\lang\zh_cn.json 093cafd2e2ddbec2
+OK   src\main\resources\assets\bettergold\lang\en_us.json 416376c99ff86565
+OK   src\main\resources\assets\bettergold\patchouli_books\alchemy_handbook\zh_cn\entries\golden_knowledge.json eb7e39eee8f316d0
+OK   src\main\resources\data\bettergold\advancement\merchant\antique_tool.json e9cadbce88c7774c
+OK   src\main\resources\data\bettergold\advancement\merchant\netherite_antique_tool.json 80a6439b30a3ca7f
+OK   src\main\resources\data\bettergold\tags\item\antique_knives.json d370bd189cac2372
+OK   docs\1.6-���.md 5dec46b28772b983
+OK   src\main\java\com\hjmmd_8\bettergold\config\Config.java 56b2fc3cb6582049
+
+mismatches = 0 / ���� 27

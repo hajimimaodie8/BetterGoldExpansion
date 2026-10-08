@@ -369,9 +369,20 @@ ENTRIES = [
 #
 # Inferred values (docs/1.6-规格.md §12 推断值表; each is a one-line change):
 #     * 章3 cover icon            = bettergold:sturdygold_ingot
-#     * 章3 p1 left list          = per family (ingot, nugget) in METALS order -> 16 items
-#     * 章3 p1 right list         = eight upgrade templates in METALS order
-#     * 章3 p2..p5 "某某金建筑方块" = that family's `_bricks` block
+#     * 章3 p1 left list          = 八族**锭**（METALS 顺序）
+#     * 章3 p1 right list         = 八张升级模板（METALS 顺序）
+#     * 章3 p2..p5 "某某金建筑方块" = 该族的 **11 件建材**（顺序见 METAL_BLOCK_SUFFIX_ORDER）
+#
+# ★ bg-fix4 §三/§四（作者 2026-10-08）之后的现行形状：
+#   * §三「把手册的炼金的起步第3章的这个第一页面给**复原**」⇒ 本函数**不再跳过 index 1**：
+#     第 1 页 = 左（八族锭轮换 + 标题「各种各样的"贵金"锭」+ 正文 knowledge_1_summary）
+#             + 右（八张升级模板轮换 + 标题「"贵金"装备的升级锻造模版」、**无正文**）
+#     —— 与 §八 删除前的形状**逐字相同**（两个标题走 KNOWLEDGE_1_*_TITLE 字面常量）。
+#   * §四「把中上边字幕的 某某金砖块 改为 某某金建筑方块」+「展示栏改为 11 项、从左到右不断替换」
+#     ⇒ 第 2~5 页（= 8 个族的建材页）**显式给 `title`**（语言键 `knowledge_<行>_<左/右>_title`，
+#     值 = 冻结快照 §6.3 的「图标：**X**」逐字，注入脚本见 `build/bgfix4_add_lang.py` 的副本）
+#     + `item` = 该族 11 件建材的轮换表（patchouli 的 spotlight 每次只画一个图标，
+#     `stacks[(ticksInBook / 20) % stacks.length]` ⇒ 列表 = "不断替换"）。
 CHAPTERS = [
     # (entry id, cover icon, sortnum, builder)  -- appended after the 1st-round entries
     ("auxiliary_materials", "mixed_crystal_pile", 2),
@@ -415,24 +426,52 @@ CORE_ROWS = [
 #   * 第 4 条「锻造模板那个标题改成『"贵金"装备的升级锻造模版』」⇒ 见 KNOWLEDGE_1_TEMPLATE_TITLE。
 KNOWLEDGE_1_INGOT_TITLE = "各种各样的\"贵金\"锭"
 KNOWLEDGE_1_TEMPLATE_TITLE = "\"贵金\"装备的升级锻造模版"
-# §七 第 7 条：建筑方块的中上角图标按**固定顺序**显示 ——
-#   锭块 → 砖块 → 柱 → 楼梯 → 台阶 → 砖墙 → 栏杆 → 门 → 活板门 → 链 → 灯笼
+# §七 第 7 条：建筑方块的中上角图标按**固定顺序**显示。
+# ★ bg-fix4 §四（作者 2026-10-08）给了**新的字面顺序**（把「栏杆」从砖墙之后挪到活板门之后）：
+#   锭块 → 砖块 → 柱 → 楼梯 → 台阶 → 砖墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼
+#   作者原话：「将中上边的物品展示栏将改为锭块,砖块,柱,楼梯,台阶,砖墙,门,活板门,栏杆,链,灯笼,
+#   并将它们以从左到右的顺序不断替换」。
+#   ⚠ **旧顺序（原文留档，已被 2026-10-08 取代）**：
+#     `_block, _bricks, _pillar, _bricks_stairs, _bricks_slab, _bricks_wall, _bars, _door, _trapdoor, _chain, _lantern`
+#     （§七 第 7 条那一版：砖墙 → **栏杆** → 门 → 活板门）。
+# ★ **真源 = `material/CreativeSections.BUILDING_SLOT`**（创造页「建筑」分区的区内位次，Java 侧那张表
+#   本来就已是作者的新顺序）⇒ 本常量必须与它**逐项同序**，关卡
+#   `[bgfix4-building-order-single-source]` 两边同时钉住。
 # ⚠ 这是本文件里**唯一的**方块形态清单（生成器覆盖检查：家族里还有 `_bricks_*` 之外的同名形态吗？
 #   答案在 `MetalFamily` 的方块注册里 —— 逐条比对见 docs/1.6-规格.md §17.2）。
-#   关卡 `[bgappend-book-block-order]` 直接读这个常量与产物核对。
+#   关卡 `[bgappend-book-block-order]`（旧 id、新期望）直接读这个常量与产物核对。
 METAL_BLOCK_SUFFIX_ORDER = [
     "_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
-    "_bricks_wall", "_bars", "_door", "_trapdoor", "_chain", "_lantern",
+    "_bricks_wall", "_door", "_trapdoor", "_bars", "_chain", "_lantern",
 ]
+
+
+def building_forms(metal: str) -> list:
+    """某一族的 **11 件建材**（顺序 = METAL_BLOCK_SUFFIX_ORDER，bg-fix4 §四 的字面顺序）。"""
+    return ["bettergold:%s%s" % (metal, _sfx) for _sfx in METAL_BLOCK_SUFFIX_ORDER]
+
+
+def knowledge_title_key(index: int, side: str) -> str:
+    """章3 建材页的「中上边字幕」语言键（bg-fix4 §四）。
+
+    值由一次性脚本从**仓库内冻结快照** `bgappend-requirements-snapshot/bg-book-6.1-6.3.md`
+    §6.3 第 2~5 行的「图标：**X**」逐字注入（脚本副本落在 `docs/bgfix4-证据/`），
+    **不由本生成器写值**（沿用 §八/§九/§十 的既定分工：生成器只写键，语言文件由脚本追加）。
+    """
+    return "%s.page.knowledge_%d_%s_title" % (LANG, index, side)
+
+
 KNOWLEDGE_ROWS = [
-    # row 1: left = every family's **ingot** (rotating list = 「随排版顺序不断变化」),
-    #        right = every family's upgrade template (rotating list), each with its own title.
+    # row 1（§八 删过、bg-fix4 §三 **复原**）：左 = 八族**锭**（轮换 = 「随排版顺序不断变化」），
+    #        右 = 八张**升级模板**（轮换），两个标题各自独立。
     ([ "bettergold:%s_ingot" % metal for metal, _core in METALS ],
      ["bettergold:%s_upgrade_template" % metal for metal, _core in METALS]),
 ]
+# row 2..5：每一行 = 两个族（左 / 右），各自 11 件建材（bg-fix4 §四）
+KNOWLEDGE_BUILDING_ROWS = []
 for _i in range(0, len(METALS), 2):
-    KNOWLEDGE_ROWS.append((["bettergold:%s_bricks" % METALS[_i][0]],
-                           ["bettergold:%s_bricks" % METALS[_i + 1][0]]))
+    KNOWLEDGE_ROWS.append((building_forms(METALS[_i][0]), building_forms(METALS[_i + 1][0])))
+    KNOWLEDGE_BUILDING_ROWS.append((METALS[_i][0], METALS[_i + 1][0]))
 
 
 def entry_auxiliary_materials():
@@ -468,21 +507,37 @@ def entry_golden_knowledge():
     """章3 ·「贵金」的知识（封面图标 = 推断值，见上方注释）。
 
     ⛔ **bg-book §八（2026-10-06）删掉了本条目原来的第 1 页** —— §8.1「删除 章 3『贵金的知识』
-    第 1 页（我上一轮改成"汇总页"的那页）」⇒ 本条目 **10 页 → 8 页**（第 2~5 行 × 两页）。
+    第 1 页（我上一轮改成"汇总页"的那页）」⇒ 当时是 **10 页 → 8 页**（第 2~5 行 × 两页）。
+    ★ **bg-fix4 §三（作者 2026-10-08）把它复原**：「请你把手册的炼金的起步第3章的这个第一页面给复原
+    ⇒ 第一个标题应该是各种各样的"贵金"锭，第二个标题应该是"贵金"装备的升级锻造模板,
+    里边那两个图标也给它改成相应的那8种金属锭和锻造模版的轮换」
+    ⇒ 本函数**不再 `continue` 跳过 index 1**，页数 **8 → 10**，形状与 §八 删除前**逐字相同**：
+    左 = 八族锭轮换 + 标题1 + 正文 `knowledge_1_summary`；右 = 八张升级模板轮换 + 标题2、**无正文**。
+    ★ **bg-fix4 §四（同一天）**：第 2~5 页（8 个族的建材页）**显式给 `title`**
+    （旧状态 = 没有 `title` ⇒ Patchouli 退化成显示**物品名**「烈燃金砖块」）+ `item` = 该族 11 件建材。
 
-    * 该页的两张图标表（八族锭 / 八张升级模板）与两个标题常量
-      （`KNOWLEDGE_1_INGOT_TITLE` / `KNOWLEDGE_1_TEMPLATE_TITLE`）**原样保留在文件里**（原文不删）；
-    * 语言键 `knowledge_1_summary` / `knowledge_1_ingot_title` / `knowledge_1_template_title`
-      也留在两份语言文件里作**历史留档**，只是**没有任何页面再引用它们**
-      （关卡 `[bgbook8-k3-p1-gone]` 用负向断言守着）；
-    * `KNOWLEDGE_ROWS[0]` 同样保留，本函数**跳过 index == 1**（= 那一跨页）。
+    * 旧口径原文（**已被 2026-10-08 取代，留档不删**）：`if index == 1: continue  # §八：这一跨页
+      （汇总页）已删除，见 docstring`，以及 `spotlight_page(["bettergold:%s_bricks" % 族], …)`
+      —— 那一版每个建材页只挂**一块砖**、没有标题。
+    * 两个标题常量（`KNOWLEDGE_1_INGOT_TITLE` / `KNOWLEDGE_1_TEMPLATE_TITLE`）与被 §八 删掉的那版
+      一字不差地复用 ⇒ 本次是**真正的复原**（不是新写一个页面）。
+    * 语言键 `knowledge_1_summary` 一直在两份语言文件里（原文不删）；本节新的 8 把
+      `knowledge_<行>_<侧>_title` 由一次性脚本从冻结快照追加（见 `knowledge_title_key`）。
     """
     pages = []
     for index, (left_items, right_items) in enumerate(KNOWLEDGE_ROWS, start=1):
         if index == 1:
-            continue        # §八：这一跨页（汇总页）已删除，见 docstring
-        pages.append(spotlight_page(left_items, "%s.page.knowledge_%d_left" % (LANG, index)))
-        pages.append(spotlight_page(right_items, "%s.page.knowledge_%d_right" % (LANG, index)))
+            # ★ 复原那一跨页（§八 删除前的形状）：
+            #   正文只在左页（右页 spotlight **不带 text**）—— 两页合起来仍只有那一句话。
+            pages.append(spotlight_page(left_items, "%s.page.knowledge_1_summary" % LANG,
+                                        KNOWLEDGE_1_INGOT_TITLE))
+            pages.append(spotlight_page(right_items, None, KNOWLEDGE_1_TEMPLATE_TITLE))
+            continue
+        # 第 2~5 页：左 / 右 各是一个族的建材页（bg-fix4 §四：字幕 = 语言键、展示栏 = 11 项）
+        pages.append(spotlight_page(left_items, "%s.page.knowledge_%d_left" % (LANG, index),
+                                    knowledge_title_key(index, "left")))
+        pages.append(spotlight_page(right_items, "%s.page.knowledge_%d_right" % (LANG, index),
+                                    knowledge_title_key(index, "right")))
     return entry("golden_knowledge", "alchemy_start", "sturdygold_ingot", 4, pages)
 
 
@@ -941,7 +996,8 @@ def main():
     )
     print(
         "  §6 chapters (bg-book append round): %d entries / %d pages "
-        "(aux=%d core=%d knowledge=%d; 1 row = 1 spread = 2 pages; knowledge 第1页 已被 §八 删除)"
+        "(aux=%d core=%d knowledge=%d; 1 row = 1 spread = 2 pages; "
+        "knowledge 第1页 §八 曾删除、bg-fix4 §三 已复原；建材页展示栏 = 11 项轮换)"
         % (len(CHAPTER_ENTRIES), chapter_pages,
            len(entry_auxiliary_materials()["pages"]),
            len(entry_core_materials()["pages"]),

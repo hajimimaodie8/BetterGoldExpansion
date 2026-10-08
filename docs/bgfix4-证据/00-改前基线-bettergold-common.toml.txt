@@ -1,0 +1,124 @@
+#Whether to log the dirt block on common setup
+logDirtBlock = true
+#A magic number
+# Default: 42
+# Range: > 0
+magicNumber = 42
+#What you want the introduction message to be for the magic number
+magicNumberIntroduction = "The magic number is... "
+#A list of items to log on common setup.
+items = ["minecraft:iron_ingot"]
+#万坚金工具攻击爆金掉落过滤模式。
+#whitelist: 只掉落列表中的物品（未列出的不落）
+#blacklist: 掉落列表中以外的物品（列出的不落）
+#默认: blacklist（空列表 = 全部掉落）
+goldLootMode = "blacklist"
+#爆金掉落过滤的物品列表（注册名）。
+#黑名单模式：这些物品不会掉落；白名单模式：只有这些物品会掉落。
+#可填 minecraft: 或 bettergold: 开头的任意金系物品注册名。
+goldLootItems = []
+#巫毒（voodoo）窗口内伤害的「提取比例」。
+#公式：提取值 += 本次实际掉血值 × 本比例（窗口内每一次受到伤害都累加）。
+#实际掉血值 = 护甲 / 抗性 / 吸收减免之后的最终值（LivingDamageEvent.Post 的 newDamage）。
+#巫毒结算自身造成的伤害不计入提取（显式排除，避免自反馈）。
+#默认 0.36 = 提取窗口内伤害总量的 36%。
+#1.5 起取代旧的 voodooStoreRatio（默认 0.8）。
+# Default: 0.36
+# Range: 0.0 ~ 100.0
+voodooExtractRatio = 0.36
+#巫毒的「每级固定伤害」（公式里加在 36% 提取值后面的那一项）。
+#公式：结算伤害 = 提取值 + 本系数 × 效果等级，效果等级 = amplifier + 1。
+#默认 1.0：1 级 +1、2 级 +2、3 级 +3 …… 即规格里的「×36% + buff 等级」。
+#注意（字面公式的必然结果）：窗口内一次伤害都没挨到时，结算仍为 等级 × 本系数 点。
+#只在效果「自然到期」时结算一次；提前移除 / 目标死亡 / 实体离开世界 / 读档 都不结算，并清空提取值。
+# Default: 1.0
+# Range: 0.0 ~ 100.0
+voodooFlatPerLevel = 1.0
+#结雷金落雷的音效机制。
+#client_payload（默认）: 服务端发自定义 payload，客户端用原版同一条 playLocalSound 播放（不依赖客户端雷实体）
+#vanilla_local: 服务端只生成雷实体，音效由客户端雷实体自己播放（与原版打雷完全一致）
+#server_broadcast: 额外再由服务端 ServerLevel.playSound 广播一次
+thunderSoundMode = "client_payload"
+#烈燃金【武器工具】触发 Buff（高燃）的概率。
+#0 = 永不触发；1 = 必定触发（默认）。
+# Default: 1.0
+# Range: 0.0 ~ 1.0
+flamegoldWeaponBuffChance = 1.0
+#烈燃金【盔甲盾牌】反制 Buff（高燃）的【每件】概率。
+#有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。
+#0 = 永不触发。
+# Default: 0.25
+# Range: 0.0 ~ 1.0
+flamegoldArmorBuffChance = 0.25
+#巫毒金【武器工具】触发 Buff（巫毒）的概率。
+#0 = 永不触发；1 = 必定触发（默认）。
+# Default: 1.0
+# Range: 0.0 ~ 1.0
+voodoogoldWeaponBuffChance = 1.0
+#巫毒金【盔甲盾牌】反制 Buff（巫毒）的【每件】概率。
+#有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。
+# Default: 0.25
+# Range: 0.0 ~ 1.0
+voodoogoldArmorBuffChance = 0.25
+#结雷金【武器工具】触发能力（落雷 + 3×3 伤害 + 颤栗）的概率。
+#0 = 永不触发；1 = 必定触发（默认）。
+# Default: 1.0
+# Range: 0.0 ~ 1.0
+thundergoldWeaponBuffChance = 1.0
+#结雷金【盔甲盾牌】反制 Buff（颤栗）的【每件】概率。
+#有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。
+# Default: 0.25
+# Range: 0.0 ~ 1.0
+thundergoldArmorBuffChance = 0.25
+#靛海金【武器工具】触发 Buff（沉淀）的概率。
+#0 = 永不触发；1 = 必定触发（默认）。
+# Default: 1.0
+# Range: 0.0 ~ 1.0
+indigoseagoldWeaponBuffChance = 1.0
+#靛海金【盔甲盾牌】反制 Buff（沉淀）的【每件】概率。
+#有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。
+# Default: 0.25
+# Range: 0.0 ~ 1.0
+indigoseagoldArmorBuffChance = 0.25
+#幻惑金【武器工具】触发 Buff（安抚）的概率。
+#默认 0.16 = 16%。0 = 永不触发。
+# Default: 0.16
+# Range: 0.0 ~ 1.0
+illusiongoldWeaponBuffChance = 0.16
+#幻惑金【盔甲盾牌】反制 Buff（安抚）的【每件】概率。
+#有效概率 = min(1, 穿戴件数 × 本条)；默认 0.04 ⇒ 1 件 4%、4 件 16%。
+# Default: 0.04
+# Range: 0.0 ~ 1.0
+illusiongoldArmorBuffChance = 0.04
+#树棘金【武器工具】触发 Buff（寄生）的概率。
+#0 = 永不触发；1 = 必定触发（默认）。
+# Default: 1.0
+# Range: 0.0 ~ 1.0
+thornsgoldWeaponBuffChance = 1.0
+#树棘金【盔甲盾牌】反制 Buff（寄生）的【每件】概率。
+#有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。
+# Default: 0.25
+# Range: 0.0 ~ 1.0
+thornsgoldArmorBuffChance = 0.25
+#幽咆金【武器工具】触发 Buff（音咆，内部 id echo_roar）的概率。
+#0 = 永不触发；1 = 必定触发（默认）。
+# Default: 1.0
+# Range: 0.0 ~ 1.0
+echogoldWeaponBuffChance = 1.0
+#幽咆金【盔甲盾牌】反制 Buff（音咆）的【每件】概率。
+#有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。
+# Default: 0.25
+# Range: 0.0 ~ 1.0
+echogoldArmorBuffChance = 0.25
+#万坚金【武器工具】触发能力（爆金：命中必定掉落一件金系物品）的概率。
+#0 = 永不触发；1 = 必定触发（默认，与 1.6.0 一致）。
+#注：「礼品金票 6%」是另一条能力，不在本键范围内。
+# Default: 1.0
+# Range: 0.0 ~ 1.0
+sturdygoldWeaponAbilityChance = 1.0
+#万坚金【盔甲盾牌】触发能力（每 16 秒 1 份伤害吸收）的间隔乘法系数。
+#间隔 = 基础(320 tick) × 本条；1.0 = 不变（默认），2.0 = 间隔翻倍，0.5 = 间隔减半。
+#0 会被钳到最小 1 tick（每 tick 一份，慎用）。每次给的量与吸收上限不受本键影响。
+# Default: 1.0
+# Range: 0.0 ~ 100.0
+sturdygoldArmorAbilityIntervalMultiplier = 1.0

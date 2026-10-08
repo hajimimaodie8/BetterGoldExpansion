@@ -142,6 +142,21 @@ FD_STURDYGOLD_FOODS = [
 ANTIQUE_TOOLS = [f"{NS}:antique_{s}" for s in ["sword", "axe", "pickaxe", "shovel", "hoe"]]
 NETHERITE_ANTIQUE_TOOLS = [f"{NS}:netherite_antique_{s}" for s in
                            ["sword", "axe", "pickaxe", "shovel", "hoe"]]
+
+# ---------------------------------------------------------------- bg-fix4 §一（2026-10-08）
+# 作者原话（逐字）：「**古董屠刀和幽冥断骸刀无法触发上古藏品和皇骸永存的进度**」。
+# 根因（本文件复核确认）：两条成就的 `criteria.have.conditions.items[0].items` 各只有上面那
+#   **5 件**——`antique_knife` / `netherite_antique_knife` 根本不在白名单里 ⇒ 拿到刀也不匹配。
+# ★ 与 `bg-fix3` §二 是**同族问题、同一条硬约束**：两把刀都在 `fd/FdItems.java:192/196` 注册
+#   ⇒ **只在装了乐事时才存在** ⇒ 把裸 id 写进 `items` 会让这两条成就在"没装乐事"的环境里
+#   **整份 JSON 解析失败并消失**（`ItemPredicate.items` 是 `homogeneousList`，解析期查注册表）。
+# ⇒ 落法（照 `bg-fix3` §二 已 A 级验证过的安全范式）：
+#   ① `generate_metal_tags.py` 生成两张**无条件存在**的标签（各 1 条 `required:false` 条目）；
+#   ② 两条成就各**再加一条**判据 `have_knife`，`items` 指向那张标签（`"#ns:tag"` **单个字符串**）；
+#   ③ `requirements` 变成 `[["have", "have_knife"]]`（**组内 OR** ⇒ "5 件古董工具 **或** 屠刀"）。
+#   ⚠ 不许把 `#tag` 混进 `items` 的**列表**里（`ensureHomogenous` 只接受同一种 Holder 形态）。
+ANTIQUE_KNIFE_TAG = f"{NS}:antique_knives"
+NETHERITE_ANTIQUE_KNIFE_TAG = f"{NS}:netherite_antique_knives"
 # 4 个礼品盒 + 1.6 的炼金珍材盒（都是 GiftBoxItem，都由易金商人卖）
 GIFT_BOXES = [f"{NS}:treasure_gift_box", f"{NS}:curio_box", f"{NS}:idol_gift_box",
               f"{NS}:gourmet_box", f"{NS}:alchemy_materials_box"]
@@ -393,12 +408,19 @@ def build() -> list[dict]:
     add("merchant/gift_box", "gift_box", "这件商品很适合你哦～",
         "从易金商人那获得任意一种礼品盒", f"{NS}:treasure_gift_box", "merchant/gold_ticket",
         {"traded": c_trade(GIFT_BOXES)}, [["traded"]])
+    # ⛔ bg-fix4 §一（2026-10-08）：**两把刀也要算数** —— 各加一条 `have_knife` 判据
+    #   （items 指向 `#bettergold:antique_knives` / `#bettergold:netherite_antique_knives`），
+    #   与 `have` 放进**同一个 requirement 组**（组内 OR）。
+    #   ⚠ 旧口径（原文保留，未删）：本轮之前这里是 `{"have": c_inv([ANTIQUE_TOOLS])}` + `[["have"]]`，
+    #     古董屠刀 / 幽冥断骸刀拿到也不解锁（作者本轮复报的缺陷）。
     add("merchant/antique_tool", "antique_tool", "上古藏品", "获得任意一种古董武器工具",
         f"{NS}:antique_sword", "merchant/gift_box",
-        {"have": c_inv([ANTIQUE_TOOLS])}, [["have"]])
+        {"have": c_inv([ANTIQUE_TOOLS]),
+         "have_knife": c_inv_tag(ANTIQUE_KNIFE_TAG)}, [["have", "have_knife"]])
     add("merchant/netherite_antique_tool", "netherite_antique_tool", "皇骸永存",
         "好好保养这份藏品吧", f"{NS}:netherite_antique_sword", "merchant/antique_tool",
-        {"have": c_inv([NETHERITE_ANTIQUE_TOOLS])}, [["have"]])
+        {"have": c_inv([NETHERITE_ANTIQUE_TOOLS]),
+         "have_knife": c_inv_tag(NETHERITE_ANTIQUE_KNIFE_TAG)}, [["have", "have_knife"]])
 
     # ---- §3.5 农业与食物（9）
     farm = "agriculture/gold_infused_dirt"
@@ -766,6 +788,11 @@ def main() -> int:
             #   条目一律 `required:false` ⇒ 没装对应可选模组时不报错）。
             "knife_tags": {m: weapon_knife_tag(m) for m in METALS},
             "handbook_tag": f"{NS}:handbook",
+            # bg-fix4 §一（2026-10-08）：两条古董成就的「刀」判据读的标签（同样 `required:false`）
+            "antique_knife_tags": {
+                "antique_tool": ANTIQUE_KNIFE_TAG,
+                "netherite_antique_tool": NETHERITE_ANTIQUE_KNIFE_TAG,
+            },
         },
     }
     MANIFEST.write_bytes((json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
@@ -776,7 +803,9 @@ def main() -> int:
     print(f"带乐事条件的成就: {[a['path'] for a in A if a['fd']]}")
     print(f"challenge: {[a['path'] for a in A if a['frame'] != 'task']}")
     # bg-fix3：两条"标签判据"的自证读数（刀/手册标签各覆盖几条成就、recipe_crafted 还剩几条）
-    _all_knife_tags = [f"#{weapon_knife_tag(m)}" for m in METALS]
+    # bg-fix4 §一：+2 张古董刀标签 ⇒ 带刀判据的成就 8 → **10** 条
+    _all_knife_tags = [f"#{weapon_knife_tag(m)}" for m in METALS] \
+        + [f"#{ANTIQUE_KNIFE_TAG}", f"#{NETHERITE_ANTIQUE_KNIFE_TAG}"]
     _knife_crits = [a["path"] for a in A
                     if any(t in json.dumps(a["criteria"], ensure_ascii=False) for t in _all_knife_tags)]
     print(f"带『乐事小刀』判据的成就: {len(_knife_crits)} 条 → {_knife_crits}")

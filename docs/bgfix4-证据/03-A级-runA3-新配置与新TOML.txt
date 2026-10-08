@@ -1,0 +1,960 @@
+﻿Reusing configuration cache.
+> Task :writeServerLegacyClasspath UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :prepareServerRun UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :classes UP-TO-DATE
+
+> Task :runServer
+WARN StatusConsoleListener Advanced terminal features are not available in this environment
+[20:29:53] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserverdev, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.228, --fml.neoFormVersion, 20240808.144430, --nogui]
+[20:29:53] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: JVM identified as Microsoft OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[20:29:53] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Microsoft; OS Windows 11 arch amd64 version 10.0
+[20:29:53] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [minecraft,forgeclient,forgedatauserdev,testharness,forgeserverdev,forgeserveruserdev,forgejunitdev,forgeclientdev,forgeclientuserdev,forgeserver,forgejunituserdev,forgedatadev]
+[20:29:53] [main/DEBUG] [cp.mo.mo.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [mixin,slf4jfixer,runtime_enum_extender,accesstransformer,runtimedistcleaner]
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Discovering transformation services
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path GAMEDIR is E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path MODSDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\mods
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\config
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is E:\mc\mcmod\bettergold-template-1.21.1\run\config\fml.toml
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main;bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main from env
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{bettergold=[E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main, E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main]}]
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Found additional transformation services from discovery services: 
+[20:29:53] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserverdev
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [mixin,fml]
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loading service mixin
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loaded service mixin
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loading service fml
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML 4.0.42 loading
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML found ModLauncher version : 11.0.5+main.901c6ea8
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML found AccessTransformer version : 10.0.1+139da711
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: FML found EventBus version : null
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: Found Runtime Dist Cleaner
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loaded service fml
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Configuring option handling for services
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Received command line version data  : VersionInfo[neoForgeVersion=21.1.228, fmlVersion=4.0.42, mcVersion=1.21.1, neoFormVersion=20240808.144430]
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services initializing
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service mixin
+[20:29:53] [main/DEBUG] [mixin/]: MixinService [ModLauncher] was successfully booted in cpw.mods.cl.ModuleClassLoader@15d0c81b
+[20:29:53] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/Lenovo/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%2394!/ Service=ModLauncher Env=SERVER
+[20:29:53] [main/DEBUG] [mixin/]: Initialising Mixin Platform Manager
+[20:29:53] [main/DEBUG] [mixin/]: Adding mixin platform agents for container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20:29:53] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20:29:53] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20:29:53] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20:29:53] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service mixin
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service fml
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Setting up basic FML game directories
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path GAMEDIR is E:\mc\mcmod\bettergold-template-1.21.1\run
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path MODSDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\mods
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is E:\mc\mcmod\bettergold-template-1.21.1\run\config
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is E:\mc\mcmod\bettergold-template-1.21.1\run\config\fml.toml
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Loading configuration
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Preparing launch handler
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLLoader/CORE]: Using forgeserverdev as launch service
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service fml
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services begin scanning
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service mixin
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service mixin
+[20:29:53] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service fml
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Initiating mod scan
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main;bettergold%%E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main from env
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{bettergold=[E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main, E:\mc\mcmod\bettergold-template-1.21.1\build\resources\main]}]
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.ta.CommonDevLaunchHandler/]: Launching with NeoForge from E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 4 implementations of IModFileCandidateLocator:
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - [built-in] net.neoforged.fml.loading.moddiscovery.locators.NeoForgeDevProvider from loader-4.0.42.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.locators.ModsFolderLocator from loader-4.0.42.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.locators.MavenDirectoryLocator from loader-4.0.42.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	   -1000 - [built-in] net.neoforged.fml.loading.moddiscovery.locators.UserdevLocator from loader-4.0.42.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 2 implementations of IModFileReader:
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.readers.JarModsDotTomlModFileReader from loader-4.0.42.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	   -1000 - net.neoforged.fml.loading.moddiscovery.readers.NestedLibraryModReader from loader-4.0.42.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 1 implementations of IDependencyLocator:
+[20:29:53] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	       0 - net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator from loader-4.0.42.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {minecraft} mods - versions {1.21.1}
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {neoforge} mods - versions {21.1.228}
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\[JEI��Ʒ������] jei-1.21.1-neoforge-19.16.1.156.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file [JEI��Ʒ������] jei-1.21.1-neoforge-19.16.1.156.jar with {jei} mods - versions {19.16.1.156}
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\Patchouli-1.21.1-93-NEOFORGE.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file Patchouli-1.21.1-93-NEOFORGE.jar with {patchouli} mods - versions {1.21.1-93-NEOFORGE}
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModListHandler/CORE]: Found mod coordinates from lists: []
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {bettergold} mods - versions {1.6.0}
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {neoforge} mods - versions {21.1.228}
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\maven.modrinth\farmers-delight\1.21.1-1.3.4\27675ddfcb8cc37e6ea1ab6c15051c7949d94657\farmers-delight-1.21.1-1.3.4.jar
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file farmers-delight-1.21.1-1.3.4.jar with {farmersdelight} mods - versions {1.3.4}
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged.fancymodloader\earlydisplay\4.0.42\46555dbfff14e9e052f1f693aed14d542a74e111\earlydisplay-4.0.42.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged.fancymodloader\loader\4.0.42\76e15f98bf676fb44b36c5e776f52a55581ec43a\loader-4.0.42.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged.accesstransformers\at-modlauncher\10.0.1\5aba50202aceead086bc09fbc2751c9f05cb4890\at-modlauncher-10.0.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\accesstransformers\10.0.1\fd83b5725f76eae9115e9355fa1c456a6a441400\accesstransformers-10.0.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\bus\8.0.5\5b2d33285ab5d1554e9798ad98c40d6ea3868bd5\bus-8.0.5.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\coremods\7.0.3\9147e6f638b4272b3bd5fc8f92ad37802512c6c\coremods-7.0.3.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\cpw.mods\modlauncher\11.0.5\b8f0d49294f733fdb6173931b263553e943dc950\modlauncher-11.0.5.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\mergetool\2.0.0\52fe1949be64e3303aabaaa21e315f551db9c9f4\mergetool-2.0.0-api.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.electronwill.night-config\toml\3.8.3\90b2fd6efcb4a7d5b9810cf78f9d824994d717f2\toml-3.8.3.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.electronwill.night-config\core\3.8.3\b442a95f09e349927f5a945ecb594455870fcf4f\core-3.8.3.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\JarJarSelector\0.4.1\fb3cc7a58af22ad2880adb98af6d518128c47dae\JarJarSelector-0.4.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.neoforged\JarJarMetadata\0.4.1\f8da03683dc81694556dc3e177c5e3bb77ae6fcb\JarJarMetadata-0.4.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.maven\maven-artifact\3.8.5\4433f50c07debefaed0553bd0068f4f48d449313\maven-artifact-3.8.5.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.jodah\typetools\0.6.3\a01aaa6ddaea9ec07ec4f209487b7a46a526283a\typetools-0.6.3.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.minecrell\terminalconsoleappender\1.3.0\b562e9bb61235c9520e26282cdee71f8f802d1fc\terminalconsoleappender-1.3.0.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.fabricmc\sponge-mixin\0.15.2+mixin.0.8.7\2af2f021d8e02a0220dc27a7a72b4666d66d44ca\sponge-mixin-0.15.2+mixin.0.8.7.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.openjdk.nashorn\nashorn-core\15.4\f67f5ffaa5f5130cf6fb9b133da00c7df3b532a5\nashorn-core-15.4.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.commons\commons-lang3\3.14.0\1ed471194b02f2c6cb734a0cd6f6f107c673afae\commons-lang3-3.14.0.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.sf.jopt-simple\jopt-simple\5.0.4\4fdac2fbe92dfad86aa6e9301736f6b4342a3f5c\jopt-simple-5.0.4.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\commons-io\commons-io\2.15.1\f11560da189ab563a5c8e351941415430e9304ea\commons-io-2.15.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\logging\1.2.7\24cb95ffb0e3433fd6e844c04e68009e504ca1c0\logging-1.2.7.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-slf4j2-impl\2.22.1\d7e6693c2606cb7e7335047d7bb96dec52db5665\log4j-slf4j2-impl-2.22.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-core\2.22.1\7183a25510a02ad00cc6a95d3b3d2a7d3c5a8dc4\log4j-core-2.22.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-api\2.22.1\bea6fede6328fabafd7e68363161a7ea6605abd1\log4j-api-2.22.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.guava\guava\32.1.2-jre\5e64ec7e056456bef3a4bc4c6fdaef71e8ab6318\guava-32.1.2-jre.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.10.1\b3add478d4382b78ea20b1671390a858002feb6c\gson-2.10.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.slf4j\slf4j-api\2.0.9\7cf2726fdcfbc8610f9a71fb3ed639871f315340\slf4j-api-2.0.9.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.antlr\antlr4-runtime\4.13.1\17125bae1d965624e265ef49552f6465a2bfa307\antlr4-runtime-4.13.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\srgutils\0.4.15\ca408b131759478f164e010fae0d73997e125fb5\srgutils-0.4.15.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.codehaus.plexus\plexus-utils\3.3.0\cf43b5391de623b36fe066a21127baef82c64022\plexus-utils-3.3.0.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.jline\jline-reader\3.20.0\8f15415b022a25b473e8e16c28ae913186ffb9c4\jline-reader-3.20.0.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.machinezoo.noexception\noexception\1.7.1\b65330c98e38a1f915fa54a6e5eca496505e3f0a\noexception-1.7.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.github.oshi\oshi-core\6.4.10\b1d8ab82d11d92fd639b56d639f8f46f739dd5fa\oshi-core-6.4.10.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.guava\failureaccess\1.0.1\1dcf1de382a0bf95a3d8b0849546c88bac1292c9\failureaccess-1.0.1.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\authlib\6.0.54\de8bc95660e1b2fe8793fd427a7a10dcec5b3ea7\authlib-6.0.54.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\brigadier\1.3.10\d15b53a14cf20fdcaa98f731af5dda654452c010\brigadier-1.3.10.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.mojang\datafixerupper\8.0.16\67d4de6d7f95d89bcf5862995fb854ebaec02a34\datafixerupper-8.0.16.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-buffer\4.1.97.Final\f8f3d8644afa5e6e1a40a3a6aeb9d9aa970ecb4f\netty-buffer-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-codec\4.1.97.Final\384ba4d75670befbedb45c4d3b497a93639c206d\netty-codec-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-common\4.1.97.Final\7cceacaf11df8dc63f23d0fb58e9d4640fc88404\netty-common-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-handler\4.1.97.Final\abb86c6906bf512bf2b797a41cd7d2e8d3cd7c36\netty-handler-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-resolver\4.1.97.Final\cec8348108dc76c47cf87c669d514be52c922144\netty-resolver-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-transport-classes-epoll\4.1.97.Final\795da37ded759e862457a82d9d92c4d39ce8ecee\netty-transport-classes-epoll-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-transport-native-unix-common\4.1.97.Final\d469d84265ab70095b01b40886cabdd433b6e664\netty-transport-native-unix-common-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\io.netty\netty-transport\4.1.97.Final\f37380d23c9bb079bc702910833b2fd532c9abd0\netty-transport-4.1.97.Final.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\it.unimi.dsi\fastutil\8.5.12\c24946d46824bd528054bface3231d2ecb7e95e8\fastutil-8.5.12.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.java.dev.jna\jna-platform\5.14.0\28934d48aed814f11e4c584da55c49fa7032b31b\jna-platform-5.14.0.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\net.java.dev.jna\jna\5.14.0\67bf3eaea4f0718cb376a181a629e5f88fa1c9dd\jna-5.14.0.jar because it was already located earlier
+[20:29:53] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.joml\joml\1.10.5\22566d58af70ad3d72308bab63b8339906deb649\joml-1.10.5.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.lz4\lz4-java\1.8.0\4b986a99445e49ea5fbf5d149c4b63f6ed6c6780\lz4-java-1.8.0.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.jline\jline-terminal\3.20.0\d0ddcc708ddf527a3454c941b7b9225cc83a15ff\jline-terminal-3.20.0.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\b421526c5f297295adef1c886e5246c39d4ac629\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.code.findbugs\jsr305\3.0.2\25ea2e8b0c338a877313bd4672d3fe056ea78f0d\jsr305-3.0.2.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\org.checkerframework\checker-qual\3.33.0\de2b60b62da487644fc11f734e73c8b0b431238f\checker-qual-3.33.0.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.errorprone\error_prone_annotations\2.18.0\89b684257096f548fa39a7df9fdaa409d4d4df91\error_prone_annotations-2.18.0.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModDiscoverer/]: Skipping C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.j2objc\j2objc-annotations\2.8\c85270e307e7b822f1086b93689124b89768e273\j2objc-annotations-2.8.jar because it was already located earlier
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.UniqueModListBuilder/]: Found 2 mods for first modid neoforge, selecting most recent based on version data
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.UniqueModListBuilder/]: Selected file neoforge-21.1.228.jar for modid neoforge with version 21.1.228
+[20:29:54] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[20:29:54] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		bettergold 1.6.0 (bettergold)
+		Farmer's Delight 1.3.4 (farmersdelight)
+		Just Enough Items 19.16.1.156 (jei)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.228 (neoforge)
+		Patchouli 1.21.1-93-NEOFORGE (patchouli)
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {minecraft} mods - versions {1.21.1}
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar with languages [LanguageSpec[languageName=minecraft, acceptedVersions=1]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\maven.modrinth\farmers-delight\1.21.1-1.3.4\27675ddfcb8cc37e6ea1ab6c15051c7949d94657\farmers-delight-1.21.1-1.3.4.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file farmers-delight-1.21.1-1.3.4.jar with {farmersdelight} mods - versions {1.3.4}
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\maven.modrinth\farmers-delight\1.21.1-1.3.4\27675ddfcb8cc37e6ea1ab6c15051c7949d94657\farmers-delight-1.21.1-1.3.4.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[4,)]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=farmersdelight.mixins.json, requiredMods=[]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {bettergold} mods - versions {1.6.0}
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\classes\java\main with languages [LanguageSpec[languageName=javafml, acceptedVersions=[1,)]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=bettergold.mixins.json, requiredMods=[]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\Patchouli-1.21.1-93-NEOFORGE.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file Patchouli-1.21.1-93-NEOFORGE.jar with {patchouli} mods - versions {1.21.1-93-NEOFORGE}
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\run\mods\Patchouli-1.21.1-93-NEOFORGE.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[4,)]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=patchouli_xplat.mixins.json, requiredMods=[]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file neoforge-21.1.228.jar with {neoforge} mods - versions {21.1.228}
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\build\moddev\artifacts\neoforge-21.1.228.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[3,]]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=neoforge.mixins.json, requiredMods=[]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate E:\mc\mcmod\bettergold-template-1.21.1\run\mods\[JEI��Ʒ������] jei-1.21.1-neoforge-19.16.1.156.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file [JEI��Ʒ������] jei-1.21.1-neoforge-19.16.1.156.jar with {jei} mods - versions {19.16.1.156}
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file E:\mc\mcmod\bettergold-template-1.21.1\run\mods\[JEI��Ʒ������] jei-1.21.1-neoforge-19.16.1.156.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[4,)]]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file  with languages []
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service fml
+[20:29:54] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 3 implementations of IModLanguageLoader:
+[20:29:54] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.fml.javafmlmod.FMLJavaModLanguageProvider from loader-4.0.42.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.fml.lowcodemod.LowCodeModLanguageProvider from loader-4.0.42.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.fml.mclanguageprovider.MinecraftModLanguageProvider from loader-4.0.42.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.LanguageProviderLoader/CORE]: Found language provider javafml, version 4.0.42
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.LanguageProviderLoader/CORE]: Found language provider lowcodefml, version 4.0.42
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.LanguageProviderLoader/CORE]: Found language provider minecraft, version 4.0.42
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.ModSorter/]: Configured system mods: [minecraft, neoforge]
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.ModSorter/]: Found system mod: minecraft
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.ModSorter/]: Found system mod: neoforge
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.ModSorter/LOADING]: Found 11 mod requirements (8 mandatory, 3 optional)
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.ModSorter/LOADING]: Found 0 mod requirements missing (0 mandatory, 0 optional)
+[20:29:54] [main/DEBUG] [mixin/]: Adding mixin platform agents for container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752
+[20:29:54] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752
+[20:29:54] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752
+[20:29:54] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752
+[20:29:54] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752
+[20:29:54] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752
+[20:29:54] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent accepted container net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading transformers
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service fml
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/LOADING]: Loading coremod transformers
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Not loading coremod script-engine since no mod requested it
+[20:29:54] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: Found 1 implementations of ICoreMod:
+[20:29:54] [main/DEBUG] [ne.ne.fm.ut.ServiceLoaderUtil/CORE]: 	net.neoforged.neoforge.coremods.NeoForgeCoreMod from neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net.minecraft.world.level.biome.Biome, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@24097e9b in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net.minecraft.world.level.levelgen.structure.Structure, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@24097e9b in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net.minecraft.world.level.block.FlowerPotBlock, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@24097e9b in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[20:29:54] [main/DEBUG] [ne.ne.fm.lo.FMLServiceProvider/CORE]: Adding [Target[className=net/minecraft/server/commands/SummonCommand, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces$WoodlandMansionPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/npc/CatSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/ai/village/VillageSiege, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/monster/Spider, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/monster/Zombie, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/monster/ZombieVillager, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/server/commands/RaidCommand, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/raid/Raid, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/NaturalSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/animal/frog/Tadpole, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/levelgen/structure/structures/OceanMonumentPieces$OceanMonumentPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/animal/horse/SkeletonTrapGoal, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/EntityType, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/monster/Evoker$EvokerSummonSpellGoal, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/monster/Strider, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/levelgen/structure/structures/OceanRuinPieces$OceanRuinPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/entity/npc/Villager, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/levelgen/PatrolSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/levelgen/PhantomSpawner, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2], Target[className=net/minecraft/world/level/levelgen/structure/structures/SwampHutPiece, elementName=, elementDescriptor=, targetType=cpw.mods.modlauncher.api.TargetType@74c79fa2]] transformer from core-mod net.neoforged.neoforge.coremods.NeoForgeCoreMod@24097e9b in neoforge-21.1.228.jar > net.neoforged.neoforge-coremods-21.1.228.jar
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.ReplaceFieldWithGetterAccess@2c16fadb to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/biome/Biome;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.ReplaceFieldWithGetterAccess@51ec2df1 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/structure/Structure;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.ReplaceFieldWithGetterAccess@f8f56b9 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/block/FlowerPotBlock;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/server/commands/SummonCommand;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces$WoodlandMansionPiece;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/npc/CatSpawner;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/ai/village/VillageSiege;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/monster/Spider;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/monster/Zombie;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/monster/ZombieVillager;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/server/commands/RaidCommand;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/raid/Raid;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/NaturalSpawner;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/animal/frog/Tadpole;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/structure/structures/OceanMonumentPieces$OceanMonumentPiece;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/animal/horse/SkeletonTrapGoal;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/EntityType;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/monster/Evoker$EvokerSummonSpellGoal;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/monster/Strider;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/structure/structures/OceanRuinPieces$OceanRuinPiece;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/entity/npc/Villager;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/PatrolSpawner;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/PhantomSpawner;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformStore/MODLAUNCHER]: Adding transformer net.neoforged.neoforge.coremods.MethodRedirector@15fa55a6 to Target : cpw.mods.modlauncher.api.TargetType@74c79fa2 {Lnet/minecraft/world/level/levelgen/structure/structures/SwampHutPiece;} {} {V}
+[20:29:54] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service fml
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752]
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[FMLMixinPlatformAgent:null]
+[20:29:55] [main/DEBUG] [mixin/]: Compatibility level JAVA_21 specified by farmersdelight.mixins.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+[20:29:55] [main/INFO] [mixin/]: Compatibility level set to JAVA_21
+[20:29:55] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[20:29:55] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(mixin_synthetic)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(mixin_synthetic)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(mixin_synthetic)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(mixin_synthetic)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(mixin_synthetic)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(mixin_synthetic)
+[20:29:55] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(mixin_synthetic)
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixin_synthetic)]
+[20:29:55] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(farmersdelight)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(farmersdelight)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(farmersdelight)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(farmersdelight)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(farmersdelight)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(farmersdelight)
+[20:29:55] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(farmersdelight)
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(farmersdelight)]
+[20:29:55] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(minecraft)
+[20:29:55] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(minecraft)
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[20:29:55] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(patchouli)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(patchouli)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(patchouli)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(patchouli)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(patchouli)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(patchouli)
+[20:29:55] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(patchouli)
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(patchouli)]
+[20:29:55] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(bettergold)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(bettergold)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(bettergold)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(bettergold)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(bettergold)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(bettergold)
+[20:29:55] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(bettergold)
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(bettergold)]
+[20:29:55] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(jei)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(jei)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(jei)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(jei)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(jei)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(jei)
+[20:29:55] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(jei)
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(jei)]
+[20:29:55] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixinextras.neoforge)]
+[20:29:55] [main/DEBUG] [mixin/]: Registering mixin config: mixinextras.init.mixins.json source=SecureJarResource(mixinextras.neoforge)
+[20:29:55] [main/DEBUG] [mixin/]: inject() running with 9 agents
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:net.neoforged.fml.loading.mixin.FMLMixinContainerHandle@1bbae752]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[FMLMixinPlatformAgent:null]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixin_synthetic)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(farmersdelight)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(patchouli)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(bettergold)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(jei)]
+[20:29:55] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(mixinextras.neoforge)]
+[20:29:55] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserverdev' with arguments [--gameDir, ., --nogui]
+[20:29:55] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[20:29:55] [main/DEBUG] [mixin/]: Selecting config farmersdelight.mixins.json
+[20:29:55] [main/DEBUG] [mixin/]: Selecting config patchouli_xplat.mixins.json
+[20:29:55] [main/WARN] [mixin/]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+[20:29:55] [main/DEBUG] [mixin/]: Selecting config bettergold.mixins.json
+[20:29:55] [main/DEBUG] [mixin/]: Selecting config neoforge.mixins.json
+[20:29:55] [main/DEBUG] [mixin/]: Selecting config mixinextras.init.mixins.json
+[20:29:55] [main/DEBUG] [MixinExtras|Service/]: com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3) is taking over from null
+[20:29:55] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
+[20:29:55] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
+[20:29:55] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
+[20:29:55] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
+[20:29:55] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
+[20:29:55] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
+[20:29:55] [main/DEBUG] [mixin/]: Preparing farmersdelight.mixins.json (14)
+[20:29:55] [main/DEBUG] [mixin/]: Preparing patchouli_xplat.mixins.json (10)
+[20:29:55] [main/DEBUG] [mixin/]: Preparing bettergold.mixins.json (2)
+[20:29:55] [main/DEBUG] [mixin/]: Preparing neoforge.mixins.json (2)
+[20:29:55] [main/DEBUG] [mixin/]: Preparing mixinextras.init.mixins.json (0)
+[20:29:55] [main/DEBUG] [mixin/]: Prepared 17 mixins in 0.296 sec (17.4ms avg) (0ms load, 0ms transform, 0ms plugin)
+[20:29:55] [main/DEBUG] [io.ne.ut.in.lo.InternalLoggerFactory/]: Using SLF4J as the default logging framework
+[20:29:55] [main/DEBUG] [io.ne.ut.ResourceLeakDetector/]: -Dio.netty.leakDetection.level: simple
+[20:29:55] [main/DEBUG] [io.ne.ut.ResourceLeakDetector/]: -Dio.netty.leakDetection.targetRecords: 4
+[20:29:56] [main/DEBUG] [os.ut.FileUtil/]: No oshi.properties file found from ClassLoader cpw.mods.modlauncher.TransformingClassLoader@5bcde458
+[20:29:56] [main/DEBUG] [os.ut.FileUtil/]: No oshi.architecture.properties file found from ClassLoader cpw.mods.modlauncher.TransformingClassLoader@5bcde458
+[20:29:57] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[20:29:57] [main/DEBUG] [mixin/]: Registering new injector for @SugarWrapper with com.llamalad7.mixinextras.sugar.impl.SugarWrapperInjectionInfo
+[20:29:57] [main/DEBUG] [mixin/]: Registering new injector for @FactoryRedirectWrapper with com.llamalad7.mixinextras.wrapper.factory.FactoryRedirectWrapperInjectionInfo
+[20:29:57] [main/DEBUG] [mixin/]: Registering new injector for @ExpressionInjectorWrapper with com.llamalad7.mixinextras.expression.impl.wrapper.ExpressionInjectorWrapperInjectionInfo
+[20:29:57] [main/DEBUG] [mixin/]: Mixing MappedRegistryAccessor from neoforge.mixins.json into net.minecraft.core.MappedRegistry
+[20:29:57] [main/DEBUG] [mixin/]: Mixing NourishmentAlwaysEatMixin from farmersdelight.mixins.json into net.minecraft.world.entity.player.Player
+[20:29:57] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:NourishmentAlwaysEatMixin from mod farmersdelight->@Inject::alwaysEatUnderNourishmentEffect(ZLorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[20:29:57] [main/DEBUG] [mixin/]: Mixing CuttingBoardDispenserMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.DispenserBlock
+[20:29:58] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:CuttingBoardDispenserMixin from mod farmersdelight->@Inject::onCuttingBoardDispenseFromInject(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;Lnet/minecraft/world/level/block/entity/DispenserBlockEntity;Lnet/minecraft/core/dispenser/BlockSource;ILnet/minecraft/world/item/ItemStack;)V does use it's CallbackInfo
+[20:29:58] [main/DEBUG] [mixin/]: Mixing KeepRichSoilUntrampledMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FarmBlock
+[20:29:58] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:KeepRichSoilUntrampledMixin from mod farmersdelight->@Inject::turnToDirt(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V does use it's CallbackInfo
+[20:29:58] [main/DEBUG] [mixin/]: Mixing RopeFenceConnectionMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.FenceBlock
+[20:29:58] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:RopeFenceConnectionMixin from mod farmersdelight->@Inject::denyConnectionToRopeFenceGate(Lnet/minecraft/world/level/block/state/BlockState;ZLnet/minecraft/core/Direction;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[20:29:58] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:RopeFenceConnectionMixin from mod farmersdelight->@Inject::denyConnectionToRopeFence(Lnet/minecraft/world/level/block/state/BlockState;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[20:29:58] [main/DEBUG] [mixin/]: Mixing CampfireBaleMixin from farmersdelight.mixins.json into net.minecraft.world.level.block.CampfireBlock
+[20:29:58] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:CampfireBaleMixin from mod farmersdelight->@Inject::isFDSmokeSource(Lnet/minecraft/world/level/block/state/BlockState;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[20:29:58] [main/DEBUG] [mixin/]: Mixing KeepRichSoilTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer
+[20:29:58] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$cancelSetDirtIfRichSoil$0(Lnet/minecraft/world/level/block/state/BlockState;)Z to mdb5a40d$farmersdelight$lambda$cancelSetDirtIfRichSoil$0$0 in farmersdelight.mixins.json:KeepRichSoilTreeMixin from mod farmersdelight
+[20:29:58] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:KeepRichSoilTreeMixin from mod farmersdelight->@Inject::cancelSetDirtIfRichSoil(Lnet/minecraft/world/level/LevelSimulatedReader;Ljava/util/function/BiConsumer;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/levelgen/feature/configurations/TreeConfiguration;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V does use it's CallbackInfo
+[20:29:58] [main/DEBUG] [mixin/]: Mixing BlockEntityTypeAccessor from neoforge.mixins.json into net.minecraft.world.level.block.entity.BlockEntityType
+[20:30:00] [main/DEBUG] [mixin/]: Mixing PlacePumpkinPieMixin from farmersdelight.mixins.json into net.minecraft.world.item.Item
+[20:30:00] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:PlacePumpkinPieMixin from mod farmersdelight->@Inject::usePumpkinPie(Lnet/minecraft/world/item/context/UseOnContext;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[20:30:00] [main/DEBUG] [mixin/]: Mixing CrossbowChargeDurationMixin from bettergold.mixins.json into net.minecraft.world.item.CrossbowItem
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: -Dio.netty.noUnsafe: false
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: Java version: 21
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: sun.misc.Unsafe.theUnsafe: available
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: sun.misc.Unsafe.copyMemory: available
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: sun.misc.Unsafe.storeFence: available
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: java.nio.Buffer.address: available
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: direct buffer constructor: unavailable: Reflective setAccessible(true) disabled
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: java.nio.Bits.unaligned: available, true
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent0/]: java.nio.DirectByteBuffer.<init>(long, {int,long}): unavailable
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: sun.misc.Unsafe: available
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: maxDirectMemory: 8438939648 bytes (maybe)
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.tmpdir: C:\Users\Lenovo\AppData\Local\Temp (java.io.tmpdir)
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.bitMode: 64 (sun.arch.data.model)
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: Platform: Windows
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.maxDirectMemory: -1 bytes
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.uninitializedArrayAllocationThreshold: -1
+[20:30:00] [main/DEBUG] [io.ne.ut.in.CleanerJava9/]: java.nio.ByteBuffer.cleaner(): available
+[20:30:00] [main/DEBUG] [io.ne.ut.in.PlatformDependent/]: -Dio.netty.noPreferDirect: false
+[20:30:01] [main/DEBUG] [mixin/]: Mixing datafix.ItemStackComponentizationFixMixin from farmersdelight.mixins.json into net.minecraft.util.datafix.fixes.ItemStackComponentizationFix
+[20:30:01] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$fixCustomStacks$2(Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;)Lcom/mojang/serialization/Dynamic; to mdb5a40d$farmersdelight$lambda$fixCustomStacks$2$0 in farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight
+[20:30:01] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$fixCustomStacks$1(Lcom/mojang/serialization/Dynamic;)Lcom/mojang/serialization/Dynamic; to mdb5a40d$farmersdelight$lambda$fixCustomStacks$1$1 in farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight
+[20:30:01] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$fixCustomStacks$0(Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;)V to mdb5a40d$farmersdelight$lambda$fixCustomStacks$0$2 in farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight
+[20:30:01] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:datafix.ItemStackComponentizationFixMixin from mod farmersdelight->@Inject::fixCustomStacks(Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V doesn't use it's CallbackInfo
+[20:30:01] [main/DEBUG] [mixin/]: Mixing datafix.V1460Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V1460
+[20:30:01] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$farmersdelight$registerHandlerInventory$1(Lcom/mojang/datafixers/schemas/Schema;Ljava/lang/String;)Lcom/mojang/datafixers/types/templates/TypeTemplate; to mdb5a40d$farmersdelight$lambda$farmersdelight$registerHandlerInventory$1$0 in farmersdelight.mixins.json:datafix.V1460Mixin from mod farmersdelight
+[20:30:01] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$registerFarmersDelightBlockEntities$0(Lcom/mojang/datafixers/schemas/Schema;Ljava/lang/String;)Lcom/mojang/datafixers/types/templates/TypeTemplate; to mdb5a40d$farmersdelight$lambda$registerFarmersDelightBlockEntities$0$1 in farmersdelight.mixins.json:datafix.V1460Mixin from mod farmersdelight
+[20:30:01] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:datafix.V1460Mixin from mod farmersdelight->@Inject::registerFarmersDelightBlockEntities(Lcom/mojang/datafixers/schemas/Schema;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[20:30:01] [main/DEBUG] [mixin/]: Mixing datafix.V3818_3Mixin from farmersdelight.mixins.json into net.minecraft.util.datafix.schemas.V3818_3
+[20:30:02] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTransformRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTransformRecipe
+[20:30:02] [main/DEBUG] [mixin/]: Mixing AccessorSmithingTrimRecipe from patchouli_xplat.mixins.json into net.minecraft.world.item.crafting.SmithingTrimRecipe
+[20:30:02] [main/DEBUG] [mixin/]: Mixing VillagersTargetRichSoilMixin from farmersdelight.mixins.json into net.minecraft.world.entity.ai.sensing.SecondaryPoiSensor
+[20:30:03] [main/DEBUG] [mixin/]: Mixing KeepRichSoilGiantTreeMixin from farmersdelight.mixins.json into net.minecraft.world.level.levelgen.feature.Feature
+[20:30:03] [main/DEBUG] [mixin/]: Renaming synthetic method lambda$keepRichSoil$0(Lnet/minecraft/world/level/block/state/BlockState;)Z to mdb5a40d$farmersdelight$lambda$keepRichSoil$0$0 in farmersdelight.mixins.json:KeepRichSoilGiantTreeMixin from mod farmersdelight
+[20:30:03] [main/DEBUG] [mixin/]: farmersdelight.mixins.json:KeepRichSoilGiantTreeMixin from mod farmersdelight->@Inject::keepRichSoil(Lnet/minecraft/world/level/LevelSimulatedReader;Lnet/minecraft/core/BlockPos;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+[20:30:04] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[20:30:04] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[20:30:04] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[20:30:04] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[20:30:04] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[20:30:04] [main/DEBUG] [ne.ne.fm.ModWorkManager/LOADING]: Using 24 threads for parallel mod-loading
+[20:30:04] [main/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [vectorwing.farmersdelight.FarmersDelight]
+[20:30:04] [main/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [vazkii.patchouli.neoforge.common.NeoForgeModInitializer]
+[20:30:04] [main/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [com.hjmmd_8.bettergold.bettergold]
+[20:30:04] [main/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [net.neoforged.neoforge.common.NeoForgeMod]
+[20:30:04] [main/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [mezz.jei.neoforge.JustEnoughItems]
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.ne.in.ve.ne.NeoForgeVersion/CORE]: Found NeoForge version 21.1.228
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.ne.in.ve.ne.NeoForgeVersion/CORE]: Found FML version 4.0.42
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file farmersdelight-common.toml for farmersdelight tracking
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file jei-server.toml for jei tracking
+[20:30:04] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.228, for MC 1.21.1
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file patchouli-client.toml for patchouli tracking
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file farmersdelight-client.toml for farmersdelight tracking
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for patchouli
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vazkii.patchouli.neoforge.common.NeoForgeModInitializer for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for jei
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvazkii/patchouli/neoforge/common/NeoForgeModInitializer; to the mod event bus of mod patchouli
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file neoforge-client.toml for neoforge tracking
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file neoforge-server.toml for neoforge tracking
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file neoforge-common.toml for neoforge tracking
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for neoforge
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.network.filters.GenericPacketSplitter for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkAccessible: true
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkBounds: true
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.ut.ResourceLeakDetectorFactory/]: Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@392155e1
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numHeapArenas: 48
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numDirectArenas: 48
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.pageSize: 8192
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxOrder: 9
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.chunkSize: 4194304
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.smallCacheSize: 256
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.normalCacheSize: 64
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimInterval: 8192
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimIntervalMillis: 0
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.useCacheForAllThreads: false
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.allocator.type: pooled
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.threadLocalDirectBufferSize: 0
+[20:30:04] [modloading-worker-0/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.maxThreadLocalCharBufferSize: 16384
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.data.DataGenerators for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/data/DataGenerators; to the mod event bus of mod farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.network.ModNetworking for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/network/ModNetworking; to the mod event bus of mod farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.SkilletItem$SkilletEvents for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/SkilletItem$SkilletEvents; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.KnifeItem$KnifeEvents for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/KnifeItem$KnifeEvents; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.HorseFeedItem$HorseFeedEvent for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/HorseFeedItem$HorseFeedEvent; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/network/filters/GenericPacketSplitter; to the mod event bus of mod neoforge
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment$BackstabbingEvent for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/enchantment/BackstabbingEnchantment$BackstabbingEvent; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.item.DogFoodItem$DogFoodEvent for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/item/DogFoodItem$DogFoodEvent; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.network.NetworkInitialization for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.event.VillagerEvents for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/network/NetworkInitialization; to the mod event bus of mod neoforge
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.network.ConfigurationInitialization for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/event/VillagerEvents; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.event.CommonModBusEvents for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/event/CommonModBusEvents; to the mod event bus of mod farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.event.CommonEvents for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/event/CommonEvents; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.CuttingBoardBlockEntity for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/network/ConfigurationInitialization; to the mod event bus of mod neoforge
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.common.MonsterRoomHooks for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/common/MonsterRoomHooks; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/CuttingBoardBlockEntity; to the mod event bus of mod farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.common.DeferredSpawnEggItem$CommonHandler for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/common/DeferredSpawnEggItem$CommonHandler; to the mod event bus of mod neoforge
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.attachment.AttachmentSync for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.CookingPotBlockEntity for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/attachment/AttachmentSync; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class net.neoforged.neoforge.attachment.AttachmentInternals for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lnet/neoforged/neoforge/attachment/AttachmentInternals; to the game event bus
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/CookingPotBlockEntity; to the mod event bus of mod farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.CabinetBlockEntity for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/CabinetBlockEntity; to the mod event bus of mod farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.entity.BasketBlockEntity for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/entity/BasketBlockEntity; to the mod event bus of mod farmersdelight
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class vectorwing.farmersdelight.common.block.CuttingBoardBlock$ToolCarvingEvent for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lvectorwing/farmersdelight/common/block/CuttingBoardBlock$ToolCarvingEvent; to the game event bus
+[20:30:04] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[20:30:04] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: ��ע������� 8 ��: [flamegold(��ȼ��), voodoogold(�׶���), thundergold(���׽�), indigoseagold(�庣��), illusiongold(�û��), thornsgold(������), echogold(���ؽ�), sturdygold(����)]
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Config file bettergold-common.toml for bettergold tracking
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for bettergold
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.probe.bgfix4.BgFix4Probe for @SubscribeEvent-annotated methods
+[20:30:04] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/probe/bgfix4/BgFix4Probe; to the game event bus
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loading configs type COMMON
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\farmersdelight-common.toml
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\farmersdelight-common.toml for changes
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.ne.co.NeoForgeConfig/FORGEMOD]: Loaded NeoForge config file neoforge-common.toml
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-common.toml
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-common.toml for changes
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.ne.co.ModConfigSpec/CORE]: List on key items is deemed to need correction, as it is null, not a list, or the wrong size.
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.ne.co.ModConfigSpec/CORE]: List on key goldLootItems is deemed to need correction, as it is null, not a list, or the wrong size.
+[20:30:05] [modloading-sync-worker/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[20:30:05] [modloading-sync-worker/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml for changes
+[20:30:05] [modloading-worker-0/DEBUG] [patchouli/]: Instantiating xplat impl: vazkii.patchouli.neoforge.xplat.NeoForgeXplatImpl
+[20:30:05] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: HELLO FROM COMMON SETUP
+[20:30:05] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: DIRT BLOCK >> minecraft:dirt
+[20:30:05] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: The magic number is... 42
+[20:30:05] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: ITEM >> minecraft:iron_ingot
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.DeferredWorkQueue/LOADING]: Dispatching synchronous work for work queue Common setup: 3 jobs
+[20:30:05] [modloading-sync-worker/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[20:30:05] [modloading-sync-worker/INFO] [co.hj.be.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[20:30:05] [modloading-sync-worker/DEBUG] [ne.ne.fm.DeferredWorkQueue/LOADING]: Synchronous work queue completed in 4.095 ms
+[20:30:05] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[20:30:05] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23127!/assets/.mcassetsroot' uses unexpected schema
+[20:30:05] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23127!/data/.mcassetsroot' uses unexpected schema
+[20:30:07] [main/INFO] [minecraft/RecipeManager]: Loaded 1987 recipes
+[20:30:07] [main/INFO] [minecraft/AdvancementTree]: Loaded 1668 advancements
+[20:30:07] [main/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bgfix4probe
+[20:30:07] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.21.1
+[20:30:07] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[20:30:07] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[20:30:07] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[20:30:07] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
+[20:30:07] [Server thread/DEBUG] [ne.ne.ne.ne.DualStackUtils/]: Detected IPv6 address: "0:0:0:0:0:0:0:0"
+[20:30:07] [Server thread/DEBUG] [io.ne.ch.MultithreadEventLoopGroup/]: -Dio.netty.eventLoopThreads: 48
+[20:30:07] [Server thread/DEBUG] [io.ne.ut.co.GlobalEventExecutor/]: -Dio.netty.globalEventExecutor.quietPeriodSeconds: 1
+[20:30:07] [Server thread/DEBUG] [io.ne.ch.ni.NioEventLoop/]: -Dio.netty.noKeySetOptimization: false
+[20:30:07] [Server thread/DEBUG] [io.ne.ch.ni.NioEventLoop/]: -Dio.netty.selectorAutoRebuildThreshold: 512
+[20:30:07] [Server thread/DEBUG] [io.ne.ut.in.PlatformDependent/]: org.jctools-core.MpscChunkedArrayQueue: available
+[20:30:08] [Server thread/INFO] [minecraft/ServerConnectionListener]: Using default channel type
+[20:30:08] [Server thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.processId: 35876 (auto-detected)
+[20:30:08] [Server thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv4Stack: false
+[20:30:08] [Server thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv6Addresses: true
+[20:30:08] [Server thread/DEBUG] [io.ne.ut.NetUtilInitializations/]: Loopback interface: loopback_0 (Software Loopback Interface 1, 0:0:0:0:0:0:0:1)
+[20:30:08] [Server thread/DEBUG] [io.ne.ut.NetUtil/]: Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
+[20:30:08] [Server thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.machineId: a8:2b:dd:ff:fe:55:ab:73 (auto-detected)
+[20:30:08] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[20:30:08] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
+[20:30:08] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[20:30:08] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
+[20:30:08] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loading configs type SERVER
+[20:30:08] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei-server.toml
+[20:30:08] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\jei-server.toml for changes
+[20:30:08] [Server thread/DEBUG] [ne.ne.ne.co.NeoForgeConfig/FORGEMOD]: Loaded NeoForge config file neoforge-server.toml
+[20:30:08] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-server.toml
+[20:30:08] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\neoforge-server.toml for changes
+[20:30:08] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "bgfix4probe"
+[20:30:08] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[20:30:08] [worldgen/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[20:30:09] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 380 ms
+[20:30:09] [Server thread/INFO] [minecraft/DedicatedServer]: Done (0.965s)! For help, type "help"
+[20:30:09] [Server thread/DEBUG] [ne.ne.ne.ne.DualStackUtils/]: Detected IPv6 address: "0:0:0:0:0:0:0:0"
+[20:30:09] [Server thread/DEBUG] [ne.ne.ne.se.LanguageHook/]: Loaded 8 language files for en_us
+[20:30:09] [Server thread/INFO] [ne.ne.ne.ga.GameTestHooks/]: Enabled Gametest Namespaces: [bettergold]
+[20:30:09] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[20:30:09] [Server thread/INFO] [co.hj.be.bettergold/]: HELLO from server starting
+[20:30:09] [Server thread/INFO] [patchouli/]: Sending reload packet to clients
+[20:30:09] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run flag=E:\mc\mcmod\bettergold-template-1.21.1\run\bgfix4-probe.enabled
+[20:30:09] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE probe_world_guard :: PASS levelName=bgfix4probe expect=bgfix4probe authorWorld=�µ�����
+[20:30:10] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE forced_chunks :: READOUT forced=1
+[20:30:11] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE probe_player :: READOUT class=com.hjmmd_8.bettergold.probe.bgfix4.BgFix4Probe$ProbePlayer isFakePlayer=false���� ServerPlayer ���ࣻ�Ӳ��ӽ����硢�Ӳ� tick��
+[20:30:11] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE probe_connection :: READOUT dummy connection ��װ�ϣ�net.minecraft.server.network.ServerGamePacketListenerImpl��send ȫ�� no-op��
+[20:30:11] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE setup_platform :: READOUT pos=BlockPos{x=8, y=200, z=8} air5x3x5 + stone below
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_head :: READOUT path=Block.getDrops(state, level, pos, null, null, tool) -> LootTable#getRandomItems -> CommonHooks.modifyLoot -> AddGlitteringVineModifier; rolls/case=400���ھ������� 2026-10-08��= ȫ�� 8 �嶼�ܵ��**���������**��
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_sword :: PASS ��ȼ�� sword leaves=21/400 vine=16/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_axe :: PASS ��ȼ�� axe leaves=21/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_pickaxe :: PASS ��ȼ�� pickaxe leaves=23/400 vine=22/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_shovel :: PASS ��ȼ�� shovel leaves=14/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_hoe :: PASS ��ȼ�� hoe leaves=25/400 vine=28/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_knife :: PASS ��ȼ�� knife leaves=22/400 vine=16/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_mace :: PASS ��ȼ�� mace leaves=31/400 vine=24/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_bow :: PASS ��ȼ�� bow leaves=22/400 vine=31/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_crossbow :: PASS ��ȼ�� crossbow leaves=18/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_trident :: PASS ��ȼ�� trident leaves=34/400 vine=30/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_flamegold_shield :: PASS ��ȼ�� shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_sword :: PASS ���� sword leaves=33/400 vine=13/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_axe :: PASS ���� axe leaves=27/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_pickaxe :: PASS ���� pickaxe leaves=35/400 vine=40/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_shovel :: PASS ���� shovel leaves=18/400 vine=22/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_hoe :: PASS ���� hoe leaves=15/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_knife :: PASS ���� knife leaves=28/400 vine=17/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_mace :: PASS ���� mace leaves=23/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_bow :: PASS ���� bow leaves=22/400 vine=31/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_crossbow :: PASS ���� crossbow leaves=25/400 vine=22/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_trident :: PASS ���� trident leaves=27/400 vine=29/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_sturdygold_shield :: PASS ���� shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_sword :: PASS ������ sword leaves=23/400 vine=28/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_axe :: PASS ������ axe leaves=32/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_pickaxe :: PASS ������ pickaxe leaves=24/400 vine=28/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_shovel :: PASS ������ shovel leaves=24/400 vine=23/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_hoe :: PASS ������ hoe leaves=25/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_knife :: PASS ������ knife leaves=22/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_mace :: PASS ������ mace leaves=24/400 vine=20/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_bow :: PASS ������ bow leaves=33/400 vine=27/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_crossbow :: PASS ������ crossbow leaves=23/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_trident :: PASS ������ trident leaves=25/400 vine=24/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thornsgold_shield :: PASS ������ shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_sword :: PASS ���ؽ� sword leaves=25/400 vine=17/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_axe :: PASS ���ؽ� axe leaves=20/400 vine=17/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_pickaxe :: PASS ���ؽ� pickaxe leaves=28/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_shovel :: PASS ���ؽ� shovel leaves=33/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_hoe :: PASS ���ؽ� hoe leaves=31/400 vine=16/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_knife :: PASS ���ؽ� knife leaves=25/400 vine=20/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_mace :: PASS ���ؽ� mace leaves=28/400 vine=23/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_bow :: PASS ���ؽ� bow leaves=19/400 vine=22/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_crossbow :: PASS ���ؽ� crossbow leaves=27/400 vine=24/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_trident :: PASS ���ؽ� trident leaves=29/400 vine=30/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_echogold_shield :: PASS ���ؽ� shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_sword :: PASS �庣�� sword leaves=33/400 vine=13/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_axe :: PASS �庣�� axe leaves=30/400 vine=24/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_pickaxe :: PASS �庣�� pickaxe leaves=23/400 vine=22/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_shovel :: PASS �庣�� shovel leaves=21/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_hoe :: PASS �庣�� hoe leaves=26/400 vine=24/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_knife :: PASS �庣�� knife leaves=32/400 vine=30/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_mace :: PASS �庣�� mace leaves=23/400 vine=18/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_bow :: PASS �庣�� bow leaves=22/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_crossbow :: PASS �庣�� crossbow leaves=26/400 vine=17/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_trident :: PASS �庣�� trident leaves=18/400 vine=20/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_indigoseagold_shield :: PASS �庣�� shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_sword :: PASS �׶��� sword leaves=20/400 vine=20/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_axe :: PASS �׶��� axe leaves=25/400 vine=23/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_pickaxe :: PASS �׶��� pickaxe leaves=27/400 vine=23/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_shovel :: PASS �׶��� shovel leaves=18/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_hoe :: PASS �׶��� hoe leaves=24/400 vine=20/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_knife :: PASS �׶��� knife leaves=25/400 vine=34/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_mace :: PASS �׶��� mace leaves=18/400 vine=24/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_bow :: PASS �׶��� bow leaves=21/400 vine=29/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_crossbow :: PASS �׶��� crossbow leaves=35/400 vine=28/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_trident :: PASS �׶��� trident leaves=17/400 vine=23/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_voodoogold_shield :: PASS �׶��� shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_sword :: PASS ���׽� sword leaves=23/400 vine=14/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_axe :: PASS ���׽� axe leaves=23/400 vine=22/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_pickaxe :: PASS ���׽� pickaxe leaves=38/400 vine=28/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_shovel :: PASS ���׽� shovel leaves=19/400 vine=17/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_hoe :: PASS ���׽� hoe leaves=24/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_knife :: PASS ���׽� knife leaves=29/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_mace :: PASS ���׽� mace leaves=19/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_bow :: PASS ���׽� bow leaves=20/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_crossbow :: PASS ���׽� crossbow leaves=22/400 vine=32/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_trident :: PASS ���׽� trident leaves=28/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_thundergold_shield :: PASS ���׽� shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_sword :: PASS �û�� sword leaves=19/400 vine=26/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_axe :: PASS �û�� axe leaves=21/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_pickaxe :: PASS �û�� pickaxe leaves=19/400 vine=28/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_shovel :: PASS �û�� shovel leaves=25/400 vine=21/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_hoe :: PASS �û�� hoe leaves=31/400 vine=20/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_knife :: PASS �û�� knife leaves=25/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_mace :: PASS �û�� mace leaves=27/400 vine=22/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_bow :: PASS �û�� bow leaves=31/400 vine=19/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_crossbow :: PASS �û�� crossbow leaves=31/400 vine=24/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_trident :: PASS �û�� trident leaves=18/400 vine=25/400 expectDrop=true
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_illusiongold_shield :: PASS �û�� shield leaves=0/400 vine=0/400 expectDrop=false
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_matrix_cells :: READOUT ������=88 ����=88/88�����ư� `MetalFamily#isWeapon` ������ ? ��Ȼ expect=0���� docs/1.6-���.md 2.2 �ļ��ˣ�
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_control_iron_sword :: PASS iron_sword leaves=0/400 expect=0
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_control_diamond_pickaxe :: PASS diamond_pickaxe leaves=0/400 expect=0
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_control_empty_hand :: PASS empty-hand leaves=0/400 expect=0
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_control_non_target_block :: PASS sturdygold_pickaxe stone=0/400 expect=0��������Ҷ/������
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_fortune_sturdygold_l0 :: PASS sturdygold_sword fortune=0 p=0.06 expect=120.0 hits=111/2000 dev=9.0 4sigma=42.5����ǰ��һ��� 0��
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_fortune_sturdygold_l1 :: PASS sturdygold_sword fortune=1 p=0.12 expect=240.0 hits=248/2000 dev=8.0 4sigma=58.1����ǰ��һ��� 0��
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_fortune_sturdygold_l2 :: PASS sturdygold_sword fortune=2 p=0.18 expect=360.0 hits=375/2000 dev=15.0 4sigma=68.7����ǰ��һ��� 0��
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_fortune_sturdygold_l3 :: PASS sturdygold_sword fortune=3 p=0.24 expect=480.0 hits=501/2000 dev=21.0 4sigma=76.4����ǰ��һ��� 0��
+[20:30:12] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_fortune_sturdygold_monotonic :: PASS ���� hits=111,248,375,501��Ӧ�ϸ������
+[20:30:13] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_real_sturdygold_sword_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=bettergold:sturdygold_sword mainhand=bettergold:sturdygold_sword
+[20:30:14] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_real_sturdygold_sword :: PASS ������ ItemEntity��vine=7 other(��Ҷ�������)=9��200 ���� destroyBlock��expectVine=true����ǰ sturdygold_sword �� 0��
+[20:30:14] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_real_thornsgold_sword_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=bettergold:thornsgold_sword mainhand=bettergold:thornsgold_sword
+[20:30:15] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_real_thornsgold_sword :: PASS ������ ItemEntity��vine=3 other(��Ҷ�������)=6��200 ���� destroyBlock��expectVine=true����ǰ sturdygold_sword �� 0��
+[20:30:15] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_real_iron_breaks :: READOUT gameMode.destroyBlock ok=200/200 tool=minecraft:air mainhand=minecraft:air
+[20:30:16] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE drop_real_iron :: PASS ������ ItemEntity��vine=0 other(��Ҷ�������)=7��200 ���� destroyBlock��expectVine=false����ǰ sturdygold_sword �� 0��
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_loaded_count :: PASS bettergold advancements loaded=51 expect=51��farmersdelight=true �� ûװʱ 3 �����������ɾͲ����أ�
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_hidden_none :: PASS hidden=0
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_challenge_nine :: PASS challenge=9 expect=9
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_recipe_crafted_none :: PASS recipe_crafted criteria=0
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_antique_shape_merchant_antique_tool :: PASS criteria=[have_knife, have] requirements=[[have, have_knife]] ����OR���壨���� have / ���� have_knife ���ܹ����飩=true
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_antique_shape_merchant_netherite_antique_tool :: PASS criteria=[have_knife, have] requirements=[[have, have_knife]] ����OR���壨���� have / ���� have_knife ���ܹ����飩=true
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_tag_bettergold:antique_knives :: PASS #bettergold:antique_knives present=true size=1 expect=1��required:false ��ס��ûװ���¡���
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_tag_bettergold:netherite_antique_knives :: PASS #bettergold:netherite_antique_knives present=true size=1 expect=1��required:false ��ס��ûװ���¡���
+[20:30:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE env_mods :: READOUT patchouli=true farmersdelight=true
+[20:30:18] [Server thread/INFO] [minecraft/MinecraftServer]: bgfix4-probe has made the advancement [Ancient Collection]
+[20:30:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_antique_knife :: PASS ��� bettergold:antique_knife -> merchant/antique_tool before=false after=true����ǰ = �� false��
+[20:30:18] [Server thread/INFO] [minecraft/MinecraftServer]: bgfix4-probe has made the advancement [The Royal Remains Endure Forever]
+[20:30:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_netherite_antique_knife :: PASS ��� bettergold:netherite_antique_knife -> merchant/netherite_antique_tool before=false after=true����ǰ = �� false��
+[20:30:18] [Server thread/INFO] [minecraft/MinecraftServer]: bgfix4-probe has made the advancement [Ancient Collection]
+[20:30:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_antique_old_path_kept :: PASS ��� bettergold:antique_axe -> merchant/antique_tool done=true��ԭ 5 ���� id ·��������Ȼ��Ч��
+[20:30:19] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_antique_negative_iron :: PASS ���� -> antique_tool=false netherite_antique_tool=false expect ȫ false
+[20:30:19] [Server thread/INFO] [minecraft/MinecraftServer]: bgfix4-probe has made the advancement [The Royal Remains Endure Forever]
+[20:30:19] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE adv_antique_negative_cross_tier :: PASS netherite_antique_sword -> antique_tool=false expect=false�������������
+[20:30:19] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE obtain_dispatch_diag :: READOUT �����׶����쳣����=0 last= broadcastChanges ���쳣=0
+[20:30:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE order_metal_order :: READOUT CreativeSections.METAL_ORDER=[flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold]������ 2026-10-08 �ھ���8 �壬��ȼ�� �� �û��
+[20:30:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE order_config_spec :: READOUT ���غ�� Config.SPEC ��˳�򣨽�����֣�=[flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold]��= NeoForge ���ý������Ŀ˳��keySet �� 25 ����
+[20:30:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE order_config_matches_metal_order :: PASS spec order=[flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold] vs METAL_ORDER=[flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold]
+[20:30:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE order_config_toml :: READOUT bettergold-common.toml��**�Ѵ���**���ļ���������˳��=[flamegold, sturdygold, thornsgold, echogold, indigoseagold, voodoogold, thundergold, illusiongold]��? NeoForge �����ż��м� ? ���˳�򱣳־�ֵ������������˳�������� spec ����Ϊ׼��ɾ����ļ������ܲŻᰴ����˳����д��
+[20:30:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE order_adv_children :: PASS Ѱ;�ĺ�����=9 expect=9
+[20:30:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE order_adv_children_detail :: READOUT children() ����˳��= GUI ����˳��: treasure/bundled_echo_shard(x=4.0,y=0.0,ih=451902366) treasure/voodoo_feather(x=4.0,y=1.0,ih=566774261) treasure/chorus_cherry_branch(x=4.0,y=2.0,ih=1674165896) treasure/golden_cowrie(x=4.0,y=4.0,ih=1782628011) treasure/amethyst_energy_dust(x=4.0,y=6.0,ih=801718798) treasure/glittering_vine(x=4.0,y=7.0,ih=1432095204) treasure/indigo_ocean_heart(x=4.0,y=8.0,ih=1180076502) treasure/blazing_rod(x=4.0,y=9.0,ih=481484216) treasure/any_raw_metal(x=4.0,y=10.0,ih=164227571) 
+[20:30:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE order_adv_children_vs_id_sort :: READOUT ����˳�� == id �ֵ��� false������˳�� == ���� 8 ��˳��ǰ 8 λ���� false
+[20:30:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE creative_total :: READOUT ��ʵ����ҳ getDisplayItems() �ܸ���=422���� SectionedCreativeTab ���Ŀո�
+[20:30:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE creative_material_cells :: PASS ���Ϸ�����METAL_MATERIALS������=40������ת��Ӧ > 0��
+[20:30:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE creative_material_metal_order :: PASS ���Ϸ����Ľ���λ�ε���������= ˳���� METAL_ORDER ����������=40
+[20:30:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE CREATIVE-MATERIAL-BEGIN 
+BGFIX4-PROBE CREATIVE-MATERIAL 1 bettergold:alchemy_student_handbook
+BGFIX4-PROBE CREATIVE-MATERIAL 2 bettergold:mixed_crystal_pile
+BGFIX4-PROBE CREATIVE-MATERIAL 3 bettergold:alchemic_fuel
+BGFIX4-PROBE CREATIVE-MATERIAL 4 bettergold:golden_bone_meal
+BGFIX4-PROBE CREATIVE-MATERIAL 5 bettergold:chaos_coin_string
+BGFIX4-PROBE CREATIVE-MATERIAL 6 bettergold:golden_cowrie_mold
+BGFIX4-PROBE CREATIVE-MATERIAL 7 bettergold:netherite_dust
+BGFIX4-PROBE CREATIVE-MATERIAL 8 bettergold:small_netherite_scrap
+BGFIX4-PROBE CREATIVE-MATERIAL 9 bettergold:unwanted_antique
+BGFIX4-PROBE CREATIVE-MATERIAL 10 bettergold:alchemy_materials_box
+BGFIX4-PROBE CREATIVE-MATERIAL 11 bettergold:netherite_antique_upgrade_smithing_template
+BGFIX4-PROBE CREATIVE-MATERIAL 12 bettergold:golden_mace_blank
+BGFIX4-PROBE CREATIVE-MATERIAL 13 bettergold:golden_bow_blank
+BGFIX4-PROBE CREATIVE-MATERIAL 14 bettergold:golden_crossbow_blank
+BGFIX4-PROBE CREATIVE-MATERIAL 15 bettergold:golden_trident_blank
+BGFIX4-PROBE CREATIVE-MATERIAL 16 bettergold:golden_shield_blank
+BGFIX4-PROBE CREATIVE-MATERIAL 17 bettergold:gift_gold_ticket
+BGFIX4-PROBE CREATIVE-MATERIAL 18 bettergold:treasure_gift_box
+BGFIX4-PROBE CREATIVE-MATERIAL 19 bettergold:curio_box
+BGFIX4-PROBE CREATIVE-MATERIAL 20 bettergold:idol_gift_box
+BGFIX4-PROBE CREATIVE-MATERIAL 21 bettergold:gourmet_box
+BGFIX4-PROBE CREATIVE-MATERIAL 22 bettergold:blazing_rod
+BGFIX4-PROBE CREATIVE-MATERIAL 23 bettergold:raw_flamegold
+BGFIX4-PROBE CREATIVE-MATERIAL 24 bettergold:flamegold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 25 bettergold:flamegold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 26 bettergold:flamegold_upgrade_template
+BGFIX4-PROBE CREATIVE-MATERIAL 27 bettergold:golden_cowrie
+BGFIX4-PROBE CREATIVE-MATERIAL 28 bettergold:raw_sturdygold
+BGFIX4-PROBE CREATIVE-MATERIAL 29 bettergold:sturdygold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 30 bettergold:sturdygold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 31 bettergold:sturdygold_upgrade_template
+BGFIX4-PROBE CREATIVE-MATERIAL 32 bettergold:glittering_vine
+BGFIX4-PROBE CREATIVE-MATERIAL 33 bettergold:raw_thornsgold
+BGFIX4-PROBE CREATIVE-MATERIAL 34 bettergold:thornsgold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 35 bettergold:thornsgold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 36 bettergold:thornsgold_upgrade_template
+BGFIX4-PROBE CREATIVE-MATERIAL 37 bettergold:bundled_echo_shard
+BGFIX4-PROBE CREATIVE-MATERIAL 38 bettergold:raw_echogold
+BGFIX4-PROBE CREATIVE-MATERIAL 39 bettergold:echogold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 40 bettergold:echogold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 41 bettergold:echogold_upgrade_template
+BGFIX4-PROBE CREATIVE-MATERIAL 42 bettergold:indigo_ocean_heart
+BGFIX4-PROBE CREATIVE-MATERIAL 43 bettergold:raw_indigoseagold
+BGFIX4-PROBE CREATIVE-MATERIAL 44 bettergold:indigoseagold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 45 bettergold:indigoseagold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 46 bettergold:indigoseagold_upgrade_template
+BGFIX4-PROBE CREATIVE-MATERIAL 47 bettergold:voodoo_feather
+BGFIX4-PROBE CREATIVE-MATERIAL 48 bettergold:raw_voodoogold
+BGFIX4-PROBE CREATIVE-MATERIAL 49 bettergold:voodoogold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 50 bettergold:voodoogold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 51 bettergold:voodoogold_upgrade_template
+BGFIX4-PROBE CREATIVE-MATERIAL 52 bettergold:amethyst_energy_dust
+BGFIX4-PROBE CREATIVE-MATERIAL 53 bettergold:raw_thundergold
+BGFIX4-PROBE CREATIVE-MATERIAL 54 bettergold:thundergold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 55 bettergold:thundergold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 56 bettergold:thundergold_upgrade_template
+BGFIX4-PROBE CREATIVE-MATERIAL 57 bettergold:chorus_cherry_branch
+BGFIX4-PROBE CREATIVE-MATERIAL 58 bettergold:raw_illusiongold
+BGFIX4-PROBE CREATIVE-MATERIAL 59 bettergold:illusiongold_ingot
+BGFIX4-PROBE CREATIVE-MATERIAL 60 bettergold:illusiongold_nugget
+BGFIX4-PROBE CREATIVE-MATERIAL 61 bettergold:illusiongold_upgrade_template
+[20:30:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE creative_material_prefix :: READOUT ���Ϸ��������ǽ�����ϣ�ʵ�ʼ���=61���嵥����־ CREATIVE-MATERIAL ���У��������ߡ���˳�򡹣����ֲ���˳��
+[20:30:23] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE forced_chunks_after :: READOUT forced=0 expect=0
+[20:30:23] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE MATRIX-BEGIN 
+BGFIX4-PROBE MATRIX flamegold/sword/leaves=21
+BGFIX4-PROBE MATRIX flamegold/sword/vine=16
+BGFIX4-PROBE MATRIX flamegold/axe/leaves=21
+BGFIX4-PROBE MATRIX flamegold/axe/vine=21
+BGFIX4-PROBE MATRIX flamegold/pickaxe/leaves=23
+BGFIX4-PROBE MATRIX flamegold/pickaxe/vine=22
+BGFIX4-PROBE MATRIX flamegold/shovel/leaves=14
+BGFIX4-PROBE MATRIX flamegold/shovel/vine=25
+BGFIX4-PROBE MATRIX flamegold/hoe/leaves=25
+BGFIX4-PROBE MATRIX flamegold/hoe/vine=28
+BGFIX4-PROBE MATRIX flamegold/knife/leaves=22
+BGFIX4-PROBE MATRIX flamegold/knife/vine=16
+BGFIX4-PROBE MATRIX flamegold/mace/leaves=31
+BGFIX4-PROBE MATRIX flamegold/mace/vine=24
+BGFIX4-PROBE MATRIX flamegold/bow/leaves=22
+BGFIX4-PROBE MATRIX flamegold/bow/vine=31
+BGFIX4-PROBE MATRIX flamegold/crossbow/leaves=18
+BGFIX4-PROBE MATRIX flamegold/crossbow/vine=19
+BGFIX4-PROBE MATRIX flamegold/trident/leaves=34
+BGFIX4-PROBE MATRIX flamegold/trident/vine=30
+BGFIX4-PROBE MATRIX flamegold/shield/leaves=0
+BGFIX4-PROBE MATRIX flamegold/shield/vine=0
+BGFIX4-PROBE MATRIX sturdygold/sword/leaves=33
+BGFIX4-PROBE MATRIX sturdygold/sword/vine=13
+BGFIX4-PROBE MATRIX sturdygold/axe/leaves=27
+BGFIX4-PROBE MATRIX sturdygold/axe/vine=19
+BGFIX4-PROBE MATRIX sturdygold/pickaxe/leaves=35
+BGFIX4-PROBE MATRIX sturdygold/pickaxe/vine=40
+BGFIX4-PROBE MATRIX sturdygold/shovel/leaves=18
+BGFIX4-PROBE MATRIX sturdygold/shovel/vine=22
+BGFIX4-PROBE MATRIX sturdygold/hoe/leaves=15
+BGFIX4-PROBE MATRIX sturdygold/hoe/vine=21
+BGFIX4-PROBE MATRIX sturdygold/knife/leaves=28
+BGFIX4-PROBE MATRIX sturdygold/knife/vine=17
+BGFIX4-PROBE MATRIX sturdygold/mace/leaves=23
+BGFIX4-PROBE MATRIX sturdygold/mace/vine=25
+BGFIX4-PROBE MATRIX sturdygold/bow/leaves=22
+BGFIX4-PROBE MATRIX sturdygold/bow/vine=31
+BGFIX4-PROBE MATRIX sturdygold/crossbow/leaves=25
+BGFIX4-PROBE MATRIX sturdygold/crossbow/vine=22
+BGFIX4-PROBE MATRIX sturdygold/trident/leaves=27
+BGFIX4-PROBE MATRIX sturdygold/trident/vine=29
+BGFIX4-PROBE MATRIX sturdygold/shield/leaves=0
+BGFIX4-PROBE MATRIX sturdygold/shield/vine=0
+BGFIX4-PROBE MATRIX thornsgold/sword/leaves=23
+BGFIX4-PROBE MATRIX thornsgold/sword/vine=28
+BGFIX4-PROBE MATRIX thornsgold/axe/leaves=32
+BGFIX4-PROBE MATRIX thornsgold/axe/vine=19
+BGFIX4-PROBE MATRIX thornsgold/pickaxe/leaves=24
+BGFIX4-PROBE MATRIX thornsgold/pickaxe/vine=28
+BGFIX4-PROBE MATRIX thornsgold/shovel/leaves=24
+BGFIX4-PROBE MATRIX thornsgold/shovel/vine=23
+BGFIX4-PROBE MATRIX thornsgold/hoe/leaves=25
+BGFIX4-PROBE MATRIX thornsgold/hoe/vine=21
+BGFIX4-PROBE MATRIX thornsgold/knife/leaves=22
+BGFIX4-PROBE MATRIX thornsgold/knife/vine=25
+BGFIX4-PROBE MATRIX thornsgold/mace/leaves=24
+BGFIX4-PROBE MATRIX thornsgold/mace/vine=20
+BGFIX4-PROBE MATRIX thornsgold/bow/leaves=33
+BGFIX4-PROBE MATRIX thornsgold/bow/vine=27
+BGFIX4-PROBE MATRIX thornsgold/crossbow/leaves=23
+BGFIX4-PROBE MATRIX thornsgold/crossbow/vine=25
+BGFIX4-PROBE MATRIX thornsgold/trident/leaves=25
+BGFIX4-PROBE MATRIX thornsgold/trident/vine=24
+BGFIX4-PROBE MATRIX thornsgold/shield/leaves=0
+BGFIX4-PROBE MATRIX thornsgold/shield/vine=0
+BGFIX4-PROBE MATRIX echogold/sword/leaves=25
+BGFIX4-PROBE MATRIX echogold/sword/vine=17
+BGFIX4-PROBE MATRIX echogold/axe/leaves=20
+BGFIX4-PROBE MATRIX echogold/axe/vine=17
+BGFIX4-PROBE MATRIX echogold/pickaxe/leaves=28
+BGFIX4-PROBE MATRIX echogold/pickaxe/vine=19
+BGFIX4-PROBE MATRIX echogold/shovel/leaves=33
+BGFIX4-PROBE MATRIX echogold/shovel/vine=19
+BGFIX4-PROBE MATRIX echogold/hoe/leaves=31
+BGFIX4-PROBE MATRIX echogold/hoe/vine=16
+BGFIX4-PROBE MATRIX echogold/knife/leaves=25
+BGFIX4-PROBE MATRIX echogold/knife/vine=20
+BGFIX4-PROBE MATRIX echogold/mace/leaves=28
+BGFIX4-PROBE MATRIX echogold/mace/vine=23
+BGFIX4-PROBE MATRIX echogold/bow/leaves=19
+BGFIX4-PROBE MATRIX echogold/bow/vine=22
+BGFIX4-PROBE MATRIX echogold/crossbow/leaves=27
+BGFIX4-PROBE MATRIX echogold/crossbow/vine=24
+BGFIX4-PROBE MATRIX echogold/trident/leaves=29
+BGFIX4-PROBE MATRIX echogold/trident/vine=30
+BGFIX4-PROBE MATRIX echogold/shield/leaves=0
+BGFIX4-PROBE MATRIX echogold/shield/vine=0
+BGFIX4-PROBE MATRIX indigoseagold/sword/leaves=33
+BGFIX4-PROBE MATRIX indigoseagold/sword/vine=13
+BGFIX4-PROBE MATRIX indigoseagold/axe/leaves=30
+BGFIX4-PROBE MATRIX indigoseagold/axe/vine=24
+BGFIX4-PROBE MATRIX indigoseagold/pickaxe/leaves=23
+BGFIX4-PROBE MATRIX indigoseagold/pickaxe/vine=22
+BGFIX4-PROBE MATRIX indigoseagold/shovel/leaves=21
+BGFIX4-PROBE MATRIX indigoseagold/shovel/vine=25
+BGFIX4-PROBE MATRIX indigoseagold/hoe/leaves=26
+BGFIX4-PROBE MATRIX indigoseagold/hoe/vine=24
+BGFIX4-PROBE MATRIX indigoseagold/knife/leaves=32
+BGFIX4-PROBE MATRIX indigoseagold/knife/vine=30
+BGFIX4-PROBE MATRIX indigoseagold/mace/leaves=23
+BGFIX4-PROBE MATRIX indigoseagold/mace/vine=18
+BGFIX4-PROBE MATRIX indigoseagold/bow/leaves=22
+BGFIX4-PROBE MATRIX indigoseagold/bow/vine=19
+BGFIX4-PROBE MATRIX indigoseagold/crossbow/leaves=26
+BGFIX4-PROBE MATRIX indigoseagold/crossbow/vine=17
+BGFIX4-PROBE MATRIX indigoseagold/trident/leaves=18
+BGFIX4-PROBE MATRIX indigoseagold/trident/vine=20
+BGFIX4-PROBE MATRIX indigoseagold/shield/leaves=0
+BGFIX4-PROBE MATRIX indigoseagold/shield/vine=0
+BGFIX4-PROBE MATRIX voodoogold/sword/leaves=20
+BGFIX4-PROBE MATRIX voodoogold/sword/vine=20
+BGFIX4-PROBE MATRIX voodoogold/axe/leaves=25
+BGFIX4-PROBE MATRIX voodoogold/axe/vine=23
+BGFIX4-PROBE MATRIX voodoogold/pickaxe/leaves=27
+BGFIX4-PROBE MATRIX voodoogold/pickaxe/vine=23
+BGFIX4-PROBE MATRIX voodoogold/shovel/leaves=18
+BGFIX4-PROBE MATRIX voodoogold/shovel/vine=21
+BGFIX4-PROBE MATRIX voodoogold/hoe/leaves=24
+BGFIX4-PROBE MATRIX voodoogold/hoe/vine=20
+BGFIX4-PROBE MATRIX voodoogold/knife/leaves=25
+BGFIX4-PROBE MATRIX voodoogold/knife/vine=34
+BGFIX4-PROBE MATRIX voodoogold/mace/leaves=18
+BGFIX4-PROBE MATRIX voodoogold/mace/vine=24
+BGFIX4-PROBE MATRIX voodoogold/bow/leaves=21
+BGFIX4-PROBE MATRIX voodoogold/bow/vine=29
+BGFIX4-PROBE MATRIX voodoogold/crossbow/leaves=35
+BGFIX4-PROBE MATRIX voodoogold/crossbow/vine=28
+BGFIX4-PROBE MATRIX voodoogold/trident/leaves=17
+BGFIX4-PROBE MATRIX voodoogold/trident/vine=23
+BGFIX4-PROBE MATRIX voodoogold/shield/leaves=0
+BGFIX4-PROBE MATRIX voodoogold/shield/vine=0
+BGFIX4-PROBE MATRIX thundergold/sword/leaves=23
+BGFIX4-PROBE MATRIX thundergold/sword/vine=14
+BGFIX4-PROBE MATRIX thundergold/axe/leaves=23
+BGFIX4-PROBE MATRIX thundergold/axe/vine=22
+BGFIX4-PROBE MATRIX thundergold/pickaxe/leaves=38
+BGFIX4-PROBE MATRIX thundergold/pickaxe/vine=28
+BGFIX4-PROBE MATRIX thundergold/shovel/leaves=19
+BGFIX4-PROBE MATRIX thundergold/shovel/vine=17
+BGFIX4-PROBE MATRIX thundergold/hoe/leaves=24
+BGFIX4-PROBE MATRIX thundergold/hoe/vine=21
+BGFIX4-PROBE MATRIX thundergold/knife/leaves=29
+BGFIX4-PROBE MATRIX thundergold/knife/vine=25
+BGFIX4-PROBE MATRIX thundergold/mace/leaves=19
+BGFIX4-PROBE MATRIX thundergold/mace/vine=25
+BGFIX4-PROBE MATRIX thundergold/bow/leaves=20
+BGFIX4-PROBE MATRIX thundergold/bow/vine=21
+BGFIX4-PROBE MATRIX thundergold/crossbow/leaves=22
+BGFIX4-PROBE MATRIX thundergold/crossbow/vine=32
+BGFIX4-PROBE MATRIX thundergold/trident/leaves=28
+BGFIX4-PROBE MATRIX thundergold/trident/vine=19
+BGFIX4-PROBE MATRIX thundergold/shield/leaves=0
+BGFIX4-PROBE MATRIX thundergold/shield/vine=0
+BGFIX4-PROBE MATRIX illusiongold/sword/leaves=19
+BGFIX4-PROBE MATRIX illusiongold/sword/vine=26
+BGFIX4-PROBE MATRIX illusiongold/axe/leaves=21
+BGFIX4-PROBE MATRIX illusiongold/axe/vine=21
+BGFIX4-PROBE MATRIX illusiongold/pickaxe/leaves=19
+BGFIX4-PROBE MATRIX illusiongold/pickaxe/vine=28
+BGFIX4-PROBE MATRIX illusiongold/shovel/leaves=25
+BGFIX4-PROBE MATRIX illusiongold/shovel/vine=21
+BGFIX4-PROBE MATRIX illusiongold/hoe/leaves=31
+BGFIX4-PROBE MATRIX illusiongold/hoe/vine=20
+BGFIX4-PROBE MATRIX illusiongold/knife/leaves=25
+BGFIX4-PROBE MATRIX illusiongold/knife/vine=19
+BGFIX4-PROBE MATRIX illusiongold/mace/leaves=27
+BGFIX4-PROBE MATRIX illusiongold/mace/vine=22
+BGFIX4-PROBE MATRIX illusiongold/bow/leaves=31
+BGFIX4-PROBE MATRIX illusiongold/bow/vine=19
+BGFIX4-PROBE MATRIX illusiongold/crossbow/leaves=31
+BGFIX4-PROBE MATRIX illusiongold/crossbow/vine=24
+BGFIX4-PROBE MATRIX illusiongold/trident/leaves=18
+BGFIX4-PROBE MATRIX illusiongold/trident/vine=25
+BGFIX4-PROBE MATRIX illusiongold/shield/leaves=0
+BGFIX4-PROBE MATRIX illusiongold/shield/vine=0
+[20:30:23] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE SUMMARY pass=118 fail=0 skip=0 aborts=[] levelName=bgfix4probe readouts=19
+[20:30:23] [Server thread/INFO] [co.hj.be.bettergold/]: BGFIX4-PROBE halting
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfix4probe]'/minecraft:overworld
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfix4probe]'/minecraft:the_nether
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[bgfix4probe]'/minecraft:the_end
+[20:30:23] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save bgfix4probe
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (bgfix4probe): All chunks are saved
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[20:30:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[20:30:23] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
+
+BUILD SUCCESSFUL in 33s
+7 actionable tasks: 1 executed, 6 up-to-date
+Configuration cache entry reused.

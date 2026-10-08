@@ -1,0 +1,19 @@
+﻿# B 级构建 · 六校验器 · 产物抽查（bg-fix4）
+
+## 1) 三条构建
+* B1-compile = BUILD SUCCESSFUL in 1s
+* B2-rundata = BUILD SUCCESSFUL in 19s
+* B3-jar = BUILD SUCCESSFUL in 12s
+
+## 2) jar
+* `build/libs/bettergold-1.6.0.jar` = 1356675 B
+* SHA256 = 1287218877163B1ECF7E42F7567D12FD82F4AF33FE8EBF6B0D36F0B193BFFE93
+* 产物抽查：`build/resources/main/.../advancement/**` = 51 个；`tags/item/antique_knives.json` 在 = True
+
+## 3) 六校验器
+* `validate_metal_assets.py` = **exit 0**；末行：bgfinal3 ��Ȩɫ�����庣�����Σ�����: 0 []
+* `validate_metal_data.py` = **exit 0**；末行：bg-fix4 ���������Ŷ����ɾ� / ˳����Դ����ͬ�� / ��3 ��1ҳ��ԭ / ����ҳ 11 �� / ����ҳ˳�����������: 0 []����3 10 ҳ / ����ҳ��Ļ 8/8 / ͼ������ 115 ����
+* `validate_trim_assets.py` = **exit 0**；末行：OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+* `validate_advancements.py` = **exit 0**；末行：OK [bgfinal-adv-lang] 102 ��Ӣ��ֵȫ������Ӣ�루en != zh���ǿա��� ASCII ��ĸ������ �� 120����Ӣ������ȫһ�£������� 0 ����
+* `check_jar_clean.py` = **exit 0**；末行：jar 内文件总数 = 2405
+* `check_forced_chunks.py` = **exit 0**；末行：chunks.dat 侧 forceload 为 0 = True

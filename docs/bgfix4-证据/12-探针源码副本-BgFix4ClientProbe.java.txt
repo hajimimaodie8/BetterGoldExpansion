@@ -1,0 +1,377 @@
+package com.hjmmd_8.bettergold.probe.bgfix4;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+import vazkii.patchouli.client.book.BookContents;
+import vazkii.patchouli.client.book.BookEntry;
+import vazkii.patchouli.client.book.BookPage;
+import vazkii.patchouli.common.book.Book;
+import vazkii.patchouli.common.book.BookRegistry;
+
+/**
+ * bg-fix4 A 级客户端探针（**只读验证**；收尾整块删除）。
+ *
+ * <p>会话隔离：与 {@link BgFix4Probe} 同包 {@code probe.bgfix4}；本类**只能**在客户端加载
+ * （引用了 {@code net.minecraft.client.*} 与 Patchouli ⇒ 专用服务端加载它会抛
+ * {@code invalid dist DEDICATED_SERVER}）⇒ 标 {@code value = Dist.CLIENT}，且与服务端探针
+ * **分成两个类**（bg-book §六 实测踩过一次）。</p>
+ *
+ * <p>开关文件：{@code <gameDir>/bgfix4c-probe.enabled}。</p>
+ *
+ * <h2>要证的事（③/④）</h2>
+ * <ol>
+ *   <li>Patchouli **真的**把这本书解析出来了：{@code BookRegistry.INSTANCE.books} 里有
+ *       {@code bettergold:alchemy_handbook}，且 {@code BookContents#isErrored() == false}
+ *       （这是"A 级"与"读 JSON"的分界：读 JSON 只能证明文件长这样）。</li>
+ *   <li>章3「贵金的知识」**10 页**；第 1 页（复原那一跨页）= 八族锭 + 标题1 + 正文；
+ *       第 2 页 = 八张升级模板 + 标题2、**无正文**。</li>
+ *   <li>第 3~10 页（8 个族的建材页）：{@code title} 走 Patchouli 自己的 {@code i18nText()}
+ *       **解析出作者要的字幕**「某某金建筑方块」（逐字 == 冻结快照 §6.3 的「图标：」值），
+ *       展示栏 = 该族 11 件建材（作者 2026-10-08 的字面顺序）。</li>
+ * </ol>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgFix4ClientProbe {
+
+    private static final String TAG = "BGFIX4C-PROBE";
+    private static final String PROBE_WORLD = "bgfix4probe";
+    private static final String AUTHOR_WORLD = "\u65b0\u7684\u4e16\u754c";   // 新的世界
+    private static final String BOOK_ID = "bettergold:alchemy_handbook";
+    private static final String ENTRY_ID = "bettergold:golden_knowledge";
+    private static final String SNAPSHOT = "tools/asset-generator/bgappend-requirements-snapshot/bg-book-6.1-6.3.md";
+
+    private static final String[] METALS = {
+            "flamegold", "sturdygold", "thornsgold", "echogold",
+            "indigoseagold", "voodoogold", "thundergold", "illusiongold"};
+    private static final String[] BUILDING_SUFFIX = {
+            "_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
+            "_bricks_wall", "_door", "_trapdoor", "_bars", "_chain", "_lantern"};
+    private static final String INGOT_TITLE = "\u5404\u79cd\u5404\u6837\u7684\"\u8d35\u91d1\"\u952d";          // 各种各样的"贵金"锭
+    private static final String TEMPLATE_TITLE =
+            "\"\u8d35\u91d1\"\u88c5\u5907\u7684\u5347\u7ea7\u953b\u9020\u6a21\u7248";                        // "贵金"装备的升级锻造模版
+
+    /** 绝对 tick 表：等资源 / 书 / 世界都就位 */
+    private static final int T_GUARD = 20;
+    private static final int T_BOOK = 200;
+    private static final int T_ASSERT = 260;
+    private static final int T_DONE = 320;
+
+    private static boolean armed;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static int skip;
+    private static final List<String> problems = new ArrayList<>();
+
+    private BgFix4ClientProbe() {
+    }
+
+    private static void report(String rawId, boolean ok, String detail) {
+        String key = rawId.replace('/', '_');
+        if (ok) {
+            pass++;
+            bettergold.LOGGER.info("{} {} :: PASS {}", TAG, key, detail);
+        } else {
+            fail++;
+            problems.add(key + " :: " + detail);
+            bettergold.LOGGER.error("{} {} :: FAIL {}", TAG, key, detail);
+        }
+    }
+
+    private static void skipped(String rawId, String detail) {
+        skip++;
+        bettergold.LOGGER.warn("{} {} :: SKIP {}", TAG, rawId.replace('/', '_'), detail);
+    }
+
+    private static void readout(String rawId, String detail) {
+        bettergold.LOGGER.info("{} {} :: READOUT {}", TAG, rawId.replace('/', '_'), detail);
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (!armed) {
+            Path flag = FMLPaths.GAMEDIR.get().resolve("bgfix4c-probe.enabled");
+            if (!Files.isRegularFile(flag)) {
+                return;
+            }
+            armed = true;
+            bettergold.LOGGER.info("{} armed=true gamedir={}", TAG, FMLPaths.GAMEDIR.get());
+        }
+        tick++;
+        try {
+            if (tick == T_GUARD) {
+                guardWorld();
+            } else if (tick == T_BOOK) {
+                bookReadouts();
+            } else if (tick == T_ASSERT) {
+                assertPages();
+            } else if (tick == T_DONE) {
+                bettergold.LOGGER.info("{} SUMMARY pass={} fail={} skip={}", TAG, pass, fail, skip);
+                for (String p : problems) {
+                    bettergold.LOGGER.error("{} PROBLEM {}", TAG, p);
+                }
+                bettergold.LOGGER.info("{} stopping client", TAG);
+                armed = false;
+                Minecraft.getInstance().stop();
+            }
+        } catch (Throwable t) {
+            fail++;
+            problems.add("tick=" + tick + " 抛异常：" + t);
+            bettergold.LOGGER.error("{} tick={} 抛异常", TAG, tick, t);
+        }
+    }
+
+    private static void guardWorld() {
+        Minecraft mc = Minecraft.getInstance();
+        // ⚠ 客户端 `LevelData` 没有名字访问器（既定事实）⇒ 按 `mcst_experience ex/03 §3.2` 的做法的
+        //   例外：从**整合服务端**的 overworld 反射读 `getLevelName()`（第 1 tick 断言世界名）。
+        String name = "?";
+        try {
+            Object integrated = mc.getSingleplayerServer();
+            if (integrated == null) {
+                name = "<no integrated server>";
+            } else {
+                Object lvl = integrated.getClass().getMethod("overworld").invoke(integrated);
+                Object data = lvl.getClass().getMethod("getLevelData").invoke(lvl);
+                name = String.valueOf(data.getClass().getMethod("getLevelName").invoke(data));
+            }
+        } catch (Throwable t) {
+            name = "<反射失败:" + t.getClass().getSimpleName() + ">";
+        }
+        boolean ok = PROBE_WORLD.equals(name);
+        report("cprobe_world_guard", ok && !AUTHOR_WORLD.equals(name),
+                "levelName=" + name + " expect=" + PROBE_WORLD + " authorWorld=" + AUTHOR_WORLD
+                        + " dimension=" + (mc.level == null ? "-" : mc.level.dimension().location()));
+    }
+
+    private static void bookReadouts() {
+        Minecraft mc = Minecraft.getInstance();
+        readout("lang", "languageCode=" + mc.options.languageCode
+                + "（i18nText 解析出的应当是哪个语种的字符串，见下）");
+        BookRegistry reg = BookRegistry.INSTANCE;
+        readout("registry_books", "books=" + reg.books.keySet());
+        Book book = reg.books.get(ResourceLocation.parse(BOOK_ID));
+        report("book_present", book != null, BOOK_ID + " present=" + (book != null));
+        if (book == null) {
+            return;
+        }
+        BookContents contents = book.getContents();
+        report("book_contents", contents != null, "getContents()=" + (contents != null));
+        if (contents == null) {
+            return;
+        }
+        // ★ 这一条是"A 级"的核心：Patchouli 自己解析失败时 isErrored() 为 true
+        report("book_not_errored", !contents.isErrored(),
+                "isErrored=" + contents.isErrored() + " exception=" + contents.getException());
+        readout("book_entry_count", "entries=" + contents.entries.size()
+                + " categories=" + contents.categories.size());
+        report("book_entry_count_20", contents.entries.size() == 20,
+                "条目数=" + contents.entries.size() + " expect=20（bg-fix4 之后：16 + §十 5 - 1 作废）");
+    }
+
+    private static void assertPages() {
+        Book book = BookRegistry.INSTANCE.books.get(ResourceLocation.parse(BOOK_ID));
+        if (book == null || book.getContents() == null) {
+            skipped("k3_pages", "书/contents 还没准备好");
+            return;
+        }
+        BookEntry entry = book.getContents().entries.get(ResourceLocation.parse(ENTRY_ID));
+        report("k3_entry_present", entry != null, ENTRY_ID + " present=" + (entry != null));
+        if (entry == null) {
+            return;
+        }
+        List<BookPage> pages = entry.getPages();
+        report("k3_page_count", pages.size() == 10, "章3 页数=" + pages.size() + " expect=10");
+
+        // ① 第 1 页（复原那一跨页 = 2 个 Patchouli 页）
+        JsonObject p0 = obj(pages, 0);
+        JsonObject p1 = obj(pages, 1);
+        report("k3_p1_left", p0 != null
+                        && "patchouli:spotlight".equals(str(p0, "type"))
+                        && items(p0).equals(ingots())
+                        && INGOT_TITLE.equals(str(p0, "title"))
+                        && "bettergold.handbook.page.knowledge_1_summary".equals(str(p0, "text")),
+                "p1左：type=" + str(p0, "type") + " items=" + items(p0) + " title=" + str(p0, "title")
+                        + " text=" + str(p0, "text"));
+        report("k3_p1_right", p1 != null
+                        && "patchouli:spotlight".equals(str(p1, "type"))
+                        && items(p1).equals(templates())
+                        && TEMPLATE_TITLE.equals(str(p1, "title"))
+                        && !p1.has("text"),
+                "p1右：type=" + str(p1, "type") + " items=" + items(p1) + " title=" + str(p1, "title")
+                        + " hasText=" + (p1 != null && p1.has("text")));
+
+        // ② 第 3~10 页：字幕（经 Patchouli 的 i18nText 解析）+ 11 件展示栏
+        Map<String, String> snapshotTitles = snapshotTitles();
+        if (snapshotTitles.isEmpty()) {
+            skipped("build_title", "读不到冻结快照（" + SNAPSHOT + "）⇒ 只做结构断言");
+        }
+        int ok = 0;
+        for (int row = 2; row <= 5; row++) {
+            for (int side = 0; side < 2; side++) {
+                int idx = (row - 1) * 2 + side;
+                String metal = METALS[(row - 2) * 2 + side];
+                String sideName = side == 0 ? "left" : "right";
+                JsonObject pg = obj(pages, idx);
+                if (pg == null) {
+                    report("build_page_" + row + "_" + sideName, false, "页 " + idx + " 不存在");
+                    continue;
+                }
+                String key = str(pg, "title");
+                String resolved = pages.get(idx).i18nText(key == null ? "" : key).getString();
+                String want = snapshotTitles.get(row + "|" + sideName);
+                boolean itemsOk = items(pg).equals(building(metal));
+                boolean titleOk = want != null && want.equals(resolved);
+                if (titleOk && itemsOk) {
+                    ok++;
+                }
+                report("build_page_" + row + "_" + sideName, titleOk && itemsOk,
+                        "第 " + (idx + 1) + " 页 " + metal + "：titleKey=" + key
+                                + " i18nText→" + resolved + "（快照期望 " + want + "）"
+                                + " items=" + items(pg).size() + " 件 itemsOk=" + itemsOk);
+            }
+        }
+        report("build_pages_all_eight", ok == 8, "8 个建材页同时满足字幕 + 11 项=" + ok + "/8");
+    }
+
+    // ---------------- 小工具 ----------------
+
+    private static JsonObject obj(List<BookPage> pages, int i) {
+        if (i >= pages.size()) {
+            return null;
+        }
+        BookPage p = pages.get(i);
+        JsonElement src = p.sourceObject;
+        return src == null || !src.isJsonObject() ? null : src.getAsJsonObject();
+    }
+
+    private static String str(JsonObject o, String k) {
+        if (o == null || !o.has(k) || o.get(k).isJsonNull()) {
+            return null;
+        }
+        JsonElement e = o.get(k);
+        return e.isJsonArray() ? e.toString() : e.getAsString();
+    }
+
+    /** `item` 字段（可能是单字符串或数组）→ 规范化成 List<String> */
+    private static List<String> items(JsonObject o) {
+        List<String> out = new ArrayList<>();
+        if (o == null || !o.has("item")) {
+            return out;
+        }
+        JsonElement e = o.get("item");
+        if (e.isJsonArray()) {
+            JsonArray a = e.getAsJsonArray();
+            for (JsonElement one : a) {
+                out.add(one.getAsString());
+            }
+        } else {
+            out.add(e.getAsString());
+        }
+        return out;
+    }
+
+    private static List<String> ingots() {
+        List<String> out = new ArrayList<>();
+        for (String m : METALS) {
+            out.add("bettergold:" + m + "_ingot");
+        }
+        return out;
+    }
+
+    private static List<String> templates() {
+        List<String> out = new ArrayList<>();
+        for (String m : METALS) {
+            out.add("bettergold:" + m + "_upgrade_template");
+        }
+        return out;
+    }
+
+    private static List<String> building(String metal) {
+        List<String> out = new ArrayList<>();
+        for (String s : BUILDING_SUFFIX) {
+            out.add("bettergold:" + metal + s);
+        }
+        return out;
+    }
+
+    /** 从**仓库内冻结快照**解析 §6.3 第 2~5 行的「图标：**X**」值（逐字，不自己编）。 */
+    private static Map<String, String> snapshotTitles() {
+        Map<String, String> out = new java.util.LinkedHashMap<>();
+        try {
+            // ⚠ 客户端的 CWD 是 `run/`（Gradle 的 run directory），不是仓库根 ⇒ 用 `GAMEDIR.parent`
+            //   （= 仓库根；日志里 gamedir=…\bettergold-template-1.21.1\run）再兜底 CWD / user.dir。
+            Path root = FMLPaths.GAMEDIR.get().getParent();
+            Path p = root == null ? Path.of(SNAPSHOT) : root.resolve(SNAPSHOT);
+            if (!Files.isRegularFile(p)) {
+                p = Path.of(SNAPSHOT);
+            }
+            if (!Files.isRegularFile(p)) {
+                p = Path.of(System.getProperty("user.dir")).resolve(SNAPSHOT);
+            }
+            if (!Files.isRegularFile(p)) {
+                bettergold.LOGGER.warn("{} 快照三处候选都读不到：{} / cwd={} / user.dir={}",
+                        TAG, SNAPSHOT, Path.of("").toAbsolutePath(), System.getProperty("user.dir"));
+                return out;
+            }
+            bettergold.LOGGER.info("{} 快照路径解析为 {}", TAG, p.toAbsolutePath());
+            boolean active = false;
+            Pattern head = Pattern.compile("^图标：\\*\\*(.+?)\\*\\*");
+            for (String ln : Files.readAllLines(p, StandardCharsets.UTF_8)) {
+                if (ln.startsWith("### 6.3")) {
+                    active = true;
+                    continue;
+                }
+                if (active && ln.startsWith("---")) {
+                    break;
+                }
+                if (!active || !ln.startsWith("|") || ln.contains("|---")) {
+                    continue;
+                }
+                String[] cells = ln.split("\\|");
+                if (cells.length < 4) {
+                    continue;
+                }
+                String first = cells[1].trim().replace("*", "");
+                if (!first.matches("\\d+")) {
+                    continue;
+                }
+                int row = Integer.parseInt(first);
+                if (row < 2 || row > 5) {
+                    continue;
+                }
+                for (int col = 2; col <= 3; col++) {
+                    String cell = cells[col].split("<br>")[0].trim();
+                    Matcher m = head.matcher(cell);
+                    if (m.find()) {
+                        out.put(row + "|" + (col == 2 ? "left" : "right"),
+                                m.group(1).replace("（随排版顺序变化）", "").trim());
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.warn("{} 快照解析失败：{}", TAG, String.valueOf(t));
+        }
+        return out;
+    }
+}

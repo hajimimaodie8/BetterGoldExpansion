@@ -1,0 +1,31 @@
+﻿# 收尾基线（**所有编辑完成之后**的最终复跑）
+
+* `validate_metal_data.py` = exit 0；bg-fix4 段末行：bg-fix4 ���������Ŷ����ɾ� / ˳����Դ����ͬ�� / ��3 ��1ҳ��ԭ / ����ҳ 11 �� / ����ҳ˳�����������: 0 []����3 10 ҳ / ����ҳ��Ļ 8/8 / ͼ������ 115 ����
+* `validate_advancements.py` = exit 0
+
+> 说明：扰动矩阵（`07`）的收尾基线跑在本节 §25 的**最后几处文字修订之前**；
+> 那几处只改本节自己的叙述（没有动任何判据 needle），本文件是**最终态**的复跑读数 —— 两条都是 exit 0。
+
+## git status 摘要（全量 19 条）
+```
+ M "docs/1.6-\350\247\204\346\240\274.md"
+ M src/main/java/com/hjmmd_8/bettergold/config/Config.java
+ M src/main/java/com/hjmmd_8/bettergold/material/MetalFamily.java
+ M src/main/java/com/hjmmd_8/bettergold/registry/AllLootModifiers.java
+ M src/main/resources/assets/bettergold/lang/en_us.json
+ M src/main/resources/assets/bettergold/lang/zh_cn.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/golden_knowledge.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_knowledge.json
+ M src/main/resources/data/bettergold/advancement/merchant/antique_tool.json
+ M src/main/resources/data/bettergold/advancement/merchant/netherite_antique_tool.json
+ M tools/asset-generator/advancement_manifest.json
+ M tools/asset-generator/generate_advancements.py
+ M tools/asset-generator/generate_handbook_data.py
+ M tools/asset-generator/generate_metal_tags.py
+ M tools/asset-generator/validate_advancements.py
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bgfix4-\350\257\201\346\215\256/"
+?? src/main/resources/data/bettergold/tags/item/antique_knives.json
+?? src/main/resources/data/bettergold/tags/item/netherite_antique_knives.json
+```
+* 贴图条目数 = 0（**0 字节改动**）

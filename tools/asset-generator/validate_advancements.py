@@ -73,6 +73,24 @@ BGFIX3_HANDBOOK_TAG = f"#{NS}:handbook"
 BGFIX3_HANDBOOK_ITEM = f"{NS}:alchemy_student_handbook"
 BGFIX3_TAG_FILES = {f"{m}_knives": [f"{NS}:{m}_knife"] for m in METALS_ORDER}
 BGFIX3_TAG_FILES["handbook"] = [BGFIX3_HANDBOOK_ITEM]
+# ==================== bg-fix4 §一（2026-10-08）新增：两把古董刀 ====================
+# 作者原话「古董屠刀和幽冥断骸刀无法触发上古藏品和皇骸永存的进度」⇒ 两条商人线成就各得一条
+# `have_knife` 判据，items 指向**无条件存在**的标签（各 1 条 `required:false` 条目）。
+# 两把刀都在 `fd/FdItems.java:192/196` 注册 ⇒ **只在装了乐事时才存在** ⇒ 与 8 把乐事小刀
+# 同一条硬约束（裸 id / 混写列表都会在"没装乐事"时把整份成就 JSON 弄坏）。
+BGFIX4_ANTIQUE_TAG_FILES = {
+    "antique_knives": [f"{NS}:antique_knife"],
+    "netherite_antique_knives": [f"{NS}:netherite_antique_knife"],
+}
+BGFIX4_ANTIQUE_TAGS = {f"#{NS}:{k}": v[0] for k, v in BGFIX4_ANTIQUE_TAG_FILES.items()}
+# 成就路径 -> (标签, 该成就原有的 5 件"永远注册"的古董工具)
+BGFIX4_ANTIQUE_ACHIEVEMENTS = {
+    "merchant/antique_tool": (f"#{NS}:antique_knives",
+                              [f"{NS}:antique_{s}" for s in ("sword", "axe", "pickaxe", "shovel", "hoe")]),
+    "merchant/netherite_antique_tool": (f"#{NS}:netherite_antique_knives",
+                                        [f"{NS}:netherite_antique_{s}" for s in ("sword", "axe", "pickaxe", "shovel", "hoe")]),
+}
+BGFIX3_TAG_FILES.update(BGFIX4_ANTIQUE_TAG_FILES)
 TAG_DIR = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "tags" / "item"
 
 # 1.6 收尾轮 bg-final 第 2 件：**英文值必须是真英译**（旧口径 = 复制中文，已推翻）。
@@ -457,10 +475,12 @@ def main() -> int:
     #   ② 标签文件**无条件存在**（写 neoforge:conditions 关掉它 ⇒ `Missing tag` ⇒ 整份 JSON 死）；
     #   ③ 条目恰好是计划里那几件、且**每一件都写 `required: false`**（没装可选模组时静默跳过）。
     bgfix3_tag_refs = sorted(r for r in set(refs) if r.startswith(f"#{NS}:"))
-    if sorted(bgfix3_tag_refs) != sorted(set(BGFIX3_KNIFE_TAGS) | {BGFIX3_HANDBOOK_TAG}):
+    # bg-fix4 §一：期望集合 = 8 张刀标签 + 手册标签 + **2 张古董刀标签**（共 11 张）
+    _want_tags = set(BGFIX3_KNIFE_TAGS) | {BGFIX3_HANDBOOK_TAG} | set(BGFIX4_ANTIQUE_TAGS)
+    if sorted(bgfix3_tag_refs) != sorted(_want_tags):
         bad("bgfix3-adv-tag-refs",
             f"成就里引用的 bettergold 标签集合不对：{bgfix3_tag_refs}"
-            f"（期望 {sorted(set(BGFIX3_KNIFE_TAGS) | {BGFIX3_HANDBOOK_TAG})}）")
+            f"（期望 {sorted(_want_tags)}）")
     for _tag in bgfix3_tag_refs:
         _short = _tag[len(f"#{NS}:"):]
         _tagfile = TAG_DIR / f"{_short}.json"
@@ -683,6 +703,47 @@ def main() -> int:
         bad("bgfix3-knife-in-gear",
             f"8 条武器成就的 `have` 判据只解析到 {len(_gear_items)} 个物品（应 >= 40）—— 反空转守护")
 
+    # ---- 5d'. bg-fix4 §一：**古董屠刀 / 幽冥断骸刀必须能触发**两条商人线成就 ----
+    #   作者原话（2026-10-08）：「古董屠刀和幽冥断骸刀无法触发上古藏品和皇骸永存的进度」。
+    #   判据（四件一起）：① 两条成就各有 `have` + `have_knife`；
+    #   ② `have` 仍是那 5 件"永远注册"的古董工具（**没有**被换成标签 ⇒ 原路径不许丢）；
+    #   ③ `have_knife` 的 items **恰好是单个标签字符串**；
+    #   ④ requirements = 1 组 {have, have_knife}（组内 OR）。
+    _antique_ok = 0
+    for _p, (_tag, _five) in BGFIX4_ANTIQUE_ACHIEVEMENTS.items():
+        _crits = advs.get(_p, {}).get("criteria") or {}
+        if "have" not in _crits or "have_knife" not in _crits:
+            bad("bgfix4-antique-knife-in-gear",
+                f"{_p} 的不是 {{have, have_knife}} 两条判据：{sorted(_crits)}"
+                f"（古董刀无法触发这条成就）")
+            continue
+        _have_items = [p.get("items") for p in
+                       (_crits["have"].get("conditions") or {}).get("items") or []]
+        if _have_items != [_five]:
+            bad("bgfix4-antique-knife-in-gear",
+                f"{_p}.have 的 items 必须仍是那 5 件裸 id 的古董工具（原路径不许丢）：实际 {_have_items}")
+        _kc = _crits["have_knife"]
+        if _kc.get("trigger") != "minecraft:inventory_changed":
+            bad("bgfix4-antique-knife-in-gear",
+                f"{_p}.have_knife 的 trigger 不是 inventory_changed：{_kc.get('trigger')}")
+        _ki = [p.get("items") for p in (_kc.get("conditions") or {}).get("items") or []]
+        if _ki != [_tag]:
+            bad("bgfix4-antique-knife-in-gear",
+                f"{_p}.have_knife 的 items 必须恰好是单个标签字符串 [{_tag}]"
+                f"（裸 id / 混写列表都会在『没装乐事』时把整份 JSON 弄坏），实际 {_ki}")
+        else:
+            _antique_ok += 1
+        _reqs = advs.get(_p, {}).get("requirements") or []
+        if len(_reqs) != 1 or sorted(_reqs[0]) != ["have", "have_knife"]:
+            bad("bgfix4-antique-knife-in-gear",
+                f"{_p} 的 requirements 必须是 1 组 {{have, have_knife}}（组内 OR：5 件工具**或**屠刀），"
+                f"实际 {_reqs}")
+    if _antique_ok != 2:
+        bad("bgfix4-antique-knife-in-gear",
+            f"两条古董成就里只有 {_antique_ok} 条把刀正确纳入 —— 反空转守护")
+    if not BGFIX4_ANTIQUE_ACHIEVEMENTS:
+        bad("bgfix4-antique-knife-in-gear", "本轮的清单是空的 —— 反空转守护（用例本身失效）")
+
     # ---- 5e. bg-fix3 §四：根成就的判据 = 「**获得**新生代炼金术学员手册」----
     #   ⚠ 旧口径原文保留（未删）：root 用 `{"craft_handbook": c_recipe("bettergold:alchemy_student_handbook")}`
     #     —— 理由是"手册物品没装 Patchouli 时不注册，而 recipe_id 是裸 RL 不查注册表"（§14.3）。
@@ -774,6 +835,9 @@ def main() -> int:
           f"`#bettergold:<族>_knives` 标签，标签条目一律 required:false）⇒ 装了乐事时小刀计入")
     print(f"OK [bgfix3-root-obtain] root 判据 = inventory_changed + `{BGFIX3_HANDBOOK_TAG}`；"
           f"全仓 recipe_crafted = 0 条")
+    print(f"OK [bgfix4-antique-knife-in-gear] {_antique_ok} 条古董成就各带 `have_knife`"
+          f"（items = 单个标签字符串，标签条目 required:false）⇒ 装了乐事时屠刀/断骸刀计入；"
+          f"`have` 那 5 件裸 id 原路径保留")
     print("OK [bgach] 物品引用 %d 个（含 %d 张本模组标签）全部存在于注册表真源；"
           "食物清单与 Java 真源逐条一致" % (len(set(refs)), len(bgfix3_tag_refs)))
     print(f"OK [bgfinal-adv-lang] {len(en_adv)} 条英文值全部是真英译"

@@ -216,9 +216,15 @@ public class AllLootModifiers {
      *   <li>「任意金武器工具」= <b>本模组全部金属族的器具（剑/斧/镐/锹/锄/小刀）
      *       + 1.5 五类武器（重锤/弓/弩/三叉戟/盾牌）</b> —— 判据是 {@code MetalFamily.of(tool)}
      *       且该物品属于该族的 {@code isTool}/{@code isWeapon}。
-     *       <br>⚠ <b>旧口径（原文保留，未删）</b>：这一条来自 {@code bg-16}，当时是「<b>任意一族</b>」，
-     *       <b>含万坚金</b>。作者 2026-10-05 把它<b>收窄</b>为「<b>特殊金属</b> = 除万坚金以外的全部本模组金」（bg-fix 第 3 条）
-     *       ⇒ 现在多一条 {@code family.isSpecialMetal()} 的前置判定（见 {@code isOurTool}）。</li>
+     *       <br>★ <b>现行口径（bg-fix4 §一，作者 2026-10-08 澄清）</b>：「<b>全部金属都能掉，没有豁免</b>」——
+     *       原话「万坚金器具与金器具的挖树叶与藤蔓有概率掉落闪耀藤条的事你又忘添加了」⇒
+     *       <b>万坚金不再豁免</b>，{@code isOurTool} 里那条 {@code family.isSpecialMetal()} 前置判定
+     *       <b>已整条移除</b>（A 级：万坚金 11 类挖树叶的掉落 0/400 → 与其余 7 族同档）。
+     *       <br>⚠ <b>旧口径（原文保留，未删，已被作者 2026-10-08 取代）</b>：
+     *       {@code bg-16} 落地时是「<b>任意一族</b>（含万坚金）」；
+     *       作者 2026-10-05 把它<b>收窄</b>为「<b>特殊金属</b> = 除万坚金以外的全部本模组金」（`bg-fix` 第 3 条）
+     *       ⇒ 当时多了一条 {@code family.isSpecialMetal()} 的前置判定，<b>万坚金 11 类全 0/400</b>
+     *       （bg-fix3 执行轮的 A 级读数，`docs/1.6-规格.md` §22.2）。本轮按最新口径去掉该判定。</li>
      *   <li><b>反例</b>：用别的模组的工具、或挖的不是树叶 / 藤蔓 ⇒ 不掉（两个判据都不满足）。</li>
      *   <li>概率与目标方块都写在 Java 里（vanilla 的物品标签表达不了"任意一族"），JSON 只提供 conditions。</li>
      * </ul>
@@ -265,18 +271,21 @@ public class AllLootModifiers {
         }
 
         /**
-         * 工具：<b>特殊金属</b>（= 除万坚金以外的全部本模组金，7 族）的器具（含乐事小刀）或五类武器。
+         * 工具：<b>全部 8 族本模组金</b>的器具（含乐事小刀）或五类武器。
          *
-         * <p><b>bg-fix 第 3 条</b>（作者 2026-10-05）：判据 = {@code family.isSpecialMetal()}
-         * <b>且</b>（{@code isTool} 或 {@code isWeapon}）。</p>
+         * <p>★ <b>bg-fix4 §一</b>（作者 2026-10-08 澄清）：判据 = {@code family != null}
+         * <b>且</b>（{@code isTool} 或 {@code isWeapon}）—— <b>不看</b> {@code isSpecialMetal()}，
+         * 于是<b>万坚金也掉</b>（"万坚金器具与金器具……你又忘添加了"）。</p>
          *
-         * <p>⚠ <b>旧口径（原文保留，未删）</b>：{@code return family != null && (family.isTool(tool.getItem()) || family.isWeapon(tool.getItem()));}
-         * —— 那是 {@code bg-16} 的「任意一族」，<b>万坚金也掉</b>；作者 2026-10-05 收窄后<b>万坚金挖树叶不掉藤条</b>
-         * （A 级反向对照的一条用例就是它）。</p>
+         * <p>⚠ <b>旧口径（原文保留，未删，已被 2026-10-08 取代）</b>——
+         * {@code bg-fix 第 3 条}（作者 2026-10-05）的写法是：
+         * {@code return family != null && family.isSpecialMetal() && (family.isTool(tool.getItem()) || family.isWeapon(tool.getItem()));}
+         * ⇒ 收窄为"特殊金属"（除万坚金外 7 族），<b>万坚金挖树叶/藤蔓不掉藤条</b>；
+         * 关卡旧期望 `[bgfix2-vine-all-but-sturdygold]` 的原文也随本轮作废（见 {@code validate_metal_data.py}）。</p>
          */
         private static boolean isOurTool(ItemStack tool) {
             var family = com.hjmmd_8.bettergold.material.MetalFamily.of(tool);
-            return family != null && family.isSpecialMetal()
+            return family != null
                     && (family.isTool(tool.getItem()) || family.isWeapon(tool.getItem()));
         }
 

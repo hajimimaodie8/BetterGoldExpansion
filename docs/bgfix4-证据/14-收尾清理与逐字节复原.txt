@@ -1,0 +1,41 @@
+﻿# 收尾清理与逐字节复原（bg-fix4）
+
+## 1) 探针 / 开关 / 世界
+src/main/java/com/hjmmd_8/bettergold/probe 目录存在 = False
+run/bgfix4-probe.enabled 存在 = False
+run/bgfix4c-probe.enabled 存在 = False
+run/bgfix4probe 世界目录存在 = False
+run/saves/bgfix4probe 存在 = False
+probe 源码副本（**删前先复制**）= docs/bgfix4-证据/11-探针源码副本-BgFix4Probe.java.txt 41782 B / 12-…ClientProbe… 17099 B
+
+## 2) 探针标识符 grep（src 全树，**大小写敏感**）
+扫描 .java 70 个；命中数 = 0 
+（另有 **1 处**无害的关卡 id 引用：Config.java 的注释里写着 `[bgfix4-metal-order-single-source]` —— 是文档锚点，不是探针代码）
+
+## 3) 逐字节复原（目标哈希）
+run/server.properties = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  期望 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+build.gradle          = 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+  期望 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+run/config/bettergold-common.toml = 731371ECCCCB018702BA5C606148D8BF54ACC731ABC26F9C446E6A1ECB8054AA
+  期望 731371ECCCCB018702BA5C606148D8BF54ACC731ABC26F9C446E6A1ECB8054AA（= 跑前原文件；新写的那份留档在 04-改后-…）
+run/mods/Patchouli jar = 646777 B / 959AF52ED6640C316C3A8469203420BE4AEEA11AD6603890BA83BF48F5D9F993（**本轮未动**）
+build/moddev/clientRunProgramArgs.txt = 本轮**未碰**（参数走 build.gradle 的 runs.client.programArguments）
+
+## 4) 作者存档 run/saves/新的世界
+跑前/跑后文件数 = 29 / 29
+逐行相同（相对路径 + 长度 + SHA256）⇒ **作者存档一个字节未变** = True
+run/saves 顶层 = 新的世界
+
+## 5) 临时改动（本轮做过、已复原）
+* `run/server.properties` 的 `level-name`：`world` → `bgfix4probe`（4 次 runServer 共用）→ **逐字节复原**（本轮**没有**时间戳漂移）
+* `run/config/bettergold-common.toml`：删掉一次（让 NeoForge 按**声明顺序**重写一份 = ② 的 A 级物证）→ 跑完把**原文件**放回
+* `build.gradle`：① 注掉 FD `localRuntime`（runC「没装乐事」那一档）② 客户端临时 `programArguments.addAll --quickPlaySingleplayer bgfix4probe` → **逐字节复原**
+* `run/mods`：**未动**（本轮不测"没装 Patchouli"）；贴图：**0 字节**；`run/*.enabled` = 0
+
+## 6) 贴图
+git status 里 textures/** 的条目数 = 0
+
+## 7) run\ 串行
+runServer(runA) → runServer(runA2) → runServer(runA3) → runServer(runC) → runClient —— **每条都在上一条的游戏进程退出之后才起**；
+全程只读 `run/logs/latest.log` 的产物副本（各轮日志已复制到本目录 01~06）。

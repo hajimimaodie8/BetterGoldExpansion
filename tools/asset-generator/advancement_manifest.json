@@ -887,6 +887,10 @@
       "thundergold": "bettergold:thundergold_knives",
       "illusiongold": "bettergold:illusiongold_knives"
     },
-    "handbook_tag": "bettergold:handbook"
+    "handbook_tag": "bettergold:handbook",
+    "antique_knife_tags": {
+      "antique_tool": "bettergold:antique_knives",
+      "netherite_antique_tool": "bettergold:netherite_antique_knives"
+    }
   }
 }

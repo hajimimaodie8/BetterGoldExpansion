@@ -1,0 +1,851 @@
+package com.hjmmd_8.bettergold.probe.bgfix4;
+
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.material.CreativeSections;
+import com.hjmmd_8.bettergold.material.MetalSpecialItems;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
+import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.Connection;
+import net.minecraft.network.PacketSendListener;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * bg-fix4 A 级实机探针（**只读验证，不参与任何玩法**；收尾整块删除）。
+ *
+ * <p>会话隔离：整包 {@code com.hjmmd_8.bettergold.probe.bgfix4}，收尾只删这个子目录。</p>
+ * <p>开关文件：{@code <gameDir>/bgfix4-probe.enabled}（按 {@link FMLPaths#GAMEDIR} 算）。</p>
+ * <p>世界守卫：第 1 tick 反射读 {@code getLevelName()}，**必须**是 {@code bgfix4probe}；
+ * 不等 ⇒ 打 {@code ABORT} 并停止一切动作（**不调 halt** —— 万一真进了作者的存档，
+ * halt 会走正常存盘把它重写一遍，那正是红线 5 的事故形态）。</p>
+ *
+ * <h2>本轮要证的五件事</h2>
+ * <ol>
+ *   <li><b>bg-fix3 追加轮</b>：闪耀藤条去掉万坚金豁免 ⇒ 8 族 × 11 类 × {树叶, 藤蔓} 的真实
+ *       GLM 路径读数**全部 &gt; 0**（万坚金 从 0/400 变绿）+ 时运曲线（万坚金剑）+ 真世界交叉印证。</li>
+ *   <li><b>①</b> 古董屠刀 / 幽冥断骸刀：真 {@code ServerPlayer} 拿到刀 ⇒「上古藏品」「皇骸永存」
+ *       **真的解锁**（改前应红）；旧的 5 件裸 id 路径仍在；阴性对照（铁剑 / 幽冥断骸剑）。</li>
+ *   <li><b>②</b> 顺序：{@code METAL_ORDER} 读数 + 配置文件的 16 键**实际顺序** + 进度树的
+ *       兄弟节点顺序（证「不由数据决定」：打印 identityHashCode 与 DisplayInfo 的 y）。</li>
+ *   <li><b>⑤</b> 真实创造页（{@code buildContents} + {@code getDisplayItems()}）里
+ *       **材料分区的实际顺序**（交给作者"划顺序"用的清单）。</li>
+ *   <li>环境读数：乐事装没装（48 / 51 条成就）、两张新标签的 size（0 / 1）。</li>
+ * </ol>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgFix4Probe {
+
+    private static final String TAG = "BGFIX4-PROBE";
+    private static final String PROBE_WORLD = "bgfix4probe";
+    private static final String AUTHOR_WORLD = "\u65b0\u7684\u4e16\u754c";   // 新的世界
+
+    private static final String[] METALS = {
+            "flamegold", "sturdygold", "thornsgold", "echogold",
+            "indigoseagold", "voodoogold", "thundergold", "illusiongold"};
+    /** 作者 2026-10-08 的中文名（只为读数可读性） */
+    private static final Map<String, String> METAL_CN = Map.of(
+            "flamegold", "烈燃金", "sturdygold", "万坚金", "thornsgold", "树棘金", "echogold", "幽咆金",
+            "indigoseagold", "靛海金", "voodoogold", "巫毒金", "thundergold", "结雷金", "illusiongold", "幻惑金");
+    private static final String[] KINDS = {
+            "sword", "axe", "pickaxe", "shovel", "hoe", "knife",
+            "mace", "bow", "crossbow", "trident", "shield"};
+    /** 判据 = `family.isTool(item) || family.isWeapon(item)`；`MetalFamily#isWeapon` **不含盾牌**。 */
+    private static final Set<String> NOT_A_WEAPON = Set.of("shield");
+    /** 作者 2026-10-08 的 11 件建材顺序（§四） */
+    private static final String[] BUILDING_SUFFIX = {
+            "_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
+            "_bricks_wall", "_door", "_trapdoor", "_bars", "_chain", "_lantern"};
+
+    // ---- 绝对 tick 表（ex/03 §3.2 规则 11：不许用"距上一步多少 tick"的累加偏移）----
+    private static final int T_GUARD = 1;
+    private static final int T_FORCELOAD = 20;
+    private static final int T_SETUP = 40;
+    private static final int T_DROP_MATRIX = 60;
+    private static final int T_REAL_BREAK_0 = 90;
+    private static final int T_REAL_ASSERT_0 = 110;
+    private static final int T_REAL_BREAK_1 = 112;
+    private static final int T_REAL_ASSERT_1 = 132;
+    private static final int T_REAL_BREAK_2 = 134;
+    private static final int T_REAL_ASSERT_2 = 154;
+    private static final int T_ADV_META = 175;
+    private static final int T_ADV_ANTIQUE = 195;
+    private static final int T_ADV_ANTIQUE_NEG = 215;
+    private static final int T_ORDER = 235;
+    private static final int T_CREATIVE = 255;
+    private static final int T_SUMMARY = 285;
+
+    private static boolean armed;
+    private static boolean aborted;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static int skip;
+    private static int broadcastFailures;
+    private static int rewardNpe;
+    private static String lastRewardNpe = "";
+    private static MinecraftServer server;
+    private static ServerLevel level;
+    private static ProbePlayer player;
+    private static String levelName = "?";
+
+    private static final List<String> problems = new ArrayList<>();
+    private static final List<String> aborts = new ArrayList<>();
+    private static final List<String> readouts = new ArrayList<>();
+    private static final Map<String, Integer> matrix = new LinkedHashMap<>();
+    private static final BlockPos TEST_POS = new BlockPos(8, 200, 8);
+
+    private BgFix4Probe() {
+    }
+
+    // ==================== 读数小工具 ====================
+
+    private static String id(String raw) {
+        return raw.replace('/', '_');
+    }
+
+    private static void report(String rawId, boolean ok, String detail) {
+        String key = id(rawId);
+        if (ok) {
+            pass++;
+            bettergold.LOGGER.info("{} {} :: PASS {}", TAG, key, detail);
+        } else {
+            fail++;
+            problems.add(key + " :: " + detail);
+            bettergold.LOGGER.error("{} {} :: FAIL {}", TAG, key, detail);
+        }
+    }
+
+    private static void skipped(String rawId, String detail) {
+        skip++;
+        bettergold.LOGGER.warn("{} {} :: SKIP {}", TAG, id(rawId), detail);
+    }
+
+    private static void readout(String rawId, String detail) {
+        readouts.add(id(rawId));
+        bettergold.LOGGER.info("{} {} :: READOUT {}", TAG, id(rawId), detail);
+    }
+
+    private static void abort(String why) {
+        aborts.add(why);
+        if (!aborted) {
+            aborted = true;
+            bettergold.LOGGER.error("{} ABORT {}（停止一切动作；**不调 halt**，避免把当前世界存盘）", TAG, why);
+        }
+    }
+
+    // ==================== 主循环 ====================
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if (!armed) {
+            Path flag = FMLPaths.GAMEDIR.get().resolve("bgfix4-probe.enabled");
+            if (!Files.isRegularFile(flag)) {
+                return;
+            }
+            armed = true;
+            server = event.getServer();
+            level = server.overworld();
+            bettergold.LOGGER.info("{} armed=true gamedir={} flag={}", TAG, FMLPaths.GAMEDIR.get(), flag);
+        }
+        if (aborted) {
+            return;
+        }
+        tick++;
+        try {
+            dispatch();
+        } catch (Throwable t) {
+            fail++;
+            problems.add("阶段 tick=" + tick + " 抛异常：" + t);
+            bettergold.LOGGER.error("{} 阶段 tick={} 抛异常", TAG, tick, t);
+        }
+    }
+
+    private static void dispatch() {
+        if (tick == T_GUARD) {
+            guardWorld();
+        } else if (tick == T_FORCELOAD) {
+            level.setChunkForced(0, 0, true);
+            readout("forced_chunks", "forced=" + level.getForcedChunks().size());
+        } else if (tick == T_SETUP) {
+            setupPlatform();
+        } else if (tick == T_DROP_MATRIX) {
+            runDropMatrix();
+        } else if (tick == T_REAL_BREAK_0) {
+            breakCase(0);
+        } else if (tick == T_REAL_ASSERT_0) {
+            assertCase(0);
+        } else if (tick == T_REAL_BREAK_1) {
+            breakCase(1);
+        } else if (tick == T_REAL_ASSERT_1) {
+            assertCase(1);
+        } else if (tick == T_REAL_BREAK_2) {
+            breakCase(2);
+        } else if (tick == T_REAL_ASSERT_2) {
+            assertCase(2);
+        } else if (tick == T_ADV_META) {
+            advanceMeta();
+        } else if (tick == T_ADV_ANTIQUE) {
+            advanceAntique();
+        } else if (tick == T_ADV_ANTIQUE_NEG) {
+            advanceAntiqueNegative();
+        } else if (tick == T_ORDER) {
+            orderReadouts();
+        } else if (tick == T_CREATIVE) {
+            creativeDump();
+        } else if (tick == T_SUMMARY) {
+            summary();
+        }
+    }
+
+    // ==================== 世界守卫（红线 5）====================
+
+    private static void guardWorld() {
+        Object data = level.getLevelData();
+        try {
+            Method m = data.getClass().getMethod("getLevelName");
+            levelName = String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            abort("probe_world_guard 读不到世界名：" + t.getClass().getSimpleName() + " " + t.getMessage());
+            return;
+        }
+        boolean ok = PROBE_WORLD.equals(levelName);
+        report("probe_world_guard", ok,
+                "levelName=" + levelName + " expect=" + PROBE_WORLD + " authorWorld=" + AUTHOR_WORLD);
+        if (levelName.equals(AUTHOR_WORLD)) {
+            abort("世界名 = 作者存档名（红线 5）");
+        } else if (!ok) {
+            abort("世界名不是本轮自己的 ASCII 探针世界");
+        }
+    }
+
+    // ==================== 场地 ====================
+
+    private static void setupPlatform() {
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                for (int dy = 0; dy <= 2; dy++) {
+                    level.setBlockAndUpdate(TEST_POS.offset(dx, dy, dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        level.setBlockAndUpdate(TEST_POS.below(), Blocks.STONE.defaultBlockState());
+        if (player == null) {
+            GameProfile profile = new GameProfile(
+                    UUID.nameUUIDFromBytes("bgfix4:probe".getBytes(StandardCharsets.UTF_8)), "bgfix4-probe");
+            player = new ProbePlayer(server, level, profile);
+            readout("probe_player", "class=" + player.getClass().getName()
+                    + " isFakePlayer=" + player.isFakePlayer()
+                    + "（真 ServerPlayer 子类；从不加进世界、从不 tick）");
+            try {
+                player.connection = new ServerGamePacketListenerImpl(
+                        server, new DummyConnection(), player, CommonListenerCookie.createInitial(profile, false));
+                readout("probe_connection", "dummy connection 已装上：" + player.connection.getClass().getName()
+                        + "（send 全部 no-op）");
+            } catch (Throwable t) {
+                skipped("probe_connection", "哑连接装不上（" + t + "）⇒ 带 rewards 的成就会在发奖励那步抛异常");
+            }
+        }
+        readout("setup_platform", "pos=" + TEST_POS + " air5x3x5 + stone below");
+    }
+
+    // ==================== bg-fix3 追加轮：闪耀藤条（全部 8 族）====================
+
+    private static boolean hasVine(List<ItemStack> drops) {
+        Item vine = MetalSpecialItems.GLITTERING_VINE.get();
+        for (ItemStack s : drops) {
+            if (s.is(vine)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 真实 GLM 路径取 N 次掉落（`Block.getDrops` → `LootTable#getRandomItems` → `CommonHooks.modifyLoot`）。 */
+    private static int rolls(BlockState state, ItemStack toolStack, int n) {
+        int hits = 0;
+        for (int i = 0; i < n; i++) {
+            if (hasVine(Block.getDrops(state, level, TEST_POS, null, null, toolStack))) {
+                hits++;
+            }
+        }
+        return hits;
+    }
+
+    private static ItemStack tool(String itemId) {
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId));
+        return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item);
+    }
+
+    private static void runDropMatrix() {
+        BlockState leaves = Blocks.OAK_LEAVES.defaultBlockState();
+        BlockState vine = Blocks.VINE.defaultBlockState();
+        BlockState stone = Blocks.STONE.defaultBlockState();
+        int n = 400;
+
+        readout("drop_matrix_head",
+                "path=Block.getDrops(state, level, pos, null, null, tool) -> LootTable#getRandomItems"
+                        + " -> CommonHooks.modifyLoot -> AddGlitteringVineModifier; rolls/case=" + n
+                        + "；口径（作者 2026-10-08）= 全部 8 族都能掉（**无万坚金豁免**）");
+
+        int cells = 0;
+        int hitCells = 0;
+        for (String metal : METALS) {
+            for (String kind : KINDS) {
+                String itemId = "bettergold:" + metal + "_" + kind;
+                ItemStack t = tool(itemId);
+                if (t.isEmpty()) {
+                    skipped("drop_matrix_" + metal + "_" + kind, "物品不存在（可选模组没装？）：" + itemId);
+                    continue;
+                }
+                int hLeaves = rolls(leaves, t, n);
+                int hVine = rolls(vine, t, n);
+                boolean expect = !NOT_A_WEAPON.contains(kind);
+                matrix.put(metal + "/" + kind + "/leaves", hLeaves);
+                matrix.put(metal + "/" + kind + "/vine", hVine);
+                cells++;
+                if ((hLeaves > 0) == expect && (hVine > 0) == expect) {
+                    hitCells++;
+                }
+                report("drop_matrix_" + metal + "_" + kind,
+                        (hLeaves > 0) == expect && (hVine > 0) == expect,
+                        METAL_CN.get(metal) + " " + kind + " leaves=" + hLeaves + "/" + n
+                                + " vine=" + hVine + "/" + n + " expectDrop=" + expect);
+            }
+        }
+        readout("drop_matrix_cells", "格子数=" + cells + " 命中=" + hitCells + "/" + cells
+                + "（盾牌按 `MetalFamily#isWeapon` 不含它 ⇒ 仍然 expect=0，见 docs/1.6-规格.md §22.2 的记账）");
+
+        int iron = rolls(leaves, new ItemStack(Items.IRON_SWORD), n);
+        int dia = rolls(leaves, new ItemStack(Items.DIAMOND_PICKAXE), n);
+        int hand = rolls(leaves, ItemStack.EMPTY, n);
+        report("drop_control_iron_sword", iron == 0, "iron_sword leaves=" + iron + "/" + n + " expect=0");
+        report("drop_control_diamond_pickaxe", dia == 0, "diamond_pickaxe leaves=" + dia + "/" + n + " expect=0");
+        report("drop_control_empty_hand", hand == 0, "empty-hand leaves=" + hand + "/" + n + " expect=0");
+        ItemStack sturdyPick = tool("bettergold:sturdygold_pickaxe");
+        if (!sturdyPick.isEmpty()) {
+            int onStone = rolls(stone, sturdyPick, n);
+            report("drop_control_non_target_block", onStone == 0,
+                    "sturdygold_pickaxe stone=" + onStone + "/" + n + " expect=0（不是树叶/藤蔓）");
+        }
+
+        // ★ 时运曲线用**万坚金**剑（改前它是 0/0/0/0 —— 本轮的红→绿就在这一格）
+        ItemStack fortuneSword = tool("bettergold:sturdygold_sword");
+        if (!fortuneSword.isEmpty()) {
+            Optional<Holder.Reference<Enchantment>> fortune =
+                    level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.FORTUNE);
+            int[] hits = new int[4];
+            int fn = 2000;
+            for (int lvl = 0; lvl <= 3; lvl++) {
+                ItemStack t = fortuneSword.copy();
+                if (lvl > 0) {
+                    if (fortune.isEmpty()) {
+                        skipped("drop_fortune_l" + lvl, "注册表里没有 minecraft:fortune");
+                        continue;
+                    }
+                    t.enchant(fortune.get(), lvl);
+                }
+                hits[lvl] = rolls(leaves, t, fn);
+                double p = 0.06 + 0.06 * lvl;
+                double sigma = Math.sqrt(fn * p * (1.0 - p));
+                double dev = Math.abs(hits[lvl] - fn * p);
+                report("drop_fortune_sturdygold_l" + lvl, dev <= 4.0 * sigma,
+                        "sturdygold_sword fortune=" + lvl + " p=" + p + " expect=" + (fn * p)
+                                + " hits=" + hits[lvl] + "/" + fn + " dev="
+                                + String.format(java.util.Locale.ROOT, "%.1f", dev) + " 4sigma="
+                                + String.format(java.util.Locale.ROOT, "%.1f", 4.0 * sigma)
+                                + "（改前这一族恒 0）");
+            }
+            report("drop_fortune_sturdygold_monotonic",
+                    hits[0] < hits[1] && hits[1] < hits[2] && hits[2] < hits[3],
+                    "万坚金剑 hits=" + hits[0] + "," + hits[1] + "," + hits[2] + "," + hits[3] + "（应严格递增）");
+        }
+    }
+
+    // ---- 真世界 destroyBlock + 数 ItemEntity（交叉印证"真的掉进世界"）----
+
+    private static final int REAL_N = 200;
+    private static final String[] REAL_CASES = {"sturdygold_sword", "thornsgold_sword", "iron"};
+
+    private static void clearItemEntities() {
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, new AABB(TEST_POS).inflate(16))) {
+            ie.discard();
+        }
+    }
+
+    private static void breakCase(int index) {
+        clearItemEntities();
+        String which = REAL_CASES[index];
+        ItemStack t = which.equals("iron") ? new ItemStack(Items.IRON_SWORD) : tool("bettergold:" + which);
+        if (t.isEmpty()) {
+            skipped("drop_real_" + which, "工具不存在");
+            return;
+        }
+        player.setItemInHand(InteractionHand.MAIN_HAND, t);
+        BlockState leaves = Blocks.OAK_LEAVES.defaultBlockState();
+        int ok = 0;
+        for (int i = 0; i < REAL_N; i++) {
+            level.setBlockAndUpdate(TEST_POS, leaves);
+            // ⚠ 必须走 `ServerPlayerGameMode#destroyBlock`：`Level#destroyBlock` 传的是
+            //   `ItemStack.EMPTY` 当工具（见 docs/1.6-规格.md §22.9 教训③）。
+            if (player.gameMode.destroyBlock(TEST_POS)) {
+                ok++;
+            }
+        }
+        readout("drop_real_" + which + "_breaks",
+                "gameMode.destroyBlock ok=" + ok + "/" + REAL_N + " tool=" + t.getItem()
+                        + " mainhand=" + player.getMainHandItem().getItem());
+    }
+
+    private static void assertCase(int index) {
+        String which = REAL_CASES[index];
+        ItemStack t = which.equals("iron") ? new ItemStack(Items.IRON_SWORD) : tool("bettergold:" + which);
+        if (t.isEmpty()) {
+            return;
+        }
+        Item vine = MetalSpecialItems.GLITTERING_VINE.get();
+        int vineHits = 0;
+        int other = 0;
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, new AABB(TEST_POS).inflate(16))) {
+            if (ie.getItem().is(vine)) {
+                vineHits++;
+            } else {
+                other++;
+            }
+        }
+        boolean expect = !which.equals("iron");
+        report("drop_real_" + which,
+                (vineHits > 0) == expect,
+                "真世界 ItemEntity：vine=" + vineHits + " other(树叶自身掉落)=" + other
+                        + "（" + REAL_N + " 次真 destroyBlock；expectVine=" + expect
+                        + "；改前 sturdygold_sword 是 0）");
+        clearItemEntities();
+        level.setBlockAndUpdate(TEST_POS, Blocks.AIR.defaultBlockState());
+    }
+
+    // ==================== 成就侧（真 ServerPlayer）====================
+
+    private static AdvancementHolder advHolder(String path) {
+        return server.getAdvancements().get(ResourceLocation.parse("bettergold:" + path));
+    }
+
+    private static boolean done(String path) {
+        AdvancementHolder h = advHolder(path);
+        if (h == null) {
+            problems.add("成就不存在（没能加载）：bettergold:" + path);
+            return false;
+        }
+        return player.getAdvancements().getOrStartProgress(h).isDone();
+    }
+
+    private static void revokeAll(String path) {
+        AdvancementHolder h = advHolder(path);
+        if (h == null) {
+            return;
+        }
+        for (String c : new ArrayList<>(h.value().criteria().keySet())) {
+            player.getAdvancements().revoke(h, c);
+        }
+    }
+
+    /**
+     * 真实获得一件物品：进背包 →（试）菜单广播 → 真 {@code INVENTORY_CHANGED} 触发器。
+     *
+     * <p>⚠ {@code Inventory#add} 会**吃掉入参那一份** ⇒ 触发器要喂 {@code stack.copy()}
+     * （bg-fix3 实测：不 copy 时 8 条刀全红、且只有背包快满的那几条会绿）。</p>
+     */
+    private static void obtain(ItemStack stack) {
+        ItemStack changed = stack.copy();
+        player.getInventory().add(stack);
+        try {
+            player.inventoryMenu.broadcastChanges();
+        } catch (Throwable t) {
+            broadcastFailures++;
+        }
+        try {
+            CriteriaTriggers.INVENTORY_CHANGED.trigger(player, player.getInventory(), changed);
+        } catch (Throwable t) {
+            rewardNpe++;
+            lastRewardNpe = t.getClass().getSimpleName() + ": " + t.getMessage();
+        }
+    }
+
+    private static void advanceMeta() {
+        Collection<AdvancementHolder> all = server.getAdvancements().getAllAdvancements();
+        List<AdvancementHolder> ours = new ArrayList<>();
+        for (AdvancementHolder h : all) {
+            if (h.id().getNamespace().equals("bettergold")) {
+                ours.add(h);
+            }
+        }
+        boolean fdLoaded = ModList.get().isLoaded("farmersdelight");
+        boolean patchouli = ModList.get().isLoaded("patchouli");
+        int expectCount = fdLoaded ? 51 : 48;
+        report("adv_loaded_count", ours.size() == expectCount,
+                "bettergold advancements loaded=" + ours.size() + " expect=" + expectCount
+                        + "（farmersdelight=" + fdLoaded + " → 没装时 3 条乐事条件成就不加载）");
+        int hidden = 0;
+        int challenge = 0;
+        int recipeCrafted = 0;
+        for (AdvancementHolder h : ours) {
+            if (h.value().display().map(d -> d.isHidden()).orElse(false)) {
+                hidden++;
+            }
+            if (h.value().display().map(d -> d.getType() == AdvancementType.CHALLENGE).orElse(false)) {
+                challenge++;
+            }
+            for (var c : h.value().criteria().values()) {
+                if (c.trigger() == CriteriaTriggers.RECIPE_CRAFTED) {
+                    recipeCrafted++;
+                }
+            }
+        }
+        report("adv_hidden_none", hidden == 0, "hidden=" + hidden);
+        report("adv_challenge_nine", challenge == 9, "challenge=" + challenge + " expect=9");
+        report("adv_recipe_crafted_none", recipeCrafted == 0, "recipe_crafted criteria=" + recipeCrafted);
+
+        // 两条古董成就：必须各有 have + have_knife 两条判据，且 requirements = 1 组 {have, have_knife}
+        for (String path : new String[]{"merchant/antique_tool", "merchant/netherite_antique_tool"}) {
+            AdvancementHolder h = advHolder(path);
+            if (h == null) {
+                report("adv_antique_shape_" + path, false, "成就不存在：" + path);
+                continue;
+            }
+            var crits = h.value().criteria();
+            var reqs = h.value().requirements();
+            List<List<String>> groups = reqs.requirements();
+            boolean ok = crits.size() == 2 && crits.containsKey("have") && crits.containsKey("have_knife")
+                    && groups.size() == 1 && groups.get(0).size() == 2;
+            // 组内 OR 的语义自证：**只**满足其中一条也能过这一组
+            boolean orSemantics = reqs.test(c -> c.equals("have")) && reqs.test(c -> c.equals("have_knife"));
+            report("adv_antique_shape_" + path, ok && orSemantics,
+                    "criteria=" + crits.keySet() + " requirements=" + groups
+                            + " 组内OR语义（单独 have / 单独 have_knife 都能过该组）=" + orSemantics);
+        }
+
+        // 两张新标签：装了乐事 size=1、没装 size=0，且**标签必须存在**（不许 Missing tag）
+        for (String tagId : new String[]{"bettergold:antique_knives", "bettergold:netherite_antique_knives"}) {
+            Optional<HolderSet.Named<Item>> tag = BuiltInRegistries.ITEM.getTag(
+                    TagKey.create(Registries.ITEM, ResourceLocation.parse(tagId)));
+            int size = tag.map(HolderSet::size).orElse(-1);
+            report("adv_tag_" + tagId, tag.isPresent() && size == (fdLoaded ? 1 : 0),
+                    "#" + tagId + " present=" + tag.isPresent() + " size=" + size
+                            + " expect=" + (fdLoaded ? 1 : 0) + "（required:false 兜住「没装乐事」）");
+        }
+        readout("env_mods", "patchouli=" + patchouli + " farmersdelight=" + fdLoaded);
+    }
+
+    /** ① 两把刀各解锁一条成就（+ 旧的 5 件裸 id 路径仍在）。 */
+    private static void advanceAntique() {
+        Item antiqueKnife = BuiltInRegistries.ITEM.get(ResourceLocation.parse("bettergold:antique_knife"));
+        Item netheriteKnife = BuiltInRegistries.ITEM.get(
+                ResourceLocation.parse("bettergold:netherite_antique_knife"));
+        if (antiqueKnife == Items.AIR || netheriteKnife == Items.AIR) {
+            skipped("adv_antique_knife", "古董屠刀/幽冥断骸刀没注册（没装乐事）⇒ 两条只能 SKIP");
+            return;
+        }
+        // 1) 古董屠刀 ⇒ 上古藏品
+        revokeAll("merchant/antique_tool");
+        boolean before1 = done("merchant/antique_tool");
+        obtain(new ItemStack(antiqueKnife));
+        boolean after1 = done("merchant/antique_tool");
+        report("adv_antique_knife", !before1 && after1,
+                "获得 bettergold:antique_knife -> merchant/antique_tool before=" + before1
+                        + " after=" + after1 + "（改前 = 恒 false）");
+        // 2) 幽冥断骸刀 ⇒ 皇骸永存
+        revokeAll("merchant/netherite_antique_tool");
+        boolean before2 = done("merchant/netherite_antique_tool");
+        obtain(new ItemStack(netheriteKnife));
+        boolean after2 = done("merchant/netherite_antique_tool");
+        report("adv_netherite_antique_knife", !before2 && after2,
+                "获得 bettergold:netherite_antique_knife -> merchant/netherite_antique_tool before=" + before2
+                        + " after=" + after2 + "（改前 = 恒 false）");
+        // 3) 旧的 5 件裸 id 路径仍在（拿斧头）
+        revokeAll("merchant/antique_tool");
+        obtain(tool("bettergold:antique_axe"));
+        report("adv_antique_old_path_kept", done("merchant/antique_tool"),
+                "获得 bettergold:antique_axe -> merchant/antique_tool done=" + done("merchant/antique_tool")
+                        + "（原 5 件裸 id 路径必须仍然有效）");
+    }
+
+    /** ① 阴性对照：别族的/别档位的物品不该解锁。 */
+    private static void advanceAntiqueNegative() {
+        revokeAll("merchant/antique_tool");
+        revokeAll("merchant/netherite_antique_tool");
+        obtain(new ItemStack(Items.IRON_SWORD));
+        boolean a1 = done("merchant/antique_tool");
+        boolean a2 = done("merchant/netherite_antique_tool");
+        report("adv_antique_negative_iron", !a1 && !a2,
+                "铁剑 -> antique_tool=" + a1 + " netherite_antique_tool=" + a2 + " expect 全 false");
+        // 幽冥断骸剑（netherite_antique_sword）**不该**解锁「上古藏品」（那是 netherite 那一档的）
+        revokeAll("merchant/antique_tool");
+        obtain(tool("bettergold:netherite_antique_sword"));
+        boolean cross = done("merchant/antique_tool");
+        report("adv_antique_negative_cross_tier", !cross,
+                "netherite_antique_sword -> antique_tool=" + cross + " expect=false（两档不许串）");
+        readout("obtain_dispatch_diag", "奖励阶段抛异常次数=" + rewardNpe + " last=" + lastRewardNpe
+                + " broadcastChanges 抛异常=" + broadcastFailures);
+    }
+
+    // ==================== ② 顺序读数 ====================
+
+    private static void orderReadouts() {
+        // (a) 顺序真源
+        readout("order_metal_order", "CreativeSections.METAL_ORDER=" + CreativeSections.METAL_ORDER
+                + "（作者 2026-10-08 口径：" + METALS.length + " 族，" + METAL_CN.get(METALS[0]) + " → "
+                + METAL_CN.get(METALS[METALS.length - 1]) + "）");
+        // (b) 配置**声明顺序** = NeoForge 配置界面 / 配置文件的条目顺序
+        // ⚠ 实测（本轮第一版）：**已存在的 `bettergold-common.toml` 不会被重排** —— NeoForge 只补新键、
+        //   保留旧文件里既有键的顺序 ⇒ 拿"文件里的顺序"当声明顺序会得到旧顺序（假红）。
+        //   ⇒ 真源 = **加载后的 spec**（`ModConfigSpec#getValues()`，NightConfig 的有序 map）。
+        Path toml = FMLPaths.CONFIGDIR.get().resolve("bettergold-common.toml");
+        List<String> specOrder = new ArrayList<>();
+        try {
+            // ⚠ 必须走**导出的接口** `UnmodifiableConfig#valueMap()`：反射拿运行期类
+            //   （`Config$1`，JPMS 没导出）会 `IllegalAccessException`（本轮第一版踩到的）。
+            com.electronwill.nightconfig.core.UnmodifiableConfig values =
+                    com.hjmmd_8.bettergold.config.Config.SPEC.getValues();
+            Map<String, Object> vm = values.valueMap();
+            for (String key : vm.keySet()) {
+                for (String m : METALS) {
+                    if (key.startsWith(m) && !specOrder.contains(m)) {
+                        specOrder.add(m);
+                    }
+                }
+            }
+            readout("order_config_spec", "加载后的 Config.SPEC 键顺序（金属部分）=" + specOrder
+                    + "（= NeoForge 配置界面的条目顺序；keySet 共 " + vm.size() + " 条）");
+            report("order_config_matches_metal_order", specOrder.equals(new ArrayList<>(List.of(METALS))),
+                    "spec order=" + specOrder + " vs METAL_ORDER=" + List.of(METALS));
+        } catch (Throwable t) {
+            skipped("order_config_spec", "读 Config.SPEC.getValues() 失败：" + t);
+        }
+        if (Files.isRegularFile(toml)) {
+            try {
+                List<String> lines = Files.readAllLines(toml, StandardCharsets.UTF_8);
+                List<String> fileOrder = new ArrayList<>();
+                for (String ln : lines) {
+                    String s = ln.trim();
+                    int eq = s.indexOf('=');
+                    if (eq < 0 || s.startsWith("#")) {
+                        continue;
+                    }
+                    String key = s.substring(0, eq).trim();
+                    for (String m : METALS) {
+                        if (key.startsWith(m) && !fileOrder.contains(m)) {
+                            fileOrder.add(m);
+                        }
+                    }
+                }
+                readout("order_config_toml", "bettergold-common.toml（**已存在**的文件）里金属键顺序="
+                        + fileOrder + "；⚠ NeoForge 不重排既有键 ⇒ 这个顺序保持旧值属正常，"
+                        + "声明顺序以上面 spec 那条为准（删掉该文件后重跑才会按声明顺序重写）");
+            } catch (Throwable t) {
+                skipped("order_config_toml", "解析 toml 失败：" + t);
+            }
+        }
+        // (c) 进度树：`treasure/any_core_material` 的 9 个孩子 —— 顺序由 `ReferenceOpenHashSet` 决定
+        try {
+            ResourceLocation core = ResourceLocation.parse("bettergold:treasure/any_core_material");
+            AdvancementNode node = server.getAdvancements().tree().get(core);
+            if (node == null) {
+                report("order_adv_children", false, "进度树里找不到 " + core);
+            } else {
+                List<String> ids = new ArrayList<>();
+                StringBuilder detail = new StringBuilder();
+                for (AdvancementNode child : node.children()) {
+                    String path = child.holder().id().getPath();
+                    ids.add(path);
+                    float x = Float.NaN;
+                    float y = Float.NaN;
+                    var disp = child.advancement().display();
+                    if (disp.isPresent()) {
+                        x = disp.get().getX();
+                        y = disp.get().getY();
+                    }
+                    detail.append(path).append("(x=").append(x).append(",y=").append(y)
+                            .append(",ih=").append(System.identityHashCode(child)).append(") ");
+                }
+                report("order_adv_children", ids.size() == 9, "寻途的孩子数=" + ids.size() + " expect=9");
+                readout("order_adv_children_detail",
+                        "children() 迭代顺序（= GUI 纵向顺序）: " + detail);
+                List<String> sorted = new ArrayList<>(ids);
+                sorted.sort(String::compareTo);
+                readout("order_adv_children_vs_id_sort",
+                        "迭代顺序 == id 字典序？ " + ids.equals(sorted)
+                                + "；迭代顺序 == 作者 8 族顺序（前 8 位）？ "
+                                + ids.subList(0, Math.min(8, ids.size()))
+                                .equals(List.of("blazing_rod", "golden_cowrie", "glittering_vine",
+                                        "bundled_echo_shard", "indigo_ocean_heart", "voodoo_feather",
+                                        "amethyst_energy_dust", "chorus_cherry_branch")));
+            }
+        } catch (Throwable t) {
+            skipped("order_adv_children", "读进度树失败：" + t);
+        }
+    }
+
+    // ==================== ⑤ 真实创造页（材料分区顺序）====================
+
+    private static void creativeDump() {
+        try {
+            CreativeModeTab tab = bettergold.BETTERGOLD_TAB.get();
+            tab.buildContents(new CreativeModeTab.ItemDisplayParameters(
+                    level.enabledFeatures(), true, level.registryAccess()));
+            Collection<ItemStack> items = tab.getDisplayItems();
+            List<String> materialOrder = new ArrayList<>();
+            List<String> materialPrefix = new ArrayList<>();
+            boolean reachedOtherSection = false;
+            boolean rankMonotonic = true;
+            int lastRank = -1;
+            int materialCells = 0;
+            for (ItemStack s : items) {
+                if (s.isEmpty()) {
+                    continue;   // SectionedCreativeTab 的空格子
+                }
+                String full = CreativeSections.itemIdOf(s);
+                if (full == null || full.isEmpty()) {
+                    continue;
+                }
+                // ⚠ `classify` 吃的是**注册名的 path 部分**（`flamegold_ingot`），不是 `bettergold:…`
+                String path = BuiltInRegistries.ITEM.getKey(s.getItem()).getPath();
+                CreativeSections.Placement p = CreativeSections.classify(path);
+                if (!reachedOtherSection && p != null
+                        && (p.kind() == CreativeSections.Kind.METAL_BUILDING
+                            || p.kind() == CreativeSections.Kind.METAL_GEAR)) {
+                    reachedOtherSection = true;   // 材料分区结束（分区顺序：材料 → 建筑 → 食物 → 装备 → 乐事）
+                }
+                if (!reachedOtherSection) {
+                    materialPrefix.add(full);
+                }
+                if (p != null && p.kind() == CreativeSections.Kind.METAL_MATERIALS) {
+                    materialCells++;
+                    materialOrder.add(full);
+                    if (p.metalRank() != lastRank) {
+                        if (p.metalRank() < lastRank) {
+                            rankMonotonic = false;
+                        }
+                        lastRank = p.metalRank();
+                    }
+                }
+            }
+            readout("creative_total", "真实创造页 getDisplayItems() 总格数=" + items.size()
+                    + "（含 SectionedCreativeTab 补的空格）");
+            report("creative_material_cells", materialCells > 0,
+                    "材料分区（METAL_MATERIALS）件数=" + materialCells + "（反空转：应 > 0）");
+            report("creative_material_metal_order", rankMonotonic && materialCells > 0,
+                    "材料分区的金属位次单调不减（= 顺序由 METAL_ORDER 决定）件数=" + materialCells);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < materialPrefix.size(); i++) {
+                sb.append('\n').append(TAG).append(" CREATIVE-MATERIAL ").append(i + 1).append(' ')
+                        .append(materialPrefix.get(i));
+            }
+            bettergold.LOGGER.info("{} CREATIVE-MATERIAL-BEGIN {}", TAG, sb);
+            readout("creative_material_prefix", "材料分区（含非金属材料）实际件数=" + materialPrefix.size()
+                    + "（清单见日志 CREATIVE-MATERIAL 逐行；交由作者「划顺序」，本轮不改顺序）");
+        } catch (Throwable t) {
+            skipped("creative_dump", "读取真实创造页失败：" + t);
+        }
+    }
+
+    // ==================== 收尾 ====================
+
+    private static void summary() {
+        level.setChunkForced(0, 0, false);
+        readout("forced_chunks_after", "forced=" + level.getForcedChunks().size() + " expect=0");
+        clearItemEntities();
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Integer> e : matrix.entrySet()) {
+            sb.append('\n').append(TAG).append(" MATRIX ").append(e.getKey()).append('=').append(e.getValue());
+        }
+        bettergold.LOGGER.info("{} MATRIX-BEGIN {}", TAG, sb);
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} skip={} aborts={} levelName={} readouts={}",
+                TAG, pass, fail, skip, aborts, levelName, readouts.size());
+        for (String p : problems) {
+            bettergold.LOGGER.error("{} PROBLEM {}", TAG, p);
+        }
+        bettergold.LOGGER.info("{} halting", TAG);
+        armed = false;
+        server.halt(false); // 只调一次
+    }
+
+    // ==================== 真 ServerPlayer（哑：不加进世界、不 tick）====================
+
+    static final class ProbePlayer extends ServerPlayer {
+        ProbePlayer(MinecraftServer srv, ServerLevel lvl, GameProfile profile) {
+            super(srv, lvl, profile, ClientInformation.createDefault());
+        }
+    }
+
+    /** 只用来把 {@code connection.send(...)} 变成 no-op（避免发奖励那一步 NPE 打断判据派发）。 */
+    static final class DummyConnection extends Connection {
+        DummyConnection() {
+            super(PacketFlow.SERVERBOUND);
+        }
+
+        @Override
+        public void send(Packet<?> packet) {
+            // no-op
+        }
+
+        @Override
+        public void send(Packet<?> packet, PacketSendListener listener) {
+            // no-op
+        }
+
+        @Override
+        public void send(Packet<?> packet, PacketSendListener listener, boolean flush) {
+            // no-op
+        }
+
+        @Override
+        public boolean isMemoryConnection() {
+            return false; // 没挂 channel ⇒ 别去碰 this.channel
+        }
+    }
+}

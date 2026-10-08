@@ -1,0 +1,11 @@
+﻿���� ��6.3 ������ 10 ����ͼ�꣺������
+  bettergold.handbook.page.knowledge_2_left_title            zh=��ȼ��������        en=Flamegold Building Blocks
+  bettergold.handbook.page.knowledge_2_right_title           zh=����������        en=Sturdygold Building Blocks
+  bettergold.handbook.page.knowledge_3_left_title            zh=������������        en=Thornsgold Building Blocks
+  bettergold.handbook.page.knowledge_3_right_title           zh=���ؽ�������        en=Echogold Building Blocks
+  bettergold.handbook.page.knowledge_4_left_title            zh=�庣��������        en=Indigoseagold Building Blocks
+  bettergold.handbook.page.knowledge_4_right_title           zh=�׶���������        en=Voodoogold Building Blocks
+  bettergold.handbook.page.knowledge_5_left_title            zh=���׽�������        en=Thundergold Building Blocks
+  bettergold.handbook.page.knowledge_5_right_title           zh=�û��������        en=Illusiongold Building Blocks
+zh_cn.json: 735 �� -> 743 �У�+8 �������� 733 �����ֵ���䣻ê�� = ĩβ '}\n' Ψһ���У�
+en_us.json: 735 �� -> 743 �У�+8 �������� 733 �����ֵ���䣻ê�� = ĩβ '}\n' Ψһ���У�

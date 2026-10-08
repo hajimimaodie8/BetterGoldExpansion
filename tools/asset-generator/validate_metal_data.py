@@ -1683,9 +1683,10 @@ _BG2_REQ_DOC = (REPO.parent / "mod_experience" / "开工需求"
 _BG2_SNAPSHOT_DIR = (REPO / "tools" / "asset-generator" / "bgappend-requirements-snapshot")
 _BG2_SNAPSHOT = _BG2_SNAPSHOT_DIR / "bg-book-6.1-6.3.md"
 # 章 → (封面图标, sortnum, 页型序列)。页型序列就是"一行 = 左页 + 右页"的机器形态。
-#   ⚠ **bg-book §八（2026-10-06）**：章3 的**第 1 页（汇总页）已被作者删除**（§8.1）⇒
-#     它的页型序列由 5 行（10 页）变成 **4 行（8 页）**，三章合计 32 → **30**。
-#     旧期望 `["patchouli:spotlight", "patchouli:spotlight"] * 5` 与 `!= 32` **原文保留在注释里**（未删）。
+#   ⚠ **bg-book §八（2026-10-06）**：章3 的**第 1 页（汇总页）曾被作者删除**（§8.1）⇒
+#     当时页型序列由 5 行（10 页）变成 **4 行（8 页）**，三章合计 32 → **30**。
+#   ★ **bg-fix4 §三（2026-10-08）作者要求"复原"那一页** ⇒ 序列回到 **5 行（10 页）**、三章合计 **32**。
+#     旧期望原文保留（未删）：`["patchouli:spotlight", "patchouli:spotlight"] * 4` 与 `!= 30`。
 _BG2_CHAPTERS = {
     "auxiliary_materials": ("mixed_crystal_pile", 2,
                             ["patchouli:spotlight", "patchouli:crafting"] * 2),
@@ -1693,7 +1694,7 @@ _BG2_CHAPTERS = {
                        ["patchouli:text", "patchouli:spotlight"]
                        + ["patchouli:spotlight", "patchouli:crafting"] * 8),
     "golden_knowledge": ("sturdygold_ingot", 4,
-                         ["patchouli:spotlight", "patchouli:spotlight"] * 4),
+                         ["patchouli:spotlight", "patchouli:spotlight"] * 5),
 }
 _bg2_pages_total = 0
 _bg2_recipe_refs = set()
@@ -1741,10 +1742,10 @@ for _cname, (_cicon, _csort, _cseq) in _BG2_CHAPTERS.items():
         _it = _pg.get("item")
         for _one in ([_it] if isinstance(_it, str) else (_it or [])):
             _bg2_item_refs.add(str(_one))
-if _bg2_pages_total != 30:
+if _bg2_pages_total != 32:
     _bgbook2_bad("bgbook2-chapter-pages",
-                 "三章合计应是 30 个 Patchouli 页（= 文档 2+9+4 = 15 行 × 2；"
-                 "§八 删掉了章3 的第 1 页 ⇒ 原期望 32 已作废），实际 %d" % _bg2_pages_total)
+                 "三章合计应是 32 个 Patchouli 页（= 文档 2+9+5 = 16 行 × 2；"
+                 "§八 删掉章3 第 1 页时曾是 30，bg-fix4 §三 复原后回到 32），实际 %d" % _bg2_pages_total)
 _bg2_missing_recipes = sorted(
     _r for _r in _bg2_recipe_refs
     if not (_DATA / "bettergold" / "recipe" / (_r.split(":", 1)[1] + ".json")).is_file())
@@ -1761,12 +1762,16 @@ _bg2_missing_items = sorted(
 if _bg2_missing_items:
     _bgbook2_bad("bgbook2-item-refs",
                  "三章的图标引用了不存在的物品/方块（死链）：%s" % _bg2_missing_items[:5])
-if len(_bg2_item_refs) != 19:
-    # ⚠ **§八 改变了这里的期望值**：章3 的第 1 页（两张轮换图标表 = 8 锭 + 8 模板）已删除 ⇒
-    #   唯一图标引用从 35 降到 **19**（章1 2 + 章2 9 + 章3 8）。旧阈值 35 原文保留在这里（未删）。
-    #   改成"恰好 19"比阈值更硬：任何"顺手加一个图标"都会当场红。
+if len(_bg2_item_refs) != 115:
+    # ★ **bg-fix4 §三/§四（2026-10-08）改变了这里的期望值**：
+    #   ① §三 复原章3 第 1 页（8 锭 + 8 模板 = 16 个引用）；
+    #   ② §四 把章3 那 8 个建材页的展示栏从"1 块砖"改成"该族 11 件建材"
+    #      ⇒ 8 族 × 11 = 88 个引用（其中 `_bricks` 与①的锭/模板不重叠）。
+    #   合计 = 章1 2 + 章2 9 + 章3（16 + 88）= **115**。
+    #   旧期望原文保留（未删）：§八 删掉章3 第 1 页后是"恰好 19"；那一轮之前是 35。
+    #   改成"恰好 115"比阈值更硬：任何"顺手加一个图标"都会当场红。
     _bgbook2_bad("bgbook2-item-refs",
-                 "三章解析到 %d 个图标引用（应恰好 19；§八 删掉章3 第 1 页后由 35 降下来）"
+                 "三章解析到 %d 个图标引用（应恰好 115；bg-fix4 §三/§四 之后由 19 升上来）"
                  % len(_bg2_item_refs))
 
 # 逐字文案：**期望值来自冻结快照**（不是本脚本自己的表 —— 否则就是 §4 第 42 条那种空转）
@@ -1914,19 +1919,23 @@ if zh.get("item.bettergold.echogold_ingot") != "\u5e7d\u5486\u91d1\u952d":
 if 'EFFECTS.register("echo_roar"' not in _bgfix_fx:
     _bgfix_bad("bgfix-echo-id-unchanged", "AllEffects 里的 echo_roar 注册 id 不见了（id 不许改）")
 
-# ---------- 第 3 条 · 闪耀藤条判据收窄为「特殊金属」（除万坚金） ----------
-if "isSpecialMetal()" not in _bgfix_glm:
-    _bgfix_bad("bgfix-vine-special-metal", "闪耀藤条判据没有用 family.isSpecialMetal()（没收窄，万坚金仍会掉）")
-else:
-    _i_special = _bgfix_glm.find("isSpecialMetal()")
-    _i_istool = _bgfix_glm.find("family.isTool(")
-    if _i_istool < 0:
-        _bgfix_bad("bgfix-vine-special-metal", "工具判据里找不到 family.isTool(（反空转守护）")
-    elif _i_special > _i_istool:
-        _bgfix_bad("bgfix-vine-special-metal", "isSpecialMetal() 落在 isTool( 之后 ⇒ 万坚金仍会掉藤条")
-if "family != null && (family.isTool(" in _bgfix_glm:
-    _bgfix_bad("bgfix-vine-old-broad",
-               "仍留着旧口径 `family != null && (family.isTool(`（= 任意一族，万坚金会掉藤条）")
+# ---------- 第 3 条 · 闪耀藤条判据"收窄为特殊金属" ----------
+# ⛔⛔ **本条整段已作废（原文保留，未删）** —— 作者 2026-10-08 明确要求**去掉豁免**：
+#   「万坚金器具与金器具的挖树叶与藤蔓有概率掉落闪耀藤条的事你又忘添加了」。
+#   旧断言原文（逐字留档）：
+#     if "isSpecialMetal()" not in _bgfix_glm:
+#         _bgfix_bad("bgfix-vine-special-metal",
+#                    "闪耀藤条判据没有用 family.isSpecialMetal()（没收窄，万坚金仍会掉）")
+#     else:
+#         _i_special = _bgfix_glm.find("isSpecialMetal()")
+#         _i_istool = _bgfix_glm.find("family.isTool(")
+#         if _i_istool < 0: ... elif _i_special > _i_istool: ...
+#     if "family != null && (family.isTool(" in _bgfix_glm:
+#         _bgfix_bad("bgfix-vine-old-broad",
+#                    "仍留着旧口径 `family != null && (family.isTool(`（= 任意一族，万坚金会掉藤条）")
+#   ⇒ 现行判据（含"必须有 isTool/isWeapon、**不许**有 isSpecialMetal"）落在 bg-fix4 段的
+#     `[bgfix4-vine-all-metals]`；本段**不再**对 `isOurTool` 的形状下任何断言（避免新口径被判红）。
+#   ⚠ `isSpecialMetal()` 本身**必须继续存在**（盾牌那条链还在用它）——见下面两条 bgfix 断言。
 if 'STURDYGOLD_ID = "sturdygold"' not in _bgfix_mf:
     _bgfix_bad("bgfix-special-metal-predicate", "MetalFamily 里没有 STURDYGOLD_ID 常量")
 if "public boolean isSpecialMetal()" not in _bgfix_mf:
@@ -2252,27 +2261,30 @@ _BG3_TEMPLATE_IDS = ["bettergold:%s_upgrade_template" % _s for _s in
                       "indigoseagold", "voodoogold", "thundergold", "illusiongold")]
 _BG3_INGOT_TITLE = "\u5404\u79cd\u5404\u6837\u7684\"\u8d35\u91d1\"\u952d"          # 各种各样的"贵金"锭
 _BG3_TEMPLATE_TITLE = "\"\u8d35\u91d1\"\u88c5\u5907\u7684\u5347\u7ea7\u953b\u9020\u6a21\u7248"  # "贵金"装备的升级锻造模版
+# ★ bg-fix4 §四（作者 2026-10-08）：建筑方块展示栏的**新字面顺序**
+#   （锭块 → 砖块 → 柱 → 楼梯 → 台阶 → 砖墙 → **门 → 活板门 → 栏杆** → 链 → 灯笼）
+# ⚠ **旧顺序原文保留（未删，已被 2026-10-08 取代）**：
+#   ["_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
+#    "_bricks_wall", "_bars", "_door", "_trapdoor", "_chain", "_lantern"]
 _BG3_BUILDING_ORDER = ["_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
-                       "_bricks_wall", "_bars", "_door", "_trapdoor", "_chain", "_lantern"]
+                       "_bricks_wall", "_door", "_trapdoor", "_bars", "_chain", "_lantern"]
 _BG3_OLD_TEXT_KEYS = ["bettergold.handbook.page.knowledge_1_left",
                       "bettergold.handbook.page.knowledge_1_right"]
 _BG3_ZH_E = _bgappend_jload(_BG3_ZH)
 _BG3_EN_E = _bgappend_jload(_BG3_EN)
 _BG3_PAGES = _BG3_ZH_E.get("pages") or []
-# ⚠ **bg-book §八（2026-10-06）改变了本节的期望**：章3 的第 1 页（§七 改成"汇总页"的那一跨页）
-#   已被 §8.1 **整页删除** ⇒ 页数 10 → **8**。
-#   旧期望（原文保留，未删）与它下面那**六条**断言（`bgappend-book-k3-p1-ingots` /
-#   `-p1-ingot-title` / `-p1-summary` ×2 / `-p1-templates` / `-p1-template-title`）**已随该页作废**：
-#   它们守的两张轮换图标表（八族锭 / 八张升级模板）与两个标题现在**不该再出现在任何一页上**，
-#   改由 `[bgbook8-k3-p1-gone]`（bgbook8 段）用**负向**判据守住；上面 `_BG3_INGOT_IDS` /
-#   `_BG3_TEMPLATE_IDS` / `_BG3_INGOT_TITLE` / `_BG3_TEMPLATE_TITLE` 四个常量**原样保留**，
-#   正是给那条负向断言当"不该再出现"的清单用。
-#   旧代码形状（留档）：`if len(_BG3_PAGES) != 10: ... else: _p0, _p1 = _BG3_PAGES[0], _BG3_PAGES[1]`
-#   + 六条 `_bgappend_bad("bgappend-book-k3-p1-*", ...)`。
-if len(_BG3_PAGES) != 8:
+# ⚠ **bg-book §八（2026-10-06）曾改变本节的期望**：章3 的第 1 页（§七 改成"汇总页"的那一跨页）
+#   被 §8.1 **整页删除** ⇒ 当时页数 10 → **8**。
+# ★ **bg-fix4 §三（2026-10-08）作者要求"复原"** ⇒ 页数回到 **10**（5 行 × 2）；
+#   下面那**六条**旧断言（`bgappend-book-k3-p1-ingots` / `-p1-ingot-title` / `-p1-summary` ×2 /
+#   `-p1-templates` / `-p1-template-title`）**当时随该页一起作废**，本轮**由
+#   `[bgfix4-k3p1-restored]`（bg-fix4 段）以新期望复活**（比旧版更硬：标题逐字来自冻结快照）。
+#   上面 `_BG3_INGOT_IDS` / `_BG3_TEMPLATE_IDS` / `_BG3_INGOT_TITLE` / `_BG3_TEMPLATE_TITLE`
+#   四个常量**继续服役**（现在给正向断言用）。
+if len(_BG3_PAGES) != 10:
     _bgappend_bad("bgappend-book-k3-pages",
-                  "章3（「贵金」的知识）的 Patchouli 页数不是 8（4 行 × 2；§八 删掉了第 1 页，"
-                  "旧期望 10 已作废；实际 %d）—— 反空转守护" % len(_BG3_PAGES))
+                  "章3（「贵金」的知识）的 Patchouli 页数不是 10（5 行 × 2；§八 曾删到 8，"
+                  "bg-fix4 §三 复原后回到 10；实际 %d）—— 反空转守护" % len(_BG3_PAGES))
 else:
     # §七.1：原来那两段长文案**不许再被任何一页引用**，也不许再出现在语言值里
     #   （键**留在 lang 里作历史留档**是允许的 —— 见该键注释；被引用/被复用才是回退）
@@ -2306,8 +2318,11 @@ else:
         _bgappend_bad("bgappend-book-k3-bilingual",
                       "章3 的 zh/en 页列表不一致（结构必须双端相同）")
 
-# §七.7：建筑方块图标的**固定顺序**（锭块 → 砖块 → 柱 → 楼梯 → 台阶 → 砖墙 → 栏杆 → 门 → 活板门 → 链 → 灯笼）
-#   落点 = 生成器的 `METAL_BLOCK_SUFFIX_ORDER`（真源）+ 从产物里反查 11 个方块 id 都真实存在。
+# §七.7 定的「建筑方块图标固定顺序」在 **bg-fix4 §四（2026-10-08）被作者更新**为
+#   锭块 → 砖块 → 柱 → 楼梯 → 台阶 → 砖墙 → 门 → 活板门 → 栏杆 → 链 → 灯笼
+#   （把「栏杆」从砖墙之后挪到活板门之后）⇒ 落点仍是生成器的 `METAL_BLOCK_SUFFIX_ORDER`（真源）
+#   + 从产物里反查 11 个方块 id 都真实存在。**新 id 的"两处同序"不变量**见本节末尾的
+#   `[bgfix4-building-order-single-source]`（Java `CreativeSections.BUILDING_SLOT` ↔ 本常量）。
 _BGDOC_GEN = (REPO / "tools" / "asset-generator" / "generate_handbook_data.py")
 if not _BGDOC_GEN.is_file():
     _bgappend_bad("bgappend-book-block-order", "读不到手册生成器：%s" % _BGDOC_GEN)
@@ -2321,7 +2336,7 @@ else:
         _bgdoc_order = re.findall(r'"([^"]+)"', _bgdoc_m.group(1))
         if _bgdoc_order != _BG3_BUILDING_ORDER:
             _bgappend_bad("bgappend-book-block-order",
-                          "建筑方块图标顺序不是 §七.7 的固定顺序：%s" % _bgdoc_order)
+                          "建筑方块图标顺序不是 bg-fix4 §四 的固定顺序：%s" % _bgdoc_order)
         if len(_bgdoc_order) != 11:
             _bgappend_bad("bgappend-book-block-order",
                           "建筑方块的形态数不是 11（实际 %d）—— 反空转守护" % len(_bgdoc_order))
@@ -2675,6 +2690,18 @@ def _bgfix2_bad(tag: str, msg: str) -> None:
     bgfix2_problems.append("%s [%s]" % (msg, tag))
 
 
+# ===========================================================================
+# bg-fix4（会话标记 bg-fix4，2026-10-08）：第四批（五条）
+# ===========================================================================
+# 稳定 ASCII id 前缀 = `[bgfix4-...]`。判据一律跑在**去注释**后的源码 / 已解析的 JSON /
+# **仓库内冻结快照**（`bgappend-requirements-snapshot/bg-book-6.1-6.3.md`）上。
+bgfix4_problems: list[str] = []
+
+
+def _bgfix4_bad(tag: str, msg: str) -> None:
+    bgfix4_problems.append("%s [%s]" % (msg, tag))
+
+
 _TRIM_MATERIAL = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "trim_material"
 _PALETTES = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures" / "trims" / "color_palettes"
 _ADV = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "advancement"
@@ -2845,28 +2872,37 @@ else:
         if _n not in _drops_body:
             _bgfix2_bad("bgfix2-skeleton-death-drop-kept", "击杀掉落那条被改坏了（缺 %s）" % _n)
 
-# ---------- 第 3 条 · 闪耀藤条：除万坚金外的全部（7 族） ----------
+# ---------- 第 3 条 · 闪耀藤条：★ bg-fix4 §一（作者 2026-10-08）**全部 8 族都能掉** ----------
+# ⛔⛔ **旧口径（原文保留，未删，已被作者 2026-10-08 明确取代）** —— 旧 id `[bgfix2-vine-all-but-sturdygold]`：
+#   它要求 `isOurTool` 方法体里**必须有** `family.isSpecialMetal()`、且 `isSpecialMetal` =
+#   `!STURDYGOLD_ID.equals(this.id)` ⇒ "除万坚金外的 7 族"（万坚金 11 类全 0/400）。
+# ★ 现行：作者原话「**万坚金器具与金器具的挖树叶与藤蔓有概率掉落闪耀藤条的事你又忘添加了**」
+#   ⇒ 去掉那一层豁免；`isSpecialMetal()` **保留**（盾牌那条链仍在用它，删了会静默改盾牌口径）。
 _isour = method_body(_bgfix_glm, "private static boolean isOurTool(")
 if not _isour:
-    _bgfix2_bad("bgfix2-vine-all-but-sturdygold", "找不到 isOurTool 方法体（反空转守护）")
+    _bgfix4_bad("bgfix4-vine-all-metals", "找不到 isOurTool 方法体（反空转守护）")
 else:
-    for _n, _why in (("family.isSpecialMetal()", "判据不是「特殊金属」"),
-                     ("family.isTool(", "少了器具那一半"),
+    if "family.isSpecialMetal()" in _isour:
+        _bgfix4_bad("bgfix4-vine-all-metals",
+                    "isOurTool 里还留着 `family.isSpecialMetal()` 前置判定 ⇒ 万坚金仍然不掉藤条"
+                    "（作者 2026-10-08：「万坚金器具与金器具的挖树叶与藤蔓有概率掉落闪耀藤条的事"
+                    "你又忘添加了」⇒ 不存在「万坚金豁免」）")
+    for _n, _why in (("family.isTool(", "少了器具那一半"),
                      ("family.isWeapon(", "少了武器那一半")):
         if _n not in _isour:
-            _bgfix2_bad("bgfix2-vine-all-but-sturdygold", "%s（缺 %s）" % (_why, _n))
+            _bgfix4_bad("bgfix4-vine-all-metals", "%s（缺 %s）" % (_why, _n))
 _is_special = method_body(_bgfix_mf, "public boolean isSpecialMetal(")
 if not _is_special:
-    _bgfix2_bad("bgfix2-vine-all-but-sturdygold", "找不到 isSpecialMetal 方法体（反空转守护）")
+    _bgfix4_bad("bgfix4-vine-all-metals", "找不到 isSpecialMetal 方法体（反空转守护）")
 elif "!STURDYGOLD_ID.equals(this.id)" not in _is_special:
-    _bgfix2_bad("bgfix2-vine-all-but-sturdygold",
-                "isSpecialMetal 不再是「排除万坚金」（作者：只有万坚金不挖）")
+    _bgfix4_bad("bgfix4-vine-all-metals",
+                "isSpecialMetal 的语义被改了（盾牌那条链还在用它：「只有万坚金不是特殊金属」）")
 # 反空转：八族（八族 - 1 = 7 族能掉）；低于 8 说明扫描表/注册表被改坏了
 # ⚠ 计数必须跑在 **AllMetals.java** 上（`new MetalFamily.Spec(` 的字面量形态）——
 #   MetalFamily.java 里只有嵌套类 `Spec` 的定义，在那里数它恒为 0（本段第一版就踩了这个 = 假红）。
 _spec_count = _bgfix_am.count("new MetalFamily.Spec(")
 if _spec_count != 8:
-    _bgfix2_bad("bgfix2-vine-all-but-sturdygold",
+    _bgfix4_bad("bgfix4-vine-all-metals",
                 "AllMetals 里的 MetalFamily.Spec 不是 8 个（实际 %d；反空转守护）" % _spec_count)
 for _n, _why in (("BASE_CHANCE = 0.06F", "6% 基础概率被改"),
                  ("CHANCE_PER_FORTUNE = 0.06F", "时运系数被改")):
@@ -3169,27 +3205,26 @@ if _bg8_missing_recipes:
     _bgbook8_bad("bgbook8-recipe-refs",
                  "§八 引用了不存在的配方（死链，游戏里那一页会空掉）：%s" % _bg8_missing_recipes[:5])
 
-# ---------- ③ 章3 第 1 页（§七 的汇总页）必须已经删除，且"作废"要能自证 ----------
-_bg8_all_pages = []
-for _e in _entries_now.values():
-    _bg8_all_pages.extend(_e.get("pages") or [])
-_bg8_stale_text = [p.get("text") for p in _bg8_all_pages
-                   if p.get("text") == "bettergold.handbook.page.knowledge_1_summary"]
-_bg8_stale_title = [p.get("title") for p in _bg8_all_pages
-                    if p.get("title") in (_BG3_INGOT_TITLE, _BG3_TEMPLATE_TITLE)]
-_bg8_stale_items = [p for p in _bg8_all_pages
-                    if p.get("item") in (_BG3_INGOT_IDS, _BG3_TEMPLATE_IDS)]
-if _bg8_stale_text or _bg8_stale_title or _bg8_stale_items:
-    _bgbook8_bad("bgbook8-k3-p1-gone",
-                 "§八 删掉的章3 第 1 页（§七 的汇总页）又回来了：text=%s title=%s 旧图标表=%d 页"
-                 % (_bg8_stale_text, _bg8_stale_title, len(_bg8_stale_items)))
+# ---------- ③ 章3 第 1 页（§七 的汇总页）：§八 删过、**bg-fix4 §三 已复原** ----------
+# ⛔⛔ **旧判据（原文保留，未删，已被 2026-10-08 取代）**：这里曾用 `[bgbook8-k3-p1-gone]`
+#   做**负向**断言 —— 全书任何一页都不许引用 `knowledge_1_summary`、不许出现那两个标题、
+#   不许出现那两张图标表（当时作者 §8.1 要求删页）。**bg-fix4 §三 要求把它复原** ⇒
+#   该负向断言失效，改由 bg-fix4 段的 `[bgfix4-k3p1-restored]` 用**正向**判据守着
+#   （左 = 八族锭 + 标题 + 正文；右 = 八张模板 + 标题、无正文）。旧代码形状（留档）：
+#     _bg8_stale_text = [p.get("text") for p in _bg8_all_pages
+#                        if p.get("text") == "bettergold.handbook.page.knowledge_1_summary"]
+#     _bg8_stale_title = [... p.get("title") in (_BG3_INGOT_TITLE, _BG3_TEMPLATE_TITLE)]
+#     _bg8_stale_items = [... p.get("item") in (_BG3_INGOT_IDS, _BG3_TEMPLATE_IDS)]
+#     if _bg8_stale_text or _bg8_stale_title or _bg8_stale_items: _bgbook8_bad("bgbook8-k3-p1-gone", ...)
+#
+# 仍然成立的那半条：**历史留档键不许被删**（既定口径：原文不删）——保留在下面。
 for _k in ("bettergold.handbook.page.knowledge_1_summary",):
     # ⚠ **记账（以实际为准）**：`docs/1.6-规格.md` §17.1 写「`knowledge_1_left` / `knowledge_1_right`
     #   两把键**留在语言文件里作历史留档**」，但**实测这两把键在两份语言文件里都不存在**
     #   （`grep 'knowledge_1'` 只有 `knowledge_1_summary` 一条）⇒ 本断言只钉**确实存在**的那一把，
     #   差异写进 §十九（不是本轮的改动，本轮没删过任何键）。
     if _k not in zh or _k not in en:
-        _bgbook8_bad("bgbook8-k3-p1-gone", "历史留档键被删了（既定口径：原文不删）：%s" % _k)
+        _bgbook8_bad("bgfix4-k3p1-restored", "历史留档键被删了（既定口径：原文不删）：%s" % _k)
 
 
 # ---------- ④ 逐字文案 + 语言键：期望值来自**仓库内冻结快照** ----------
@@ -3971,17 +4006,21 @@ for _needle, _why in (
         ('"%s_knives" % _m', "计划表里没有按族生成的 `<族>_knives` 标签"),
         ('"handbook"', "计划表里没有 `handbook` 标签（root 改「获得」靠的就是它）"),
         ('"required": False', "可选条目没有写成 `\"required\": false`（没装可选模组时整条标签会被丢弃）"),
+        # bg-fix4 §一：两张古董刀标签（同样是"只在装了乐事时才存在的物品"）
+        ('"antique_knives"', "计划表里没有 `antique_knives` 标签（古董屠刀）"),
+        ('"netherite_antique_knives"', "计划表里没有 `netherite_antique_knives` 标签（幽冥断骸刀）"),
         ("for _m in ALL_METALS", "刀标签不是按 8 族循环生成的（写死清单会漏族 —— AGENTS 红线 2）")):
     if _needle not in _bgfix3_tags_src:
         _bgfix3_bad("bgfix3-tag-generator", "%s（缺 %s）" % (_why, _needle))
 
-# 产物侧：9 张"可选条目标签"必须在，且每张**恰好 1 条** value 写成 `required: false`
+# 产物侧：**11 张**"可选条目标签"必须在，且每张**恰好 1 条** value 写成 `required: false`
+#   （bg-fix3 时是 9 张 = 8 族刀 + handbook；bg-fix4 §一 追加 2 张古董刀 ⇒ 11 张）
 _bgfix3_tag_dir = _DATA / "bettergold" / "tags" / "item"
 _bgfix3_tag_paths = sorted(_bgfix3_tag_dir.glob("*_knives.json")) + \
                     [_bgfix3_tag_dir / "handbook.json"]
-if len(_bgfix3_tag_paths) != 9:
+if len(_bgfix3_tag_paths) != 11:
     _bgfix3_bad("bgfix3-tag-generator",
-                "可选条目标签文件不是 9 张（8 族刀 + handbook），实际 %d：%s"
+                "可选条目标签文件不是 11 张（8 族刀 + 2 张古董刀 + handbook），实际 %d：%s"
                 % (len(_bgfix3_tag_paths), [p.name for p in _bgfix3_tag_paths]))
 for _tp in _bgfix3_tag_paths:
     if not _tp.is_file():
@@ -4511,6 +4550,248 @@ for _needle, _why in ((u"bg-book §十", u"docs/1.6-规格.md 里没有 bg-book 
     if _needle not in _bgfix_spec:
         _bgbook10_bad("bgbook10-doc", "%s（缺 %s）" % (_why, _needle))
 
+# ===========================================================================
+# bg-fix4（会话标记 bg-fix4，2026-10-08）：第四批 · 五条
+# ===========================================================================
+# 稳定 id 前缀 `[bgfix4-...]`。判据全部跑在**去注释源码 / 已解析 JSON / 仓库内冻结快照**上。
+_FX4_METALS = ["flamegold", "sturdygold", "thornsgold", "echogold",
+               "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+# 作者 2026-10-08 字面顺序（§四）—— 真源是 Java 的 `CreativeSections.BUILDING_SLOT`，这里只做互核
+_FX4_AUTHOR_BUILDING_ORDER = ["_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
+                              "_bricks_wall", "_door", "_trapdoor", "_bars", "_chain", "_lantern"]
+# 章3 第 2~5 行 × 左/右 -> 金属（= 生成器的 METALS 两两配对；顺序即快照里的行序）
+_FX4_BUILD_SLOTS = [(2, "left", "flamegold"), (2, "right", "sturdygold"),
+                    (3, "left", "thornsgold"), (3, "right", "echogold"),
+                    (4, "left", "indigoseagold"), (4, "right", "voodoogold"),
+                    (5, "left", "thundergold"), (5, "right", "illusiongold")]
+
+
+def _fx4_snapshot_k3() -> dict:
+    """冻结快照 §6.3 → ``{(行, 侧): 标题}``（「图标：**X**」里的 X，**逐字**，不自己编）。
+
+    形状与 `[bgbook2-texts-verbatim]` 的解析同源：表头/分隔行靠"第一格是纯数字"排除；
+    `（随排版顺序变化）` 是**图标说明**不是标题的一部分（只有第 1 行带它）。
+    """
+    _lines = _BG2_SNAPSHOT.read_text(encoding="utf-8").split("\n")
+    _active, _rows = False, []
+    for _ln in _lines:
+        if _ln.startswith("### 6.3"):
+            _active = True
+            continue
+        if _active and _ln.startswith("---"):
+            break
+        if _active and _ln.startswith("|") and "|---" not in _ln:
+            _cells = [c for c in _ln.split("|")][1:-1]
+            if not re.fullmatch(r"\d+", _cells[0].strip().replace("*", "")):
+                continue
+            _rows.append(_cells)
+    _out = {}
+    for _cells in _rows:
+        _idx = int(_cells[0].strip().replace("*", ""))
+        for _col, _side in ((1, "left"), (2, "right")):
+            _cell = _cells[_col] if _col < len(_cells) else ""
+            _head = _cell.split("<br>")[0].strip()
+            if not _head.startswith("图标："):
+                continue
+            _t = re.sub(r"\*\*(.+?)\*\*", r"\1", _head[len("图标："):]).strip()
+            _out[(_idx, _side)] = _t.replace("（随排版顺序变化）", "").strip()
+    return _out
+
+
+_fx4_k3_titles = _fx4_snapshot_k3()
+
+# ---------- ② 顺序真源（一个真源 + 两处/四处同序） ----------
+_FX4_CREATIVE = JAVA / "material" / "CreativeSections.java"
+_fx4_creative_src = strip_comments(_FX4_CREATIVE.read_text(encoding="utf-8"))
+_fx4_src_order = None
+_fx4_mo = re.search(r"METAL_ORDER\s*=\s*List\.of\((.*?)\);", _fx4_creative_src, re.S)
+if not _fx4_mo:
+    _bgfix4_bad("bgfix4-metal-order-single-source",
+                "解析不到顺序真源 `CreativeSections.METAL_ORDER`（那一行）")
+else:
+    _fx4_src_order = re.findall(r'"([a-z_]+)"', _fx4_mo.group(1))
+    if _fx4_src_order != _FX4_METALS:
+        _bgfix4_bad("bgfix4-metal-order-single-source",
+                    "顺序真源不是作者 2026-10-08 的 8 金属顺序：%s ≠ %s" % (_fx4_src_order, _FX4_METALS))
+    if len(_fx4_src_order) != 8:
+        _bgfix4_bad("bgfix4-metal-order-single-source",
+                    "顺序真源不是 8 个金属（实际 %d）—— 反空转守护" % len(_fx4_src_order))
+    # (a) Config.java：16 个键的**声明顺序**（NeoForge 配置界面 / toml 的条目顺序 = 声明顺序）
+    _fx4_cfg_order, _fx4_seen = [], set()
+    for _k in re.findall(r'\.defineInRange\(\s*"([^"]+)"', _bgfix_cfg):
+        for _m in _FX4_METALS:
+            if _k.startswith(_m) and _m not in _fx4_seen:
+                _fx4_seen.add(_m)
+                _fx4_cfg_order.append(_m)
+    if len(_fx4_cfg_order) != 8:
+        _bgfix4_bad("bgfix4-metal-order-single-source",
+                    "Config.java 里认出的金属键只有 %d 族（应 8）—— 反空转守护：%s"
+                    % (len(_fx4_cfg_order), _fx4_cfg_order))
+    elif _fx4_cfg_order != _fx4_src_order:
+        _bgfix4_bad("bgfix4-metal-order-single-source",
+                    "Config.java 的 16 键声明顺序 %s ≠ 顺序真源 %s"
+                    "（作者 2026-10-08：「模组设置也要用这种规律排序」）"
+                    % (_fx4_cfg_order, _fx4_src_order))
+    # (b) 两个生成器的 METALS + (c) 成就清单（产物）里的 lists.metals
+    _fx4_gen_adv = (REPO / "tools" / "asset-generator" / "generate_advancements.py")
+    _fx4_gen_book = _BGDOC_GEN
+    _fx4_other = {}
+    for _p, _pat, _label in (
+            (_fx4_gen_adv, r"^METALS = \[(.*?)\]", "generate_advancements.py 的 METALS"),
+            (_fx4_gen_book, r"^METALS = \[(.*?)\]", "generate_handbook_data.py 的 METALS")):
+        if not _p.is_file():
+            _bgfix4_bad("bgfix4-metal-order-single-source", "读不到 %s" % _p)
+            continue
+        _mm = re.search(_pat, _p.read_text(encoding="utf-8"), re.S | re.M)
+        if not _mm:
+            _bgfix4_bad("bgfix4-metal-order-single-source", "解析不到 %s" % _label)
+            continue
+        _got = re.findall(r'"([a-z_]+)"', _mm.group(1))
+        if _label.endswith("generate_handbook_data.py 的 METALS"):
+            # 那个列表是 [("族", "核心材料"), …] ⇒ 只保留族
+            _got = re.findall(r'\("([a-z_]+)",\s*"[a-z_]+"\)', _mm.group(1))
+        _fx4_other[_label] = _got
+        if _got != _FX4_METALS:
+            _bgfix4_bad("bgfix4-metal-order-single-source",
+                        "%s 的顺序 %s ≠ 作者顺序 %s" % (_label, _got, _FX4_METALS))
+    _fx4_manifest = REPO / "tools" / "asset-generator" / "advancement_manifest.json"
+    if _fx4_manifest.is_file():
+        _fx4_man_metals = (json.loads(_fx4_manifest.read_text(encoding="utf-8"))
+                           .get("lists", {}).get("metals"))
+        if _fx4_man_metals != _FX4_METALS:
+            _bgfix4_bad("bgfix4-metal-order-single-source",
+                        "成就清单里的 lists.metals %s ≠ 作者顺序" % (_fx4_man_metals,))
+    else:
+        _bgfix4_bad("bgfix4-metal-order-single-source", "读不到 advancement_manifest.json")
+
+# ---------- ②b 建筑方块 11 项的顺序真源（Java `BUILDING_SLOT` ↔ 生成器常量） ----------
+_fx4_bs = re.search(r"BUILDING_SLOT = Map\.ofEntries\((.*?)\);", _fx4_creative_src, re.S)
+if not _fx4_bs:
+    _bgfix4_bad("bgfix4-building-order-single-source",
+                "解析不到 `CreativeSections.BUILDING_SLOT`（建筑方块顺序真源）")
+else:
+    _fx4_java_order = ["_" + _s for _s in re.findall(r'Map\.entry\("([a-z_]+)",\s*\d+\)',
+                                                     _fx4_bs.group(1))]
+    if _fx4_java_order != _FX4_AUTHOR_BUILDING_ORDER:
+        _bgfix4_bad("bgfix4-building-order-single-source",
+                    "Java `BUILDING_SLOT` 的顺序 %s ≠ 作者 2026-10-08 的字面顺序 %s"
+                    % (_fx4_java_order, _FX4_AUTHOR_BUILDING_ORDER))
+    if len(_fx4_java_order) != 11:
+        _bgfix4_bad("bgfix4-building-order-single-source",
+                    "Java `BUILDING_SLOT` 不是 11 项（实际 %d）—— 反空转守护" % len(_fx4_java_order))
+    if _BGDOC_GEN.is_file():
+        _fx4_bm = re.search(r"METAL_BLOCK_SUFFIX_ORDER\s*=\s*\[(.*?)\]",
+                            _BGDOC_GEN.read_text(encoding="utf-8"), re.S)
+        _fx4_py_order = re.findall(r'"([^"]+)"', _fx4_bm.group(1)) if _fx4_bm else []
+        if _fx4_py_order != _fx4_java_order:
+            _bgfix4_bad("bgfix4-building-order-single-source",
+                        "生成器 `METAL_BLOCK_SUFFIX_ORDER` %s ≠ Java `BUILDING_SLOT` %s"
+                        "（两处必须同序）" % (_fx4_py_order, _fx4_java_order))
+
+# ---------- ③ 章3 第 1 页**已复原**（左 = 八族锭 + 标题1 + 正文；右 = 八张模板 + 标题2、无正文） ----------
+if len(_BG3_PAGES) != 10:
+    _bgfix4_bad("bgfix4-k3p1-restored",
+                "章3 页数不是 10（§八 删过、bg-fix4 §三 复原）：%d" % len(_BG3_PAGES))
+else:
+    _fx4_p0, _fx4_p1 = _BG3_PAGES[0], _BG3_PAGES[1]
+    if _fx4_p0.get("type") != "patchouli:spotlight" or _fx4_p1.get("type") != "patchouli:spotlight":
+        _bgfix4_bad("bgfix4-k3p1-restored",
+                    "复原的第 1 页不是两页 spotlight：%s / %s" % (_fx4_p0.get("type"), _fx4_p1.get("type")))
+    if _fx4_p0.get("item") != _BG3_INGOT_IDS:
+        _bgfix4_bad("bgfix4-k3p1-restored",
+                    "第 1 页（左）的图标表不是八族**锭**（顺序 = METALS）：%s" % (_fx4_p0.get("item"),))
+    if _fx4_p1.get("item") != _BG3_TEMPLATE_IDS:
+        _bgfix4_bad("bgfix4-k3p1-restored",
+                    "第 1 页（右）的图标表不是八张**升级模板**（顺序 = METALS）：%s" % (_fx4_p1.get("item"),))
+    _fx4_t1 = _fx4_k3_titles.get((1, "left"))
+    _fx4_t2 = _fx4_k3_titles.get((1, "right"))
+    if not _fx4_t1 or not _fx4_t2:
+        _bgfix4_bad("bgfix4-k3p1-restored", "冻结快照 §6.3 第 1 行取不到两个标题（反空转守护）")
+    else:
+        if _fx4_p0.get("title") != _fx4_t1:
+            _bgfix4_bad("bgfix4-k3p1-restored",
+                        "第 1 页（左）的标题 %r ≠ 快照 §6.3 第 1 行左格的「图标：」值 %r"
+                        % (_fx4_p0.get("title"), _fx4_t1))
+        if _fx4_p1.get("title") != _fx4_t2:
+            _bgfix4_bad("bgfix4-k3p1-restored",
+                        "第 1 页（右）的标题 %r ≠ 快照 §6.3 第 1 行右格的「图标：」值 %r"
+                        % (_fx4_p1.get("title"), _fx4_t2))
+        # 两个标题必须与 §八 删除前的那两个常量**逐字相同**（= 真正的"复原"，不是新写一页）
+        if _fx4_t1 != _BG3_INGOT_TITLE or _fx4_t2 != _BG3_TEMPLATE_TITLE:
+            _bgfix4_bad("bgfix4-k3p1-restored",
+                        "复原页的两个标题与 §七/§八 时期留下的常量不一致：%r/%r vs %r/%r"
+                        % (_fx4_t1, _fx4_t2, _BG3_INGOT_TITLE, _BG3_TEMPLATE_TITLE))
+    if _fx4_p0.get("text") != "bettergold.handbook.page.knowledge_1_summary":
+        _bgfix4_bad("bgfix4-k3p1-restored",
+                    "第 1 页（左）的正文不是 knowledge_1_summary：%r" % (_fx4_p0.get("text"),))
+    if "text" in _fx4_p1:
+        _bgfix4_bad("bgfix4-k3p1-restored",
+                    "第 1 页（右）**不该**有正文（§七 的形状：两页合起来只有那一句话）：%r"
+                    % (_fx4_p1.get("text"),))
+
+# ---------- ④ 8 个建材页：字幕 = 「某某金建筑方块」（快照逐字）+ 展示栏 = 该族 11 项（作者顺序） ----------
+_fx4_build_ok = 0
+for _fx4_row, _fx4_side, _fx4_metal in _FX4_BUILD_SLOTS:
+    _fx4_idx = (_fx4_row - 1) * 2 + (0 if _fx4_side == "left" else 1)   # 行 1 = 页 0/1
+    _fx4_key = "bettergold.handbook.page.knowledge_%d_%s_title" % (_fx4_row, _fx4_side)
+    _fx4_want_title = _fx4_k3_titles.get((_fx4_row, _fx4_side))
+    if _fx4_idx >= len(_BG3_PAGES):
+        _bgfix4_bad("bgfix4-build-title-verbatim", "页 %d 不存在（反空转守护）" % _fx4_idx)
+        continue
+    _fx4_pg = _BG3_PAGES[_fx4_idx]
+    if _fx4_pg.get("title") != _fx4_key:
+        _bgfix4_bad("bgfix4-build-title-verbatim",
+                    "第 %d 页（%s）的 title 不是语言键 %s，实际 %r"
+                    % (_fx4_idx + 1, _fx4_metal, _fx4_key, _fx4_pg.get("title")))
+        continue
+    if _fx4_key not in zh or _fx4_key not in en:
+        _bgfix4_bad("bgfix4-build-title-verbatim", "语言键缺中文或英文：%s" % _fx4_key)
+        continue
+    if not _fx4_want_title:
+        _bgfix4_bad("bgfix4-build-title-verbatim",
+                    "冻结快照 §6.3 第 %d 行 %s 格取不到「图标：」标题（反空转守护）"
+                    % (_fx4_row, _fx4_side))
+        continue
+    if zh[_fx4_key] != _fx4_want_title:
+        _bgfix4_bad("bgfix4-build-title-verbatim",
+                    "字幕的中文值 %r ≠ 冻结快照 §6.3 的「图标：」逐字值 %r"
+                    % (zh[_fx4_key], _fx4_want_title))
+    elif not en[_fx4_key].strip() or en[_fx4_key] == zh[_fx4_key]:
+        _bgfix4_bad("bgfix4-build-title-verbatim",
+                    "字幕的英文值缺失或与中文逐字相同（既定口径：中英双端、en ≠ zh）：%s" % _fx4_key)
+    else:
+        _fx4_build_ok += 1
+    # 展示栏 = 该族 11 件建材，顺序 = 作者 2026-10-08 的字面顺序
+    _fx4_want_items = ["bettergold:%s%s" % (_fx4_metal, _sfx) for _sfx in _FX4_AUTHOR_BUILDING_ORDER]
+    if _fx4_pg.get("item") != _fx4_want_items:
+        _bgfix4_bad("bgfix4-build-title-verbatim",
+                    "第 %d 页（%s）的展示栏不是该族 11 件建材（作者顺序：锭块→砖块→柱→楼梯→台阶→"
+                    "砖墙→门→活板门→栏杆→链→灯笼），实际 %s"
+                    % (_fx4_idx + 1, _fx4_metal, _fx4_pg.get("item")))
+if len(_FX4_BUILD_SLOTS) != 8 or _fx4_build_ok != 8:
+    _bgfix4_bad("bgfix4-build-title-verbatim",
+                "8 个建材页里只有 %d 个同时满足「字幕来自快照 + 展示栏 11 项同序」（反空转守护）"
+                % _fx4_build_ok)
+if len(_fx4_k3_titles) != 10:
+    _bgfix4_bad("bgfix4-build-title-verbatim",
+                "冻结快照 §6.3 的「图标：」标题不是 10 个（实际 %d）—— 快照被改坏/解析器坏了"
+                % len(_fx4_k3_titles))
+
+# ---------- ⑤ 创造页材料顺序：**待作者补投**（本轮只出清单，不改顺序） ----------
+# ⚠ 这一条**没有机器判据**（作者还没给顺序）⇒ 落法是"清单 + 记账"，见 docs/1.6-规格.md §25。
+#   本节只钉一句"不许偷偷改顺序"：材料分区的排序键仍来自 `METAL_ORDER`（上面已核）。
+
+# ---------- 文档侧：§25 的口径必须落档 ----------
+for _needle, _why in ((u"bg-fix4", u"docs/1.6-规格.md 里没有 bg-fix4 这一轮的节"),
+                      (u"先删后复原", u"没写「同一页被删又被复原」的三文档冲突处置"),
+                      (u"建筑方块", u"没写 §四 的字幕口径（某某金建筑方块）"),
+                      (u"11 项", u"没写展示栏 = 11 项（按作者字面顺序）"),
+                      (u"ReferenceOpenHashSet", u"没写「进度树兄弟节点顺序不由数据决定」这条门禁项"),
+                      (u"门禁项", u"没写门禁项"),
+                      (u"待作者补投", u"没写 §五「创造页材料顺序待作者补投」")):
+    if _needle not in _bgfix_spec:
+        _bgfix4_bad("bgfix4-doc", "%s（缺 %s）" % (_why, _needle))
+
 print(f"bg-final 1.6 收尾三件（声波击退 / 成就英译 / 高燃 1 级不点燃）问题: "
       f"{len(bgfinal_problems)} {bgfinal_problems[:8]}")
 print(f"bg-fix2 六条未生效复报（色卡取证 / 声波解耦 / 藤条 / 金骨粉 / 高燃沉淀 / 成就）问题: "
@@ -4527,10 +4808,14 @@ print(f"bg-book §十 追加轮（「金灿的盛宴」5 章 / 两个门禁项 /
       f"{len(bgbook10_problems)} {bgbook10_problems[:8]}"
       f"（5 章 {_BG10_PAGES_TOTAL} 页 / 配方引用 {len(_BG10_RECIPE_REFS)} 条 / "
       f"图标引用 {len(_BG10_SPOTLIGHT_REFS)} 个）")
+print(f"bg-fix4 第四批（古董刀成就 / 顺序真源两处同序 / 章3 第1页复原 / 建材页 11 项 / 创造页顺序待补）"
+      f"问题: {len(bgfix4_problems)} {bgfix4_problems[:8]}"
+      f"（章3 {len(_BG3_PAGES)} 页 / 建材页字幕 {_fx4_build_ok}/8 / 图标引用 {len(_bg2_item_refs)} 个）")
 
 sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
                or bg15w_problems or bg8_problems or bg9_problems
                or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
                or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
                or bgfinal3_problems or bgbook9_problems or bgfix3_problems or bgbook10_problems
+               or bgfix4_problems
                or symmetric_problems or beacon_problems) else 0)

@@ -1,0 +1,6 @@
+﻿handbook written: 1 book (data/) + 4 categories + 20 entries + 192 pages x2 languages (assets/) -> E:\mc\mcmod\bettergold-template-1.21.1\src\main\resources\data\bettergold\patchouli_books\alchemy_handbook + E:\mc\mcmod\bettergold-template-1.21.1\src\main\resources\assets\bettergold\patchouli_books\alchemy_handbook
+  ��6 chapters (bg-book append round): 3 entries / 32 pages (aux=4 core=18 knowledge=10; 1 row = 1 spread = 2 pages; knowledge ��1ҳ ��� ��ɾ����bg-fix4 ���� �Ѹ�ԭ������ҳչʾ�� = 11 ���ֻ�)
+  ��8 gear chapters (bg-book ���): 9 entries / 86 pages (linkage=6, �����=10����ҳ 14 �� = 7 ҳ x 2 �䷽ = Patchouli �Ľṹ����)
+  ��9 merchant/antiques chapters (bg-book ���): 3 entries / 20 pages (intro=3, gift_box=7, antique_gear=10; 1 �� ��һ�� = 1+3 ���䷽ҳ = Patchouli �Ľṹ����)
+  ��10 golden feast chapters (bg-book ��ʮ): 5 entries / 54 pages (crops=10, foods=10, sturdy=14, fd_foods=10, fd_sturdy=10; 1 �� = 1 �� = 2 ҳ; G1 ����ҳ 2 + G2 ����ҳ 3 ����Ϊ spotlight����5 ���� = ռλ)
+  RETIRED (��� ����װ����Ŀ + ��� ����������Ŷ���ռλ + bg-fix3 ���� �����Ǽ���Ŀ + ��ʮ ���һ���Ǽ�ռλ golden_feast����д��): tools=25 + armor=17 + merchant=6 + antiques=5 + metal_tour=9 + upgrade_templates=5 + golden_feast=7 = 74

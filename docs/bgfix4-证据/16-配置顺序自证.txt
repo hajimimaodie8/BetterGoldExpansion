@@ -1,0 +1,11 @@
+﻿order=flamegold,sturdygold,thornsgold,echogold,indigoseagold,voodoogold,thundergold,illusiongold
+  flamegold      ['flamegoldWeaponBuffChance', 'flamegoldArmorBuffChance'] OK
+  sturdygold     ['sturdygoldWeaponAbilityChance', 'sturdygoldArmorAbilityIntervalMultiplier'] OK
+  thornsgold     ['thornsgoldWeaponBuffChance', 'thornsgoldArmorBuffChance'] OK
+  echogold       ['echogoldWeaponBuffChance', 'echogoldArmorBuffChance'] OK
+  indigoseagold  ['indigoseagoldWeaponBuffChance', 'indigoseagoldArmorBuffChance'] OK
+  voodoogold     ['voodoogoldWeaponBuffChance', 'voodoogoldArmorBuffChance'] OK
+  thundergold    ['thundergoldWeaponBuffChance', 'thundergoldArmorBuffChance'] OK
+  illusiongold   ['illusiongoldWeaponBuffChance', 'illusiongoldArmorBuffChance'] OK
+source(CreativeSections.METAL_ORDER)=flamegold,sturdygold,thornsgold,echogold,indigoseagold,voodoogold,thundergold,illusiongold
+OK ����ͬ��Config 16 ������˳�� == CreativeSections.METAL_ORDER == ���߿ھ���

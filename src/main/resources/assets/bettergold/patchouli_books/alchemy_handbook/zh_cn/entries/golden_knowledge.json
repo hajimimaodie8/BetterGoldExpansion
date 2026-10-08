@@ -8,58 +8,175 @@
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:flamegold_bricks"
+        "bettergold:flamegold_ingot",
+        "bettergold:sturdygold_ingot",
+        "bettergold:thornsgold_ingot",
+        "bettergold:echogold_ingot",
+        "bettergold:indigoseagold_ingot",
+        "bettergold:voodoogold_ingot",
+        "bettergold:thundergold_ingot",
+        "bettergold:illusiongold_ingot"
       ],
-      "text": "bettergold.handbook.page.knowledge_2_left"
+      "text": "bettergold.handbook.page.knowledge_1_summary",
+      "title": "各种各样的\"贵金\"锭"
     },
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:sturdygold_bricks"
+        "bettergold:flamegold_upgrade_template",
+        "bettergold:sturdygold_upgrade_template",
+        "bettergold:thornsgold_upgrade_template",
+        "bettergold:echogold_upgrade_template",
+        "bettergold:indigoseagold_upgrade_template",
+        "bettergold:voodoogold_upgrade_template",
+        "bettergold:thundergold_upgrade_template",
+        "bettergold:illusiongold_upgrade_template"
       ],
-      "text": "bettergold.handbook.page.knowledge_2_right"
+      "title": "\"贵金\"装备的升级锻造模版"
     },
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:thornsgold_bricks"
+        "bettergold:flamegold_block",
+        "bettergold:flamegold_bricks",
+        "bettergold:flamegold_pillar",
+        "bettergold:flamegold_bricks_stairs",
+        "bettergold:flamegold_bricks_slab",
+        "bettergold:flamegold_bricks_wall",
+        "bettergold:flamegold_door",
+        "bettergold:flamegold_trapdoor",
+        "bettergold:flamegold_bars",
+        "bettergold:flamegold_chain",
+        "bettergold:flamegold_lantern"
       ],
-      "text": "bettergold.handbook.page.knowledge_3_left"
+      "text": "bettergold.handbook.page.knowledge_2_left",
+      "title": "bettergold.handbook.page.knowledge_2_left_title"
     },
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:echogold_bricks"
+        "bettergold:sturdygold_block",
+        "bettergold:sturdygold_bricks",
+        "bettergold:sturdygold_pillar",
+        "bettergold:sturdygold_bricks_stairs",
+        "bettergold:sturdygold_bricks_slab",
+        "bettergold:sturdygold_bricks_wall",
+        "bettergold:sturdygold_door",
+        "bettergold:sturdygold_trapdoor",
+        "bettergold:sturdygold_bars",
+        "bettergold:sturdygold_chain",
+        "bettergold:sturdygold_lantern"
       ],
-      "text": "bettergold.handbook.page.knowledge_3_right"
+      "text": "bettergold.handbook.page.knowledge_2_right",
+      "title": "bettergold.handbook.page.knowledge_2_right_title"
     },
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:indigoseagold_bricks"
+        "bettergold:thornsgold_block",
+        "bettergold:thornsgold_bricks",
+        "bettergold:thornsgold_pillar",
+        "bettergold:thornsgold_bricks_stairs",
+        "bettergold:thornsgold_bricks_slab",
+        "bettergold:thornsgold_bricks_wall",
+        "bettergold:thornsgold_door",
+        "bettergold:thornsgold_trapdoor",
+        "bettergold:thornsgold_bars",
+        "bettergold:thornsgold_chain",
+        "bettergold:thornsgold_lantern"
       ],
-      "text": "bettergold.handbook.page.knowledge_4_left"
+      "text": "bettergold.handbook.page.knowledge_3_left",
+      "title": "bettergold.handbook.page.knowledge_3_left_title"
     },
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:voodoogold_bricks"
+        "bettergold:echogold_block",
+        "bettergold:echogold_bricks",
+        "bettergold:echogold_pillar",
+        "bettergold:echogold_bricks_stairs",
+        "bettergold:echogold_bricks_slab",
+        "bettergold:echogold_bricks_wall",
+        "bettergold:echogold_door",
+        "bettergold:echogold_trapdoor",
+        "bettergold:echogold_bars",
+        "bettergold:echogold_chain",
+        "bettergold:echogold_lantern"
       ],
-      "text": "bettergold.handbook.page.knowledge_4_right"
+      "text": "bettergold.handbook.page.knowledge_3_right",
+      "title": "bettergold.handbook.page.knowledge_3_right_title"
     },
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:thundergold_bricks"
+        "bettergold:indigoseagold_block",
+        "bettergold:indigoseagold_bricks",
+        "bettergold:indigoseagold_pillar",
+        "bettergold:indigoseagold_bricks_stairs",
+        "bettergold:indigoseagold_bricks_slab",
+        "bettergold:indigoseagold_bricks_wall",
+        "bettergold:indigoseagold_door",
+        "bettergold:indigoseagold_trapdoor",
+        "bettergold:indigoseagold_bars",
+        "bettergold:indigoseagold_chain",
+        "bettergold:indigoseagold_lantern"
       ],
-      "text": "bettergold.handbook.page.knowledge_5_left"
+      "text": "bettergold.handbook.page.knowledge_4_left",
+      "title": "bettergold.handbook.page.knowledge_4_left_title"
     },
     {
       "type": "patchouli:spotlight",
       "item": [
-        "bettergold:illusiongold_bricks"
+        "bettergold:voodoogold_block",
+        "bettergold:voodoogold_bricks",
+        "bettergold:voodoogold_pillar",
+        "bettergold:voodoogold_bricks_stairs",
+        "bettergold:voodoogold_bricks_slab",
+        "bettergold:voodoogold_bricks_wall",
+        "bettergold:voodoogold_door",
+        "bettergold:voodoogold_trapdoor",
+        "bettergold:voodoogold_bars",
+        "bettergold:voodoogold_chain",
+        "bettergold:voodoogold_lantern"
       ],
-      "text": "bettergold.handbook.page.knowledge_5_right"
+      "text": "bettergold.handbook.page.knowledge_4_right",
+      "title": "bettergold.handbook.page.knowledge_4_right_title"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:thundergold_block",
+        "bettergold:thundergold_bricks",
+        "bettergold:thundergold_pillar",
+        "bettergold:thundergold_bricks_stairs",
+        "bettergold:thundergold_bricks_slab",
+        "bettergold:thundergold_bricks_wall",
+        "bettergold:thundergold_door",
+        "bettergold:thundergold_trapdoor",
+        "bettergold:thundergold_bars",
+        "bettergold:thundergold_chain",
+        "bettergold:thundergold_lantern"
+      ],
+      "text": "bettergold.handbook.page.knowledge_5_left",
+      "title": "bettergold.handbook.page.knowledge_5_left_title"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:illusiongold_block",
+        "bettergold:illusiongold_bricks",
+        "bettergold:illusiongold_pillar",
+        "bettergold:illusiongold_bricks_stairs",
+        "bettergold:illusiongold_bricks_slab",
+        "bettergold:illusiongold_bricks_wall",
+        "bettergold:illusiongold_door",
+        "bettergold:illusiongold_trapdoor",
+        "bettergold:illusiongold_bars",
+        "bettergold:illusiongold_chain",
+        "bettergold:illusiongold_lantern"
+      ],
+      "text": "bettergold.handbook.page.knowledge_5_right",
+      "title": "bettergold.handbook.page.knowledge_5_right_title"
     }
   ]
 }

@@ -75,6 +75,14 @@ for _m in ALL_METALS:
 #   判据由 `recipe_crafted` 改成 `inventory_changed`（作者 2026-10-07「触发条件是**获得**」）。
 OPTIONAL_ITEM_TAG_VALUES["handbook"] = [
     {"id": "bettergold:alchemy_student_handbook", "required": False}]
+# bg-fix4 §一（作者 2026-10-08）：「古董屠刀和幽冥断骸刀无法触发上古藏品和皇骸永存的进度」。
+#   两把刀都在 `fd/FdItems.java:192/196` 注册 ⇒ **只在装了乐事时才存在** ⇒ 与 8 把乐事小刀
+#   同一条硬约束（裸 id 会让那两条成就**整份 JSON 被丢弃**）。
+#   ⇒ 两条成就各加一条 `have_knife` 判据，items 指向下面这两张**无条件存在**的标签。
+OPTIONAL_ITEM_TAG_VALUES["antique_knives"] = [
+    {"id": "bettergold:antique_knife", "required": False}]
+OPTIONAL_ITEM_TAG_VALUES["netherite_antique_knives"] = [
+    {"id": "bettergold:netherite_antique_knife", "required": False}]
 
 # 目标文件 -> 要并入的物品/方块 id 列表
 def build_plan() -> dict[Path, list[str]]:
@@ -169,6 +177,7 @@ def main() -> None:
     print(f"{'已写入' if args.apply else '演练'}: 共新增 {total_added} 条标签归属")
 
     # bg-fix3：9 张"可选条目"标签（8 把乐事小刀 + 手册物品），见文件头 `OPTIONAL_ITEM_TAG_VALUES`
+    # bg-fix4 §一：再 +2 张（古董屠刀 / 幽冥断骸刀）= **11 张**
     optional_changed = 0
     for name, values in sorted(OPTIONAL_ITEM_TAG_VALUES.items()):
         path = DATA / "bettergold" / "tags" / "item" / ("%s.json" % name)

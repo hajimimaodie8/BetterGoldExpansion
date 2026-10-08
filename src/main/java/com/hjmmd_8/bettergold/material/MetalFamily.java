@@ -457,12 +457,20 @@ public final class MetalFamily {
     /**
      * 本族是不是「<b>特殊金属</b>」= 除万坚金以外的全部本模组金（作者 2026-10-05 裁定，bg-fix 第 3 条）。
      *
-     * <p>当前用途：闪耀藤条掉落的工具判据
-     * （{@code AllLootModifiers.AddGlitteringVineModifier#isOurTool}）。</p>
+     * <p>当前用途：<b>只剩盾牌那条</b>（{@code MetalWeapons.MetalShieldItem#isSpecialMetal} /
+     * 格挡反 buff 与盾牌耐久的口径）。</p>
      *
-     * <p>⚠ <b>旧口径（原文保留，未删）</b>：bg-16 落地时判据是
+     * <p>★ <b>已不再是闪耀藤条的判据</b>（bg-fix4 §一，作者 2026-10-08）：
+     * {@code AllLootModifiers.AddGlitteringVineModifier#isOurTool} 里那条
+     * {@code family.isSpecialMetal()} 前置判定<b>已整条移除</b> ⇒ 现在<b>全部 8 族</b>都能挖出藤条
+     * （原话「万坚金器具与金器具……你又忘添加了」）。本方法的 javadoc 当时确实写着
+     * 「当前用途：闪耀藤条掉落的工具判据」—— <b>那句已过时，原文保留在下面</b>。</p>
+     *
+     * <p>⚠ <b>旧口径（原文保留，未删）</b>：bg-16 落地时藤条判据是
      * {@code family != null && (family.isTool(...) || family.isWeapon(...))}
-     * —— 「<b>任意一族</b>（含万坚金）」，作者 2026-10-05 把它<b>收窄</b>到特殊金属。</p>
+     * —— 「<b>任意一族</b>（含万坚金）」，作者 2026-10-05 把它<b>收窄</b>到特殊金属；
+     * 作者 2026-10-08 又<b>退回</b>「任意一族」（= 与 bg-16 同形）。
+     * ⚠ 本方法<b>不许</b>因为"藤条不用了"而删除：盾牌那边还在用它（删了会静默改变盾牌口径）。</p>
      */
     public boolean isSpecialMetal() {
         return !STURDYGOLD_ID.equals(this.id);
