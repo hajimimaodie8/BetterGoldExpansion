@@ -1,0 +1,7 @@
+check_jar_clean.py           旧语义行   14 条；工作区找不到的 = 0（其中 print 行 0）
+check_forced_chunks.py       旧语义行    7 条；工作区找不到的 = 0（其中 print 行 0）
+validate_metal_assets.py     旧语义行  123 条；工作区找不到的 = 0（其中 print 行 0）
+validate_metal_data.py       旧语义行 1804 条；工作区找不到的 = 0（其中 print 行 0）
+validate_trim_assets.py      旧语义行   78 条；工作区找不到的 = 0（其中 print 行 0）
+validate_advancements.py     旧语义行  271 条；工作区找不到的 = 0（其中 print 行 0）
+[bgfix6-old-lines-ok] 旧行丢失总数 = 0

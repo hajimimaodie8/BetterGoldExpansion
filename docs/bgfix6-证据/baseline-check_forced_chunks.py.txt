@@ -1,0 +1,5 @@
+chunks.dat top-level keys = ['data', 'DataVersion']
+chunks.dat data keys      = ['Forced']
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True

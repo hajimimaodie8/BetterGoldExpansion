@@ -1,11 +1,48 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""校验：MetalFamily 会注册出来的每个物品/方块，在 zh_cn / en_us 里是否都有语言条目。"""
+"""校验：MetalFamily 会注册出来的每个物品/方块，在 zh_cn / en_us 里是否都有语言条目。
+
+==================== 关卡退出码契约（bgfix6，2026-10-08）====================
+  0 = 全绿；1 = 有「问题」（文件末尾 `_EXIT_PROBLEM_LISTS` 里 24 个列表任一非空）；
+  2 = 基线被破坏 / 前置缺失 / 脚本自身出错（扫描根目录不在、**实际检查项数 = 0**、
+      未捕获异常）。★ 任何未捕获异常都不许变成 0；顶层兜底一律转成 2。
+  ★ 反空转：必须打印「实际检查了 N 项」并断言 N > 0。
+  依据：`docs/构建与跑测注意事项.md`「关卡的退出码契约」；
+        `mod_experience\\ex\\03-验证与证据.md` §3.19。
+
+⚠ bgfix6 就地标注（旧行为原文保留）：原先只有末尾那一行
+  `sys.exit(1 if (逐条列出 24 个列表) else 0)` —— **能 exit 1、没有 exit 2**，
+  且 `checked`（语言键计数）只 print 从不断言；未捕获异常被 Python 记成 **exit 1**
+  （分类错：脚本崩了却被读成"有问题"）。判定口径未动。
+"""
 from __future__ import annotations
 import json
+import os
 import re
 import sys
+import traceback
 from pathlib import Path
+
+
+def _bgfix6_excepthook(exc_type, exc, tb):
+    """未捕获异常 ⇒ **绝不许变成 0**；本关卡的顶层兜底把它变成 2。
+
+    为什么不改写成 `main()` + `try/except`：本脚本是 5000 行**模块级**脚本，整体缩进
+    既大又容易切错（`docs/构建与跑测注意事项.md` §四「删代码块要按标记+锚点成对定位」）。
+    `sys.excepthook` 只拦"真正没被接住"的异常，语义等价、零侵入；
+    `SystemExit`（= 脚本自己的 exit 0/1/2）不会走这里（Python 不对它调 excepthook）。
+    """
+    if issubclass(exc_type, SystemExit):
+        sys.__excepthook__(exc_type, exc, tb)
+        return
+    traceback.print_exception(exc_type, exc, tb)
+    print("[bg-data-crash] 关卡自身出错（未捕获异常）⇒ exit 2")
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(2)
+
+
+sys.excepthook = _bgfix6_excepthook
 
 # Windows 控制台是 GBK：非 GBK 字符（U+21D2 之类）会让 print 直接抛 UnicodeEncodeError，
 # 于是"关卡红了"变成"关卡崩了"（扰动实测会记成"没命中"）。这里兜底成替换符。
@@ -5011,10 +5048,39 @@ print(f"bg-fix4 第四批（古董刀成就 / 顺序真源两处同序 / 章3 �
       f"问题: {len(bgfix4_problems)} {bgfix4_problems[:8]}"
       f"（章3 {len(_BG3_PAGES)} 页 / 建材页字幕 {_fx4_build_ok}/8 / 图标引用 {len(_bg2_item_refs)} 个）")
 
-sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
-               or bg15w_problems or bg8_problems or bg9_problems
-               or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
-               or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
-               or bgfinal3_problems or bgbook9_problems or bgfix3_problems or bgbook10_problems
-               or bgfix4_problems or bgfix5_problems
-               or symmetric_problems or beacon_problems) else 0)
+# ==================== bgfix6（2026-10-08）：反空转 / 前置缺失 ⇒ exit 2 ====================
+# 旧行为（原文保留）：`checked`（语言键）只在上面 L80 附近 print 一次，从不影响退出码。
+# 这里额外把"扫描面"本身数一遍（resources 下的 JSON 产物数）—— 目录被搬走 / 改名时它变 0。
+_RES_ROOTS = [REPO / "src" / "main" / "resources" / "assets",
+              REPO / "src" / "main" / "resources" / "data"]
+_scan_json = sum(1 for _r in _RES_ROOTS if _r.is_dir() for _ in _r.rglob("*.json"))
+_missing_roots = [_r for _r in _RES_ROOTS if not _r.is_dir()]
+print(f"[bg-data-anti-vacuum] 实际检查了 {checked} 项（语言键）+ {_scan_json} 个 JSON 产物"
+      f"（扫描根缺失 {len(_missing_roots)} 个；两项都必须 > 0）")
+if checked <= 0 or _scan_json <= 0 or _missing_roots:
+    print(f"FAIL [bg-data-anti-vacuum] 检查项数 = 0 或扫描根缺失 {_missing_roots}"
+          f"（语言键 {checked} / JSON 产物 {_scan_json}）⇒ 基线被破坏（前置缺失）⇒ 本关卡 exit 2")
+    sys.exit(2)
+
+_EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
+                       bg15w_problems, bg8_problems, bg9_problems,
+                       bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
+                       bgfinal_problems, bgappend_problems, bgfix2_problems, bgbook8_problems,
+                       bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
+                       bgfix4_problems, bgfix5_problems,
+                       symmetric_problems, beacon_problems)
+# ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
+#   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
+#                  or bg15w_problems or bg8_problems or bg9_problems
+#                  or bg16_problems or bgbook_problems or bgbook2_problems or bgfix_problems
+#                  or bgfinal_problems or bgappend_problems or bgfix2_problems or bgbook8_problems
+#                  or bgfinal3_problems or bgbook9_problems or bgfix3_problems or bgbook10_problems
+#                  or bgfix4_problems or bgfix5_problems
+#                  or symmetric_problems or beacon_problems) else 0)
+#   改成引用同一份元组，只为**消除"两处清单漂移"**这个已知脆弱形状（原判定一字未改）。
+#   ⚠ `swim_problems` 不在这份清单里，但它在 L391 被 `bg8_problems.extend(...)` 吸收 ⇒ 已覆盖。
+_problem_total = sum(len(_x) for _x in _EXIT_PROBLEM_LISTS)
+print(f"[bg-data-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
+      f"（契约：0 绿 / 1 有问题 / 2 前置坏）")
+
+sys.exit(1 if _problem_total else 0)

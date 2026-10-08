@@ -1,0 +1,36 @@
+﻿===== bgfix6：JC-D1（弄脏 jar ⇒ 期望 exit 1）与 JC-D0（复原后 ⇒ 期望 exit 0）=====
+目标：临时新增 src\main\java\com\hjmmd_8\bettergold\probe\BgProbeDummy.java（类名含 Probe、含 halt 与 BG-PROBE 字面量）⇒ 构建 ⇒ 跑 check_jar_clean
+
+--- 改前 build/libs/bettergold-1.6.0.jar SHA256 ---
+98533963c65ecd1afb24f9ee21f6afa38dd8d92275280a1ebe1183462c116652
+--- 改前 git status --porcelain（应为空）---
+ M tools/asset-generator/check_forced_chunks.py
+ M tools/asset-generator/check_jar_clean.py
+ M tools/asset-generator/validate_advancements.py
+ M tools/asset-generator/validate_metal_assets.py
+ M tools/asset-generator/validate_metal_data.py
+ M tools/asset-generator/validate_trim_assets.py
+文件已写入：src\main\java\com\hjmmd_8\bettergold\probe\BgProbeDummy.java
+--- 构建（processResources jar --rerun-tasks）---
+gradle exit=0
+BUILD SUCCESSFUL in 16s
+--- 弄脏后 jar SHA256 ---
+fb8b2adb5fe6766988e6010de8132866f03f150d2114ab2a3e7b67990a8ae700
+--- JC-D1：跑 check_jar_clean.py（期望 exit 1）---
+>>> exit=1
+build/libs jars:
+  bettergold-1.5.0.jar  (1089906 bytes)
+  bettergold-1.6.0.jar  (1360547 bytes)
+
+产物 bettergold-1.6.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+  ⚠ build/libs 里有 2 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+jar 内 *Probe* 路径 = 2 ['com/hjmmd_8/bettergold/probe/', 'com/hjmmd_8/bettergold/probe/BgProbeDummy.class']
+jar 内含 'halt' 字节的 class = 1 ['com/hjmmd_8/bettergold/probe/BgProbeDummy.class']
+jar 内含 'BG-PROBE' 常量的 class = 1 ['com/hjmmd_8/bettergold/probe/BgProbeDummy.class']
+jar 内文件总数 = 2410
+[jar-clean-anti-vacuum] 实际检查了 2410 项（jar 内条目数；必须 > 0）
+FAIL [jar-clean-probe-residue] jar 内有 *Probe* 路径 2 条：['com/hjmmd_8/bettergold/probe/', 'com/hjmmd_8/bettergold/probe/BgProbeDummy.class']
+FAIL [jar-clean-halt-byte] jar 内有 1 个 class 含 'halt' 字节：['com/hjmmd_8/bettergold/probe/BgProbeDummy.class']
+FAIL [jar-clean-bg-probe-const] jar 内有 1 个 class 含 'BG-PROBE' 常量：['com/hjmmd_8/bettergold/probe/BgProbeDummy.class']
+[jar-clean-fail] 产物 jar 不干净：问题 3 条 ⇒ 本关卡 exit 1
+--- 已删除临时类（src\main\java\com\hjmmd_8\bettergold\probe\BgProbeDummy.java 存在 = False）---

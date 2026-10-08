@@ -1,0 +1,18 @@
+检查 JSON: 595 个
+解析失败: 0
+贴图缺失: 0
+专属材料缺件: 0
+武器贴图/模型缺件: 0 []
+胚底贴图/模型问题: 0 []
+盾牌/三叉戟实体贴图尺寸不符: 0 []
+三叉戟三模型结构问题: 0 []
+mixin 接线问题: 0 []
+flamegold    item=29  block=10  armor=2
+voodoogold   item=29  block=10  armor=2
+thundergold  item=29  block=10  armor=2
+indigoseagold item=29  block=10  armor=2
+illusiongold item=29  block=10  armor=2
+thornsgold   item=29  block=10  armor=2
+echogold     item=29  block=10  armor=2
+bg-16 授权贴图（golden_trident_blank）问题: 0 []
+bgfinal3 授权色卡（靛海金纹饰）问题: 0 []

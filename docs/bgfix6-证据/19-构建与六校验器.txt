@@ -1,0 +1,60 @@
+﻿===== bgfix6 §19：构建（compileJava / runData / processResources jar --rerun-tasks）+ 六校验器 =====
+跑前 run\saves 清单（名字|mtime|文件数）→ build\bgfix6-runsaves-before.txt
+新的世界|2026-10-06T14:41:23.8080070Z|29
+
+--- gradlew compileJava : exit=0 / BUILD SUCCESSFUL in 1s
+
+--- gradlew runData : exit=0 / BUILD SUCCESSFUL in 17s
+
+--- gradlew processResources jar --rerun-tasks : exit=0 / BUILD SUCCESSFUL in 16s
+
+跑后 run\saves 清单（应与跑前逐字节相同）→ build\bgfix6-runsaves-after.txt
+新的世界|2026-10-06T14:41:23.8080070Z|29
+
+run\saves 跑前/跑后差异行数 = 0
+
+===== 最终 jar =====
+bettergold-1.5.0.jar  1089906 B  SHA256=06057980a826445345e35f64b47e36dc6f5f2c0359ecb149ffc05ce6a8cc2afb
+bettergold-1.6.0.jar  1359937 B  SHA256=d6f80c102cd64bab308360bce5ee21b5d730f1d6339ed1fdb180835222f7331e
+
+===== 六校验器（最终构建后；旧口径只记 exit 0，本轮起补 1/2 的可达性）=====
+
+--- validate_metal_assets.py : exit=0
+[bg-assets-anti-vacuum] 实际检查了 595 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+[bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--- validate_metal_data.py : exit=0
+bg-15w §八 追加轮② 问题合计: 0 []
+bg-15w §九 追加轮③ 问题合计: 0 []
+[bg-data-anti-vacuum] 实际检查了 307 项（语言键）+ 1660 个 JSON 产物（扫描根缺失 0 个；两项都必须 > 0）
+[bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--- validate_trim_assets.py : exit=0
+[bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+[bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--- validate_advancements.py : exit=0
+OK [bgach] 51 个成就 / 125 条 criteria / 触发类型 ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:villager_trade'] / recipe_crafted 0 条 / 语言键 102 条
+OK [bgach] 树（bg-fix3 §五 链式）：根 3 孩子（炼制I + 两条农业）、根链 root -> 炼制I -> 炼制II -> 寻途、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；challenge 9 条（八族盔甲 + 骷髅打金服）
+OK [bgfix3-knife-in-gear] 8 条武器成就各带 `have_knife`（items = 该族 `#bettergold:<族>_knives` 标签，标签条目一律 required:false）⇒ 装了乐事时小刀计入
+OK [bgfix3-root-obtain] root 判据 = inventory_changed + `#bettergold:handbook`；全仓 recipe_crafted = 0 条
+OK [bgfix4-antique-knife-in-gear] 2 条古董成就各带 `have_knife`（items = 单个标签字符串，标签条目 required:false）⇒ 装了乐事时屠刀/断骸刀计入；`have` 那 5 件裸 id 原路径保留
+
+--- check_jar_clean.py : exit=0
+[jar-clean-anti-vacuum] 实际检查了 2408 项（jar 内条目数；必须 > 0）
+[jar-clean-ok] 产物 jar 干净（条目 2408；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+--- check_forced_chunks.py : exit=0
+chunks.dat 侧 forceload 为 0 = True
+[chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+[chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+===== git status（应只有本轮新增的 docs\bgfix6-证据\）=====
+ M tools/asset-generator/check_forced_chunks.py
+ M tools/asset-generator/check_jar_clean.py
+ M tools/asset-generator/validate_advancements.py
+ M tools/asset-generator/validate_metal_assets.py
+ M tools/asset-generator/validate_metal_data.py
+ M tools/asset-generator/validate_trim_assets.py
+?? "docs/bgfix6-\350\257\201\346\215\256/"

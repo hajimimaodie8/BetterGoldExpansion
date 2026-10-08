@@ -1,13 +1,50 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""校验新生成的三套金属资产：JSON 能否解析 + 模型引用的贴图是否都存在。"""
+"""校验新生成的三套金属资产：JSON 能否解析 + 模型引用的贴图是否都存在。
+
+==================== 关卡退出码契约（bgfix6，2026-10-08）====================
+  0 = 全绿；1 = 有「问题」（下面 10 个问题列表任一非空）；
+  2 = 基线被破坏 / 前置缺失 / 脚本自身出错（资产根目录不存在、**JSON 扫描到 0 项**、
+      未捕获异常）。★ 任何未捕获异常都不许变成 0；顶层兜底一律转成 2。
+  ★ 反空转：必须打印「实际检查了 N 项」并断言 N > 0。
+  依据：`docs/构建与跑测注意事项.md`「关卡的退出码契约」；
+        `mod_experience\\ex\\03-验证与证据.md` §3.19。
+
+⚠ bgfix6 就地标注（旧行为原文保留）：原先只有最后那一行
+  `sys.exit(1 if (10 个列表) else 0)` —— **能 exit 1、没有 exit 2**，而且 `checked`
+  （扫描到的 JSON 数）**只 print 从不断言** ⇒ 把 `assets/bettergold` 改名/搬走后
+  10 个列表全空 ⇒ **exit 0**（"压根没检查"被当成"没问题"）。判定口径未动。
+"""
 from __future__ import annotations
 import hashlib
 import json
+import os
 import sys
+import traceback
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+def _bgfix6_excepthook(exc_type, exc, tb):
+    """未捕获异常 ⇒ **绝不许变成 0**；本关卡的顶层兜底把它变成 2。
+
+    为什么不改写成 `main()` + `try/except`：本脚本是 400 行**模块级**脚本，整体缩进
+    既大又容易切错（`docs/构建与跑测注意事项.md` §四「删代码块要按标记+锚点成对定位」）。
+    `sys.excepthook` 只拦"真正没被接住"的异常，语义等价、零侵入；
+    `SystemExit`（= 脚本自己的 exit 0/1/2）不会走这里（Python 不对它调 excepthook）。
+    """
+    if issubclass(exc_type, SystemExit):
+        sys.__excepthook__(exc_type, exc, tb)
+        return
+    traceback.print_exception(exc_type, exc, tb)
+    print("[bg-assets-crash] 关卡自身出错（未捕获异常）⇒ exit 2")
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(2)
+
+
+sys.excepthook = _bgfix6_excepthook
 ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
 DATA = REPO / "src" / "main" / "resources" / "data"
 METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
@@ -399,6 +436,25 @@ for rel, want in AUTHORIZED_PALETTE_TEXTURE.items():
             f"{rel} 逐像素等于原版 quartz 色卡（= bg-15w §7.3 的白灰阶回退现状，"
             f"bgfix2 第 1 条报的 bug 本体）[bgfinal3-indigosea-not-quartz]")
 print(f"bgfinal3 授权色卡（靛海金纹饰）问题: {len(palette_hash_problems)} {palette_hash_problems[:4]}")
+
+# ==================== bgfix6（2026-10-08）：前置缺失 / 反空转 ⇒ exit 2 ====================
+# 旧行为（原文保留）：`checked` 只在上面 print，从不影响退出码 ⇒ "扫描到 0 个 JSON" 也会全绿。
+print(f"[bg-assets-anti-vacuum] 实际检查了 {checked} 项"
+      f"（blockstates / models 里名字含金属的 JSON；必须 > 0）")
+if not ASSETS.is_dir():
+    print(f"FAIL [bg-assets-missing-root] 资产根目录不存在：{ASSETS} ⇒ 基线被破坏（前置缺失）⇒ 本关卡 exit 2")
+    sys.exit(2)
+if checked <= 0:
+    print("FAIL [bg-assets-anti-vacuum] JSON 扫描到 0 项 ⇒ 基线坏了"
+          "（目录改名 / 扫描表被清空；**不许把「没扫到」当成「没问题」**）⇒ 本关卡 exit 2")
+    sys.exit(2)
+
+# 结论行（稳定 ASCII 结论码，便于扰动矩阵逐条命中）；判据与下面那行 sys.exit 完全一致。
+_problem_total = sum(len(_x) for _x in (
+    bad_json, missing_tex, missing_special, missing_weapon_assets, missing_blank_assets,
+    size_bad, trident_problems, mixin_problems, blank_tex_hash_problems, palette_hash_problems))
+print(f"[bg-assets-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
+      f"（契约：0 绿 / 1 有问题 / 2 前置坏）")
 
 sys.exit(1 if (bad_json or missing_tex or missing_special or missing_weapon_assets
                or missing_blank_assets or size_bad or trident_problems or mixin_problems

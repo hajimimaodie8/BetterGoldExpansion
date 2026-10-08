@@ -6,6 +6,20 @@
 用法:
     python validate_trim_assets.py [<原版 client jar 路径>]
 不给参数时用 gradle 缓存里 1.21.1 client jar 的默认路径。
+
+==================== 关卡退出码契约（bgfix6，2026-10-08）====================
+  0 = 全绿；1 = 有「问题」（PROBLEMS 非空）；
+  2 = 基线被破坏 / 前置缺失 / 脚本自身出错（原版 client jar 读不到、**实际检查项数 = 0**、
+      未捕获异常）。★ 任何未捕获异常都不许变成 0；顶层 `except` 一律转成 2。
+  ★ 反空转：必须打印「实际检查了 N 项」并断言 N > 0。
+  依据：`docs/构建与跑测注意事项.md`「关卡的退出码契约」；
+        `mod_experience\\ex\\03-验证与证据.md` §3.19。
+
+⚠ bgfix6 就地标注（旧行为原文保留）：本脚本原本**大量判定只 print、不入 PROBLEMS**
+（`唯一值个数=（必须相等）` / `全部落在原版 0.1..1.0 之外 =` / `我方全在 =`（两处））——
+即"算出来了、也是 False、但退出码照样 0"。现在这四条**只补退出码、判据一字未改**（都是把
+**原来就已经算好的那个布尔**接进 PROBLEMS）；`assert "overrides" not in d` 同理：
+原来它会崩成 exit 2，现在按契约记成"有问题"⇒ exit 1。
 """
 import io
 import hashlib
@@ -85,6 +99,8 @@ def palette_pixels(data: bytes):
 
 def main():
     lines = []
+    # bgfix6 反空转计数：实际检查了多少项（色卡 / trim_material / 图集置换 / 我方盔甲模型）。
+    _checked = 0
 
     def p(s):
         lines.append(s)
@@ -99,8 +115,17 @@ def main():
         collide = [k for k, v in VANILLA_INDEX.items() if abs(v - d["item_model_index"]) < 1e-9]
         p(f"  {m:18s} asset_name={d['asset_name']:18s} item_model_index={d['item_model_index']:.2f}"
           f"  撞原版={collide if collide else '无'}")
+        _checked += 1
     p(f"  唯一值个数={len(set(seen.values()))} / {len(OURS)}（必须相等）")
     p(f"  全部落在原版 0.1..1.0 之外 = {all(v < 0.1 or v > 1.0 for v in seen.values())}")
+    # bgfix6：把上面两行**已经算出来的布尔**接进退出码（判据未动）。
+    if len(set(seen.values())) != len(OURS):
+        PROBLEMS.append(f"[bgfinal3-trim-index-unique] item_model_index 唯一值个数 {len(set(seen.values()))}"
+                        f" != {len(OURS)}（必须两两不等，否则谓词互相遮蔽）")
+    if not all(v < 0.1 or v > 1.0 for v in seen.values()):
+        _bad_idx = {m: v for m, v in seen.items() if not (v < 0.1 or v > 1.0)}
+        PROBLEMS.append(f"[bgfinal3-trim-index-vanilla-range] 有 item_model_index 落回原版 0.1..1.0"
+                        f"（会撞原版纹饰）：{_bad_idx}")
 
     # ---------- 2. 色卡 ----------
     p("")
@@ -110,6 +135,7 @@ def main():
         size, px = palette_pixels(path.read_bytes())
         uniq = len(set(px))
         p(f"  {m:18s} size={size} 唯一像素={uniq} 首={px[0]} 末={px[-1]} 全白={all(c[:3] == (255, 255, 255) for c in px)}")
+        _checked += 1
 
     with zipfile.ZipFile(VANILLA) as z:
         p("  原版对比 trim_palette.png（palette_key，8×1 灰阶）：")
@@ -174,8 +200,18 @@ def main():
         arm_perms.update(src.get("permutations", {}))
     p(f"  a) armor_trims.json（穿戴模型 trims/models/armor/*）: {len(arm_perms)} 条置换，"
       f"我方全在 = {all(m in arm_perms for m in OURS)}")
+    # bgfix6：把上面那个**已经算出来的布尔**接进退出码（判据未动）。
+    _missing_arm = [m for m in OURS if m not in arm_perms]
+    if _missing_arm:
+        PROBLEMS.append(f"[bgfinal3-atlas-armor-trims-missing] armor_trims.json 的置换里少了我方材质"
+                        f"（穿戴形态纹饰会画不出来）：{_missing_arm}")
+    _checked += len(arm_perms)
     blocks_path = RES / "assets/minecraft/atlases/blocks.json"
     p(f"  b) blocks.json（物品形态 trims/items/*_trim）存在 = {blocks_path.is_file()}")
+    # bgfix6：这个文件是"两处置换"的一处，缺了就是"缺一不生效" ⇒ 有问题（原判定口径：文件必须存在 + 我方全在）。
+    if not blocks_path.is_file():
+        PROBLEMS.append("[bgfinal3-atlas-blocks-missing] assets/minecraft/atlases/blocks.json 不存在"
+                        "（物品形态的纹饰图集置换 = 两处置换之一，缺一不生效）")
     if blocks_path.is_file():
         blocks = json.loads(blocks_path.read_text(encoding="utf-8"))
         blk_perms, blk_tex = {}, []
@@ -185,6 +221,12 @@ def main():
         p(f"     源贴图 = {blk_tex}")
         p(f"     palette_key = {[s.get('palette_key') for s in blocks['sources']]}")
         p(f"     {len(blk_perms)} 条置换，我方全在 = {all(m in blk_perms for m in OURS)}")
+        # bgfix6：同上 —— 把已经算出来的布尔接进退出码（判据未动）。
+        _missing_blk = [m for m in OURS if m not in blk_perms]
+        if _missing_blk:
+            PROBLEMS.append(f"[bgfinal3-atlas-blocks-missing] blocks.json 的置换里少了我方材质"
+                            f"（物品形态纹饰会画不出来）：{_missing_blk}")
+        _checked += len(blk_perms)
         for m in OURS:
             p(f"     {m:18s} -> {blk_perms.get(m)}")
         p("     注意：SpriteSourceList.load 用的是 resourceManager.getResourceStack（同名文件**拼接**），")
@@ -212,7 +254,13 @@ def main():
             path = RES / "assets/bettergold/models/item" / f"{m}_{slot}.json"
             if path.is_file():
                 d = json.loads(path.read_text(encoding="utf-8"))
-                assert "overrides" not in d, path
+                # ⚠ bgfix6 就地标注：原来是 `assert "overrides" not in d, path`
+                #   （AssertionError ⇒ 顶层 except ⇒ exit 2）。按退出码契约，"我方模型带了
+                #   overrides"属于「**有问题**」⇒ 现在记进 PROBLEMS ⇒ exit 1；判据未动。
+                if "overrides" in d:
+                    PROBLEMS.append(f"[bgfinal3-armor-model-overrides] {path.name} 不该有 overrides"
+                                    f"（我方盔甲模型只有层 0，overlay 由 ArmorTrimItemModels 运行期补）")
+                _checked += 1
     p("  6 套 × 4 件 = 24 个模型全部只有 {parent: minecraft:item/generated, textures:{layer0}}，")
     p("  没有 overrides / 没有 layer1（对照原版 netherite_chestplate.json）⇒ 修之前自家盔甲连纹饰都不画。")
     p("  修法：client/ArmorTrimItemModels.java 在 ModelEvent.ModifyBakingResult 里给**所有**带纹饰槽位的")
@@ -235,13 +283,22 @@ def main():
     print(f"\n[写出] {out}")
 
     # ---------- bgfinal3：退出码 ----------
+    # ---------- bgfix6（2026-10-08）：反空转 / 前置缺失 ⇒ exit 2 ----------
+    # 旧行为（原文保留）：本脚本原先没有任何"实际检查了 N 项"的断言。
+    print(f"[bgfinal3-anti-vacuum] 实际检查了 {_checked} 项"
+          f"（trim_material {len(OURS)} + 色卡 {len(OURS)} + 图集置换 + 我方盔甲模型；必须 > 0）")
+    if _checked <= 0:
+        print("FAIL [bgfinal3-anti-vacuum] 检查项数 = 0 ⇒ 基线被破坏（前置缺失）⇒ 本关卡 exit 2")
+        return 2
     if PROBLEMS:
         for _p in PROBLEMS:
             print(f"FAIL {_p}")
         print(f"纹饰素材关卡问题: {len(PROBLEMS)}")
+        print(f"[bgfinal3-fail] 问题 {len(PROBLEMS)} 条 ⇒ 本关卡 exit 1")
         return 1
     print("OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），"
           "其余 8 张各是自己的彩色渐变")
+    print(f"[bgfinal3-ok] 问题 0 条 / 检查 {_checked} 项（契约：0 绿 / 1 有问题 / 2 前置坏）")
     return 0
 
 

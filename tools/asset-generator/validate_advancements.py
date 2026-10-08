@@ -819,10 +819,14 @@ def main() -> int:
             f"（那样 {_CARROT_BLOCK} 是个不存在的方块，判据永远不达成）")
 
     # ---- 输出 ----
+    # bgfix6（2026-10-08）就地标注：本关卡的 0/1/2 契约**本来就齐**（docstring 第 5-8 行 +
+    #   下面的 try/except ⇒ 2；`bad()` 收集 ⇐ 每条断言都带反空转守护），本轮**只补一行
+    #   统一格式的稳定 ASCII 结论码**，便于"六校验器扰动矩阵"逐条命中；退出码判据一字未改。
     for p in problems:
         print(f"FAIL {p}")
     if problems:
         print(f"bg-ach 进度系统问题: {len(problems)}")
+        print(f"[bgach-fail] 问题 {len(problems)} 条 ⇒ 本关卡 exit 1（契约：0 绿 / 1 有问题 / 2 前置坏）")
         return 1
     print(f"OK [bgach] 51 个成就 / {total_criteria} 条 criteria / 触发类型 "
           f"{sorted(used_triggers)} / recipe_crafted {len(recipe_refs)} 条 / 语言键 {lang_n} 条")
@@ -842,6 +846,8 @@ def main() -> int:
           "食物清单与 Java 真源逐条一致" % (len(set(refs)), len(bgfix3_tag_refs)))
     print(f"OK [bgfinal-adv-lang] {len(en_adv)} 条英文值全部是真英译"
           f"（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 {len(SYMBOL_ONLY_OK)} 条）")
+    print(f"[bgach-ok] 问题 0 条 / 成就 {len(advs)} 个 / criteria {total_criteria} 条 / 语言键 {lang_n} 条"
+          f"（契约：0 绿 / 1 有问题 / 2 前置坏）")
     return 0
 
 

@@ -1,0 +1,59 @@
+==============================================================================
+bgfix6 扰动矩阵：弄脏 ⇒ exit 1 / 前置缺失 ⇒ exit 2 / 只加空白 ⇒ exit 0
+==============================================================================
+[OK      ] MA-D1  validate_metal_assets.py   expect=1 got=1 hit=occ=1 restore=ok
+           [bg-assets-anti-vacuum] 实际检查了 595 项（blockstates / models 里名字含金属的 JSON；必须 > 0） | [bg-assets-fail] 问题合计 1 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+[OK      ] MA-T1  validate_metal_assets.py   expect=2 got=2 hit=moved restore=ok
+           胚底贴图/模型问题: 10 ['贴图 textures/item/golden_mace_blank.png', '模型 models/item/golden_mace_blank.json', '贴图 textures/item/golden_bow_blank.png', '模型 models/item/golden_bow_blank.json', '贴图 textures/item/golden_crossbow_blank.png', '模型 models/item/golden_crossbow_blank.json', '贴图 textures/item/golden_trident_blank.png', '模型 models/item/golden_trident_blank.json'] | 三叉戟三模型结构问题: 8 ["sturdygold: 三个三叉戟模型读取失败 [Errno 2] No such file or directory: 'E:\\\\mc\\\\mcmod\\\\bettergold-template-1.21.1\\\\src\\\\main\\\\resources\\\\assets\\\\bettergold\\\\models\\\\item\\\\sturdygold_trident.json'", "flamegold: 三个三叉戟模型读取失败 [Errno 2] No such file or directory: 'E:\\\\mc\\\\mcmod\\\\bettergold-template-1.21.1\\\\src\\\\main\\\\resources\\\\assets\\\\bettergold\\\\models\\\\item\\\\flamegold_trident.json'", "voodoogold: 三个三叉戟模型读取失败 [Errno 2] No such file or directory: 'E:\\\\mc\\\\mcmod\\\\bettergold-template-1.21.1\\\\src\\\\main\\\\resources\\\\assets\\\\bettergold\\\\models\\\\item\\\\voodoogold_trident.json'", "thundergold: 三个三叉戟模型读取失败 [Errno 2] No such file or directory: 'E:\\\\mc\\\\mcmod\\\\bettergold-template-1.21.1\\\\src\\\\main\\\\resources\\\\assets\\\\bettergold\\\\models\\\\item\\\\thundergold_trident.json'", "indigoseagold: 三个三叉戟模型读取失败 [Errno 2] No such file or directory: 'E:\\\\mc\\\\mcmod\\\\bettergold-template-1.21.1\\\\src\\\\main\\\\resources\\\\assets\\\\bettergold\\\\models\\\\item\\\\indigoseagold_trident.json'", "illusiongold: 三个三叉戟模型读取失败 [Errno 2] No such file or directory: 'E:\\\\mc\\\\mcmod\\\\bettergold-template-1.21.1\\\\src\\\\main\\\\resources\\\\assets\\\\bettergold\\\\models\\\\item\\\\illusiongold_trident.json'"] | bg-16 授权贴图（golden_trident_blank）问题: 1 ['缺 textures/item/golden_trident_blank.png（反空转守护）'] | bgfinal3 授权色卡（靛海金纹饰）问题: 1 ['缺 textures/trims/color_palettes/indigoseagold.png（反空转守护）']
+[OK      ] MA-W1  validate_metal_assets.py   expect=0 got=0 hit=appended restore=ok
+           [bg-assets-anti-vacuum] 实际检查了 595 项（blockstates / models 里名字含金属的 JSON；必须 > 0） | [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+[OK      ] MD-D1  validate_metal_data.py     expect=1 got=1 hit=occ=1 restore=ok
+           bg-15w §八 追加轮② 问题合计: 0 [] | bg-15w §九 追加轮③ 问题合计: 0 [] | bg-book §六 追加轮（三章逐页补全）问题: 1 ["三章的图标引用了不存在的物品/方块（死链）：['bettergold:flamegold_ingot'] [bgbook2-item-refs]"]（三章 32 页 / 16 条配方引用 / 115 个图标引用） | [bg-data-anti-vacuum] 实际检查了 307 项（语言键）+ 1660 个 JSON 产物（扫描根缺失 0 个；两项都必须 > 0）
+[OK      ] MD-T1  validate_metal_data.py     expect=2 got=2 hit=moved restore=ok
+           [bg-data-crash] 关卡自身出错（未捕获异常）⇒ exit 2
+[OK      ] MD-W1  validate_metal_data.py     expect=0 got=0 hit=appended restore=ok
+           bg-15w §八 追加轮② 问题合计: 0 [] | bg-15w §九 追加轮③ 问题合计: 0 [] | [bg-data-anti-vacuum] 实际检查了 307 项（语言键）+ 1660 个 JSON 产物（扫描根缺失 0 个；两项都必须 > 0） | [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+[OK      ] TR-D1  validate_trim_assets.py    expect=1 got=1 hit=occ=1 restore=ok
+           [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0） | FAIL [bgfinal3-trim-index-vanilla-range] 有 item_model_index 落回原版 0.1..1.0（会撞原版纹饰）：{'illusiongold': 0.1} | 纹饰素材关卡问题: 1 | [bgfinal3-fail] 问题 1 条 ⇒ 本关卡 exit 1
+[OK      ] TR-T1  validate_trim_assets.py    expect=2 got=2 hit=n/a restore=ok
+           关卡自身出错（exit 2）：FileNotFoundError(2, 'No such file or directory')
+[OK      ] TR-W1  validate_trim_assets.py    expect=0 got=0 hit=appended restore=ok
+           [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0） | [bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+[OK      ] AD-D1  validate_advancements.py   expect=1 got=1 hit=occ=1 restore=ok
+           FAIL [bgach-trigger-whitelist] root.have_handbook 的 trigger 'minecraft:inventory_changedXX' 不在白名单里 | FAIL [bgfix3-root-obtain] root 的判据 trigger 不是 inventory_changed（作者 2026-10-07「触发条件是获得」）：minecraft:inventory_changedXX | bg-ach 进度系统问题: 2 | [bgach-fail] 问题 2 条 ⇒ 本关卡 exit 1（契约：0 绿 / 1 有问题 / 2 前置坏）
+[OK      ] AD-T1  validate_advancements.py   expect=2 got=2 hit=moved restore=ok
+           关卡自身出错（exit 2）：FileNotFoundError(2, 'No such file or directory')
+[OK      ] AD-W1  validate_advancements.py   expect=0 got=0 hit=appended restore=ok
+           [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+[OK      ] JC-T1  check_jar_clean.py         expect=2 got=2 hit=moved restore=ok
+           FAIL [jar-clean-jar-missing] 产物 jar 不存在：E:\mc\mcmod\bettergold-template-1.21.1\build\libs\bettergold-1.6.0.jar
+[OK      ] JC-W1  check_jar_clean.py         expect=0 got=0 hit=appended restore=ok
+           [jar-clean-anti-vacuum] 实际检查了 2408 项（jar 内条目数；必须 > 0） | [jar-clean-ok] 产物 jar 干净（条目 2408；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+[OK      ] FC-W1  check_forced_chunks.py     expect=0 got=0 hit=copy restore=ok
+           chunks.dat 侧 forceload 为 0 = True | [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0） | [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+[OK      ] FC-D1  check_forced_chunks.py     expect=1 got=1 hit=crafted restore=ok
+           chunks.dat 侧 forceload 为 0 = False | [chunks-forced-anti-vacuum] 实际检查了 2 项（data 段键 1 + Forced 列表项 1；必须 > 0） | FAIL [chunks-forced-residual] 收尾态仍有残留 forceload：1 项 [0] ⇒ 本关卡 exit 1
+[OK      ] FC-T1  check_forced_chunks.py     expect=2 got=2 hit=n/a restore=ok
+           FAIL [chunks-forced-missing] chunks.dat 不存在：C:\Users\Lenovo\AppData\Local\Temp\bgfix6-no-such-chunks.dat
+
+==============================================================================
+id      gate                       op                                             exp got hit          restore
+MA-D1   validate_metal_assets.py   replace@src\main\resources\assets\bettergold\models\item\flamegold_ingot.json   1   1 occ=1        ok
+MA-T1   validate_metal_assets.py   rename-away@src\main\resources\assets\bettergold   2   2 moved        ok
+MA-W1   validate_metal_assets.py   append@src\main\resources\assets\bettergold\models\item\flamegold_ingot.json   0   0 appended     ok
+MD-D1   validate_metal_data.py     replace@src\main\resources\assets\bettergold\lang\zh_cn.json   1   1 occ=1        ok
+MD-T1   validate_metal_data.py     rename-away@src\main\resources\assets\bettergold\lang   2   2 moved        ok
+MD-W1   validate_metal_data.py     append@src\main\resources\assets\bettergold\lang\zh_cn.json   0   0 appended     ok
+TR-D1   validate_trim_assets.py    replace@src\main\resources\data\bettergold\trim_material\illusiongold.json   1   1 occ=1        ok
+TR-T1   validate_trim_assets.py    argv=不存在的原版 client jar                           2   2 n/a          ok
+TR-W1   validate_trim_assets.py    append@src\main\resources\data\bettergold\trim_material\illusiongold.json   0   0 appended     ok
+AD-D1   validate_advancements.py   replace@src\main\resources\data\bettergold\advancement\root.json   1   1 occ=1        ok
+AD-T1   validate_advancements.py   rename-away@tools\asset-generator\advancement_manifest.json   2   2 moved        ok
+AD-W1   validate_advancements.py   append@src\main\resources\data\bettergold\advancement\root.json   0   0 appended     ok
+JC-T1   check_jar_clean.py         rename-away@build\libs\bettergold-1.6.0.jar      2   2 moved        ok
+JC-W1   check_jar_clean.py         append@src\main\java\com\hjmmd_8\bettergold\material\MetalFamily.java   0   0 appended     ok
+FC-W1   check_forced_chunks.py     argv=真实 chunks.dat 的副本（原件零改动）                    0   0 copy         ok
+FC-D1   check_forced_chunks.py     argv=伪造 Forced=[0] 的 chunks.dat                  1   1 crafted      ok
+FC-T1   check_forced_chunks.py     argv=不存在的路径                                      2   2 n/a          ok
+mismatches = 0 / 17 个用例；restore 失败 = 0
+[bgfix6-perturb-ok]

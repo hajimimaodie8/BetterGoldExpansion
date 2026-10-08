@@ -1,0 +1,10 @@
+build/libs jars:
+  bettergold-1.5.0.jar  (1089906 bytes)
+  bettergold-1.6.0.jar  (1359937 bytes)
+
+产物 bettergold-1.6.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+  ⚠ build/libs 里有 2 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+jar 内 *Probe* 路径 = 0 []
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2408
