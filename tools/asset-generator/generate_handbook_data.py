@@ -378,6 +378,8 @@ ENTRIES = [
 #     第 1 页 = 左（八族锭轮换 + 标题「各种各样的"贵金"锭」+ 正文 knowledge_1_summary）
 #             + 右（八张升级模板轮换 + 标题「"贵金"装备的升级锻造模版」、**无正文**）
 #     —— 与 §八 删除前的形状**逐字相同**（两个标题走 KNOWLEDGE_1_*_TITLE 字面常量）。
+#     ⚠ **上面那句「右页无正文」已被 bgfix8（作者 2026-10-09）取代，原文留档不删**：
+#       现行 = 右页也有正文（`knowledge_1_right`，§七.1 删掉的那段的作者原文）。
 #   * §四「把中上边字幕的 某某金砖块 改为 某某金建筑方块」+「展示栏改为 11 项、从左到右不断替换」
 #     ⇒ 第 2~5 页（= 8 个族的建材页）**显式给 `title`**（语言键 `knowledge_<行>_<左/右>_title`，
 #     值 = 冻结快照 §6.3 的「图标：**X**」逐字，注入脚本见 `build/bgfix4_add_lang.py` 的副本）
@@ -417,6 +419,8 @@ CORE_ROWS = [
 #     （原「材料链」段 = 旧 `knowledge_1_left`；原「锻造模板怎么用」段 = 旧 `knowledge_1_right`），
 #     整页只剩**两张图标 + 一句汇总**（新键 `knowledge_1_summary`，只有左页承载正文，
 #     右页 `spotlight` 不带 `text` ⇒ 两页合起来只有一句话，符合"只留一句"）。
+#     ⚠ **已被 bgfix8（作者 2026-10-09）取代，原文留档不删**：右页现在**带** `text`
+#       （= 本段所说的、§七.1 删掉的「锻造模板怎么用」那一段，键名 `knowledge_1_right`）。
 #   * 第 2 条「左图标 = 各种各样的"贵金"锭」⇒ 从左到右 = 八族**锭**（原来还夹着粒）。
 #   * 第 3 条「下方图标换成若干变化的贵金锭」⇒ ⚠ **Patchouli 的 spotlight 页只有一个图标槽**
 #     （`PageSpotlight` 的字段只有 `item` / `title` / `linkRecipe`，`render()` 只画
@@ -513,6 +517,11 @@ def entry_golden_knowledge():
     里边那两个图标也给它改成相应的那8种金属锭和锻造模版的轮换」
     ⇒ 本函数**不再 `continue` 跳过 index 1**，页数 **8 → 10**，形状与 §八 删除前**逐字相同**：
     左 = 八族锭轮换 + 标题1 + 正文 `knowledge_1_summary`；右 = 八张升级模板轮换 + 标题2、**无正文**。
+    ★ **bgfix8（作者 2026-10-09）就地取代上面那句「右页无正文」**：作者原话
+    「**贵金的装备升级锻造模板那一页应该加文字**，我不知道是删了还是怎么地的。你没有这样加上」
+    ⇒ 右页补回 **§七.1 删掉的那一段**（旧键 `knowledge_1_right` 的**作者原文**，逐字来源 =
+    仓库内留档 `docs/bgbook2-证据/07-从需求文档解析出的22段逐字文案.txt:18`；英文 = 同目录
+    `06-语言键注入脚本副本.py:58`）。**旧口径（「右页不带 text」）原文保留在下面那段注释里，不删。**
     ★ **bg-fix4 §四（同一天）**：第 2~5 页（8 个族的建材页）**显式给 `title`**
     （旧状态 = 没有 `title` ⇒ Patchouli 退化成显示**物品名**「烈燃金砖块」）+ `item` = 该族 11 件建材。
 
@@ -528,10 +537,15 @@ def entry_golden_knowledge():
     for index, (left_items, right_items) in enumerate(KNOWLEDGE_ROWS, start=1):
         if index == 1:
             # ★ 复原那一跨页（§八 删除前的形状）：
-            #   正文只在左页（右页 spotlight **不带 text**）—— 两页合起来仍只有那一句话。
+            #   ⚠ **旧口径（原文留档，已被 bgfix8 取代、不删）**：正文只在左页
+            #     （右页 spotlight **不带 text**）—— 两页合起来仍只有那一句话。
+            #   ★ **bgfix8（作者 2026-10-09）**：「贵金的装备升级锻造模板那一页应该加文字」
+            #     ⇒ 右页补回 §七.1 删掉的那一段（旧键 `knowledge_1_right` 的**作者原文**，
+            #     逐字来源 = `docs/bgbook2-证据/07-...txt:18`；英文 = `06-语言键注入脚本副本.py:58`）。
             pages.append(spotlight_page(left_items, "%s.page.knowledge_1_summary" % LANG,
                                         KNOWLEDGE_1_INGOT_TITLE))
-            pages.append(spotlight_page(right_items, None, KNOWLEDGE_1_TEMPLATE_TITLE))
+            pages.append(spotlight_page(right_items, "%s.page.knowledge_1_right" % LANG,
+                                        KNOWLEDGE_1_TEMPLATE_TITLE))
             continue
         # 第 2~5 页：左 / 右 各是一个族的建材页（bg-fix4 §四：字幕 = 语言键、展示栏 = 11 项）
         pages.append(spotlight_page(left_items, "%s.page.knowledge_%d_left" % (LANG, index),

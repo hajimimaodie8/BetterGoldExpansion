@@ -32,6 +32,7 @@
         "bettergold:thundergold_upgrade_template",
         "bettergold:illusiongold_upgrade_template"
       ],
+      "text": "bettergold.handbook.page.knowledge_1_right",
       "title": "\"贵金\"装备的升级锻造模版"
     },
     {

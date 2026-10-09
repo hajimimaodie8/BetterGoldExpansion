@@ -1,0 +1,37 @@
+﻿=== zh_cn.json ===
+  bettergold.configuration.flamegoldWeaponBuffChance         '��ȼ�� �� �������ߴ��� Buff ����'  ->  '��ȼ���������߶��ƴ���Buff����'
+  bettergold.configuration.flamegoldArmorBuffChance          '��ȼ�� �� ���׶��ƴ��� Buff ����'  ->  '��ȼ�𡤿��״���buff����'
+  bettergold.configuration.voodoogoldWeaponBuffChance        '�׶��� �� �������ߴ��� Buff ����'  ->  '�׶����������߶��ƴ���Buff����'
+  bettergold.configuration.voodoogoldArmorBuffChance         '�׶��� �� ���׶��ƴ��� Buff ����'  ->  '�׶��𡤿��״���buff����'
+  bettergold.configuration.thundergoldWeaponBuffChance       '���׽� �� �������ߴ�����������'  ->  '���׽��������߶��ƴ���Buff����'
+  bettergold.configuration.thundergoldArmorBuffChance        '���׽� �� ���׶��ƴ��� Buff ����'  ->  '���׽𡤿��״���buff����'
+  bettergold.configuration.indigoseagoldWeaponBuffChance     '�庣�� �� �������ߴ��� Buff ����'  ->  '�庣���������߶��ƴ���Buff����'
+  bettergold.configuration.indigoseagoldArmorBuffChance      '�庣�� �� ���׶��ƴ��� Buff ����'  ->  '�庣�𡤿��״���buff����'
+  bettergold.configuration.illusiongoldWeaponBuffChance      '�û�� �� �������ߴ��� Buff ����'  ->  '�û���������߶��ƴ���Buff����'
+  bettergold.configuration.illusiongoldArmorBuffChance       '�û�� �� ���׶��ƴ��� Buff ����'  ->  '�û�𡤿��״���buff����'
+  bettergold.configuration.thornsgoldWeaponBuffChance        '������ �� �������ߴ��� Buff ����'  ->  '�������������߶��ƴ���Buff����'
+  bettergold.configuration.thornsgoldArmorBuffChance         '������ �� ���׶��ƴ��� Buff ����'  ->  '�����𡤿��״���buff����'
+  bettergold.configuration.echogoldWeaponBuffChance          '���ؽ� �� �������ߴ��� Buff�����أ�����'  ->  '���ؽ��������߶��ƴ���Buff����'
+  bettergold.configuration.echogoldArmorBuffChance           '���ؽ� �� ���׶��ƴ��� Buff�����أ�����'  ->  '���ؽ𡤿��״���buff����'
+  + append bettergold.handbook.page.knowledge_1_right = '��Ȼ"���"Ҳ������������������ǿ�����װʹ�ã�������������ĳ��"���"����������Ӧ�ĺ��Ĳ������ƳɵĶ���ģ�壬�ٴ����Ͻ�װ�����������"���"�����ɡ�'
+  keys 741 -> 742   changed_lines=15��Ӧ 15 = 14 + 1 ׷�ӣ�
+  written, no-BOM, LF=743 CRLF=0
+=== en_us.json ===
+  bettergold.configuration.flamegoldWeaponBuffChance         'Flamegold - Weapon/Tool Buff Chance'  ->  'Flamegold - Weapon/Tool/Shield Buff Chance'
+  bettergold.configuration.flamegoldArmorBuffChance          'Flamegold - Armor/Shield Buff Chance'  ->  'Flamegold - Armor Buff Chance'
+  bettergold.configuration.voodoogoldWeaponBuffChance        'Voodoogold - Weapon/Tool Buff Chance'  ->  'Voodoogold - Weapon/Tool/Shield Buff Chance'
+  bettergold.configuration.voodoogoldArmorBuffChance         'Voodoogold - Armor/Shield Buff Chance'  ->  'Voodoogold - Armor Buff Chance'
+  bettergold.configuration.thundergoldWeaponBuffChance       'Thundergold - Weapon/Tool Ability Chance'  ->  'Thundergold - Weapon/Tool/Shield Buff Chance'
+  bettergold.configuration.thundergoldArmorBuffChance        'Thundergold - Armor/Shield Buff Chance'  ->  'Thundergold - Armor Buff Chance'
+  bettergold.configuration.indigoseagoldWeaponBuffChance     'Indigoseagold - Weapon/Tool Buff Chance'  ->  'Indigoseagold - Weapon/Tool/Shield Buff Chance'
+  bettergold.configuration.indigoseagoldArmorBuffChance      'Indigoseagold - Armor/Shield Buff Chance'  ->  'Indigoseagold - Armor Buff Chance'
+  bettergold.configuration.illusiongoldWeaponBuffChance      'Illusiongold - Weapon/Tool Buff Chance'  ->  'Illusiongold - Weapon/Tool/Shield Buff Chance'
+  bettergold.configuration.illusiongoldArmorBuffChance       'Illusiongold - Armor/Shield Buff Chance'  ->  'Illusiongold - Armor Buff Chance'
+  bettergold.configuration.thornsgoldWeaponBuffChance        'Thornsgold - Weapon/Tool Buff Chance'  ->  'Thornsgold - Weapon/Tool/Shield Buff Chance'
+  bettergold.configuration.thornsgoldArmorBuffChance         'Thornsgold - Armor/Shield Buff Chance'  ->  'Thornsgold - Armor Buff Chance'
+  bettergold.configuration.echogoldWeaponBuffChance          'Echogold - Weapon/Tool Buff (Sonic Roar) Chance'  ->  'Echogold - Weapon/Tool/Shield Buff (Sonic Roar) Chance'
+  bettergold.configuration.echogoldArmorBuffChance           'Echogold - Armor/Shield Buff (Sonic Roar) Chance'  ->  'Echogold - Armor Buff (Sonic Roar) Chance'
+  + append bettergold.handbook.page.knowledge_1_right = 'Of course "noble gold" can also be used to make powerful weapons and armour, but first you have to craft the ingot of some "noble gold" and the smithing template made from its matching core material, then combine them with golden gear and the matching "noble gold" ingot.'
+  keys 741 -> 742   changed_lines=15��Ӧ 15 = 14 + 1 ׷�ӣ�
+  written, no-BOM, LF=743 CRLF=0
+DONE ok

@@ -132,6 +132,37 @@ public class Config {
     //   · 非万坚金 · 武器工具：**概率**（0–1），默认 1.0；幻惑金 0.16（它本来就是「16% 概率施加安抚」）
     //   · 非万坚金 · 盔甲盾牌：**每件**概率（0–1），默认 0.25；幻惑金 0.04
     //       有效概率 = min(1, 该族穿戴件数 × 本条)（穿满 4 件默认 = 100% / 16%，与 1.4/1.5 逐位相同）
+    //
+    // ==================== bgfix8（作者 2026-10-09）：显示文案 = 武器工具**盾牌** / 盔甲 ====================
+    //
+    // 作者原话：「设置里**除了万坚金相关**……毕竟盾牌的反制赋予 Buff 的机制是**百分百**的，
+    //   盔甲因为**依赖于全套系**，所以才为**每件为 25%**，你得需要修改成
+    //   **某某金·武器工具盾牌触发Buff概率** 和 **某某金·盔甲触发buff概率** 才对。此设定要忽略掉万坚金相关。」
+    //
+    // ⇒ 显示文案（**两处，同一份字面**：① 本类的 `.comment(...)` = 配置界面里鼠标悬停/页脚那几行；
+    //   ② `zh_cn.json` / `en_us.json` 的 `bettergold.configuration.<键名>` = 配置界面里的**条目名**）：
+    //     · 武器侧 7 条 ⇒ 「〈族〉金·武器工具盾牌触发Buff概率」
+    //     · 盔甲侧 7 条 ⇒ 「〈族〉金·盔甲触发buff概率」
+    //   ⚠ **旧字面（原文留档，未删）**：「〈族〉金 · 武器工具触发 Buff 概率」/「〈族〉金 · 盔甲盾牌触发 Buff 概率」。
+    //
+    // ★ **这层文案与代码现状是相符的（本轮读源码核实，不是按作者口述照抄）**：
+    //   * `wornPieces(...)` 只扫 **HEAD / CHEST / LEGS / FEET 四件盔甲**（`MetalEvents.java:1694-1703`）
+    //     ⇒ 「盔甲」侧那条是**每件**概率，盾牌**不计入**；
+    //   * 盾牌的两条路径都走**武器侧**那条：① 拿盾左键打怪 ⇒ `dispatchWeaponHit` 的守卫
+    //     `family.isShield(...)` ⇒ `applyFamilyWeaponEffect` ⇒ `weaponBuffChance`；
+    //     ② 举盾格挡 ⇒ `onShieldBlock` ⇒ **同一个** `applyFamilyWeaponEffect`
+    //     ⇒ 默认 1.0 ⇒ **盾牌的反制赋予 Buff 就是 100%**（幻惑金 0.16 是它自己的默认值）。
+    //   * ⇒ 所以「盾牌」这个词从盔甲侧文案里**移走**、并在武器侧点明，是**修正一处描述错误**，
+    //     而不是新增/改变任何行为。
+    //
+    // ⚠ **万坚金那两条一个字都没动**（`sturdygoldWeaponAbilityChance` /
+    //   `sturdygoldArmorAbilityIntervalMultiplier`）：作者明说「设置里除了万坚金相关」。它们本来就叫
+    //   「**能力**概率」/「**能力**间隔（乘法系数）」—— 与「触发 Buff 的概率」是**两类东西**，
+    //   而且万坚金既没有「每件 25%」那套反制（`reflects()` 对它恒 false）、盾牌也不反 buff
+    //   （`onShieldBlock` 里 `isSpecialMetal()` 挡住）。**保持它们自己的措辞 = 不动**。
+    //
+    // ⚠ 键名 / 默认值 / 取值范围 / 声明顺序：本轮**逐字未动**（配置键名是存档红线），
+    //   关卡 `[bgfix8-config-labels-*]` + 既有的 `[bgfix-config-16-keys]` / `[bgfix-config-defaults]` 守着。
     //   · 万坚金 · 武器工具：**概率**（0–1），默认 1.0 = 「必定掉落一件金系物品」那条**能力**（爆金）
     //       ⚠ 「礼品金票 6%」（{@code ModEvents.GIFT_TICKET_CHANCE}）是**另一条**，不在本次 16 条里
     //   · 万坚金 · 盔甲盾牌：**乘法系数**（0–100），默认 1.0
@@ -164,14 +195,17 @@ public class Config {
 
     /** 烈燃金 · 武器工具触发高燃的概率（默认 1.0 = 必定，与 1.6.0 行为一致） */
     public static final ModConfigSpec.DoubleValue FLAMEGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("烈燃金【武器工具】触发 Buff（高燃）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .comment("烈燃金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是 Buff：高燃。0 = 永不触发；1 = 必定触发（默认）。")
             .defineInRange("flamegoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
 
     /** 烈燃金 · 盔甲盾牌反制高燃的每件概率（默认 0.25 = 每件 25%，穿满 4 件 100%） */
     public static final ModConfigSpec.DoubleValue FLAMEGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("烈燃金【盔甲盾牌】反制 Buff（高燃）的【每件】概率。",
+            .comment("烈燃金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
                     "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
-                    "0 = 永不触发。")
+                    "触发的是 Buff：高燃。0 = 永不触发。")
             .defineInRange("flamegoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /**
@@ -208,70 +242,92 @@ public class Config {
 
     /** 树棘金 · 武器工具触发寄生的概率（默认 1.0） */
     public static final ModConfigSpec.DoubleValue THORNSGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("树棘金【武器工具】触发 Buff（寄生）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .comment("树棘金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是 Buff：寄生。0 = 永不触发；1 = 必定触发（默认）。")
             .defineInRange("thornsgoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
 
     /** 树棘金 · 盔甲盾牌反制寄生的每件概率（默认 0.25） */
     public static final ModConfigSpec.DoubleValue THORNSGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("树棘金【盔甲盾牌】反制 Buff（寄生）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .comment("树棘金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "触发的是 Buff：寄生。0 = 永不触发。")
             .defineInRange("thornsgoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /** 幽咆金 · 武器工具触发音咆的概率（默认 1.0） */
     public static final ModConfigSpec.DoubleValue ECHOGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("幽咆金【武器工具】触发 Buff（音咆，内部 id echo_roar）的概率。",
-                    "0 = 永不触发；1 = 必定触发（默认）。")
+            .comment("幽咆金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是 Buff：音咆（内部 id echo_roar）。0 = 永不触发；1 = 必定触发（默认）。")
             .defineInRange("echogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
 
     /** 幽咆金 · 盔甲盾牌反制音咆的每件概率（默认 0.25） */
     public static final ModConfigSpec.DoubleValue ECHOGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("幽咆金【盔甲盾牌】反制 Buff（音咆）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .comment("幽咆金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "触发的是 Buff：音咆。0 = 永不触发。")
             .defineInRange("echogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /** 靛海金 · 武器工具触发沉淀的概率（默认 1.0） */
     public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("靛海金【武器工具】触发 Buff（沉淀）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .comment("靛海金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是 Buff：沉淀。0 = 永不触发；1 = 必定触发（默认）。")
             .defineInRange("indigoseagoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
 
     /** 靛海金 · 盔甲盾牌反制沉淀的每件概率（默认 0.25） */
     public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("靛海金【盔甲盾牌】反制 Buff（沉淀）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .comment("靛海金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "触发的是 Buff：沉淀。0 = 永不触发。")
             .defineInRange("indigoseagoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /** 巫毒金 · 武器工具触发巫毒的概率（默认 1.0） */
     public static final ModConfigSpec.DoubleValue VOODOOGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("巫毒金【武器工具】触发 Buff（巫毒）的概率。", "0 = 永不触发；1 = 必定触发（默认）。")
+            .comment("巫毒金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是 Buff：巫毒。0 = 永不触发；1 = 必定触发（默认）。")
             .defineInRange("voodoogoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
 
     /** 巫毒金 · 盔甲盾牌反制巫毒的每件概率（默认 0.25） */
     public static final ModConfigSpec.DoubleValue VOODOOGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("巫毒金【盔甲盾牌】反制 Buff（巫毒）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .comment("巫毒金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "触发的是 Buff：巫毒。0 = 永不触发。")
             .defineInRange("voodoogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /** 结雷金 · 武器工具触发落雷/颤栗的概率（默认 1.0） */
     public static final ModConfigSpec.DoubleValue THUNDERGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("结雷金【武器工具】触发能力（落雷 + 3×3 伤害 + 颤栗）的概率。",
-                    "0 = 永不触发；1 = 必定触发（默认）。")
+            .comment("结雷金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是能力：落雷 + 3×3 伤害 + 颤栗。0 = 永不触发；1 = 必定触发（默认）。")
             .defineInRange("thundergoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
 
     /** 结雷金 · 盔甲盾牌反制颤栗的每件概率（默认 0.25） */
     public static final ModConfigSpec.DoubleValue THUNDERGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("结雷金【盔甲盾牌】反制 Buff（颤栗）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。")
+            .comment("结雷金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "触发的是 Buff：颤栗。0 = 永不触发。")
             .defineInRange("thundergoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /** 幻惑金 · 武器工具施加安抚的概率（默认 0.16 = 16%，与 1.5/1.6 现状逐位相同） */
     public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_WEAPON_BUFF_CHANCE = BUILDER
-            .comment("幻惑金【武器工具】触发 Buff（安抚）的概率。", "默认 0.16 = 16%。0 = 永不触发。")
+            .comment("幻惑金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 也走这一条（默认 0.16 ⇒ 盾牌反制是 16%）。",
+                    "触发的是 Buff：安抚。默认 0.16 = 16%。0 = 永不触发。")
             .defineInRange("illusiongoldWeaponBuffChance", 0.16D, 0.0D, 1.0D);
 
     /** 幻惑金 · 盔甲盾牌反制安抚的每件概率（默认 0.04 = 每件 4%，穿满 4 件 16%） */
     public static final ModConfigSpec.DoubleValue ILLUSIONGOLD_ARMOR_BUFF_CHANCE = BUILDER
-            .comment("幻惑金【盔甲盾牌】反制 Buff（安抚）的【每件】概率。",
-                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.04 ⇒ 1 件 4%、4 件 16%。")
+            .comment("幻惑金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内（盾牌走武器侧那条 = 16%）；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.04 ⇒ 1 件 4%、4 件 16%。",
+                    "触发的是 Buff：安抚。0 = 永不触发。")
             .defineInRange("illusiongoldArmorBuffChance", 0.04D, 0.0D, 1.0D);
 
     /**

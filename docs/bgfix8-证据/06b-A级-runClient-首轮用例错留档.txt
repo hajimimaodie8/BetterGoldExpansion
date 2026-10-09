@@ -1,0 +1,26 @@
+# 来源：run/logs/2026-10-09-3.log.gz（**游戏自己写的 UTF-8**；探针行原样抽取）
+[0910月2026 21:41:54.209] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run flag=E:\mc\mcmod\bettergold-template-1.21.1\run\bgfix8c-probe.enabled cwd=E:\mc\mcmod\bettergold-template-1.21.1\run userDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[0910月2026 21:41:57.631] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE probe_world_guard :: PASS levelName=bgfix8probe expect=bgfix8probe authorWorld=新的世界
+[0910月2026 21:41:57.631] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE boot_ticks_before_world :: READOUT 进入世界用了 bootTick=25
+[0910月2026 21:42:00.208] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE repo_root :: READOUT GAMEDIR=E:\mc\mcmod\bettergold-template-1.21.1\run cwd=E:\mc\mcmod\bettergold-template-1.21.1\run userDir=E:\mc\mcmod\bettergold-template-1.21.1\run => repoRoot=E:\mc\mcmod\bettergold-template-1.21.1
+[0910月2026 21:42:00.222] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE snapshot_loaded :: PASS 快照 .3 第 1 行：左标题=各种各样的"贵金"锭 / 右标题="贵金"装备的升级锻造模版 / 左正文 104 字 / 右正文 76 字
+[0910月2026 21:42:00.222] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE book_registered :: PASS books=[bettergold:alchemy_handbook]
+[0910月2026 21:42:00.223] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE book_contents_no_error :: PASS isErrored=false exception=null
+[0910月2026 21:42:00.223] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_entry_present :: PASS entry=bettergold:golden_knowledge present=true
+[0910月2026 21:42:00.226] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_pages_10 :: PASS 章3 页数=10 expect=10
+[0910月2026 21:42:00.247] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_right_title_resolved :: READOUT JSON title="贵金"装备的升级锻造模版 / 字段 title="贵金"装备的升级锻造模版 / i18nText(title)="贵金"装备的升级锻造模版 / stacks=8（非空 8，前几个物品名=[烈燃金升级锻造模板, 万坚金升级锻造模板, 树棘金升级锻造模板]）/ **按 render 分支实际会画的中上边字幕="贵金"装备的升级锻造模版**
+[0910月2026 21:42:00.247] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_right_title_literal :: PASS 右页 title="贵金"装备的升级锻造模版 / 快照字幕="贵金"装备的升级锻造模版
+[0910月2026 21:42:00.248] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_right_title_is_not_item_name :: PASS 字幕不是物品名（分支取的是 title 而不是 stacks[0].getHoverName()）：header="贵金"装备的升级锻造模版
+[0910月2026 21:42:00.248] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_right_stacks_8 :: PASS 八张升级模板 stacks=8 非空=8
+[0910月2026 21:42:00.248] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_right_text_resolved :: READOUT text 键=bettergold.handbook.page.knowledge_1_right / i18nText 解析值=当然"贵金"也可以用于制作功能性强大的武装使用，不过得先做出某样"贵金"锭和它所对应的核心材料所制成的锻造模板，再搭配上金装备和所相符的"贵金"锭即可。
+[0910月2026 21:42:00.248] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_right_text_key :: PASS 右页 text 键=bettergold.handbook.page.knowledge_1_right
+[0910月2026 21:42:00.257] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_right_text_verbatim :: PASS 右页正文逐字比对冻结快照=true（实际 76 字 / 快照 76 字）
+[0910月2026 21:42:00.258] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE k3_p1_left_unchanged :: PASS 左页 title=各种各样的"贵金"锭（快照 各种各样的"贵金"锭）/ text 键=bettergold.handbook.page.knowledge_1_summary
+[0910月2026 21:42:00.258] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE book_totals :: READOUT entries=20 pages=192（改前基线：entries=20 / pages=192 —— 本轮只加正文，页数不许变）
+[0910月2026 21:42:00.258] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE book_pages_unchanged :: PASS 全书页数=192 expect=192
+[0910月2026 21:42:00.258] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE cfg_spec_loaded :: READOUT SPEC.getValues() 条目=25 / SPEC.getSpec() 条目=25
+[0910月2026 21:42:00.262] [Render thread/ERROR] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE worldTick=60 抛异常
+[0910月2026 21:42:02.206] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE forced_chunks_note :: READOUT 客户端整合服务端：本轮**不做任何 forceload**（只读内容树/配置）
+[0910月2026 21:42:02.207] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE SUMMARY pass=13 fail=1 skip=0 levelName=bgfix8probe readouts=7 worldTick=100
+[0910月2026 21:42:02.208] [Render thread/ERROR] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE PROBLEM worldTick=60 抛异常：java.lang.NullPointerException: Cannot invoke "String.length()" because "s" is null
+[0910月2026 21:42:02.208] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8C-PROBE stopping client

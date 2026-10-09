@@ -1,0 +1,8 @@
+# 来源：run/logs/2026-10-09-4.log.gz（**游戏自己写的 UTF-8**；探针行原样抽取）
+[0910月2026 21:40:40.633] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (5.132s)! For help, type "help"
+[0910月2026 21:40:40.991] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8S-PROBE armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run flag=E:\mc\mcmod\bettergold-template-1.21.1\run\bgfix8s-probe.enabled cwd=E:\mc\mcmod\bettergold-template-1.21.1\run userDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[0910月2026 21:40:40.992] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8S-PROBE probe_world_guard :: PASS levelName=bgfix8probe expect=bgfix8probe authorWorld=新的世界
+[0910月2026 21:40:42.680] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8S-PROBE config_readout :: READOUT bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[0910月2026 21:40:42.687] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8S-PROBE forced_chunks :: READOUT forced=0 expect=0
+[0910月2026 21:40:42.687] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX8S-PROBE SUMMARY problems=[] tick=40 levelName=bgfix8probe 探针收尾 = halt(false) 一次
+[0910月2026 21:40:42.727] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server

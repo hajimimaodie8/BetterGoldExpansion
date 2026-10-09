@@ -1,0 +1,38 @@
+== 1) 临时改动逐字节复原（SHA256 与跑前基线比对） ==
+  build.gradle                                  2aac7860e5b1f03128d42637b9f002c7a44f37e269ee6b7bc9dfbe41ad478c2f  match=True
+  build\moddev\clientRunProgramArgs.txt         a365a5edf7abc44c576e5dd3f725a54d46658fcddc1e3a0257bec7c0ab2e4bdb  match=True
+  run\server.properties                         a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4  match=True
+== 2) 探针整块删除 + grep 零命中 ==
+  src/.../bettergold/probe 目录仍存在 = False（应 False）
+  src 内探针/halt 命中 = 0 []（`bgfix8` 作为**轮次标签**出现在 Config.java 注释里是允许的）
+== 3) 开关文件 / 探针世界 ==
+  run/ 下 *.enabled = 0 []（应 0）
+  run/saves 目录 = ['新的世界']
+    新的世界 files=29
+== 4) 作者存档 / run/world 逐文件 SHA256 与跑前清单比对 ==
+  跑前 80 行 / 跑后 80 行 / 差异行 = 0（应 0）
+== 5) 产物 jar 与 jar 洁净度 ==
+  bettergold-1.5.0.jar  1089906 B  sha256=06057980a826445345e35f64b47e36dc6f5f2c0359ecb149ffc05ce6a8cc2afb
+  bettergold-1.6.0.jar  1361454 B  sha256=834c13f55b456600aa3ece7cc00f75a2d35da6848ed73bfd606dc45962e67273
+== 6) git status（哪些是本轮的改动） ==
+ M "docs/1.6-\350\247\204\346\240\274.md"
+ M src/main/java/com/hjmmd_8/bettergold/config/Config.java
+ M src/main/resources/assets/bettergold/lang/en_us.json
+ M src/main/resources/assets/bettergold/lang/zh_cn.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/golden_knowledge.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_knowledge.json
+ M src/main/resources/assets/bettergold/textures/item/chaos_coin_string.png
+ M src/main/resources/assets/bettergold/textures/item/echogold_sword.png
+ M src/main/resources/assets/bettergold/textures/item/flamegold_sword.png
+ M src/main/resources/assets/bettergold/textures/item/gold_door.png
+ M src/main/resources/assets/bettergold/textures/item/illusiongold_sword.png
+ M src/main/resources/assets/bettergold/textures/item/indigoseagold_sword.png
+ M src/main/resources/assets/bettergold/textures/item/sturdygold_sword.png
+ M src/main/resources/assets/bettergold/textures/item/thornsgold_sword.png
+ M src/main/resources/assets/bettergold/textures/item/thundergold_sword.png
+ M src/main/resources/assets/bettergold/textures/item/voodoogold_sword.png
+ M tools/asset-generator/bgappend-requirements-snapshot/bg-book-6.1-6.3.md
+ M tools/asset-generator/generate_handbook_data.py
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bgfix8-\350\257\201\346\215\256/"
+?? probe/

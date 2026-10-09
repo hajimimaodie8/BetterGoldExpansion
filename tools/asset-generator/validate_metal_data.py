@@ -1865,9 +1865,12 @@ else:
     # §6.3 第 1 行是**汇总行**（bg-book §七.1：作者要求删掉原来那两段长文案、只留一句）
     # ⇒ 它的文案在第 1 个单元格里，另外两个单元格只有图标说明（没有正文）。
     _bg2_texts = [_t for _t in _bg2_texts if _t]
-    if len(_bg2_texts) != 21 or sum(len(_t) for _t in _bg2_texts) < 600:
+    if len(_bg2_texts) != 22 or sum(len(_t) for _t in _bg2_texts) < 600:
+        # ⚠ **旧期望（原文留档，未删，已被 bgfix8 2026-10-09 取代）**：曾为 `!= 21`，
+        #   说明串为「应 21 段 = 2 + 9 + 1 + 9」—— 那时 §6.3 第 1 行右格只有图标、没有正文。
+        #   作者本轮要求右页加文字 ⇒ 快照那一格多出一段 ⇒ **2 + 9 + 2 + 9 = 22**。
         _bgbook2_bad("bgbook2-texts-verbatim",
-                     "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 21 段 = 2 + 9 + 1 + 9、"
+                     "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 22 段 = 2 + 9 + 2 + 9、"
                      "总字数 >= 600；反空转守护）"
                      % (len(_bg2_texts), sum(len(_t) for _t in _bg2_texts)))
     _zh_values = set(zh.values())
@@ -1877,18 +1880,21 @@ else:
                      "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
                      % (len(_bg2_missing_texts), len(_bg2_texts), _bg2_missing_texts[0][:40]))
 
-# 语言键：24 条（3 个条目名 + 21 段文案/标题键）必须**中英双端都有**
+# 语言键：25 条（3 个条目名 + 22 段文案/标题键）必须**中英双端都有**
 #   ⚠ bg-append 追加轮：`knowledge_1_left` / `knowledge_1_right` **已被作者要求删除**
 #     （§七.1「把那些东西都汇总起来」）⇒ 换成 `knowledge_1_summary`（整页只剩这一句）。
+#   ★ **bgfix8（2026-10-09）**：作者要求「贵金的装备升级锻造模板那一页应该加文字」
+#     ⇒ `knowledge_1_right`（「锻造模板怎么用」那段）**重新成为页面正文键**（右页），
+#     本清单 **24 → 25**；`knowledge_1_left` **仍然不在**（它的信息已并入 summary）。
 _bg2_suffixes = (["aux_1", "aux_2"]
                  + ["core_%d" % _i for _i in range(1, 10)] + ["core_1_right"]
-                 + ["knowledge_1_summary"]
+                 + ["knowledge_1_summary", "knowledge_1_right"]
                  + ["knowledge_%d_%s" % (_i, _s) for _i in range(2, 6) for _s in ("left", "right")])
 _bg2_keys = (["bettergold.handbook.entry.%s" % _c for _c in _BG2_CHAPTERS]
              + ["bettergold.handbook.page.%s" % _s for _s in _bg2_suffixes])
-if len(_bg2_keys) != 24:
+if len(_bg2_keys) != 25:
     _bgbook2_bad("bgbook2-lang-bilingual",
-                 "章节语言键清单是 %d 条（应 24 = 3 + 21；反空转守护）" % len(_bg2_keys))
+                 "章节语言键清单是 %d 条（应 25 = 3 + 22；反空转守护）" % len(_bg2_keys))
 for _k in _bg2_keys:
     if _k not in zh or _k not in en:
         _bgbook2_bad("bgbook2-lang-bilingual", "章节语言键缺中文或英文：%s" % _k)
@@ -2305,8 +2311,13 @@ _BG3_TEMPLATE_TITLE = "\"\u8d35\u91d1\"\u88c5\u5907\u7684\u5347\u7ea7\u953b\u902
 #    "_bricks_wall", "_bars", "_door", "_trapdoor", "_chain", "_lantern"]
 _BG3_BUILDING_ORDER = ["_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
                        "_bricks_wall", "_door", "_trapdoor", "_bars", "_chain", "_lantern"]
-_BG3_OLD_TEXT_KEYS = ["bettergold.handbook.page.knowledge_1_left",
-                      "bettergold.handbook.page.knowledge_1_right"]
+_BG3_OLD_TEXT_KEYS = ["bettergold.handbook.page.knowledge_1_left"]
+# ⚠ **旧清单（原文留档，未删，已被 bgfix8 2026-10-09 取代）**：
+#     _BG3_OLD_TEXT_KEYS = ["bettergold.handbook.page.knowledge_1_left",
+#                           "bettergold.handbook.page.knowledge_1_right"]
+#   —— §七.1「把那些东西都汇总起来」当时把**两段**都删了；作者本轮（bgfix8 §2）
+#      「贵金的装备升级锻造模板那一页应该加文字」⇒ **只**把 `knowledge_1_right` 放回右页，
+#      `knowledge_1_left`（材料链）**仍然**不许被引用（它的信息已并入 `knowledge_1_summary`）。
 _BG3_ZH_E = _bgappend_jload(_BG3_ZH)
 _BG3_EN_E = _bgappend_jload(_BG3_EN)
 _BG3_PAGES = _BG3_ZH_E.get("pages") or []
@@ -2325,6 +2336,8 @@ if len(_BG3_PAGES) != 10:
 else:
     # §七.1：原来那两段长文案**不许再被任何一页引用**，也不许再出现在语言值里
     #   （键**留在 lang 里作历史留档**是允许的 —— 见该键注释；被引用/被复用才是回退）
+    #   ⚠ bgfix8（2026-10-09）：上面这句里的"两段"现在**只剩 `knowledge_1_left` 一段**——
+    #     作者要求把「锻造模板怎么用」（`knowledge_1_right`）放回右页 ⇒ 见 `_BG3_OLD_TEXT_KEYS` 的留档。
     _bg3_refs = set()
     for _pg in _BG3_PAGES:
         if isinstance(_pg.get("text"), str):
@@ -2732,6 +2745,30 @@ def _bgfix2_bad(tag: str, msg: str) -> None:
 # ===========================================================================
 # 稳定 ASCII id 前缀 = `[bgfix4-...]`。判据一律跑在**去注释**后的源码 / 已解析的 JSON /
 # **仓库内冻结快照**（`bgappend-requirements-snapshot/bg-book-6.1-6.3.md`）上。
+# ==================== bgfix8（2026-10-09）：前置检查（**放在所有使用点之前**） ====================
+#
+# 口径（`docs/构建与跑测注意事项.md` 七 + `ex/03` §3.19.1）：**前置缺失 = exit 2**，
+# 绝不是"没有问题"。本轮的期望值来自三个仓库内文件（冻结快照 / Config.java / 手册产物）——
+# 它们不在 = 基线被破坏。
+#   ⚠ 必须**早于**任何读快照的代码（例如 `_fx4_snapshot_k3()` 会直接 `read_text` 炸成
+#     `[bg-data-crash]`；那样虽然也是 exit 2，但报错就分不清"前置缺失"与"脚本自身出错"了）。
+bgfix8_problems: list[str] = []
+
+
+def _bgfix8_bad(tag: str, msg: str) -> None:
+    bgfix8_problems.append("%s [%s]" % (msg, tag))
+
+
+_BGFIX8_PREREQ = [_BG2_SNAPSHOT, JAVA / "config" / "Config.java", _BG3_ZH, _BG3_EN]
+_bgfix8_missing = [str(_p) for _p in _BGFIX8_PREREQ if not _p.is_file()]
+print(f"[bgfix8-anti-vacuum] 前置文件存在性：冻结快照={_BG2_SNAPSHOT.is_file()} / "
+      f"Config.java={(JAVA / 'config' / 'Config.java').is_file()} / "
+      f"手册 golden_knowledge.json(zh,en)={_BG3_ZH.is_file()},{_BG3_EN.is_file()}"
+      f"（缺 {len(_bgfix8_missing)} 个，必须 = 0）")
+if _bgfix8_missing:
+    print(f"FAIL [bgfix8-anti-vacuum] 前置缺失 {_bgfix8_missing} ⇒ 本关卡 exit 2")
+    sys.exit(2)
+
 bgfix4_problems: list[str] = []
 
 
@@ -4765,10 +4802,15 @@ else:
     if _fx4_p0.get("text") != "bettergold.handbook.page.knowledge_1_summary":
         _bgfix4_bad("bgfix4-k3p1-restored",
                     "第 1 页（左）的正文不是 knowledge_1_summary：%r" % (_fx4_p0.get("text"),))
-    if "text" in _fx4_p1:
+    # ⚠ **旧判据（原文留档，未删，已被 bgfix8 2026-10-09 取代）**：
+    #     `if "text" in _fx4_p1: _bgfix4_bad("bgfix4-k3p1-restored",
+    #         "第 1 页（右）**不该**有正文（§七 的形状：两页合起来只有那一句话）：%r" % _fx4_p1.get("text"))`
+    #   —— 作者本轮原话「贵金的装备升级锻造模板那一页**应该加文字**」⇒ 右页**必须有**正文；
+    #     详细判据（逐字比对冻结快照 + 中文/英文）在下面的 `[bgfix8-book-right-text]`。
+    if _fx4_p1.get("text") != "bettergold.handbook.page.knowledge_1_right":
         _bgfix4_bad("bgfix4-k3p1-restored",
-                    "第 1 页（右）**不该**有正文（§七 的形状：两页合起来只有那一句话）：%r"
-                    % (_fx4_p1.get("text"),))
+                    "第 1 页（右）的正文不是 knowledge_1_right"
+                    "（bgfix8：作者要求这一页加文字；实际 %r）" % (_fx4_p1.get("text"),))
 
 # ---------- ④ 8 个建材页：字幕 = 「某某金建筑方块」（快照逐字）+ 展示栏 = 该族 11 项（作者顺序） ----------
 _fx4_build_ok = 0
@@ -5245,12 +5287,241 @@ if _fx7_missing_snaps:
           f" ⇒ 前置缺失 ⇒ 本关卡 exit 2")
     sys.exit(2)
 
+# ==================== bgfix8（2026-10-09）：① 配置显示文案 ② 手册右页补正文 ====================
+#
+# 作者原话（父代理转述；本节口径逐条落档在 `docs/1.6-规格.md` §29）：
+#   ①「设置里**除了万坚金相关**……毕竟盾牌的反制赋予 Buff 的机制是**百分百**的，盔甲因为
+#      **依赖于全套系**，所以才为**每件为 25%**，你得需要修改成 **某某金·武器工具盾牌触发Buff概率**
+#      和 **某某金·盔甲触发buff概率** 才对。再重复一遍啊此设定要忽略掉万坚金相关。」
+#   ②「贵金的知识的第一页面右侧你忘记填字幕了，贵金的装备升级锻造模板那一页**应该加文字**，
+#      我不知道是删了还是怎么地的。你没有这样加上。」
+#
+# ⚠ **本轮只改"文案层"**：配置**键名 / 默认值 / 取值范围 / 声明顺序一个字未动**
+#   （既有的 `[bgfix-config-16-keys]` / `[bgfix-config-defaults]` 守着键名与默认值；
+#     下面 `[bgfix8-config-keys-frozen]` 另钉**取值范围**、`[bgfix8-config-order-frozen]` 钉顺序）。
+# ⚠ `bgfix8_problems` / `_bgfix8_bad` / 前置检查（`[bgfix8-anti-vacuum]`）定义在**上面**的
+#   "bgfix4 段之前" —— 必须早于任何读冻结快照的代码（见那一段的注释）。
+
+# ---------- ① 配置显示文案：两处字面必须**逐字**等于作者给的两条模板 ----------
+#   ★ 两处 = ⓐ `Config.java` 的 `.comment(...)` 第 1 行（配置界面的**提示行**；
+#              判据跑在**去注释**源码 `_bgfix_cfg` 上 —— 否则我写的那段 `//` 说明会假绿，见 ex/03 §3.17）
+#            ⓑ `zh_cn.json` / `en_us.json` 的 `bettergold.configuration.<键名>`（配置界面的**条目名**）
+#   ⚠ **旧字面（原文留档，未删，已被 2026-10-09 取代）**：
+#     zh 武器侧「〈族〉金 · 武器工具触发 Buff 概率」/ zh 盔甲侧「〈族〉金 · 盔甲盾牌触发 Buff 概率」；
+#     en 武器侧 "<Family> - Weapon/Tool Buff Chance" / en 盔甲侧 "<Family> - Armor/Shield Buff Chance"。
+#   ⚠ 万坚金两条**不在本清单里**（作者：「设置里除了万坚金相关」）—— 由下一条负向断言守着。
+_BGFIX8_FAMS = [("flamegold", u"烈燃金", "Flamegold"),
+                ("voodoogold", u"巫毒金", "Voodoogold"),
+                ("thundergold", u"结雷金", "Thundergold"),
+                ("indigoseagold", u"靛海金", "Indigoseagold"),
+                ("illusiongold", u"幻惑金", "Illusiongold"),
+                ("thornsgold", u"树棘金", "Thornsgold"),
+                ("echogold", u"幽咆金", "Echogold")]
+_bgfix8_checked = 0
+for _f8, _zhname, _enname in _BGFIX8_FAMS:
+    for _suffix, _kind in (("WeaponBuffChance", "weapon"), ("ArmorBuffChance", "armor")):
+        _key = "bettergold.configuration.%s%s" % (_f8, _suffix)
+        _want_zh = (u"%s·武器工具盾牌触发Buff概率" % _zhname if _kind == "weapon"
+                    else u"%s·盔甲触发buff概率" % _zhname)
+        _echo = " (Sonic Roar)" if _f8 == "echogold" else ""
+        _want_en = ("%s - Weapon/Tool/Shield Buff%s Chance" % (_enname, _echo) if _kind == "weapon"
+                    else "%s - Armor Buff%s Chance" % (_enname, _echo))
+        _bgfix8_checked += 1
+        if zh.get(_key) != _want_zh:
+            _bgfix8_bad("bgfix8-config-label-zh",
+                        "配置条目名（zh）%s = %r ≠ 作者字面 %r" % (_key, zh.get(_key), _want_zh))
+        if en.get(_key) != _want_en:
+            _bgfix8_bad("bgfix8-config-label-en",
+                        "配置条目名（en）%s = %r ≠ %r" % (_key, en.get(_key), _want_en))
+        # `.comment(...)` 第 1 行：**去注释**源码里必须逐字出现该族的中文字面
+        if _want_zh not in _bgfix_cfg:
+            _bgfix8_bad("bgfix8-config-comment-zh",
+                        "Config.java 的 .comment(...) 里没有作者字面 %r（去注释源码）" % _want_zh)
+        # 中文侧必须是中文；英文侧不许混中文；两端不许逐字相同
+        if not re.search(u"[\u4e00-\u9fff]", str(zh.get(_key, ""))):
+            _bgfix8_bad("bgfix8-config-label-zh", "中文条目名里没有中日韩文字：%s" % _key)
+        if re.search(u"[\u4e00-\u9fff]", str(en.get(_key, ""))):
+            _bgfix8_bad("bgfix8-config-label-en", "英文条目名里混进了中文：%s" % _key)
+        if zh.get(_key) == en.get(_key):
+            _bgfix8_bad("bgfix8-config-label-en", "中英条目名逐字相同（既定口径：en ≠ zh）：%s" % _key)
+        # 语义层：**盾牌**只许出现在武器侧那条里，盔甲侧那条不许再提"盾牌"
+        if _kind == "weapon":
+            if u"武器工具盾牌" not in _want_zh:
+                _bgfix8_bad("bgfix8-config-label-zh", "武器侧字面里没有「武器工具盾牌」：%s" % _key)
+        else:
+            if u"盾牌" in str(zh.get(_key, "")):
+                _bgfix8_bad("bgfix8-config-label-zh",
+                            "盔甲侧条目名里还留着「盾牌」（盾牌走武器侧那条）：%s" % _key)
+            if "Shield" in str(en.get(_key, "")):
+                _bgfix8_bad("bgfix8-config-label-en",
+                            "盔甲侧英文条目名里还留着 Shield：%s" % _key)
+if _bgfix8_checked != 14:
+    _bgfix8_bad("bgfix8-config-label-zh",
+                "被检查的配置条目名不是 14 条（实际 %d）—— 反空转守护" % _bgfix8_checked)
+# 负向：旧措辞的**提示行模板**不许再出现在 Config.java 的去注释源码里
+for _old in (u"【武器工具】触发 Buff（", u"【盔甲盾牌】反制 Buff（", u"【武器工具】触发能力（落雷"):
+    if _old in _bgfix_cfg:
+        _bgfix8_bad("bgfix8-config-comment-old-gone",
+                    "旧的提示行措辞还在 Config.java 里：%r" % _old)
+# 负向：这两条字面**只许**是 14 条新文案，不许被搬到万坚金那两条上
+for _bad8 in (u"万坚金·武器工具盾牌触发Buff概率", u"万坚金·盔甲触发buff概率"):
+    if _bad8 in _bgfix_cfg:
+        _bgfix8_bad("bgfix8-config-sturdygold-untouched",
+                    "万坚金那两条被顺手改了（作者明说「除了万坚金相关」）：%r" % _bad8)
+    if _bad8 in set(zh.values()) or _bad8 in set(en.values()):
+        _bgfix8_bad("bgfix8-config-sturdygold-untouched", "语言文件里出现了 %r" % _bad8)
+
+# ---------- ①b 万坚金两条：**逐字不动**（正向钉住它们自己的措辞） ----------
+for _needle8, _why8 in ((u"万坚金【武器工具】触发能力（爆金：命中必定掉落一件金系物品）的概率。",
+                         u"万坚金武器侧「能力概率」的提示行被改了"),
+                        (u"万坚金【盔甲盾牌】触发能力（每 16 秒 1 份伤害吸收）的间隔乘法系数。",
+                         u"万坚金盔甲侧「能力间隔系数」的提示行被改了"),
+                        ("sturdygoldWeaponAbilityChance", u"万坚金武器侧键名不在位"),
+                        ("sturdygoldArmorAbilityIntervalMultiplier", u"万坚金盔甲侧键名不在位")):
+    if _needle8 not in _bgfix_cfg:
+        _bgfix8_bad("bgfix8-config-sturdygold-untouched",
+                    "%s（缺 %r）" % (_why8, _needle8))
+
+# ---------- ①c 键名 / 默认值 / 取值范围 / 顺序：**四样都不许变** ----------
+#   默认值由既有的 `[bgfix-config-defaults]`（`_BGFIX_DEFAULTS` 那张字面表）守着；
+#   这里补**取值范围**与**§11.4 文档侧那 16 个字面键名**，再加一条"顺序 == METAL_ORDER"。
+_bgfix8_16 = list(_BGFIX_WEAPON_KEYS.values()) + list(_BGFIX_ARMOR_KEYS.values()) + [_BGFIX_MULT_KEY]
+if len(_bgfix8_16) != 16:
+    _bgfix8_bad("bgfix8-config-keys-frozen",
+                "16 条清单不是 16（实际 %d）—— 反空转守护" % len(_bgfix8_16))
+_bgfix8_range_ok = 0
+for _k8 in _bgfix8_16:
+    _m8 = re.search(r'\.defineInRange\(\s*"%s"\s*,\s*[-0-9.]+D\s*,\s*([-0-9.]+)D\s*,\s*([-0-9.]+)D'
+                    % re.escape(_k8), _bgfix_cfg)
+    if not _m8:
+        _bgfix8_bad("bgfix8-config-keys-frozen", "Config.java 里找不到键 %s 的 defineInRange" % _k8)
+        continue
+    _want_lo, _want_hi = ((0.0, 100.0) if _k8 == _BGFIX_MULT_KEY else (0.0, 1.0))
+    _got_lo, _got_hi = float(_m8.group(1)), float(_m8.group(2))
+    if abs(_got_lo - _want_lo) > 1e-9 or abs(_got_hi - _want_hi) > 1e-9:
+        _bgfix8_bad("bgfix8-config-keys-frozen",
+                    "键 %s 的取值范围变成了 (%s ~ %s)，应是 (%s ~ %s)"
+                    % (_k8, _got_lo, _got_hi, _want_lo, _want_hi))
+        continue
+    if _k8 not in _bgfix_spec:      # ★ 文档侧独立副本：§11.4 的表格里必须逐字有这 16 个键名
+        _bgfix8_bad("bgfix8-config-keys-frozen",
+                    "docs/1.6-规格.md §11.4 里找不到键名 %s（唯一真源没落档？）" % _k8)
+        continue
+    _bgfix8_range_ok += 1
+if _bgfix8_range_ok != 16:
+    _bgfix8_bad("bgfix8-config-keys-frozen",
+                "逐条核对通过的键只有 %d/16 —— 反空转守护" % _bgfix8_range_ok)
+# 声明顺序 == 创造页/进度树的金属顺序（`CreativeSections.METAL_ORDER`）
+_bgfix8_order = [k for k in _cfg_keys if k in _bgfix8_16]
+_bgfix8_want_order = []
+for _mf8 in _FX4_METALS:
+    _bgfix8_want_order.append(_BGFIX_WEAPON_KEYS[_mf8])
+    if _mf8 in _BGFIX_ARMOR_KEYS:
+        _bgfix8_want_order.append(_BGFIX_ARMOR_KEYS[_mf8])
+    if _mf8 == "sturdygold":
+        _bgfix8_want_order.append(_BGFIX_MULT_KEY)
+if _bgfix8_order != _bgfix8_want_order:
+    _bgfix8_bad("bgfix8-config-order-frozen",
+                "16 条的声明顺序 %s ≠ METAL_ORDER 推出的顺序 %s（本轮不许改顺序）"
+                % (_bgfix8_order, _bgfix8_want_order))
+
+# ---------- ② 手册「贵金的知识」第 1 页右页：字幕 + 正文 ----------
+#   作者的"字幕"= `patchouli:spotlight` 的 `title`（没写就退化成物品名，见 ex/04 第 102 条）；
+#   "加文字" = 该页的 `text`（本轮补回 §七.1 删掉的「锻造模板怎么用」那一段）。
+_bgfix8_snap_lines = _BG2_SNAPSHOT.read_text(encoding="utf-8").split("\n")
+# 标题（"字幕"）：**复用**既有解析器 `_fx4_snapshot_k3()`（同一份快照、同一形状 —— 不写第二份解析）
+_bgfix8_want_title = _fx4_k3_titles.get((1, "right"))
+# 正文：§6.3 第 1 行右格 `<br>` 之后那一段（形状与 `[bgbook2-texts-verbatim]` 同源）
+_bgfix8_want_body = None
+_bgfix8_active = False
+for _ln8 in _bgfix8_snap_lines:
+    if _ln8.startswith("### 6.3"):
+        _bgfix8_active = True
+        continue
+    if _bgfix8_active and _ln8.startswith("---"):
+        break
+    if not (_bgfix8_active and _ln8.startswith("|")) or "|---" in _ln8:
+        continue
+    _c8 = _ln8.split("|")[1:-1]
+    if not _c8 or not re.fullmatch(r"\d+", _c8[0].strip().replace("*", "")):
+        continue
+    if _c8[0].strip().replace("*", "") != "1":
+        continue
+    _cell8 = _c8[2] if len(_c8) > 2 else ""
+    _body8 = _cell8.split("<br>")[-1].strip()
+    if _body8 and not _body8.startswith(u"图标："):
+        _bgfix8_want_body = re.sub(r"\*\*(.+?)\*\*", r"\1", _body8)
+_bgfix8_bodies = {}      # 只为下面的日志读数保留一个可打印的名字
+if _bgfix8_want_body:
+    _bgfix8_bodies[(1, "right")] = _bgfix8_want_body
+if not _bgfix8_want_body:
+    _bgfix8_bad("bgfix8-book-right-text",
+                "冻结快照 §6.3 第 1 行右格取不到正文（反空转守护）")
+else:
+    _bgfix8_right_text = _bgfix8_bodies.get(("1", "right"))
+    if _BG3_PAGES[1].get("text") != "bettergold.handbook.page.knowledge_1_right":
+        _bgfix8_bad("bgfix8-book-right-text",
+                    "第 1 页（右）的 text 不是 knowledge_1_right：%r" % (_BG3_PAGES[1].get("text"),))
+    _bgfix8_key = "bettergold.handbook.page.knowledge_1_right"
+    if zh.get(_bgfix8_key) != _bgfix8_want_body:
+        _bgfix8_bad("bgfix8-book-right-text",
+                    "zh 的 %s = %r ≠ 冻结快照逐字值 %r"
+                    % (_bgfix8_key, zh.get(_bgfix8_key), _bgfix8_want_body))
+    if not str(en.get(_bgfix8_key, "")).strip() or en.get(_bgfix8_key) == zh.get(_bgfix8_key):
+        _bgfix8_bad("bgfix8-book-right-text",
+                    "英文值缺失或与中文逐字相同：%s" % _bgfix8_key)
+    # 与左页/摘要那段**不许**是同一句（否则等于没加）
+    for _other8 in ("bettergold.handbook.page.knowledge_1_summary",
+                    "bettergold.handbook.page.knowledge_1_left"):
+        if zh.get(_other8) and zh.get(_other8) == zh.get(_bgfix8_key):
+            _bgfix8_bad("bgfix8-book-right-text",
+                        "右页正文与 %s 逐字相同（等于没加）" % _other8)
+    # ★ **第二条独立来源**：仓库内留档的作者原文（`docs/bgbook2-证据/07-...txt`）
+    _bgfix8_evid = (REPO / "docs" / "bgbook2-\u8bc1\u636e"
+                    / "07-\u4ece\u9700\u6c42\u6587\u6863\u89e3\u6790\u51fa\u768422\u6bb5\u9010\u5b57\u6587\u6848.txt")
+    if not _bgfix8_evid.is_file():
+        _bgfix8_bad("bgfix8-book-right-text-source",
+                    "读不到作者原文留档（期望值的第二条独立来源）：%s" % _bgfix8_evid)
+    else:
+        _ev8 = None
+        for _ln8 in _bgfix8_evid.read_text(encoding="utf-8").split("\n"):
+            if _ln8.startswith("knowledge_1_right"):
+                _ev8 = _ln8.split(None, 1)[1].strip()
+        if _ev8 != zh.get(_bgfix8_key):
+            _bgfix8_bad("bgfix8-book-right-text-source",
+                        "手册右页中文 %r ≠ 作者原文留档 %r" % (zh.get(_bgfix8_key), _ev8))
+# "字幕"：右页 title 必须非空，且 == 冻结快照的「图标：」逐字值
+if not _bgfix8_want_title:
+    _bgfix8_bad("bgfix8-book-right-title", "冻结快照 §6.3 第 1 行右格取不到「图标：」字幕（反空转守护）")
+else:
+    if _BG3_PAGES[1].get("title") != _bgfix8_want_title:
+        _bgfix8_bad("bgfix8-book-right-title",
+                    "第 1 页（右）的 title %r ≠ 快照字幕 %r（没写 title ⇒ Patchouli 会退化成物品名）"
+                    % (_BG3_PAGES[1].get("title"), _bgfix8_want_title))
+    if len(_BG3_PAGES) != 10:
+        _bgfix8_bad("bgfix8-book-right-title", "章3 页数不是 10（实际 %d）" % len(_BG3_PAGES))
+
+# ---------- ③ 文档侧：本轮口径必须落档（docs/1.6-规格.md 的 §29） ----------
+for _needle8, _why8 in ((u"bgfix8", u"docs/1.6-规格.md 里没有 bgfix8 这一轮的节"),
+                        (u"武器工具盾牌触发Buff概率", u"没写作者给的武器侧字面"),
+                        (u"盔甲触发buff概率", u"没写作者给的盔甲侧字面"),
+                        (u"knowledge_1_right", u"没写右页补回的正文键"),
+                        (u"bgbook2-证据", u"没写正文的逐字来源（作者原文留档）"),
+                        (u"盾牌的反制", u"没写「盾牌的反制 = 武器侧那条 / 默认 100%」这层语义"),
+                        (u"万坚金", u"没写万坚金两条为什么不动")):
+    if _needle8 not in _bgfix_spec:
+        _bgfix8_bad("bgfix8-doc", "%s（缺 %s）" % (_why8, _needle8))
+
+print(f"bgfix8（配置显示文案 + 手册右页字幕/正文）问题: {len(bgfix8_problems)} {bgfix8_problems[:8]}"
+      f"（配置条目名核对 {_bgfix8_checked} 条 / 键与范围 {_bgfix8_range_ok}/16 / "
+      f"右页 title={_bgfix8_want_title!r} / 右页正文 {len(_bgfix8_want_body or '')} 字）")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
                        bgfinal_problems, bgappend_problems, bgfix2_problems, bgbook8_problems,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
-                       bgfix4_problems, bgfix5_problems, bgfix7_problems,
+                       bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        symmetric_problems, beacon_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
