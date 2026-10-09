@@ -5048,6 +5048,177 @@ print(f"bg-fix4 第四批（古董刀成就 / 顺序真源两处同序 / 章3 �
       f"问题: {len(bgfix4_problems)} {bgfix4_problems[:8]}"
       f"（章3 {len(_BG3_PAGES)} 页 / 建材页字幕 {_fx4_build_ok}/8 / 图标引用 {len(_bg2_item_refs)} 个）")
 
+# ==========================================================================================
+# bgfix7（2026-10-08）：创造页「材料」分区**前半部分**按作者口述序重排（执行轮）
+# ==========================================================================================
+# 作者原话（逐字，他自述"表述可能有偏差与错误"）：见
+#   `tools/asset-generator/bgfix7-creative-material-prefix-order.txt` 的抬头（同一份逐字引用）。
+# ★ 只许重排：21 个中文名与「材料分区前 21 件」**集合完全相等** ==>
+#   不许增项、不许删项、不许把别的分区的东西搬进来（红线 4 的同精神）。
+# ★ 期望值真源 = 仓库内**冻结快照**（两行一个真源，别处不许有第二份 21 件列表）：
+#   ① `bgfix7-creative-material-prefix-order.txt`：作者口述位次 1..21 -> 真实 id（改后的顺序）；
+#   ② `bgfix7-creative-material-baseline.txt`：重排**前**真实创造页里的 61 件位次（A 级读数搬运）。
+#   （口径：期望值不许读仓库外的活页文档，见 `docs/构建与跑测注意事项.md` 六；
+#     搬运记录写在两个快照的抬头里。）
+# 稳定 ASCII id：`[bgfix7-...]`；判据一律跑在**去注释**源码上
+#   （`mod_experience/ex/03-验证与证据.md` 3.17：正向 needle 也会被注释里的那一份骗过）。
+bgfix7_problems: list[str] = []
+
+
+def _bgfix7_bad(tag: str, msg: str) -> None:
+    bgfix7_problems.append("%s [%s]" % (msg, tag))
+
+
+_FX7_PREFIX_LEN = 21
+_FX7_BASELINE_FILE = REPO / "tools" / "asset-generator" / "bgfix7-creative-material-baseline.txt"
+_FX7_ORDER_FILE = REPO / "tools" / "asset-generator" / "bgfix7-creative-material-prefix-order.txt"
+_FX7_SECTIONS = JAVA / "material" / "CreativeTabSections.java"
+
+# ---------- ① 快照 A：重排前的 61 件位次（反空转：61 行 + 位次连续 + 第 22 件是 blazing_rod） ----------
+_fx7_baseline: list[str] = []
+_fx7_baseline_ok = False
+if not _FX7_BASELINE_FILE.is_file():
+    _bgfix7_bad("bgfix7-creative-material-prefix",
+                "读不到冻结快照 %s（反空转守护）" % _FX7_BASELINE_FILE)
+else:
+    _fx7_base_seqs: list[int] = []
+    for _ln in _FX7_BASELINE_FILE.read_text(encoding="utf-8").splitlines():
+        _s = _ln.strip()
+        if not _s or _s.startswith("#"):
+            continue
+        _m = re.fullmatch(r"(\d+)\s+(bettergold:[a-z0-9_]+)", _s)
+        if not _m:
+            _bgfix7_bad("bgfix7-creative-material-prefix", "快照 A 的行格式不对：%r" % _s)
+            continue
+        _fx7_base_seqs.append(int(_m.group(1)))
+        _fx7_baseline.append(_m.group(2))
+    if len(_fx7_baseline) != 61:
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "快照 A 不是 61 件（实际 %d）== 反空转守护（作者清单是从真实创造页读出来的 61 件）"
+                    % len(_fx7_baseline))
+    elif _fx7_base_seqs != list(range(1, 62)):
+        _bgfix7_bad("bgfix7-creative-material-prefix", "快照 A 的位次不是 1..61 连续：%s" % _fx7_base_seqs[:8])
+    elif _fx7_baseline[21] != "bettergold:blazing_rod":
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "快照 A 第 22 件不是 bettergold:blazing_rod（实际 %s）== 作者的"
+                    "「后面就是正常的，从高燃烈焰棒棒开始」指的就是它"
+                    "（zh_cn: item.bettergold.blazing_rod = 高燃烈焰棒）" % _fx7_baseline[21])
+    else:
+        _fx7_baseline_ok = True
+
+# ---------- ② 快照 B：作者口述位次 1..21 -> 真实 id（改后顺序的**唯一**期望值） ----------
+_fx7_want_prefix: list[str] = []
+if not _FX7_ORDER_FILE.is_file():
+    _bgfix7_bad("bgfix7-creative-material-prefix",
+                "读不到冻结快照 %s（反空转守护）" % _FX7_ORDER_FILE)
+else:
+    _fx7_ord_seqs: list[int] = []
+    _fx7_cn_names: list[str] = []
+    for _ln in _FX7_ORDER_FILE.read_text(encoding="utf-8").splitlines():
+        _s = _ln.strip()
+        if not _s or _s.startswith("#"):
+            continue
+        _m = re.fullmatch(r"(\d+)\s+(bettergold:[a-z0-9_]+)\s+(\S+)\s+(\S+)", _s)
+        if not _m:
+            _bgfix7_bad("bgfix7-creative-material-prefix", "快照 B 的行格式不对：%r" % _s)
+            continue
+        _fx7_ord_seqs.append(int(_m.group(1)))
+        _fx7_want_prefix.append(_m.group(2))
+        _fx7_cn_names.append(_m.group(3))
+    if len(_fx7_want_prefix) != _FX7_PREFIX_LEN:
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "快照 B 不是 %d 条（实际 %d）== 反空转守护（N 必须 = %d 且 > 0）"
+                    % (_FX7_PREFIX_LEN, len(_fx7_want_prefix), _FX7_PREFIX_LEN))
+    elif _fx7_ord_seqs != list(range(1, _FX7_PREFIX_LEN + 1)):
+        _bgfix7_bad("bgfix7-creative-material-prefix", "快照 B 的位次不是 1..21 连续：%s" % _fx7_ord_seqs)
+    if len(set(_fx7_want_prefix)) != len(_fx7_want_prefix):
+        _bgfix7_bad("bgfix7-creative-material-prefix", "快照 B 里有重复 id（作者不会点同一个东西两次）")
+    if len(set(_fx7_cn_names)) != len(_fx7_cn_names):
+        _bgfix7_bad("bgfix7-creative-material-prefix", "快照 B 里有重复的作者名：%s" % _fx7_cn_names)
+
+# 快照 A / B 的**集合关系**：前缀 21 件必须恰好是基线前 21 件（只重排、不增删、不跨分区搬）
+if _fx7_baseline_ok and _fx7_want_prefix:
+    _fx7_want_set = set(_fx7_want_prefix)
+    _fx7_base21 = set(_fx7_baseline[:_FX7_PREFIX_LEN])
+    if _fx7_want_set != _fx7_base21:
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "前缀集合 != 材料分区基线前 21 件（多出 %s / 少了 %s）"
+                    "== 只许重排：不许增项、不许删项、不许跨分区搬"
+                    % (sorted(_fx7_want_set - _fx7_base21), sorted(_fx7_base21 - _fx7_want_set)))
+    _fx7_rest40 = set(_fx7_baseline[_FX7_PREFIX_LEN:])
+    _fx7_overlap = sorted(_fx7_want_set & _fx7_rest40)
+    if _fx7_overlap:
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "前缀吃到了「其余 40 件」里的东西（%s）== 其余部分必须原样不动" % _fx7_overlap)
+    if len(_fx7_want_set) + len(_fx7_rest40) != 61:
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "前缀 + 其余 != 61 件（%d + %d）== 不重不漏"
+                    % (len(_fx7_want_set), len(_fx7_rest40)))
+
+# ---------- ③ Java 侧：前缀真源 + 它必须是材料分区的**第一段**，且四段旧结构不许删 ----------
+_fx7_src = strip_comments(_FX7_SECTIONS.read_text(encoding="utf-8")) if _FX7_SECTIONS.is_file() else ""
+_fx7_prefix: list[str] = []
+if not _fx7_src:
+    _bgfix7_bad("bgfix7-creative-material-prefix", "读不到 %s" % _FX7_SECTIONS)
+else:
+    _fx7_pm = re.search(r"MATERIAL_PREFIX_ORDER\s*=\s*List\.of\((.*?)\);", _fx7_src, re.S)
+    if not _fx7_pm:
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "解析不到前缀真源 `CreativeTabSections.MATERIAL_PREFIX_ORDER`（那一张有序表）")
+    else:
+        _fx7_prefix = ["bettergold:" + _p for _p in re.findall(r'"([a-z0-9_]+)"', _fx7_pm.group(1))]
+    # 反空转：长度必须 = 21 且 > 0（"前缀为空"也算破坏）
+    if len(_fx7_prefix) != _FX7_PREFIX_LEN:
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "Java 前缀表长度不是 %d（实际 %d）== 反空转守护（前缀长度必须 = N 且 N > 0）"
+                    % (_FX7_PREFIX_LEN, len(_fx7_prefix)))
+    # 逐项对 **id**（不是对中文名）
+    if _fx7_want_prefix and _fx7_prefix != _fx7_want_prefix:
+        _fx7_diff = [(i + 1, a, b) for i, (a, b) in enumerate(zip(_fx7_prefix, _fx7_want_prefix))
+                     if a != b][:5]
+        _bgfix7_bad("bgfix7-creative-material-prefix",
+                    "Java 前缀表 %s != 作者 2026-10-08 口述序 %s（前 5 处不同：%s）"
+                    % (_fx7_prefix, _fx7_want_prefix, _fx7_diff))
+    # 材料分区五段：前缀必须第一、四个旧段必须还在（不删项）
+    _fx7_mm = re.search(r"MATERIALS\s*=\s*List\.of\((.*?)\);", _fx7_src, re.S)
+    if not _fx7_mm:
+        _bgfix7_bad("bgfix7-creative-material-prefix", "解析不到 `CreativeTabSections.MATERIALS`（段列表）")
+    else:
+        _fx7_body = _fx7_mm.group(1)
+        _fx7_slots = re.findall(r'new Slot\("([^"]+)"', _fx7_body)
+        if len(_fx7_slots) != 5:
+            _bgfix7_bad("bgfix7-creative-material-prefix",
+                        "材料分区不是 5 段（实际 %d：%s）== 旧四段必须原地保留、前缀段插在最前"
+                        % (len(_fx7_slots), _fx7_slots))
+        if not _fx7_slots or "材料前缀" not in _fx7_slots[0]:
+            _bgfix7_bad("bgfix7-creative-material-prefix",
+                        "前缀段不是材料分区的**第一段**（实际首段 = %s）"
+                        % (_fx7_slots[0] if _fx7_slots else "<空>"))
+        for _needle, _why in (
+                ("MATERIAL_PREFIX", "前缀段没有用 `MATERIAL_PREFIX` 那把唯一的有序比较器"),
+                ('new Slot("炼金术学员手册"', "旧段「炼金术学员手册」被删了（删段 == 物品静默掉出分区）"),
+                ('new Slot("其他材料"', "旧段「其他材料」被删了"),
+                ('new Slot("交易金商人相关"', "旧段「交易金商人相关」被删了"),
+                ('new Slot("金属"', "旧段「金属」被删了")):
+            if _needle not in _fx7_body:
+                _bgfix7_bad("bgfix7-creative-material-prefix", "%s（缺 %s）" % (_why, _needle))
+    # 前缀 id 一律稳定 ASCII（注册名 path 部分：小写字母 / 数字 / 下划线）
+    for _p in _fx7_prefix:
+        if not re.fullmatch(r"bettergold:[a-z0-9_]+", _p):
+            _bgfix7_bad("bgfix7-creative-material-prefix", "前缀里有不稳定 / 非 ASCII 的 id：%r" % _p)
+
+# ---------- ④ 文档侧：本轮口径必须落档（docs/1.6-规格.md 里的 §28） ----------
+for _needle, _why in ((u"bgfix7", u"docs/1.6-规格.md 里没有 bgfix7 这一轮的节"),
+                      (u"金门", u"没写「金门」这条待确认的映射"),
+                      (u"待作者确认", u"没列「待作者确认的名字清单」"),
+                      (u"只许重排", u"没写「只许重排，不许增删 / 不许跨分区搬」这条红线"),
+                      (u"高燃烈焰棒", u"没写「其余保持原样的起点 = blazing_rod」")):
+    if _needle not in _bgfix_spec:
+        _bgfix7_bad("bgfix7-doc", "%s（缺 %s）" % (_why, _needle))
+
+print(f"bg-fix7（创造页材料分区前半部分重排）问题: {len(bgfix7_problems)} {bgfix7_problems[:8]}"
+      f"（前缀 {len(_fx7_prefix)} 项 / 基线 {len(_fx7_baseline)} 件 / 期望前缀 {len(_fx7_want_prefix)} 项）")
+
 # ==================== bgfix6（2026-10-08）：反空转 / 前置缺失 ⇒ exit 2 ====================
 # 旧行为（原文保留）：`checked`（语言键）只在上面 L80 附近 print 一次，从不影响退出码。
 # 这里额外把"扫描面"本身数一遍（resources 下的 JSON 产物数）—— 目录被搬走 / 改名时它变 0。
@@ -5062,12 +5233,24 @@ if checked <= 0 or _scan_json <= 0 or _missing_roots:
           f"（语言键 {checked} / JSON 产物 {_scan_json}）⇒ 基线被破坏（前置缺失）⇒ 本关卡 exit 2")
     sys.exit(2)
 
+# ==================== bgfix7（2026-10-08）追加：本轮的**期望值快照**也是前置 ⇒ 缺了 exit 2 ====================
+# 口径（`docs/构建与跑测注意事项.md` 七）：**前置缺失**是 exit 2，不是"没有问题"。
+# 本关卡的期望值全部来自这两个仓库内冻结快照 ⇒ 它们不在 = 基线被破坏（不是"检查通过"）。
+_fx7_missing_snaps = [str(_p) for _p in (_FX7_BASELINE_FILE, _FX7_ORDER_FILE) if not _p.is_file()]
+print(f"[bgfix7-anti-vacuum] 本轮期望值快照：基线 {_FX7_BASELINE_FILE.name}="
+      f"{_FX7_BASELINE_FILE.is_file()} / 作者序 {_FX7_ORDER_FILE.name}={_FX7_ORDER_FILE.is_file()}"
+      f"（缺失 {len(_fx7_missing_snaps)} 个，必须 = 0）")
+if _fx7_missing_snaps:
+    print(f"FAIL [bgfix7-creative-material-prefix] 期望值快照缺失 {_fx7_missing_snaps}"
+          f" ⇒ 前置缺失 ⇒ 本关卡 exit 2")
+    sys.exit(2)
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
                        bgfinal_problems, bgappend_problems, bgfix2_problems, bgbook8_problems,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
-                       bgfix4_problems, bgfix5_problems,
+                       bgfix4_problems, bgfix5_problems, bgfix7_problems,
                        symmetric_problems, beacon_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags

@@ -1,0 +1,50 @@
+# bgfix7 冻结快照（关卡期望值的唯一来源）：作者 2026-10-08 口述的「材料分区前半部分」顺序 → **真实 id**
+#
+# 作者原话（逐字；他自己声明"表述可能有偏差与错误"）：
+#   「在创作模式的材料清单里面，按照如下要求重新排列前半部分的材料：手册，混合晶石堆，炼金燃油，金骨粉，
+#     混沌金币串， 金重锤、金三叉戟、金弓、金弩、金门，没人要的老古董、古董升级锻造模板，下界合金尘埃、
+#     下界合金碎片， 金钱贝模具，礼品金票、万宝礼物盒、古董珍品盒，金雕礼品盒、珍享礼品盒，炼金真材盒，
+#     后面就是正常的，从高燃烈焰棒棒开始，表述可能有偏差与错误，但是整体你应该知道」
+#
+# 三条依据（逐条可复算）：
+#   ① **集合相等**（最强）：作者的 21 个名字与「材料分区前 21 件」——即
+#      `bgfix7-creative-material-baseline.txt` 第 1~21 行——**一一对应**，一件不多一件不少
+#      ⇒ 映射完全被集合确定，不需要凭印象外推；
+#   ② **语言键**：每个 id 的 zh_cn 名逐条核对（见最后一列 `assets/bettergold/lang/zh_cn.json`），
+#      21 条全部命中，其中 5 处只是**字面**差异（见下）；
+#   ③ **位置**：作者把每个名字夹在哪两个名字之间，与「基线里这些 id 的相对关系」一致
+#      （例：混沌金币串 后面紧跟的就是五件胚底；炼金真材盒 被放在整串的**最后**、连礼盒都在它前面）。
+#
+# 待作者确认（**只有字面差异；id 由依据 ① 唯一确定**）：
+#   · 「金门」→ `golden_shield_blank`：语言键 = **金制盾牌胚底**。61 件里**没有任何名字含"门"的物品**
+#     （`bettergold:gold_door` 是**建筑分区**的方块，按红线不许跨分区搬）；而"五件胚底"正好是
+#     重锤 / 三叉戟 / 弓 / 弩 / **盾**，作者也恰好把它们写在"金重锤、金三叉戟、金弓、金弩"之后连续 5 个。
+#   · 「古董升级锻造模板」→ `netherite_antique_upgrade_smithing_template`（语言键：**下界合金**古董升级模板）
+#   · 「下界合金碎片」→ `small_netherite_scrap`（语言键：**小**下界合金碎片）
+#   · 「古董珍品盒」→ `curio_box`（语言键：珍品**古董**盒，词序不同）
+#   · 「珍享礼品盒」→ `gourmet_box`（语言键：**金享珍味盒**）；「炼金真材盒」→ `alchemy_materials_box`
+#     （语言键：炼金**珍**材盒）。后两条由依据 ① 消元唯一确定（21 个名字里只剩这两个 id 没被认领）。
+#
+# 格式：`<作者口述位次> <真实 id> <作者原话里的名字> <zh_cn 语言键实际名>`
+# 位次 1..21 连续无空缺；id 一律是**注册名的 path 部分**（稳定 ASCII，与 Java 源同一形状）。
+1 bettergold:alchemy_student_handbook 手册 新生代炼金术学员手册
+2 bettergold:mixed_crystal_pile 混合晶石堆 混合晶石堆
+3 bettergold:alchemic_fuel 炼金燃油 炼金燃油
+4 bettergold:golden_bone_meal 金骨粉 金骨粉
+5 bettergold:chaos_coin_string 混沌金币串 混沌金币串
+6 bettergold:golden_mace_blank 金重锤 金制重锤胚底
+7 bettergold:golden_trident_blank 金三叉戟 金制三叉戟胚底
+8 bettergold:golden_bow_blank 金弓 金制弓胚底
+9 bettergold:golden_crossbow_blank 金弩 金制弩胚底
+10 bettergold:golden_shield_blank 金门 金制盾牌胚底
+11 bettergold:unwanted_antique 没人要的老古董 没人要的老古董
+12 bettergold:netherite_antique_upgrade_smithing_template 古董升级锻造模板 下界合金古董升级模板
+13 bettergold:netherite_dust 下界合金尘埃 下界合金尘埃
+14 bettergold:small_netherite_scrap 下界合金碎片 小下界合金碎片
+15 bettergold:golden_cowrie_mold 金钱贝模具 金钱贝模具
+16 bettergold:gift_gold_ticket 礼品金票 礼品金票
+17 bettergold:treasure_gift_box 万宝礼物盒 万宝礼物盒
+18 bettergold:curio_box 古董珍品盒 珍品古董盒
+19 bettergold:idol_gift_box 金雕礼品盒 金雕礼品盒
+20 bettergold:gourmet_box 珍享礼品盒 金享珍味盒
+21 bettergold:alchemy_materials_box 炼金真材盒 炼金珍材盒

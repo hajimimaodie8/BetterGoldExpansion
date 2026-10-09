@@ -154,13 +154,90 @@ public final class CreativeTabSections {
     // ==================== 内置 4 个分区的内部规则（分区 key / 横幅 / 释词见 CreativePageSections） ====================
 
     /**
-     * 材料分区内部顺序：<b>炼金术学员手册 → 其他材料 → 交易金商人相关 → 金属</b>
-     * （作者定稿原话：其他材料排最前、交易金商人相关物排中、特殊金属排后）。
+     * 材料分区<b>前半部分</b>的定稿顺序 = 作者 2026-10-08 口述的那一串（逐条映射到**真实 id**）。
+     *
+     * <h2>★ 现行口径（`bgfix7`，2026-10-08）就地标注：旧口径原文保留在上面那段 javadoc 里</h2>
+     * <p>旧口径（`bg-fix4` 及以前）：材料分区的前半部分 = 「炼金术学员手册 → 其他材料（**注册顺序**）→
+     * 交易金商人相关（**候选列表顺序**）」，作者一直没有给过这 21 件的先后 ⇒ 从来没有人"排"过它，
+     * 界面里的次序纯属注册顺序的副产物（这就是 §25.7「待作者补投」那一条）。
+     * 现在作者把顺序补投了 ⇒ 这 21 件改由**这一张表**决定先后，其余 40 件（金属段）一个字不动。</p>
+     *
+     * <h2>作者口述 → 真实 id 的映射依据</h2>
+     * <p>作者的 21 个中文名与「材料分区前 21 件」是<b>一一对应</b>的（集合完全相等，见
+     * `docs/1.6-规格.md` §28.2 的映射表）：21 个名字 ↔ 61 件清单里的第 1~21 件，一件不多一件不少；
+     * 语言键逐条核对见 `assets/bettergold/lang/zh_cn.json`。两处<b>口误/待确认</b>已在 §28.2 单独标出
+     * （「金门」= {@code golden_shield_blank} 金制盾牌胚底；「珍享礼品盒/炼金真材盒」= 语言键里写作
+     * 「金享珍味盒 / 炼金珍材盒」）。</p>
+     *
+     * <p>⚠ <b>只许重排</b>：这 21 件全部本来就在材料分区里（基线清单第 1~21 件），
+     * 没有一件是"从别的分区搬过来"的；反过来，**前缀之外的 40 件（从 {@code blazing_rod} 起的金属段）
+     * 仍然按原来的排序键排**，本表不碰它们。加/删任何一项都会让关卡
+     * `[bgfix7-creative-material-prefix]` 变红（前缀长度必须 = 21、且两集合互不相交、并集 = 61）。</p>
+     *
+     * <p>末位 {@code alchemy_materials_box}（炼金真材盒）在**礼盒段之后** —— 这一点是本表存在的第二个理由：
+     * 现在的段结构（手册 → 其他材料 → 交易金商人相关 → 金属）**表达不了**它，
+     * 所以前半部分必须由一张显式的有序表接管，而不是靠"段 + 段内注册顺序"凑出来。</p>
+     */
+    public static final List<String> MATERIAL_PREFIX_ORDER = List.of(
+            "alchemy_student_handbook",                    // 手册（新生代炼金术学员手册）
+            "mixed_crystal_pile",                          // 混合晶石堆
+            "alchemic_fuel",                               // 炼金燃油
+            "golden_bone_meal",                            // 金骨粉
+            "chaos_coin_string",                           // 混沌金币串
+            "golden_mace_blank",                           // 金重锤（金制重锤胚底）
+            "golden_trident_blank",                        // 金三叉戟（金制三叉戟胚底）
+            "golden_bow_blank",                            // 金弓（金制弓胚底）
+            "golden_crossbow_blank",                       // 金弩（金制弩胚底）
+            "golden_shield_blank",                         // 金门 —— 待作者确认，见 §28.2
+            "unwanted_antique",                            // 没人要的老古董
+            "netherite_antique_upgrade_smithing_template", // 古董升级锻造模板
+            "netherite_dust",                              // 下界合金尘埃
+            "small_netherite_scrap",                       // 下界合金碎片
+            "golden_cowrie_mold",                          // 金钱贝模具
+            "gift_gold_ticket",                            // 礼品金票
+            "treasure_gift_box",                           // 万宝礼物盒
+            "curio_box",                                   // 古董珍品盒（语言键：珍品古董盒）
+            "idol_gift_box",                               // 金雕礼品盒
+            "gourmet_box",                                 // 珍享礼品盒（语言键：金享珍味盒）
+            "alchemy_materials_box");                      // 炼金真材盒（语言键：炼金珍材盒）
+
+    /** 前缀内的位次；不在前缀里的一律返回 {@link #MATERIAL_PREFIX_ORDER} 的长度（排最后，与既有规则同形） */
+    private static int materialPrefixRank(String path) {
+        int i = MATERIAL_PREFIX_ORDER.indexOf(path);
+        return i >= 0 ? i : MATERIAL_PREFIX_ORDER.size();
+    }
+
+    /**
+     * 「材料前缀」段的段内排序：按 {@link #MATERIAL_PREFIX_ORDER} 的下标，同键再按物品 id 兜底。
+     *
+     * <p>形状与 {@link CreativeSections#SUITE_ORDER} / {@link CreativeSections#KNIFE_ORDER} 一致：
+     * 位次表只有**一张**（就是上面那个 {@code List}），生成器 / 配置界面都没有第二份。</p>
+     */
+    public static final java.util.Comparator<ItemStack> MATERIAL_PREFIX =
+            java.util.Comparator.<ItemStack>comparingInt(s -> materialPrefixRank(pathOf(s)))
+                    .thenComparing(CreativeSections::itemIdOf);
+
+    /** 是不是「材料前缀」这 21 件之一（段归属判定；判据 = 上面那张唯一的有序表） */
+    private static boolean isMaterialPrefix(ItemStack stack) {
+        return MATERIAL_PREFIX_ORDER.contains(pathOf(stack));
+    }
+
+    /**
+     * 材料分区内部顺序：<b>材料前缀（作者 2026-10-08 定稿序，21 件）→ 炼金术学员手册 →
+     * 其他材料 → 交易金商人相关 → 金属</b>。
+     *
+     * <p>⚠ <b>旧口径原文（已被作者 2026-10-08 的补投取代，逐字保留、不删）</b>：
+     * 「材料分区内部顺序：<b>炼金术学员手册 → 其他材料 → 交易金商人相关 → 金属</b>
+     * （作者定稿原话：其他材料排最前、交易金商人相关物排中、特殊金属排后）」——
+     * 那四段今天**仍然在表里、顺序也一个字没动**，只是它们装的东西被第一段（材料前缀）先吃掉，
+     * 于是它们现在恒为空段（留着 = 以后新加的非金属材料自动落回原位置，不会丢物品）。</p>
      *
      * <p>注意：规则是"先到先得"（每件物品只进第一个命中的段），所以「其他材料」排在第一位时
      * 不能再写成 {@code stack -> true} 的兜底判定 —— 那会把整个分区都吃进第一段。
      * 这里改成正面判定"既不是交易金商人相关物、也不是金属物品"，四段合起来仍然恰好覆盖全部物品，
      * 一件都不会丢。</p>
+     *
+     * <p>兜底仍在 {@link #ordered}：万一某件物品没被任何段命中，会被追加在末尾而不是丢掉。</p>
      *
      * <p><b>bg-book（1.6）：手册为什么是"材料位第一"</b> —— 需求要「新生代炼金术学员手册排在材料位第一」，
      * 两种做法见需求 §6#5，本轮取的是<b>②「在材料分区的段列表里把它单列成第一段」</b>：</p>
@@ -174,6 +251,8 @@ public final class CreativeTabSections {
      * <p>⚠ 手册物品只在装了 Patchouli 时才注册；没装时本段的判定恒为 false（段为空、无副作用）。</p>
      */
     public static final List<Slot> MATERIALS = List.of(
+            new Slot("材料前缀（作者 2026-10-08 定稿序）", CreativeTabSections::isMaterialPrefix,
+                    CreativeTabSections.MATERIAL_PREFIX),
             new Slot("炼金术学员手册", CreativeTabSections::isHandbook),
             new Slot("其他材料", stack -> !isTraderRelated(stack) && !isMetal(stack)),
             new Slot("交易金商人相关", CreativeTabSections::isTraderRelated),
@@ -184,6 +263,12 @@ public final class CreativeTabSections {
      *
      * <p>判据用物品类而不是 id 字符串 —— 类比较不会因为 id 写错而静默失效，
      * 而且没装 Patchouli 时根本没有实例，判定自然恒为 false。</p>
+     *
+     * <p>⚠ <b>`bgfix7`（2026-10-08）就地标注</b>：手册现在被<b>更靠前</b>的「材料前缀」段先吃掉
+     * （它在那张表里是第 1 位）⇒ <b>本段实际恒为空</b>。**保留本段**（以及下面「其他材料」/
+     * 「交易金商人相关」两段）是刻意的：
+     * ① 手册的归属判据仍是"物品类"，前缀表万一被作者改掉，手册也不会掉出材料分区；
+     * ② 没装 Patchouli 那一档，前缀表里的那个 id 根本不存在，本段照样恒空、无副作用。</p>
      */
     private static boolean isHandbook(ItemStack stack) {
         return stack.getItem() instanceof com.hjmmd_8.bettergold.item.HandbookItem;

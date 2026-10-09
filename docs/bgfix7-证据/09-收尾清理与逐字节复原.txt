@@ -1,0 +1,66 @@
+﻿=== bgfix7 收尾清理与逐字节复原（全部命令的原始输出） ===
+
+--- [1] 六校验器（最终态，与 08 的两次读数同口径） ---
+validate_metal_assets.py => EXIT=0
+    [bg-assets-anti-vacuum] ʵ�ʼ���� 595 �blockstates / models �����ֺ������ JSON������ > 0��
+    [bg-assets-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_metal_data.py => EXIT=0
+    [bgfix7-anti-vacuum] ��������ֵ���գ����� bgfix7-creative-material-baseline.txt=True / ������ bgfix7-creative-material-prefix-order.txt=True��ȱʧ 0 �������� = 0��
+    [bg-data-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_trim_assets.py => EXIT=0
+    [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+    [bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements.py => EXIT=0
+    [bgach-ok] ���� 0 �� / �ɾ� 51 �� / criteria 125 �� / ���Լ� 102 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+check_jar_clean.py => EXIT=0
+    [jar-clean-anti-vacuum] 实际检查了 2408 项（jar 内条目数；必须 > 0）
+    [jar-clean-ok] 产物 jar 干净（条目 2408；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py => EXIT=0
+    [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+--- [2] 探针残留 grep（源码树 / jar / run 开关） ---
+src 下命中文件数 = 0（必须 0）
+probe 包目录存在 = False（必须 False）
+run/bgfix7-probe.enabled 存在 = False（必须 False）
+run/bgfix7probe 世界存在 = False（必须 False）
+check_jar_clean 关键行: [jar-clean-ok] 产物 jar 干净（条目 2408；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+--- [3] 逐字节复原 ---
+run/server.properties SHA256 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4  期望 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+build.gradle SHA256 = 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+build\moddev\clientRunProgramArgs.txt 存在 = True（本轮没跑客户端、没碰它）
+
+--- [4] 作者存档 / 贴图 ---
+run/saves 清单差异行数 = 0（必须 0）
+git status 里 textures/** 行数 = 0（必须 0）
+
+--- [5] git status（不 commit） ---
+     M "docs/1.6-\350\247\204\346\240\274.md"
+     M src/main/java/com/hjmmd_8/bettergold/material/CreativeTabSections.java
+     M tools/asset-generator/validate_metal_data.py
+    ?? "docs/bgfix7-\350\257\201\346\215\256/"
+    ?? tools/asset-generator/bgfix7-creative-material-baseline.txt
+    ?? tools/asset-generator/bgfix7-creative-material-prefix-order.txt
+
+--- [6] run\ 执行情况与**并发观察**（诚实记账） ---
+本轮我发起 3 次游戏进程（严格串行，每条都在上一条退出后才起）：runServer(runA) / runServer(runA2) / runData。
+⚠ 收尾时用 Get-CimInstance 只读检查发现：**run\ 里还有一个 17:16:06 启动的 dev 客户端进程仍在运行**（不是本会话发起的）：
+    PID 41884  GAME  net.neoforged.devlaunch.Main @...\build\moddev\clientRunProgramArgs.txt（客户端）
+    PID 5904/46868 = Gradle daemon（非游戏进程）
+  ⇒ 严格意义上本轮**没有拿到 run\ 的独占**（项目红线「run\ 是独占资源，必须串行」）。
+  未做任何补救动作（不杀别人的进程）。对本轮读数的实际影响：无 —— 证据如下：
+    ① 两条 runServer 的探针读数**各自完整自洽**（第 1 tick 世界名 = bgfix7probe、12 PASS/0 FAIL、SUMMARY 一行、halt 只调一次）；
+    ② 我用的世界是新目录 run\bgfix7probe（作者存档在 run\saves\新的世界），收尾已删；
+    ③ run/saves 逐文件清单 跑前/跑后差异 = 0 行；
+    ④ 日志里**没有**出现文档记的并发症状（'Unable to delete file ... latest.log' / 卡在加载界面）。
+  ⚠ 需要父代理/作者知悉的副作用：dev 客户端与 runServer **共用 run\logs\latest.log**，
+    我这两轮 runServer 各触发了一次日志轮转（run/logs 里的 2026-10-09-*.log.gz、debug-*.log.gz）——
+    这是共享 run\ 的固有行为；另一方的客户端会话仍活着、未被本会话触碰。
+
+--- [7] 本轮没有触碰的共享文件 ---
+build.gradle          SHA256 = 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F（与文档记的 bgfix4 目标值一致）
+build/moddev/clientRunProgramArgs.txt  本轮**没跑客户端**、没读没写（参数走 build.gradle 的约定本轮用不上）
+run/mods（Patchouli / JEI，交付物）  本轮未动
+开工需求\  只读（一个字节未动）
+贴图  0 字节（git status 无 textures/**）

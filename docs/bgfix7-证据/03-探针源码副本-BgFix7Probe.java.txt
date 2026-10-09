@@ -1,0 +1,394 @@
+package com.hjmmd_8.bettergold.probe.bgfix7;
+
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.material.CreativeSections;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * bgfix7 A 级实机探针（**只读验证，不参与任何玩法**；收尾整块删除）。
+ *
+ * <p>会话隔离：整包 {@code com.hjmmd_8.bettergold.probe.bgfix7}，收尾只删这个子目录
+ * （= {@code src/main/java/com/hjmmd_8/bettergold/probe/bgfix7/}）。</p>
+ * <p>开关文件：{@code <gameDir>/bgfix7-probe.enabled}（按 {@link FMLPaths#GAMEDIR} 算，
+ * 不能按工程根算 —— `ex/03 §3.2` 规则 3）。</p>
+ * <p>世界守卫：第 1 tick 反射读 {@code getLevelName()}，**必须**是 {@code bgfix7probe}
+ * （本轮服务端自己新建的 ASCII 探针世界）；不等 ⇒ 打 {@code ABORT} 并停止一切动作
+ * （**不调 halt** —— 万一真进了作者的存档，halt 会走正常存盘把它重写一遍，那正是红线 5 的事故形态）。</p>
+ *
+ * <h2>本轮要证的一件事</h2>
+ * <p>作者 2026-10-08 补投的「材料分区前半部分」顺序，在**真实创造页**里逐条生效：</p>
+ * <ol>
+ *   <li>材料分区（判据：从第 1 格到第一个「建筑/装备」分区物品之前）仍然是 <b>61 件</b>；</li>
+ *   <li><b>前 21 件</b>逐项 == 冻结快照 {@code bgfix7-creative-material-prefix-order.txt} 的 id 序列；</li>
+ *   <li><b>第 22~61 件</b>逐条 == 冻结快照 {@code bgfix7-creative-material-baseline.txt} 的第 22~61 行
+ *       （= 其余部分保持原序、一物不差）；</li>
+ *   <li>不重不漏（集合 == 基线的 61 件集合）；</li>
+ *   <li><b>阳性对照</b>：这一页真的读到了东西（总格数 &gt; 0 / 第 1 个非空格子 = 手册）；
+ *       且"改后的前 21 件"**不等于**改前的前 21 件（证明重排真的发生了，而不是自比自话）。</li>
+ * </ol>
+ * <p>期望值一律取自**仓库内的冻结快照**（路径基准从 {@link FMLPaths#GAMEDIR}（= {@code <repo>/run}）
+ * 反推 —— `ex/03 §3.18` 陷阱 ②）；读不到时把 cwd / user.dir / 候选路径**全打进日志**。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgFix7Probe {
+
+    private static final String TAG = "BGFIX7-PROBE";
+    private static final String PROBE_WORLD = "bgfix7probe";
+    private static final String AUTHOR_WORLD = "\u65b0\u7684\u4e16\u754c";   // 新的世界
+
+    private static final int MATERIAL_COUNT = 61;
+    private static final int PREFIX_LEN = 21;
+
+    /** 绝对 tick 表（`ex/03 §3.2` 规则 11：不许用"距上一步多少 tick"的累加偏移） */
+    private static final int T_GUARD = 1;
+    private static final int T_CREATIVE = 40;
+    private static final int T_SUMMARY = 60;
+
+    private static boolean armed;
+    private static boolean aborted;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static int skip;
+    private static MinecraftServer server;
+    private static ServerLevel level;
+    private static String levelName = "?";
+
+    private static final List<String> problems = new ArrayList<>();
+    private static final List<String> aborts = new ArrayList<>();
+    private static final List<String> readouts = new ArrayList<>();
+
+    private BgFix7Probe() {
+    }
+
+    // ==================== 读数小工具 ====================
+
+    private static String id(String raw) {
+        return raw.replace('/', '_');
+    }
+
+    private static void report(String rawId, boolean ok, String detail) {
+        String key = id(rawId);
+        if (ok) {
+            pass++;
+            bettergold.LOGGER.info("{} {} :: PASS {}", TAG, key, detail);
+        } else {
+            fail++;
+            problems.add(key + " :: " + detail);
+            bettergold.LOGGER.error("{} {} :: FAIL {}", TAG, key, detail);
+        }
+    }
+
+    private static void skipped(String rawId, String detail) {
+        skip++;
+        bettergold.LOGGER.warn("{} {} :: SKIP {}", TAG, id(rawId), detail);
+    }
+
+    private static void readout(String rawId, String detail) {
+        readouts.add(id(rawId));
+        bettergold.LOGGER.info("{} {} :: READOUT {}", TAG, id(rawId), detail);
+    }
+
+    private static void abort(String why) {
+        aborts.add(why);
+        if (!aborted) {
+            aborted = true;
+            bettergold.LOGGER.error("{} ABORT {}（停止一切动作；**不调 halt**，避免把当前世界存盘）", TAG, why);
+        }
+    }
+
+    // ==================== 主循环 ====================
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if (!armed) {
+            Path flag = FMLPaths.GAMEDIR.get().resolve("bgfix7-probe.enabled");
+            if (!Files.isRegularFile(flag)) {
+                return;
+            }
+            armed = true;
+            server = event.getServer();
+            level = server.overworld();
+            bettergold.LOGGER.info("{} armed=true gamedir={} flag={} cwd={} userDir={}",
+                    TAG, FMLPaths.GAMEDIR.get(), flag, Path.of("").toAbsolutePath(),
+                    System.getProperty("user.dir"));
+        }
+        if (aborted) {
+            return;
+        }
+        tick++;
+        try {
+            dispatch();
+        } catch (Throwable t) {
+            fail++;
+            problems.add("阶段 tick=" + tick + " 抛异常：" + t);
+            bettergold.LOGGER.error("{} 阶段 tick={} 抛异常", TAG, tick, t);
+        }
+    }
+
+    private static void dispatch() {
+        if (tick == T_GUARD) {
+            guardWorld();
+        } else if (tick == T_CREATIVE) {
+            creativeDump();
+        } else if (tick == T_SUMMARY) {
+            summary();
+        }
+    }
+
+    // ==================== 世界守卫（红线 5）====================
+
+    private static void guardWorld() {
+        Object data = level.getLevelData();
+        try {
+            Method m = data.getClass().getMethod("getLevelName");
+            levelName = String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            abort("probe_world_guard 读不到世界名：" + t.getClass().getSimpleName() + " " + t.getMessage());
+            return;
+        }
+        boolean ok = PROBE_WORLD.equals(levelName);
+        report("probe_world_guard", ok,
+                "levelName=" + levelName + " expect=" + PROBE_WORLD + " authorWorld=" + AUTHOR_WORLD);
+        if (levelName.equals(AUTHOR_WORLD)) {
+            abort("世界名 = 作者存档名（红线 5）");
+        } else if (!ok) {
+            abort("世界名不是本轮自己的 ASCII 探针世界");
+        }
+    }
+
+    // ==================== 期望值：仓库内的冻结快照 ====================
+
+    /** 仓库根：`GAMEDIR` 是 `<repo>/run` ⇒ 它的 parent 才是仓库根（`ex/03 §3.18` 陷阱 ②）。 */
+    private static Path repoRoot() {
+        Path gamedir = FMLPaths.GAMEDIR.get();
+        List<Path> candidates = List.of(
+                gamedir.getParent() == null ? gamedir : gamedir.getParent(),
+                Path.of("").toAbsolutePath(),
+                Path.of("").toAbsolutePath().getParent() == null
+                        ? Path.of("").toAbsolutePath() : Path.of("").toAbsolutePath().getParent());
+        for (Path c : candidates) {
+            Path probe = c.resolve("tools/asset-generator/bgfix7-creative-material-baseline.txt");
+            if (Files.isRegularFile(probe)) {
+                readout("repo_root", "GAMEDIR=" + gamedir + " cwd=" + Path.of("").toAbsolutePath()
+                        + " userDir=" + System.getProperty("user.dir") + " ⇒ repoRoot=" + c);
+                return c;
+            }
+        }
+        readout("repo_root_not_found", "GAMEDIR=" + gamedir + " cwd=" + Path.of("").toAbsolutePath()
+                + " userDir=" + System.getProperty("user.dir") + " candidates=" + candidates
+                + "（都找不到 tools/asset-generator/bgfix7-creative-material-baseline.txt）");
+        return null;
+    }
+
+    /** 快照 A：重排前真实创造页里的 61 件位次（按行序）。 */
+    private static List<String> readBaseline(Path root) {
+        List<String> out = new ArrayList<>();
+        Path f = root.resolve("tools/asset-generator/bgfix7-creative-material-baseline.txt");
+        try {
+            for (String raw : Files.readAllLines(f, StandardCharsets.UTF_8)) {
+                String s = raw.trim();
+                if (s.isEmpty() || s.startsWith("#")) {
+                    continue;
+                }
+                String[] parts = s.split("\\s+");
+                if (parts.length >= 2) {
+                    out.add(parts[1]);
+                }
+            }
+        } catch (Throwable t) {
+            problems.add("读快照 A 失败：" + f + " :: " + t);
+        }
+        return out;
+    }
+
+    /** 快照 B：作者口述位次 1..21 → 真实 id（按位次升序）。 */
+    private static List<String> readWantPrefix(Path root) {
+        List<String> out = new ArrayList<>();
+        Path f = root.resolve("tools/asset-generator/bgfix7-creative-material-prefix-order.txt");
+        try {
+            for (String raw : Files.readAllLines(f, StandardCharsets.UTF_8)) {
+                String s = raw.trim();
+                if (s.isEmpty() || s.startsWith("#")) {
+                    continue;
+                }
+                String[] parts = s.split("\\s+");
+                if (parts.length >= 2) {
+                    out.add(parts[1]);
+                }
+            }
+        } catch (Throwable t) {
+            problems.add("读快照 B 失败：" + f + " :: " + t);
+        }
+        return out;
+    }
+
+    // ==================== 真实创造页 ====================
+
+    private static void creativeDump() {
+        Path root = repoRoot();
+        List<String> baseline = root == null ? List.of() : readBaseline(root);
+        List<String> wantPrefix = root == null ? List.of() : readWantPrefix(root);
+        readout("snapshot_read", "基线 61 件读出=" + baseline.size() + " / 作者序前缀读出="
+                + wantPrefix.size() + "（两条都要 > 0；读不到就是「期望值没读到」，不是「产品通过」）");
+        report("snapshot_loaded", baseline.size() == MATERIAL_COUNT && wantPrefix.size() == PREFIX_LEN,
+                "快照 A=" + baseline.size() + "（期望 " + MATERIAL_COUNT + "）/ 快照 B="
+                        + wantPrefix.size() + "（期望 " + PREFIX_LEN + "）");
+
+        boolean mutLoaded = ModList.get().isLoaded("mut");
+        if (mutLoaded) {
+            skipped("creative_dump", "装了 mut（MoreUpgradeTemplate）⇒ 五件胚底被设计性隐藏 ⇒ 61 件那条不成立");
+            return;
+        }
+
+        try {
+            CreativeModeTab tab = bettergold.BETTERGOLD_TAB.get();
+            tab.buildContents(new CreativeModeTab.ItemDisplayParameters(
+                    level.enabledFeatures(), true, level.registryAccess()));
+            Collection<ItemStack> items = tab.getDisplayItems();
+
+            List<String> materialOrder = new ArrayList<>();
+            List<String> firstNonEmpty = new ArrayList<>();
+            boolean reachedOtherSection = false;
+            boolean rankMonotonic = true;
+            int lastRank = -1;
+            int materialCells = 0;
+            int nonEmptyCells = 0;
+            for (ItemStack s : items) {
+                if (s.isEmpty()) {
+                    continue;   // SectionedCreativeTab 的空格子
+                }
+                String full = CreativeSections.itemIdOf(s);
+                if (full == null || full.isEmpty()) {
+                    continue;
+                }
+                nonEmptyCells++;
+                if (firstNonEmpty.isEmpty()) {
+                    firstNonEmpty.add(full);
+                }
+                // ⚠ `classify` 吃的是**注册名的 path 部分**（`flamegold_ingot`），不是 `bettergold:…`
+                //   —— bg-fix4 runA 就是在这里数出 0 的（`ex/03 §3.18` 陷阱 ①）。
+                String path = BuiltInRegistries.ITEM.getKey(s.getItem()).getPath();
+                CreativeSections.Placement p = CreativeSections.classify(path);
+                if (!reachedOtherSection && p != null
+                        && (p.kind() == CreativeSections.Kind.METAL_BUILDING
+                            || p.kind() == CreativeSections.Kind.METAL_GEAR)) {
+                    reachedOtherSection = true;   // 材料分区结束（页内分区顺序：材料 → 建筑 → 食物 → 装备 → 乐事）
+                }
+                if (!reachedOtherSection) {
+                    materialOrder.add(full);
+                }
+                if (p != null && p.kind() == CreativeSections.Kind.METAL_MATERIALS) {
+                    materialCells++;
+                    if (p.metalRank() != lastRank) {
+                        if (p.metalRank() < lastRank) {
+                            rankMonotonic = false;
+                        }
+                        lastRank = p.metalRank();
+                    }
+                }
+            }
+
+            // ---- 阳性对照（与业务无关的两条：这一页真的读到了东西）----
+            report("creative_page_nonempty", items.size() > 0 && nonEmptyCells > 0,
+                    "getDisplayItems() 总格数=" + items.size() + " / 总非空格数=" + nonEmptyCells
+                            + "（阳性对照：两条都必须 > 0）/ 第 1 个非空格子=" + firstNonEmpty);
+            report("creative_handbook_first",
+                    !firstNonEmpty.isEmpty() && "bettergold:alchemy_student_handbook".equals(firstNonEmpty.get(0)),
+                    "第 1 个非空格子=" + firstNonEmpty + "（材料分区的绝对第一位 = 手册）");
+
+            // ---- 逐行打印实际位次（一手读数）----
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < materialOrder.size(); i++) {
+                sb.append('\n').append(TAG).append(" CREATIVE-MATERIAL ").append(i + 1).append(' ')
+                        .append(materialOrder.get(i));
+            }
+            bettergold.LOGGER.info("{} CREATIVE-MATERIAL-BEGIN {}", TAG, sb);
+            readout("creative_material_prefix", "材料分区（含非金属材料）实际件数=" + materialOrder.size()
+                    + "（逐行见上面 CREATIVE-MATERIAL 清单）");
+            report("creative_material_cells", materialCells > 0,
+                    "材料分区（METAL_MATERIALS）件数=" + materialCells + "（反空转：应 > 0）");
+            report("creative_material_metal_order", rankMonotonic && materialCells > 0,
+                    "材料分区的金属位次单调不减（= 顺序由 METAL_ORDER 决定）件数=" + materialCells);
+
+            // ---- ① 仍然 61 件（不重不漏）----
+            report("creative_material_count", materialOrder.size() == MATERIAL_COUNT,
+                    "材料分区件数=" + materialOrder.size() + " expect=" + MATERIAL_COUNT);
+            List<String> sortedHave = new ArrayList<>(materialOrder);
+            java.util.Collections.sort(sortedHave);
+            List<String> sortedWant = new ArrayList<>(baseline);
+            java.util.Collections.sort(sortedWant);
+            report("creative_material_set_equal", !baseline.isEmpty() && sortedHave.equals(sortedWant),
+                    "集合相等（不重不漏）=" + sortedHave.equals(sortedWant)
+                            + " 实际件数=" + materialOrder.size() + " 基线件数=" + baseline.size());
+
+            // ---- ② 前 21 件逐项 == 作者口述序映射后的 id 序列 ----
+            List<String> gotPrefix = materialOrder.size() >= PREFIX_LEN
+                    ? materialOrder.subList(0, PREFIX_LEN) : materialOrder;
+            report("creative_material_prefix_len",
+                    gotPrefix.size() == PREFIX_LEN && PREFIX_LEN > 0,
+                    "实际前缀长度=" + gotPrefix.size() + " expect=" + PREFIX_LEN + "（N 必须 > 0）");
+            report("creative_material_prefix_21", gotPrefix.equals(wantPrefix),
+                    "前 21 件=" + gotPrefix + "\n" + TAG + " 期望（作者 2026-10-08 口述序）=" + wantPrefix);
+
+            // ---- ③ 其余 40 件逐条 == 基线第 22~61 行（原序、一物不差）----
+            List<String> gotTail = materialOrder.size() > PREFIX_LEN
+                    ? materialOrder.subList(PREFIX_LEN, materialOrder.size()) : List.of();
+            List<String> wantTail = baseline.size() > PREFIX_LEN
+                    ? baseline.subList(PREFIX_LEN, baseline.size()) : List.of();
+            report("creative_material_tail_40", gotTail.equals(wantTail),
+                    "第 22 件起 " + gotTail.size() + " 项逐条比对=" + gotTail.equals(wantTail)
+                            + "（首项=" + (gotTail.isEmpty() ? "<空>" : gotTail.get(0))
+                            + " expect=" + (wantTail.isEmpty() ? "<空>" : wantTail.get(0)) + "）");
+
+            // ---- ④ 阳性对照：重排真的发生了（改后前缀 != 改前前 21 件）----
+            List<String> oldPrefix = baseline.size() >= PREFIX_LEN
+                    ? baseline.subList(0, PREFIX_LEN) : baseline;
+            report("creative_prefix_differs_from_baseline", !gotPrefix.equals(oldPrefix),
+                    "改后前 21 件与改前不同=" + !gotPrefix.equals(oldPrefix)
+                            + "（若相等 ⇒ 说明重排没生效，这条会红；同时说明上面几条不是自比自话）");
+
+            readout("creative_actual_order", "实际位次（1.." + materialOrder.size() + "）=" + materialOrder);
+        } catch (Throwable t) {
+            skipped("creative_dump", "读取真实创造页失败：" + t);
+        }
+    }
+
+    // ==================== 收尾 ====================
+
+    private static void summary() {
+        readout("forced_chunks", "forced=" + level.getForcedChunks().size() + " expect=0（本轮不碰区块）");
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        counts.put("pass", pass);
+        counts.put("fail", fail);
+        counts.put("skip", skip);
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} skip={} aborts={} levelName={} readouts={} counts={}",
+                TAG, pass, fail, skip, aborts, levelName, readouts.size(), counts);
+        for (String p : problems) {
+            bettergold.LOGGER.error("{} PROBLEM {}", TAG, p);
+        }
+        bettergold.LOGGER.info("{} halting", TAG);
+        armed = false;
+        server.halt(false); // 只调一次
+    }
+}

@@ -1,0 +1,153 @@
+[0910月2026 18:15:53.057] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserverdev, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.228, --fml.neoFormVersion, 20240808.144430, --nogui]
+[0910月2026 18:15:53.060] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: JVM identified as Microsoft OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[0910月2026 18:15:53.061] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Microsoft; OS Windows 11 arch amd64 version 10.0
+[0910月2026 18:15:53.207] [main/INFO] [net.neoforged.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserverdev
+[0910月2026 18:15:53.276] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/Lenovo/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%2394!/ Service=ModLauncher Env=SERVER
+[0910月2026 18:15:53.804] [main/INFO] [net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[0910月2026 18:15:53.805] [main/INFO] [net.neoforged.fml.loading.moddiscovery.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		bettergold 1.6.0 (bettergold)
+		Farmer's Delight 1.3.4 (farmersdelight)
+		Just Enough Items 19.16.1.156 (jei)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.228 (neoforge)
+		Patchouli 1.21.1-93-NEOFORGE (patchouli)
+[0910月2026 18:15:54.879] [main/INFO] [mixin/]: Compatibility level set to JAVA_21
+[0910月2026 18:15:54.891] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserverdev' with arguments [--gameDir, ., --nogui]
+[0910月2026 18:15:54.997] [main/WARN] [mixin/]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+[0910月2026 18:15:56.514] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[0910月2026 18:16:02.573] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[0910月2026 18:16:02.574] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[0910月2026 18:16:02.577] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[0910月2026 18:16:02.577] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[0910月2026 18:16:02.579] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[0910月2026 18:16:02.679] [modloading-worker-0/INFO] [net.neoforged.neoforge.common.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.228, for MC 1.21.1
+[0910月2026 18:16:02.811] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[0910月2026 18:16:02.828] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 已注册金属族 8 套: [flamegold(烈燃金), voodoogold(巫毒金), thundergold(结雷金), indigoseagold(靛海金), illusiongold(幻惑金), thornsgold(树棘金), echogold(幽咆金), sturdygold(万坚金)]
+[0910月2026 18:16:03.443] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[0910月2026 18:16:03.444] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[0910月2026 18:16:03.458] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO FROM COMMON SETUP
+[0910月2026 18:16:03.458] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: DIRT BLOCK >> minecraft:dirt
+[0910月2026 18:16:03.458] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: The magic number is... 42
+[0910月2026 18:16:03.459] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: ITEM >> minecraft:iron_ingot
+[0910月2026 18:16:03.460] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[0910月2026 18:16:03.462] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] sturdygoldArmorIntervalMultiplier=1.000
+[0910月2026 18:16:03.585] [main/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[0910月2026 18:16:03.704] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23127!/assets/.mcassetsroot' uses unexpected schema
+[0910月2026 18:16:03.705] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23127!/data/.mcassetsroot' uses unexpected schema
+[0910月2026 18:16:05.100] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 1987 recipes
+[0910月2026 18:16:05.291] [main/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 1668 advancements
+[0910月2026 18:16:05.675] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.21.1
+[0910月2026 18:16:05.675] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[0910月2026 18:16:05.675] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: SURVIVAL
+[0910月2026 18:16:05.675] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[0910月2026 18:16:05.741] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25565
+[0910月2026 18:16:05.883] [Server thread/INFO] [net.minecraft.server.network.ServerConnectionListener/]: Using default channel type
+[0910月2026 18:16:05.915] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[0910月2026 18:16:05.915] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: The server will make no attempt to authenticate usernames. Beware.
+[0910月2026 18:16:05.915] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[0910月2026 18:16:05.915] [Server thread/WARN] [net.minecraft.server.dedicated.DedicatedServer/]: To change this, set "online-mode" to "true" in the server.properties file.
+[0910月2026 18:16:05.959] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "bgfix7probe"
+[0910月2026 18:16:06.524] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[0910月2026 18:16:06.744] [worldgen/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[0910月2026 18:16:06.886] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 362 ms
+[0910月2026 18:16:06.886] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (0.954s)! For help, type "help"
+[0910月2026 18:16:06.924] [Server thread/INFO] [net.neoforged.neoforge.gametest.GameTestHooks/]: Enabled Gametest Namespaces: [bettergold]
+[0910月2026 18:16:06.934] [Server thread/INFO] [net.neoforged.neoforge.server.permission.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[0910月2026 18:16:06.936] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO from server starting
+[0910月2026 18:16:06.937] [Server thread/INFO] [patchouli/]: Sending reload packet to clients
+[0910月2026 18:16:06.995] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run flag=E:\mc\mcmod\bettergold-template-1.21.1\run\bgfix7-probe.enabled cwd=E:\mc\mcmod\bettergold-template-1.21.1\run userDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[0910月2026 18:16:06.995] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE probe_world_guard :: PASS levelName=bgfix7probe expect=bgfix7probe authorWorld=新的世界
+[0910月2026 18:16:08.915] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE repo_root :: READOUT GAMEDIR=E:\mc\mcmod\bettergold-template-1.21.1\run cwd=E:\mc\mcmod\bettergold-template-1.21.1\run userDir=E:\mc\mcmod\bettergold-template-1.21.1\run ⇒ repoRoot=E:\mc\mcmod\bettergold-template-1.21.1
+[0910月2026 18:16:08.917] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE snapshot_read :: READOUT 基线 61 件读出=61 / 作者序前缀读出=21（两条都要 > 0；读不到就是「期望值没读到」，不是「产品通过」）
+[0910月2026 18:16:08.917] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE snapshot_loaded :: PASS 快照 A=61（期望 61）/ 快照 B=21（期望 21）
+[0910月2026 18:16:08.963] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_page_nonempty :: PASS getDisplayItems() 总格数=422 / 总非空格数=358（阳性对照：两条都必须 > 0）/ 第 1 个非空格子=[bettergold:alchemy_student_handbook]
+[0910月2026 18:16:08.963] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_handbook_first :: PASS 第 1 个非空格子=[bettergold:alchemy_student_handbook]（材料分区的绝对第一位 = 手册）
+[0910月2026 18:16:08.965] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE CREATIVE-MATERIAL-BEGIN 
+BGFIX7-PROBE CREATIVE-MATERIAL 1 bettergold:alchemy_student_handbook
+BGFIX7-PROBE CREATIVE-MATERIAL 2 bettergold:mixed_crystal_pile
+BGFIX7-PROBE CREATIVE-MATERIAL 3 bettergold:alchemic_fuel
+BGFIX7-PROBE CREATIVE-MATERIAL 4 bettergold:golden_bone_meal
+BGFIX7-PROBE CREATIVE-MATERIAL 5 bettergold:chaos_coin_string
+BGFIX7-PROBE CREATIVE-MATERIAL 6 bettergold:golden_mace_blank
+BGFIX7-PROBE CREATIVE-MATERIAL 7 bettergold:golden_trident_blank
+BGFIX7-PROBE CREATIVE-MATERIAL 8 bettergold:golden_bow_blank
+BGFIX7-PROBE CREATIVE-MATERIAL 9 bettergold:golden_crossbow_blank
+BGFIX7-PROBE CREATIVE-MATERIAL 10 bettergold:golden_shield_blank
+BGFIX7-PROBE CREATIVE-MATERIAL 11 bettergold:unwanted_antique
+BGFIX7-PROBE CREATIVE-MATERIAL 12 bettergold:netherite_antique_upgrade_smithing_template
+BGFIX7-PROBE CREATIVE-MATERIAL 13 bettergold:netherite_dust
+BGFIX7-PROBE CREATIVE-MATERIAL 14 bettergold:small_netherite_scrap
+BGFIX7-PROBE CREATIVE-MATERIAL 15 bettergold:golden_cowrie_mold
+BGFIX7-PROBE CREATIVE-MATERIAL 16 bettergold:gift_gold_ticket
+BGFIX7-PROBE CREATIVE-MATERIAL 17 bettergold:treasure_gift_box
+BGFIX7-PROBE CREATIVE-MATERIAL 18 bettergold:curio_box
+BGFIX7-PROBE CREATIVE-MATERIAL 19 bettergold:idol_gift_box
+BGFIX7-PROBE CREATIVE-MATERIAL 20 bettergold:gourmet_box
+BGFIX7-PROBE CREATIVE-MATERIAL 21 bettergold:alchemy_materials_box
+BGFIX7-PROBE CREATIVE-MATERIAL 22 bettergold:blazing_rod
+BGFIX7-PROBE CREATIVE-MATERIAL 23 bettergold:raw_flamegold
+BGFIX7-PROBE CREATIVE-MATERIAL 24 bettergold:flamegold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 25 bettergold:flamegold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 26 bettergold:flamegold_upgrade_template
+BGFIX7-PROBE CREATIVE-MATERIAL 27 bettergold:golden_cowrie
+BGFIX7-PROBE CREATIVE-MATERIAL 28 bettergold:raw_sturdygold
+BGFIX7-PROBE CREATIVE-MATERIAL 29 bettergold:sturdygold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 30 bettergold:sturdygold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 31 bettergold:sturdygold_upgrade_template
+BGFIX7-PROBE CREATIVE-MATERIAL 32 bettergold:glittering_vine
+BGFIX7-PROBE CREATIVE-MATERIAL 33 bettergold:raw_thornsgold
+BGFIX7-PROBE CREATIVE-MATERIAL 34 bettergold:thornsgold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 35 bettergold:thornsgold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 36 bettergold:thornsgold_upgrade_template
+BGFIX7-PROBE CREATIVE-MATERIAL 37 bettergold:bundled_echo_shard
+BGFIX7-PROBE CREATIVE-MATERIAL 38 bettergold:raw_echogold
+BGFIX7-PROBE CREATIVE-MATERIAL 39 bettergold:echogold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 40 bettergold:echogold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 41 bettergold:echogold_upgrade_template
+BGFIX7-PROBE CREATIVE-MATERIAL 42 bettergold:indigo_ocean_heart
+BGFIX7-PROBE CREATIVE-MATERIAL 43 bettergold:raw_indigoseagold
+BGFIX7-PROBE CREATIVE-MATERIAL 44 bettergold:indigoseagold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 45 bettergold:indigoseagold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 46 bettergold:indigoseagold_upgrade_template
+BGFIX7-PROBE CREATIVE-MATERIAL 47 bettergold:voodoo_feather
+BGFIX7-PROBE CREATIVE-MATERIAL 48 bettergold:raw_voodoogold
+BGFIX7-PROBE CREATIVE-MATERIAL 49 bettergold:voodoogold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 50 bettergold:voodoogold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 51 bettergold:voodoogold_upgrade_template
+BGFIX7-PROBE CREATIVE-MATERIAL 52 bettergold:amethyst_energy_dust
+BGFIX7-PROBE CREATIVE-MATERIAL 53 bettergold:raw_thundergold
+BGFIX7-PROBE CREATIVE-MATERIAL 54 bettergold:thundergold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 55 bettergold:thundergold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 56 bettergold:thundergold_upgrade_template
+BGFIX7-PROBE CREATIVE-MATERIAL 57 bettergold:chorus_cherry_branch
+BGFIX7-PROBE CREATIVE-MATERIAL 58 bettergold:raw_illusiongold
+BGFIX7-PROBE CREATIVE-MATERIAL 59 bettergold:illusiongold_ingot
+BGFIX7-PROBE CREATIVE-MATERIAL 60 bettergold:illusiongold_nugget
+BGFIX7-PROBE CREATIVE-MATERIAL 61 bettergold:illusiongold_upgrade_template
+[0910月2026 18:16:08.965] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_prefix :: READOUT 材料分区（含非金属材料）实际件数=61（逐行见上面 CREATIVE-MATERIAL 清单）
+[0910月2026 18:16:08.965] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_cells :: PASS 材料分区（METAL_MATERIALS）件数=40（反空转：应 > 0）
+[0910月2026 18:16:08.965] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_metal_order :: PASS 材料分区的金属位次单调不减（= 顺序由 METAL_ORDER 决定）件数=40
+[0910月2026 18:16:08.965] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_count :: PASS 材料分区件数=61 expect=61
+[0910月2026 18:16:08.970] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_set_equal :: PASS 集合相等（不重不漏）=true 实际件数=61 基线件数=61
+[0910月2026 18:16:08.970] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_prefix_len :: PASS 实际前缀长度=21 expect=21（N 必须 > 0）
+[0910月2026 18:16:08.970] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_prefix_21 :: PASS 前 21 件=[bettergold:alchemy_student_handbook, bettergold:mixed_crystal_pile, bettergold:alchemic_fuel, bettergold:golden_bone_meal, bettergold:chaos_coin_string, bettergold:golden_mace_blank, bettergold:golden_trident_blank, bettergold:golden_bow_blank, bettergold:golden_crossbow_blank, bettergold:golden_shield_blank, bettergold:unwanted_antique, bettergold:netherite_antique_upgrade_smithing_template, bettergold:netherite_dust, bettergold:small_netherite_scrap, bettergold:golden_cowrie_mold, bettergold:gift_gold_ticket, bettergold:treasure_gift_box, bettergold:curio_box, bettergold:idol_gift_box, bettergold:gourmet_box, bettergold:alchemy_materials_box]
+BGFIX7-PROBE 期望（作者 2026-10-08 口述序）=[bettergold:alchemy_student_handbook, bettergold:mixed_crystal_pile, bettergold:alchemic_fuel, bettergold:golden_bone_meal, bettergold:chaos_coin_string, bettergold:golden_mace_blank, bettergold:golden_trident_blank, bettergold:golden_bow_blank, bettergold:golden_crossbow_blank, bettergold:golden_shield_blank, bettergold:unwanted_antique, bettergold:netherite_antique_upgrade_smithing_template, bettergold:netherite_dust, bettergold:small_netherite_scrap, bettergold:golden_cowrie_mold, bettergold:gift_gold_ticket, bettergold:treasure_gift_box, bettergold:curio_box, bettergold:idol_gift_box, bettergold:gourmet_box, bettergold:alchemy_materials_box]
+[0910月2026 18:16:08.974] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_material_tail_40 :: PASS 第 22 件起 40 项逐条比对=true（首项=bettergold:blazing_rod expect=bettergold:blazing_rod）
+[0910月2026 18:16:08.974] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_prefix_differs_from_baseline :: PASS 改后前 21 件与改前不同=true（若相等 ⇒ 说明重排没生效，这条会红；同时说明上面几条不是自比自话）
+[0910月2026 18:16:08.974] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE creative_actual_order :: READOUT 实际位次（1..61）=[bettergold:alchemy_student_handbook, bettergold:mixed_crystal_pile, bettergold:alchemic_fuel, bettergold:golden_bone_meal, bettergold:chaos_coin_string, bettergold:golden_mace_blank, bettergold:golden_trident_blank, bettergold:golden_bow_blank, bettergold:golden_crossbow_blank, bettergold:golden_shield_blank, bettergold:unwanted_antique, bettergold:netherite_antique_upgrade_smithing_template, bettergold:netherite_dust, bettergold:small_netherite_scrap, bettergold:golden_cowrie_mold, bettergold:gift_gold_ticket, bettergold:treasure_gift_box, bettergold:curio_box, bettergold:idol_gift_box, bettergold:gourmet_box, bettergold:alchemy_materials_box, bettergold:blazing_rod, bettergold:raw_flamegold, bettergold:flamegold_ingot, bettergold:flamegold_nugget, bettergold:flamegold_upgrade_template, bettergold:golden_cowrie, bettergold:raw_sturdygold, bettergold:sturdygold_ingot, bettergold:sturdygold_nugget, bettergold:sturdygold_upgrade_template, bettergold:glittering_vine, bettergold:raw_thornsgold, bettergold:thornsgold_ingot, bettergold:thornsgold_nugget, bettergold:thornsgold_upgrade_template, bettergold:bundled_echo_shard, bettergold:raw_echogold, bettergold:echogold_ingot, bettergold:echogold_nugget, bettergold:echogold_upgrade_template, bettergold:indigo_ocean_heart, bettergold:raw_indigoseagold, bettergold:indigoseagold_ingot, bettergold:indigoseagold_nugget, bettergold:indigoseagold_upgrade_template, bettergold:voodoo_feather, bettergold:raw_voodoogold, bettergold:voodoogold_ingot, bettergold:voodoogold_nugget, bettergold:voodoogold_upgrade_template, bettergold:amethyst_energy_dust, bettergold:raw_thundergold, bettergold:thundergold_ingot, bettergold:thundergold_nugget, bettergold:thundergold_upgrade_template, bettergold:chorus_cherry_branch, bettergold:raw_illusiongold, bettergold:illusiongold_ingot, bettergold:illusiongold_nugget, bettergold:illusiongold_upgrade_template]
+[0910月2026 18:16:09.919] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE forced_chunks :: READOUT forced=0 expect=0（本轮不碰区块）
+[0910月2026 18:16:09.920] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE SUMMARY pass=12 fail=0 skip=0 aborts=[] levelName=bgfix7probe readouts=5 counts={pass=12, fail=0, skip=0}
+[0910月2026 18:16:09.920] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX7-PROBE halting
+[0910月2026 18:16:09.965] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
+[0910月2026 18:16:09.965] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
+[0910月2026 18:16:09.966] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
+[0910月2026 18:16:10.062] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[bgfix7probe]'/minecraft:overworld
+[0910月2026 18:16:10.106] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[bgfix7probe]'/minecraft:the_end
+[0910月2026 18:16:10.111] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[bgfix7probe]'/minecraft:the_nether
+[0910月2026 18:16:10.124] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (bgfix7probe): All chunks are saved
+[0910月2026 18:16:10.124] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[0910月2026 18:16:10.124] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[0910月2026 18:16:10.124] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage: All dimensions are saved

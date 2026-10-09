@@ -1,0 +1,41 @@
+﻿=== bgfix7 B 级：compileJava / runData / processResources jar --rerun-tasks + 六校验器 ===
+gradlew compileJava => EXIT=0  |  BUILD SUCCESSFUL in 1s
+gradlew runData => EXIT=0  |  BUILD SUCCESSFUL in 13s
+gradlew processResources jar --rerun-tasks => EXIT=0  |  BUILD SUCCESSFUL in 11s
+
+jar: E:\mc\mcmod\bettergold-template-1.21.1\build\libs\bettergold-1.6.0.jar  B=1360766  SHA256=305684C53E00A47A3D568376523BC69C6A506A96A27C834A989D5EA86D0A3CBB
+validate_metal_assets.py => EXIT=0  |  [bg-assets-anti-vacuum] ʵ�ʼ���� 595 �blockstates / models �����ֺ������ JSON������ > 0�� || [bg-assets-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_metal_data.py => EXIT=0  |  [bgfix7-anti-vacuum] ��������ֵ���գ����� bgfix7-creative-material-baseline.txt=True / ������ bgfix7-creative-material-prefix-order.txt=True��ȱʧ 0 �������� = 0�� || [bg-data-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_trim_assets.py => EXIT=0  |  [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0） || [bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements.py => EXIT=0  |  [bgach-ok] ���� 0 �� / �ɾ� 51 �� / criteria 125 �� / ���Լ� 102 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+check_jar_clean.py => EXIT=0  |  [jar-clean-anti-vacuum] 实际检查了 2408 项（jar 内条目数；必须 > 0） || [jar-clean-ok] 产物 jar 干净（条目 2408；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py => EXIT=0  |  [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0） || [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+validate_metal_assets.py => EXIT=0
+    [bg-assets-anti-vacuum] ʵ�ʼ���� 595 �blockstates / models �����ֺ������ JSON������ > 0��
+    [bg-assets-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_metal_data.py => EXIT=0
+    [bg-data-anti-vacuum] ʵ�ʼ���� 307 ����Լ���+ 1660 �� JSON ���ɨ���ȱʧ 0 ����������� > 0��
+    [bgfix7-anti-vacuum] ��������ֵ���գ����� bgfix7-creative-material-baseline.txt=True / ������ bgfix7-creative-material-prefix-order.txt=True��ȱʧ 0 �������� = 0��
+    [bg-data-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_trim_assets.py => EXIT=0
+    [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+    [bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements.py => EXIT=0
+    [bgach-ok] ���� 0 �� / �ɾ� 51 �� / criteria 125 �� / ���Լ� 102 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+check_jar_clean.py => EXIT=0
+    [jar-clean-anti-vacuum] 实际检查了 2408 项（jar 内条目数；必须 > 0）
+    [jar-clean-ok] 产物 jar 干净（条目 2408；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py => EXIT=0
+    [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+=== 重跑（只对齐了一处行内注释的空白；判据一字未改）===
+compileJava => EXIT=0  |  BUILD SUCCESSFUL in 2s
+processResources jar --rerun-tasks => EXIT=0  |  BUILD SUCCESSFUL in 8s
+jar: B=1360766  SHA256=7AEF90D20071CA4260C8DDAC2C3D9756F5FEC019CAFAFF2061ADACD87E39A1F9
+validate_metal_assets.py => EXIT=0
+validate_metal_data.py => EXIT=0
+validate_trim_assets.py => EXIT=0
+validate_advancements.py => EXIT=0
+check_jar_clean.py => EXIT=0
+check_forced_chunks.py => EXIT=0
