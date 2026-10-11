@@ -1,0 +1,20 @@
+改前: en 键 722 / zh 键 722 / en 字节 77803 / zh 字节 73721
+旧 en 值(104 字) '把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。'
+新 en 值(294 字) 'Smelt "noble gold" raw material into ingots in a furnace or blast furnace to make building blocks (ingot block / bricks / pillar / stairs / slab / brick wall / bars / door / trapdoor / chain / lantern), or combine them with the matching core material\'s smithing template to upgrade golden gear.'
+PASS no-bom :: en 无 BOM
+PASS lf :: en 无 CR（LF）
+PASS eof-eol :: 文件结尾换行状态未变（改前 ends_with_LF=False）
+PASS key-count :: 键数未变（722）
+PASS order-kept :: 全部键的先后顺序逐位未变
+PASS zh-untouched :: zh_cn.json 0 字节改动（SHA256 695FA5A5347E1165）
+PASS only-target-changed :: 只有目标键的值变了（差异 = ['bettergold.handbook.page.knowledge_1_summary']）
+PASS new-en-verbatim :: 目标键 == 新英文逐字（294 字）
+PASS en!=zh :: 目标键的 en != zh
+PASS no-cjk :: 目标键的 en 里没有中日韩文字
+PASS no-empty :: 目标键的 en 非空
+PASS rest-frozen :: 其余 721 个键的值逐字未变（未变动子集 SHA256 f41ad23d41d882a0f35c3bbb1c8ec5b7）
+AFTER-SHA 07AA2FA07EDD8942FA8CD8BFA441EFEA8BB2740E1532BB1D60143FF27097768F
+BEFORE-SHA 7A7156E8D83C03BE9916D10A78AA8951FEF66F69F760AFADA2DB16E5433F1E57
+REST-SUBSET-SHA F41AD23D41D882A0F35C3BBB1C8EC5B72F124B25F8666EBFB6529219D00BAFC7
+BYTES 77803 -> 77849
+RESULT ALL-PASS

@@ -1,0 +1,221 @@
+package com.hjmmd_8.bettergold.probe.bgfix11;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.regex.Pattern;
+
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.locale.Language;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * bgfix11 A 级**客户端**探针（一次性；收尾整块删除）。
+ *
+ * <p>要证的一件事：<b>`bettergold.handbook.page.knowledge_1_summary` 在游戏里真的解析成新的英文</b>
+ * —— 读的是 {@link I18n} 的解析值（= {@code Language.getInstance().getOrDefault(key)}），
+ * 不是我自己再解析一遍 JSON。</p>
+ *
+ * <p>口径（源码依据，本机 patched sources；与 bgfix10 §31.9 同一套）：</p>
+ * <ul>
+ *   <li>{@code LanguageManager#onResourceManagerReload} 装载的清单是
+ *       <b>{@code ["en_us", 当前语言]}</b>，而 {@code ClientLanguage.loadFrom} 是 {@code map.putAll(...)}
+ *       逐语言**覆盖** ⇒ <b>当前语言优先、en_us 兜底</b>。</li>
+ *   <li>⇒ 要看英文就必须把当前语言切到 {@code en_us}；探针在内存里切
+ *       （{@code Options.languageCode} + {@code LanguageManager#setSelected} +
+ *       {@code Minecraft#reloadResourcePacks}），**跑完按 PID 杀进程** ⇒ {@code options.txt} 不会被写回。</li>
+ *   <li>★ 本轮比上一轮多一步：**先读 en、再把语言切回 {@code zh_cn} 读一次 zh**
+ *       ⇒ 可以在游戏里直接断言 <b>en != zh</b>（不是拿硬盘上的 JSON 自比）。</li>
+ *   <li>⚠ **不进任何世界**：打上开关文件后启动客户端、停在标题界面即可
+ *       ⇒ 完全避开"载入/重写作者存档"这条红线（{@code run/saves} 里只有作者那份
+ *       {@code 新的世界}）。</li>
+ * </ul>
+ *
+ * <p>开关文件：{@code run/bgfix11-probe.enabled}（跑前删除 ⇒ 探针不动作）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgFix11Probe {
+
+    private static final String TAG = "BGFIX11-PROBE";
+    private static final String SWITCH = "bgfix11-probe.enabled";
+    private static final String DONE = "bgfix11-probe.done";
+    /** en_us.json 的键数（722）—— 语言表里所有含 `bettergold` 的键都该来自这一份 */
+    private static final int EXPECT_BG_KEYS = 722;
+
+    private static final String KEY = "bettergold.handbook.page.knowledge_1_summary";
+    /** 本轮定的新英文（= `docs/1.6-规格.md` §31.10.1 的逐字值 / 关卡 `_BGFIX11_K1S_NEW_EN`） */
+    private static final String EXPECT_EN =
+            "Smelt \"noble gold\" raw material into ingots in a furnace or blast furnace to make building"
+            + " blocks (ingot block / bricks / pillar / stairs / slab / brick wall / bars / door / trapdoor"
+            + " / chain / lantern), or combine them with the matching core material's smithing template to"
+            + " upgrade golden gear.";
+    /** zh 那一侧的现行值（作者那份 = 唯一真源；探针顺便证明"两侧真的不一样"）
+     *  ⚠ 字面量由 `probe/bgfix11/gen_expect_zh.py` 生成、再由 `check_probe_literals.py` 逐字复核
+     *  （手抄过一次 `\u6805`（栅）而正确是 `\u680f`（栏）—— 所以不许手抄）。 */
+    private static final String EXPECT_ZH =
+            "\u628a\"\u8d35\u91d1\"\u539f\u6599\u4e22\u8fdb\u7194\u7089\u6216\u9ad8\u7089\u70e7\u6210\u952d"
+            + "\uff0c\u5373\u53ef\u5236\u6210\u5efa\u6750\uff08\u5efa\u7b51\u65b9\u5757\uff1a\u952d\u5757"
+            + " / \u7816\u5757 / \u67f1 / \u697c\u68af / \u53f0\u9636 / \u7816\u5899 / \u680f\u6746 / \u95e8"
+            + " / \u6d3b\u677f\u95e8 / \u94fe / \u706f\u7b3c\uff09\uff0c\u6216\u4e0e\u5176\u5bf9\u5e94\u6838"
+            + "\u5fc3\u6750\u6599\u505a\u6210\u7684\u953b\u9020\u6a21\u7248\u5347\u7ea7\u91d1\u88c5\u5907"
+            + "\u3002";
+
+    private static final Pattern CJK = Pattern.compile("[\u3400-\u9fff\uf900-\ufaff]");
+
+    private static int tick = 0;
+    private static int armedTick = 0;
+    /** 0=等第一个 tick；1=等 en 装载；2=等切回 zh；3=已出结果 */
+    private static int phase = 0;
+    private static String enVal = null;
+    private static String zhVal = null;
+
+    private BgFix11Probe() {
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        try {
+            step();
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} tick={} \u629b\u5f02\u5e38", TAG, tick, t);
+            for (StackTraceElement e : t.getStackTrace()) {
+                bettergold.LOGGER.error("{}   at {}", TAG, e);
+            }
+        }
+    }
+
+    private static void step() throws IOException {
+        Path gamedir = FMLPaths.GAMEDIR.get();
+        if (!Files.isRegularFile(gamedir.resolve(SWITCH))) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        tick++;
+
+        if (phase == 0 && tick >= 20 && mc.getLanguageManager() != null) {
+            readout("probe_armed", "gamedir=" + gamedir
+                    + " selected_before=" + mc.getLanguageManager().getSelected()
+                    + " options_lang_before=" + mc.options.languageCode);
+            switchTo(mc, "en_us");
+            readout("switch_to_en_us", "requested at tick=" + tick);
+            phase = 1;
+            armedTick = tick;
+            return;
+        }
+
+        if (phase == 1 && tick >= armedTick + 100 && tick % 20 == 0) {
+            int n = countBgKeys();
+            if (n != EXPECT_BG_KEYS || !"en_us".equals(mc.getLanguageManager().getSelected())) {
+                readout("waiting_reload_en", "tick=" + tick + " selected="
+                        + mc.getLanguageManager().getSelected() + " bg_keys=" + n);
+                return;
+            }
+            enVal = I18n.get(KEY);
+            readout("en_us_readout", "bg_keys=" + n + " len=" + enVal.length()
+                    + " head=" + esc(enVal.substring(0, Math.min(80, enVal.length()))));
+            switchTo(mc, "zh_cn");
+            phase = 2;
+            armedTick = tick;
+            return;
+        }
+
+        if (phase == 2 && tick >= armedTick + 100 && tick % 20 == 0) {
+            int n = countBgKeys();
+            if (!"zh_cn".equals(mc.getLanguageManager().getSelected()) || n != EXPECT_BG_KEYS) {
+                readout("waiting_lang_back", "tick=" + tick + " selected="
+                        + mc.getLanguageManager().getSelected() + " bg_keys=" + n);
+                return;
+            }
+            zhVal = I18n.get(KEY);
+            phase = 3;
+            int pass = 0;
+            int fail = 0;
+
+            // ① 装载面：语言表里含 `bettergold` 的键数 == en_us.json 的键数（反空转锚点）
+            boolean a = n == EXPECT_BG_KEYS;
+            pass += a ? 1 : 0;
+            fail += a ? 0 : 1;
+            readout("lang_state " + (a ? "PASS" : "FAIL"), "selected=en_us->zh_cn / bg_keys=" + n
+                    + " expect=" + EXPECT_BG_KEYS);
+
+            // ② en 解析值 == 本轮钉死的新英文（逐字）
+            boolean b = EXPECT_EN.equals(enVal);
+            pass += b ? 1 : 0;
+            fail += b ? 0 : 1;
+            readout("en_verbatim " + (b ? "PASS" : "FAIL"), "len=" + enVal.length()
+                    + " en=" + esc(enVal) + (b ? "" : " EXPECT=" + esc(EXPECT_EN)));
+
+            // ③ en 非空
+            boolean c = !enVal.trim().isEmpty();
+            pass += c ? 1 : 0;
+            fail += c ? 0 : 1;
+            readout("en_not_empty " + (c ? "PASS" : "FAIL"), "len=" + enVal.length());
+
+            // ④ en 里没有中日韩文字（= 不是把中文拷进英文）
+            boolean d = !CJK.matcher(enVal).find();
+            pass += d ? 1 : 0;
+            fail += d ? 0 : 1;
+            readout("en_no_cjk " + (d ? "PASS" : "FAIL"), "cjk=" + CJK.matcher(enVal).find());
+
+            // ⑤ 游戏里 en != zh（两侧真的不一样 —— 缺陷的判据本体）
+            boolean e = !enVal.equals(zhVal);
+            pass += e ? 1 : 0;
+            fail += e ? 0 : 1;
+            readout("en_ne_zh " + (e ? "PASS" : "FAIL"), "zh_len=" + zhVal.length()
+                    + " zh=" + esc(zhVal));
+
+            // ⑥ zh 那一侧仍是作者那份中文（证明"两侧确实读的是两套语言"，不是同一个表读了两遍）
+            boolean f = EXPECT_ZH.equals(zhVal);
+            pass += f ? 1 : 0;
+            fail += f ? 0 : 1;
+            readout("zh_author_verbatim " + (f ? "PASS" : "FAIL"), "zh=" + esc(zhVal)
+                    + (f ? "" : " EXPECT=" + esc(EXPECT_ZH)));
+
+            readout("RESULT", "pass=" + pass + " fail=" + fail + " tick=" + tick);
+            Files.write(gamedir.resolve(DONE),
+                    ("done tick=" + tick + " pass=" + pass + " fail=" + fail + "\n")
+                            .getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    private static void switchTo(Minecraft mc, String code) {
+        mc.options.languageCode = code;
+        mc.getLanguageManager().setSelected(code);
+        mc.reloadResourcePacks();
+    }
+
+    private static int countBgKeys() {
+        int n = 0;
+        for (String k : Language.getInstance().getLanguageData().keySet()) {
+            if (k.contains("bettergold")) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    private static void readout(String name, String value) {
+        bettergold.LOGGER.info("{} {} :: {}", TAG, name, value);
+    }
+
+    /** 非 ASCII 一律转 \\uXXXX（探针输出不许依赖控制台编码） */
+    private static String esc(String s) {
+        StringBuilder sb = new StringBuilder(s.length() + 8);
+        for (char c : s.toCharArray()) {
+            if (c >= 32 && c < 127) {
+                sb.append(c);
+            } else {
+                sb.append(String.format("\\u%04x", (int) c));
+            }
+        }
+        return sb.toString();
+    }
+}

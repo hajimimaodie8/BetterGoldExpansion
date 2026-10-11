@@ -3,7 +3,9 @@
 """校验：MetalFamily 会注册出来的每个物品/方块，在 zh_cn / en_us 里是否都有语言条目。
 
 ==================== 关卡退出码契约（bgfix6，2026-10-08）====================
-  0 = 全绿；1 = 有「问题」（文件末尾 `_EXIT_PROBLEM_LISTS` 里 24 个列表任一非空）；
+  0 = 全绿；1 = 有「问题」（文件末尾 `_EXIT_PROBLEM_LISTS` 里 29 个列表任一非空；
+      ⚠ 原文写的是「24 个」—— bgfix7~bgfix11 又加了 5 个列表而那句没跟着改，
+      **bgfix11 就地更正为 29**，旧数字留档在此，判定口径一字未动）；
   2 = 基线被破坏 / 前置缺失 / 脚本自身出错（扫描根目录不在、**实际检查项数 = 0**、
       未捕获异常）。★ 任何未捕获异常都不许变成 0；顶层兜底一律转成 2。
   ★ 反空转：必须打印「实际检查了 N 项」并断言 N > 0。
@@ -5611,11 +5613,23 @@ print(f"bgfix9（金玫瑰丛 × 金染土）问题: {len(bgfix9_problems)} {bgf
 #   「除 20 个删除键与 6 个改值键之外的 716 个键」的规范化 SHA256
 #   （`"<键>\t<值>\n"` 排序拼接）。**改前 / 改后算出来必须是同一个值**（改后那条由 apply 脚本先证过）。
 #   ⇒ 谁动了这 716 个键里的任何一个（哪怕改回中文），这条当场红；要动就**显式改这个常量并记账**。
+#   ★★ **bgfix11 就地补记（2026-10-11；旧口径原文不删）**：`knowledge_1_summary` 这一轮被修
+#     （en 值由「中文原文」→ §31.7 的建议英文）⇒ 它**退出**"未变动子集"，子集 **716 → 715 键**。
+#     旧常量（原文留档在下面两行注释里，未删，= 含该键的 716 键基线）：
+#       `_BGFIX10_UNTOUCHED_SHA = "B96C5E7E9FD0D9005C62BCF14CF80BD72F287B2A6A83B88DA368B01EA3BAD15E"`
+#       `_BGFIX10_UNTOUCHED_N = 716`
+#     反证（本轮实测，脚本 `docs/bgfix11-证据/脚本副本/verify_old_baseline.py`）：拿**改前冻结副本**
+#     （`docs/bgfix11-证据/08-en_us-改前冻结副本.json`）用同一个排除集复算 ⇒ 逐位 == 上面那个旧常量 / 716 键
+#     ⇒ 排除集本身没写错，变的只是"子集里少了一个键"。
+#     ⚠ 探针目录 `probe/bgfix11/` 收尾按探针铁律**整块删除** ⇒ 一切一次性脚本/冻结副本从证据目录取。
 _BGFIX10_EN_BEFORE_SHA = "B39CF06901319D9BAEDD4E202DC1EF14F78596DEAEF3580D958D575927E83A36"
 _BGFIX10_EN_AFTER_SHA = "7A7156E8D83C03BE9916D10A78AA8951FEF66F69F760AFADA2DB16E5433F1E57"
 _BGFIX10_ZH_SHA = "695FA5A5347E1165F431A204D8CA6F1965D9D136DA0F4D560F299E8B3C972810"
-_BGFIX10_UNTOUCHED_SHA = "B96C5E7E9FD0D9005C62BCF14CF80BD72F287B2A6A83B88DA368B01EA3BAD15E"
-_BGFIX10_UNTOUCHED_N = 716
+_BGFIX10_UNTOUCHED_SHA = "68A5441020CB829DD2ED9EC435E627461AFF1EEFE567213B7528E21889588E1C"
+_BGFIX10_UNTOUCHED_N = 715
+# ★ bgfix11（2026-10-11）：本轮修的键（**退出**"未变动子集"；断言见本节 ⑥）
+_BGFIX11_FIXED = ("bettergold.handbook.page.knowledge_1_summary",)
+_BGFIX11_EN_AFTER_SHA = "07AA2FA07EDD8942FA8CD8BFA441EFEA8BB2740E1532BB1D60143FF27097768F"
 # 20 个作废键（作者 2026-10-11 从 zh 里删掉 ⇒ en 跟着删；两侧都不许再出现）
 _BGFIX10_REMOVED = (
     "%s.entry.metal_tour" % "bettergold.handbook", "%s.entry.upgrade_templates" % "bettergold.handbook",
@@ -5661,11 +5675,20 @@ _BGFIX10_CHANGED = {
         "on to the \"〔待补〕\" chapter for that, thank you (this antique can also be found in Ancient "
         "City chests)."),
 }
-# ⚠ **唯一例外**：`bettergold.handbook.page.knowledge_1_summary` 的 **en 值就是中文原文**
-#   —— 这是**改前就存在**的既有缺陷（bgfix10 三方比对时发现；它**不在**本轮 6 条改值清单里，
-#     按"未变动的键一个字都不动"的红线**本轮未动**），已单列给作者裁定（见 §31 的"未决"一节）。
-#   ⇒ 谁把它修好，就把这一行从例外表里删掉（**不是**把缺陷写成契约）。
-_BGFIX10_CJK_OK = {"bettergold.handbook.page.knowledge_1_summary"}
+# ⚠ **旧口径（原文留档在下面，一行未删）—— 当时那张「唯一例外」表**：
+#   `bettergold.handbook.page.knowledge_1_summary` 的 **en 值就是中文原文**（== zh 逐字相同）
+#   —— 这是**改前就存在**的既有缺陷（bgfix10 三方比对时发现；它**不在**那一轮 6 条改值清单里，
+#     按"未变动的键一个字都不动"的红线当时**未动**），已单列给作者裁定（§31.7 / §31.8）。
+#   当时的落法 = 把它列成 `[bgfix10-lang-en-not-zh]` 的**唯一例外**（注释里写明"这是既有缺陷、
+#   不是把缺陷写成契约；谁修好就把这一行删掉"），旧代码原文逐字如下：
+#     _BGFIX10_CJK_OK = {"bettergold.handbook.page.knowledge_1_summary"}
+#   ★★ **bgfix11（2026-10-11）已修 ⇒ 例外表整体删除**（缺陷修好就不该再留例外）：
+#     ① 上面这行常量**已从代码里删掉**（只作为留档注释存在）；
+#     ② 循环里那句 `if _bg10_k in _BGFIX10_CJK_OK: continue` 也**已删** ⇒ 现行
+#        `[bgfix10-lang-en-not-zh]` 对 **722 个键一个不例外**地跑全域 CJK 检测；
+#     ③ 该键的新英文由 `[bgfix11-lang-k1s-en]` 逐字钉死（见本节 ⑥）；
+#     ④ "例外表不许再回来"由 `[bgfix11-lang-exception-gone]` 在**去注释源码**上负向守着
+#        （⚠ 本条不能在本文件**含注释**的原文上判：上面那段留档注释里逐字写着旧代码）。
 # 占位标记：这两条本身就该是"占位"（不影响"en 不许含中文"的判定）
 _BGFIX10_PLACEHOLDERS = (u"〔待补〕", u"（作者未指定）", u"（作者未给，待补）")
 
@@ -5696,8 +5719,8 @@ for _bg10_name, _bg10_tab in (("zh_cn", zh), ("en_us", en)):
                      "%s 有空值 %d 条：%s" % (_bg10_name, len(_bg10_empty), _bg10_empty[:5]))
 _bg10_cjk = re.compile(u"[\u3400-\u9fff\uf900-\ufaff]")
 for _bg10_k, _bg10_v in en.items():
-    if _bg10_k in _BGFIX10_CJK_OK:
-        continue
+    # ★ bgfix11：这里原先有一句 `if _bg10_k in _BGFIX10_CJK_OK: continue`（例外表），
+    #   缺陷修好后**已删** ⇒ 现在对 en 的每一个键都跑 CJK 检测，**零例外**。
     _bg10_t = str(_bg10_v)
     for _bg10_ph in _BGFIX10_PLACEHOLDERS:
         _bg10_t = _bg10_t.replace(_bg10_ph, "")
@@ -5706,7 +5729,8 @@ for _bg10_k, _bg10_v in en.items():
                      "en 值里出现中日韩文字（把中文原文拷进英文了）：%s = %r" % (_bg10_k, _bg10_v))
 
 # ---------- ③ 未变动的键**逐字未变**（冻结基线）----------
-_bg10_excl = set(_BGFIX10_REMOVED) | set(_BGFIX10_CHANGED)
+# ⚠ bgfix11：`_BGFIX11_FIXED` 里的键**也**排除（本轮被修 ⇒ 它不该再被当成"未变动"）→ 715 键
+_bg10_excl = set(_BGFIX10_REMOVED) | set(_BGFIX10_CHANGED) | set(_BGFIX11_FIXED)
 
 
 def _bgfix10_subset_hash(_tab):
@@ -5768,6 +5792,103 @@ for _bg10_needle, _bg10_why in (
     if _bg10_needle not in _bgfix_spec:
         _bgfix10_bad("bgfix10-doc", "%s（缺 %s）" % (_bg10_why, _bg10_needle))
 
+# ---------- ⑥ bgfix11（2026-10-11）：`knowledge_1_summary` 的 en 补真英文（§31.7 那条既有缺陷已修）----------
+#
+# 作者原话：「**需要改善一下，没必要**」⇒ 父代理解读（本轮照此执行）：
+#   * 「需要改善」 = **修**：这条键的 **en 值原先就是中文原文**（bgfix10 §31.7 发现、按
+#     "未变动的键一个字都不动"的红线当时未动）⇒ 现在补上**真英文**；
+#   * 「没必要」   = **不改**：`trim_material.bettergold.unwanted_antique` **不加** `Material` 后缀、
+#     成就标题 `The Drummer on Stage Sure Packs a Punch` **保持**（只列备选，不改）。
+# 新英文 = `docs/1.6-规格.md` §31.7 的**建议英文逐字采纳**（不新造译名；术语依据见 §31.10）。
+#
+# 本条守四件事：① 该键的 en **非空 / 非中文 / ≠ zh / == 新英文**（逐字钉死，含反空转）；
+#              ② zh 那一侧**一个字节都没动**（作者那份 = 唯一真源，按**文件 SHA256** 判）；
+#              ③ 「已知缺陷例外表」**不许再存在**（★ **去注释源码**上的负向断言）；
+#              ④ 旧代码原文**必须仍留档在注释里**（★ **原始源码**上的正向断言）+ 文档侧落档。
+bgfix11_problems: list[str] = []
+
+
+def _bgfix11_bad(tag, msg):
+    bgfix11_problems.append("[%s] %s" % (tag, msg))
+
+
+_BGFIX11_K1S = _BGFIX11_FIXED[0]
+# 旧 en 值（== zh 逐字相同；既有缺陷的原文，留档不删）
+_BGFIX11_K1S_OLD_EN = (u"把\"贵金\"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / "
+                       u"台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。")
+# 新 en 值（§31.7 的建议英文**逐字**；与 `docs/bgfix11-证据/脚本副本/apply_en.py` 里的 NEW_EN 同源）
+_BGFIX11_K1S_NEW_EN = ("Smelt \"noble gold\" raw material into ingots in a furnace or blast furnace to make building "
+                       "blocks (ingot block / bricks / pillar / stairs / slab / brick wall / bars / door / trapdoor / "
+                       "chain / lantern), or combine them with the matching core material's smithing template to "
+                       "upgrade golden gear.")
+
+_bg11_v = en.get(_BGFIX11_K1S)
+_bg11_zh_v = zh.get(_BGFIX11_K1S)
+# 反空转：本轮只修 1 条键；钉死的新英文不许被截断
+if len(_BGFIX11_FIXED) != 1:
+    _bgfix11_bad("bgfix11-lang-k1s-en", "本轮修的键清单不是 1 条（反空转守护）")
+if len(_BGFIX11_K1S_NEW_EN) < 250:
+    _bgfix11_bad("bgfix11-lang-k1s-en",
+                 "钉死的新英文只有 %d 字（< 250 ⇒ 常量被截断，反空转守护）" % len(_BGFIX11_K1S_NEW_EN))
+if len(_BGFIX11_K1S_OLD_EN) < 50:
+    _bgfix11_bad("bgfix11-lang-k1s-en",
+                 "留档的旧中文只有 %d 字（< 50 ⇒ 留档被截断，反空转守护）" % len(_BGFIX11_K1S_OLD_EN))
+if _bg11_v is None:
+    _bgfix11_bad("bgfix11-lang-k1s-en", "%s 不在 en_us.json 里" % _BGFIX11_K1S)
+else:
+    _bg11_v = str(_bg11_v)
+    if not _bg11_v.strip():
+        _bgfix11_bad("bgfix11-lang-k1s-en", "%s 的 en 值是空串" % _BGFIX11_K1S)
+    if _bg10_cjk.search(_bg11_v):
+        _bgfix11_bad("bgfix11-lang-k1s-en",
+                     "%s 的 en 值里仍有中日韩文字（没真的译）：%r" % (_BGFIX11_K1S, _bg11_v))
+    if _bg11_v == str(_bg11_zh_v):
+        _bgfix11_bad("bgfix11-lang-k1s-en",
+                     "%s 的 en 值与 zh 逐字相同（等于没译）" % _BGFIX11_K1S)
+    if _bg11_v == _BGFIX11_K1S_OLD_EN:
+        _bgfix11_bad("bgfix11-lang-k1s-en",
+                     "%s 的 en 值还是旧的中文原文（缺陷没被修）" % _BGFIX11_K1S)
+    if _bg11_v != _BGFIX11_K1S_NEW_EN:
+        _bgfix11_bad("bgfix11-lang-k1s-en",
+                     "%s 的 en 值不是本轮钉死的新英文（实际 %r）" % (_BGFIX11_K1S, _bg11_v))
+# ② zh 侧没被动过：**文件级** SHA256（作者那份 = 唯一真源；@ 该常量原先只是仪表盘，这一轮开始被断言使用）
+_bg11_zh_sha = hashlib.sha256((LANG / "zh_cn.json").read_bytes()).hexdigest().upper()
+if _bg11_zh_sha != _BGFIX10_ZH_SHA:
+    _bgfix11_bad("bgfix11-lang-k1s-en",
+                 "zh_cn.json 的 SHA256 = %s（作者那一份是 %s）—— zh 侧被动过了"
+                 % (_bg11_zh_sha[:32], _BGFIX10_ZH_SHA[:32]))
+if _bg11_zh_v != _BGFIX11_K1S_OLD_EN:
+    _bgfix11_bad("bgfix11-lang-k1s-en",
+                 "zh 侧这句不再是旧中文（作者改了 zh 就要同步更新本断言）：%r" % (_bg11_zh_v,))
+
+# ③ 「已知缺陷例外表」不许再存在 —— ★ 判据跑在**去注释源码**上。
+#   ⚠ 本条**不能**在本文件"含注释"的原文上判：那段留档注释里**逐字写着**旧代码（要求 ④ 就是它）。
+#   ⚠⚠ 自指陷阱：本断言的 needle **不能**在代码里连续出现（否则它自己喂饱自己）⇒ 用拼接构造。
+_bg11_self_raw = Path(__file__).read_text(encoding="utf-8")
+_bg11_self_nc = re.sub(r"#[^\n]*", "", _bg11_self_raw)
+_bg11_exc_token = "_BGFIX10_" + "CJK_OK"
+_bg11_old_code = "_BGFIX10_" + "CJK_OK = {\"bettergold.handbook.page.knowledge_1_summary\"}"
+if _bg11_exc_token in _bg11_self_nc:
+    _bgfix11_bad("bgfix11-lang-exception-gone",
+                 "关卡里仍有「已知缺陷例外」表（去注释源码里找到 %s）—— 缺陷修好就不该再留例外"
+                 % _bg11_exc_token)
+# ④ 旧代码原文必须仍留档在**注释**里（原文上的正向断言；"旧口径就地标注、原文不删"）
+if _bg11_old_code not in _bg11_self_raw:
+    _bgfix11_bad("bgfix11-lang-exception-gone",
+                 "旧例外表的代码原文没有留档在注释里（要求：旧口径就地标注、原文不删）")
+# ⑤ 文档侧：§31.10 必须把「新英文 + 旧值留档 + 术语依据」落档
+for _bg11_needle, _bg11_why in (
+        (u"Smelt \"noble gold\" raw material into ingots", u"§31 里没有本轮定的新英文（真源没落档）"),
+        (u"bgfix11", u"docs/1.6-规格.md 里没有 bgfix11 这一轮的节"),
+        (u"已修", u"§31.7 那条既有缺陷没有标注成「已修」")):
+    if _bg11_needle not in _bgfix_spec:
+        _bgfix11_bad("bgfix11-doc", "%s（缺 %s）" % (_bg11_why, _bg11_needle))
+
+print(f"bgfix11（en 补真英文：knowledge_1_summary 由中文 → 真英文）问题: {len(bgfix11_problems)}"
+      f" {bgfix11_problems[:4]}（该键 en {len(_BGFIX11_K1S_NEW_EN)} 字 / zh {len(_BGFIX11_K1S_OLD_EN)} 字"
+      f" / 未变动子集 {len(_bg10_untouched)} 键 / 子集 SHA256 {_bg10_hash[:16]}"
+      f" / en {_BGFIX10_EN_AFTER_SHA[:8]} → {_BGFIX11_EN_AFTER_SHA[:8]}）")
+
 print(f"bgfix10（作者替换 zh ⇒ en 同步：6 改值 / 20 删键 / 键集一致）问题: {len(bgfix10_problems)}"
       f" {bgfix10_problems[:4]}（en {len(en)} 键 / zh {len(zh)} 键 / 未变动子集 {len(_bg10_untouched)} 键"
       f" / 子集 SHA256 {_bg10_hash[:16]}；en 改前 {_BGFIX10_EN_BEFORE_SHA[:8]} → 改后 {_BGFIX10_EN_AFTER_SHA[:8]}）")
@@ -5778,7 +5899,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfinal_problems, bgappend_problems, bgfix2_problems, bgbook8_problems,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
-                       bgfix9_problems, bgfix10_problems,
+                       bgfix9_problems, bgfix10_problems, bgfix11_problems,
                        symmetric_problems, beacon_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags

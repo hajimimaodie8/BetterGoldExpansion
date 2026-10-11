@@ -1,0 +1,4 @@
+== 跑客户端之前 / 之后的 run\ 状态（作者存档零改动）==
+options.txt SHA256 = 00F98FCF8739CBF3E4684767922192B46623E6A135972EEFB817211007044284（lang:zh_cn）
+run/saves:
+  新的世界 files=29 last_mtime=2026-10-09 18:48:14

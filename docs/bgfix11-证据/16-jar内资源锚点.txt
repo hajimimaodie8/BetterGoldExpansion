@@ -1,0 +1,6 @@
+== jar 内资源与探针残留核对（bettergold-1.6.0.jar）==
+jar 条目数 = 2409
+jar 内 assets/bettergold/lang/en_us.json 的 SHA256 = 07AA2FA07EDD8942FA8CD8BFA441EFEA8BB2740E1532BB1D60143FF27097768F
+工作区该文件的 SHA256                        = 07AA2FA07EDD8942FA8CD8BFA441EFEA8BB2740E1532BB1D60143FF27097768F
+*probe* / *Probe* 条目 = 0 []
+jar 内该键的解析值 = 'Smelt "noble gold" raw material into ingots in a furnace or blast furnace to make building blocks (ingot block / bricks / pillar / stairs / slab / brick wall / bars / door / trapdoor / chain / lantern), or combine them with the matching core material\'s smithing template to upgrade golden gear.'

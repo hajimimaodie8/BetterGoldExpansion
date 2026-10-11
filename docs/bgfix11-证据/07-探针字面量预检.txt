@@ -1,0 +1,7 @@
+== 跑客户端**之前**的逐字预检（防「手抄码位」造成假 FAIL）==
+exit=1
+Traceback (most recent call last):
+  File "E:\mc\mcmod\bettergold-template-1.21.1\probe\bgfix11\check_probe_literals.py", line 12, in <module>
+    src = open(JAVA, encoding="utf-8").read()
+          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'src/main/java/com/hjmmd_8/bettergold/probe/bgfix11/BgFix11Probe.java'

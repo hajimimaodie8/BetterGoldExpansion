@@ -1,0 +1,28 @@
+== 构建（bgfix11 最终产物，探针已整块删除）==
+BUILD SUCCESSFUL in 5s
+
+== 六校验器（判据 = exit + 关键计数两列）==
+--- validate_metal_assets.py（exit 0 / 契约 0 绿 · 1 有问题 · 2 前置坏）
+    bgfinal3 授权色卡（靛海金纹饰）问题: 0 []
+    [bg-assets-anti-vacuum] 实际检查了 595 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+    [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+--- validate_metal_data.py（exit 0 / 契约 0 绿 · 1 有问题 · 2 前置坏）
+    bgfix11（en 补真英文：knowledge_1_summary 由中文 → 真英文）问题: 0 []（该键 en 294 字 / zh 104 字 / 未变动子集 715 键 / 子集 SHA256 68a5441020cb829d / en 7A7156E8 → 07AA2FA0）
+    bgfix10（作者替换 zh ⇒ en 同步：6 改值 / 20 删键 / 键集一致）问题: 0 []（en 722 键 / zh 722 键 / 未变动子集 715 键 / 子集 SHA256 68a5441020cb829d；en 改前 B39CF069 → 改后 7A7156E8）
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+--- validate_trim_assets.py（exit 0 / 契约 0 绿 · 1 有问题 · 2 前置坏）
+    [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+    OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+    [bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+--- validate_advancements.py（exit 0 / 契约 0 绿 · 1 有问题 · 2 前置坏）
+    OK [bgach] 物品引用 122 个（含 11 张本模组标签）全部存在于注册表真源；食物清单与 Java 真源逐条一致
+    OK [bgfinal-adv-lang] 102 条英文值全部是真英译（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 0 条）
+    [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+--- check_jar_clean.py（exit 0 / 契约 0 绿 · 1 有问题 · 2 前置坏）
+    jar 内文件总数 = 2409
+    [jar-clean-anti-vacuum] 实际检查了 2409 项（jar 内条目数；必须 > 0）
+    [jar-clean-ok] 产物 jar 干净（条目 2409；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+--- check_forced_chunks.py（exit 0 / 契约 0 绿 · 1 有问题 · 2 前置坏）
+    chunks.dat 侧 forceload 为 0 = True
+    [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）

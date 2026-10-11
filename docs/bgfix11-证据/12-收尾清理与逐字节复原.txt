@@ -1,0 +1,23 @@
+== 形态与哈希 ==
+en_us.json                                                 bytes=77849   CRLF=0    BOM=False ends_nl=False sha=07AA2FA07EDD8942  utf-8 OK
+zh_cn.json                                                 bytes=73721   CRLF=0    BOM=False ends_nl=False sha=695FA5A5347E1165  utf-8 OK
+validate_metal_data.py                                     bytes=393679  CRLF=0    BOM=False ends_nl=True  sha=73174E17E5590632  utf-8 OK
+1.6-规格.md                                                  bytes=568021  CRLF=0    BOM=False ends_nl=True  sha=5D7C541ACA9DDB23  utf-8 OK
+
+== en_us.json 目标键 ==
+en == zh ? False
+en 含 CJK ? False
+en 值 = 'Smelt "noble gold" raw material into ingots in a furnace or blast furnace to make building blocks (ingot block / bricks / pillar / stairs / slab / brick wall / bars / door / trapdoor / chain / lantern), or combine them with the matching core material\'s smithing template to upgrade golden gear.'
+键数 en=722 zh=722 键集一致=True
+
+== 探针残留（生产代码）==
+src/ 下探针命中 = 0 []
+probe/ 目录存在 = False
+run/ 下 bgfix11* 文件 = []
+'halt(' 在生产代码（src/main/java）里的出现次数 = 0
+
+== 关卡终检（validate_metal_data.py）==
+exit = 0
+  bgfix11（en 补真英文：knowledge_1_summary 由中文 → 真英文）问题: 0 []（该键 en 294 字 / zh 104 字 / 未变动子集 715 键 / 子集 SHA256 68a5441020cb829d / en 7A7156E8 → 07AA2FA0）
+  bgfix10（作者替换 zh ⇒ en 同步：6 改值 / 20 删键 / 键集一致）问题: 0 []（en 722 键 / zh 722 键 / 未变动子集 715 键 / 子集 SHA256 68a5441020cb829d；en 改前 B39CF069 → 改后 7A7156E8）
+  [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）

@@ -1,0 +1,16 @@
+基线 SHA256: en=07AA2FA07EDD8942 zh=695FA5A5347E1165 val=73174E17E5590632
+基线 exit=0（期望 0）
+P P1 en 值改回中文                                exit=1   expect=1 OK  ids={'[bgfix11-lang-k1s-en]': True, '[bgfix10-lang-en-not-zh]': True} restore=OK (1.2s)  -> PASS
+P P2 en 值改成空串                                exit=1   expect=1 OK  ids={'[bgfix11-lang-k1s-en]': True, '[bgfix10-lang-no-empty]': True} restore=OK (1.2s)  -> PASS
+P P3 en 值换成另一句真英文                            exit=1   expect=1 OK  ids={'[bgfix11-lang-k1s-en]': True} restore=OK (1.1s)  -> PASS
+P P4 例外表塞回代码                                 exit=1   expect=1 OK  ids={'[bgfix11-lang-exception-gone]': True} restore=OK (1.0s)  -> PASS
+P P5 删掉注释里的旧代码留档                             exit=1   expect=1 OK  ids={'[bgfix11-lang-exception-gone]': True} restore=OK (1.0s)  -> PASS
+P P6 只加空白（en 末尾加空行）                          exit=0   expect=0 OK  ids={} restore=OK (1.1s)  -> PASS
+P P7 只在关卡里加 # 注释                             exit=0   expect=0 OK  ids={} restore=OK (1.0s)  -> PASS
+P P8 前置缺失（en_us.json 改名）                     exit=2   expect=2 OK  [bg-data-crash]=True  -> PASS
+P8 restore=OK
+--- 终态 SHA256 复核 ---
+en        07AA2FA07EDD8942FA8CD8BFA441EFEA OK
+zh        695FA5A5347E1165F431A204D8CA6F19 OK
+validate  73174E17E5590632CAA0345EE557A3D1 OK
+RESULT ALL-PASS

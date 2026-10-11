@@ -1,0 +1,18 @@
+== bgfix11 · 那一行的三方对照 ==
+键：bettergold.handbook.page.knowledge_1_summary
+
+[zh 原文]（作者那份 = 唯一真源；全程 0 字节改动）
+  把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。
+
+[旧 en]（== zh 逐字相同；bgfix10 §31.7 的既有缺陷）
+  把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。
+
+[新 en]（§31.7 的建议英文逐字采纳；294 字）
+  Smelt "noble gold" raw material into ingots in a furnace or blast furnace to make building blocks (ingot block / bricks / pillar / stairs / slab / brick wall / bars / door / trapdoor / chain / lantern), or combine them with the matching core material's smithing template to upgrade golden gear.
+
+术语依据（既有写法，均 grep 自改后的 en_us.json）：
+  * "noble gold"：22 处
+  * smithing template：3 处
+  * golden gear：2 处
+  * Building Blocks（手册页标题）：9 处
+  * furnace：2 处
