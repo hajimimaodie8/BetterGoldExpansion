@@ -1,0 +1,55 @@
+{
+  "parent": "bettergold:metal/flamegold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:flamegold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.flamegold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.flamegold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:flamegold_sword",
+              "bettergold:flamegold_axe",
+              "bettergold:flamegold_pickaxe",
+              "bettergold:flamegold_shovel",
+              "bettergold:flamegold_hoe",
+              "bettergold:flamegold_mace",
+              "bettergold:flamegold_bow",
+              "bettergold:flamegold_crossbow",
+              "bettergold:flamegold_trident",
+              "bettergold:flamegold_shield"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:flamegold_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

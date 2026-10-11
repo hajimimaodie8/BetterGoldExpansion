@@ -1,0 +1,73 @@
+{
+  "parent": "bettergold:metal/voodoogold/weapon",
+  "display": {
+    "icon": {
+      "id": "bettergold:voodoogold_chestplate",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.voodoogold_armor.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.voodoogold_armor.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "armor_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:voodoogold_helmet"
+          }
+        ]
+      }
+    },
+    "armor_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:voodoogold_chestplate"
+          }
+        ]
+      }
+    },
+    "armor_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:voodoogold_leggings"
+          }
+        ]
+      }
+    },
+    "armor_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:voodoogold_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "armor_helmet"
+    ],
+    [
+      "armor_chestplate"
+    ],
+    [
+      "armor_leggings"
+    ],
+    [
+      "armor_boots"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

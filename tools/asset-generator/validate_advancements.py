@@ -818,6 +818,177 @@ def main() -> int:
             f"方块 id 真源 AllBlocks.java 里没有注册 golden_carrot_crop"
             f"（那样 {_CARROT_BLOCK} 是个不存在的方块，判据永远不达成）")
 
+    # ---- 5f. bgfix9（2026-10-11）：作者 2026-10-09 实测推翻的两条 =================
+    # 作者原话：「**齐活,烧炼,拿下** 这一成就似乎无法正常触发，无论是**直接拿取**，还是
+    #   **必须用合成获取**都触发不了。同时**光辉岁月之种**的**直接拿取金钱茄种子**也无法触发」。
+    # 根因（源码级，两把尺子）：
+    #   ① `InventoryChangeTrigger.TriggerInstance#matches`（`InventoryChangeTrigger.java:86-110`）：
+    #      `items.size() == 1` ⇒ 只比"**本次变化的那一格**"（`:107-108` = OR 语义）；
+    #      `items.size() != 1` ⇒ **扫全背包、每条谓词都要命中**（`:91-106` = AND 语义）。
+    #      ⇒ ㊽ 的 `items` 原先写成 **8 条谓词**（每条一个原料 id）＝「**同时持有全部 8 种原料**」，
+    #        而作者描述写的是「获得**任意一种**原料」⇒ **集合语义被写反**，两条路径都不解锁。
+    #   ② ㊹ 的判据多带 `conditions.player[].predicate.location.structures = minecraft:bastion_remnant`
+    #      ⇒ 判据被收窄成"**只能在堡垒遗迹里拿到**"。它与作者 bg-ach §七.2「只要是**获得**某样物品
+    #      就能触发成就」的总口径冲突，也给不出"必须堡垒"的原文依据（种子的来源里还有
+    #      `minecraft:chests/nether_bridge`）。
+    # 判据设计（**期望语义不来自实现**，见 `ex/03` §3.20 ②）：
+    #   (a) 从 **manifest 里的作者原文 description** 抽「任意 / 所有」⇒ 反查产物 JSON 的谓词条数；
+    #   (b) 两条点名的成就逐条钉形状；负向断言「判据里不许再出现 `player` 条件」。
+    _gen_path = Path(__file__).resolve().parent / "generate_advancements.py"
+    _gen_src = read(_gen_path)
+    # ⚠ 生成器是 **Python**：`strip_comments()` 只认 C 族注释 ⇒ 必须**另剥 `#`**
+    #   （`ex/03` §3.15 ① / §3.17 ①：源码 needle 一律跑在"去注释源码"上，Python 要自己剥 `#`）。
+    _gen_nc = re.sub(r"#[^\n]*", "", _gen_src)
+    if len(_gen_nc) < len(_gen_src) // 2:
+        bad("bgfix9-generator-anti-vacuum",
+            f"生成器去注释后只剩 {len(_gen_nc)} B（原 {len(_gen_src)} B）—— 剥注释的正则坏了？")
+    for _needle, _tag, _why in (
+            ('c_inv([RAW_MATERIALS])', "bgfix9-generator-raw-metal",
+             "生成器里没有 `c_inv([RAW_MATERIALS])`（= 1 条谓词 + 数组 = OR）；"
+             "产物是生成的 ⇒ 只改产物改不动根"),
+            ('c_inv([f"{NS}:golden_eggplant_seeds"])', "bgfix9-generator-eggplant",
+             "生成器里没有 `c_inv([f\"{NS}:golden_eggplant_seeds\"])`（㊹ 的判据形状）"),
+    ):
+        if _needle not in _gen_nc:
+            bad(_tag, _why)
+    # 负向：旧的错误形状**不许**在代码里复活（注释里保留原文不算 —— 已先剥 `#`）
+    if "c_inv(RAW_MATERIALS)" in _gen_nc:
+        bad("bgfix9-generator-raw-metal",
+            "生成器里又出现了 `c_inv(RAW_MATERIALS)`（少一层方括号 ⇒ 8 条谓词 ⇒ AND ⇒ 永不触发）")
+    if 'structure="minecraft:bastion_remnant"' in _gen_nc:
+        bad("bgfix9-generator-eggplant",
+            f"生成器里又出现了 `structure=\"minecraft:bastion_remnant\"`（结构门 ⇒ 堡垒遗迹之外拿到"
+            f"金钱茄种子永不触发）")
+
+    # (a) 集合语义 ↔ 判据形状 的**两条不变量**（期望值来自**作者原文 description**，不是实现）
+    #     「任意一种 / 任意一件」⇒ **每一条 `inventory_changed` 判据恰好 1 条谓词**
+    #         （1 条谓词 = 只比"变化的那一格" ⇒ OR；≥2 条 = 扫全背包 AND ⇒ 语义写反）
+    #     「所有 / 一整套」    ⇒ **多条判据、每件一条、每件各自一组**（组间 AND、组内 OR），
+    #         且每条判据仍是 1 条谓词。
+    #     ⚠ 踩过的坑：第一版把「所有」写成"一个 criteria 里放 N 条谓词"⇒ 42 条假红 ——
+    #       本仓「所有」的落法是**N 条 criteria + N 个 requirement 组**（见生成器
+    #       `{f"food_…": c_inv([f]) …}` + `[[f"food_…"] for f in …]`），不是 N 条谓词。
+    _any_paths: list[str] = []
+    _all_paths: list[str] = []
+    _any_checked = 0
+    _all_checked = 0
+    _homog_checked = 0
+    _pred_checked = 0
+    for _a in manifest["advancements"]:
+        _p = _a["path"]
+        _desc = _a.get("description") or ""
+        _obj = advs.get(_p, {}) or {}
+        _crits = _obj.get("criteria") or {}
+        _reqs = _obj.get("requirements") or []
+        _inv = {k: c for k, c in _crits.items() if c.get("trigger") == "minecraft:inventory_changed"}
+        if "任意" in _desc:
+            _any_paths.append(_p)
+            for _k, _c in _inv.items():
+                _n = len((_c.get("conditions") or {}).get("items") or [])
+                _any_checked += 1
+                if _n != 1:
+                    bad("bgfix9-inv-one-predicate",
+                        f"{_p}.{_k} 的描述是「…**任意**…」（{_desc!r}），"
+                        f"但 `items` 写了 {_n} 条谓词 —— `InventoryChangeTrigger` 里 "
+                        f"`items.size() != 1` 是**扫全背包 AND**（`InventoryChangeTrigger.java:91-106`）"
+                        f"⇒ 语义被写反（「任意一种」变成「全部同时持有」）")
+        if ("所有" in _desc) or ("一整套" in _desc):
+            _all_paths.append(_p)
+            _all_checked += 1
+            if len(_crits) < 2:
+                bad("bgfix9-all-of-shape",
+                    f"{_p} 的描述是「…**{'所有' if '所有' in _desc else '一整套'}**…」（{_desc!r}），"
+                    f"但只有 {len(_crits)} 条判据 ⇒ 表达不出「每一件都要」"
+                    f"（应每件各一条判据 + 各自一组）")
+            if len(_reqs) != len(_crits) or any(len(g) != 1 for g in _reqs):
+                bad("bgfix9-all-of-shape",
+                    f"{_p} 的 requirements 必须是「每件各自一组」（组间 AND）：实得 "
+                    f"{len(_reqs)} 组 / {len(_crits)} 条判据 ⇒ {_reqs}")
+            for _k, _c in _inv.items():
+                _n = len((_c.get("conditions") or {}).get("items") or [])
+                if _n != 1:
+                    bad("bgfix9-all-of-shape",
+                        f"{_p}.{_k} 的 `items` 有 {_n} 条谓词 —— 「所有」必须是"
+                        f"**多条判据**（每件一条），不是一条判据里塞多条谓词")
+        # 同质性：`items` 列表里不许**混写** `#tag` 与裸 id（`HolderSetCodec` 的
+        #   `ensureHomogenous` 只接受同一种 Holder 形态 ⇒ 混写会让**整份 JSON 解析失败并消失**）
+        for _k, _c in _crits.items():
+            for _pred in (_c.get("conditions") or {}).get("items") or []:
+                _it = _pred.get("items")
+                _pred_checked += 1
+                if isinstance(_it, list) and _it:
+                    _homog_checked += 1
+                    _tags = [x for x in _it if isinstance(x, str) and x.startswith("#")]
+                    if _tags and len(_tags) != len(_it):
+                        bad("bgfix9-items-homogeneous",
+                            f"{_p}.{_k} 的 `items` 列表混写了标签与裸 id：{_it}"
+                            f"（`ensureHomogenous` 只接受同一种形态 ⇒ 整份 JSON 会被丢弃）")
+    if len(_any_paths) < 8 or _any_checked < 8:
+        bad("bgfix9-inv-one-predicate",
+            f"按描述里的「任意」只认出 {len(_any_paths)} 条成就 / {_any_checked} 条判据 —— 反空转守护"
+            f"（生成器描述文案被改过？）")
+    if len(_all_paths) < 8 or _all_checked < 8:
+        bad("bgfix9-all-of-shape",
+            f"按描述里的「所有 / 一整套」只认出 {len(_all_paths)} 条成就 —— 反空转守护")
+    if _homog_checked < 8 or _pred_checked < 40:
+        bad("bgfix9-items-homogeneous",
+            f"只检查了 {_pred_checked} 条谓词 / {_homog_checked} 个数组形态的 `items` —— 反空转守护")
+
+    # (b) 两条点名的成就逐条钉形状 + 负向「判据里不许有 player 条件」
+    _RAW_PATH = "treasure/any_raw_metal"
+    _raw_want = manifest["lists"]["raw_materials"]
+    _raw_c = (advs.get(_RAW_PATH, {}) or {}).get("criteria") or {}
+    if list(_raw_c) != ["have"] or _raw_c.get("have", {}).get("trigger") != "minecraft:inventory_changed":
+        bad("bgfix9-raw-metal-shape",
+            f"㊽ {_RAW_PATH} 的判据不是「单条 have/inventory_changed」：{sorted(_raw_c)}")
+    else:
+        _items = (_raw_c["have"].get("conditions") or {}).get("items") or []
+        if len(_items) != 1 or sorted(_items[0].get("items") or []) != sorted(_raw_want):
+            bad("bgfix9-raw-metal-shape",
+                f"㊽ {_RAW_PATH}.have 的 `items` 必须是**恰好 1 条谓词**、其 `items` 数组 = 清单里的 "
+                f"{len(_raw_want)} 种原料（实际 {len(_items)} 条谓词：{_items}）")
+    if len(_raw_want) != 8:
+        bad("bgfix9-raw-metal-shape",
+            f"清单 `lists.raw_materials` 不是 8 条（实际 {len(_raw_want)}）—— 反空转守护")
+
+    _EP_PATH = "agriculture/eggplant_seeds"
+    _ep_c = (advs.get(_EP_PATH, {}) or {}).get("criteria") or {}
+    if list(_ep_c) != ["have"]:
+        bad("bgfix9-eggplant-no-structure",
+            f"㊹ {_EP_PATH} 应恰好 1 条判据 `have`（实际 {sorted(_ep_c)}）")
+    else:
+        _ec = _ep_c["have"]
+        if _ec.get("trigger") != "minecraft:inventory_changed":
+            bad("bgfix9-eggplant-no-structure",
+                f"㊹ 的 trigger 不是 inventory_changed：{_ec.get('trigger')}")
+        _eitems = (_ec.get("conditions") or {}).get("items") or []
+        if _eitems != [{"items": f"{NS}:golden_eggplant_seeds"}]:
+            bad("bgfix9-eggplant-no-structure",
+                f"㊹ 的 `items` 必须恰好是 [{{'items': 'bettergold:golden_eggplant_seeds'}}]，"
+                f"实际 {_eitems}")
+        if "player" in (_ec.get("conditions") or {}):
+            bad("bgfix9-eggplant-no-structure",
+                f"㊹ 的判据里又出现了 `conditions.player`（结构/位置条件）⇒ 堡垒遗迹之外拿到"
+                f"金钱茄种子永不触发（作者 2026-10-09 实测的缺陷本体）："
+                f"{(_ec.get('conditions') or {}).get('player')}")
+    if (advs.get(_EP_PATH, {}) or {}).get("requirements") != [["have"]]:
+        bad("bgfix9-eggplant-no-structure",
+            f"㊹ 的 requirements 必须是 [['have']]，实际 "
+            f"{(advs.get(_EP_PATH, {}) or {}).get('requirements')}")
+    # 负向（全量）：**任何**判据都不许自带 `conditions.player` —— 51 条里没有任何一条需要
+    #   结构/位置门；这条就是"㊹ 那一类"的类级守护（扰动：往任意一条加 player ⇒ 当场红）。
+    _player_crits: list[str] = []
+    for _p, _v in advs.items():
+        for _k, _c in ((_v or {}).get("criteria") or {}).items():
+            if "player" in ((_c.get("conditions") or {}) or {}):
+                _player_crits.append(f"{_p}.{_k}")
+    if _player_crits:
+        bad("bgfix9-no-player-condition",
+            f"这些判据自带 `conditions.player`（位置/结构门）—— 51 条成就里一条都不该有："
+            f"{_player_crits}")
+    if len(advs) != EXPECTED_COUNT:
+        bad("bgfix9-anti-vacuum", f"扫到的成就数 {len(advs)} != {EXPECTED_COUNT} —— 反空转守护")
+
     # ---- 输出 ----
     # bgfix6（2026-10-08）就地标注：本关卡的 0/1/2 契约**本来就齐**（docstring 第 5-8 行 +
     #   下面的 try/except ⇒ 2；`bad()` 收集 ⇐ 每条断言都带反空转守护），本轮**只补一行
@@ -842,6 +1013,13 @@ def main() -> int:
     print(f"OK [bgfix4-antique-knife-in-gear] {_antique_ok} 条古董成就各带 `have_knife`"
           f"（items = 单个标签字符串，标签条目 required:false）⇒ 装了乐事时屠刀/断骸刀计入；"
           f"`have` 那 5 件裸 id 原路径保留")
+    print(f"OK [bgfix9-inv-one-predicate] 「任意」类 {len(_any_paths)} 条成就 / {_any_checked} 条判据"
+          f"全部是**恰好 1 条谓词**（OR ⇔ items.size()==1）；「所有 / 一整套」类 {len(_all_paths)} 条"
+          f"全部是「每件一条判据 + 各自一组」（组间 AND）；谓词 {_pred_checked} 条 / 数组形态 "
+          f"{_homog_checked} 个；全 51 条无 `conditions.player`（位置/结构门）")
+    print(f"OK [bgfix9-raw-metal-shape] ㊽ treasure/any_raw_metal.have = 1 条谓词 + "
+          f"{len(_raw_want)} 项原料数组（拿取/合成任一即解锁）；"
+          f"[bgfix9-eggplant-no-structure] ㊹ agriculture/eggplant_seeds.have = 获得金钱茄种子（无结构门）")
     print("OK [bgach] 物品引用 %d 个（含 %d 张本模组标签）全部存在于注册表真源；"
           "食物清单与 Java 真源逐条一致" % (len(set(refs)), len(bgfix3_tag_refs)))
     print(f"OK [bgfinal-adv-lang] {len(en_adv)} 条英文值全部是真英译"

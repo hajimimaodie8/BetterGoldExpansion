@@ -18,16 +18,28 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "bettergold:raw_flamegold",
-              "bettergold:raw_voodoogold",
-              "bettergold:raw_thundergold",
-              "bettergold:raw_indigoseagold",
-              "bettergold:raw_illusiongold",
-              "bettergold:raw_thornsgold",
-              "bettergold:raw_echogold",
-              "bettergold:raw_sturdygold"
-            ]
+            "items": "bettergold:raw_flamegold"
+          },
+          {
+            "items": "bettergold:raw_voodoogold"
+          },
+          {
+            "items": "bettergold:raw_thundergold"
+          },
+          {
+            "items": "bettergold:raw_indigoseagold"
+          },
+          {
+            "items": "bettergold:raw_illusiongold"
+          },
+          {
+            "items": "bettergold:raw_thornsgold"
+          },
+          {
+            "items": "bettergold:raw_echogold"
+          },
+          {
+            "items": "bettergold:raw_sturdygold"
           }
         ]
       }

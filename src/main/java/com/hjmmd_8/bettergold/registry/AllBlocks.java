@@ -185,9 +185,21 @@ public class AllBlocks {
 
     // ==================== 金作物相关方块 ====================
 
-    /** 金染土：用锄头点一下变成金染耕地（需要铁质以上锹采集，否则不掉落） */
+    /** 金染土：用锄头点一下变成金染耕地（需要铁质以上锹采集，否则不掉落）
+     *
+     *  <p>⛔ <b>bgfix9（2026-10-11；作者 2026-10-09 实测复报）</b>：这里原来是裸的
+     *  <code>new Block(BlockBehaviour.Properties.of()…)</code> —— 于是金染土<b>没有任何</b>
+     *  「可支撑植物」的声明，而金染耕地（{@link com.hjmmd_8.bettergold.block.GoldInfusedFarmlandBlock}）
+     *  的 {@code canSustainPlant} 恒 {@code TRUE} ⇒ 两种"金染"土不对称，作者实测
+     *  「金玫瑰无法放在金染土上，弄成金染耕地就能放」。
+     *  ⚠ 旧写法原文保留在上面（未删，只有那一行 class 换成 {@link com.hjmmd_8.bettergold.block.GoldInfusedDirtBlock}）。
+     *  ⇒ 现行 = {@code GoldInfusedDirtBlock}：**只对金玫瑰丛**返回 {@code TriState.TRUE}，其余回落 DEFAULT
+     *  （刻意<b>不</b>照抄金染耕地的"恒 TRUE"——那样普通作物就能直接种在金染土上、绕过"必须先耕地"，
+     *  见 {@link com.hjmmd_8.bettergold.block.GoldInfusedDirtBlock} 的类注释）。</p>
+     *  <p>注册 id 仍是 {@code bettergold:gold_infused_dirt}、字段类型仍是 {@code DeferredBlock<Block>}（一字未动）。</p>
+     */
     public static final DeferredBlock<Block> GOLD_INFUSED_DIRT = BLOCKS.register("gold_infused_dirt",
-            () -> new Block(BlockBehaviour.Properties.of()
+            () -> new com.hjmmd_8.bettergold.block.GoldInfusedDirtBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.DIRT)
                     .requiresCorrectToolForDrops()
                     .strength(0.5F)

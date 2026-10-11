@@ -1,0 +1,82 @@
+{
+  "parent": "bettergold:agriculture/gold_infused_dirt",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_wheat",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.plant_gold_crop.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.plant_gold_crop.description"
+    }
+  },
+  "criteria": {
+    "till": {
+      "trigger": "minecraft:item_used_on_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "bettergold:gold_infused_farmland"
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": "#minecraft:hoes"
+            }
+          }
+        ]
+      }
+    },
+    "plant_wheat": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:block_state_property",
+            "block": "bettergold:golden_wheat_crop"
+          }
+        ]
+      }
+    },
+    "plant_eggplant": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:block_state_property",
+            "block": "bettergold:golden_eggplant_crop"
+          }
+        ]
+      }
+    },
+    "plant_carrot": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:block_state_property",
+            "block": "bettergold:golden_carrot_crop"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "till"
+    ],
+    [
+      "plant_wheat",
+      "plant_eggplant",
+      "plant_carrot"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

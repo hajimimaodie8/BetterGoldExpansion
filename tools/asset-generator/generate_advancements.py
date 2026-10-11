@@ -166,7 +166,19 @@ FD_CONDITION = [{"type": "neoforge:mod_loaded", "modid": "farmersdelight"}]
 
 
 def c_inv(items: list[str], structure: str | None = None) -> dict:
-    """inventory_changed：items 单条 ⇒ 只比"变化的那一格"（OR 语义）；多条 ⇒ 扫全背包 AND。"""
+    """``inventory_changed``：``items`` 单条 ⇒ 只比"变化的那一格"（OR 语义）；多条 ⇒ 扫全背包 AND。
+
+    ⚠ **入参是"若干组"，不是"一组里的若干项"** —— 每个元素各自变成**一条 ``ItemPredicate``**
+    （`{"items": <那一项>}`）。所以「**任意一种**（N 件里任意一件）」必须写成 `c_inv([<N 项的列表>])`
+    （**1 条谓词** + `items` 数组 = OR），写成 `c_inv(<N 项的列表>)` 会变成 **N 条谓词 = AND**。
+    bgfix9（2026-10-09）作者实测的 `treasure/any_raw_metal` 就是这个笔误（见调用点注释与
+    `docs/1.6-规格.md` §30.2）；关卡 `[bgfix9-inv-one-predicate]` 现在按描述里的「任意」反查这条不变量。
+
+    ``structure``（旧参数，**bgfix9 起已无调用点**）：把判据收窄成"只能在某个结构里拿到"。
+    ⚠ 它**与作者"获得即触发"的总口径冲突**，且违反"来源一致性"（种子还会从 `nether_bridge` 出）
+    ⇒ `agriculture/eggplant_seeds` 的那个调用点已去掉它（原文留档在调用点注释里）。
+    参数**保留**只为以后作者真要"结构门"时能一行加回；**当前没有任何调用点传它**。
+    """
     predicates = [{"items": i} for i in items]
     cond: dict = {"items": predicates}
     if structure:
@@ -331,9 +343,21 @@ def build() -> list[dict]:
     add("treasure/chorus_cherry_branch", "chorus_cherry_branch", "末外重叠的花香",
         "制作一个紫颂樱花枝", f"{NS}:chorus_cherry_branch", treasure_parent,
         {"have": c_inv([f"{NS}:chorus_cherry_branch"])}, [["have"]])
+    # ⛔ **bgfix9（2026-10-09）：本条原来写的是 `c_inv(RAW_MATERIALS)` —— 作者实测
+    #   「无论是直接拿取，还是必须用合成获取都触发不了」，根因就是**少套了一层方括号**。
+    #   `c_inv(items)` 的入参语义是"**若干组**"（**每个元素 ⇒ 一条 `ItemPredicate`**），
+    #   而 `InventoryChangeTrigger#matches` 的硬语义是：
+    #     `items.size() == 1` ⇒ 只比"**本次变化的那一格**"（`InventoryChangeTrigger.java:107-108`）；
+    #     `items.size() != 1` ⇒ **扫全背包、逐条谓词都要在背包里找到**（`:91-106`）= **AND**。
+    #   ⇒ 旧写法把「获得**任意一种**原料」实际变成了「**同时持有全部 8 种原料**」，
+    #     拿一样 / 合成一样都永远不满足 ⇒ 两条路径都不解锁（与 `any_core_material` 的
+    #     `c_inv([CORE_MATERIALS])`（**1 条谓词 + 数组 = OR**）一比即知）。
+    #   ⚠ **旧写法原文保留在上面/下面注释里，未删**：`{"have": c_inv(RAW_MATERIALS)}`。
+    #   ⚠ 关卡已加 `[bgfix9-inv-one-predicate]`（按描述里的「任意」反查"必须恰好 1 条谓词"）。
     add("treasure/any_raw_metal", "raw_metal", "齐活，烧炼，拿下！",
         "制作出任意一种\"贵金\"原料", f"{NS}:raw_sturdygold", treasure_parent,
-        {"have": c_inv(RAW_MATERIALS)}, [["have"]])
+        # ★ 现行：**1 条谓词 + `items` 写成数组** ⇒ `items.size() == 1` ⇒ **OR**（任意一种）
+        {"have": c_inv([RAW_MATERIALS])}, [["have"]])
 
     # ---- §3.3 八条金属线（25）
     # 每条线：核心材料成就 → 锭 →（武器工具 / 整套盔甲）；万坚金多一条挑战 ⑲
@@ -427,9 +451,23 @@ def build() -> list[dict]:
     add("agriculture/gold_infused_dirt", "gold_infused_dirt", "土地也要染上黄金", "制作金染土",
         f"{NS}:gold_infused_dirt", "root",
         {"have": c_inv([f"{NS}:gold_infused_dirt"])}, [["have"]])
+    # ⛔ **bgfix9（2026-10-09）：本条原来自带一个 `structure="minecraft:bastion_remnant"` 条件**
+    #   （`player` 里放 `entity_properties` 的 `location.structures`）⇒ 判据被收窄成
+    #   「**只能在堡垒遗迹里**拿到金钱茄种子」。作者实测「直接拿取金钱茄种子无法触发」＝缺陷，
+    #   因为：① 作者 bg-ach §七.2 的总口径是「只要是**获得某样物品**就能够触发成就」；
+    #   ② 那个结构条件**与实际来源不一致** —— `AllLootModifiers.CHEST_TABLES` 里除 4 张
+    #      `bastion_*` 外**还有 `minecraft:chests/nether_bridge`（下界要塞）**，
+    #      在那种箱子里拿到种子（或自种收获 / 创造拿取 / 翻自家箱子）按旧判据**永不触发**
+    #      （`LocationPredicate.java:54`：`structures` 只认 `bastion_remnant`）。
+    #   ⚠ **旧写法原文保留（未删）**：
+    #      `{"have": c_inv([f"{NS}:golden_eggplant_seeds"], structure="minecraft:bastion_remnant")}`
+    #   ⚠ 标题 / 简介（「在遗迹堡垒里获得金钱茄种子」）**一个字都没动** —— 与「制作 X」那批
+    #      成就同款处理：**文案留原文、判定回到"获得"**（`docs/1.6-规格.md` §18.2 / §30.3）。
+    #   ⚠ 关卡 `[bgfix9-eggplant-no-structure]` 守着"判据里不许再出现结构条件"。
     add("agriculture/eggplant_seeds", "eggplant_seeds", "光辉岁月之种",
         "在遗迹堡垒里获得金钱茄种子", f"{NS}:golden_eggplant_seeds", farm,
-        {"have": c_inv([f"{NS}:golden_eggplant_seeds"], structure="minecraft:bastion_remnant")},
+        # ★ 现行：就是「获得金钱茄种子」（任意途径：堡垒 / 下界要塞开箱、自种收获、创造拿取…）
+        {"have": c_inv([f"{NS}:golden_eggplant_seeds"])},
         [["have"]])
     add("agriculture/golden_egg", "golden_egg", "好大的金蛋～",
         "使用金种子喂给鸡从而获取金蛋", f"{NS}:golden_egg", farm,

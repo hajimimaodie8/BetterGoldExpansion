@@ -1,0 +1,98 @@
+bgfix9 B 级：构建三条 + 六校验器（exit 与关键计数两列）
+repo = E:\mc\mcmod\bettergold-template-1.21.1
+
+$ gradlew compileJava  -> exit=0
+    | BUILD SUCCESSFUL in 907ms
+
+$ gradlew runData  -> exit=0
+    | BUILD SUCCESSFUL in 14s
+
+$ gradlew processResources jar --rerun-tasks  -> exit=0
+    | BUILD SUCCESSFUL in 8s
+
+====================================================================================================
+六校验器（每个都单跑，避免互相覆盖输出）
+====================================================================================================
+
+--- validate_metal_assets.py  -> exit=0
+    | 胚底贴图/模型问题: 0 []
+    | 三叉戟三模型结构问题: 0 []
+    | mixin 接线问题: 0 []
+    | bg-16 授权贴图（golden_trident_blank）问题: 0 []
+    | bgfinal3 授权色卡（靛海金纹饰）问题: 0 []
+    | [bg-assets-anti-vacuum] 实际检查了 595 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+    | [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    | ...（该脚本输出末尾 4 行 = 汇总/结论行）...
+    | bg-16 授权贴图（golden_trident_blank）问题: 0 []
+    | bgfinal3 授权色卡（靛海金纹饰）问题: 0 []
+    | [bg-assets-anti-vacuum] 实际检查了 595 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+    | [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--- validate_metal_data.py  -> exit=0
+    | bg-15w 续工轮（tooltip 键 + 双向条件配方 + 胚底条件可见）问题: 0 []
+    | 装备分区顺序（§9.1 更正 §8.1）问题: 0 []
+    | 游泳速度 SWIM_SPEED（§8.3 新口径）问题: 0 []
+    | bg-15w §八 追加轮② 问题合计: 0 []
+    | 六套金属标签一致性（34 个标签 × 8 套金属）问题: 0 []
+    | 信标基座标签 #minecraft:beacon_base_blocks 问题: 0 []
+    | §9.2 重复原料配方（六套各一张 + 三张 legacy 必须消失）问题: 0 []
+    | §9.3 靛海金器具免水下挖掘惩罚问题: 0 []
+    | ...（该脚本输出末尾 4 行 = 汇总/结论行）...
+    | [bgfix7-anti-vacuum] 本轮期望值快照：基线 bgfix7-creative-material-baseline.txt=True / 作者序 bgfix7-creative-material-prefix-order.txt=True（缺失 0 个，必须 = 0）
+    | bgfix8（配置显示文案 + 手册右页字幕/正文）问题: 0 []（配置条目名核对 14 条 / 键与范围 16/16 / 右页 title='"贵金"装备的升级锻造模版' / 右页正文 76 字）
+    | bgfix9（金玫瑰丛 × 金染土）问题: 0 []（白名单 = 恰好金玫瑰丛 1 件 + DEFAULT 回落；金染耕地 TRUE 回归保留；`#minecraft:dirt` 负向命中 0 处）
+    | [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--- validate_trim_assets.py  -> exit=0
+    | 唯一值个数=9 / 9（必须相等）
+    | [bgfix2-第1条] 与 quartz **逐像素完全相同**的我方色卡 = 无
+    | [bgfinal3-indigosea-palette-restored] indigoseagold.png SHA256 = 9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d
+    | a) armor_trims.json（穿戴模型 trims/models/armor/*）: 9 条置换，我方全在 = True
+    | 9 条置换，我方全在 = True
+    | => 修复前我方六个金属的 item_model_index 全是 0.1，谓词值 0.1 命中的就是 quartz 那一行，
+    | == 5. 我方盔甲物品模型（JSON 里没有 trim overlay，这是原样；overlay 由客户端 ArmorTrimItemModels 运行期补） ==
+    | [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+    | ...（该脚本输出末尾 4 行 = 汇总/结论行）...
+    | [写出] E:\mc\mcmod\bettergold-template-1.21.1\build\p15fix-asset-audit.txt
+    | [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+    | OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+    | [bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--- validate_advancements.py  -> exit=0
+    | [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    | ...（该脚本输出末尾 4 行 = 汇总/结论行）...
+    | OK [bgfix9-raw-metal-shape] ㊽ treasure/any_raw_metal.have = 1 条谓词 + 8 项原料数组（拿取/合成任一即解锁）；[bgfix9-eggplant-no-structure] ㊹ agriculture/eggplant_seeds.have = 获得金钱茄种子（无结构门）
+    | OK [bgach] 物品引用 122 个（含 11 张本模组标签）全部存在于注册表真源；食物清单与 Java 真源逐条一致
+    | OK [bgfinal-adv-lang] 102 条英文值全部是真英译（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 0 条）
+    | [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--- check_jar_clean.py  -> exit=0
+    | build/libs jars:
+    | bettergold-1.5.0.jar  (1089906 bytes)
+    | bettergold-1.6.0.jar  (1362306 bytes)
+    | 产物 bettergold-1.6.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+    | ⚠ build/libs 里有 2 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+    | jar 内 *Probe* 路径 = 0 []
+    | jar 内含 'halt' 字节的 class = 0 []
+    | jar 内含 'BG-PROBE' 常量的 class = 0 []
+    | ...（该脚本输出末尾 4 行 = 汇总/结论行）...
+    | jar 内含 'BG-PROBE' 常量的 class = 0 []
+    | jar 内文件总数 = 2409
+    | [jar-clean-anti-vacuum] 实际检查了 2409 项（jar 内条目数；必须 > 0）
+    | [jar-clean-ok] 产物 jar 干净（条目 2409；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+--- check_forced_chunks.py  -> exit=0
+    | chunks.dat top-level keys = ['data', 'DataVersion']
+    | chunks.dat data keys      = ['Forced']
+    | data.Forced               = []
+    | data.Forced length        = 0
+    | chunks.dat 侧 forceload 为 0 = True
+    | [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    | [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+    | ...（该脚本输出末尾 4 行 = 汇总/结论行）...
+    | data.Forced length        = 0
+    | chunks.dat 侧 forceload 为 0 = True
+    | [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    | [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+（判读：exit 0 绿 / 1 有问题 / 2 前置坏；⚠ 不能失败的脚本只能当仪表盘读，要读计数行）

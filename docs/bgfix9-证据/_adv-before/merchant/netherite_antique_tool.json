@@ -1,0 +1,50 @@
+{
+  "parent": "bettergold:merchant/antique_tool",
+  "display": {
+    "icon": {
+      "id": "bettergold:netherite_antique_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.netherite_antique_tool.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.netherite_antique_tool.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:netherite_antique_sword",
+              "bettergold:netherite_antique_axe",
+              "bettergold:netherite_antique_pickaxe",
+              "bettergold:netherite_antique_shovel",
+              "bettergold:netherite_antique_hoe"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:netherite_antique_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

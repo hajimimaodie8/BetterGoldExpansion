@@ -1,0 +1,143 @@
+{
+  "parent": "bettergold:agriculture/alchemical_meat",
+  "display": {
+    "icon": {
+      "id": "bettergold:alchemical_meat_skewer",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.midas_feast_2.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.midas_feast_2.description"
+    }
+  },
+  "criteria": {
+    "food_bettergold_alchemical_meat": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:alchemical_meat"
+          }
+        ]
+      }
+    },
+    "food_bettergold_alchemical_meat_skewer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:alchemical_meat_skewer"
+          }
+        ]
+      }
+    },
+    "food_bettergold_alchemical_meat_sandwich": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:alchemical_meat_sandwich"
+          }
+        ]
+      }
+    },
+    "food_bettergold_golden_glow_custard": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_glow_custard"
+          }
+        ]
+      }
+    },
+    "food_bettergold_golden_apple_cider": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_apple_cider"
+          }
+        ]
+      }
+    },
+    "food_bettergold_golden_pie_crust": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_pie_crust"
+          }
+        ]
+      }
+    },
+    "food_bettergold_golden_apple_pie_slice": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_apple_pie_slice"
+          }
+        ]
+      }
+    },
+    "food_bettergold_golden_chocolate_pie_slice": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_chocolate_pie_slice"
+          }
+        ]
+      }
+    },
+    "food_bettergold_golden_cake_slice": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_cake_slice"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "food_bettergold_alchemical_meat"
+    ],
+    [
+      "food_bettergold_alchemical_meat_skewer"
+    ],
+    [
+      "food_bettergold_alchemical_meat_sandwich"
+    ],
+    [
+      "food_bettergold_golden_glow_custard"
+    ],
+    [
+      "food_bettergold_golden_apple_cider"
+    ],
+    [
+      "food_bettergold_golden_pie_crust"
+    ],
+    [
+      "food_bettergold_golden_apple_pie_slice"
+    ],
+    [
+      "food_bettergold_golden_chocolate_pie_slice"
+    ],
+    [
+      "food_bettergold_golden_cake_slice"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "parent": "bettergold:merchant/gift_box",
+  "display": {
+    "icon": {
+      "id": "bettergold:antique_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.antique_tool.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.antique_tool.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:antique_sword",
+              "bettergold:antique_axe",
+              "bettergold:antique_pickaxe",
+              "bettergold:antique_shovel",
+              "bettergold:antique_hoe"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:antique_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

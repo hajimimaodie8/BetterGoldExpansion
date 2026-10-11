@@ -1,0 +1,73 @@
+{
+  "parent": "bettergold:metal/sturdygold/weapon",
+  "display": {
+    "icon": {
+      "id": "bettergold:sturdygold_chestplate",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.sturdygold_armor.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.sturdygold_armor.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "armor_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_helmet"
+          }
+        ]
+      }
+    },
+    "armor_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_chestplate"
+          }
+        ]
+      }
+    },
+    "armor_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_leggings"
+          }
+        ]
+      }
+    },
+    "armor_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "armor_helmet"
+    ],
+    [
+      "armor_chestplate"
+    ],
+    [
+      "armor_leggings"
+    ],
+    [
+      "armor_boots"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

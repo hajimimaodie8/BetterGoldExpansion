@@ -1,0 +1,8 @@
+生成成就 JSON: 51 个 → src\main\resources\data\bettergold\advancement
+清单: tools\asset-generator\advancement_manifest.json
+带乐事条件的成就: ['agriculture/alchemical_meat', 'agriculture/midas_feast_2', 'agriculture/sturdygold_feast_2']
+challenge: ['metal/flamegold/armor', 'metal/sturdygold/armor', 'metal/sturdygold/skeleton', 'metal/thornsgold/armor', 'metal/echogold/armor', 'metal/indigoseagold/armor', 'metal/voodoogold/armor', 'metal/thundergold/armor', 'metal/illusiongold/armor']
+带『乐事小刀』判据的成就: 10 条 → ['metal/flamegold/weapon', 'metal/sturdygold/weapon', 'metal/thornsgold/weapon', 'metal/echogold/weapon', 'metal/indigoseagold/weapon', 'metal/voodoogold/weapon', 'metal/thundergold/weapon', 'metal/illusiongold/weapon', 'merchant/antique_tool', 'merchant/netherite_antique_tool']
+带『手册』标签判据的成就: ['root']
+仍是 recipe_crafted 的成就: []
+语言键: 102 条/语言（advancements.bettergold.<key>.title/.description）

@@ -1,0 +1,55 @@
+{
+  "parent": "bettergold:metal/thundergold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:thundergold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.thundergold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.thundergold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:thundergold_sword",
+              "bettergold:thundergold_axe",
+              "bettergold:thundergold_pickaxe",
+              "bettergold:thundergold_shovel",
+              "bettergold:thundergold_hoe",
+              "bettergold:thundergold_mace",
+              "bettergold:thundergold_bow",
+              "bettergold:thundergold_crossbow",
+              "bettergold:thundergold_trident",
+              "bettergold:thundergold_shield"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:thundergold_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

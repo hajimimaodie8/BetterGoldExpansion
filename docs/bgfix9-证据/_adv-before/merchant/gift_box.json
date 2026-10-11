@@ -1,0 +1,37 @@
+{
+  "parent": "bettergold:merchant/gold_ticket",
+  "display": {
+    "icon": {
+      "id": "bettergold:treasure_gift_box",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.gift_box.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.gift_box.description"
+    }
+  },
+  "criteria": {
+    "traded": {
+      "trigger": "minecraft:villager_trade",
+      "conditions": {
+        "item": {
+          "items": [
+            "bettergold:treasure_gift_box",
+            "bettergold:curio_box",
+            "bettergold:idol_gift_box",
+            "bettergold:gourmet_box",
+            "bettergold:alchemy_materials_box"
+          ]
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "traded"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

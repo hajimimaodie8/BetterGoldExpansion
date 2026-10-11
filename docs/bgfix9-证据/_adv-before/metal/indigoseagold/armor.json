@@ -1,0 +1,73 @@
+{
+  "parent": "bettergold:metal/indigoseagold/weapon",
+  "display": {
+    "icon": {
+      "id": "bettergold:indigoseagold_chestplate",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.indigoseagold_armor.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.indigoseagold_armor.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "armor_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:indigoseagold_helmet"
+          }
+        ]
+      }
+    },
+    "armor_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:indigoseagold_chestplate"
+          }
+        ]
+      }
+    },
+    "armor_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:indigoseagold_leggings"
+          }
+        ]
+      }
+    },
+    "armor_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:indigoseagold_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "armor_helmet"
+    ],
+    [
+      "armor_chestplate"
+    ],
+    [
+      "armor_leggings"
+    ],
+    [
+      "armor_boots"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

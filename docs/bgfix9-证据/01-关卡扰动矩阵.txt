@@ -1,0 +1,48 @@
+[用例前置] 生成器 raw 源码里 `c_inv([RAW_MATERIALS])` 出现 1 次；去注释后旧形状 `c_inv(RAW_MATERIALS)` 出现 0 次（应为 0）
+                    OK | adv-baseline               | validator=validate_advancements.py     | exit=0 expect=0 | hit=[] | occ=- | 复原SHA256=一致
+                    OK | adv-old-shape              | validator=validate_advancements.py     | exit=1 expect=1 | hit=['bgfix9-inv-one-predicate', 'bgfix9-raw-metal-shape'] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgfix9-inv-one-predicate] treasure/any_raw_metal.have 的描述是「…**任意**…」（'制作出任意一种"贵金"原料'），但 `items` 写了 8 条谓词 —— `InventoryChangeTrigger` 里 `items.size() != 1` 是**扫全背包 AND**（`Inve
+                       |   └ FAIL [bgfix9-raw-metal-shape] ㊽ treasure/any_raw_metal.have 的 `items` 必须是**恰好 1 条谓词**、其 `items` 数组 = 清单里的 8 种原料（实际 8 条谓词：[{'items': 'bettergold:raw_flamegold'}, {'items': 'bettergo
+                    OK | adv-drop-one-item          | validator=validate_advancements.py     | exit=1 expect=1 | hit=['bgfix9-raw-metal-shape'] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgach-requirements-semantics] treasure/any_raw_metal 的 items 不是 8 种原料（实际 ['bettergold:raw_flamegold', 'bettergold:raw_illusiongold', 'bettergold:raw_indigoseagold', 'bettergo
+                       |   └ FAIL [bgfix9-raw-metal-shape] ㊽ treasure/any_raw_metal.have 的 `items` 必须是**恰好 1 条谓词**、其 `items` 数组 = 清单里的 8 种原料（实际 1 条谓词：[{'items': ['bettergold:raw_flamegold', 'bettergold:raw_voo
+                    OK | adv-mix-tag                | validator=validate_advancements.py     | exit=1 expect=1 | hit=['bgfix9-items-homogeneous'] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgach-requirements-semantics] treasure/any_raw_metal 的 items 不是 8 种原料（实际 ['#bettergold:raw_materials', 'bettergold:raw_echogold', 'bettergold:raw_flamegold', 'bettergold:raw_
+                       |   └ FAIL [bgfix9-items-homogeneous] treasure/any_raw_metal.have 的 `items` 列表混写了标签与裸 id：['bettergold:raw_flamegold', '#bettergold:raw_materials', 'bettergold:raw_voodoogold', 'bettergol
+                    OK | adv-eggplant-structure     | validator=validate_advancements.py     | exit=1 expect=1 | hit=['bgfix9-eggplant-no-structure', 'bgfix9-no-player-condition'] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgfix9-eggplant-no-structure] ㊹ 的判据里又出现了 `conditions.player`（结构/位置条件）⇒ 堡垒遗迹之外拿到金钱茄种子永不触发（作者 2026-10-09 实测的缺陷本体）：[{'condition': 'minecraft:entity_properties', 'entity': 'this'
+                       |   └ FAIL [bgfix9-no-player-condition] 这些判据自带 `conditions.player`（位置/结构门）—— 51 条成就里一条都不该有：['agriculture/eggplant_seeds.have']
+                    OK | adv-all-collapse           | validator=validate_advancements.py     | exit=1 expect=1 | hit=['bgfix9-all-of-shape'] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgach-requirements] agriculture/midas_feast_1 的 requirements ['food_minecraft_golden_apple', 'food_minecraft_golden_carrot', 'food_bettergold_golden_chocolate_bar', 'food_bet
+                       |   └ FAIL [bgach-requirements-semantics] agriculture/midas_feast_1 是「获得**所有**…」⇒ 每个食物必须各自一组（实际 12 组）
+              MEASURED | adv-precondition-missing   | validator=validate_advancements.py     | exit=1 expect=None | hit=[] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgach-count] 产物成就 JSON 数 = 0，期望 51
+                       |   └ FAIL [bgach-anti-vacuum] 产物目录里一个成就 JSON 都没有
+                    OK | gen-old-shape              | validator=validate_advancements.py     | exit=1 expect=1 | hit=['bgfix9-generator-raw-metal'] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgfix9-generator-raw-metal] 生成器里没有 `c_inv([RAW_MATERIALS])`（= 1 条谓词 + 数组 = OR）；产物是生成的 ⇒ 只改产物改不动根
+                       |   └ FAIL [bgfix9-generator-raw-metal] 生成器里又出现了 `c_inv(RAW_MATERIALS)`（少一层方括号 ⇒ 8 条谓词 ⇒ AND ⇒ 永不触发）
+                    OK | gen-eggplant-structure     | validator=validate_advancements.py     | exit=1 expect=1 | hit=['bgfix9-generator-eggplant'] | occ=1 | 复原SHA256=一致
+                       |   └ FAIL [bgfix9-generator-eggplant] 生成器里没有 `c_inv([f"{NS}:golden_eggplant_seeds"])`（㊹ 的判据形状）
+                       |   └ FAIL [bgfix9-generator-eggplant] 生成器里又出现了 `structure="minecraft:bastion_remnant"`（结构门 ⇒ 堡垒遗迹之外拿到金钱茄种子永不触发）
+                    OK | gen-comment-only           | validator=validate_advancements.py     | exit=0 expect=0 | hit=[] | occ=1 | 复原SHA256=一致
+                    OK | md-baseline                | validator=validate_metal_data.py       | exit=0 expect=0 | hit=[] | occ=- | 复原SHA256=一致
+                    OK | md-blocks-revert           | validator=validate_metal_data.py       | exit=1 expect=1 | hit=['bgfix9-rose-dirt-sustain-block'] | occ=1 | 复原SHA256=一致
+                    OK | md-unconditional-true      | validator=validate_metal_data.py       | exit=1 expect=1 | hit=['bgfix9-rose-dirt-sustain-whitelist'] | occ=1 | 复原SHA256=一致
+                    OK | md-dirt-tag                | validator=validate_metal_data.py       | exit=1 expect=1 | hit=['bgfix9-rose-dirt-not-in-dirt-tag'] | occ=1 | 复原SHA256=一致
+                    OK | md-farmland-regression     | validator=validate_metal_data.py       | exit=1 expect=1 | hit=['bgfix9-rose-farmland-regression'] | occ=1 | 复原SHA256=一致
+                    OK | md-comment-only            | validator=validate_metal_data.py       | exit=0 expect=0 | hit=[] | occ=1 | 复原SHA256=一致
+                    OK | md-precondition-missing    | validator=validate_metal_data.py       | exit=2 expect=2 | hit=[] | occ=1 | 复原SHA256=一致
+
+扰动矩阵：17 条用例，mismatches = 0
+复原核对：0 个目标与改前摘要不一致 []
+改前/改后逐目标 SHA256（前 16 位）：
+    c13389425f3a4411  src\main\java\com\hjmmd_8\bettergold\block\GoldInfusedDirtBlock.java
+    bd11839fa159a6d7  src\main\java\com\hjmmd_8\bettergold\block\GoldInfusedFarmlandBlock.java
+    03af0530acc107cf  src\main\java\com\hjmmd_8\bettergold\registry\AllBlocks.java
+    c3ac93a790729253  src\main\resources\assets\bettergold\lang
+    fc5f52769f6831e2  src\main\resources\data\bettergold\advancement
+    d2ee4995ce8cb88e  src\main\resources\data\bettergold\advancement\agriculture\eggplant_seeds.json
+    6ebfccbbfe022be1  src\main\resources\data\bettergold\advancement\agriculture\midas_feast_1.json
+    88da620cd645ac3c  src\main\resources\data\bettergold\advancement\treasure\any_raw_metal.json
+    <absent>  src\main\resources\data\minecraft\tags\block\dirt.json
+    0295e0d485502c2d  tools\asset-generator\generate_advancements.py

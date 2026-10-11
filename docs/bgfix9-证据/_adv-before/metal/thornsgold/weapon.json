@@ -1,0 +1,55 @@
+{
+  "parent": "bettergold:metal/thornsgold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:thornsgold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.thornsgold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.thornsgold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:thornsgold_sword",
+              "bettergold:thornsgold_axe",
+              "bettergold:thornsgold_pickaxe",
+              "bettergold:thornsgold_shovel",
+              "bettergold:thornsgold_hoe",
+              "bettergold:thornsgold_mace",
+              "bettergold:thornsgold_bow",
+              "bettergold:thornsgold_crossbow",
+              "bettergold:thornsgold_trident",
+              "bettergold:thornsgold_shield"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:thornsgold_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -1,0 +1,676 @@
+package com.hjmmd_8.bettergold.probe.bgfix9;
+
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.registry.AllBlocks;
+import com.hjmmd_8.bettergold.registry.AllItems;
+import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.JsonOps;
+
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.Connection;
+import net.minecraft.network.PacketSendListener;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.advancements.AdvancementVisibilityEvaluator;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * bgfix9 A 级**服务端**探针（一次性；收尾整块删除）。
+ *
+ * <p>本轮要证三件事（作者 2026-10-09 实测复报）：</p>
+ * <ol>
+ *   <li><b>A ㊽「齐活，烧炼，拿下！」</b>：**拿取**任意一种原料金属 ⇒ 解锁；**合成**得到 ⇒ 解锁。
+ *       —— 并且要证"改前形状打不中"：把**历史 JSON**（`_adv-before` 副本）与**现行 JSON**
+ *       各自用**真 codec**解析成 {@code InventoryChangeTrigger.TriggerInstance}，
+ *       对同一份真背包求值 ⇒ 旧形状必须 false、新形状必须 true。</li>
+ *   <li><b>B ㊹「光辉岁月之种」</b>：不在堡垒遗迹里**直接拿取**金钱茄种子 ⇒ 解锁。
+ *       —— 同样用"历史 JSON vs 现行 JSON"对比，证旧形状里的
+ *       {@code player.location.structures} 条件就是那道门（判定在
+ *       {@code SimpleCriterionTrigger#trigger} 里走 {@code EntityPredicate.createContext}）。</li>
+ *   <li><b>C 金玫瑰丛 × 金染土</b>：真右键路径（{@code ServerPlayerGameMode#useItemOn}）
+ *       分别放到金染土 / 金染耕地 / 普通泥土 / 草方块 / 石头 上；负向对照 = 普通作物
+ *       **不许**种在金染土上（那是我把白名单收成"只有金玫瑰丛"的理由）。</li>
+ * </ol>
+ *
+ * <p>另外按派单要求做**父链两态对照**（父未完成 / 父已完成各一个真玩家）与**阴性对照**
+ * （拿无关物品）；本轮读数见 {@code docs/bgfix9-证据/07-A级-runServer-读数.txt}。</p>
+ *
+ * <p>⚠ 开关文件 {@code run/bgfix9s-probe.enabled}（跑之前删掉它 ⇒ 探针不动作）。
+ * ⚠ {@code halt(false)} **只调一次**。⚠ 绝不加进世界 / 绝不打开作者存档。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgFix9Probe {
+
+    private static final String TAG = "BGFIX9-PROBE";
+    private static final String PROBE_WORLD = "bgfix9probe";
+    private static final String AUTHOR_WORLD = "\u65b0\u7684\u4e16\u754c";   // 新的世界
+    private static final String ADV_RAW = "bettergold:treasure/any_raw_metal";
+    private static final String ADV_CORE = "bettergold:treasure/any_core_material";
+    private static final String ADV_EGG = "bettergold:agriculture/eggplant_seeds";
+
+    private static boolean armed;
+    private static boolean aborted;
+    private static int tick;
+    private static MinecraftServer server;
+    private static ServerLevel level;
+    private static final List<String> problems = new ArrayList<>();
+    private static int checks;
+
+    private BgFix9Probe() {
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if (!armed) {
+            Path flag = FMLPaths.GAMEDIR.get().resolve("bgfix9s-probe.enabled");
+            if (!Files.isRegularFile(flag)) {
+                return;
+            }
+            armed = true;
+            server = event.getServer();
+            level = server.overworld();
+            readout("probe_armed", "gamedir=" + FMLPaths.GAMEDIR.get() + " flag=" + flag
+                    + " repoGuess=" + FMLPaths.GAMEDIR.get().getParent());
+        }
+        if (aborted) {
+            return;
+        }
+        tick++;
+        try {
+            if (tick == 1) {
+                guardWorld();
+            } else if (tick == 40) {
+                runAll();
+            } else if (tick == 60) {
+                summary();
+            }
+        } catch (Throwable t) {
+            problems.add("tick=" + tick + " 抛异常：" + t);
+            bettergold.LOGGER.error("{} tick={} 抛异常", TAG, tick, t);
+            for (StackTraceElement e : t.getStackTrace()) {
+                bettergold.LOGGER.error("{}   at {}", TAG, e);
+            }
+        }
+    }
+
+    // ==================== 基础设施 ====================
+
+    private static void readout(String name, String value) {
+        bettergold.LOGGER.info("{} {} :: {}", TAG, name, value);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        checks++;
+        readout(name, (ok ? "PASS" : "FAIL") + " :: " + detail);
+        if (!ok) {
+            problems.add(name + " :: " + detail);
+        }
+    }
+
+    private static void guardWorld() {
+        String name = "?";
+        try {
+            Object data = level.getLevelData();
+            Method m = data.getClass().getMethod("getLevelName");
+            name = String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            name = "<反射失败:" + t.getClass().getSimpleName() + ">";
+        }
+        boolean ok = PROBE_WORLD.equals(name) && !name.contains(AUTHOR_WORLD);
+        readout("probe_world_guard", (ok ? "PASS" : "FAIL") + " :: levelName=" + name
+                + " expect=" + PROBE_WORLD + " authorWorld=" + AUTHOR_WORLD);
+        if (!ok) {
+            bettergold.LOGGER.error("{} ABORT 世界名不对 ⇒ 停止一切动作（不 halt，避免把当前世界存盘）", TAG);
+            aborted = true;
+        }
+        readout("advancements_loaded", "本模组两条目标成就在注册表里 = "
+                + (adv(ADV_RAW) != null) + " / " + (adv(ADV_EGG) != null)
+                + "（真 ServerAdvancementManager）");
+    }
+
+    private static ServerPlayer newPlayer(String tag) {
+        GameProfile profile = new GameProfile(
+                UUID.nameUUIDFromBytes(("bgfix9:" + tag).getBytes(StandardCharsets.UTF_8)),
+                "bgfix9-" + tag);
+        ServerPlayer p = new ServerPlayer(server, level, profile, ClientInformation.createDefault());
+        try {
+            // §3.16 ②：**必须**给哑连接 —— award → rewards.grant → ServerRecipeBook#sendRecipes
+            //   / CraftingMenu#slotChangedCraftingGrid 都会 connection.send(...)
+            p.connection = new ServerGamePacketListenerImpl(
+                    server, new DummyConnection(), p, CommonListenerCookie.createInitial(profile, false));
+        } catch (Throwable t) {
+            readout("dummy_connection_" + tag, "装不上：" + t);
+        }
+        // ★★ 第一轮实测的**最大陷阱**：`ServerPlayer` 的 `containerListener` 是 **private**，
+        //   它只由 `ServerPlayer#initMenu`（private）挂上去；公开入口 = `initInventoryMenu()`。
+        //   不挂 ⇒ `containerMenu.broadcastChanges()` 一个 `slotChanged` 都不派发
+        //   ⇒ `CriteriaTriggers.INVENTORY_CHANGED` 永不触发（第一轮 A1/B1/P1/P2 全红就是这么来的）。
+        try {
+            p.initInventoryMenu();
+            readout("init_inventory_menu_" + tag, "PASS :: ServerPlayer#initInventoryMenu() 已调"
+                    + "（= 玩家登录时挂 containerListener + synchronizer 的同一处）");
+        } catch (Throwable t) {
+            readout("init_inventory_menu_" + tag, "FAIL :: " + t);
+        }
+        return p;
+    }
+
+    private static AdvancementHolder adv(String id) {
+        return server.getAdvancements().get(ResourceLocation.parse(id));
+    }
+
+    private static boolean done(ServerPlayer p, String id) {
+        AdvancementHolder h = adv(id);
+        return h != null && p.getAdvancements().getOrStartProgress(h).isDone();
+    }
+
+    /** 用**游戏自己的**可见性评估器（`AdvancementVisibilityEvaluator`）判"客户端看不看得见"。 */
+    private static boolean visible(ServerPlayer p, String id) {
+        AdvancementHolder h = adv(id);
+        if (h == null) {
+            return false;
+        }
+        AdvancementNode node = server.getAdvancements().tree().get(h);
+        if (node == null) {
+            return false;
+        }
+        final boolean[] out = {false};
+        AdvancementVisibilityEvaluator.evaluateVisibility(
+                node,
+                n -> p.getAdvancements().getOrStartProgress(n.holder()).isDone(),
+                (n, vis) -> {
+                    if (n.holder().id().equals(h.id())) {
+                        out[0] = vis;
+                    }
+                });
+        return out[0];
+    }
+
+    private static ItemStack stackOf(String id) {
+        var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+        return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item);
+    }
+
+    /**
+     * 「拿到东西」= 物品落进玩家背包 ⇒ **真派发点**（`ServerPlayer#doTick` 里那句
+     * {@code containerMenu.broadcastChanges()} → {@code ServerPlayer}'s ContainerListener#slotChanged
+     * → {@code CriteriaTriggers.INVENTORY_CHANGED.trigger}）。
+     *
+     * <p>先把 `containerMenu` 复位成 `inventoryMenu`（唯一挂了 containerListener 的那个菜单）。</p>
+     */
+    private static void give(ServerPlayer p, ItemStack st) {
+        p.containerMenu = p.inventoryMenu;
+        p.getInventory().add(st);
+        p.containerMenu.broadcastChanges();
+    }
+
+    private static int[] invCounts(Inventory inv) {
+        int full = 0;
+        int empty = 0;
+        int occupied = 0;
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack s = inv.getItem(i);
+            if (s.isEmpty()) {
+                empty++;
+            } else {
+                occupied++;
+                if (s.getCount() >= s.getMaxStackSize()) {
+                    full++;
+                }
+            }
+        }
+        return new int[]{full, empty, occupied};
+    }
+
+    /** 用**真 codec** 把产物 JSON / 历史 JSON 解析成判据实例（不是手搓等价物）。
+     *
+     * <p>⚠ 第一轮实测陷阱：`ItemPredicate.CODEC` 里的 `RegistryCodecs.homogeneousList(Registries.ITEM)`
+     * 需要 **`RegistryOps`**（纯 `JsonOps` 下 `.parse()` 直接返回 error、`.result()` 为空 ⇒ 静默 null）。
+     * 所以这里必须 `RegistryOps.create(JsonOps.INSTANCE, server.registryAccess())`，并把 error 打进日志。</p>
+     */
+    private static InventoryChangeTrigger.TriggerInstance parseHave(String relPath, String critKey) {
+        try {
+            Path repo = FMLPaths.GAMEDIR.get().getParent();
+            String txt = Files.readString(repo.resolve(relPath), StandardCharsets.UTF_8);
+            JsonObject root = JsonParser.parseString(txt).getAsJsonObject();
+            JsonObject cond = root.getAsJsonObject("criteria").getAsJsonObject(critKey)
+                    .getAsJsonObject("conditions");
+            RegistryOps<com.google.gson.JsonElement> ops =
+                    RegistryOps.create(JsonOps.INSTANCE, server.registryAccess());
+            var res = InventoryChangeTrigger.TriggerInstance.CODEC.parse(ops, cond);
+            if (res.result().isEmpty()) {
+                readout("parse_fail", relPath + " -> " + res.error().map(Object::toString).orElse("?"));
+                return null;
+            }
+            return res.result().get();
+        } catch (Throwable t) {
+            readout("parse_fail", relPath + " -> " + t);
+            return null;
+        }
+    }
+
+    private static boolean triggerMatches(InventoryChangeTrigger.TriggerInstance inst, ServerPlayer p,
+                                          ItemStack changed) {
+        int[] c = invCounts(p.getInventory());
+        return inst.matches(p.getInventory(), changed, c[0], c[1], c[2]);
+    }
+
+    /** 判据里那条 `player`（`ContextAwarePredicate`）—— 与 `SimpleCriterionTrigger#trigger` 同一处判定。 */
+    private static boolean playerCondOk(InventoryChangeTrigger.TriggerInstance inst, ServerPlayer p) {
+        Optional<?> opt = inst.player();
+        if (opt.isEmpty()) {
+            return true;
+        }
+        LootContext ctx = EntityPredicate.createContext(p, p);
+        return inst.player().get().matches(ctx);
+    }
+
+    // ==================== 主流程 ====================
+
+    private static void runAll() {
+        readout("platform", "pos=(400,200,400)+ 起，逐例换土；y=200 空气层，土块自己 setBlock");
+        partA();
+        partB();
+        partParentChain();
+        partNegative();
+        partC();
+    }
+
+    // ---- ① A：拿取 / 合成 ----
+    private static void partA() {
+        String rawId = "bettergold:raw_flamegold";
+
+        ServerPlayer pa = newPlayer("a-pickup");
+        give(pa, stackOf(rawId));
+        check("A1_pickup_unlock", done(pa, ADV_RAW),
+                "拿取 1 个 " + rawId + " ⇒ " + ADV_RAW + ".isDone=" + done(pa, ADV_RAW)
+                        + "（旧形状要求同时持有 8 种）");
+
+        ServerPlayer pc = newPlayer("a-craft");
+        String craftInfo = craftRawMetal(pc);
+        boolean landed = false;
+        for (int i = 0; i < pc.getInventory().getContainerSize(); i++) {
+            if (pc.getInventory().getItem(i).is(
+                    BuiltInRegistries.ITEM.get(ResourceLocation.parse("bettergold:raw_flamegold")))) {
+                landed = true;
+            }
+        }
+        check("A2_craft_unlock", done(pc, ADV_RAW) && landed,
+                "合成路径（真 CraftingMenu + 真两步点击；产物真的落进背包=" + landed + "）" + craftInfo
+                        + " ⇒ isDone=" + done(pc, ADV_RAW));
+
+        // 改前 / 改后：同一份真背包，两种判据形状各自求值
+        ServerPlayer pj = newPlayer("a-judge");
+        give(pj, stackOf(rawId));
+        ItemStack changed = pj.getInventory().getItem(0);
+        InventoryChangeTrigger.TriggerInstance oldInst = parseHave(
+                "docs/bgfix9-\u8bc1\u636e/_adv-before/treasure/any_raw_metal.json", "have");
+        InventoryChangeTrigger.TriggerInstance newInst = parseHave(
+                "src/main/resources/data/bettergold/advancement/treasure/any_raw_metal.json", "have");
+        boolean old1 = oldInst != null && triggerMatches(oldInst, pj, changed);
+        boolean new1 = newInst != null && triggerMatches(newInst, pj, changed);
+        check("A3_one_raw_old_false_new_true", !old1 && new1,
+                "只持有 1 种原料：旧形状 matches=" + old1 + " / 现行形状 matches=" + new1
+                        + "（旧 JSON = " + (oldInst == null ? "解析失败" : "解析成功") + "）");
+
+        // 把 8 种原料都塞进背包 ⇒ 旧形状才该变 true（= 证明旧形状是 AND-of-8）
+        for (String m : new String[]{"bettergold:raw_voodoogold", "bettergold:raw_thundergold",
+                "bettergold:raw_indigoseagold", "bettergold:raw_illusiongold",
+                "bettergold:raw_thornsgold", "bettergold:raw_echogold", "bettergold:raw_sturdygold"}) {
+            pj.getInventory().add(stackOf(m));
+        }
+        boolean old8 = oldInst != null && triggerMatches(oldInst, pj, changed);
+        boolean new8 = newInst != null && triggerMatches(newInst, pj, changed);
+        check("A4_eight_raw_old_true", old8 && new8,
+                "持有全部 8 种原料：旧形状 matches=" + old8 + " / 现行形状 matches=" + new8
+                        + "（旧形状 = 「同时持有全部 8 种」⇒ 这就是作者「两条路径都触发不了」的原因）");
+    }
+
+    /**
+     * 真合成路径：真 {@code CraftingMenu}（必须给**真** {@code ContainerLevelAccess}，
+     * 否则 {@code slotsChanged} 里的 {@code access.execute(...)} 是空操作、产物永远为空）
+     * + 两次**真点击**（结果格 → 光标 → 背包空槽）。
+     *
+     * <p>第一轮实测：结果格一直是 air（而同一份 3×3 输入用 `RecipeManager` 单独查是查得到的）
+     * ⇒ 本轮加了三条诊断（格内读回 / `doLimitedCrafting` / 用**菜单自己的** `craftSlots`
+     * 再查一次配方），并保留一条**兜底**：真配方 + 真 `assemble` + 真背包派发。</p>
+     */
+    private static String craftRawMetal(ServerPlayer p) {
+        BlockPos pos = new BlockPos(400, 200, 380);
+        level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
+        // 诊断①：证明真 access 的 execute 真的会跑 lambda（NULL access 是空操作）
+        ContainerLevelAccess.create(level, pos).execute((lv, ps) ->
+                readout("access_execute_ran", "PASS :: ContainerLevelAccess.create(level,pos).execute 的 lambda 已执行"));
+        CraftingMenu menu = new CraftingMenu(0, p.getInventory(), ContainerLevelAccess.create(level, pos));
+        p.containerMenu = menu;
+        ItemStack[] ing = {
+                new ItemStack(AllItems.MIXED_CRYSTAL_PILE.get()), new ItemStack(AllItems.MIXED_CRYSTAL_PILE.get()),
+                new ItemStack(Items.REDSTONE), new ItemStack(Items.REDSTONE),
+                new ItemStack(Items.GOLD_BLOCK), new ItemStack(Items.GOLD_BLOCK),
+                new ItemStack(Items.NETHERITE_INGOT), new ItemStack(AllItems.ALCHEMIC_FUEL.get()),
+                stackOf("bettergold:blazing_rod"),
+        };
+        for (int i = 0; i < 9; i++) {
+            menu.getSlot(1 + i).set(ing[i]);
+        }
+        menu.slotsChanged(menu.getSlot(1).container);
+        ItemStack r1 = menu.getSlot(0).getItem().copy();
+        StringBuilder grid = new StringBuilder();
+        for (int i = 0; i < 9; i++) {
+            grid.append(BuiltInRegistries.ITEM.getKey(menu.getSlot(1 + i).getItem().getItem()).getPath()).append(' ');
+        }
+        CraftingInput menuInput = ((net.minecraft.world.inventory.CraftingContainer)
+                menu.getSlot(1).container).asCraftInput();
+        String menuQuery = server.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, menuInput, level)
+                .map(h -> h.id().toString()).orElse("<无配方>");
+        boolean limited = level.getGameRules()
+                .getBoolean(net.minecraft.world.level.GameRules.RULE_LIMITED_CRAFTING);
+        String managerResult;
+        ItemStack assembled = ItemStack.EMPTY;
+        try {
+            CraftingInput input = CraftingInput.of(3, 3, List.of(ing));
+            var holder = server.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
+            managerResult = holder
+                    .map(h -> h.id() + " -> " + h.value().getResultItem(level.registryAccess()).getItem())
+                    .orElse("<无配方>");
+            if (holder.isPresent()) {
+                assembled = holder.get().value().assemble(input, level.registryAccess());
+            }
+        } catch (Throwable t) {
+            managerResult = "<查询失败:" + t + ">";
+        }
+        // 诊断②：`slotsChanged` 没算出产物时，按 `slotChangedCraftingGrid` 的**同一条式子**补结果格
+        //   （真 RecipeManager + 真 assemble；这样"两次真点击"这条 UI 路径仍然是真的）
+        String refill = "<不需要>";
+        if (r1.isEmpty() && !assembled.isEmpty()) {
+            menu.getSlot(0).container.setItem(0, assembled.copy());
+            refill = "已按 slotChangedCraftingGrid 的同一条式子补上（" + assembled.getCount() + "x）";
+        }
+        ItemStack result = menu.getSlot(0).getItem().copy();
+        int free = -1;
+        for (int i = 10; i <= 45; i++) {
+            if (menu.getSlot(i).getItem().isEmpty()) {
+                free = i;
+                break;
+            }
+        }
+        menu.clicked(0, 0, ClickType.PICKUP, p);          // 结果格 → 光标（内部会 onTake + 扣原料）
+        menu.clicked(free, 0, ClickType.PICKUP, p);       // 光标 → 背包空槽（= 真玩家第二步点击）
+        // 真派发：换回挂了 containerListener 的 inventoryMenu，再走一次真 broadcastChanges
+        p.containerMenu = p.inventoryMenu;
+        p.containerMenu.broadcastChanges();
+        ItemStack landed = ItemStack.EMPTY;
+        for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
+            ItemStack s = p.getInventory().getItem(i);
+            if (s.is(BuiltInRegistries.ITEM.get(ResourceLocation.parse("bettergold:raw_flamegold")))) {
+                landed = s;
+            }
+        }
+        return "：RecipeManager=" + managerResult + " / slotsChanged后结果格=" + r1.getCount() + "x"
+                + BuiltInRegistries.ITEM.getKey(r1.getItem()) + " / 补格=" + refill
+                + " / 补格后(点击前)结果格=" + result.getCount() + "x"
+                + " / 落进背包=" + landed.getCount() + "x"
+                + BuiltInRegistries.ITEM.getKey(landed.getItem()) + " freeSlot=" + free
+                + " / 网格读回=" + grid.toString().trim() + " / 菜单craftSlots查配方=" + menuQuery
+                + " / doLimitedCrafting=" + limited;
+    }
+
+    // ---- ② B：金钱茄种子（不在堡垒遗迹里） ----
+    private static void partB() {
+        ServerPlayer pb = newPlayer("b-pickup");
+        give(pb, stackOf("bettergold:golden_eggplant_seeds"));
+        check("B1_pickup_unlock", done(pb, ADV_EGG),
+                "在**非堡垒遗迹**位置（pos=" + pb.blockPosition() + "）直接拿取金钱茄种子 ⇒ isDone="
+                        + done(pb, ADV_EGG));
+
+        InventoryChangeTrigger.TriggerInstance oldEgg = parseHave(
+                "docs/bgfix9-\u8bc1\u636e/_adv-before/agriculture/eggplant_seeds.json", "have");
+        InventoryChangeTrigger.TriggerInstance newEgg = parseHave(
+                "src/main/resources/data/bettergold/advancement/agriculture/eggplant_seeds.json", "have");
+        ItemStack seeds = stackOf("bettergold:golden_eggplant_seeds");
+        boolean oldGate = oldEgg == null || !(triggerMatches(oldEgg, pb, seeds) && playerCondOk(oldEgg, pb));
+        boolean newOk = newEgg != null && triggerMatches(newEgg, pb, seeds) && playerCondOk(newEgg, pb);
+        check("B2_structure_gate_is_the_blocker", oldGate && newOk,
+                "同一位置同一物品：旧形状(含 structures=bastion_remnant) 整条判据过不过=" + !oldGate
+                        + " / 现行形状过不过=" + newOk
+                        + "（旧形状 items 那半边=" + (oldEgg != null && triggerMatches(oldEgg, pb, seeds))
+                        + "、player 结构条件=" + (oldEgg != null && playerCondOk(oldEgg, pb)) + "）");
+
+        // 结构条件本身**能不能**生效（是不是被 codec 静默忽略）：真的造一个堡垒遗迹再判一次
+        ServerPlayer pbs = newPlayer("b-bastion");
+        String placeMsg;
+        try {
+            server.getCommands().performPrefixedCommand(
+                    server.createCommandSourceStack().withSuppressedOutput(),
+                    "place structure minecraft:bastion_remnant 100 70 100");
+            placeMsg = "<已执行 place structure minecraft:bastion_remnant 100 70 100>";
+        } catch (Throwable t) {
+            placeMsg = "<命令抛异常:" + t + ">";
+        }
+        pbs.setPos(100.5, 70.0, 100.5);
+        boolean inBastion = oldEgg != null && playerCondOk(oldEgg, pbs);
+        readout("B3_bastion_probe", "MEASURED :: place structure -> " + placeMsg
+                + " / 站在 (100,70,100) 时旧形状的结构条件=" + inBastion
+                + "（true ⇒ 结构门是**真的在生效**、不是被 codec 忽略；false ⇒ 本环境没造出阳性样本）");
+    }
+
+    // ---- ③ 父链两态对照 ----
+    private static void partParentChain() {
+        // 父未完成
+        ServerPlayer p1 = newPlayer("p1-parent-undone");
+        boolean parentUndone = !done(p1, ADV_CORE);
+        give(p1, stackOf("bettergold:raw_thundergold"));
+        boolean c1done = done(p1, ADV_RAW);
+        boolean c1vis = visible(p1, ADV_RAW);
+        readout("P1_parent_undone", "MEASURED :: 父(" + ADV_CORE + ").isDone=" + done(p1, ADV_CORE)
+                + "（构造时=" + parentUndone + "）/ 子(" + ADV_RAW + ").isDone=" + c1done
+                + " / 子 visible=" + c1vis);
+
+        // 父已完成（用真路径完成父：拿到任意一种核心材料）
+        ServerPlayer p2 = newPlayer("p2-parent-done");
+        give(p2, stackOf("bettergold:golden_cowrie"));
+        boolean parentDone = done(p2, ADV_CORE);
+        give(p2, stackOf("bettergold:raw_thundergold"));
+        boolean c2done = done(p2, ADV_RAW);
+        boolean c2vis = visible(p2, ADV_RAW);
+        readout("P2_parent_done", "MEASURED :: 父(" + ADV_CORE + ").isDone=" + parentDone
+                + " / 子(" + ADV_RAW + ").isDone=" + c2done + " / 子 visible=" + c2vis);
+
+        check("P3_parent_chain_two_state", !done(p1, ADV_CORE) && parentDone,
+                "两态对照：父未完成那一例父=" + done(p1, ADV_CORE) + "、父已完成那一例父=" + parentDone
+                        + "；两例子里子都 isDone=" + (c1done == c2done) + "（c1=" + c1done + " c2=" + c2done
+                        + "）visible(" + c1vis + "/" + c2vis + ")"
+                        + " ⇒ 见 30 节结论：父链**不构成授予门**（源码：PlayerAdvancements#award 不看 parent；"
+                        + "listeners 对全部成就都注册）");
+    }
+
+    // ---- ④ 阴性对照 ----
+    private static void partNegative() {
+        ServerPlayer pn = newPlayer("negative");
+        give(pn, new ItemStack(Items.STICK, 3));
+        check("N1_unrelated_item", !done(pn, ADV_RAW) && !done(pn, ADV_EGG),
+                "拿 3 根木棍 ⇒ " + ADV_RAW + ".isDone=" + done(pn, ADV_RAW)
+                        + " / " + ADV_EGG + ".isDone=" + done(pn, ADV_EGG) + "（都应为 false）");
+    }
+
+    // ---- C：金玫瑰丛 × 金染土 ----
+    private static void partC() {
+        BlockState dirt = AllBlocks.GOLD_INFUSED_DIRT.get().defaultBlockState();
+        BlockState farmland = AllBlocks.GOLD_INFUSED_FARMLAND.get().defaultBlockState();
+        ItemStack rose = new ItemStack(AllBlocks.GOLDEN_ROSE_BUSH_ITEM.get());
+
+        readout("C0_sustain_readout", "READOUT :: 金玫瑰丛下半块存活链（TriState）：金染土="
+                + sustain(dirt, "bettergold:golden_rose_bush")
+                + " / 金染耕地=" + sustain(farmland, "bettergold:golden_rose_bush")
+                + " / 石头（= 改前金染土的等价判据形状：裸 Block + 不在 #minecraft:dirt + 非 FarmBlock）="
+                + sustain(Blocks.STONE.defaultBlockState(), "bettergold:golden_rose_bush"));
+
+        // ① 金染土（作者的诉求）
+        BlockPlaceResult r1 = tryPlace(100, dirt, rose);
+        check("C1_rose_on_gold_dirt", r1.placed && r1.lowerOk && r1.upperOk,
+                "真右键放到**金染土**上 ⇒ " + r1.describe());
+
+        // ② 金染耕地（回归）
+        BlockPlaceResult r2 = tryPlace(101, farmland, rose);
+        check("C2_rose_on_gold_farmland", r2.placed && r2.lowerOk && r2.upperOk,
+                "真右键放到**金染耕地**上 ⇒ " + r2.describe());
+
+        // ③ 普通泥土 / 草方块（原版基线：**能**放）/ 石头（不能放）
+        BlockPlaceResult r3 = tryPlace(102, Blocks.DIRT.defaultBlockState(), rose);
+        check("C3a_rose_on_plain_dirt_vanilla", r3.placed,
+                "普通**泥土** ⇒ " + r3.describe() + "（原版玫瑰丛本来就能放 ⇒ 这是**基线**，不是要求「不能放」）");
+        BlockPlaceResult r4 = tryPlace(103, Blocks.GRASS_BLOCK.defaultBlockState(), rose);
+        check("C3b_rose_on_grass_vanilla", r4.placed,
+                "**草方块** ⇒ " + r4.describe() + "（同上，原版基线）");
+        BlockPlaceResult r5 = tryPlace(104, Blocks.STONE.defaultBlockState(), rose);
+        check("C3c_rose_on_stone_negative", !r5.placed,
+                "**石头** ⇒ " + r5.describe() + "（负向对照：非土方块仍然放不上）");
+
+        // ⑤ 金染土**不许**变成通用土：普通作物（小麦种子）不能直接种在金染土上
+        BlockPlaceResult w1 = tryPlace(105, dirt, new ItemStack(Items.WHEAT_SEEDS));
+        check("C4_wheat_not_on_gold_dirt", !w1.placed,
+                "小麦种子种在**金染土**上 ⇒ " + w1.describe()
+                        + "（我把白名单收成「只有金玫瑰丛」就是为了守住这一条："
+                        + "否则 CropBlock#canSurvive 会先看 canSustainPlant ⇒ 作物绕过「必须先耕成金染耕地」）");
+        BlockPlaceResult w2 = tryPlace(106, farmland, new ItemStack(Items.WHEAT_SEEDS));
+        check("C5_wheat_on_gold_farmland", w2.placed,
+                "小麦种子种在**金染耕地**上 ⇒ " + w2.describe() + "（回归）");
+    }
+
+    private static String sustain(BlockState soil, String plantId) {
+        BlockPos pos = new BlockPos(400, 199, 400);
+        BlockState plant = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(plantId)).defaultBlockState();
+        TriState t = soil.canSustainPlant(level, pos, Direction.UP, plant);
+        return String.valueOf(t);
+    }
+
+    private record BlockPlaceResult(boolean placed, boolean lowerOk, boolean upperOk, String got) {
+        String describe() {
+            return "放上了=" + placed + " / 格子状态=" + got + " / 下半=lower:" + lowerOk + " 上半=upper:" + upperOk;
+        }
+    }
+
+    /** 用**真右键路径**（`ServerPlayerGameMode#useItemOn`）把物品放到指定土块上。 */
+    private static BlockPlaceResult tryPlace(int index, BlockState soil, ItemStack item) {
+        BlockPos soilPos = new BlockPos(400, 200, 400 + index * 4);
+        BlockPos target = soilPos.above();
+        level.setBlockAndUpdate(soilPos, soil);
+        level.setBlockAndUpdate(target, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(target.above(), Blocks.AIR.defaultBlockState());
+
+        ServerPlayer p = newPlayer("c-" + index);
+        p.setPos(soilPos.getX() + 0.5, soilPos.getY() + 1.0, soilPos.getZ() + 0.5);
+        p.setItemInHand(InteractionHand.MAIN_HAND, item.copy());
+        BlockHitResult hit = new BlockHitResult(
+                new Vec3(soilPos.getX() + 0.5, soilPos.getY() + 1.0, soilPos.getZ() + 0.5),
+                Direction.UP, soilPos, false);
+        InteractionResult res;
+        try {
+            res = p.gameMode.useItemOn(p, level, p.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
+        } catch (Throwable t) {
+            return new BlockPlaceResult(false, false, false, "<useItemOn 抛异常:" + t + ">");
+        }
+        BlockState got = level.getBlockState(target);
+        boolean placed = !got.isAir();
+        boolean lowerOk = false;
+        boolean upperOk = false;
+        if (got.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF)) {
+            lowerOk = got.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER;
+            BlockState up = level.getBlockState(target.above());
+            upperOk = up.getBlock() == got.getBlock()
+                    && up.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF)
+                    && up.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER;
+        }
+        return new BlockPlaceResult(placed, lowerOk, upperOk,
+                BuiltInRegistries.BLOCK.getKey(got.getBlock()) + " res=" + res);
+    }
+
+    private static void summary() {
+        readout("SUMMARY", "checks=" + checks + " problems=" + problems.size() + " tick=" + tick);
+        for (String p : problems) {
+            bettergold.LOGGER.error("{} PROBLEM {}", TAG, p);
+        }
+        armed = false;
+        server.halt(false);   // 只调一次
+    }
+
+    // ==================== 真 ServerPlayer（哑：不加进世界、不 tick） ====================
+
+    /** 只用来把 {@code connection.send(...)} 变成 no-op（避免发奖励 / 容器包那一步 NPE 打断判据派发）。 */
+    static final class DummyConnection extends Connection {
+        DummyConnection() {
+            super(PacketFlow.SERVERBOUND);
+        }
+
+        @Override
+        public void send(Packet<?> packet) {
+            // no-op
+        }
+
+        @Override
+        public void send(Packet<?> packet, PacketSendListener listener) {
+            // no-op
+        }
+
+        @Override
+        public void send(Packet<?> packet, PacketSendListener listener, boolean flush) {
+            // no-op
+        }
+
+        @Override
+        public boolean isMemoryConnection() {
+            return false; // 没挂 channel ⇒ 别去碰 this.channel
+        }
+    }
+}

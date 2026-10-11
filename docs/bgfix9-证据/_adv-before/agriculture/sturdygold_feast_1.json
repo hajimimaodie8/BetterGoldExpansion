@@ -1,0 +1,176 @@
+{
+  "parent": "bettergold:agriculture/midas_feast_1",
+  "display": {
+    "icon": {
+      "id": "bettergold:sturdygold_bread",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.sturdygold_feast_1.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.sturdygold_feast_1.description"
+    }
+  },
+  "criteria": {
+    "food_bettergold_sturdygold_apple": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_apple"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_carrot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_carrot"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_chocolate_bar": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_chocolate_bar"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_brewed_hot_cocoa": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_brewed_hot_cocoa"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_ice_cream": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_ice_cream"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_sugar_cane_stick": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_sugar_cane_stick"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_eggplant": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_eggplant"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_bread": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_bread"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_fried_golden_egg": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_fried_golden_egg"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_chocolate_cookie": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_chocolate_cookie"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_honey_cookie": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_honey_cookie"
+          }
+        ]
+      }
+    },
+    "food_bettergold_sturdygold_egg_sandwich": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:sturdygold_egg_sandwich"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "food_bettergold_sturdygold_apple"
+    ],
+    [
+      "food_bettergold_sturdygold_carrot"
+    ],
+    [
+      "food_bettergold_sturdygold_chocolate_bar"
+    ],
+    [
+      "food_bettergold_sturdygold_brewed_hot_cocoa"
+    ],
+    [
+      "food_bettergold_sturdygold_ice_cream"
+    ],
+    [
+      "food_bettergold_sturdygold_sugar_cane_stick"
+    ],
+    [
+      "food_bettergold_sturdygold_eggplant"
+    ],
+    [
+      "food_bettergold_sturdygold_bread"
+    ],
+    [
+      "food_bettergold_sturdygold_fried_golden_egg"
+    ],
+    [
+      "food_bettergold_sturdygold_chocolate_cookie"
+    ],
+    [
+      "food_bettergold_sturdygold_honey_cookie"
+    ],
+    [
+      "food_bettergold_sturdygold_egg_sandwich"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

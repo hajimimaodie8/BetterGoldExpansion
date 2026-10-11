@@ -1,0 +1,40 @@
+BGFIX9-PROBE probe_armed :: gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run flag=E:\mc\mcmod\bettergold-template-1.21.1\run\bgfix9s-probe.enabled repoGuess=E:\mc\mcmod\bettergold-template-1.21.1
+BGFIX9-PROBE probe_world_guard :: PASS :: levelName=bgfix9probe expect=bgfix9probe authorWorld=新的世界
+BGFIX9-PROBE advancements_loaded :: 本模组两条目标成就在注册表里 = true / true（真 ServerAdvancementManager）
+BGFIX9-PROBE platform :: pos=(400,200,400)+ 起，逐例换土；y=200 空气层，土块自己 setBlock
+BGFIX9-PROBE init_inventory_menu_a-pickup :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE A1_pickup_unlock :: PASS :: 拿取 1 个 bettergold:raw_flamegold ⇒ bettergold:treasure/any_raw_metal.isDone=true（旧形状要求同时持有 8 种）
+BGFIX9-PROBE init_inventory_menu_a-craft :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE access_execute_ran :: PASS :: ContainerLevelAccess.create(level,pos).execute 的 lambda 已执行
+BGFIX9-PROBE A2_craft_unlock :: PASS :: 合成路径（真 CraftingMenu + 真两步点击；产物真的落进背包=true）：RecipeManager=bettergold:raw_flamegold -> bettergold:raw_flamegold / slotsChanged后结果格=1xbettergold:raw_flamegold / 补格=<不需要> / 补格后(点击前)结果格=1x / 落进背包=1xbettergold:raw_flamegold freeSlot=10 / 网格读回=mixed_crystal_pile mixed_crystal_pile redstone redstone gold_block gold_block netherite_ingot alchemic_fuel blazing_rod / 菜单craftSlots查配方=bettergold:raw_flamegold / doLimitedCrafting=false ⇒ isDone=true
+BGFIX9-PROBE init_inventory_menu_a-judge :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE A3_one_raw_old_false_new_true :: PASS :: 只持有 1 种原料：旧形状 matches=false / 现行形状 matches=true（旧 JSON = 解析成功）
+BGFIX9-PROBE A4_eight_raw_old_true :: PASS :: 持有全部 8 种原料：旧形状 matches=true / 现行形状 matches=true（旧形状 = 「同时持有全部 8 种」⇒ 这就是作者「两条路径都触发不了」的原因）
+BGFIX9-PROBE init_inventory_menu_b-pickup :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE B1_pickup_unlock :: PASS :: 在**非堡垒遗迹**位置（pos=BlockPos{x=-24, y=78, z=10}）直接拿取金钱茄种子 ⇒ isDone=true
+BGFIX9-PROBE B2_structure_gate_is_the_blocker :: PASS :: 同一位置同一物品：旧形状(含 structures=bastion_remnant) 整条判据过不过=false / 现行形状过不过=true（旧形状 items 那半边=true、player 结构条件=false）
+BGFIX9-PROBE init_inventory_menu_b-bastion :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE B3_bastion_probe :: MEASURED :: place structure -> <已执行 place structure minecraft:bastion_remnant 100 70 100> / 站在 (100,70,100) 时旧形状的结构条件=false（true ⇒ 结构门是**真的在生效**、不是被 codec 忽略；false ⇒ 本环境没造出阳性样本）
+BGFIX9-PROBE init_inventory_menu_p1-parent-undone :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE P1_parent_undone :: MEASURED :: 父(bettergold:treasure/any_core_material).isDone=false（构造时=true）/ 子(bettergold:treasure/any_raw_metal).isDone=true / 子 visible=true
+BGFIX9-PROBE init_inventory_menu_p2-parent-done :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE P2_parent_done :: MEASURED :: 父(bettergold:treasure/any_core_material).isDone=true / 子(bettergold:treasure/any_raw_metal).isDone=true / 子 visible=true
+BGFIX9-PROBE P3_parent_chain_two_state :: PASS :: 两态对照：父未完成那一例父=false、父已完成那一例父=true；两例子里子都 isDone=true（c1=true c2=true）visible(true/true) ⇒ 见 30 节结论：父链**不构成授予门**（源码：PlayerAdvancements#award 不看 parent；listeners 对全部成就都注册）
+BGFIX9-PROBE init_inventory_menu_negative :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE N1_unrelated_item :: PASS :: 拿 3 根木棍 ⇒ bettergold:treasure/any_raw_metal.isDone=false / bettergold:agriculture/eggplant_seeds.isDone=false（都应为 false）
+BGFIX9-PROBE C0_sustain_readout :: READOUT :: 金玫瑰丛下半块存活链（TriState）：金染土=TRUE / 金染耕地=TRUE / 石头（= 改前金染土的等价判据形状：裸 Block + 不在 #minecraft:dirt + 非 FarmBlock）=DEFAULT
+BGFIX9-PROBE init_inventory_menu_c-100 :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE C1_rose_on_gold_dirt :: PASS :: 真右键放到**金染土**上 ⇒ 放上了=true / 格子状态=bettergold:golden_rose_bush res=CONSUME / 下半=lower:true 上半=upper:true
+BGFIX9-PROBE init_inventory_menu_c-101 :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE C2_rose_on_gold_farmland :: PASS :: 真右键放到**金染耕地**上 ⇒ 放上了=true / 格子状态=bettergold:golden_rose_bush res=CONSUME / 下半=lower:true 上半=upper:true
+BGFIX9-PROBE init_inventory_menu_c-102 :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE C3a_rose_on_plain_dirt_vanilla :: PASS :: 普通**泥土** ⇒ 放上了=true / 格子状态=bettergold:golden_rose_bush res=CONSUME / 下半=lower:true 上半=upper:true（原版玫瑰丛本来就能放 ⇒ 这是**基线**，不是要求「不能放」）
+BGFIX9-PROBE init_inventory_menu_c-103 :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE C3b_rose_on_grass_vanilla :: PASS :: **草方块** ⇒ 放上了=true / 格子状态=bettergold:golden_rose_bush res=CONSUME / 下半=lower:true 上半=upper:true（同上，原版基线）
+BGFIX9-PROBE init_inventory_menu_c-104 :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE C3c_rose_on_stone_negative :: PASS :: **石头** ⇒ 放上了=false / 格子状态=minecraft:air res=FAIL / 下半=lower:false 上半=upper:false（负向对照：非土方块仍然放不上）
+BGFIX9-PROBE init_inventory_menu_c-105 :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE C4_wheat_not_on_gold_dirt :: PASS :: 小麦种子种在**金染土**上 ⇒ 放上了=false / 格子状态=minecraft:air res=FAIL / 下半=lower:false 上半=upper:false（我把白名单收成「只有金玫瑰丛」就是为了守住这一条：否则 CropBlock#canSurvive 会先看 canSustainPlant ⇒ 作物绕过「必须先耕成金染耕地」）
+BGFIX9-PROBE init_inventory_menu_c-106 :: PASS :: ServerPlayer#initInventoryMenu() 已调（= 玩家登录时挂 containerListener + synchronizer 的同一处）
+BGFIX9-PROBE C5_wheat_on_gold_farmland :: PASS :: 小麦种子种在**金染耕地**上 ⇒ 放上了=true / 格子状态=minecraft:wheat res=CONSUME / 下半=lower:false 上半=upper:false（回归）
+BGFIX9-PROBE SUMMARY :: checks=15 problems=0 tick=60

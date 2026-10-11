@@ -5516,12 +5516,79 @@ print(f"bgfix8（配置显示文案 + 手册右页字幕/正文）问题: {len(b
       f"（配置条目名核对 {_bgfix8_checked} 条 / 键与范围 {_bgfix8_range_ok}/16 / "
       f"右页 title={_bgfix8_want_title!r} / 右页正文 {len(_bgfix8_want_body or '')} 字）")
 
+# ==================== bgfix9（2026-10-11）：金玫瑰丛放不上金染土 ====================
+# 作者原话：「还有**金玫瑰无法放在金染土上**，虽然**弄成金染耕地也能放上**的说」。
+# 根因（`【读源码】neoforge-21.1.228-sources.jar`）：金玫瑰丛 = `TallFlowerBlock`
+#   ⇒ `DoublePlantBlock` ⇒ `BushBlock`。下半块存活判据 `BushBlock#canSurvive`
+#   （`BushBlock.java:38-45`）**先问下方方块的 `canSustainPlant`**：不是 `DEFAULT` 就以它为准；
+#   是 `DEFAULT` 才回落 `mayPlaceOn` = `state.is(BlockTags.DIRT) ||
+#   state.getBlock() instanceof FarmBlock`（`BushBlock.java:22-24`）。
+#   ⇒ 金染耕地（`GoldInfusedFarmlandBlock#canSustainPlant` 恒 TRUE）能放；
+#     金染土（bgfix9 之前是裸 `Block`、既不在 `#minecraft:dirt` 也不是 `FarmBlock`）不能放。
+# 现行落法 = `GoldInfusedDirtBlock`：**只对金玫瑰丛**返回 `TriState.TRUE`，其余回落 `DEFAULT`。
+#   ⚠ 刻意**不**照抄金染耕地的"恒 TRUE"：`CropBlock#canSurvive`（`CropBlock.java:163-168`）
+#     同样先看 `canSustainPlant` ⇒ 恒 TRUE 会让普通小麦/金麦/金钱茄**直接种在金染土上**、
+#     绕过 `GoldCropBlock#mayPlaceOn`（要求下方是金染耕地）＝ 破坏"必须先耕成金染耕地"这条设计
+#     （连带《开垦我的金色土地》成就的前提失效）。
+bgfix9_problems: list[str] = []
+
+
+def _bgfix9_bad(tag: str, msg: str) -> None:
+    bgfix9_problems.append(f"{msg} [{tag}]")
+
+
+_blocks_nc9 = strip_comments((JAVA / "registry" / "AllBlocks.java").read_text(encoding="utf-8"))
+if 'BLOCKS.register("gold_infused_dirt"' not in _blocks_nc9 or "GoldInfusedDirtBlock" not in _blocks_nc9:
+    _bgfix9_bad("bgfix9-rose-dirt-sustain-block",
+                "AllBlocks 里 gold_infused_dirt 不是用 GoldInfusedDirtBlock 注册的"
+                "（裸 Block ⇒ 没有 canSustainPlant ⇒ 金玫瑰丛放不上）")
+_dirt_block_file = JAVA / "block" / "GoldInfusedDirtBlock.java"
+if not _dirt_block_file.is_file():
+    _bgfix9_bad("bgfix9-rose-dirt-sustain-block", "缺 block/GoldInfusedDirtBlock.java")
+    _dirt_block_nc = ""
+else:
+    _dirt_block_nc = strip_comments(_dirt_block_file.read_text(encoding="utf-8"))
+for _needle9, _tag9, _why9 in (
+        ("canSustainPlant", "bgfix9-rose-dirt-sustain-whitelist",
+         "金染土没有声明 canSustainPlant"),
+        ("GOLDEN_ROSE_BUSH", "bgfix9-rose-dirt-sustain-whitelist",
+         "金染土的 canSustainPlant 白名单里没有金玫瑰丛（作者本轮的唯一要求）"),
+        ("TriState.TRUE", "bgfix9-rose-dirt-sustain-whitelist",
+         "金染土没有对金玫瑰丛返回 TriState.TRUE"),
+        ("TriState.DEFAULT", "bgfix9-rose-dirt-sustain-whitelist",
+         "金染土的白名单**不封闭**（缺 `return TriState.DEFAULT`）⇒ 要么恒 TRUE（普通作物会直接"
+         "种在金染土上）、要么实际还是放不上 —— 必须是「金玫瑰丛 ⇒ TRUE，其余 ⇒ DEFAULT」"),
+):
+    if _needle9 not in _dirt_block_nc:
+        _bgfix9_bad(_tag9, _why9)
+_farm_nc9 = strip_comments((JAVA / "block" / "GoldInfusedFarmlandBlock.java").read_text(encoding="utf-8"))
+if "canSustainPlant" not in _farm_nc9 or "TriState.TRUE" not in _farm_nc9:
+    _bgfix9_bad("bgfix9-rose-farmland-regression",
+                "金染耕地的 canSustainPlant 不再是 TRUE —— 回归被破坏"
+                "（作者明确「弄成金染耕地也能放上」）")
+# 负向：不许走"把金染土塞进 #minecraft:dirt"这条**全局放宽**的路（那超出作者要求，
+#   会连带让树苗/花/菌类等一切 `BushBlock` 都能放上金染土）
+_dirt_tag_hits9: list[str] = []
+for _tf9 in (_DATA / "minecraft" / "tags" / "block").rglob("*.json"):
+    if _tf9.name != "dirt.json":
+        continue
+    if "gold_infused_dirt" in _tf9.read_text(encoding="utf-8"):
+        _dirt_tag_hits9.append(str(_tf9.relative_to(REPO)))
+if _dirt_tag_hits9:
+    _bgfix9_bad("bgfix9-rose-dirt-not-in-dirt-tag",
+                f"金染土被塞进了 #minecraft:dirt（{_dirt_tag_hits9}）—— 那会把金染土变成"
+                f"「什么植物都能放」的通用土，超出作者要求（只要求金玫瑰丛）")
+print(f"bgfix9（金玫瑰丛 × 金染土）问题: {len(bgfix9_problems)} {bgfix9_problems[:4]}"
+      f"（白名单 = 恰好金玫瑰丛 1 件 + DEFAULT 回落；金染耕地 TRUE 回归保留；"
+      f"`#minecraft:dirt` 负向命中 {len(_dirt_tag_hits9)} 处）")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
                        bgfinal_problems, bgappend_problems, bgfix2_problems, bgbook8_problems,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
+                       bgfix9_problems,
                        symmetric_problems, beacon_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags

@@ -1,15 +1,15 @@
 {
-  "parent": "bettergold:agriculture/gold_infused_dirt",
+  "parent": "bettergold:alchemy/mixed_crystal_pile",
   "display": {
     "icon": {
-      "id": "bettergold:golden_eggplant_seeds",
+      "id": "bettergold:alchemic_fuel",
       "count": 1
     },
     "title": {
-      "translate": "advancements.bettergold.eggplant_seeds.title"
+      "translate": "advancements.bettergold.alchemic_fuel.title"
     },
     "description": {
-      "translate": "advancements.bettergold.eggplant_seeds.description"
+      "translate": "advancements.bettergold.alchemic_fuel.description"
     }
   },
   "criteria": {
@@ -18,7 +18,7 @@
       "conditions": {
         "items": [
           {
-            "items": "bettergold:golden_eggplant_seeds"
+            "items": "bettergold:alchemic_fuel"
           }
         ]
       }

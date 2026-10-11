@@ -2,14 +2,14 @@
   "parent": "bettergold:agriculture/gold_infused_dirt",
   "display": {
     "icon": {
-      "id": "bettergold:golden_eggplant_seeds",
+      "id": "bettergold:golden_egg",
       "count": 1
     },
     "title": {
-      "translate": "advancements.bettergold.eggplant_seeds.title"
+      "translate": "advancements.bettergold.golden_egg.title"
     },
     "description": {
-      "translate": "advancements.bettergold.eggplant_seeds.description"
+      "translate": "advancements.bettergold.golden_egg.description"
     }
   },
   "criteria": {
@@ -18,7 +18,7 @@
       "conditions": {
         "items": [
           {
-            "items": "bettergold:golden_eggplant_seeds"
+            "items": "bettergold:golden_egg"
           }
         ]
       }

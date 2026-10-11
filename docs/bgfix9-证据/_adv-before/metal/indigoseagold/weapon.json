@@ -1,0 +1,55 @@
+{
+  "parent": "bettergold:metal/indigoseagold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:indigoseagold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.indigoseagold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.indigoseagold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:indigoseagold_sword",
+              "bettergold:indigoseagold_axe",
+              "bettergold:indigoseagold_pickaxe",
+              "bettergold:indigoseagold_shovel",
+              "bettergold:indigoseagold_hoe",
+              "bettergold:indigoseagold_mace",
+              "bettergold:indigoseagold_bow",
+              "bettergold:indigoseagold_crossbow",
+              "bettergold:indigoseagold_trident",
+              "bettergold:indigoseagold_shield"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:indigoseagold_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -1,0 +1,59 @@
+bgfix9 收尾自检（只读）
+
+【① 探针整块删除 + grep 零命中】
+src/main/java/.../probe/ 下剩余 = （空/不存在）
+`BgFix9Probe|BGFIX9|bgfix9s-probe` 命中 = 0 []
+
+【② 生产代码 halt( 】
+含 `halt(` 的生产源码 = 0 []
+
+【③ run/ 状态】
+开关文件 run/bgfix9s-probe.enabled 存在 = False
+本轮探针世界 run/bgfix9probe/ 存在 = False
+# 跑后：run/saves 清单（只读记录；本脚本不写入该目录）
+新的世界	文件数=29	mtime_max=1791542894	mtime_min=1787840587
+
+--- 跑前 ---
+# 跑前：run/saves 清单（只读记录；本脚本不写入该目录）
+新的世界	文件数=29	mtime_max=1791542894	mtime_min=1787840587
+
+【④ server.properties 逐字节复原】
+当前  sha256=a2229937ba8ab742… (1440 B)
+跑前备份 sha256=a2229937ba8ab742… (1440 B)
+一致 = True
+
+【⑤ probe/ 收尾状态】
+probe/ 下 = []
+
+【⑥ 最终 jar】
+build\libs\bettergold-1.6.0.jar  1362306 B  sha256=c7d056b8b85b7684…
+条目总数 = 2409 / *Probe* 路径 = 0 []
+含 `halt` 字节的 class = 0 []
+data/bettergold/advancement 条目 = 65
+
+【⑦ git status --porcelain（本轮改动清单）】
+ M "docs/1.6-\350\247\204\346\240\274.md"
+ M src/main/java/com/hjmmd_8/bettergold/registry/AllBlocks.java
+ M src/main/resources/data/bettergold/advancement/agriculture/eggplant_seeds.json
+ M src/main/resources/data/bettergold/advancement/treasure/any_raw_metal.json
+ M tools/asset-generator/generate_advancements.py
+ M tools/asset-generator/validate_advancements.py
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bgfix9-\350\257\201\346\215\256/"
+?? src/main/java/com/hjmmd_8/bettergold/block/GoldInfusedDirtBlock.java
+
+--- git diff --stat ---
+ "docs/1.6-\350\247\204\346\240\274.md"             | 229 ++++++++++++++++++++-
+ .../com/hjmmd_8/bettergold/registry/AllBlocks.java |  16 +-
+ .../advancement/agriculture/eggplant_seeds.json    |  11 -
+ .../advancement/treasure/any_raw_metal.json        |  32 +--
+ tools/asset-generator/generate_advancements.py     |  44 +++-
+ tools/asset-generator/validate_advancements.py     | 178 ++++++++++++++++
+ tools/asset-generator/validate_metal_data.py       |  67 ++++++
+ 7 files changed, 538 insertions(+), 39 deletions(-)
+
+
+【⑧ 文档 §30 落档之后，两个读文档/产物的关卡复跑（最终态）】
+validate_metal_data.py     -> exit=0   [bg-data-ok] 问题合计 0 条；bgfix9（金玫瑰丛 × 金染土）问题: 0 []
+validate_advancements.py   -> exit=0   [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条
+（其余四个校验器不读 docs/1.6-规格.md，§30 落档不影响它们的读数；读数见 08-B级-构建与六校验器.txt）

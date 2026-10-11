@@ -1,0 +1,466 @@
+bgfix9 根因取证（源码逐行 + 产物判据逐字 + 生成器调用点）
+源码出处：build/moddev/artifacts/neoforge-21.1.228-sources.jar（探针解包副本在 probe/bgfix9/_mcsrc/）
+
+====================================================================================================
+A ㊽ treasure/any_raw_metal「齐活，烧炼，拿下！」—— 判据形状
+====================================================================================================
+
+【源码】InventoryChangeTrigger.TriggerInstance#matches：items.size()==1 只比『变化的那一格』；!=1 扫全背包逐条都要命中（= AND）
+
+   86:         public boolean matches(Inventory inventory, ItemStack stack, int full, int empty, int occupied) {
+   87:             if (!this.slots.matches(full, empty, occupied)) {
+   88:                 return false;
+   89:             } else if (this.items.isEmpty()) {
+   90:                 return true;
+   91:             } else if (this.items.size() != 1) {
+   92:                 List<ItemPredicate> list = new ObjectArrayList<>(this.items);
+   93:                 int i = inventory.getContainerSize();
+   94: 
+   95:                 for (int j = 0; j < i; j++) {
+   96:                     if (list.isEmpty()) {
+   97:                         return true;
+   98:                     }
+   99: 
+  100:                     ItemStack itemstack = inventory.getItem(j);
+  101:                     if (!itemstack.isEmpty()) {
+  102:                         list.removeIf(p_340607_ -> p_340607_.test(itemstack));
+  103:                     }
+  104:                 }
+  105: 
+  106:                 return list.isEmpty();
+  107:             } else {
+  108:                 return !stack.isEmpty() && this.items.get(0).test(stack);
+  109:             }
+  110:         }
+
+---- 改前（历史副本）：docs\bgfix9-证据\_adv-before\treasure\any_raw_metal.json ----
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:raw_sturdygold",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.raw_metal.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.raw_metal.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:raw_flamegold"
+          },
+          {
+            "items": "bettergold:raw_voodoogold"
+          },
+          {
+            "items": "bettergold:raw_thundergold"
+          },
+          {
+            "items": "bettergold:raw_indigoseagold"
+          },
+          {
+            "items": "bettergold:raw_illusiongold"
+          },
+          {
+            "items": "bettergold:raw_thornsgold"
+          },
+          {
+            "items": "bettergold:raw_echogold"
+          },
+          {
+            "items": "bettergold:raw_sturdygold"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
+
+---- 改后（现行产物）：src\main\resources\data\bettergold\advancement\treasure\any_raw_metal.json ----
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:raw_sturdygold",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.raw_metal.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.raw_metal.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:raw_flamegold",
+              "bettergold:raw_voodoogold",
+              "bettergold:raw_thundergold",
+              "bettergold:raw_indigoseagold",
+              "bettergold:raw_illusiongold",
+              "bettergold:raw_thornsgold",
+              "bettergold:raw_echogold",
+              "bettergold:raw_sturdygold"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
+
+---- 对照：同类『任意一种』的另一条（一直是 1 条谓词 + 数组 = OR）----
+{
+  "parent": "bettergold:alchemy/alchemic_fuel",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_cowrie",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.core_material.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.core_material.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:blazing_rod",
+              "bettergold:golden_cowrie",
+              "bettergold:glittering_vine",
+              "bettergold:bundled_echo_shard",
+              "bettergold:indigo_ocean_heart",
+              "bettergold:voodoo_feather",
+              "bettergold:amethyst_energy_dust",
+              "bettergold:chorus_cherry_branch"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
+
+---- 生成器调用点（唯一真源）----
+  346:     # ⛔ **bgfix9（2026-10-09）：本条原来写的是 `c_inv(RAW_MATERIALS)` —— 作者实测
+  355:     #   ⚠ **旧写法原文保留在上面/下面注释里，未删**：`{"have": c_inv(RAW_MATERIALS)}`。
+  360:         {"have": c_inv([RAW_MATERIALS])}, [["have"]])
+（去注释后现行代码里必须只剩 `c_inv([RAW_MATERIALS])`；旧形状 `c_inv(RAW_MATERIALS)` 只许出现在注释里 —— 关卡 [bgfix9-generator-raw-metal] 守着）
+
+====================================================================================================
+B ㊹ agriculture/eggplant_seeds「光辉岁月之种」—— 结构条件
+====================================================================================================
+
+【源码】LocationPredicate#matches：structures 必须命中『该位置的结构部件』（getStructureWithPieceAt(...).isValid()，第 54 行）
+
+   45:     public boolean matches(ServerLevel level, double x, double y, double z) {
+   46:         if (this.position.isPresent() && !this.position.get().matches(x, y, z)) {
+   47:             return false;
+   48:         } else if (this.dimension.isPresent() && this.dimension.get() != level.dimension()) {
+   49:             return false;
+   50:         } else {
+   51:             BlockPos blockpos = BlockPos.containing(x, y, z);
+   52:             boolean flag = level.isLoaded(blockpos);
+   53:             if (!this.biomes.isPresent() || flag && this.biomes.get().contains(level.getBiome(blockpos))) {
+   54:                 if (!this.structures.isPresent() || flag && level.structureManager().getStructureWithPieceAt(blockpos, this.structures.get()).isValid()) {
+   55:                     if (!this.smokey.isPresent() || flag && this.smokey.get() == CampfireBlock.isSmokeyPos(level, blockpos)) {
+   56:                         if (this.light.isPresent() && !this.light.get().matches(level, blockpos)) {
+   57:                             return false;
+   58:                         } else if (this.block.isPresent() && !this.block.get().matches(level, blockpos)) {
+   59:                             return false;
+   60:                         } else {
+
+【源码】TriggerInstance 的 player 字段类型 = EntityPredicate.ADVANCEMENT_CODEC（= 位置/结构条件挂在『玩家』这一侧）
+
+   50:     public static record TriggerInstance(Optional<ContextAwarePredicate> player, InventoryChangeTrigger.TriggerInstance.Slots slots, List<ItemPredicate> items)
+   51:         implements SimpleCriterionTrigger.SimpleInstance {
+   52:         public static final Codec<InventoryChangeTrigger.TriggerInstance> CODEC = RecordCodecBuilder.create(
+   53:             p_337367_ -> p_337367_.group(
+   54:                         EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(InventoryChangeTrigger.TriggerInstance::player),
+   55:                         InventoryChangeTrigger.TriggerInstance.Slots.CODEC
+   56:                             .optionalFieldOf("slots", InventoryChangeTrigger.TriggerInstance.Slots.ANY)
+   57:                             .forGetter(InventoryChangeTrigger.TriggerInstance::slots),
+   58:                         ItemPredicate.CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(InventoryChangeTrigger.TriggerInstance::items)
+   59:                     )
+   60:                     .apply(p_337367_, InventoryChangeTrigger.TriggerInstance::new)
+   61:         );
+
+---- 改前（历史副本）：docs\bgfix9-证据\_adv-before\agriculture\eggplant_seeds.json ----
+{
+  "parent": "bettergold:agriculture/gold_infused_dirt",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_eggplant_seeds",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.eggplant_seeds.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.eggplant_seeds.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_eggplant_seeds"
+          }
+        ],
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": "minecraft:bastion_remnant"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
+
+---- 改后（现行产物）：src\main\resources\data\bettergold\advancement\agriculture\eggplant_seeds.json ----
+{
+  "parent": "bettergold:agriculture/gold_infused_dirt",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_eggplant_seeds",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.eggplant_seeds.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.eggplant_seeds.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_eggplant_seeds"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
+
+---- 种子来源（与『结构条件』不一致的那一条）----
+   56:     /** 箱子 loot table 列表（含藏宝室） */
+   57:     private static final List<String> CHEST_TABLES = List.of(
+   58:             "minecraft:chests/nether_bridge",
+   59:             "minecraft:chests/bastion_treasure",
+   60:             "minecraft:chests/bastion_bridge",
+   61:             "minecraft:chests/bastion_hoglin_stable",
+   62:             "minecraft:chests/bastion_other"
+   63:     );
+
+====================================================================================================
+C 金玫瑰丛 × 金染土 —— 存活判据链
+====================================================================================================
+
+【源码】BushBlock#mayPlaceOn（22-24）与 #canSurvive（38-45）：先问下方方块的 canSustainPlant，不是 DEFAULT 就以它为准
+
+   22:     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
+   23:         return state.is(BlockTags.DIRT) || state.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+   24:     }
+   25: 
+   26:     /**
+   27:      * Update the provided state given the provided neighbor direction and neighbor state, returning a new state.
+   28:      * For example, fences make their connections to the passed in state if possible, and wet concrete powder immediately returns its solidified counterpart.
+   29:      * Note that this method should ideally consider only the specific direction passed in.
+   30:      */
+   31:     @Override
+   32:     protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+   33:         return !state.canSurvive(level, currentPos)
+   34:             ? Blocks.AIR.defaultBlockState()
+   35:             : super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+   36:     }
+   37: 
+   38:     @Override
+   39:     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+   40:         BlockPos blockpos = pos.below();
+   41:         BlockState belowBlockState = level.getBlockState(blockpos);
+   42:         net.neoforged.neoforge.common.util.TriState soilDecision = belowBlockState.canSustainPlant(level, blockpos, Direction.UP, state);
+   43:         if (!soilDecision.isDefault()) return soilDecision.isTrue();
+   44:         return this.mayPlaceOn(belowBlockState, level, blockpos);
+   45:     }
+
+【源码】CropBlock#canSurvive（163-168）：**普通作物也先看 canSustainPlant** ⇒ 若金染土恒 TRUE，作物就能绕过 GoldCropBlock#mayPlaceOn 直接种在金染土上
+
+  163:     @Override
+  164:     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+  165:         net.neoforged.neoforge.common.util.TriState soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
+  166:         if (!soilDecision.isDefault()) return soilDecision.isTrue();
+  167:         return hasSufficientLight(level, pos) && super.canSurvive(state, level, pos);
+  168:     }
+
+---- 金染耕地（既有口径 = 恒 TRUE）----
+   50:     /** NeoForge：明确声明可支撑植物（金作物种植的关键检查） */
+   51:     @Override
+   52:     public net.neoforged.neoforge.common.util.TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos,
+   53:                                                                        net.minecraft.core.Direction direction, BlockState plant) {
+   54:         // 允许任何植物/作物种在金染耕地上
+   55:         return net.neoforged.neoforge.common.util.TriState.TRUE;
+   56:     }
+
+---- 金染土（bgfix9 现行 = 只放行金玫瑰丛）----
+   61:     @Override
+   62:     public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos,
+   63:                                     Direction direction, BlockState plant) {
+   64:         if (plant.is(AllBlocks.GOLDEN_ROSE_BUSH.get())) {
+   65:             return TriState.TRUE;
+   66:         }
+   67:         return TriState.DEFAULT;
+   68:     }
+
+---- 注册点（AllBlocks）----
+  188:     /** 金染土：用锄头点一下变成金染耕地（需要铁质以上锹采集，否则不掉落）
+  189:      *
+  190:      *  <p>⛔ <b>bgfix9（2026-10-11；作者 2026-10-09 实测复报）</b>：这里原来是裸的
+  191:      *  <code>new Block(BlockBehaviour.Properties.of()…)</code> —— 于是金染土<b>没有任何</b>
+  192:      *  「可支撑植物」的声明，而金染耕地（{@link com.hjmmd_8.bettergold.block.GoldInfusedFarmlandBlock}）
+  193:      *  的 {@code canSustainPlant} 恒 {@code TRUE} ⇒ 两种"金染"土不对称，作者实测
+  194:      *  「金玫瑰无法放在金染土上，弄成金染耕地就能放」。
+  195:      *  ⚠ 旧写法原文保留在上面（未删，只有那一行 class 换成 {@link com.hjmmd_8.bettergold.block.GoldInfusedDirtBlock}）。
+  196:      *  ⇒ 现行 = {@code GoldInfusedDirtBlock}：**只对金玫瑰丛**返回 {@code TriState.TRUE}，其余回落 DEFAULT
+  197:      *  （刻意<b>不</b>照抄金染耕地的"恒 TRUE"——那样普通作物就能直接种在金染土上、绕过"必须先耕地"，
+  198:      *  见 {@link com.hjmmd_8.bettergold.block.GoldInfusedDirtBlock} 的类注释）。</p>
+  199:      *  <p>注册 id 仍是 {@code bettergold:gold_infused_dirt}、字段类型仍是 {@code DeferredBlock<Block>}（一字未动）。</p>
+  200:      */
+  201:     public static final DeferredBlock<Block> GOLD_INFUSED_DIRT = BLOCKS.register("gold_infused_dirt",
+  202:             () -> new com.hjmmd_8.bettergold.block.GoldInfusedDirtBlock(BlockBehaviour.Properties.of()
+  203:                     .mapColor(MapColor.DIRT)
+  204:                     .requiresCorrectToolForDrops()
+  205:                     .strength(0.5F)
+  206:                     .sound(net.minecraft.world.level.block.SoundType.GRAVEL)));
+
+---- 金玫瑰丛注册（TallFlowerBlock，属性照抄原版玫瑰丛）----
+  131:      */
+  132:     public static final DeferredBlock<net.minecraft.world.level.block.TallFlowerBlock> GOLDEN_ROSE_BUSH =
+  133:             BLOCKS.register("golden_rose_bush",
+  134:                     () -> new net.minecraft.world.level.block.TallFlowerBlock(
+  135:                             BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.ROSE_BUSH)));
+
+====================================================================================================
+父链两态：`PlayerAdvancements` **不看 parent**
+====================================================================================================
+
+【源码】`registerListeners(ServerAdvancementManager)` 对**全部**成就注册判据监听（97-101）
+
+   97:     private void registerListeners(ServerAdvancementManager manager) {
+   98:         for (AdvancementHolder advancementholder : manager.getAllAdvancements()) {
+   99:             this.registerListeners(advancementholder);
+  100:         }
+  101:     }
+
+【源码】`award(...)`（168-195）：**没有任何 parent 判定**（只有 FakePlayer 早退 + 判据授予 + 奖励）
+
+  168:     public boolean award(AdvancementHolder advancement, String criterionKey) {
+  169:         // Forge: don't grant advancements for fake players
+  170:         if (this.player instanceof net.neoforged.neoforge.common.util.FakePlayer) return false;
+  171:         boolean flag = false;
+  172:         AdvancementProgress advancementprogress = this.getOrStartProgress(advancement);
+  173:         boolean flag1 = advancementprogress.isDone();
+  174:         if (advancementprogress.grantProgress(criterionKey)) {
+  175:             this.unregisterListeners(advancement);
+  176:             this.progressChanged.add(advancement);
+  177:             flag = true;
+  178:             net.neoforged.neoforge.event.EventHooks.onAdvancementProgressedEvent(this.player, advancement, advancementprogress, criterionKey, net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT);
+  179:             if (!flag1 && advancementprogress.isDone()) {
+  180:                 advancement.value().rewards().grant(this.player);
+  181:                 advancement.value().display().ifPresent(p_352686_ -> {
+  182:                     if (p_352686_.shouldAnnounceChat() && this.player.level().getGameRules().getBoolean(GameRules.RULE_ANNOUNCE_ADVANCEMENTS)) {
+  183:                         this.playerList.broadcastSystemMessage(p_352686_.getType().createAnnouncement(advancement, this.player), false);
+  184:                     }
+  185:                     net.neoforged.neoforge.event.EventHooks.onAdvancementEarnedEvent(this.player, advancement);
+  186:                 });
+  187:             }
+  188:         }
+  189: 
+  190:         if (!flag1 && advancementprogress.isDone()) {
+  191:             this.markForVisibilityUpdate(advancement);
+  192:         }
+  193: 
+  194:         return flag;
+  195:     }
+
+【源码】`AdvancementVisibilityEvaluator`：`flag1 = flag`（本节点已达成）⇒ **已达成的节点一定 visible**；未达成的才看父链（40-59）
+
+   40:     private static boolean evaluateVisibility(
+   41:         AdvancementNode advancement,
+   42:         Stack<AdvancementVisibilityEvaluator.VisibilityRule> visibilityRules,
+   43:         Predicate<AdvancementNode> predicate,
+   44:         AdvancementVisibilityEvaluator.Output output
+   45:     ) {
+   46:         boolean flag = predicate.test(advancement);
+   47:         AdvancementVisibilityEvaluator.VisibilityRule advancementvisibilityevaluator$visibilityrule = evaluateVisibilityRule(advancement.advancement(), flag);
+   48:         boolean flag1 = flag;
+   49:         visibilityRules.push(advancementvisibilityevaluator$visibilityrule);
+   50: 
+   51:         for (AdvancementNode advancementnode : advancement.children()) {
+   52:             flag1 |= evaluateVisibility(advancementnode, visibilityRules, predicate, output);
+   53:         }
+   54: 
+   55:         boolean flag2 = flag1 || evaluateVisiblityForUnfinishedNode(visibilityRules);
+   56:         visibilityRules.pop();
+   57:         output.accept(advancement, flag2);
+   58:         return flag1;
+   59:     }
