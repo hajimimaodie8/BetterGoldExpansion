@@ -4605,11 +4605,20 @@ for _k in _bg10_keys:
     elif not en[_k].strip() or en[_k] == zh[_k]:
         _bgbook10_bad("bgbook10-lang-bilingual",
                       "§十 的英文值缺失或与中文逐字相同（作者只给了中文，需要忠实英译）：%s" % _k)
-# 作废的旧占位条目的语言键**必须原样留着**（原文不删）
+# ⚠ **口径变更（作者 2026-10-11 替换 zh_cn.json，bgfix10）**：
+#   旧占位条目的语言键**已从两份语言文件里删掉** ⇒ 这条断言**由正向改为负向**。
+#   ⚠ **旧期望原文留档（未删）**：
+#     `for _k in ("%s.entry.golden_feast" % _BG10_LANG, "%s.page.golden_feast" % _BG10_LANG):`
+#     `    if _k not in zh:`
+#     `        _bgbook10_bad("bgbook10-lang-bilingual", "作废的旧占位条目的语言键 %s 被删掉了（既定口径：原文不删）" % _k)`
+#   ⇒ 现行口径 = **「删键 + 规格留档」**（作者有意清理；20 条作废键的完整清单与判定见 §31 与下面的
+#     `bgfix10` 段）。★ **语言键删掉 ≠ 档案丢掉**：作废条目的**正文全文对照**仍然留在
+#     `docs/1.6-规格.md` §19.8 / §24.8（那两节一行未动）。
 for _k in ("%s.entry.golden_feast" % _BG10_LANG, "%s.page.golden_feast" % _BG10_LANG):
-    if _k not in zh:
+    if _k in zh or _k in en:
         _bgbook10_bad("bgbook10-lang-bilingual",
-                      "作废的旧占位条目的语言键 %s 被删掉了（既定口径：原文不删）" % _k)
+                      "作废的旧占位条目的语言键 %s 又回到了语言文件里"
+                      "（现行口径 = 删键 + 规格留档，作者 2026-10-11 裁定；见 §31）" % _k)
 
 # ---------- ⑦ 文档侧：§24 的口径必须落档 ----------
 for _needle, _why in ((u"bg-book §十", u"docs/1.6-规格.md 里没有 bg-book §十 这一轮的节"),
@@ -5582,13 +5591,194 @@ print(f"bgfix9（金玫瑰丛 × 金染土）问题: {len(bgfix9_problems)} {bgf
       f"（白名单 = 恰好金玫瑰丛 1 件 + DEFAULT 回落；金染耕地 TRUE 回归保留；"
       f"`#minecraft:dirt` 负向命中 {len(_dirt_tag_hits9)} 处）")
 
+# ==================== bgfix10（2026-10-11）：作者替换 zh_cn.json ⇒ en_us.json 同步 ====================
+#
+# 起因（作者原话）：「现在我用修改后的 zhcn.json 替换了原来的，但是 en-US 没有同步翻译修改更新的内容」。
+# 三方比对（HEAD `11820bb` ↔ **作者替换后的 zh** ↔ en）结论（清单落在 `docs/1.6-规格.md` §31）：
+#   新增 0 / 改值 6 / 删除 20；键集差异 = en 缺 0、**en 多 20**。
+#   ★ 关键判定：那 20 条**全部是「已作废条目 / 旧占位条目」的语言键**（`metal_tour` / `upgrade_templates` /
+#     `tools_per_family` / `armor_per_family` / `golden_feast` / `merchant` / `antiques` 及其 page 键），
+#     产物里**已不存在这些条目** ⇒ 判定为**作者有意清理**（父代理 2026-10-11 裁定）
+#     ⇒ en 侧跟着删，**键集与 zh 完全一致**。
+#
+# 本节守三件事（父代理要求的"关卡三件套"）+ 两条产物断言：
+#   ① 键集与 zh **完全一致**（双向）                → `[bgfix10-lang-keyset]`
+#   ② 两语言都**不许有空值** / en **不许把中文拷进去** → `[bgfix10-lang-no-empty]` / `[bgfix10-lang-en-not-zh]`
+#   ③ **未变动的键逐字未变**（冻结基线 = 改前 en 的"未变动子集" SHA256） → `[bgfix10-lang-untouched-frozen]`
+#   ④ 本轮 6 条新英文值**逐条钉死** + 20 个作废键**不许回来**（负向）
+#
+# ⚠ **冻结基线怎么用**：`_BGFIX10_UNTOUCHED_SHA` 是**改前 en**（SHA256 `_BGFIX10_EN_BEFORE_SHA`）里
+#   「除 20 个删除键与 6 个改值键之外的 716 个键」的规范化 SHA256
+#   （`"<键>\t<值>\n"` 排序拼接）。**改前 / 改后算出来必须是同一个值**（改后那条由 apply 脚本先证过）。
+#   ⇒ 谁动了这 716 个键里的任何一个（哪怕改回中文），这条当场红；要动就**显式改这个常量并记账**。
+_BGFIX10_EN_BEFORE_SHA = "B39CF06901319D9BAEDD4E202DC1EF14F78596DEAEF3580D958D575927E83A36"
+_BGFIX10_EN_AFTER_SHA = "7A7156E8D83C03BE9916D10A78AA8951FEF66F69F760AFADA2DB16E5433F1E57"
+_BGFIX10_ZH_SHA = "695FA5A5347E1165F431A204D8CA6F1965D9D136DA0F4D560F299E8B3C972810"
+_BGFIX10_UNTOUCHED_SHA = "B96C5E7E9FD0D9005C62BCF14CF80BD72F287B2A6A83B88DA368B01EA3BAD15E"
+_BGFIX10_UNTOUCHED_N = 716
+# 20 个作废键（作者 2026-10-11 从 zh 里删掉 ⇒ en 跟着删；两侧都不许再出现）
+_BGFIX10_REMOVED = (
+    "%s.entry.metal_tour" % "bettergold.handbook", "%s.entry.upgrade_templates" % "bettergold.handbook",
+    "%s.entry.tools_per_family" % "bettergold.handbook", "%s.entry.armor_per_family" % "bettergold.handbook",
+    "%s.entry.golden_feast" % "bettergold.handbook", "%s.entry.merchant" % "bettergold.handbook",
+    "%s.entry.antiques" % "bettergold.handbook",
+    "%s.page.metal_tour" % "bettergold.handbook", "%s.page.metal_chain" % "bettergold.handbook",
+    "%s.page.upgrade_templates" % "bettergold.handbook", "%s.page.tools" % "bettergold.handbook",
+    "%s.page.tools_1" % "bettergold.handbook", "%s.page.tools_2" % "bettergold.handbook",
+    "%s.page.tools_3" % "bettergold.handbook", "%s.page.armor" % "bettergold.handbook",
+    "%s.page.armor_1" % "bettergold.handbook", "%s.page.armor_2" % "bettergold.handbook",
+    "%s.page.golden_feast" % "bettergold.handbook", "%s.page.merchant" % "bettergold.handbook",
+    "%s.page.antiques" % "bettergold.handbook",
+)
+# 6 条改值键：key -> (旧英文, 新英文)。旧英文用来**钉住"改的是这一条、且确实是改前那条"**。
+_BGFIX10_CHANGED = {
+    "item.bettergold.unwanted_antique": ("Unwanted Old Antique", "Useless Old Antique"),
+    "trim_material.bettergold.unwanted_antique": ("Old Antique", "Useless Old Antique"),
+    "advancements.bettergold.echogold_weapon.title": (
+        "Wait for the Show - This One Is About the Drummer",
+        "The Drummer on Stage Sure Packs a Punch"),
+    "bettergold.handbook.page.core_4": (
+        "Using wood as its carrier, the glittering vine may take quite some luck: just mine leaves and "
+        "vines with any golden tool for a small chance to drop one. That means it is an item you can only "
+        "own after you already have \"noble gold\" tools. The \"noble gold\" smelted with it is called "
+        "\"Thornsgold\".",
+        "Using wood as its carrier, the glittering vine is now a fairly mid-game material to obtain: just "
+        "mine leaves and vines with any \"noble gold\" tool for a chance to drop one. Or perhaps we could "
+        "go ask a senior alchemy student for help? The \"noble gold\" smelted with it is called "
+        "\"Thornsgold\"."),
+    "bettergold.handbook.page.merchant_gift_box_2_left": (
+        "The Curio Box gives out Unwanted Antiques, and has a chance to give one kind of antique weapon "
+        "or tool (this gift box can also be found in Ancient City chests).",
+        "The Curio Box gives out Useless Old Antiques, and has a chance to give one kind of antique "
+        "weapon or tool (this gift box can also be found in Ancient City chests)."),
+    "bettergold.handbook.page.merchant_gift_box_2_right": (
+        "The Unwanted Antique can be thrown as a projectile that deals 3 damage, and can also be used on "
+        "an anvil to repair antique weapons and tools. But it actually has one more use -- please move on "
+        "to the \"〔待补〕\" chapter for that, thank you (this antique can also be found in Ancient City "
+        "chests).",
+        "The Useless Old Antique can be thrown as a projectile that deals 3 damage, and can also be used "
+        "on an anvil to repair antique weapons and tools. But it actually has one more use -- please move "
+        "on to the \"〔待补〕\" chapter for that, thank you (this antique can also be found in Ancient "
+        "City chests)."),
+}
+# ⚠ **唯一例外**：`bettergold.handbook.page.knowledge_1_summary` 的 **en 值就是中文原文**
+#   —— 这是**改前就存在**的既有缺陷（bgfix10 三方比对时发现；它**不在**本轮 6 条改值清单里，
+#     按"未变动的键一个字都不动"的红线**本轮未动**），已单列给作者裁定（见 §31 的"未决"一节）。
+#   ⇒ 谁把它修好，就把这一行从例外表里删掉（**不是**把缺陷写成契约）。
+_BGFIX10_CJK_OK = {"bettergold.handbook.page.knowledge_1_summary"}
+# 占位标记：这两条本身就该是"占位"（不影响"en 不许含中文"的判定）
+_BGFIX10_PLACEHOLDERS = (u"〔待补〕", u"（作者未指定）", u"（作者未给，待补）")
+
+bgfix10_problems: list[str] = []
+
+
+def _bgfix10_bad(tag, msg):
+    bgfix10_problems.append("[%s] %s" % (tag, msg))
+
+
+# ---------- ① 键集与 zh **完全一致**（双向）+ 反空转 ----------
+_bg10_only_zh = sorted(set(zh) - set(en))
+_bg10_only_en = sorted(set(en) - set(zh))
+if _bg10_only_zh or _bg10_only_en:
+    _bgfix10_bad("bgfix10-lang-keyset",
+                 "en 与 zh 的键集不一致：只 zh 有 %d 条 %s / 只 en 有 %d 条 %s"
+                 % (len(_bg10_only_zh), _bg10_only_zh[:5], len(_bg10_only_en), _bg10_only_en[:5]))
+if len(zh) < 700 or len(en) < 700:
+    _bgfix10_bad("bgfix10-lang-keyset",
+                 "语言键总数 zh=%d / en=%d < 700（反空转守护：键集比对必须真的比过 700 条以上）"
+                 % (len(zh), len(en)))
+
+# ---------- ② 空值 + "把中文拷进 en" ----------
+for _bg10_name, _bg10_tab in (("zh_cn", zh), ("en_us", en)):
+    _bg10_empty = sorted(k for k, v in _bg10_tab.items() if not str(v).strip())
+    if _bg10_empty:
+        _bgfix10_bad("bgfix10-lang-no-empty",
+                     "%s 有空值 %d 条：%s" % (_bg10_name, len(_bg10_empty), _bg10_empty[:5]))
+_bg10_cjk = re.compile(u"[\u3400-\u9fff\uf900-\ufaff]")
+for _bg10_k, _bg10_v in en.items():
+    if _bg10_k in _BGFIX10_CJK_OK:
+        continue
+    _bg10_t = str(_bg10_v)
+    for _bg10_ph in _BGFIX10_PLACEHOLDERS:
+        _bg10_t = _bg10_t.replace(_bg10_ph, "")
+    if _bg10_cjk.search(_bg10_t):
+        _bgfix10_bad("bgfix10-lang-en-not-zh",
+                     "en 值里出现中日韩文字（把中文原文拷进英文了）：%s = %r" % (_bg10_k, _bg10_v))
+
+# ---------- ③ 未变动的键**逐字未变**（冻结基线）----------
+_bg10_excl = set(_BGFIX10_REMOVED) | set(_BGFIX10_CHANGED)
+
+
+def _bgfix10_subset_hash(_tab):
+    _h = hashlib.sha256()
+    for _k, _v in sorted((k, v) for k, v in _tab.items() if k not in _bg10_excl):
+        _h.update(_k.encode("utf-8"))
+        _h.update(b"\t")
+        _h.update(str(_v).encode("utf-8"))
+        _h.update(b"\n")
+    return _h.hexdigest()
+
+
+_bg10_untouched = [k for k in en if k not in _bg10_excl]
+_bg10_hash = _bgfix10_subset_hash(en)
+if len(_bg10_untouched) != _BGFIX10_UNTOUCHED_N:
+    _bgfix10_bad("bgfix10-lang-untouched-frozen",
+                 "未变动子集是 %d 个键（冻结基线 %d 个）—— 键被增删了"
+                 % (len(_bg10_untouched), _BGFIX10_UNTOUCHED_N))
+if _bg10_hash.upper() != _BGFIX10_UNTOUCHED_SHA:
+    _bgfix10_bad("bgfix10-lang-untouched-frozen",
+                 "未变动子集的规范化 SHA256 = %s（冻结基线 %s）—— 有人动了本轮不该动的键"
+                 "（要动就显式改这个常量并在 §31 记账）" % (_bg10_hash.upper()[:32], _BGFIX10_UNTOUCHED_SHA[:32]))
+if len(_bg10_untouched) < 700:
+    _bgfix10_bad("bgfix10-lang-untouched-frozen",
+                 "反空转守护：参与比对的键只有 %d 个（< 700）" % len(_bg10_untouched))
+
+# ---------- ④ 本轮产物：6 条新英文值逐条钉死 + 20 个作废键不许回来 ----------
+for _bg10_k, (_bg10_old, _bg10_new) in _BGFIX10_CHANGED.items():
+    if en.get(_bg10_k) != _bg10_new:
+        _bgfix10_bad("bgfix10-lang-changed-frozen",
+                     "%s 的英文不是本轮定的新值（实际 %r）" % (_bg10_k, en.get(_bg10_k)))
+    if en.get(_bg10_k) == zh.get(_bg10_k):
+        _bgfix10_bad("bgfix10-lang-changed-frozen",
+                     "%s 的英文与中文逐字相同（等于没译）" % _bg10_k)
+if len(_BGFIX10_CHANGED) != 6:
+    _bgfix10_bad("bgfix10-lang-changed-frozen", "改值清单不是 6 条（反空转守护）")
+_bg10_back = sorted(k for k in _BGFIX10_REMOVED if k in en or k in zh)
+if len(_BGFIX10_REMOVED) != 20:
+    _bgfix10_bad("bgfix10-lang-retired-gone", "作废键清单不是 20 条（反空转守护）")
+if _bg10_back:
+    _bgfix10_bad("bgfix10-lang-retired-gone",
+                 "作废条目的语言键又回到了语言文件里（现行口径 = 删键 + 规格留档）：%s" % _bg10_back[:6])
+# ⚠ **语言键删掉 ≠ 档案丢掉**：作废条目的正文全文对照必须仍然在规格里（§19.8 / §24.8）。
+for _bg10_needle, _bg10_why in (
+        (u"作废内容的全文对照", u"没找到「作废内容的全文对照」那句（档案被丢掉了？）"),
+        (u"装备的升级", u"§19.6.1 的旧类别「装备的升级」全文对照不见了"),
+        (u"贵金的材料链", u"§22.4 的「贵金的材料链」全文对照不见了")):
+    if _bg10_needle not in _bgfix_spec:
+        _bgfix10_bad("bgfix10-archive-kept", _bg10_why)
+
+# ---------- ⑤ 文档侧：§31 的口径必须落档 ----------
+for _bg10_needle, _bg10_why in (
+        (u"bgfix10", u"docs/1.6-规格.md 里没有 bgfix10 这一轮的节"),
+        (u"删键 + 规格留档", u"没写「旧占位语言键的留档方式 = 删键 + 规格留档」这条口径变更"),
+        (u"语言键删掉 ≠ 档案丢掉", u"没写「语言键删掉 ≠ 档案丢掉」这句"),
+        (u"Useless Old Antique", u"没写「没用的老古董」的新英文"),
+        (u"The Drummer on Stage Sure Packs a Punch", u"没写幽咆金武器成就标题的新英文"),
+        (u"knowledge_1_summary", u"没把「en 值仍是中文」这条既有缺陷记账")):
+    if _bg10_needle not in _bgfix_spec:
+        _bgfix10_bad("bgfix10-doc", "%s（缺 %s）" % (_bg10_why, _bg10_needle))
+
+print(f"bgfix10（作者替换 zh ⇒ en 同步：6 改值 / 20 删键 / 键集一致）问题: {len(bgfix10_problems)}"
+      f" {bgfix10_problems[:4]}（en {len(en)} 键 / zh {len(zh)} 键 / 未变动子集 {len(_bg10_untouched)} 键"
+      f" / 子集 SHA256 {_bg10_hash[:16]}；en 改前 {_BGFIX10_EN_BEFORE_SHA[:8]} → 改后 {_BGFIX10_EN_AFTER_SHA[:8]}）")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
                        bgfinal_problems, bgappend_problems, bgfix2_problems, bgbook8_problems,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
-                       bgfix9_problems,
+                       bgfix9_problems, bgfix10_problems,
                        symmetric_problems, beacon_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags

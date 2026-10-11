@@ -1,0 +1,111 @@
+bgfix10 · 给作者的对照表（中文 → 新英文）+ 20 条删除的影响说明
+================================================================================================
+
+SHA256：en 改前 B39CF06901319D9BAEDD4E202DC1EF14F78596DEAEF3580D958D575927E83A36
+        en 改后 7A7156E8D83C03BE9916D10A78AA8951FEF66F69F760AFADA2DB16E5433F1E57
+        zh 作者那份 695FA5A5347E1165F431A204D8CA6F1965D9D136DA0F4D560F299E8B3C972810（全程 0 字节改动）
+键数：en 742 → 722 / zh 722（键集完全一致）
+
+################################################################################################
+# 一、6 条改值（逐条：新中文 → 新英文；老英文与旧中文一并留档）
+################################################################################################
+
+[1] item.bettergold.unwanted_antique
+    旧中文：没人要的老古董
+    新中文：没用的老古董
+    旧英文：Unwanted Old Antique
+    新英文：Useless Old Antique
+
+[2] trim_material.bettergold.unwanted_antique
+    旧中文：没人要的老古董质
+    新中文：没用的老古董质
+    旧英文：Old Antique
+    新英文：Useless Old Antique
+
+[3] advancements.bettergold.echogold_weapon.title
+    旧中文：等着看好戏吧，关于鼓手的
+    新中文：台上这鼓手有力气
+    旧英文：Wait for the Show - This One Is About the Drummer
+    新英文：The Drummer on Stage Sure Packs a Punch
+
+[4] bettergold.handbook.page.core_4
+    旧中文：闪耀藤条作为以木元素为载体的核心材料获取可能需要较高的运气，只需要使用任意金工具挖掘树叶与藤蔓有较小的几率才能掉落，这就意味着这可是你在拥有"贵金"工具以后才能拥有的物品，使用此原料炼制而成的"贵金"便被称之为「树棘金」。
+    新中文：闪耀藤条作为以木元素为载体的核心材料获取门槛算偏中期了，只需要使用任意"贵金"工具挖掘树叶与藤蔓有几率掉落，或许我们可以去找高年级的炼金术学员来帮忙呢，使用此原料炼制而成的"贵金"便被称之为「树棘金」。
+    旧英文：Using wood as its carrier, the glittering vine may take quite some luck: just mine leaves and vines with any golden tool for a small chance to drop one. That means it is an item you can only own after you already have "noble gold" tools. The "noble gold" smelted with it is called "Thornsgold".
+    新英文：Using wood as its carrier, the glittering vine is now a fairly mid-game material to obtain: just mine leaves and vines with any "noble gold" tool for a chance to drop one. Or perhaps we could go ask a senior alchemy student for help? The "noble gold" smelted with it is called "Thornsgold".
+
+[5] bettergold.handbook.page.merchant_gift_box_2_left
+    旧中文：珍品古董盒内可以开出没人要的老古董，也有一定几率在内开出一种古董武器工具（其实这种礼品盒也可以在远古城市的箱子内开到）。
+    新中文：珍品古董盒内可以开出没用的老古董，也有一定几率在内开出一种古董武器工具（其实这种礼品盒也可以在远古城市的箱子内开到）。
+    旧英文：The Curio Box gives out Unwanted Antiques, and has a chance to give one kind of antique weapon or tool (this gift box can also be found in Ancient City chests).
+    新英文：The Curio Box gives out Useless Old Antiques, and has a chance to give one kind of antique weapon or tool (this gift box can also be found in Ancient City chests).
+
+[6] bettergold.handbook.page.merchant_gift_box_2_right
+    旧中文：没人要的老古董可以作为能够造成 3 点伤害的投掷品使用，还可以用于在铁砧上为古董武器工具进行修复，但它其实还有一个用途，那就请你移步至「〔待补〕」这个章节里面谢谢（其实这个古董也可以在远古城市的箱子内开到）。
+    新中文：没用的老古董可以作为能够造成 3 点伤害的投掷品使用，还可以用于在铁砧上为古董武器工具进行修复，但它其实还有一个用途，那就请你移步至「〔待补〕」这个章节里面谢谢（其实这个古董也可以在远古城市的箱子内开到）。
+    旧英文：The Unwanted Antique can be thrown as a projectile that deals 3 damage, and can also be used on an anvil to repair antique weapons and tools. But it actually has one more use -- please move on to the "〔待补〕" chapter for that, thank you (this antique can also be found in Ancient City chests).
+    新英文：The Useless Old Antique can be thrown as a projectile that deals 3 damage, and can also be used on an anvil to repair antique weapons and tools. But it actually has one more use -- please move on to the "〔待补〕" chapter for that, thank you (this antique can also be found in Ancient City chests).
+
+################################################################################################
+# 二、20 条删除（键集与 zh 一致；旧值留档 —— 语言键删掉 ≠ 档案丢掉）
+################################################################################################
+
+影响说明：这 20 条全部是**已作废条目 / 旧占位条目**的语言键，产物里已无这些条目。
+          en 侧原来 476–495 行是这 20 条（与 zh HEAD 逐行一一对应），现已删除。
+          作废条目的**正文全文对照**仍留在 docs/1.6-规格.md §19.6 / §21.7 / §22.4（一行未动）。
+
+#   键（zh HEAD 行 / en 改前行）                                    旧中文值 / 旧英文值
+1   bettergold.handbook.entry.metal_tour (zh0/en0)           贵金的材料链
+                                                         → The Material Chain of Noble Golds
+2   bettergold.handbook.entry.upgrade_templates (zh0/en0)    升级锻造模板
+                                                         → Upgrade Smithing Templates
+3   bettergold.handbook.entry.tools_per_family (zh0/en0)     器具（每族六件）
+                                                         → Tools (six per family)
+4   bettergold.handbook.entry.armor_per_family (zh0/en0)     头胸腿靴（每族四件）
+                                                         → Helmet, Chest, Legs, Boots (four per family)
+5   bettergold.handbook.entry.golden_feast (zh0/en0)         以金镀食
+                                                         → Gild Your Food
+6   bettergold.handbook.entry.merchant (zh0/en0)             易金商人
+                                                         → The Gold Exchange Merchant
+7   bettergold.handbook.entry.antiques (zh0/en0)             古董器具
+                                                         → Antique Tools
+8   bettergold.handbook.page.metal_tour (zh0/en0)            八套贵金各自的材料链。
+                                                         → The material chain of each noble gold.
+9   bettergold.handbook.page.metal_chain (zh0/en0)           核心材料 → 原料 → 锭 → 粒，外加一块升级锻造模板。
+                                                         → Core material -> raw ore -> ingot -> nugget, plus one upgrade smithing template.
+10  bettergold.handbook.page.upgrade_templates (zh0/en0)     每套贵金都有一张自己的升级锻造模板，合成时要用到该金属的核心材料。
+                                                         → Every noble gold has its own upgrade smithing template, crafted with that metal's core material.
+11  bettergold.handbook.page.tools (zh0/en0)                 每套贵金有六件器具：剑、斧、镐、锹、锄、刀 —— 由金制器具加上该金属的升级模板与锭，在锻造台上升级而来。
+                                                         → Each noble gold has six tools: sword, axe, pickaxe, shovel, hoe and knife - smithed from the golden tool with that metal's template and ingot.
+12  bettergold.handbook.page.tools_1 (zh0/en0)               剑 · 斧
+                                                         → Sword / Axe
+13  bettergold.handbook.page.tools_2 (zh0/en0)               镐 · 锹
+                                                         → Pickaxe / Shovel
+14  bettergold.handbook.page.tools_3 (zh0/en0)               锄 · 刀
+                                                         → Hoe / Knife
+15  bettergold.handbook.page.armor (zh0/en0)                 每套贵金有头、胸、腿、靴四件盔甲，同样是锻造升级。
+                                                         → Each noble gold has helmet, chestplate, leggings and boots - also smithed.
+16  bettergold.handbook.page.armor_1 (zh0/en0)               头盔 · 胸甲
+                                                         → Helmet / Chestplate
+17  bettergold.handbook.page.armor_2 (zh0/en0)               护腿 · 靴子
+                                                         → Leggings / Boots
+18  bettergold.handbook.page.golden_feast (zh0/en0)          以金镀食 —— 贵金做成的食物。
+                                                         → Gild your food - dishes made from noble gold.
+19  bettergold.handbook.page.merchant (zh0/en0)              易金商人在村庄里经营贵金相关的买卖。
+                                                         → The gold exchange merchant trades everything about noble gold in villages.
+20  bettergold.handbook.page.antiques (zh0/en0)              古董器具走的是另一条线：古董升级模板。
+                                                         → Antique tools follow another path: the antique upgrade template.
+
+################################################################################################
+# 三、本轮发现但**未改**的既有缺陷（等作者一句话；不在本轮 6 条清单里）
+################################################################################################
+
+bettergold.handbook.page.knowledge_1_summary
+  zh：把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。
+  en：把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。
+  ⇒ **en 值就是中文原文**（改前 == 改后，不是本轮引入）。装了 Patchouli 时英文环境下这一页会显示中文。
+  建议英文（可直接采纳）：
+  Smelt "noble gold" raw material into ingots in a furnace or blast furnace to make building blocks
+  (ingot block / bricks / pillar / stairs / slab / brick wall / bars / door / trapdoor / chain / lantern),
+  or combine them with the matching core material's smithing template to upgrade golden gear.
+

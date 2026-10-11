@@ -370,7 +370,8 @@
       "icon": "bettergold:echogold_sword",
       "frame": "task",
       "fd": false,
-      "title": "等着看好戏吧，关于鼓手的",
+      "_bgfix10_old_title": "等着看好戏吧，关于鼓手的",
+      "title": "台上这鼓手有力气",
       "description": "获得任意一种幽咆金武器工具",
       "triggers": [
         "minecraft:inventory_changed"

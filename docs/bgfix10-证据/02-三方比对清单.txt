@@ -1,0 +1,93 @@
+== FILES ==
+zh HEAD bytes=75460 bom=False eol=LF keys=742
+zh WORK bytes=73721 bom=False eol=LF keys=722
+en WORK bytes=79573 bom=False eol=LF keys=742
+
+== ZH CHANGES: added=0 removed=20 changed=6 ==
+
+-- ADDED (in zh now, not in HEAD) --
+(none)
+
+-- REMOVED (in HEAD, not now) --
+zhHEAD:476  bettergold.handbook.entry.metal_tour = 贵金的材料链
+zhHEAD:477  bettergold.handbook.entry.upgrade_templates = 升级锻造模板
+zhHEAD:478  bettergold.handbook.entry.tools_per_family = 器具（每族六件）
+zhHEAD:479  bettergold.handbook.entry.armor_per_family = 头胸腿靴（每族四件）
+zhHEAD:480  bettergold.handbook.entry.golden_feast = 以金镀食
+zhHEAD:481  bettergold.handbook.entry.merchant = 易金商人
+zhHEAD:482  bettergold.handbook.entry.antiques = 古董器具
+zhHEAD:483  bettergold.handbook.page.metal_tour = 八套贵金各自的材料链。
+zhHEAD:484  bettergold.handbook.page.metal_chain = 核心材料 → 原料 → 锭 → 粒，外加一块升级锻造模板。
+zhHEAD:485  bettergold.handbook.page.upgrade_templates = 每套贵金都有一张自己的升级锻造模板，合成时要用到该金属的核心材料。
+zhHEAD:486  bettergold.handbook.page.tools = 每套贵金有六件器具：剑、斧、镐、锹、锄、刀 —— 由金制器具加上该金属的升级模板与锭，在锻造台上升级而来。
+zhHEAD:487  bettergold.handbook.page.tools_1 = 剑 · 斧
+zhHEAD:488  bettergold.handbook.page.tools_2 = 镐 · 锹
+zhHEAD:489  bettergold.handbook.page.tools_3 = 锄 · 刀
+zhHEAD:490  bettergold.handbook.page.armor = 每套贵金有头、胸、腿、靴四件盔甲，同样是锻造升级。
+zhHEAD:491  bettergold.handbook.page.armor_1 = 头盔 · 胸甲
+zhHEAD:492  bettergold.handbook.page.armor_2 = 护腿 · 靴子
+zhHEAD:493  bettergold.handbook.page.golden_feast = 以金镀食 —— 贵金做成的食物。
+zhHEAD:494  bettergold.handbook.page.merchant = 易金商人在村庄里经营贵金相关的买卖。
+zhHEAD:495  bettergold.handbook.page.antiques = 古董器具走的是另一条线：古董升级模板。
+
+-- CHANGED VALUE --
+zhHEAD:157 -> zh:157  item.bettergold.unwanted_antique
+      OLD: 没人要的老古董
+      NEW: 没用的老古董
+zhHEAD:184 -> zh:184  trim_material.bettergold.unwanted_antique
+      OLD: 没人要的老古董质
+      NEW: 没用的老古董质
+zhHEAD:544 -> zh:524  advancements.bettergold.echogold_weapon.title
+      OLD: 等着看好戏吧，关于鼓手的
+      NEW: 台上这鼓手有力气
+zhHEAD:607 -> zh:587  bettergold.handbook.page.core_4
+      OLD: 闪耀藤条作为以木元素为载体的核心材料获取可能需要较高的运气，只需要使用任意金工具挖掘树叶与藤蔓有较小的几率才能掉落，这就意味着这可是你在拥有"贵金"工具以后才能拥有的物品，使用此原料炼制而成的"贵金"便被称之为「树棘金」。
+      NEW: 闪耀藤条作为以木元素为载体的核心材料获取门槛算偏中期了，只需要使用任意"贵金"工具挖掘树叶与藤蔓有几率掉落，或许我们可以去找高年级的炼金术学员来帮忙呢，使用此原料炼制而成的"贵金"便被称之为「树棘金」。
+zhHEAD:666 -> zh:646  bettergold.handbook.page.merchant_gift_box_2_left
+      OLD: 珍品古董盒内可以开出没人要的老古董，也有一定几率在内开出一种古董武器工具（其实这种礼品盒也可以在远古城市的箱子内开到）。
+      NEW: 珍品古董盒内可以开出没用的老古董，也有一定几率在内开出一种古董武器工具（其实这种礼品盒也可以在远古城市的箱子内开到）。
+zhHEAD:667 -> zh:647  bettergold.handbook.page.merchant_gift_box_2_right
+      OLD: 没人要的老古董可以作为能够造成 3 点伤害的投掷品使用，还可以用于在铁砧上为古董武器工具进行修复，但它其实还有一个用途，那就请你移步至「〔待补〕」这个章节里面谢谢（其实这个古董也可以在远古城市的箱子内开到）。
+      NEW: 没用的老古董可以作为能够造成 3 点伤害的投掷品使用，还可以用于在铁砧上为古董武器工具进行修复，但它其实还有一个用途，那就请你移步至「〔待补〕」这个章节里面谢谢（其实这个古董也可以在远古城市的箱子内开到）。
+
+== KEY SET: zh(work) vs en(work) ==
+en missing=0  en extra=20  zh=722 en=742
+-- en MISSING (zh has, en does not) --
+(none)
+-- en EXTRA (en has, zh does not) --
+en:476  bettergold.handbook.entry.metal_tour = The Material Chain of Noble Golds
+en:477  bettergold.handbook.entry.upgrade_templates = Upgrade Smithing Templates
+en:478  bettergold.handbook.entry.tools_per_family = Tools (six per family)
+en:479  bettergold.handbook.entry.armor_per_family = Helmet, Chest, Legs, Boots (four per family)
+en:480  bettergold.handbook.entry.golden_feast = Gild Your Food
+en:481  bettergold.handbook.entry.merchant = The Gold Exchange Merchant
+en:482  bettergold.handbook.entry.antiques = Antique Tools
+en:483  bettergold.handbook.page.metal_tour = The material chain of each noble gold.
+en:484  bettergold.handbook.page.metal_chain = Core material -> raw ore -> ingot -> nugget, plus one upgrade smithing template.
+en:485  bettergold.handbook.page.upgrade_templates = Every noble gold has its own upgrade smithing template, crafted with that metal's core material.
+en:486  bettergold.handbook.page.tools = Each noble gold has six tools: sword, axe, pickaxe, shovel, hoe and knife - smithed from the golden tool with that metal's template and ingot.
+en:487  bettergold.handbook.page.tools_1 = Sword / Axe
+en:488  bettergold.handbook.page.tools_2 = Pickaxe / Shovel
+en:489  bettergold.handbook.page.tools_3 = Hoe / Knife
+en:490  bettergold.handbook.page.armor = Each noble gold has helmet, chestplate, leggings and boots - also smithed.
+en:491  bettergold.handbook.page.armor_1 = Helmet / Chestplate
+en:492  bettergold.handbook.page.armor_2 = Leggings / Boots
+en:493  bettergold.handbook.page.golden_feast = Gild your food - dishes made from noble gold.
+en:494  bettergold.handbook.page.merchant = The gold exchange merchant trades everything about noble gold in villages.
+en:495  bettergold.handbook.page.antiques = Antique tools follow another path: the antique upgrade template.
+
+== EN STATE FOR THE CHANGED/ADDED KEYS ==
+en:157  item.bettergold.unwanted_antique = Unwanted Old Antique
+en:184  trim_material.bettergold.unwanted_antique = Old Antique
+en:544  advancements.bettergold.echogold_weapon.title = Wait for the Show - This One Is About the Drummer
+en:607  bettergold.handbook.page.core_4 = Using wood as its carrier, the glittering vine may take quite some luck: just mine leaves and vines with any golden tool for a small chance to drop one. That means it is an item you can only own after you already have "noble gold" tools. The "noble gold" smelted with it is called "Thornsgold".
+en:666  bettergold.handbook.page.merchant_gift_box_2_left = The Curio Box gives out Unwanted Antiques, and has a chance to give one kind of antique weapon or tool (this gift box can also be found in Ancient City chests).
+en:667  bettergold.handbook.page.merchant_gift_box_2_right = The Unwanted Antique can be thrown as a projectile that deals 3 damage, and can also be used on an anvil to repair antique weapons and tools. But it actually has one more use -- please move on to the "〔待补〕" chapter for that, thank you (this antique can also be found in Ancient City chests).
+
+== ORDER COMPARISON ==
+same relative order of common keys: True
+zh order == en order (full): False
+first divergence at index 474: zh=advancements.bettergold.root.title en=bettergold.handbook.entry.metal_tour
+
+== EN EMPTY VALUES ==
+empty en values=0

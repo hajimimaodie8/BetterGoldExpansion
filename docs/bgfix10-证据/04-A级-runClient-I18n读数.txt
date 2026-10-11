@@ -1,0 +1,14 @@
+﻿[1110月2026 12:36:15.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE probe_armed :: gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run selected_before=zh_cn options_lang_before=zh_cn
+[1110月2026 12:36:15.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE switch_to_en_us :: requested at tick=20
+[1110月2026 12:36:24.008] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE lang_state :: selected=en_us bg_keys=722 expect=722 (=PASS)
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE changed PASS :: item.bettergold.unwanted_antique :: len=19 head=Useless Old Antique
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE changed PASS :: trim_material.bettergold.unwanted_antique :: len=19 head=Useless Old Antique
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE changed PASS :: advancements.bettergold.echogold_weapon.title :: len=39 head=The Drummer on Stage Sure Packs a Punch
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE changed PASS :: bettergold.handbook.page.core_4 :: len=290 head=Using wood as its carrier, the glittering vine is now a fairly mid-gam
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE changed PASS :: bettergold.handbook.page.merchant_gift_box_2_left :: len=163 head=The Curio Box gives out Useless Old Antiques, and has a chance to give
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE changed PASS :: bettergold.handbook.page.merchant_gift_box_2_right :: len=294 head=The Useless Old Antique can be thrown as a projectile that deals 3 dam
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE absent PASS :: bettergold.handbook.entry.metal_tour :: exists=false value=bettergold.handbook.entry.metal_tour
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE absent PASS :: bettergold.handbook.page.tools_1 :: exists=false value=bettergold.handbook.page.tools_1
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE untouched PASS :: item.bettergold.antique_sword :: Antique Sword
+[1110月2026 12:36:24.009] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE untouched PASS :: effect.bettergold.echo_roar :: Sonic Roar
+[1110月2026 12:36:24.011] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGFIX10-PROBE RESULT :: pass=11 fail=0 tick=200

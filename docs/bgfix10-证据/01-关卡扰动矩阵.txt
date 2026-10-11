@@ -1,0 +1,23 @@
+[用例前置] 被扰动文件 4 个；改前 SHA256 已记
+md-baseline                kind=none   occ=-    exit=0    hit=-                                                          
+adv-baseline               kind=none   occ=-    exit=0    hit=-                                                          
+md-drop-en-key             kind=patch  occ=1    exit=1    hit=bgfix10-lang-keyset                                        
+md-zh-copy                 kind=patch  occ=1    exit=1    hit=bgfix10-lang-en-not-zh                                     
+md-empty-value             kind=patch  occ=1    exit=1    hit=bgfix10-lang-no-empty                                      
+md-retired-back            kind=patch  occ=1    exit=1    hit=bgfix10-lang-retired-gone,bgbook10-lang-bilingual          
+md-untouched-changed       kind=patch  occ=1    exit=1    hit=bgfix10-lang-untouched-frozen                              
+md-changed-revert          kind=patch  occ=1    exit=1    hit=bgfix10-lang-changed-frozen                                
+md-doc-needle-gone         kind=patch  occ=3    exit=1    hit=bgfix10-doc                                                
+adv-manifest-revert        kind=patch  occ=1    exit=1    hit=bgach-lang-verbatim                                        
+md-reverse-blank-line      kind=patch  occ=1    exit=0    hit=-                                                          
+md-reverse-snap-prose      kind=patch  occ=1    exit=0    hit=-                                                          
+md-precondition-missing    kind=rename occ=1    exit=2    hit=-                                                          
+
+== 逐字节复原 ==
+OK   1eccb225b569c560  docs\1.6-规格.md
+OK   7a7156e8d83c03be  src\main\resources\assets\bettergold\lang\en_us.json
+OK   6a0a7759bfd3d915  tools\asset-generator\advancement_manifest.json
+OK   12331233cccedcca  tools\asset-generator\bgappend-requirements-snapshot\bg-book-6.1-6.3.md
+
+总计：cases run = 13 / 13（弄脏⇒1 = 8 / 反向对照⇒0 = 4 / 前置缺失⇒2 = 1）；mismatches = 0；SETUP_FAILS = 0；RESTORE identical: True
+RESULT ALL-PASS

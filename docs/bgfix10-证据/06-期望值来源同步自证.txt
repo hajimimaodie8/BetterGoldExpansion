@@ -1,0 +1,19 @@
+PASS snap6-row-unique :: §6.2 第 4 行唯一命中（1 行）
+PASS snap6-parsed :: 解析净文本 == 作者新 zh 值（101 字）
+PASS snap6-old-kept :: §6：旧文案原文仍在（搬运记录里）
+PASS snap6-log :: §6：搬运记录 +1 行
+PASS snap6-clean :: §6：UTF-8 无 BOM / LF
+PASS snap9-row-left :: 2 左 唯一命中（1）
+PASS snap9-row-right :: 2 右 唯一命中（1）
+PASS snap9-parsed-left :: 2 左 解析净文本 == 作者新 zh 值
+PASS snap9-parsed-right :: 2 右 解析净文本 == 作者新 zh 值
+PASS snap9-label-new :: 2 右 的「中上边放」标签已换新名
+PASS snap9-old-kept :: §9：两段旧文案原文仍在（搬运记录里）
+PASS snap9-note :: §9 的空引号批注仍在
+PASS snap9-log :: §9：搬运记录 +1 行
+PASS snap9-clean :: §9：UTF-8 无 BOM / LF
+PASS manifest-title :: title == 作者新 zh 值 '台上这鼓手有力气'
+PASS manifest-old-kept :: 旧期望原文以 `_bgfix10_old_title` 留档（JSON 无注释语法）
+PASS zh-untouched :: zh_cn.json 仍是作者那一份（字节未动）
+PASS en-stable :: en_us.json 仍是 apply_en.py 的产物（本脚本没碰它）
+RESULT ALL-PASS

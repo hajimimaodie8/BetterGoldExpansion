@@ -1,0 +1,24 @@
+== bettergold.handbook.page.knowledge_1_summary
+   en_before  '把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。'
+   en_after   '把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。'
+   zh         '把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。'
+== bettergold.handbook.page.knowledge_1_right
+   en_before  'Of course "noble gold" can also be used to make powerful weapons and armour, but first you have to craft the ingot of some "noble gold" and the smithing template made from its matching core material, then combine them with golden gear and the matching "noble gold" ingot.'
+   en_after   'Of course "noble gold" can also be used to make powerful weapons and armour, but first you have to craft the ingot of some "noble gold" and the smithing template made from its matching core material, then combine them with golden gear and the matching "noble gold" ingot.'
+   zh         '当然"贵金"也可以用于制作功能性强大的武装使用，不过得先做出某样"贵金"锭和它所对应的核心材料所制成的锻造模板，再搭配上金装备和所相符的"贵金"锭即可。'
+== item.bettergold.unwanted_antique
+   en_before  'Unwanted Old Antique'
+   en_after   'Useless Old Antique'
+   zh         '没用的老古董'
+== item.bettergold.alchemy_student_handbook
+   en_before  'Handbook of the New-Generation Alchemy Student'
+   en_after   'Handbook of the New-Generation Alchemy Student'
+   zh         '新生代炼金术学员手册'
+
+== en_after 里含中日韩文字的键（全量）
+   [SAME-AS-ZH] bettergold.handbook.page.knowledge_1_summary = '把"贵金"原料丢进熔炉或高炉烧成锭，即可制成建材（建筑方块：锭块 / 砖块 / 柱 / 楼梯 / 台阶 / 砖墙 / 栏杆 / 门 / 活板门 / 链 / 灯笼），或与其对应核心材料做成的锻造模版升级金装备。'
+   [DIFF] bettergold.handbook.page.merchant_gift_box_2_right = 'The Useless Old Antique can be thrown as a projectile that deals 3 damage, and can also be used on an anvil to repair antique weapons and tools. But it actually has one more use -- please move on to the "〔待补〕" chapter for that, thank you (this antique can also be found in Ancient City chests).'
+
+== 这些键在改前的 en 里也是中文吗
+   before=True after=True  bettergold.handbook.page.knowledge_1_summary
+   before=True after=True  bettergold.handbook.page.merchant_gift_box_2_right

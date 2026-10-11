@@ -1,0 +1,22 @@
+改前: en 键 742 / zh 键 722 / en 字节 79573
+PASS no-bom :: 无 BOM
+PASS lf :: 无 CR（LF）
+PASS shrunk :: 字节 79573 → 77803
+PASS keyset==zh :: 键集与 zh 完全一致（en 722 / zh 722）
+PASS removed-gone :: 20 个作废键都不在 en 里
+PASS removed-gone-zh :: 20 个作废键也都不在 zh 里（作者已删）
+PASS order-kept :: 其余键的先后顺序逐位未变（722 项）
+PASS untouched-verbatim :: 未变动的 716 个键的值逐字未变（差异 0 条）
+PASS changed:item.bettergold.unwanted_antique :: 'Unwanted Old Antique' → 'Useless Old Antique'
+PASS changed:trim_material.bettergold.unwanted_antique :: 'Old Antique' → 'Useless Old Antique'
+PASS changed:advancements.bettergold.echogold_weapon.title :: 'Wait for the Show - This One Is About the Drummer' → 'The Drummer on Stage Sure Packs a Punch'
+PASS changed:bettergold.handbook.page.core_4 :: 'Using wood as its carrier, the glittering vine may take quite some luck: just mine leaves and vines with any golden tool for a small chance to drop one. That means it is an item you can only own after you already have "noble gold" tools. The "noble gold" smelted with it is called "Thornsgold".' → 'Using wood as its carrier, the glittering vine is now a fairly mid-game material to obtain: just mine leaves and vines with any "noble gold" tool for a chance to drop one. Or perhaps we could go ask a senior alchemy student for help? The "noble gold" smelted with it is called "Thornsgold".'
+PASS changed:bettergold.handbook.page.merchant_gift_box_2_left :: 'The Curio Box gives out Unwanted Antiques, and has a chance to give one kind of antique weapon or tool (this gift box can also be found in Ancient City chests).' → 'The Curio Box gives out Useless Old Antiques, and has a chance to give one kind of antique weapon or tool (this gift box can also be found in Ancient City chests).'
+PASS changed:bettergold.handbook.page.merchant_gift_box_2_right :: 'The Unwanted Antique can be thrown as a projectile that deals 3 damage, and can also be used on an anvil to repair antique weapons and tools. But it actually has one more use -- please move on to the "〔待补〕" chapter for that, thank you (this antique can also be found in Ancient City chests).' → 'The Useless Old Antique can be thrown as a projectile that deals 3 damage, and can also be used on an anvil to repair antique weapons and tools. But it actually has one more use -- please move on to the "〔待补〕" chapter for that, thank you (this antique can also be found in Ancient City chests).'
+PASS no-empty :: en 无空值（0 条）
+INFO zh/en 值逐字相同的键 1 条：['bettergold.handbook.page.knowledge_1_summary']
+PASS changed-not-zh :: 6 条改值键的英文都不等于中文
+PASS subset-hash :: 未变动子集 SHA256 b96c5e7e9fd0d9005c62bcf14cf80bd7（716 键）
+AFTER-SHA 7A7156E8D83C03BE9916D10A78AA8951FEF66F69F760AFADA2DB16E5433F1E57
+SUBSET-SHA B96C5E7E9FD0D9005C62BCF14CF80BD72F287B2A6A83B88DA368B01EA3BAD15E
+RESULT ALL-PASS

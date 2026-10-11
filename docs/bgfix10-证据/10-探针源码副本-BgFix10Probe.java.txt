@@ -1,0 +1,204 @@
+package com.hjmmd_8.bettergold.probe.bgfix10;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.locale.Language;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * bgfix10 A 级**客户端**探针（一次性；收尾整块删除）。
+ *
+ * <p>要证的一件事：<b>作者替换后的 en_us.json 在游戏里真的解析成新的英文</b> —— 读的是
+ * {@link I18n} 的解析值（= {@code Language.getInstance().getOrDefault(key)}），不是我自己再解析一遍 JSON。</p>
+ *
+ * <p>口径（源码依据，本机 patched sources）：</p>
+ * <ul>
+ *   <li>{@code LanguageManager#onResourceManagerReload} 装载的清单是
+ *       <b>{@code ["en_us", 当前语言]}</b>（{@code LanguageManager.java:53-70}），
+ *       而 {@code ClientLanguage.loadFrom} 是 {@code map.putAll(...)} 逐语言**覆盖**
+ *       （{@code ClientLanguage.java:43-55}）⇒ <b>当前语言优先、en_us 兜底</b>。</li>
+ *   <li>⇒ 要看英文就必须把当前语言切到 {@code en_us}（本机 {@code run/options.txt} 是 {@code lang:zh_cn}）。
+ *       探针在内存里切（{@code Options.languageCode} + {@code LanguageManager#setSelected} +
+ *       {@code Minecraft#reloadResourcePacks}），**跑完杀进程** ⇒ {@code options.txt} 不会被写回。</li>
+ *   <li>⚠ **不进任何世界**：只要求打上开关文件后启动客户端、停在标题界面即可
+ *       ⇒ 完全避开"载入/重写作者存档"这条红线（run/saves 里只有作者那份 {@code 新的世界}）。</li>
+ * </ul>
+ *
+ * <p>开关文件：{@code run/bgfix10-probe.enabled}（跑前删除 ⇒ 探针不动作）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgFix10Probe {
+
+    private static final String TAG = "BGFIX10-PROBE";
+    private static final String SWITCH = "bgfix10-probe.enabled";
+    private static final String DONE = "bgfix10-probe.done";
+    /** en_us.json 的键数（722）—— 语言表里所有含 `bettergold` 的键都该来自这一份 */
+    private static final int EXPECT_BG_KEYS = 722;
+
+    /** 6 条本轮改值的键 ⇒ 游戏里必须解析成这个新英文 */
+    private static final Map<String, String> EXPECT_CHANGED = new LinkedHashMap<>();
+    /** 20 个作废键里抽两条 ⇒ 游戏里必须**不存在**（键集与 zh 一致） */
+    private static final String[] EXPECT_ABSENT = {
+        "bettergold.handbook.entry.metal_tour",
+        "bettergold.handbook.page.tools_1",
+    };
+    /** 未变动的键抽两条 ⇒ 必须逐字未变 */
+    private static final Map<String, String> EXPECT_UNTOUCHED = new LinkedHashMap<>();
+
+    static {
+        EXPECT_CHANGED.put("item.bettergold.unwanted_antique", "Useless Old Antique");
+        EXPECT_CHANGED.put("trim_material.bettergold.unwanted_antique", "Useless Old Antique");
+        EXPECT_CHANGED.put("advancements.bettergold.echogold_weapon.title",
+                "The Drummer on Stage Sure Packs a Punch");
+        EXPECT_CHANGED.put("bettergold.handbook.page.core_4",
+                "Using wood as its carrier, the glittering vine is now a fairly mid-game material to obtain:"
+                + " just mine leaves and vines with any \"noble gold\" tool for a chance to drop one."
+                + " Or perhaps we could go ask a senior alchemy student for help? The \"noble gold\" smelted"
+                + " with it is called \"Thornsgold\".");
+        EXPECT_CHANGED.put("bettergold.handbook.page.merchant_gift_box_2_left",
+                "The Curio Box gives out Useless Old Antiques, and has a chance to give one kind of antique"
+                + " weapon or tool (this gift box can also be found in Ancient City chests).");
+        EXPECT_CHANGED.put("bettergold.handbook.page.merchant_gift_box_2_right",
+                "The Useless Old Antique can be thrown as a projectile that deals 3 damage, and can also be"
+                + " used on an anvil to repair antique weapons and tools. But it actually has one more use"
+                + " -- please move on to the \"\u3014\u5f85\u8865\u3015\" chapter for that, thank you"
+                + " (this antique can also be found in Ancient City chests).");
+        EXPECT_UNTOUCHED.put("item.bettergold.antique_sword", "Antique Sword");
+        EXPECT_UNTOUCHED.put("effect.bettergold.echo_roar", "Sonic Roar");
+    }
+
+    private static int tick = 0;
+    private static boolean switched = false;
+    private static boolean done = false;
+
+    private BgFix10Probe() {
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        try {
+            step();
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} tick={} \u629b\u5f02\u5e38", TAG, tick, t);
+            for (StackTraceElement e : t.getStackTrace()) {
+                bettergold.LOGGER.error("{}   at {}", TAG, e);
+            }
+        }
+    }
+
+    private static void step() throws IOException {
+        Path gamedir = FMLPaths.GAMEDIR.get();
+        if (!Files.isRegularFile(gamedir.resolve(SWITCH))) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        tick++;
+        if (!switched && tick >= 20 && mc.getLanguageManager() != null) {
+            switched = true;
+            readout("probe_armed", "gamedir=" + gamedir
+                    + " selected_before=" + mc.getLanguageManager().getSelected()
+                    + " options_lang_before=" + mc.options.languageCode);
+            mc.options.languageCode = "en_us";
+            mc.getLanguageManager().setSelected("en_us");
+            mc.reloadResourcePacks();
+            readout("switch_to_en_us", "requested at tick=" + tick);
+        }
+        if (!done && switched && tick >= 200 && tick % 20 == 0) {
+            int n = countBgKeys();
+            if (n != EXPECT_BG_KEYS) {
+                readout("waiting_reload", "tick=" + tick + " bg_keys=" + n + " expect=" + EXPECT_BG_KEYS);
+                return;
+            }
+            done = true;
+            int pass = 0;
+            int fail = 0;
+            readout("lang_state", "selected=" + mc.getLanguageManager().getSelected()
+                    + " bg_keys=" + n + " expect=" + EXPECT_BG_KEYS
+                    + " (=" + (n == EXPECT_BG_KEYS ? "PASS" : "FAIL") + ")");
+            if (n == EXPECT_BG_KEYS) {
+                pass++;
+            } else {
+                fail++;
+            }
+            for (Map.Entry<String, String> e : EXPECT_CHANGED.entrySet()) {
+                String got = I18n.get(e.getKey());
+                boolean ok = got.equals(e.getValue());
+                if (ok) {
+                    pass++;
+                } else {
+                    fail++;
+                }
+                readout("changed " + (ok ? "PASS" : "FAIL"), e.getKey()
+                        + " :: len=" + got.length() + " head=" + esc(got.substring(0, Math.min(70, got.length())))
+                        + (ok ? "" : " EXPECT=" + esc(e.getValue())));
+            }
+            for (String k : EXPECT_ABSENT) {
+                boolean ok = !I18n.exists(k);
+                if (ok) {
+                    pass++;
+                } else {
+                    fail++;
+                }
+                readout("absent " + (ok ? "PASS" : "FAIL"), k + " :: exists=" + I18n.exists(k)
+                        + " value=" + esc(I18n.get(k)));
+            }
+            for (Map.Entry<String, String> e : EXPECT_UNTOUCHED.entrySet()) {
+                String got = I18n.get(e.getKey());
+                boolean ok = got.equals(e.getValue());
+                if (ok) {
+                    pass++;
+                } else {
+                    fail++;
+                }
+                readout("untouched " + (ok ? "PASS" : "FAIL"), e.getKey() + " :: " + esc(got)
+                        + (ok ? "" : " EXPECT=" + esc(e.getValue())));
+            }
+            // 还原内存里的语言选择（进程随后被杀 ⇒ options.txt 根本不会被写回；这一步只是双保险）
+            mc.options.languageCode = "zh_cn";
+            mc.getLanguageManager().setSelected("zh_cn");
+            readout("RESULT", "pass=" + pass + " fail=" + fail + " tick=" + tick);
+            Files.write(gamedir.resolve(DONE),
+                    ("done tick=" + tick + " pass=" + pass + " fail=" + fail + "\n")
+                            .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+    }
+
+    private static int countBgKeys() {
+        int n = 0;
+        for (String k : Language.getInstance().getLanguageData().keySet()) {
+            if (k.contains("bettergold")) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    private static void readout(String name, String value) {
+        bettergold.LOGGER.info("{} {} :: {}", TAG, name, value);
+    }
+
+    /** 非 ASCII 一律转 \\uXXXX（探针输出不许依赖控制台编码） */
+    private static String esc(String s) {
+        StringBuilder sb = new StringBuilder(s.length() + 8);
+        for (char c : s.toCharArray()) {
+            if (c >= 32 && c < 127) {
+                sb.append(c);
+            } else {
+                sb.append(String.format("\\u%04x", (int) c));
+            }
+        }
+        return sb.toString();
+    }
+}

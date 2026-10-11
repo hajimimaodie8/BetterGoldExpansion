@@ -1,0 +1,33 @@
+bgfix10 · 六校验器（收尾后最终态；判读 = exit + 关键计数行 两列）
+============================================================================================
+exit=0  validate_metal_assets
+         [bg-assets-anti-vacuum] 实际检查了 595 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+         [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+exit=0  validate_metal_data
+         bgfix10（作者替换 zh ⇒ en 同步：6 改值 / 20 删键 / 键集一致）问题: 0 []（en 722 键 / zh 722 键 / 未变动子集 716 键 / 子集 SHA256 b96c5e7e9fd0d900；en 改前 B39CF069 → 改后 7A7156E8）
+         [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+exit=0  validate_trim_assets
+         [bgfinal3-anti-vacuum] 实际检查了 68 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+         [bgfinal3-ok] 问题 0 条 / 检查 68 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+exit=0  validate_advancements
+         OK [bgach] 51 个成就 / 125 条 criteria / 触发类型 ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:villager_trade'] / recipe_crafted 0 条 / 语言键 102 条
+         [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+exit=0  check_jar_clean
+         jar 内文件总数 = 2409
+         [jar-clean-anti-vacuum] 实际检查了 2409 项（jar 内条目数；必须 > 0）
+
+exit=0  check_forced_chunks
+         data.Forced length        = 0
+         [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+
+构建：compileJava exit=0 / runData exit=0 / processResources jar --rerun-tasks exit=0（BUILD SUCCESSFUL ×3）
+jar：条目 2409 / *Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0（探针已整块删除后重建）
+
+── 追加（写完 docs/1.6-规格.md §31.9 之后复跑两个"读文档"的关卡）──
+validate_metal_data  exit=0  bgfix10（…）问题: 0 []（en 722 键 / zh 722 键 / 未变动子集 716 键 / 子集 SHA256 b96c5e7e9fd0d900）
+validate_advancements exit=0  问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条
+（§31.9 是**追加**文本，只增加 needle、不删任何 needle ⇒ 两条 doc 断言不受影响；复跑确认）

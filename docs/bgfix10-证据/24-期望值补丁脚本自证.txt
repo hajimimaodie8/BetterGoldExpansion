@@ -1,0 +1,25 @@
+① tools\asset-generator\bgappend-requirements-snapshot\bg-book-6.1-6.3.md
+  replace core_4 正文                                  1 处
+  搬运记录 +1 行
+② tools\asset-generator\bgappend-requirements-snapshot\bg-book-9.md
+  物品名 '没人要的老古董' → '没用的老古董'，全文命中 3 处（应恰好 3）
+  replace 物品名（标签 1 + 正文 2）                           3 处
+  搬运记录 +1 行
+③ tools\asset-generator\advancement_manifest.json
+  replace echogold_weapon.title                      1 处
+  manifest 条目数 51，title 现值 '台上这鼓手有力气'
+
+== 写后自证 ==
+PASS snap6-row :: §6.2 第 4 行唯一命中（1 行）
+FAIL snap6-parsed :: 解析后的净文本 == 作者的新 zh 值
+FAIL snap9-parsed-left :: 2 左：解析后的净文本 == 作者的新 zh 值
+PASS snap9-parsed-right :: 2 右：解析后的净文本 == 作者的新 zh 值（`<br>⚠` 批注仍在）
+PASS snap9-note :: §9 的旧批注（空引号 ⇒ 见 §9.5）仍在
+PASS snap6-clean :: §6 快照 UTF-8 无 BOM / LF
+PASS snap9-clean :: §9 快照 UTF-8 无 BOM / LF
+PASS snap6-both :: §6：新文案在表里、旧文案在搬运记录里
+FAIL snap9-new :: §9：新文案两格都在
+PASS snap9-old :: §9：旧文案留档在搬运记录里
+PASS snap9-label :: §9 正文区已无旧名（正文区 = 搬运记录之前）
+PASS zh-untouched :: zh_cn.json 仍是作者那一份（字节未动）
+RESULT HAS-FAIL

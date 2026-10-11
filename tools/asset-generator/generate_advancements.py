@@ -370,7 +370,9 @@ def build() -> list[dict]:
         ("thornsgold", "我被一块金属锭？扎到了？！", "可它明明看起来那么光滑…",
          "摄取之绿", "看似吉利服实则移动的仙人掌", "treasure/glittering_vine"),
         ("echogold", "就这样轰轰烈烈的登场", "感觉可以拿这玩意做大音箱！",
-         "等着看好戏吧，关于鼓手的", "苏打色的战甲配上劲爆的音乐", "treasure/bundled_echo_shard"),
+         # ⚠ bgfix10（2026-10-11）：作者替换 zh_cn.json ⇒ 这一格的**逐字中文**改了。
+         #   **旧原文留档（不删）**：「等着看好戏吧，关于鼓手的」
+         "台上这鼓手有力气", "苏打色的战甲配上劲爆的音乐", "treasure/bundled_echo_shard"),
         ("indigoseagold", "坠海浮靛", "这块金属～是水炼的，是水炼的",
          "以强力水压重击", "深海游行者", "treasure/indigo_ocean_heart"),
         ("voodoogold", "毒液渗透之物", "这块金属所散发出的毒素十分让人不安",
@@ -579,7 +581,10 @@ EN: dict[str, tuple[str, str]] = {  # advancement key -> (title, description)
                          "Obtain a full set of Thornsgold armor."),
     "echogold_ingot": ("A Roaring Entrance Just Like That",
                        "Feels like you could build a big speaker out of this!"),
-    "echogold_weapon": ("Wait for the Show - This One Is About the Drummer",
+    # ⚠ bgfix10（2026-10-11）：中文由「等着看好戏吧，关于鼓手的」改成「台上这鼓手有力气」
+    #   ⇒ 英文跟着改。**旧英文原文留档（不删）**：
+    #   "Wait for the Show - This One Is About the Drummer"
+    "echogold_weapon": ("The Drummer on Stage Sure Packs a Punch",
                         "Obtain any kind of Echogold weapon or tool."),
     "echogold_armor": ("Soda-Colored Armor With Blasting Music",
                        "Obtain a full set of Echogold armor."),
