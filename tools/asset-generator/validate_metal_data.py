@@ -108,13 +108,24 @@ def need(key: str) -> None:
 
 
 for m in ALL_METALS:
-    ids = [f"{m}_{s}" for s in ITEMS] + [f"raw_{m}"] + [f"{m}_{w}" for w in WEAPONS]
-    for i in ids:
-        need(f"item.bettergold.{i}")
-    for b in BLOCKS:
+    # ⚠ 1.7 bg-n10 轮3：**按该族声明的形态过滤**（旧口径原文保留在下面）。
+    #   旧口径（轮1 后半写的）= 无条件要 `[f"{m}_{s}" for s in ITEMS] + [f"raw_{m}"]` +
+    #   全部 `BLOCKS` + 全部 `TEMPLATE_KEYS`；那时生成器也是"全量占位"，
+    #   两边一起错 ⇒ **假绿**（未注册形态的死语言键两边都看不见）。
+    #   现口径：与 `generate_metal_data.py`（生成器）**同时**改成按形态取，
+    #   否则会立刻假红（生成器不再写死键、校验器还在要）。
+    #   形态外的（器具 / 武器 / 盔甲 / 刀）恒定注册 ⇒ 恒定要语言键。
+    for s in ITEMS:
+        if s in ("nugget", "upgrade_template") and not MF.has(m, s):
+            continue
+        need(f"item.bettergold.{m}_{s}")
+    if MF.has(m, "raw"):
+        need(f"item.bettergold.raw_{m}")
+    for b in MF.building_of(m):
         need(f"block.bettergold.{m}_{b}")
-    for t in TEMPLATE_KEYS:
-        need(f"item.bettergold.smithing_template.{m}_upgrade.{t}")
+    if MF.has(m, "upgrade_template"):
+        for t in TEMPLATE_KEYS:
+            need(f"item.bettergold.smithing_template.{m}_upgrade.{t}")
     # 盔甲纹饰材料名（trim_material JSON 的 description 用它；缺了纹饰提示会是裸键名）
     need(f"trim_material.bettergold.{m}")
 
@@ -6009,16 +6020,20 @@ else:
     if _bg11_v != _BGFIX11_K1S_NEW_EN:
         _bgfix11_bad("bgfix11-lang-k1s-en",
                      "%s 的 en 值不是本轮钉死的新英文（实际 %r）" % (_BGFIX11_K1S, _bg11_v))
-# ② zh 侧没被动过 —— ⚠ **1.7（bg-n10 轮1 后半）口径就地标注**：
+# ② zh 侧没被动过 —— ⚠ **1.7（bg-n10 轮1 后半）口径就地标注，轮3 再次改常量**：
 #   旧口径（原文保留）= **文件级** SHA256 必须 == `_BGFIX10_ZH_SHA`（695FA5A5…）。
-#   1.7 作者要求"语言键占位、**只加不删**"⇒ 文件级常量必然变（新增 73 键）⇒ 改成**语义冻结**：
+#   1.7 轮1 后半作者要求"语言键占位、**只加不删**"⇒ 文件级常量必然变（新增 73 键）⇒ 改成**语义冻结**：
 #     ① 冻结副本（`09-zh_cn-冻结副本.json`）里**每一个键的值逐字未变**（这才是"作者那份没被动过"的本意）；
-#     ② 新增的键必须**恰好**是本轮 1.7 的两族占位键（键数 = 73，且不许删键）；
+#     ② 新增的键必须**恰好**是本轮 1.7 的键（键数 = `_BGN10_NEW_LANG_KEYS`，且不许删键）；
 #     ③ 文件级 SHA 仍然记录（`_BGN10_ZH_AFTER_SHA`），改了要显式改常量（护栏不消失，只是换了锚点）。
 #   旧值留档：`_BGFIX10_ZH_SHA = "695FA5A5347E1165F431A204D8CA6F1965D9D136DA0F4D560F299E8B3C972810"`
-_BGN10_ZH_AFTER_SHA = "717E39789409FFC2CA3F48ED3313E54F3624766FE1C4D749756CA5EEF6E8A737"
-_BGN10_EN_AFTER_SHA = "112E554C79CD41464C9E708AFD0D3C3C3F8DC5B983E40C49EE131C87D6F834F0"
-_BGN10_NEW_LANG_KEYS = 73      # 1.7 两族占位键：zh 63（generate_metal_data）+ 10（generate_weapon_lang）
+#            轮1 后半的值（轮3 就地取代）：zh 717E39789409FFC2… / en 112E554C79CD4146… / 键数 73
+#   ⚠ 轮3 为什么又变：轮2 的 A 级负向检查抓到 **19 条死语言键**（未注册形态的占位键，
+#     例如 `item.bettergold.raw_chaosgold` / `block.bettergold.chaosalloy_bricks`）⇒
+#     生成器与校验器**同时**改成按形态取，删掉那 19 条 ⇒ 73 - 19 = **54**。
+_BGN10_ZH_AFTER_SHA = "7B9D0B52F5031D34B284035DC84CE89903539F54F67E6C610CD7783EEBD7C4EF"
+_BGN10_EN_AFTER_SHA = "1681514BDBAA69915F19B653B74EA4EE330E1A8174D1BC3CD609EBE795B2793C"
+_BGN10_NEW_LANG_KEYS = 54      # 1.7 两族真实注册物体的键：zh 44（generate_metal_data）+ 10（generate_weapon_lang）
 if not _BGFIX11_FROZEN_ZH.is_file():
     _bgfix11_bad("bgfix11-lang-k1s-en",
                  "找不到 zh 冻结副本 %s（反空转守护）" % _BGFIX11_FROZEN_ZH.relative_to(REPO))
@@ -6104,13 +6119,25 @@ if not _enum_body:
     _bgn10_bad("bgn10-forms-parity", "解析不到 MetalFamily.Form 枚举（反空转守护）")
 else:
     _java_forms = re.findall(r"^\s{8}[A-Z_]+\(\"([a-z_]+)\"\)", _enum_body.group(1), re.M)
-    if _java_forms != MF.ALL_FORMS:
+    # ⚠ 1.7 轮3：Java 枚举里多了 15 个「器具/武器/盔甲的伪形态」（顺序在 15 个可声明形态之后）
+    #   ⇒ 对穿的是 `MF.jvm_enum_names()`（= ALL_FORMS + GEAR_FORMS），不是 ALL_FORMS。
+    #   旧口径原文保留：`if _java_forms != MF.ALL_FORMS:`
+    if _java_forms != MF.jvm_enum_names():
         _bgn10_bad("bgn10-forms-parity",
-                   "Java Form 枚举 %s ≠ metal_forms.ALL_FORMS %s（顺序也要一致）"
-                   % (_java_forms, MF.ALL_FORMS))
-    if len(_java_forms) != 15:
+                   "Java Form 枚举 %s ≠ metal_forms.ALL_FORMS+GEAR_FORMS %s（顺序也要一致）"
+                   % (_java_forms, MF.jvm_enum_names()))
+    if len(_java_forms) != 30:
         _bgn10_bad("bgn10-forms-parity",
-                   "Java Form 枚举不是 15 个（实际 %d）—— 反空转守护" % len(_java_forms))
+                   "Java Form 枚举不是 30 个（= 15 可声明 + 15 伪形态；实际 %d）—— 反空转守护"
+                   % len(_java_forms))
+    if _java_forms[:len(MF.ALL_FORMS)] != MF.ALL_FORMS:
+        _bgn10_bad("bgn10-forms-parity",
+                   "Java Form 枚举的**前 %d 项**不是 metal_forms.ALL_FORMS（可声明形态的顺序被改动了）"
+                   % len(MF.ALL_FORMS))
+    if _java_forms[len(MF.ALL_FORMS):] != MF.GEAR_FORMS:
+        _bgn10_bad("bgn10-forms-parity",
+                   "Java Form 枚举的**伪形态段** %s ≠ metal_forms.GEAR_FORMS %s"
+                   % (_java_forms[len(MF.ALL_FORMS):], MF.GEAR_FORMS))
 _bf = re.search(r"BUILDING_FORMS = java\.util\.EnumSet\.of\((.*?)\);", _bgn10_mf_nc, re.S)
 if not _bf:
     _bgn10_bad("bgn10-forms-parity", "解析不到 Form.BUILDING_FORMS（反空转守护）")
@@ -6178,6 +6205,126 @@ for _lit, _m in (("chaosRange(ChaosRange.Channel.MINING, 2, 12)", "chaosgold 2..
                  ("chaosRange(ChaosRange.Channel.MINING, 8, 16)", "chaosalloy 8..16")):
     if _lit not in _bgn10_am_nc:
         _bgn10_bad("bgn10-chaos-range", "AllMetals 里没有 %s（作者给的两端值）" % _m)
+
+# ---------- ③ 区间值的**接线**（1.7 bg-n10 轮3）：唯一实现 + 落点 + 作者逐件给的数 ----------
+# 口径：**「公式只有一处」是硬约束，接线是"读当前值 → 写进游戏认的那个口子"**，
+#   接线层里**一个 `min ? max : min` 都不许有**（那条公式只在 ChaosRange.java）。
+_bgn10w_problems: list[str] = []
+
+
+def _bgn10w_bad(tag: str, msg: str) -> None:
+    _bgn10w_problems.append("[%s] %s" % (tag, msg))
+
+
+_b10w = JAVA / "material" / "ChaosWiring.java"
+_b10w_txt = strip_comments(_b10w.read_text(encoding="utf-8")) if _b10w.is_file() else ""
+if not _b10w_txt:
+    _bgn10w_bad("bgn10-chaos-wiring", "缺 material/ChaosWiring.java（接线层；反空转守护）")
+else:
+    # 接线层必须调唯一入口 `ChaosRange.current(`，且**不许**自带第二条乒乓公式
+    if "ChaosRange.current(" not in _b10w_txt:
+        _bgn10w_bad("bgn10-chaos-wiring", "接线层没有调 ChaosRange.current(...)（那就不是「接线」了）")
+    if _bgn10_formula in _b10w_txt:
+        _bgn10w_bad("bgn10-chaos-wiring",
+                    "接线层里出现了乒乓公式本体（%s）—— 公式只许在 ChaosRange.java 一处" % _bgn10_formula)
+    # 三个落点（缺一个就是"某一路的区间静默不生效"）
+    for _needle, _why in (
+            ("PlayerEvent.BreakSpeed", "缺挖掘速度落点（PlayerEvent.BreakSpeed）"),
+            ("ItemAttributeModifierEvent", "缺攻击伤害落点（ItemAttributeModifierEvent）"),
+            ("LivingIncomingDamageEvent",
+             "远程命中的翻转没挂在 LivingIncomingDamageEvent 上（挂在 DamageEvent.Post 会被"
+             "同一条链上任何异常吞掉 —— 轮3 实测：chaos 器具命中时 Config#weaponBuffChance 抛"
+             "「未登记族」，Post 那一层整条轮不到）"),
+            ("getWeaponItem()",
+             "缺远程命中派发（DamageSource#getWeaponItem —— 红线 4：不许用主手）"),
+            ("liveStackOf", "远程翻转没有「找射手手里那一栈」这一步 —— 在投射物带的副本上 toggle"
+                            "不会改到手持栈（AbstractArrow#firedFromWeapon 是 copy()）")):
+        if _needle not in _b10w_txt:
+            _bgn10w_bad("bgn10-chaos-wiring", _why)
+    # 挖掘速度的差值必须拿 Tier 的速度当基准（不是写死数字）
+    if ".tier.getSpeed()" not in _b10w_txt:
+        _bgn10w_bad("bgn10-chaos-wiring",
+                    "挖掘差值没拿 family.tier.getSpeed() 当基准（写死数字 ⇒ 改区间时会两边不一致）")
+# 近战「命中即翻转」的三个子类必须在（缺了 = 近战永不转换）
+for _needle, _why in (
+        ("class ChaosSwordItem", "缺剑的命中翻转子类"),
+        ("class ChaosMaceItem", "缺重锤的命中翻转子类"),
+        ("class ChaosTridentItem", "缺三叉戟的命中翻转子类"),
+        ("static void flipAttackOnHit", "缺共用的翻转动作（flipAttackOnHit）")):
+    if _needle not in strip_comments((JAVA / "material" / "MetalWeapons.java").read_text(encoding="utf-8")):
+        _bgn10w_bad("bgn10-chaos-wiring", _why)
+# 接线层必须注册在游戏总线
+if ("NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ChaosWiring.class)"
+        not in strip_comments((JAVA / "bettergold.java").read_text(encoding="utf-8"))):
+    _bgn10w_bad("bgn10-chaos-wiring",
+                "接线层没有注册到游戏总线（攻击伤害/挖掘速度/远程翻转全部静默不生效）")
+
+# 作者逐件给的数：从**声明字面**反解，再与期望表逐个对穿（不是拿期望表自比）
+def _num(_s: str) -> float:
+    return float(_s.rstrip("fF"))
+
+
+_b10w_ranges = {(_f, _c): (_num(_a), _num(_b)) for _f, _c, _a, _b in re.findall(
+    r"chaosRange\(MetalFamily\.Form\.([A-Z_]+), ChaosRange\.Channel\.([A-Z_]+),\s*([0-9.]+)[fF]?,\s*([0-9.]+)[fF]?\)",
+    _bgn10_am_nc)}
+_b10w_speeds = {_f: _num(_v) for _f, _v in re.findall(
+    r"attackSpeed\(MetalFamily\.Form\.([A-Z_]+),\s*([0-9.]+)[fF]?\)", _bgn10_am_nc)}
+# 作者原话（立档 §2.4 / 任务口径）：剑 4..8 / 重锤 3..7 / 三叉戟 7..11 / 斧 7..10 / 镐 2..6 /
+#   锹 2.5..6.5 / 锄 1..5 / 刀 1.5..5.5（乐事）/ 弓 2.0..3.5 / 弩 3.5..4.5；投掷 9..13
+_B10W_WANT_RANGES = {
+    ("SWORD", "ATTACK"): (4.0, 8.0),
+    ("MACE", "ATTACK"): (3.0, 7.0),
+    ("TRIDENT", "ATTACK"): (7.0, 11.0),
+    ("AXE", "ATTACK"): (7.0, 10.0),
+    ("PICKAXE", "ATTACK"): (2.0, 6.0),
+    ("SHOVEL", "ATTACK"): (2.5, 6.5),
+    ("HOE", "ATTACK"): (1.0, 5.0),
+    ("KNIFE", "ATTACK"): (1.5, 5.5),
+    ("BOW", "ATTACK"): (2.0, 3.5),
+    ("CROSSBOW", "ATTACK"): (3.5, 4.5),
+}
+if len(_b10w_ranges) < len(_B10W_WANT_RANGES):
+    _bgn10w_bad("bgn10-chaos-wiring",
+                "从 AllMetals 只反解到 %d 条形态区间声明（期望 >= %d；解析失败 / 声明被删）"
+                % (len(_b10w_ranges), len(_B10W_WANT_RANGES)))
+for _k, _want in _B10W_WANT_RANGES.items():
+    _got = _b10w_ranges.get(_k)
+    if _got != _want:
+        _bgn10w_bad("bgn10-chaos-wiring",
+                    "AllMetals 的 %s+%s 声明的两端值 %s ≠ 作者给的 %s" % (_k[0], _k[1], _got, _want))
+# 攻速：作者给的**最终值**（剑 1.6 / 重锤 0.6 / 三叉戟 1.1 / 斧 1 / 镐 1.2 / 锹 1 / 锄 4 / 刀 2）
+_B10W_WANT_SPEEDS = {"SWORD": 1.6, "MACE": 0.6, "TRIDENT": 1.1, "AXE": 1.0,
+                     "PICKAXE": 1.2, "SHOVEL": 1.0, "HOE": 4.0, "KNIFE": 2.0}
+if len(_b10w_speeds) < len(_B10W_WANT_SPEEDS):
+    _bgn10w_bad("bgn10-chaos-wiring",
+                "从 AllMetals 只反解到 %d 条攻速声明（期望 >= %d）"
+                % (len(_b10w_speeds), len(_B10W_WANT_SPEEDS)))
+for _k, _want in _B10W_WANT_SPEEDS.items():
+    if _b10w_speeds.get(_k) != _want:
+        _bgn10w_bad("bgn10-chaos-wiring",
+                    "%s 的攻速声明 %s ≠ 作者给的 %s" % (_k, _b10w_speeds.get(_k), _want))
+# 投掷 9..13 / 重锤 ×1.0 / 弓 20 tick / 弩 1.2 秒 / 刀 1.5+2.0 —— 逐条字面
+for _lit, _why in (
+        ("tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)", "缺投掷 9..13（作者原话）"),
+        ("maceFinalDamageMultiplier(1.0F)", "缺重锤「最终伤 ×1.0」"),
+        ("bowFullDraw(20, 0.0F)", "缺弓「拉弓 20 tick」"),
+        ("crossbowCharge(1.2F)", "缺弩「蓄力 1.2 秒 = 24 tick」"),
+        ("knifeAttributes(1.5F, 2.0F)", "缺乐事刀「伤害 1.5 下端 / 攻速 2」")):
+    if _lit not in _bgn10_am_nc:
+        _bgn10w_bad("bgn10-chaos-wiring", "AllMetals 里%s（字面 `%s`）" % (_why, _lit))
+# 挖掘速度：注册基准必须是**区间上端**（否则"当前值 − 上端"的差值算错）
+if "spec.miningSpeed = 12.0F" not in _bgn10_am_nc:
+    _bgn10w_bad("bgn10-chaos-wiring", "chaosgold 的 miningSpeed 不是区间上端 12.0F（差值基准错）")
+if "spec.miningSpeed = 16.0F" not in _bgn10_am_nc:
+    _bgn10w_bad("bgn10-chaos-wiring", "chaosalloy 的 miningSpeed 不是区间上端 16.0F（差值基准错）")
+# 弩的 24 tick 分支必须在 mixin 的入口上（正是既有 20 tick 那条的守卫处）
+_mx = strip_comments((JAVA / "mixin" / "CrossbowChargeDurationMixin.java").read_text(encoding="utf-8"))
+if "chargeDuration(stack, shooter)" not in _mx:
+    _bgn10w_bad("bgn10-chaos-wiring",
+                "弩的 mixin 不再走 MetalCrossbowItem#chargeDuration（1.2 秒 = 24 tick 的分支没了）")
+print(f"1.7 轮3 区间值接线（反解到形态区间 {len(_b10w_ranges)} 条 / 攻速 {len(_b10w_speeds)} 条）问题: "
+      f"{len(_bgn10w_problems)} {_bgn10w_problems[:4]}")
+
 print(f"1.7 两个共用组件（形态子集 {len(MF.FORMS)} 族 / 区间值公式命中 {len(_hits)} 处）问题: "
       f"{len(bgn10_problems)} {bgn10_problems[:4]}")
 
@@ -6188,7 +6335,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
-                       symmetric_problems, beacon_problems, bgn10_problems)
+                       symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

@@ -69,30 +69,53 @@ public final class ChaosRange {
      */
     public enum Channel {
         /** 挖掘速度（作者：混沌金 2..12；触发 = 挖掘成功 + 重新手持） */
-        MINING(1, "挖掘速度"),
-        /** 攻击伤害（作者：随攻击与切手转换；触发 = 命中 + 重新手持） */
-        ATTACK(2, "攻击伤害"),
+        MINING(1, "挖掘速度", Trigger.MINING_SUCCESS),
+        /**
+         * 攻击伤害（作者：「伤害随攻击与切手转换」；触发 = <b>命中成功</b> + 重新手持）。
+         *
+         * <p>⚠ 轮3 起它的取值来自 {@link MetalFamily.Spec#chaosRange(MetalFamily.Form, float, float)}
+         * 的<b>按形态细分</b>的伤害区间（剑 4..8 / 重锤 3..7 / 三叉戟 7..11 / 斧 7..10 / 镐 2..6 /
+         * 锹 2.5..6.5 / 锄 1..5 / 刀 1.5..5.5）；弓 / 弩 / 三叉戟投掷用同一个通道，
+         * 因为它们与近战共用「攻击之后翻转」这一个触发点。</p>
+         */
+        ATTACK(2, "攻击伤害", Trigger.ATTACK_HIT),
         /** 减伤百分比（作者：混沌金单件 0..6%；崩乱合金单件 4..10%） */
-        ARMOR(4, "减伤");
+        ARMOR(4, "减伤", Trigger.ARMOR_HURT);
 
         /** 位掩码里的那一位 */
         public final int bit;
         /** 中文名（日志 / tooltip 用） */
         public final String cnName;
+        /** 这个通道由哪个触发点翻转（只是文档性的一列，判据不读它） */
+        public final Trigger trigger;
 
-        Channel(int bit, String cnName) {
+        Channel(int bit, String cnName, Trigger trigger) {
             this.bit = bit;
             this.cnName = cnName;
+            this.trigger = trigger;
         }
+    }
+
+    /** 触发点枚举（作者裁定 ① 的两个 + 轮3 补的攻击一个；文档性，规则本体仍在 {@link #pingPong}） */
+    public enum Trigger {
+        /** 挖掘成功（{@code BlockEvent.BreakEvent}） */
+        MINING_SUCCESS,
+        /** 命中成功（近战 {@code hurtEnemy} / 远程命中 {@code LivingDamageEvent.Post}） */
+        ATTACK_HIT,
+        /** 受到盔甲伤害（轮4 / 轮7 接） */
+        ARMOR_HURT
     }
 
     /**
      * 一个通道的两端值（闭区间 {@code [min, max]}，两端都能取到；<b>不许</b>当连续区间用）。
      *
-     * <p>作者口径是"转换"而不是"随机"⇒ 取值只有两个端点。{@link #percent()} 给百分比类通道
-     * （盔甲减伤：{@code 0..6} = 0%..6%）用。</p>
+     * <p>作者口径是"转换"而不是"随机"⇒ 取值只有两个端点。
+     * ⚠ 轮3 起两端值是 <b>float</b>（伤害区间里有 {@code 2.0..3.5} / {@code 1.5..5.5} 这种半档值），
+     * <b>但仍然是"只有两端"</b>：{@link #valueOf} 只会返回 {@code min} 或 {@code max} 之一，
+     * 中间任何值都取不到（原口径是 {@code int}，轮3 就地改成 float，原文口径与理由见
+     * {@code docs/1.7-...-需求立档.md} §12）。</p>
      */
-    public record Range(int min, int max) {
+    public record Range(float min, float max) {
 
         public Range {
             if (max <= min) {
@@ -101,7 +124,7 @@ public final class ChaosRange {
         }
 
         /** 两端取一 */
-        public int valueOf(boolean high) {
+        public float valueOf(boolean high) {
             return high ? this.max : this.min;
         }
 
@@ -119,7 +142,7 @@ public final class ChaosRange {
      * <p>全仓<b>只此一处</b>写这条公式；其余地方一律调 {@link #toggle} / {@link #current}。
      * 参数是"当前值"而不是布尔，是为了让轮3 能把它的取值直接对到具体数字上（打印 / 断言）。</p>
      */
-    public static int pingPong(int current, Range range) {
+    public static float pingPong(float current, Range range) {
         return current == range.min ? range.max : range.min;
     }
 
@@ -130,11 +153,45 @@ public final class ChaosRange {
      */
     public static @Nullable Integer current(ItemStack stack, MetalFamily family, Channel channel) {
         Range range = family == null ? null : family.range(channel);
+        return range == null ? null : (int) current(stack, channel, range);
+    }
+
+    /**
+     * 读取<b>按物品形态细分</b>的当前值（轮3：伤害区间逐件不同）。
+     *
+     * <p>先取该形态自己声明的区间（{@code Spec.chaosRange(Form, min, max)}）；
+     * 该形态没声明时退回通道级的 {@code Spec.chaosRange(Channel, min, max)}（挖掘速度就是这种）。
+     * 两者都没有 ⇒ {@code null}（调用方自己不接线，本模组之外一个字节都不写）。</p>
+     */
+    public static @Nullable Float current(ItemStack stack, MetalFamily family, MetalFamily.Form form,
+            Channel channel) {
+        if (family == null) {
+            return null;
+        }
+        Range range = family.range(form, channel);
         return range == null ? null : current(stack, channel, range);
     }
 
+    /** 便利重载：形态直接从物品推（{@link MetalFamily#formOf}），查不到就退回通道级 */
+    public static @Nullable Float current(ItemStack stack, MetalFamily family, Channel channel,
+            boolean perForm) {
+        if (family == null) {
+            return null;
+        }
+        if (!perForm) {
+            Integer v = current(stack, family, channel);
+            return v == null ? null : v.floatValue();
+        }
+        return current(stack, family, family.formOf(stack.getItem()), channel);
+    }
+
+    /** 便利重载：**按这个物品自己的形态**取当前值（物品不在本族 ⇒ null） */
+    public static @Nullable Float currentByItem(ItemStack stack, MetalFamily family, Channel channel) {
+        return current(stack, family, family.formOf(stack.getItem()), channel);
+    }
+
     /** 读取当前值（显式给通道） */
-    public static int current(ItemStack stack, Channel channel, Range range) {
+    public static float current(ItemStack stack, Channel channel, Range range) {
         return range.valueOf(isHigh(stack, channel));
     }
 
@@ -217,10 +274,18 @@ public final class ChaosRange {
     /**
      * 「这个物品属于本族且本族声明了该通道」才翻转 —— 本模组之外 / 没声明区间的物品
      * <b>一个字节都不写</b>（负向不变量，关卡守着）。
+     *
+     * <p>⚠ 轮3：判据从"族声明了这个通道"升级成"**这个物品形态**声明了这个区间"
+     * （{@code family.range(form, channel)}）—— 因为伤害区间是<b>逐件不同</b>的
+     * （剑 4..8、重锤 3..7…），只有"这一件确实有区间"才该翻转。
+     * 通道级声明仍然生效（挖掘 2..12 就是通道级的）。</p>
      */
     private static void toggleFor(ItemStack stack, Channel channel) {
         MetalFamily family = MetalFamily.of(stack);
-        if (family == null || family.range(channel) == null) {
+        if (family == null) {
+            return;
+        }
+        if (family.range(stack.getItem(), channel) == null) {
             return;
         }
         toggle(stack, channel);

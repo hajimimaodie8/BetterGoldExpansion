@@ -1,5 +1,7 @@
 package com.hjmmd_8.bettergold.material;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.hjmmd_8.bettergold.bettergold;
 
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +15,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MaceItem;
 import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -125,9 +129,30 @@ public final class MetalWeapons {
             return this.enchantmentValue;
         }
 
-        /** 与原版 {@code BowItem#getPowerForTime} 逐字同式，只把分母 20 换成 {@value #BOW_FULL_DRAW_TICKS} */
+        /** 与原版 {@code BowItem#getPowerForTime} 逐字同式，只把分母 20 换成「本件弓的满蓄力 tick」 */
         public static float powerForTime(int charge) {
-            float f = (float) charge / (float) BOW_FULL_DRAW_TICKS;
+            return powerForTime(null, charge);
+        }
+
+        /**
+         * 满蓄力所需 tick：<b>先看这件弓有没有区间/专属声明</b>
+         * （{@code Spec.bowFullDrawTicks}；混沌金 = 20，作者口径），没有就用既有的
+         * {@value #BOW_FULL_DRAW_TICKS}（既有 8 族）。
+         *
+         * <p>唯一入口 —— 服务端 {@link #releaseUsing} 与客户端 {@code pull} 谓词
+         * （{@code client.MetalWeaponItemProperties}）共用它，两边不会漂移。</p>
+         */
+        public static int fullDrawTicks(@Nullable ItemStack stack) {
+            MetalFamily family = stack == null ? null : MetalFamily.of(stack);
+            if (family != null && family.bowFullDrawTicks > 0) {
+                return family.bowFullDrawTicks;
+            }
+            return BOW_FULL_DRAW_TICKS;
+        }
+
+        /** 与原版 {@code BowItem#getPowerForTime} 逐字同式，只把分母 20 换成「本件弓的满蓄力 tick」 */
+        public static float powerForTime(@Nullable ItemStack stack, int charge) {
+            float f = (float) charge / (float) fullDrawTicks(stack);
             f = (f * f + f * 2.0F) / 3.0F;
             return f > 1.0F ? 1.0F : f;
         }
@@ -146,7 +171,7 @@ public final class MetalWeapons {
             if (charge < 0) {
                 return;
             }
-            float power = powerForTime(charge);
+            float power = powerForTime(stack, charge);
             if (power < 0.1F) {
                 return;
             }
@@ -162,21 +187,38 @@ public final class MetalWeapons {
         }
 
         /**
-         * 弹射物伤害 4.0 的落点：{@code AbstractArrow#baseDamage}。
+         * 弹射物基础伤害的落点：{@code AbstractArrow#baseDamage}。
          *
-         * <p>原版箭的最终伤害是 {@code ceil(速度 × baseDamage)}（{@code AbstractArrow#onHitEntity}
-         * 第 355-363 行），其中 {@code baseDamage} 默认 2.0 —— 满蓄力速度 3.0 时约 6.0。
-         * 把它写成 {@value #BOW_PROJECTILE_DAMAGE} 之后满蓄力为 {@code 3.0 × 4.0 = 12.0}，
-         * 与原版弓<b>同一条计算路径</b>、同样随拉弓力度缩放。</p>
+         * <p>原版箭的最终伤害是 {@code ceil(速度 × baseDamage)}（{@code AbstractArrow#onHitEntity}），
+         * 其中 {@code baseDamage} 默认 2.0。既有 8 族写成 {@value #BOW_PROJECTILE_DAMAGE}
+         * （满蓄力约 {@code 3.0 × 4.0 = 12.0}）。
+         * <b>轮3</b>：本族声明了 {@code Spec.bowProjectileDamage} 时优先用它；
+         * 声明了 ATTACK 区间（混沌金 {@code 2.0..3.5}）时<b>读当前值</b>
+         * —— 也就是说同一把弓这一发与下一发可能是 3.5 / 2.0（作者：「伤害随攻击与切手转换」）。</p>
          */
         @Override
         protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon,
                 ItemStack ammo, boolean isCrit) {
             Projectile projectile = super.createProjectile(level, shooter, weapon, ammo, isCrit);
             if (projectile instanceof AbstractArrow arrow) {
-                arrow.setBaseDamage(BOW_PROJECTILE_DAMAGE);
+                arrow.setBaseDamage(bowBaseDamage(weapon));
             }
             return projectile;
+        }
+
+        /** 弓这一发的弹射物基础伤害（区间优先；见 {@link #createProjectile}） */
+        public static float bowBaseDamage(ItemStack weapon) {
+            MetalFamily family = MetalFamily.of(weapon);
+            if (family != null) {
+                if (family.bowProjectileDamage > 0.0F) {
+                    return family.bowProjectileDamage;
+                }
+                Float v = ChaosWiring.rangedValue(weapon, ChaosRange.Channel.ATTACK);
+                if (v != null) {
+                    return v;
+                }
+            }
+            return BOW_PROJECTILE_DAMAGE;
         }
     }
 
@@ -272,8 +314,46 @@ public final class MetalWeapons {
          * ⇒ 按住本值（20 tick）装不上，实际要 ≥ 25 tick。</b>」—— 那在 mixin 落地前是对的。</p>
          */
         public static int chargeDuration(ItemStack stack, LivingEntity shooter) {
-            float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, CROSSBOW_CHARGE_SECONDS);
+            // ⚠ 轮3：本件弩声明了专属蓄力秒数（{@code Spec.crossbowChargeSeconds}）时先走它
+            //   —— 作者：混沌金弩 **1.2 秒**（= 24 tick；立档 §4 ⑥b 裁定「按字面 = 24 tick」）。
+            //   换算是"秒 → tick"这一处分母，仍然只在本方法里做一次。
+            float seconds = chargeSecondsOf(stack);
+            float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, seconds);
             return net.minecraft.util.Mth.floor(f * 20.0F);
+        }
+
+        /**
+         * 本件弩的蓄力秒数：专属声明优先（{@code Spec.crossbowChargeSeconds}），
+         * 否则既有的 {@value #CROSSBOW_CHARGE_SECONDS}（1.0 秒 = 20 tick）。
+         *
+         * <p>⚠ 它是<b>固定值</b>，不随区间翻转 —— 区间（3.5..4.5）那一档是<b>弹射物速度</b>，
+         * 两个量量纲不同（秒 vs 速度），不许互相顶替。</p>
+         */
+        public static float chargeSecondsOf(ItemStack stack) {
+            MetalFamily family = MetalFamily.of(stack);
+            if (family != null && family.crossbowChargeSeconds > 0.0F) {
+                return family.crossbowChargeSeconds;
+            }
+            return CROSSBOW_CHARGE_SECONDS;
+        }
+
+        /**
+         * 箭矢弹速：本族专属常量优先（{@code Spec.crossbowArrowPower}），
+         * 否则读 {@code ATTACK} 区间的当前值（混沌金 3.5..4.5），
+         * 都没有再用既有的 {@value #CROSSBOW_ARROW_POWER}。
+         */
+        public static float arrowPower(ItemStack stack) {
+            MetalFamily family = MetalFamily.of(stack);
+            if (family != null) {
+                if (family.crossbowArrowPower > 0.0F) {
+                    return family.crossbowArrowPower;
+                }
+                Float v = ChaosWiring.rangedValue(stack, ChaosRange.Channel.ATTACK);
+                if (v != null) {
+                    return v;
+                }
+            }
+            return CROSSBOW_ARROW_POWER;
         }
 
         @Override
@@ -291,7 +371,7 @@ public final class MetalWeapons {
             if (charged != null && !charged.isEmpty()) {
                 float power = charged.contains(net.minecraft.world.item.Items.FIREWORK_ROCKET)
                         ? CROSSBOW_FIREWORK_POWER
-                        : CROSSBOW_ARROW_POWER;
+                        : arrowPower(stack);
                 this.performShooting(level, player, hand, stack, power, 1.0F, null);
                 return net.minecraft.world.InteractionResultHolder.consume(stack);
             }
@@ -375,6 +455,141 @@ public final class MetalWeapons {
 
     /** 五类武器的 id 后缀（与 {@code MetalFamily} 的字段名一一对应） */
     public static final String[] WEAPON_SUFFIXES = { "mace", "bow", "crossbow", "trident", "shield" };
+
+    // ==================== 轮3：带「区间值」的近战武器 ====================
+
+    /**
+     * <b>命中成功 ⇒ ATTACK 区间乒乓一次</b>（三个近战子类共用的<b>唯一一份</b>动作）。
+     *
+     * <p>判据是"这一件物品确实声明了 ATTACK 区间"（{@code family.range(item, ATTACK)}）——
+     * 没有区间的物品（既有 8 族的全部武器、本模组之外的物品）<b>一个字节都不写</b>。</p>
+     */
+    static void flipAttackOnHit(ItemStack stack) {
+        MetalFamily family = MetalFamily.of(stack);
+        if (family == null || family.range(stack.getItem(), ChaosRange.Channel.ATTACK) == null) {
+            return;
+        }
+        ChaosRange.toggle(stack, ChaosRange.Channel.ATTACK);
+    }
+
+    /**
+     * <b>近战命中成功 ⇒ 翻转一次 ATTACK 区间</b>（作者：「伤害随攻击与切手转换」）。
+     *
+     * <h2>为什么是 {@code hurtEnemy}</h2>
+     * <p>{@code Player#attack}（neoforge sources {@code Player.java}）在<b>算出本次伤害之后、
+     * 真正 {@code hurt()} 之前</b>调 {@code stack.getItem().hurtEnemy(stack, target, player)}
+     * ⇒ 在这里翻转，<b>本次命中用的还是翻转前的值</b>、下次命中换到另一端 ——
+     * 正是作者要的"每次攻击转换一次"，与挖掘那条（"挖掘成功之后才转换"）同构。</p>
+     *
+     * <h2>为什么是<b>三个子类</b>而不是一个基类</h2>
+     * <p>{@code Item#hurtEnemy} 是实例方法、只能靠子类覆写；而 {@code SwordItem} /
+     * {@code MaceItem} / {@code TridentItem} 不是同一个基类，只能各写一个
+     * （共同的翻转动作仍在 {@link MetalWeapons#flipAttackOnHit} <b>一处</b>）。</p>
+     */
+    /** 混沌金 / 崩乱合金的剑（伤害走区间 ⇒ 注册值 = 区间下端；攻速 = 作者给的固定值） */
+    public static class ChaosSwordItem extends SwordItem {
+
+        public ChaosSwordItem(Tier tier, Item.Properties properties) {
+            super(tier, properties);
+        }
+
+        @Override
+        public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            flipAttackOnHit(stack);
+            return true;
+        }
+    }
+
+    /** 混沌金 / 崩乱合金的斧（属性在注册处给：伤害 = 区间下端、攻速 = 作者给的固定值） */
+    public static class ChaosAxeItem extends net.minecraft.world.item.AxeItem {
+
+        public ChaosAxeItem(Tier tier, Item.Properties properties) {
+            super(tier, properties);
+        }
+
+        @Override
+        public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            flipAttackOnHit(stack);
+            return true;
+        }
+    }
+
+    /** 混沌金 / 崩乱合金的镐 */
+    public static class ChaosPickaxeItem extends net.minecraft.world.item.PickaxeItem {
+
+        public ChaosPickaxeItem(Tier tier, Item.Properties properties) {
+            super(tier, properties);
+        }
+
+        @Override
+        public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            flipAttackOnHit(stack);
+            return true;
+        }
+    }
+
+    /** 混沌金 / 崩乱合金的锹 */
+    public static class ChaosShovelItem extends net.minecraft.world.item.ShovelItem {
+
+        public ChaosShovelItem(Tier tier, Item.Properties properties) {
+            super(tier, properties);
+        }
+
+        @Override
+        public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            flipAttackOnHit(stack);
+            return true;
+        }
+    }
+
+    /** 混沌金 / 崩乱合金的锄 */
+    public static class ChaosHoeItem extends net.minecraft.world.item.HoeItem {
+
+        public ChaosHoeItem(Tier tier, Item.Properties properties) {
+            super(tier, properties);
+        }
+
+        @Override
+        public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            flipAttackOnHit(stack);
+            return true;
+        }
+    }
+
+    /** 混沌金的剑（伤害走区间 ⇒ 注册值 = 区间下端；攻速 = 作者给的固定值） */
+    public static class ChaosMaceItem extends MetalMaceItem {
+
+        public ChaosMaceItem(Item.Properties properties, int enchantmentValue) {
+            super(properties, enchantmentValue);
+        }
+
+        @Override
+        public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            flipAttackOnHit(stack);
+            return true;
+        }
+    }
+
+    /** 混沌金的三叉戟（近战走区间；投掷在 {@code MetalEvents} 里按 {@code getWeaponItem} 改写） */
+    public static class ChaosTridentItem extends MetalTridentItem {
+
+        public ChaosTridentItem(Item.Properties properties, int enchantmentValue) {
+            super(properties, enchantmentValue);
+        }
+
+        @Override
+        public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+            super.hurtEnemy(stack, target, attacker);
+            flipAttackOnHit(stack);
+            return true;
+        }
+    }
 
     // ==================== 盾牌「自带」主/副手 +10% 击退抗性（bg-15w 续工轮） ====================
 

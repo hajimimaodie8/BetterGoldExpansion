@@ -118,10 +118,14 @@ public final class MetalWeaponItemProperties {
     }
 
     /**
-     * 弓：{@code pull} 用<b>我们自己的</b> 16 tick 满蓄力当分母（原版用写死的 20）。
-     * 模型的 {@code pull: 0.65 / 0.9} 两帧于是分别落在 10.4 / 14.4 tick，
-     * 与 {@code MetalWeapons.MetalBowItem#powerForTime} 的曲线同步 —— 不这么写，
-     * 16 tick 拉满时 {@code pull} 只到 0.8，第三帧贴图永远不会出现。
+     * 弓：{@code pull} 用<b>我们自己的</b>满蓄力 tick 当分母（原版用写死的 20）。
+     * 模型的 {@code pull: 0.65 / 0.9} 两帧于是分别落在对应比例上，
+     * 与 {@code MetalWeapons.MetalBowItem#powerForTime(ItemStack, int)} 的曲线同步 —— 不这么写，
+     * 拉满时 {@code pull} 只到 0.8，第三帧贴图永远不会出现。
+     *
+     * <p>⚠ 轮3：分母从静态常量 {@code BOW_FULL_DRAW_TICKS} 改成
+     * {@code MetalWeapons.MetalBowItem#fullDrawTicks(stack)} —— 混沌金弓是 20（作者口径），
+     * 既有 8 族仍是 16；两者走同一个入口（{@code Spec.bowFullDrawTicks}）。</p>
      */
     private static void registerBow(Item item) {
         net.minecraft.client.renderer.item.ItemProperties.register(item, PULL,
@@ -132,7 +136,7 @@ public final class MetalWeaponItemProperties {
                     return entity.getUseItem() != stack
                             ? 0.0F
                             : (float) (stack.getUseDuration(entity) - entity.getUseItemRemainingTicks())
-                                    / (float) MetalWeapons.BOW_FULL_DRAW_TICKS;
+                                    / (float) MetalWeapons.MetalBowItem.fullDrawTicks(stack);
                 });
         net.minecraft.client.renderer.item.ItemProperties.register(item, PULLING,
                 (stack, level, entity, seed) -> entity != null && entity.isUsingItem()

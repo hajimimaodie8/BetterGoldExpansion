@@ -539,6 +539,73 @@ public final class MetalFamily {
     /** 本族声明的「区间值」通道（{@link ChaosRange}，1.7 起共用组件；默认空 = 不参与） */
     public final java.util.Map<ChaosRange.Channel, ChaosRange.Range> chaosRanges;
 
+    /**
+     * 本族声明的<b>按形态细分</b>的区间（轮3：伤害区间逐件不同，例如剑 4..8 / 重锤 3..7）。
+     *
+     * <p>键 = 「形态 + 通道」（{@link Spec#chaosRange(Form, ChaosRange.Channel, float, float)}），
+     * 只读快照；{@link #allChaosRanges()} 给关卡与探针遍历用。</p>
+     */
+    public final java.util.Map<String, ChaosRange.Range> chaosFormRanges;
+
+    // ==================== 轮3：器具的"随身数值"（从 Spec 复制的只读快照） ====================
+
+    /** 三叉戟投掷伤害区间（null = 用 MetalEvents 的既有定值 15） */
+    public final ChaosRange.@Nullable Range tridentThrowRange;
+    /** 重锤"最终伤害"倍率（既有 8 族 = 1.2；混沌金 = 1.0） */
+    public final float maceFinalDamageMultiplier;
+    /** 弓：满蓄力 tick（0 = 用旧常量 16） */
+    public final int bowFullDrawTicks;
+    /** 弓：弹射物基础伤害（0 = 由 ATTACK 区间给 / 或旧常量 4.0） */
+    public final float bowProjectileDamage;
+    /** 弩：箭矢弹速（0 = 由 ATTACK 区间给 / 或旧常量 4.5） */
+    public final float crossbowArrowPower;
+    /** 弩：蓄力秒数（0 = 用旧常量 1.0） */
+    public final float crossbowChargeSeconds;
+    /** 乐事联动小刀：伤害 / 攻速修正 */
+    public final float knifeDamage;
+    public final float knifeSpeed;
+    /** 器具的最终攻速（键 = Form 名；空 = 全走既有常量） */
+    public final java.util.Map<String, Float> gearAttackSpeeds;
+
+    /** 本族是否给该形态声明了该通道的区间（轮3：混沌金器具的"逐件不同"判定） */
+    public boolean hasFormRange(Form form, ChaosRange.Channel channel) {
+        return this.chaosFormRanges.containsKey(key(form, channel));
+    }
+
+    /**
+     * 某件器具的 {@code ATTACK_SPEED} 修正量 = 作者给的最终攻速 − 玩家基础攻速
+     * （{@code Attributes.ATTACK_SPEED} 基值 = 4.0）。
+     *
+     * <p>⚠ 这处换算是**唯一**一处（{@code AllMetals} 只写作者给的最终值，例如 {@code 1.6f}）。</p>
+     */
+    public float gearSpeed(Form form, float fallback) {
+        Float finalSpeed = this.gearAttackSpeeds.get(form.name());
+        return finalSpeed == null ? fallback : finalSpeed - 4.0F;
+    }
+
+    /**
+     * 某件器具的注册属性表（轮3 的混沌金器具专用）：
+     * {@code ATTACK_DAMAGE} = <b>该形态区间下端</b>（当前值到上端的那一段由
+     * {@link ChaosWiring} 的属性事件补）、{@code ATTACK_SPEED} = {@link #gearSpeed}。
+     *
+     * <p>⚠ 这里**读的是声明表**（{@code Spec.chaosRange(Form, ATTACK, min, max)}），
+     * 不另写一份数 —— 下端改一个字，注册值与事件差值同时跟着变。</p>
+     */
+    private ItemAttributeModifiers chaosAttributes(Tier tier, Form form) {
+        ChaosRange.Range range = this.chaosFormRanges.get(key(form, ChaosRange.Channel.ATTACK));
+        float damage = range == null ? tier.getAttackDamageBonus() : range.min();
+        return ItemAttributeModifiers.builder()
+                .add(Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, damage,
+                                AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED,
+                        new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, gearSpeed(form, 0.0F),
+                                AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND)
+                .build();
+    }
+
     /** 本族是否注册了该形态 */
     public boolean has(Form form) {
         return this.forms.contains(form);
@@ -547,6 +614,155 @@ public final class MetalFamily {
     /** 本族声明的「区间值」通道 → 两端值；没声明该通道 ⇒ {@code null}（见 {@link ChaosRange}） */
     public ChaosRange.@Nullable Range range(ChaosRange.Channel channel) {
         return this.chaosRanges.get(channel);
+    }
+
+    /**
+     * <b>按物品形态</b>取区间（轮3：伤害区间逐件不同）。
+     *
+     * <p>查找顺序：① 该形态自己声明的（{@code Spec.chaosRange(Form, Channel, min, max)}，
+     * 例如 {@code SWORD + ATTACK → 4..8}）；
+     * ② 退回 {@link #range(ChaosRange.Channel)} 的通道级声明
+     * （挖掘速度 {@code MINING → 2..12} 就是通道级的，五种器具共用）。
+     * 两处都没有 ⇒ {@code null}。</p>
+     */
+    public ChaosRange.@Nullable Range range(Form form, ChaosRange.Channel channel) {
+        ChaosRange.Range perForm = this.chaosFormRanges.get(key(form, channel));
+        return perForm != null ? perForm : range(channel);
+    }
+
+    /** 按<b>物品实例</b>取区间（先解出它的形态，再走 {@link #range(Form, ChaosRange.Channel)}） */
+    public ChaosRange.@Nullable Range range(Item item, ChaosRange.Channel channel) {
+        Form form = formOf(item);
+        if (form != null) {
+            ChaosRange.Range perForm = this.chaosFormRanges.get(key(form, channel));
+            if (perForm != null) {
+                return perForm;
+            }
+        }
+        // 材料/建材形态也可能声明通道级区间；物品不在本族 ⇒ 仍给通道级（本族自有物品才会走到这里）
+        return of(item) == this ? range(channel) : null;
+    }
+
+    /** 「形态 + 通道」的复合键（{@link #chaosFormRanges} 的键；对关卡/探针是稳定字符串） */
+    public static String key(Form form, ChaosRange.Channel channel) {
+        return (form == null ? "null" : form.name()) + ":" + channel.name();
+    }
+
+    /** 本族声明的全部区间（通道级 + 按形态细分），按稳定键排序（探针 / 关卡的遍历入口） */
+    public java.util.Map<String, ChaosRange.Range> allChaosRanges() {
+        var out = new java.util.TreeMap<String, ChaosRange.Range>();
+        this.chaosRanges.forEach((ch, r) -> out.put(key(null, ch), r));
+        out.putAll(this.chaosFormRanges);
+        return java.util.Collections.unmodifiableMap(out);
+    }
+
+    /**
+     * <b>物品 → 形态</b>的唯一反查（轮3 新增；伤害区间要按件查，而 {@code Spec.chaosRange(Form,...)}
+     * 是一张声明表）。
+     *
+     * <p>覆盖：材料链（锭/粒/原料/块/模板）、11 种建材，以及<b>不在 {@link Form} 表里的</b>
+     * 器具 / 武器 / 盔甲 / 刀（它们用「同名的伪形态」表达：{@code SWORD / MACE / BOW / CROSSBOW /
+     * TRIDENT / SHIELD / KNIFE}；{@code SHIELD} 没有区间，留在这里是为了反查完整）。
+     * 本族之外 ⇒ {@code null}。</p>
+     */
+    public @Nullable Form formOf(Item item) {
+        if (item == null) {
+            return null;
+        }
+        if (this.ingot != null && item == this.ingot.get()) {
+            return Form.INGOT;
+        }
+        if (this.nugget != null && item == this.nugget.get()) {
+            return Form.NUGGET;
+        }
+        if (this.raw != null && item == this.raw.get()) {
+            return Form.RAW;
+        }
+        if (this.upgradeTemplate != null && item == this.upgradeTemplate.get()) {
+            return Form.UPGRADE_TEMPLATE;
+        }
+        if (this.block != null && item == this.block.asItem()) {
+            return Form.BLOCK;
+        }
+        if (this.bricks != null && item == this.bricks.asItem()) {
+            return Form.BRICKS;
+        }
+        if (this.bricksStairs != null && item == this.bricksStairs.asItem()) {
+            return Form.BRICKS_STAIRS;
+        }
+        if (this.bricksSlab != null && item == this.bricksSlab.asItem()) {
+            return Form.BRICKS_SLAB;
+        }
+        if (this.bricksWall != null && item == this.bricksWall.asItem()) {
+            return Form.BRICKS_WALL;
+        }
+        if (this.pillar != null && item == this.pillar.asItem()) {
+            return Form.PILLAR;
+        }
+        if (this.bars != null && item == this.bars.asItem()) {
+            return Form.BARS;
+        }
+        if (this.door != null && item == this.door.asItem()) {
+            return Form.DOOR;
+        }
+        if (this.trapdoor != null && item == this.trapdoor.asItem()) {
+            return Form.TRAPDOOR;
+        }
+        if (this.chain != null && item == this.chain.asItem()) {
+            return Form.CHAIN;
+        }
+        if (this.lantern != null && item == this.lantern.asItem()) {
+            return Form.LANTERN;
+        }
+        if (item == this.sword.get()) {
+            return Form.SWORD;
+        }
+        if (item == this.axe.get()) {
+            return Form.AXE;
+        }
+        if (item == this.pickaxe.get()) {
+            return Form.PICKAXE;
+        }
+        if (item == this.shovel.get()) {
+            return Form.SHOVEL;
+        }
+        if (item == this.hoe.get()) {
+            return Form.HOE;
+        }
+        if (item == this.mace.get()) {
+            return Form.MACE;
+        }
+        if (item == this.bow.get()) {
+            return Form.BOW;
+        }
+        if (item == this.crossbow.get()) {
+            return Form.CROSSBOW;
+        }
+        if (item == this.trident.get()) {
+            return Form.TRIDENT;
+        }
+        if (item == this.shield.get()) {
+            return Form.SHIELD;
+        }
+        // 刀（乐事联动，经 addExtraItem 登记）：本族的额外部件只会是刀
+        // （⚠ 反查优先走全局索引，见下面的静态重载；这里用 extraItems 兜底）
+        for (Supplier<Item> extra : this.extraItems) {
+            if (extra.get() == item) {
+                return Form.KNIFE;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 全局便利：任意物品 → 它的族 + 形态（不成对时返回 {@code null}）。
+     *
+     * <p>⚠ 名字不能叫 {@code formOf}（Java 不允许"只差 static"的重载）⇒ 用具名的
+     * {@code formOfItem}；实例版本见 {@link #formOf(Item)}。</p>
+     */
+    public static @Nullable Form formOfItem(Item item) {
+        MetalFamily family = of(item);
+        return family == null ? null : family.formOf(item);
     }
 
     /** 该金属的全部物品（含建材的 BlockItem），供创造页分类与遍历使用 */
@@ -691,6 +907,16 @@ public final class MetalFamily {
         // 形态子集 / 区间值（1.7 bg-n10 轮1 后半）：只读快照，之后的注册全部 read-only 地读它
         this.forms = java.util.Collections.unmodifiableSet(java.util.EnumSet.copyOf(spec.forms));
         this.chaosRanges = java.util.Map.copyOf(spec.chaosRanges);
+        this.chaosFormRanges = java.util.Map.copyOf(spec.chaosFormRanges);
+        this.gearAttackSpeeds = java.util.Map.copyOf(spec.gearAttackSpeeds);
+        this.tridentThrowRange = spec.tridentThrowRange;
+        this.maceFinalDamageMultiplier = spec.maceFinalDamageMultiplier;
+        this.bowFullDrawTicks = spec.bowFullDrawTicks;
+        this.bowProjectileDamage = spec.bowProjectileDamage;
+        this.crossbowArrowPower = spec.crossbowArrowPower;
+        this.crossbowChargeSeconds = spec.crossbowChargeSeconds;
+        this.knifeDamage = spec.knifeDamage;
+        this.knifeSpeed = spec.knifeSpeed;
         this.fireResistant = spec.fireResistant;
         this.autoSmelt = spec.autoSmelt;
         this.thunderStrike = spec.thunderStrike;
@@ -748,16 +974,42 @@ public final class MetalFamily {
 
         // ---------- 器具 ----------
         Tier t = this.tier;
-        this.sword = AllItems.ITEMS.register(this.id + "_sword",
-                () -> new SwordItem(t, props().attributes(SwordItem.createAttributes(t, SWORD_DMG, SWORD_SPD))));
-        this.axe = AllItems.ITEMS.register(this.id + "_axe",
-                () -> new AxeItem(t, props().attributes(AxeItem.createAttributes(t, AXE_DMG, AXE_SPD))));
-        this.pickaxe = AllItems.ITEMS.register(this.id + "_pickaxe",
-                () -> new PickaxeItem(t, props().attributes(PickaxeItem.createAttributes(t, PICKAXE_DMG, PICKAXE_SPD))));
-        this.shovel = AllItems.ITEMS.register(this.id + "_shovel",
-                () -> new ShovelItem(t, props().attributes(ShovelItem.createAttributes(t, SHOVEL_DMG, SHOVEL_SPD))));
-        this.hoe = AllItems.ITEMS.register(this.id + "_hoe",
-                () -> new HoeItem(t, props().attributes(HoeItem.createAttributes(t, HOE_DMG, HOE_SPD))));
+        // ⚠ 1.7 bg-n10 轮3：本族若声明了**按形态的 ATTACK 区间**（混沌金 14 件套），
+        //   那么 ① 剑 / 重锤 / 三叉戟换成「命中即翻转」的子类，② 属性表里的伤害写**区间下端**
+        //   （当前值到上端的那一段由 ChaosWiring 的属性事件补），③ 攻速用作者给的固定值
+        //   （{@code Spec.gearFormValue(Form, ATTACK_SPEED)}，单位是"最终攻速"，注册时减去玩家基础 4.0）。
+        //   既有 8 族一个区间都没声明 ⇒ 这里逐字走原来的分支（注册结果不变）。
+        //   ⚠ 三元表达式的两个分支类型不同（ChaosSwordItem vs SwordItem）⇒ 必须显式写
+        //   `Supplier<SwordItem>`，否则 DeferredRegister 的泛型推断会失败（编译期实测）。
+        boolean chaosGear = hasFormRange(Form.SWORD, ChaosRange.Channel.ATTACK)
+                || hasFormRange(Form.MACE, ChaosRange.Channel.ATTACK);
+        Supplier<SwordItem> swordFactory = chaosGear
+                ? () -> new MetalWeapons.ChaosSwordItem(t, props().attributes(chaosAttributes(t, Form.SWORD)))
+                : () -> new SwordItem(t, props().attributes(SwordItem.createAttributes(t, SWORD_DMG, SWORD_SPD)));
+        this.sword = AllItems.ITEMS.register(this.id + "_sword", swordFactory);
+        // 斧 / 镐 / 锹 / 锄：混沌金走"命中即翻转 + 区间下端当注册值"的子类（既有 8 族逐字不变）
+        Supplier<AxeItem> axeFactory = chaosGear
+                ? () -> new MetalWeapons.ChaosAxeItem(t,
+                        props().attributes(chaosAttributes(t, Form.AXE)))
+                : () -> new AxeItem(t, props().attributes(AxeItem.createAttributes(t, AXE_DMG, AXE_SPD)));
+        this.axe = AllItems.ITEMS.register(this.id + "_axe", axeFactory);
+        Supplier<PickaxeItem> pickaxeFactory = chaosGear
+                ? () -> new MetalWeapons.ChaosPickaxeItem(t,
+                        props().attributes(chaosAttributes(t, Form.PICKAXE)))
+                : () -> new PickaxeItem(t,
+                        props().attributes(PickaxeItem.createAttributes(t, PICKAXE_DMG, PICKAXE_SPD)));
+        this.pickaxe = AllItems.ITEMS.register(this.id + "_pickaxe", pickaxeFactory);
+        Supplier<ShovelItem> shovelFactory = chaosGear
+                ? () -> new MetalWeapons.ChaosShovelItem(t,
+                        props().attributes(chaosAttributes(t, Form.SHOVEL)))
+                : () -> new ShovelItem(t,
+                        props().attributes(ShovelItem.createAttributes(t, SHOVEL_DMG, SHOVEL_SPD)));
+        this.shovel = AllItems.ITEMS.register(this.id + "_shovel", shovelFactory);
+        Supplier<HoeItem> hoeFactory = chaosGear
+                ? () -> new MetalWeapons.ChaosHoeItem(t,
+                        props().attributes(chaosAttributes(t, Form.HOE)))
+                : () -> new HoeItem(t, props().attributes(HoeItem.createAttributes(t, HOE_DMG, HOE_SPD)));
+        this.hoe = AllItems.ITEMS.register(this.id + "_hoe", hoeFactory);
 
         // ---------- 盔甲材质 ----------
         this.armorMaterial = Holder.direct(new ArmorMaterial(
@@ -784,37 +1036,50 @@ public final class MetalFamily {
         // 耐久与附魔能力一律「沿用」本族 tier 与盔甲材质上的既有数值（6144/30 或 4096/24），
         // 本批不引入任何新的耐久 / 附魔常量。盾牌走自己的两档（万坚金 3072 / 其余 2048），
         // 因为原版盾牌只有 336 耐久，规格 12.2 给了明确数字。
-        this.mace = AllItems.ITEMS.register(this.id + "_mace", () -> new MetalWeapons.MetalMaceItem(
-                props().durability(spec.durability)
-                        .attributes(ItemAttributeModifiers.builder()
-                                .add(Attributes.ATTACK_DAMAGE,
-                                        new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, MACE_DMG,
-                                                AttributeModifier.Operation.ADD_VALUE),
-                                        EquipmentSlotGroup.MAINHAND)
-                                .add(Attributes.ATTACK_SPEED,
-                                        new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, MACE_SPD,
-                                                AttributeModifier.Operation.ADD_VALUE),
-                                        EquipmentSlotGroup.MAINHAND)
-                                .build()),
-                spec.enchantmentValue));
+        // 战锤 / 三叉戟：混沌金走"命中即翻转 + 区间下端当注册值"的子类（既有 8 族逐字不变）
+        boolean chaosMace = hasFormRange(Form.MACE, ChaosRange.Channel.ATTACK);
+        boolean chaosTrident = hasFormRange(Form.TRIDENT, ChaosRange.Channel.ATTACK);
+        Supplier<MetalWeapons.MetalMaceItem> maceFactory = chaosMace
+                ? () -> new MetalWeapons.ChaosMaceItem(
+                        props().durability(spec.durability).attributes(chaosAttributes(t, Form.MACE)),
+                        spec.enchantmentValue)
+                : () -> new MetalWeapons.MetalMaceItem(
+                        props().durability(spec.durability)
+                                .attributes(ItemAttributeModifiers.builder()
+                                        .add(Attributes.ATTACK_DAMAGE,
+                                                new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, MACE_DMG,
+                                                        AttributeModifier.Operation.ADD_VALUE),
+                                                EquipmentSlotGroup.MAINHAND)
+                                        .add(Attributes.ATTACK_SPEED,
+                                                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, MACE_SPD,
+                                                        AttributeModifier.Operation.ADD_VALUE),
+                                                EquipmentSlotGroup.MAINHAND)
+                                        .build()),
+                        spec.enchantmentValue);
+        this.mace = AllItems.ITEMS.register(this.id + "_mace", maceFactory);
         this.bow = AllItems.ITEMS.register(this.id + "_bow", () -> new MetalWeapons.MetalBowItem(
                 props().durability(spec.durability), spec.enchantmentValue));
         this.crossbow = AllItems.ITEMS.register(this.id + "_crossbow",
                 () -> new MetalWeapons.MetalCrossbowItem(
                         props().durability(spec.durability), spec.enchantmentValue));
-        this.trident = AllItems.ITEMS.register(this.id + "_trident", () -> new MetalWeapons.MetalTridentItem(
-                props().durability(spec.durability)
-                        .attributes(ItemAttributeModifiers.builder()
-                                .add(Attributes.ATTACK_DAMAGE,
-                                        new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, TRIDENT_DMG,
-                                                AttributeModifier.Operation.ADD_VALUE),
-                                        EquipmentSlotGroup.MAINHAND)
-                                .add(Attributes.ATTACK_SPEED,
-                                        new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, TRIDENT_SPD,
-                                                AttributeModifier.Operation.ADD_VALUE),
-                                        EquipmentSlotGroup.MAINHAND)
-                                .build()),
-                spec.enchantmentValue));
+        Supplier<MetalWeapons.MetalTridentItem> tridentFactory = chaosTrident
+                ? () -> new MetalWeapons.ChaosTridentItem(
+                        props().durability(spec.durability).attributes(chaosAttributes(t, Form.TRIDENT)),
+                        spec.enchantmentValue)
+                : () -> new MetalWeapons.MetalTridentItem(
+                        props().durability(spec.durability)
+                                .attributes(ItemAttributeModifiers.builder()
+                                        .add(Attributes.ATTACK_DAMAGE,
+                                                new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, TRIDENT_DMG,
+                                                        AttributeModifier.Operation.ADD_VALUE),
+                                                EquipmentSlotGroup.MAINHAND)
+                                        .add(Attributes.ATTACK_SPEED,
+                                                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, TRIDENT_SPD,
+                                                        AttributeModifier.Operation.ADD_VALUE),
+                                                EquipmentSlotGroup.MAINHAND)
+                                        .build()),
+                        spec.enchantmentValue);
+        this.trident = AllItems.ITEMS.register(this.id + "_trident", tridentFactory);
         this.shield = AllItems.ITEMS.register(this.id + "_shield", () -> new MetalWeapons.MetalShieldItem(
                 // 「自带主/副手 +10% 击退抗性」写进**物品自己的属性表**（`Item.Properties#attributes`）：
                 // 这样它才会出现在物品 tooltip 里（作者要的「自带」：改前 lines=1、改后两行 +10%）。
@@ -1044,7 +1309,29 @@ public final class MetalFamily {
         /** 灯笼 */
         LANTERN("lantern"),
         /** 升级锻造模板 */
-        UPGRADE_TEMPLATE("upgrade_template");
+        UPGRADE_TEMPLATE("upgrade_template"),
+
+        // ==================== 1.7 bg-n10 轮3：器具 / 武器 / 盔甲 / 刀的「伪形态」 ====================
+        // ⚠ 它们**不是建材形态**：不进 BUILDING_FORMS、不进 Spec.forms 的默认值（{@link #DECLARABLE}），
+        //   只在 **形态反查**（{@link MetalFamily#formOf}）与 **按形态声明区间**
+        //   （{@code Spec.chaosRange(Form, ChaosRange.Channel, min, max)}）里当"键"用 ——
+        //   混沌金器具的伤害区间逐件不同（剑 4..8 / 重锤 3..7 / 三叉戟 7..11 / 镐 2..6 / 锹 2.5..6.5 /
+        //   锄 1..5 / 刀 1.5..5.5 / 弓 2.0..3.5），必须有一个"件"的维度。
+        SWORD("sword"),
+        AXE("axe"),
+        PICKAXE("pickaxe"),
+        SHOVEL("shovel"),
+        HOE("hoe"),
+        KNIFE("knife"),
+        MACE("mace"),
+        BOW("bow"),
+        CROSSBOW("crossbow"),
+        TRIDENT("trident"),
+        SHIELD("shield"),
+        HELMET("helmet"),
+        CHESTPLATE("chestplate"),
+        LEGGINGS("leggings"),
+        BOOTS("boots");
 
         /** 物品 / 方块 id 的后缀（{@code raw} 例外：真实 id 是 {@code raw_<族>}） */
         public final String suffix;
@@ -1060,6 +1347,14 @@ public final class MetalFamily {
 
         /** 必备形态（不许被关掉） */
         public static final java.util.Set<Form> REQUIRED_FORMS = java.util.EnumSet.of(INGOT, BLOCK);
+
+        /**
+         * 可以出现在 {@link Spec#forms} / {@code withoutForms} 里的形态 = 材料链 + 11 建材
+         * （<b>不含</b>上面那批器具 / 武器 / 盔甲伪形态 —— 它们恒注册、没有开关）。
+         */
+        public static final java.util.Set<Form> DECLARABLE = java.util.EnumSet.of(
+                INGOT, NUGGET, RAW, BLOCK, BRICKS, BRICKS_STAIRS, BRICKS_SLAB, BRICKS_WALL,
+                PILLAR, BARS, DOOR, TRAPDOOR, CHAIN, LANTERN, UPGRADE_TEMPLATE);
     }
 
     /**
@@ -1193,14 +1488,18 @@ public final class MetalFamily {
         public boolean shieldBreakImmune = true;
 
         /**
-         * 本族注册的<b>形态子集</b>（{@link Form}）—— 默认 = 全部 15 种
+         * 本族注册的<b>形态子集</b>（{@link Form}）—— 默认 = 全部 15 种（{@link Form#DECLARABLE}）
          * ⇒ 既有的 8 族一个字段都不用写，注册结果与加这个开关之前<b>逐字相同</b>。
          *
          * <p>作者 2026-10-16 裁定（立档 §4.0 ⑪d）：崩乱合金只做「锭 + 块 + 模板」，
          * 混沌金缺「原料」与「升级锻造模板」⇒ 用 {@link #forms(Form...)} 声明，
          * <b>不要</b>在 {@code MetalFamily} 里加 per-family 的 if 分支。</p>
+         *
+         * <p>⚠ 轮3：初值从 {@code allOf(Form.class)} 改成 {@link Form#DECLARABLE}
+         * —— {@link Form} 里新加了 11 个「器具/武器/盔甲伪形态」，它们**不是**可开关的形态
+         * （恒注册），若留在初值里会让 {@code has(SWORD)} 恒真、把 {@code MF.has(...)} 的语义污染。</p>
          */
-        public java.util.Set<Form> forms = java.util.EnumSet.allOf(Form.class);
+        public java.util.Set<Form> forms = java.util.EnumSet.copyOf(Form.DECLARABLE);
 
         /**
          * 本族声明了哪些「区间值」通道（{@link ChaosRange}）—— 默认空表 ⇒ 既有 8 族
@@ -1209,6 +1508,110 @@ public final class MetalFamily {
          * <p>规则 / 存储 / 触发点全在 {@link ChaosRange}（唯一实现）；本表<b>只放两端值</b>。</p>
          */
         public java.util.Map<ChaosRange.Channel, ChaosRange.Range> chaosRanges = java.util.Map.of();
+
+        /**
+         * 本族声明的<b>按形态细分</b>的区间（键 = {@link MetalFamily#key}(Form, Channel)）——
+         * 默认空表 ⇒ 既有 8 族一个字段都不用写。轮3：混沌金七类器具的 ATTACK 区间走这里。
+         */
+        public java.util.Map<String, ChaosRange.Range> chaosFormRanges = java.util.Map.of();
+
+        // ==================== 轮3：混沌金器具的"随身数值" ====================
+        // 说明：这些是**区间之外的固定值**（作者只给了区间的那几个量走 chaosRange）。
+        // 每族默认值 = 既有 8 族沿用至今的值 ⇒ 不声明就逐字不变。
+
+        /** 三叉戟<b>投掷</b>伤害区间（作者：混沌金 9..13）；null = 用 {@link MetalEvents} 的既有定值 15 */
+        public ChaosRange.@Nullable Range tridentThrowRange = null;
+        /** 重锤"最终伤害"倍率（既有 8 族 = 1.2；作者：混沌金 = 1.0，即不额外乘算） */
+        public float maceFinalDamageMultiplier = 1.2F;
+        /** 弓：满蓄力所需 tick（既有 8 族 = {@value MetalWeapons#BOW_FULL_DRAW_TICKS} 16；作者：混沌金 20） */
+        public int bowFullDrawTicks = 0;
+        /** 弓：弹射物基础伤害（既有 8 族 = {@value MetalWeapons#BOW_PROJECTILE_DAMAGE} 4.0）；
+         *  混沌金走 {@link ChaosRange.Channel#ATTACK} 的区间 2.0..3.5 ⇒ 留 0 表示"由区间给" */
+        public float bowProjectileDamage = 0.0F;
+        /** 弩：箭矢弹速（既有 8 族 = {@value MetalWeapons#CROSSBOW_ARROW_POWER} 4.5）；
+         *  混沌金走 ATTACK 的区间 3.5..4.5 ⇒ 留 0 表示"由区间给" */
+        public float crossbowArrowPower = 0.0F;
+        /** 弩：蓄力秒数（既有 8 族 = {@value MetalWeapons#CROSSBOW_CHARGE_SECONDS} 1.0；
+         *  作者：混沌金 = **1.2 秒** = 24 tick；留 0 表示"用既有常量"） */
+        public float crossbowChargeSeconds = 0.0F;
+        /** 乐事联动小刀：{@code createAttributes} 的伤害修正（既有 8 族 = {@link MetalFamily#KNIFE_DMG}） */
+        public float knifeDamage = KNIFE_DMG;
+        /** 乐事联动小刀：{@code createAttributes} 的攻速修正（既有 8 族 = {@link MetalFamily#KNIFE_SPD}） */
+        public float knifeSpeed = KNIFE_SPD;
+
+        /**
+         * 器具的<b>攻击速度</b>（作者逐件给的固定值；键 = Form 名）。
+         *
+         * <p>⚠ 单位是 <b>"最终攻速"</b>（作者口径：剑 1.6 / 重锤 0.6 / 三叉戟 1.1 / 斧 1 /
+         * 镐 1.2 / 锹 1 / 锄 4 / 刀 2），注册时减去玩家基础 4.0 才是 {@code ATTACK_SPEED} 的修正量
+         * —— 换算只在 {@link MetalFamily#gearSpeed(Form, float)} 一处做。
+         * 空表 = 全部走既有常量（既有 8 族）。</p>
+         */
+        public java.util.Map<String, Float> gearAttackSpeeds = java.util.Map.of();
+
+        /** 声明一件器具的最终攻速（作者逐件给的值；见 {@link #gearAttackSpeeds}） */
+        public Spec attackSpeed(Form form, float finalSpeed) {
+            if (this.gearAttackSpeeds.isEmpty()) {
+                this.gearAttackSpeeds = new java.util.HashMap<>();
+            }
+            this.gearAttackSpeeds.put(form.name(), finalSpeed);
+            return this;
+        }
+
+        /**
+         * 三叉戟<b>投掷</b>伤害区间（作者：混沌金 9..13）。
+         *
+         * <p>与近战那一档（{@code chaosRange(TRIDENT, ATTACK, 7, 11)}）是<b>两个量</b>：
+         * 近战走属性表，投掷走 {@code MetalEvents#onTridentThrownDamage} 里按
+         * {@code DamageSource#getWeaponItem()} 等比缩放；两者共用同一个翻转位（当前端）。</p>
+         */
+        public Spec tridentThrowDamage(Form form, float min, float max) {
+            if (form != Form.TRIDENT) {
+                throw new IllegalArgumentException("投掷伤害区间只对三叉戟有意义（收到 " + form + "）");
+            }
+            this.tridentThrowRange = new ChaosRange.Range(min, max);
+            return this;
+        }
+
+        /** 重锤的"最终伤害"倍率（既有 8 族默认 1.2；作者：混沌金 = 1.0，即不额外乘算） */
+        public Spec maceFinalDamageMultiplier(float multiplier) {
+            this.maceFinalDamageMultiplier = multiplier;
+            return this;
+        }
+
+        /**
+         * 弓：满蓄力 tick + 弹射物基础伤害。
+         *
+         * <p>作者给混沌金的是「拉弓 {@code 20}」——按立档口径取"**拉满所需 tick = 20**"，
+         * 与既有 8 族的 {@value MetalWeapons#BOW_FULL_DRAW_TICKS} 不同源但同一条曲线。
+         * {@code projectileDamage} 传 0 ⇒ 弹射物伤害由 {@code ATTACK} 区间的当前值给
+         * （混沌金 2.0..3.5）。</p>
+         */
+        public Spec bowFullDraw(int ticks, float projectileDamage) {
+            this.bowFullDrawTicks = ticks;
+            this.bowProjectileDamage = projectileDamage;
+            return this;
+        }
+
+        /**
+         * 弩：蓄力秒数（作者：混沌金 **1.2 秒** = 24 tick）。
+         *
+         * <p>⚠ 与既有的「本模组弩 = 20 tick」（{@code CrossbowChargeDurationMixin}）冲突，
+         * 立档 §4 ⑥b 裁定「按字面 = 24 tick」⇒ 本值非 0 时该 mixin 走本族分支
+         * （见 {@code MetalWeapons.MetalCrossbowItem#chargeSecondsOf}）；
+         * 原版弩与第三方弩仍原样放回 25。弹速那一档（3.5..4.5）另走 {@code ATTACK} 区间。</p>
+         */
+        public Spec crossbowCharge(float seconds) {
+            this.crossbowChargeSeconds = seconds;
+            return this;
+        }
+
+        /** 乐事联动小刀的两个 {@code createAttributes} 修正（既有 8 族不调用；混沌金：1.5 / 2.0） */
+        public Spec knifeAttributes(float damage, float speed) {
+            this.knifeDamage = damage;
+            this.knifeSpeed = speed;
+            return this;
+        }
 
         /**
          * 声明本族注册哪些形态（覆盖式：<b>只注册列出来的</b>）。
@@ -1240,15 +1643,32 @@ public final class MetalFamily {
          * 声明一个区间通道的两端值（作者口径：混沌金挖掘 {@code 2..12}、混沌金盔甲 {@code 0..6}、
          * 崩乱合金挖掘 {@code 8..16}、崩乱合金盔甲 {@code 4..10} …）。
          *
-         * <p>⚠ 轮3 / 轮4 / 轮7 若需要"同一族的每把武器各有一档伤害区间"，在这张表上换成
-         * "按物品细分"的 key 即可（例如再叠一个 {@code Map<Item, ChaosRange.Range>}），
-         * <b>不要</b>把乒乓规则复制到武器类里。</p>
+         * <p>⚠ 轮3 起本条是<b>通道级</b>（该族全部器具共用一个区间，挖掘速度就是这种）；
+         * 要"同一族的每把武器各有一档伤害区间"用
+         * {@link #chaosRange(Form, ChaosRange.Channel, float, float)}。
+         * <b>乒乓规则仍然只在 {@link ChaosRange#pingPong} 一处</b>，这里只放两端值。</p>
          */
-        public Spec chaosRange(ChaosRange.Channel channel, int min, int max) {
+        public Spec chaosRange(ChaosRange.Channel channel, float min, float max) {
             if (this.chaosRanges.isEmpty()) {
                 this.chaosRanges = new java.util.EnumMap<>(ChaosRange.Channel.class);
             }
             this.chaosRanges.put(channel, new ChaosRange.Range(min, max));
+            return this;
+        }
+
+        /**
+         * 声明<b>某个形态</b>在某个通道上的两端值（轮3：混沌金器具的伤害逐件不同）。
+         *
+         * <p>例：{@code chaosRange(Form.SWORD, Channel.ATTACK, 4, 8)}、{@code (Form.MACE, ATTACK, 3, 7)}、
+         * {@code (Form.TRIDENT, ATTACK, 7, 11)}、{@code (Form.BOW, ATTACK, 2.0f, 3.5f)}…
+         * 投掷三叉戟的 {@code 9..13} 与近战 {@code 7..11} 是两个不同的量，
+         * 见 {@link #tridentThrowDamage}（投掷那一档单独声明，不塞进这张表）。</p>
+         */
+        public Spec chaosRange(Form form, ChaosRange.Channel channel, float min, float max) {
+            if (this.chaosFormRanges.isEmpty()) {
+                this.chaosFormRanges = new java.util.HashMap<>();
+            }
+            this.chaosFormRanges.put(MetalFamily.key(form, channel), new ChaosRange.Range(min, max));
             return this;
         }
 

@@ -1,0 +1,181 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * <b>客户端侧探针</b>（bg-n10 轮2/轮3 的"无紫黑格"运行时判据）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件同样是 {@code run/bgn10v-probe.enabled}；只在 {@link Dist#CLIENT} 注册。</p>
+ *
+ * <p>为什么不去世界：{@code --quickPlaySingleplayer <名字>} 在 1.21.1 需要配合
+ * {@code quickPlayPath}（上次游玩记录）才会真的进世界；只给名字时客户端会**停在标题界面**
+ * （本轮实测：日志停在贴图图集创建完之后不再推进，14 分钟无新行）。
+ * 而"模型/贴图有没有紫黑格"这件事在**标题界面就已经定稿** —— 图集与烘焙模型都在资源加载阶段完成，
+ * 所以启动后在客户端 tick 里直接查 {@code ModelManager} 就是有效的运行时判据，
+ * 不必冒"UI 自动化建世界 / 误写作者存档"的风险。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgN10vClientProbe {
+
+    private static final String TAG = "BGN10VPROBE-CLIENT";
+    private static final int CHECK_AT_TICK = 100;
+
+    private static int ticks;
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private BgN10vClientProbe() {
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (done || !BgN10vProbe.enabled()) {
+            return;
+        }
+        ticks++;
+        if (ticks < CHECK_AT_TICK) {
+            return;
+        }
+        done = true;
+        try {
+            run();
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("client_exception", String.valueOf(t));
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        bettergold.LOGGER.info("{} INFO exiting JVM（客户端没有「停服」这回事；探针收尾直接退进程）", TAG);
+        Runtime.getRuntime().halt(0);
+    }
+
+    private static void run() {
+        Minecraft mc = Minecraft.getInstance();
+        // ① 每个 bettergold 物品的 inventory 模型都不许落到 missing model（= 无紫黑格）
+        var mm = mc.getModelManager();
+        int checked = 0;
+        List<String> missing = new ArrayList<>();
+        for (var entry : BuiltInRegistries.ITEM.entrySet()) {
+            String id = entry.getKey().location().toString();
+            if (!id.startsWith("bettergold:")) {
+                continue;
+            }
+            checked++;
+            var loc = net.minecraft.client.resources.model.ModelResourceLocation
+                    .inventory(ResourceLocation.parse(id));
+            if (mm.getModel(loc) == mm.getMissingModel()) {
+                missing.add(id);
+            }
+        }
+        check("c_client_models_no_missing", missing.isEmpty(),
+                "checked=" + checked + " missing=" + missing);
+
+        // ② 方块图集里必须真的有 chaosgold_lantern 的精灵，而且它是**动画**（3 帧）。
+        //    ⚠ 读数说明（轮3 实测）：
+        //      ① 动画精灵的 `contents()` 报的是**单帧**尺寸 16×16，"16×48 的源文件"体现在帧数上
+        //         —— 这正是"没被纵向拉长"的运行时判据：没有 `.mcmeta` 时同一个 16×48 的 PNG
+        //         会被当成**一张 16×48 的静态图**，帧数会是 1。
+        //      ② `SpriteContents#getFrameCount()` 是 **private**（`SpriteContents.java:77`）
+        //         ⇒ 只能从它的 `toString()` 里取（那个记录串本来就带 `frameCount=`，见同文件 :173）。
+        try {
+            var atlas = mc.getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS);
+            var sprite = atlas.apply(ResourceLocation.fromNamespaceAndPath("bettergold",
+                    "block/chaosgold_lantern"));
+            String contents = sprite == null ? "<none>" : sprite.contents().toString();
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("frameCount=(\\d+)").matcher(contents);
+            int frameCount = m.find() ? Integer.parseInt(m.group(1)) : -1;
+            int w = sprite == null ? -1 : sprite.contents().width();
+            int h = sprite == null ? -1 : sprite.contents().height();
+            check("c_lantern_sprite_animated_not_stretched",
+                    sprite != null && frameCount == 3 && w == 16 && h == 16,
+                    "sprite=" + (sprite == null ? "null" : "found") + " frameCount=" + frameCount
+                            + " singleFrame=" + w + "x" + h
+                            + " contents=" + contents
+                            + "（期望 frameCount=3 且单帧 16x16 —— 与既有 9 张同形；"
+                            + "没有 .mcmeta 时帧数会是 1）");
+        } catch (Throwable t) {
+            fail("c_lantern_sprite_animated_not_stretched", String.valueOf(t));
+        }
+
+        // ③ 语言键：两族的中文名必须真的解析出来（不是裸键）
+        try {
+            String name = net.minecraft.locale.Language.getInstance()
+                    .getOrDefault("item.bettergold.chaosgold_sword");
+            check("c_lang_resolves", name != null && !name.contains("item.bettergold"),
+                    "item.bettergold.chaosgold_sword -> " + name);
+        } catch (Throwable t) {
+            fail("c_lang_resolves", String.valueOf(t));
+        }
+
+        // ④ 若真的进了世界（有整合服务端），顺手断言世界名
+        try {
+            var server = mc.getSingleplayerServer();
+            if (server != null) {
+                ServerLevel level = server.overworld();
+                String world = ((net.minecraft.world.level.storage.ServerLevelData) level.getLevelData())
+                        .getLevelName();
+                check("c_world_name_is_probe_world",
+                        world.equals("bgn10vworld") || world.equals("bgn10vprobe"),
+                        "world=" + world);
+            } else {
+                bettergold.LOGGER.info("{} INFO world :: SKIP（还在标题界面，没有整合服务端）", TAG);
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.info("{} INFO world :: SKIP（{}）", TAG, t.getClass().getSimpleName());
+        }
+
+        // ⑤ 客户端日志里的资源加载失败
+        Path log = Path.of(System.getProperty("user.dir")).resolve("logs").resolve("latest.log");
+        int failed = 0;
+        int missingModel = 0;
+        try {
+            if (Files.exists(log)) {
+                for (String line : Files.readAllLines(log, java.nio.charset.StandardCharsets.UTF_8)) {
+                    if (line.contains("Unable to load model") || line.contains("Failed to load ")) {
+                        failed++;
+                    }
+                    if (line.contains("Missing model")) {
+                        missingModel++;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            fail("c_log_scan_io", String.valueOf(e));
+        }
+        check("c_no_resource_load_failures", failed == 0 && missingModel == 0,
+                "UnableToLoad/FailedToLoad=" + failed + " Missing model=" + missingModel);
+    }
+}

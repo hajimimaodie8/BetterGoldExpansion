@@ -209,13 +209,40 @@ public final class AllMetals {
         MetalFamily.Spec spec = new MetalFamily.Spec("chaosgold", "混沌金")
                 .withoutForms(MetalFamily.Form.RAW, MetalFamily.Form.UPGRADE_TEMPLATE)
                 .chaosRange(ChaosRange.Channel.MINING, 2, 12)
+                // ---- 轮3：14 件套的伤害区间（作者逐件给的数；两端乒乓、当前值即实际值）----
+                //     ⚠ 表里的下（上）端就是**注册值与差值**的唯一来源 —— 不许在别处再写一份。
+                .chaosRange(MetalFamily.Form.SWORD, ChaosRange.Channel.ATTACK, 4, 8)
+                .chaosRange(MetalFamily.Form.MACE, ChaosRange.Channel.ATTACK, 3, 7)
+                .chaosRange(MetalFamily.Form.TRIDENT, ChaosRange.Channel.ATTACK, 7, 11)
+                .chaosRange(MetalFamily.Form.AXE, ChaosRange.Channel.ATTACK, 7, 10)
+                .chaosRange(MetalFamily.Form.PICKAXE, ChaosRange.Channel.ATTACK, 2, 6)
+                .chaosRange(MetalFamily.Form.SHOVEL, ChaosRange.Channel.ATTACK, 2.5F, 6.5F)
+                .chaosRange(MetalFamily.Form.HOE, ChaosRange.Channel.ATTACK, 1, 5)
+                .chaosRange(MetalFamily.Form.KNIFE, ChaosRange.Channel.ATTACK, 1.5F, 5.5F)
+                .chaosRange(MetalFamily.Form.BOW, ChaosRange.Channel.ATTACK, 2.0F, 3.5F)
+                .chaosRange(MetalFamily.Form.CROSSBOW, ChaosRange.Channel.ATTACK, 3.5F, 4.5F)
+                // ---- 攻速（作者给的**最终值**，换算成属性修正的减法只在 gearSpeed 一处做）----
+                .attackSpeed(MetalFamily.Form.SWORD, 1.6F)
+                .attackSpeed(MetalFamily.Form.MACE, 0.6F)
+                .attackSpeed(MetalFamily.Form.TRIDENT, 1.1F)
+                .attackSpeed(MetalFamily.Form.AXE, 1.0F)
+                .attackSpeed(MetalFamily.Form.PICKAXE, 1.2F)
+                .attackSpeed(MetalFamily.Form.SHOVEL, 1.0F)
+                .attackSpeed(MetalFamily.Form.HOE, 4.0F)
+                .attackSpeed(MetalFamily.Form.KNIFE, 2.0F)
+                // ---- 区间之外的固定值 ----
+                .tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)   // 投掷 9..13（近战 7..11）
+                .maceFinalDamageMultiplier(1.0F)                        // 作者：「最终伤 ×1.0」（不额外乘算）
+                .bowFullDraw(20, 0.0F)                                  // 作者：拉弓 20 tick（弹伤由 ATTACK 区间 2.0..3.5 给）
+                .crossbowCharge(1.2F)                                   // 作者：1.2 秒 = 24 tick
+                .knifeAttributes(1.5F, 2.0F)                            // 乐事刀：伤害区间下端 1.5 / 攻速 2.0
                 .coreItem(() -> AllItems.CHAOS_COIN.get());
         spec.durability = 426;
         spec.enchantmentValue = 24;
         spec.incorrectForDrops = BlockTags.INCORRECT_FOR_IRON_TOOL;   // 作者：挖掘等级「铁」
         // ⚠ 挖掘速度本体只有一个数（Tier 是按族共享的），而作者要的是**区间 2..12** ⇒
-        //   这里先取区间上端当占位，轮3 用 ChaosRange 的当前值把这条接成"逐物品栈"的速度
-        //   （Tier 的 speed 字段改不动逐 itemstack，必须另走属性那条路 —— 轮3 定型）。
+        //   注册时取**区间上端**（12.0F）当基准，运行期由 ChaosWiring#onBreakSpeed
+        //   补「当前值 − 上端」的差值（按物品栈、每次挖掘读一次）—— 见轮3 §12 的接线说明。
         spec.miningSpeed = 12.0F;
         // 盾牌：作者没点名混沌金盾的"格挡反 buff"⇒ 不调用 specialWeaponMetal（工作值，轮4 可一句话改）。
         // 免疫破盾走 Spec 默认（shieldBreakImmune = true，七套金属一致）。

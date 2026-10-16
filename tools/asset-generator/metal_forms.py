@@ -34,6 +34,18 @@ BUILDING_FORMS = [
     "pillar", "bars", "door", "trapdoor", "chain", "lantern",
 ]
 
+#: 器具 / 武器 / 盔甲的「伪形态」（1.7 轮3）—— **不是可开关的形态**：
+#:   * 不在 ALL_FORMS / BUILDING_FORMS 里（`forms(...)` / `withoutForms(...)` 不受它影响，
+#:     所以"每族 11 建材 / 13 形态"那些既有期望一个数都不变）；
+#:   * 只用于 **形态反查**（Java `MetalFamily#formOf`）与 **按形态声明区间**
+#:     （`Spec.chaosRange(Form, Channel, min, max)`：混沌金器具的伤害逐件不同）。
+#: ⚠ 顺序必须与 Java `MetalFamily.Form` 枚举**逐字一致**（`[bgn10-forms-parity]` 对穿）。
+GEAR_FORMS = [
+    "sword", "axe", "pickaxe", "shovel", "hoe", "knife",
+    "mace", "bow", "crossbow", "trident", "shield",
+    "helmet", "chestplate", "leggings", "boots",
+]
+
 #: 必备形态（关掉它们 = 配置错误；Java 侧 register() 抛异常）
 REQUIRED_FORMS = ["ingot", "block"]
 
@@ -115,3 +127,8 @@ def recipe_forms_of(metal: str) -> list[str]:
 def jvm_class_hint() -> str:
     """给 `[bgn10-forms-parity]` 用：Java 侧形态名与顺序的说明串（不许改格式）"""
     return "MetalFamily.Form: " + ", ".join(ALL_FORMS)
+
+
+def jvm_enum_names() -> list[str]:
+    """Java `MetalFamily.Form` 枚举的**完整**名字与顺序 = 可声明形态 + 伪形态（轮3）"""
+    return list(ALL_FORMS) + list(GEAR_FORMS)

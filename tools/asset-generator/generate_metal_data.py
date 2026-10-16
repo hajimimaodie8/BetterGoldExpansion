@@ -121,30 +121,42 @@ def main() -> None:
     for mid, meta in METALS.items():
         cn, en_name = meta["cn"], meta["en"]
         # ---------- 语言 ----------
-        # ⚠ 1.7 bg-n10 轮1 后半：**故意全量占位**（作者要求"语言键占位、只加不删"）——
-        #   即使某族没有 raw / upgrade_template 这类形态，也照样写它的键
-        #   （多出来的键不会被任何物品引用，纯占位；少写会让 `validate_metal_data.py`
-        #   的"全部物品与方块都要有语言键"那一段变红）。
+        # ⚠ 1.7 bg-n10 轮3：**按该族声明的形态过滤**（旧口径原文保留在下面）。
+        #   旧口径（轮1 后半写的，已被轮3 的 A 级负向检查推翻）：
+        #     「**故意全量占位**（作者要求"语言键占位、只加不删"）—— 即使某族没有 raw /
+        #      upgrade_template 这类形态，也照样写它的键（多出来的键不会被任何物品引用，纯占位；
+        #      少写会让 validate_metal_data.py 的"全部物品与方块都要有语言键"那一段变红）。」
+        #   ⇒ 后果（轮2 A 级实测抓到）：未注册形态留下了**死语言键**，
+        #     例如 `item.bettergold.raw_chaosgold` / `block.bettergold.chaosalloy_bricks`
+        #     —— 与立档「没声明的形态不许注册（物品/方块/模型/语言键/tag 全查）」直接冲突。
+        #   现口径：语言键与注册物体**一一对应**；校验器那边也同步改成按形态取（两边同时改才不假红）。
         if meta.get("special_id"):
             zh[f"item.bettergold.{meta['special_id']}"] = meta["special_cn"]
             en[f"item.bettergold.{meta['special_id']}"] = meta["special_en"]
         for suffix, (z, e) in ITEM_NAMES.items():
+            # 形态过滤：材料链三类（raw / nugget / upgrade_template）+ **11 种建材**都按
+            # MF.has(...) 取（崩乱合金只有 block ⇒ 它只剩 block 一条建材语言键）；
+            # 不在形态表里的（器具 / 武器 / 盔甲 / 刀）恒定产出语言键。
+            if suffix in ("raw", "nugget", "upgrade_template") or suffix in BLOCK_SUFFIXES:
+                if not MF.has(mid, suffix):
+                    continue
             item_id = f"raw_{mid}" if suffix == "raw" else f"{mid}_{suffix}"
             key = f"{'block' if suffix in BLOCK_SUFFIXES else 'item'}.bettergold.{item_id}"
             zh[key] = z.format(cn=cn)
             en[key] = e.format(en=en_name)
-        # 升级模板的 5 条说明（键名与万坚金一致）
-        base = f"item.bettergold.smithing_template.{mid}_upgrade."
-        zh[base + "applies_to"] = "金装备"
-        en[base + "applies_to"] = "Golden Gear"
-        zh[base + "ingredients"] = f"{cn}锭"
-        en[base + "ingredients"] = f"{en_name} Ingot"
-        zh[base + "upgrade_description"] = f"{cn}升级"
-        en[base + "upgrade_description"] = f"{en_name} Upgrade"
-        zh[base + "base_slot_description"] = "放入金制盔甲、武器或工具"
-        en[base + "base_slot_description"] = "Put golden armor, weapons or tools"
-        zh[base + "additions_slot_description"] = f"放入{cn}锭"
-        en[base + "additions_slot_description"] = f"Put a {en_name} Ingot"
+        # 升级模板的 5 条说明（键名与万坚金一致）——只在**注册了模板形态**的族上写
+        if MF.has(mid, "upgrade_template"):
+            base = f"item.bettergold.smithing_template.{mid}_upgrade."
+            zh[base + "applies_to"] = "金装备"
+            en[base + "applies_to"] = "Golden Gear"
+            zh[base + "ingredients"] = f"{cn}锭"
+            en[base + "ingredients"] = f"{en_name} Ingot"
+            zh[base + "upgrade_description"] = f"{cn}升级"
+            en[base + "upgrade_description"] = f"{en_name} Upgrade"
+            zh[base + "base_slot_description"] = "放入金制盔甲、武器或工具"
+            en[base + "base_slot_description"] = "Put golden armor, weapons or tools"
+            zh[base + "additions_slot_description"] = f"放入{cn}锭"
+            en[base + "additions_slot_description"] = f"Put a {en_name} Ingot"
 
         # 盔甲纹饰材料名（generate_metal_trims.py 生成的 trim_material JSON 的 description 用它；
         # 1.4 的三条是手写的，这里补上自动化：已有的会被 insert_lang 跳过）

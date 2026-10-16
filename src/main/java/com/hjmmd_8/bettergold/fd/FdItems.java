@@ -209,8 +209,8 @@ public class FdItems {
                 continue;
             }
             var holder = ITEMS.register(family.id + "_knife",
-                    () -> createKnife(family.tier, com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_DMG,
-                            com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_SPD, family.fireResistant));
+                    () -> createKnife(family.tier, family.knifeDamage,
+                            family.knifeSpeed, family.fireResistant));
             family.addExtraItem(holder::get);
             list.add(holder);
         }

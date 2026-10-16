@@ -1,0 +1,1328 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.material.ChaosRange;
+import com.hjmmd_8.bettergold.material.ChaosWiring;
+import com.hjmmd_8.bettergold.material.CreativePageSections;
+import com.hjmmd_8.bettergold.material.MetalEvents;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.material.MetalWeapons;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * 临时探针（bg-n10 轮2 A 级验收 + 轮3 A 级）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10v-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} 只调一次；forceload 双向归零；绝不进生产代码路径。</p>
+ */
+public final class BgN10vProbe {
+
+    private static final String TAG = "BGN10VPROBE";
+
+    /** 形态子集里的 11 种建材后缀（探针侧只用来说明"哪些是形态"） */
+    private static final Set<String> BUILDING_SUFFIXES = Set.of(
+            "block", "bricks", "bricks_stairs", "bricks_slab", "bricks_wall",
+            "pillar", "bars", "door", "trapdoor", "chain", "lantern");
+
+    /**
+     * 崩乱合金在创造页里应出现的**非建材**后缀（器具 / 武器 / 盔甲 / 刀 + 锭 + 模板）。
+     *
+     * <p>⚠ 器具/武器/盔甲/刀**不在形态子集里**（立档 §11.1：它们恒注册，轮7 才接数值）⇒
+     * 探针的负向判据只能拿**形态**说事，不能要求这些消失。</p>
+     */
+    private static final Set<String> GEAR_SUFFIXES_UNION = Set.of(
+            "ingot", "upgrade_template",
+            "sword", "axe", "pickaxe", "shovel", "hoe", "knife",
+            "mace", "bow", "crossbow", "trident", "shield",
+            "helmet", "chestplate", "leggings", "boots");
+
+    private static int passes;
+    private static int fails;
+    private static int ticks;
+    private static boolean done;
+    private static final List<BlockPos> FORCED = new ArrayList<>();
+    private static int baseX;
+    private static int baseZ;
+
+    private BgN10vProbe() {
+    }
+
+    // ==================== 开关 + 注册 ====================
+
+    private static Path gameDir() {
+        // 探针跑在 run/ 里（gameDir）⇒ 开关文件与日志都在那里
+        return Path.of(System.getProperty("user.dir"));
+    }
+
+    public static boolean enabled() {
+        return Files.exists(gameDir().resolve("bgn10v-probe.enabled"));
+    }
+
+    public static void install() {
+        if (!enabled()) {
+            return;
+        }
+        bettergold.LOGGER.info("{} probe registered (gameDir switch file found) gameDir={}", TAG, gameDir());
+        // 接线层的逐次读数：默认关（生产恒 false）；要看细节时把下面这行打开（A 级已跑过一轮）
+        ChaosWiring.debug = false;
+        NeoForge.EVENT_BUS.register(BgN10vProbe.class);
+    }
+
+    // ==================== 小工具 ====================
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static boolean itemExists(String id) {
+        return BuiltInRegistries.ITEM.containsKey(ResourceLocation.fromNamespaceAndPath("bettergold", id));
+    }
+
+    private static boolean blockExists(String id) {
+        return BuiltInRegistries.BLOCK.containsKey(ResourceLocation.fromNamespaceAndPath("bettergold", id));
+    }
+
+    private static Item item(String id) {
+        return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("bettergold", id));
+    }
+
+    private static Block block(String id) {
+        return BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("bettergold", id));
+    }
+
+    private static String path(Item item) {
+        return BuiltInRegistries.ITEM.getKey(item).getPath();
+    }
+
+    private static Path repoRoot() {
+        // ⚠ 探针跑在 run/ 里（NeoForge 的 gameDir）⇒ user.dir 是 run/，
+        //   源码树在它的上一级。两处都探测一下，避免下一个会话在 gradle 直接跑时误判。
+        Path cwd = Path.of(System.getProperty("user.dir"));
+        if (Files.exists(cwd.resolve("src/main/resources"))) {
+            return cwd;
+        }
+        Path up = cwd.getParent();
+        return up != null && Files.exists(up.resolve("src/main/resources")) ? up : cwd;
+    }
+
+    private static Path res(String rel) {
+        return repoRoot().resolve(rel);
+    }
+
+    // ==================== 事件入口 ====================
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        try {
+            stage0(event.getServer());
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION in stage0", TAG, t);
+            fail("stage0_exception", String.valueOf(t));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        if (!enabled()) {
+            return;
+        }
+        unforceAll(event.getServer());
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!enabled() || done) {
+            return;
+        }
+        ticks++;
+        MinecraftServer server = event.getServer();
+        try {
+            switch (ticks) {
+                case 20 -> stageScan(server);
+                case 40 -> stageRegistryAndTags(server);
+                case 60 -> stagePlace(server);
+                case 90 -> stageDropsAndBeacon(server);
+                case 130 -> stageCreativeAndLantern(server);
+                case 160 -> stageRound3Static(server);
+                case 200 -> stagePingPong(server);
+                case 240 -> stageMiningFlip(server);
+                case 260 -> stageDigSpeedEvent(server);
+                case 280 -> stageMelee(server);
+                case 320 -> stageRanged(server);
+                case 360 -> stageBoundary(server);
+                default -> {
+                }
+            }
+            if (ticks == 700) {
+                summaryAndHalt(server);
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION at tick {}", TAG, ticks, t);
+            fail("tick_exception", "tick=" + ticks + " " + t);
+        }
+    }
+
+    // ==================== 阶段 ====================
+
+    private static ServerLevel level(MinecraftServer server) {
+        return server.overworld();
+    }
+
+    private static void stage0(MinecraftServer server) {
+        ServerLevel level = level(server);
+        BlockPos ref = level.getSharedSpawnPos();
+        baseX = ref.getX() + 40;
+        baseZ = ref.getZ() + 40;
+        bettergold.LOGGER.info("{} INFO world :: name={} spawn={} base=({},{}) minY={} forcedBefore={}",
+                TAG, ((net.minecraft.world.level.storage.ServerLevelData) level.getLevelData()).getLevelName(),
+                ref, baseX, baseZ, level.getMinBuildHeight(), level.getForcedChunks().size());
+        int cx = baseX >> 4;
+        int cz = baseZ >> 4;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                level.setChunkForced(cx + dx, cz + dz, true);
+                FORCED.add(new BlockPos(cx + dx, 0, cz + dz));
+            }
+        }
+        check("forceload_set_25", level.getForcedChunks().size() == 25,
+                "forcedBefore=0 forcedAfter=" + level.getForcedChunks().size());
+    }
+
+    /** ① 数据包加载无错 + 计数 */
+    private static void stageScan(MinecraftServer server) {
+        Path log = gameDir().resolve("logs").resolve("latest.log");
+        int parsing = 0;
+        int missingTag = 0;
+        int unknownElement = 0;
+        int lines = 0;
+        try {
+            if (Files.exists(log)) {
+                for (String line : Files.readAllLines(log, java.nio.charset.StandardCharsets.UTF_8)) {
+                    lines++;
+                    if (line.contains("Parsing error loading")) {
+                        parsing++;
+                        if (parsing <= 5) {
+                            bettergold.LOGGER.error("{} LOG_PARSING :: {}", TAG, line);
+                        }
+                    }
+                    if (line.contains("Missing tag")) {
+                        missingTag++;
+                        if (missingTag <= 5) {
+                            bettergold.LOGGER.error("{} LOG_MISSING_TAG :: {}", TAG, line);
+                        }
+                    }
+                    if (line.contains("Unknown element")) {
+                        unknownElement++;
+                        if (unknownElement <= 5) {
+                            bettergold.LOGGER.error("{} LOG_UNKNOWN_ELEMENT :: {}", TAG, line);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            fail("log_scan_io", String.valueOf(e));
+            return;
+        }
+        bettergold.LOGGER.info("{} INFO log_scan :: lines={} parsing_error={} missing_tag={} unknown_element={}",
+                TAG, lines, parsing, missingTag, unknownElement);
+        check("data_load_no_parse_errors", parsing == 0 && missingTag == 0 && unknownElement == 0,
+                "Parsing error=" + parsing + " Missing tag=" + missingTag + " Unknown element=" + unknownElement);
+        // Loaded 计数（数据包把多少配方 / 标签装进来了）
+        var rm = server.getRecipeManager();
+        Set<String> recipes = new LinkedHashSet<>();
+        rm.getRecipes().forEach(r -> recipes.add(r.id().toString()));
+        long bgRecipes = recipes.stream().filter(s -> s.startsWith("bettergold:")).count();
+        int ourTags = 0;
+        var blockTags = server.registryAccess().registryOrThrow(Registries.BLOCK).getTagNames().toList();
+        for (var t : blockTags) {
+            if (t.location().getNamespace().equals("bettergold")) {
+                ourTags++;
+            }
+        }
+        bettergold.LOGGER.info("{} INFO loaded :: recipesTotal={} bettergoldRecipes={} blockTagsBettergold={}",
+                TAG, recipes.size(), bgRecipes, ourTags);
+        check("loaded_counts_positive", bgRecipes > 0 && ourTags > 0,
+                "bettergoldRecipes=" + bgRecipes + " bettergoldBlockTags=" + ourTags);
+    }
+
+    /** ②③⑤ 建材注册 / 形态负向 / 信标标签 */
+    private static void stageRegistryAndTags(MinecraftServer server) {
+        String[] building = { "block", "bricks", "bricks_stairs", "bricks_slab", "bricks_wall",
+                "pillar", "bars", "door", "trapdoor", "chain", "lantern" };
+        List<String> missingItem = new ArrayList<>();
+        List<String> missingBlock = new ArrayList<>();
+        List<String> notBlockItem = new ArrayList<>();
+        for (String s : building) {
+            if (!itemExists("chaosgold_" + s)) {
+                missingItem.add(s);
+            }
+            if (!blockExists("chaosgold_" + s)) {
+                missingBlock.add(s);
+            }
+            Item it = item("chaosgold_" + s);
+            if (!(it instanceof BlockItem)) {
+                notBlockItem.add(s + "=" + (it == null ? "null" : it.getClass().getSimpleName()));
+            }
+        }
+        check("r2_materials_eleven", missingItem.isEmpty() && missingBlock.isEmpty(),
+                "checked=11 missingItem=" + missingItem + " missingBlock=" + missingBlock);
+        check("r2_block_items_eleven", notBlockItem.isEmpty(), "not_a_BlockItem=" + notBlockItem);
+        check("r2_core_items",
+                itemExists("chaosgold_ingot") && itemExists("chaosgold_nugget") && itemExists("chaos_coin"),
+                "ingot=" + itemExists("chaosgold_ingot") + " nugget=" + itemExists("chaosgold_nugget")
+                        + " coin=" + itemExists("chaos_coin"));
+
+        // 形态子集负向：崩乱合金只许 锭 / 块 / 模板（材料链与建材形态）。
+        // ⚠ 器具 / 武器 / 盔甲 / 刀**不在形态子集里**（立档 §11.1：它们恒注册，轮7 才接数值）
+        //   ⇒ 负向判据只拿形态说事；`chaosalloy_knife` 属乐事联动刀，恒注册。
+        //   ⚠ **被测边界（如实记账）**：注册链上 chaosalloy 的模型/贴图/战利品表是拦住的，
+        //     但 `FdItems#registerMetalKnives` 是"对所有族开刀"的通用循环 ⇒ 它给崩乱合金也发了刀。
+        //     探针因此**不**把刀当负向；这一条留给作者一句话裁定（见交接清单）。
+        String[] alloyForbidden = { "nugget", "bricks", "bricks_stairs", "bricks_slab", "bricks_wall",
+                "pillar", "bars", "door", "trapdoor", "chain", "lantern" };
+        List<String> alloyBad = new ArrayList<>();
+        for (String s : alloyForbidden) {
+            if (itemExists("chaosalloy_" + s)) {
+                alloyBad.add("item:chaosalloy_" + s);
+            }
+            if (blockExists("chaosalloy_" + s)) {
+                alloyBad.add("block:chaosalloy_" + s);
+            }
+        }
+        if (itemExists("raw_chaosalloy")) {
+            alloyBad.add("item:raw_chaosalloy");
+        }
+        check("r2_chaosalloy_negative_forms", alloyBad.isEmpty(), "forbidden_found=" + alloyBad);
+        List<String> alloyHave = new ArrayList<>();
+        for (String s : new String[] { "ingot", "block", "upgrade_template" }) {
+            if (itemExists("chaosalloy_" + s)) {
+                alloyHave.add(s);
+            }
+        }
+        check("r2_chaosalloy_exactly_three", alloyHave.size() == 3, "present=" + alloyHave);
+        check("r2_chaosgold_negative_forms",
+                !itemExists("raw_chaosgold") && !itemExists("chaosgold_upgrade_template"),
+                "raw_chaosgold=" + itemExists("raw_chaosgold")
+                        + " chaosgold_upgrade_template=" + itemExists("chaosgold_upgrade_template"));
+
+        // 语言键负向（只查**未注册形态**；器具/武器/盔甲/刀是恒定注册的，不在此列）
+        var lang = net.minecraft.locale.Language.getInstance();
+        List<String> langBad = new ArrayList<>();
+        List<String> forbiddenKeys = new ArrayList<>(List.of(
+                "item.bettergold.raw_chaosgold", "item.bettergold.raw_chaosalloy",
+                "item.bettergold.chaosgold_upgrade_template",
+                "item.bettergold.chaosalloy_nugget"));
+        for (String s : new String[] { "bricks", "bricks_stairs", "bricks_slab", "bricks_wall",
+                "pillar", "bars", "door", "trapdoor", "chain", "lantern" }) {
+            forbiddenKeys.add("block.bettergold.chaosalloy_" + s);
+        }
+        for (String t : new String[] { "applies_to", "ingredients", "upgrade_description",
+                "base_slot_description", "additions_slot_description" }) {
+            forbiddenKeys.add("item.bettergold.smithing_template.chaosgold_upgrade." + t);
+        }
+        for (String key : forbiddenKeys) {
+            if (lang.has(key)) {
+                langBad.add(key);
+            }
+        }
+        check("r2_lang_keys_negative", langBad.isEmpty(),
+                "checked=" + forbiddenKeys.size() + " unexpected=" + langBad
+                        + " langEntries=" + lang.getLanguageData().size());
+        // 语言键正向：混沌金 11 建材 + 两族锭块
+        List<String> langMissing = new ArrayList<>();
+        for (String s : building) {
+            String key = "block.bettergold.chaosgold_" + s;
+            if (!lang.has(key)) {
+                langMissing.add(key);
+            }
+        }
+        check("r2_lang_keys_positive", langMissing.isEmpty(), "missing=" + langMissing);
+
+        // 信标基座标签（块 / 砖 / 柱 / 崩乱合金块）
+        TagKey<Block> beacon = TagKey.create(Registries.BLOCK,
+                ResourceLocation.parse("minecraft:beacon_base_blocks"));
+        Set<String> members = new LinkedHashSet<>();
+        BuiltInRegistries.BLOCK.getTag(beacon)
+                .ifPresent(hs -> hs.forEach(h -> members.add(BuiltInRegistries.BLOCK.getKey(h.value()).toString())));
+        List<String> want = List.of("bettergold:chaosgold_block", "bettergold:chaosgold_bricks",
+                "bettergold:chaosgold_pillar", "bettergold:chaosalloy_block");
+        List<String> missing = new ArrayList<>();
+        for (String w : want) {
+            if (!members.contains(w)) {
+                missing.add(w);
+            }
+        }
+        check("r2_beacon_tag_members", missing.isEmpty(),
+                "beaconMembers=" + members.size() + " missing=" + missing);
+    }
+
+    /** 放置（BlockItem 认的那些方块状态真能落地） */
+    private static void stagePlace(MinecraftServer server) {
+        ServerLevel level = level(server);
+        int y = 120;
+        String[] building = { "block", "bricks", "bricks_stairs", "bricks_slab", "bricks_wall",
+                "pillar", "bars", "door", "trapdoor", "chain", "lantern" };
+        List<String> bad = new ArrayList<>();
+        List<String> placed = new ArrayList<>();
+        for (int i = 0; i < building.length; i++) {
+            BlockPos pos = new BlockPos(baseX + i * 3, y, baseZ);
+            level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
+            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            Block b = block("chaosgold_" + building[i]);
+            boolean ok = level.setBlockAndUpdate(pos, b.defaultBlockState());
+            BlockState now = level.getBlockState(pos);
+            placed.add(building[i] + "=" + path(b.asItem()) + "/" + (now.getBlock() == b));
+            if (!ok || now.getBlock() != b) {
+                bad.add(building[i] + "->" + now);
+            }
+        }
+        check("r2_place_eleven", bad.isEmpty(), "bad=" + bad);
+        bettergold.LOGGER.info("{} INFO placed :: {}", TAG, placed);
+    }
+
+    /** 掉落自证（真 ServerPlayer + destroyBlock）+ 信标金字塔 */
+    private static void stageDropsAndBeacon(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10vprobe");
+        player.getAbilities().mayfly = true;
+        player.getAbilities().instabuild = false;
+        player.onUpdateAbilities();
+        int y = 120;
+        String[] building = { "block", "bricks", "bricks_stairs", "bricks_slab", "bricks_wall",
+                "pillar", "bars", "door", "trapdoor", "chain", "lantern" };
+        List<String> report = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        for (int i = 0; i < building.length; i++) {
+            Block b = block("chaosgold_" + building[i]);
+            BlockPos pos = new BlockPos(baseX + i * 3, y, baseZ);
+            // 掉落表求值（真 ServerPlayer + 真 tool）—— 与 destroyBlock 走同一张表
+            ItemStack tool = new ItemStack(item("chaosgold_pickaxe"));
+            List<ItemStack> drops = Block.getDrops(level.getBlockState(pos), level, pos,
+                    level.getBlockEntity(pos), player, tool);
+            boolean selfDrop = drops.stream().anyMatch(s -> s.getItem() == b.asItem());
+            report.add(building[i] + "=" + drops.stream().map(s -> path(s.getItem()) + "x" + s.getCount()).toList());
+            if (!selfDrop) {
+                bad.add(building[i] + "->" + drops);
+            }
+            // 真挖一次（destroyBlock = 玩家破坏路径）+ **直接查那张战利品表**。
+            // ⚠ 轮2 首版这里是假红：探针的 ServerPlayer 没有连接、**服务端 tick 不会跑**，
+            //   而 `ItemEntity` 走的是 `level.getEntities()`（每 tick 从区块重建）
+            //   ⇒ 刚 spawn 的掉落物在同一 tick 里查不到。改成查战利品表（掉落物的上游真源），
+            //   掉落物实体那一侧另用 `level.addFreshEntity` 计数交叉印证。
+            level.setBlockAndUpdate(pos, b.defaultBlockState());
+            player.setPos(pos.getX() + 0.5, y + 1.0, pos.getZ() + 0.5);
+            boolean destroyed = player.gameMode.destroyBlock(pos);
+            var lootTableId = b.getLootTable();
+            var lootTable = lootTableId == null ? null
+                    : server.reloadableRegistries().getLootTable(lootTableId);
+            long lootCount = 0;
+            if (lootTable != null) {
+                List<ItemStack> rolled = lootTable.getRandomItems(
+                        new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
+                                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN,
+                                        pos.getCenter())
+                                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.TOOL,
+                                        tool)
+                                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.BLOCK_STATE,
+                                        level.getBlockState(pos))
+                                .withOptionalParameter(
+                                        net.minecraft.world.level.storage.loot.parameters.LootContextParams.BLOCK_ENTITY,
+                                        level.getBlockEntity(pos))
+                                .withLuck(player.getLuck())
+                                .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.BLOCK));
+                lootCount = rolled.stream().filter(s -> s.getItem() == b.asItem())
+                        .mapToLong(ItemStack::getCount).sum();
+            }
+            report.add(building[i] + " loot=" + lootTableId
+                    + " selfDrops=" + drops.stream().map(s -> path(s.getItem()) + "x" + s.getCount()).toList()
+                    + " rolledSelf=" + lootCount);
+            if (!destroyed || lootCount != 1) {
+                bad.add("destroy:" + building[i] + " destroyed=" + destroyed + " rolledSelf=" + lootCount
+                        + " lootTable=" + lootTableId);
+            }
+        }
+        check("r2_block_selfdrop_eleven", bad.isEmpty(), "bad=" + bad);
+        bettergold.LOGGER.info("{} INFO drops :: {}", TAG, report);
+        player.discard();
+
+        // 信标：块 / 砖 / 柱 各自 3×3 底座 ⇒ updateBase 反射读层数
+        String[] kinds = { "block", "bricks", "pillar" };
+        List<String> beaconReport = new ArrayList<>();
+        List<String> beaconBad = new ArrayList<>();
+        int beaconY = 140;
+        int beaconBaseX = baseX + 30;
+        try {
+            var m = Class.forName("net.minecraft.world.level.block.entity.BeaconBlockEntity")
+                    .getDeclaredMethod("updateBase", net.minecraft.world.level.Level.class, int.class, int.class, int.class);
+            m.setAccessible(true);
+            for (int k = 0; k < kinds.length; k++) {
+                int bx = beaconBaseX + k * 8;
+                Block b = block("chaosgold_" + kinds[k]);
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        level.setBlockAndUpdate(new BlockPos(bx + dx, beaconY - 1, baseZ + dz), b.defaultBlockState());
+                    }
+                }
+                level.setBlockAndUpdate(new BlockPos(bx, beaconY, baseZ), Blocks.BEACON.defaultBlockState());
+                int pyramid = (int) m.invoke(null, level, bx, beaconY, baseZ);
+                beaconReport.add(kinds[k] + "->level" + pyramid);
+                if (pyramid < 1) {
+                    beaconBad.add(kinds[k]);
+                }
+            }
+            // 负向对照：底座换玻璃 ⇒ 必须 level 0
+            int bx = beaconBaseX + 3 * 8;
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    level.setBlockAndUpdate(new BlockPos(bx + dx, beaconY - 1, baseZ + dz), Blocks.GLASS.defaultBlockState());
+                }
+            }
+            level.setBlockAndUpdate(new BlockPos(bx, beaconY, baseZ), Blocks.BEACON.defaultBlockState());
+            int control = (int) m.invoke(null, level, bx, beaconY, baseZ);
+            check("r2_beacon_pyramid", beaconBad.isEmpty(),
+                    "chaosgold bases=" + beaconReport + " control(glass)=" + control);
+            check("r2_beacon_negative_control", control == 0, "glass pyramid level=" + control);
+        } catch (Throwable t) {
+            fail("r2_beacon_reflection", String.valueOf(t));
+        }
+    }
+
+    /** 创造页分组 + 灯笼 */
+    private static void stageCreativeAndLantern(MinecraftServer server) {
+        // 创造页内容要**先建**（原版只在客户端打开创造页时 buildContents；服务端侧没有玩家 ⇒ 空表）。
+        // CreativeModeTabs.tryRebuildTabContents 是原版给的公开入口（客户端/服务端都能调）。
+        boolean rebuilt = net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(
+                server.getWorldData().enabledFeatures(), true, server.registryAccess());
+        bettergold.LOGGER.info("{} INFO creative_rebuild :: rebuilt={}", TAG, rebuilt);
+        CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativePageSections.PAGE_TAB_ID);
+        if (tab == null) {
+            fail("r2_creative_tab_missing", "id=" + CreativePageSections.PAGE_TAB_ID);
+            return;
+        }
+        Set<String> ids = new LinkedHashSet<>();
+        for (ItemStack s : tab.getDisplayItems()) {
+            if (!s.isEmpty()) {
+                ids.add(BuiltInRegistries.ITEM.getKey(s.getItem()).toString());
+            }
+        }
+        bettergold.LOGGER.info("{} INFO creative :: id={} entries={}", TAG,
+                BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab), ids.size());
+        MetalFamily chaosgold = MetalFamily.byId("chaosgold");
+        MetalFamily chaosalloy = MetalFamily.byId("chaosalloy");
+        if (chaosgold == null || chaosalloy == null) {
+            fail("r2_families_missing", "chaosgold=" + chaosgold + " chaosalloy=" + chaosalloy);
+            return;
+        }
+        List<String> cgMissing = new ArrayList<>();
+        for (var h : chaosgold.allItems) {
+            String id = BuiltInRegistries.ITEM.getKey(h.get()).toString();
+            if (!ids.contains(id)) {
+                cgMissing.add(id);
+            }
+        }
+        List<String> caMissing = new ArrayList<>();
+        for (var h : chaosalloy.allItems) {
+            String id = BuiltInRegistries.ITEM.getKey(h.get()).toString();
+            if (!ids.contains(id)) {
+                caMissing.add(id);
+            }
+        }
+        check("r2_creative_chaosgold_group", cgMissing.isEmpty(),
+                "inPage=" + (chaosgold.allItems.size() - cgMissing.size()) + "/" + chaosgold.allItems.size()
+                        + " missing=" + cgMissing);
+        check("r2_creative_chaosalloy_group", caMissing.isEmpty(),
+                "inPage=" + (chaosalloy.allItems.size() - caMissing.size()) + "/" + chaosalloy.allItems.size()
+                        + " missing=" + caMissing);
+        Set<String> alloyInPage = new LinkedHashSet<>();
+        Set<String> alloyBuildingInPage = new LinkedHashSet<>();
+        for (String id : ids) {
+            if (id.startsWith("bettergold:chaosalloy_")) {
+                String suffix = id.substring("bettergold:chaosalloy_".length());
+                alloyInPage.add(suffix);
+                if (BUILDING_SUFFIXES.contains(suffix)) {
+                    alloyBuildingInPage.add(suffix);
+                }
+            }
+        }
+        // 「崩乱合金只有 3 形态」= 除（恒定的）器具/武器/盔甲/刀之外，**形态**只剩 块，
+        //   加上材料链的 锭 + 模板 —— 这就是作者裁定 ⑪d 的精确边界。
+        //   ⚠ 这条是**边界确认**（不是"该红"的判据）；它每轮都要是真值才有意义，
+        //     所以用 pass 记录真值、另用一条负向断言保证"没多出别的建材形态"。
+        pass("r2_creative_chaosalloy_forms_boundary",
+                "boundary 确认（不是失败）：chaosalloy 在创造页的**非形态**装备 = 器具/武器/盔甲"
+                        + "（恒注册，立档 §11.1；轮7 才接数值）+ 乐事刀；**形态**只剩 block。"
+                        + "inPage=" + alloyInPage + " building=" + alloyBuildingInPage);
+        check("r2_creative_chaosalloy_no_extra_building_forms",
+                alloyBuildingInPage.equals(new LinkedHashSet<>(List.of("block"))),
+                "chaosalloy 的建材形态必须是 {block} 一个（作者裁定 ⑪d：不做 11 种建材）："
+                        + alloyBuildingInPage);
+        // 无紫黑格的服务端侧等价判据 = 每个创造页条目都有**物品模型**文件
+        // （`models/item/<id>.json` —— 方块物品也走这一张；实测 `chaosgold_block` 两张都有）。
+        // ⚠ 轮2/轮3 首版这里有个假红：`Path.of("src", ...)` 用的是**相对 run/** 的路径 ⇒ 全部 missing。
+        //   现在统一走 res()（= 源码树根），并逐条打印路径 + 存在性，便于复算。
+        List<String> noModel = new ArrayList<>();
+        List<String> modelProbe = new ArrayList<>();
+        for (String id : ids) {
+            if (!id.startsWith("bettergold:")) {
+                continue;
+            }
+            Item it = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+            String p = path(it);
+            Path itemModel = res("src/main/resources/assets/bettergold/models/item/" + p + ".json");
+            boolean itemOk = Files.exists(itemModel);
+            if (!itemOk) {
+                noModel.add(id + " -> " + itemModel);
+            }
+            if (modelProbe.size() < 3) {
+                modelProbe.add(id + "=" + itemOk);
+            }
+        }
+        check("r3_creative_items_have_models", noModel.isEmpty(),
+                "checked=" + ids.size() + " missing=" + noModel + " sample=" + modelProbe);
+
+        // 灯笼：PNG 尺寸 / .mcmeta 同形 / 帧数 / 模型解析
+        try {
+            Path png = res("src/main/resources/assets/bettergold/textures/block/chaosgold_lantern.png");
+            byte[] d = Files.readAllBytes(png);
+            int w = ((d[16] & 0xFF) << 24) | ((d[17] & 0xFF) << 16) | ((d[18] & 0xFF) << 8) | (d[19] & 0xFF);
+            int h = ((d[20] & 0xFF) << 24) | ((d[21] & 0xFF) << 16) | ((d[22] & 0xFF) << 8) | (d[23] & 0xFF);
+            Path meta = res("src/main/resources/assets/bettergold/textures/block/chaosgold_lantern.png.mcmeta");
+            Path otherMeta = res("src/main/resources/assets/bettergold/textures/block/sturdygold_lantern.png.mcmeta");
+            String mine = Files.readString(meta, java.nio.charset.StandardCharsets.UTF_8).replaceAll("\\s", "");
+            String other = Files.readString(otherMeta, java.nio.charset.StandardCharsets.UTF_8).replaceAll("\\s", "");
+            check("r2_lantern_png_16x48", w == 16 && h == 48, "w=" + w + " h=" + h + " bytes=" + d.length);
+            check("r2_lantern_frames_three", h / w == 3, "frames=" + (h / w));
+            check("r2_lantern_mcmeta_same_as_existing", mine.equals(other),
+                    "chaosgold=" + mine + " sturdygold=" + other);
+            // 服务端侧可核的模型链：方块状态有 loaded state definition（= blockstate JSON 解析成功），
+            // 贴图/精灵与图集在 runClient 侧另验（本探针只到"能被服务端加载"这一层）。
+            BlockState st = block("chaosgold_lantern").defaultBlockState();
+            boolean hasDef = st.getBlock().getStateDefinition().getPossibleStates().contains(st);
+            Path blockstate = res("src/main/resources/assets/bettergold/blockstates/chaosgold_lantern.json");
+            check("r2_lantern_model_resolves", hasDef && Files.exists(blockstate),
+                    "possibleStates=" + st.getBlock().getStateDefinition().getPossibleStates().size()
+                            + " blockstateJson=" + Files.exists(blockstate));
+        } catch (Exception e) {
+            fail("r2_lantern_io", String.valueOf(e));
+        }
+    }
+
+    private static ServerPlayer newPlayer(MinecraftServer server, ServerLevel level, String name) {
+        return new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), name),
+                ClientInformation.createDefault());
+    }
+
+    // ==================== 轮3：区间值接线的 A 级读数 ====================
+
+    /** 14 件套的静态面：耐久 / 附魔能力 / 挖掘等级 / 注册属性 / 攻速 / 弓弩的固定值 */
+    private static void stageRound3Static(MinecraftServer server) {
+        // ---- 诊断：TOOL 组件与 getDestroySpeed（挖掘速度接线的第一手材料）----
+        ItemStack digPick = new ItemStack(item("chaosgold_pickaxe"));
+        var tool = digPick.get(net.minecraft.core.component.DataComponents.TOOL);
+        StringBuilder rules = new StringBuilder();
+        if (tool != null) {
+            rules.append("default=").append(tool.defaultMiningSpeed()).append(" rules=");
+            for (var r : tool.rules()) {
+                rules.append("{blocks=").append(r.blocks())
+                        .append(" speed=").append(r.speed().orElse(null))
+                        .append(" drops=").append(r.correctForDrops().orElse(null)).append("} ");
+            }
+        } else {
+            rules.append("<no TOOL component>");
+        }
+        var stone = Blocks.STONE.defaultBlockState();
+        bettergold.LOGGER.info("{} INFO r3_tool_diag :: chaosgold_pickaxe TOOL={} | getDestroySpeed(stone)={} "
+                        + "Item.getDestroySpeed(stone)={} | sturdygold_pickaxe TOOL-default/speed={}/{}",
+                TAG, rules.toString().trim(), digPick.getDestroySpeed(stone),
+                digPick.getItem().getDestroySpeed(digPick, stone),
+                new ItemStack(item("sturdygold_pickaxe"))
+                        .get(net.minecraft.core.component.DataComponents.TOOL) == null ? "-"
+                                : new ItemStack(item("sturdygold_pickaxe"))
+                                        .get(net.minecraft.core.component.DataComponents.TOOL).defaultMiningSpeed(),
+                new ItemStack(item("sturdygold_pickaxe")).getDestroySpeed(stone));
+        MetalFamily cg = MetalFamily.byId("chaosgold");
+        if (cg == null) {
+            fail("r3_family_missing", "chaosgold");
+            return;
+        }
+        bettergold.LOGGER.info("{} INFO r3_ranges :: {}", TAG, cg.allChaosRanges());
+        // ① 耐久 426 / 附魔 24 / 挖掘等级 = 铁
+        check("r3_tier_426_24_iron",
+                cg.tier.getUses() == 426 && cg.tier.getEnchantmentValue() == 24
+                        && cg.tier.getIncorrectBlocksForDrops()
+                                == net.minecraft.tags.BlockTags.INCORRECT_FOR_IRON_TOOL,
+                "uses=" + cg.tier.getUses() + " ench=" + cg.tier.getEnchantmentValue()
+                        + " incorrectForDrops=" + cg.tier.getIncorrectBlocksForDrops().location());
+        // ② 14 件套齐备（5 器具 + 小刀 + 5 武器 + 盾 + 4 盔甲 = 16 件；作者口径 14 件套含 5 器具 + 乐事刀
+        //    + 重锤/弓/弩/三叉戟 + 盾 = 11，外加 4 盔甲 —— 这里只点"全部存在"）
+        String[] gear = { "sword", "axe", "pickaxe", "shovel", "hoe", "knife", "mace", "bow",
+                "crossbow", "trident", "shield", "helmet", "chestplate", "leggings", "boots" };
+        List<String> missing = new ArrayList<>();
+        for (String s : gear) {
+            if (!itemExists("chaosgold_" + s)) {
+                missing.add(s);
+            }
+        }
+        check("r3_gear_all_present", missing.isEmpty(), "checked=" + gear.length + " missing=" + missing);
+        // ③ 攻速：作者逐件给的最终值（注册属性 = 最终值 − 4.0）
+        List<String> speeds = new ArrayList<>();
+        List<String> speedBad = new ArrayList<>();
+        for (String s : new String[] { "sword", "mace", "trident", "axe", "pickaxe", "shovel", "hoe" }) {
+            ItemStack st = new ItemStack(item("chaosgold_" + s));
+            double speed = 4.0 + sumAttackSpeed(st);
+            speeds.add(s + "=" + round4(speed));
+            double want = switch (s) {
+                case "sword" -> 1.6;
+                case "mace" -> 0.6;
+                case "trident" -> 1.1;
+                case "axe" -> 1.0;
+                case "pickaxe" -> 1.2;
+                case "shovel" -> 1.0;
+                case "hoe" -> 4.0;
+                default -> -1;
+            };
+            if (Math.abs(speed - want) > 0.001) {
+                speedBad.add(s + " got " + round4(speed) + " want " + want);
+            }
+        }
+        check("r3_attack_speeds", speedBad.isEmpty(), "final=" + speeds + " bad=" + speedBad);
+        // ④ 注册伤害 = 区间下端（当前值在低端时显示的就是它）
+        List<String> dmgBad = new ArrayList<>();
+        List<String> dmg = new ArrayList<>();
+        for (String s : new String[] { "sword", "mace", "trident", "axe", "pickaxe", "shovel", "hoe" }) {
+            ItemStack st = new ItemStack(item("chaosgold_" + s));
+            double d = ChaosWiring.attackDamageOf(st);
+            dmg.add(s + "=" + round4(d));
+            var range = cg.range(st.getItem(), ChaosRange.Channel.ATTACK);
+            double want = range == null ? -1 : range.min();
+            if (Math.abs(d - want) > 0.001) {
+                dmgBad.add(s + " got " + round4(d) + " want(min) " + want);
+            }
+            // 诊断：把属性修饰符逐条打出来（发现"注册值不是区间下端"时的第一手材料）
+            StringBuilder raw = new StringBuilder();
+            for (var e : st.getAttributeModifiers().modifiers()) {
+                raw.append(e.attribute().getRegisteredName()).append('=')
+                        .append(e.modifier().amount()).append('/')
+                        .append(e.modifier().id().getPath()).append(' ')
+                        .append(e.slot().toString()).append("; ");
+            }
+            bettergold.LOGGER.info("{} INFO r3_attr :: {} class={} family={} range={} raw=[{}]",
+                    TAG, s, st.getItem().getClass().getSimpleName(),
+                    MetalFamily.of(st) == null ? "null" : MetalFamily.of(st).id, range, raw.toString().trim());
+        }
+        check("r3_registered_damage_is_range_min", dmgBad.isEmpty(), "damage=" + dmg + " bad=" + dmgBad);
+        // ⑤ 弓 20 tick / 弩 1.2 秒 = 24 tick / 弩弹速 4.5（高端）
+        ItemStack bow = new ItemStack(item("chaosgold_bow"));
+        ItemStack crossbow = new ItemStack(item("chaosgold_crossbow"));
+        check("r3_bow_full_draw_20", MetalWeapons.MetalBowItem.fullDrawTicks(bow) == 20,
+                "fullDrawTicks(chaosgold)=" + MetalWeapons.MetalBowItem.fullDrawTicks(bow)
+                        + " (sturdygold=" + MetalWeapons.MetalBowItem
+                                .fullDrawTicks(new ItemStack(item("sturdygold_bow"))) + ")");
+        int chargeLow = MetalWeapons.MetalCrossbowItem.chargeDuration(crossbow, null);
+        ChaosRange.setHigh(crossbow, ChaosRange.Channel.ATTACK, true);
+        int chargeHigh = MetalWeapons.MetalCrossbowItem.chargeDuration(crossbow, null);
+        ItemStack vanillaCrossbow = new ItemStack(net.minecraft.world.item.Items.CROSSBOW);
+        int vanillaCharge = MetalWeapons.MetalCrossbowItem.chargeDuration(vanillaCrossbow, null);
+        check("r3_crossbow_24_ticks", chargeLow == 24 && chargeHigh == 24,
+                "chaosgold charge=" + chargeLow + "/" + chargeHigh
+                        + " (原版弩经同一方法外推=" + vanillaCharge + "，真原版走 mixin 的 other 分支)");
+        // ⑥ 弹速 / 弹伤读区间
+        ChaosRange.setHigh(crossbow, ChaosRange.Channel.ATTACK, false);
+        float powerLow = MetalWeapons.MetalCrossbowItem.arrowPower(crossbow);
+        ChaosRange.setHigh(crossbow, ChaosRange.Channel.ATTACK, true);
+        float powerHigh = MetalWeapons.MetalCrossbowItem.arrowPower(crossbow);
+        ChaosRange.setHigh(bow, ChaosRange.Channel.ATTACK, false);
+        float bowLow = MetalWeapons.MetalBowItem.bowBaseDamage(bow);
+        ChaosRange.setHigh(bow, ChaosRange.Channel.ATTACK, true);
+        float bowHigh = MetalWeapons.MetalBowItem.bowBaseDamage(bow);
+        check("r3_projectile_values_from_range",
+                Math.abs(powerLow - 3.5F) < 1e-4 && Math.abs(powerHigh - 4.5F) < 1e-4
+                        && Math.abs(bowLow - 2.0F) < 1e-4 && Math.abs(bowHigh - 3.5F) < 1e-4,
+                "crossbow power=" + powerLow + "/" + powerHigh + " bow baseDamage=" + bowLow + "/" + bowHigh);
+        // ⑦ 小刀（乐事联动）伤害区间 + 攻速
+        ItemStack knife = new ItemStack(item("chaosgold_knife"));
+        var knifeRange = cg.range(knife.getItem(), ChaosRange.Channel.ATTACK);
+        check("r3_knife_range_1_5_to_5_5",
+                knifeRange != null && knifeRange.min() == 1.5F && knifeRange.max() == 5.5F,
+                "knifeRange=" + knifeRange);
+        // ⑧ 负向：既有 8 族一件武器都不许有形态区间（一个字节都不写）
+        List<String> leaked = new ArrayList<>();
+        for (MetalFamily f : MetalFamily.all()) {
+            if (f.id.equals("chaosgold")) {
+                continue;
+            }
+            for (String s : gear) {
+                if (!itemExists(f.id + "_" + s)) {
+                    continue;
+                }
+                ItemStack st = new ItemStack(item(f.id + "_" + s));
+                if (f.range(st.getItem(), ChaosRange.Channel.ATTACK) != null
+                        || ChaosRange.isHigh(st, ChaosRange.Channel.ATTACK)) {
+                    leaked.add(f.id + "_" + s);
+                }
+            }
+        }
+        check("r3_other_families_untouched", leaked.isEmpty(), "leaked=" + leaked);
+    }
+
+    private static double sumAttackSpeed(ItemStack stack) {
+        double v = 0.0D;
+        for (var e : stack.getAttributeModifiers().modifiers()) {
+            if (e.attribute().value() == net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED.value()) {
+                v += e.modifier().amount();
+            }
+        }
+        return v;
+    }
+
+    private static String round4(double v) {
+        return String.format(java.util.Locale.ROOT, "%.4f", v);
+    }
+
+    /** 同一件器具反复手持 ⇒ 值在两端乒乓（真 ServerPlayer + 真事件） */
+    private static void stagePingPong(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10vping");
+        player.getAbilities().instabuild = false;
+        player.onUpdateAbilities();
+        ItemStack sword = new ItemStack(item("chaosgold_sword"));
+        player.setItemInHand(InteractionHand.MAIN_HAND, sword);
+        ItemStack inHand = player.getMainHandItem();
+        bettergold.LOGGER.info("{} INFO r3_pingpong_diag :: held={} family={} form={} range={} rawRange={} "
+                        + "formRanges={}",
+                TAG, inHand, MetalFamily.of(inHand) == null ? "null" : MetalFamily.of(inHand).id,
+                MetalFamily.of(inHand) == null ? "null" : MetalFamily.of(inHand).formOf(inHand.getItem()),
+                ChaosRange.currentByItem(inHand, MetalFamily.of(inHand), ChaosRange.Channel.ATTACK),
+                MetalFamily.of(inHand).range(inHand.getItem(), ChaosRange.Channel.ATTACK),
+                MetalFamily.of(inHand).chaosFormRanges);
+        StringBuilder seq = new StringBuilder();
+        List<Float> values = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            // 真实的「换成这一件」路径：
+            //   ① `setItemInHand` 真的改主手（走 `Player#setItemSlot`）；
+            //   ② `LivingEquipmentChangeEvent` 在**真实游戏里**由
+            //      `LivingEntity#detectEquipmentUpdates()` 在实体 tick 里发出 —— 而探针的
+            //      `ServerPlayer` 没有客户端连接、**不会 tick**（`detectEquipmentUpdates()` 是 private）
+            //      ⇒ 这里把同一个事件**手发一次**到同一条事件总线（与真实 tick 每 tick 至多发一次同构，
+            //      不能既 setItemInHand 又手发 —— 那会翻两次，轮3 首版就是这样翻回原点的）。
+            ItemStack previous = player.getMainHandItem().copy();
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            player.setItemInHand(InteractionHand.MAIN_HAND, inHand);
+            // 一个"换成这一件"的**单次**事件（与真实 tick 的 detectEquipmentUpdates 同构）
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
+                    new net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent(
+                            player, net.minecraft.world.entity.EquipmentSlot.MAINHAND, previous, inHand));
+            Float v = ChaosRange.current(inHand, MetalFamily.of(inHand),
+                    MetalFamily.Form.SWORD, ChaosRange.Channel.ATTACK);
+            values.add(v);
+            seq.append(v == null ? "-" : removeTrailingZero(v)).append(' ');
+        }
+        boolean ok = values.size() == 6;
+        for (int i = 1; i < values.size(); i++) {
+            Float a = values.get(i - 1);
+            Float b = values.get(i);
+            if (a == null || b == null || Math.abs(a - b) < 1e-6) {
+                ok = false;
+            }
+        }
+        // 两次取值必须落在两个不同的端点上（值域 = {4.0, 8.0}）
+        boolean bothEnds = new java.util.HashSet<>(values).equals(new java.util.HashSet<>(List.of(4.0F, 8.0F)));
+        check("r3_pingpong_on_held_change", ok && bothEnds,
+                "sequence(chaosgold_sword ATTACK)=" + seq.toString().trim()
+                        + " 值域=" + new java.util.TreeSet<>(values)
+                        + "（期望：连续两次不重、取值只有 4.0/8.0 两端 —— 即「乒乓」；"
+                        + "序列起点取决于进世界时那次装备变更是否已经翻过一次，两端各出现 3 次即可）");
+        player.discard();
+    }
+
+    private static String removeTrailingZero(Float v) {
+        return v == Math.floor(v) ? String.valueOf((int) (float) v) : String.valueOf(v);
+    }
+
+    /** 挖掘成功 ⇒ 翻转 MINING（真 BlockEvent.BreakEvent，走 ChaosRange.Triggers 的生产处理器） */
+    private static void stageMiningFlip(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10vdig");
+        player.getAbilities().instabuild = false;
+        player.onUpdateAbilities();
+        ItemStack pick = new ItemStack(item("chaosgold_pickaxe"));
+        player.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        ItemStack inHand = player.getMainHandItem();
+        MetalFamily cg = MetalFamily.byId("chaosgold");
+        List<Float> mining = new ArrayList<>();
+        List<Float> breakSpeeds = new ArrayList<>();
+        BlockPos pos = new BlockPos(baseX + 20, 120, baseZ + 20);
+        for (int i = 0; i < 4; i++) {
+            level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
+            // 真事件（服务端侧、非取消）：ChaosRange.Triggers#onMiningSuccess 会翻转 MINING
+            var ev = new net.neoforged.neoforge.event.level.BlockEvent.BreakEvent(
+                    level, pos, level.getBlockState(pos), player);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(ev);
+            int v = (int) ChaosRange.current(inHand, ChaosRange.Channel.MINING,
+                    cg.range(ChaosRange.Channel.MINING));
+            mining.add((float) v);
+            // 同一 tick 的挖掘速度（走 ChaosWiring#onBreakSpeed）：
+            // ① 基线 = 原版 getDigSpeed 里"工具给出的那一段"（可复算）
+            // ② 整条 = player.getDigSpeed（还叠了效率附魔 / 状态，打印出来当对照）
+            float baseline = ChaosWiring.baselineDigSpeed(player, Blocks.STONE.defaultBlockState());
+            float digSpeed = player.getDigSpeed(Blocks.STONE.defaultBlockState(), pos);
+            breakSpeeds.add(baseline);
+            if (i == 0) {
+                bettergold.LOGGER.info("{} INFO r3_baseline_diag :: baseline={} full={} fullNoPos={} "
+                                + "invSelected={} eff={} bbs={} eyeWater={} onGround={}",
+                        TAG, baseline, digSpeed,
+                        player.getDigSpeed(Blocks.STONE.defaultBlockState(), null),
+                        player.getInventory().getSelected(),
+                        player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MINING_EFFICIENCY),
+                        player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.BLOCK_BREAK_SPEED),
+                        player.isEyeInFluid(net.minecraft.tags.FluidTags.WATER), player.onGround());
+            }
+        }
+        StringBuilder ms = new StringBuilder();
+        for (Float f : mining) {
+            ms.append(f == null ? "-" : String.valueOf(f.intValue())).append(' ');
+        }
+        StringBuilder bs = new StringBuilder();
+        for (Float f : breakSpeeds) {
+            bs.append(round4(f)).append(' ');
+        }
+        boolean pingPong = mining.size() == 4 && Math.abs(mining.get(0) - 12.0F) < 1e-6
+                && Math.abs(mining.get(1) - 2.0F) < 1e-6 && Math.abs(mining.get(2) - 12.0F) < 1e-6
+                && Math.abs(mining.get(3) - 2.0F) < 1e-6;
+        boolean speedMatches = breakSpeeds.size() == 4
+                && Math.abs(breakSpeeds.get(0) - 12.0F) < 0.001F
+                && Math.abs(breakSpeeds.get(1) - 12.0F) < 0.001F;
+        check("r3_mining_flip_on_break", pingPong, "MINING sequence=" + ms.toString().trim()
+                + " 期望 12 2 12 2（初始在区间上端，因为注册值是上端且掩码为空 ⇒ 当前值 = 上端）");
+        // ⚠ 基线 `inventory.getDestroySpeed` **只走物品自己的 TOOL 组件**（注册值是区间上端 12）
+        //   ⇒ 它**不随区间翻转**；翻转只体现在 `player.getDigSpeed`（会发 BreakSpeed 事件）上。
+        //   这里核的是"基线恒 = 注册上端 12"，翻转到 2 的那一半由 r3_digspeed_event_delta 核。
+        check("r3_digspeed_baseline_is_registered_max", speedMatches,
+                "基线（inventory.getDestroySpeed(STONE)）逐次=" + bs.toString().trim()
+                        + " 期望恒为注册上端 12（翻转不改 TOOL 组件，只改 BreakSpeed 事件的结果）");
+        // 负向：既有 8 族的镐 + 原版镐，挖掘速度必须仍是 Tier 速度
+        // （用**基线** `inventory.getDestroySpeed` 比对：整条 getDigSpeed 还叠了附魔/状态）
+        ItemStack sturdy = new ItemStack(item("sturdygold_pickaxe"));
+        player.setItemInHand(InteractionHand.MAIN_HAND, sturdy);
+        float sturdySpeed = ChaosWiring.baselineDigSpeed(player, Blocks.STONE.defaultBlockState());
+        ItemStack vanilla = new ItemStack(net.minecraft.world.item.Items.NETHERITE_PICKAXE);
+        player.setItemInHand(InteractionHand.MAIN_HAND, vanilla);
+        float vanillaSpeed = ChaosWiring.baselineDigSpeed(player, Blocks.STONE.defaultBlockState());
+        check("r3_other_pickaxes_untouched",
+                Math.abs(sturdySpeed - 10.0F) < 0.001F && Math.abs(vanillaSpeed - 9.0F) < 0.001F,
+                "baseline sturdygold=" + round4(sturdySpeed)
+                        + " (10.0 = 万坚金 Tier 速度) / vanilla netherite=" + round4(vanillaSpeed)
+                        + " (9.0) —— 既有族与原版都不吃区间");
+        player.discard();
+    }
+
+    /**
+     * <b>挖掘速度接线的 A 级主读数</b>：同一件镐、同一个方块、只把区间值从低端翻到高端，
+     * 看 {@code Player#getDigSpeed} 的**差值**是否恰好等于 {@code current} 的差值。
+     *
+     * <p>用差值而不是绝对值：原版 {@code getDigSpeed} 还会叠效率附魔 / 急迫 / 水中 / <b>悬空</b>
+     * 等修正（本探针的玩家不落地 ⇒ 末尾 {@code f /= 5}），拿绝对值比会把那些也当成"接线错了"。</p>
+     */
+    private static void stageDigSpeedEvent(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10vdigspd");
+        player.getAbilities().instabuild = false;
+        player.onUpdateAbilities();
+        ItemStack pick = new ItemStack(item("chaosgold_pickaxe"));
+        player.setItemInHand(InteractionHand.MAIN_HAND, pick);
+        BlockPos pos = new BlockPos(baseX + 24, 120, baseZ + 20);
+        level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
+        var stone = Blocks.STONE.defaultBlockState();
+        ChaosRange.setHigh(pick, ChaosRange.Channel.MINING, false);
+        float low = player.getDigSpeed(stone, pos);
+        ChaosRange.setHigh(pick, ChaosRange.Channel.MINING, true);
+        float high = player.getDigSpeed(stone, pos);
+        // 负向对照：既有族的镐（无区间）同一个玩家、同一个方块 ⇒ 必须与区间无关
+        ItemStack sturdy = new ItemStack(item("sturdygold_pickaxe"));
+        player.setItemInHand(InteractionHand.MAIN_HAND, sturdy);
+        float sturdy0 = player.getDigSpeed(stone, pos);
+        ChaosRange.setHigh(sturdy, ChaosRange.Channel.MINING, true);
+        float sturdy1 = player.getDigSpeed(stone, pos);
+        boolean ok = Math.abs((high - low) - (12.0F - 2.0F)) < 0.001F
+                && Math.abs(sturdy1 - sturdy0) < 0.001F;
+        check("r3_digspeed_follows_current_delta", ok,
+                "chaosgold_pickaxe getDigSpeed(STONE) low(2)=" + round4(low) + " high(12)=" + round4(high)
+                        + " delta=" + round4(high - low) + " 期望 10.0000（= 12 − 2）"
+                        + " | 既有族对照 sturdygold=" + round4(sturdy0) + "/" + round4(sturdy1)
+                        + " delta=" + round4(sturdy1 - sturdy0) + " 期望 0");
+        check("r3_digspeed_absolute_scales_with_current",
+                high - low > 9.9F && Math.abs(high - low) < 10.1F,
+                "绝对值 low=" + round4(low) + " high=" + round4(high) + " delta=" + round4(high - low)
+                        + "（⚠ 绝对值**不是** 2.4/14.4 那种正比：`getDigSpeed` 里"
+                        + "工具速度是**加**进 f 之后再乘其它系数，所以 low 可能被别的修正压成负数；"
+                        + "判据只取差值 10.0 —— 这正是「区间那一层被精确替换」的可复算证据）");
+        player.discard();
+    }
+
+    /**
+     * 近战命中 ⇒ 实际伤害 = current()，且命中后翻转。
+     *
+     * <p>⚠ {@code player.attack(target)} 需要玩家有客户端（{@code ServerPlayer.connection != null}）
+     * —— 探针里的 ServerPlayer 没有 connection ⇒ NPE。改用 {@code Player#attack} 之前的那一步：
+     * 直接调物品的 {@code hurtEnemy}（这正是 {@code Player#attack} 里用来"算出伤害、施加附魔后效"
+     * 的那一句），然后用**同一条伤害管线**（{@code zombie.hurt} → {@code LivingDamageEvent}）施加伤害。</p>
+     */
+    private static void stageMelee(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10vhit");
+        player.getAbilities().instabuild = false;
+        player.onUpdateAbilities();
+        List<String> rows = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        for (boolean startHigh : new boolean[] { false, true }) {
+            ItemStack sword = new ItemStack(item("chaosgold_sword"));
+            ChaosRange.setHigh(sword, ChaosRange.Channel.ATTACK, startHigh);
+            player.setItemInHand(InteractionHand.MAIN_HAND, sword);
+            float expected = startHigh ? 8.0F : 4.0F;
+            var zombie = new net.minecraft.world.entity.monster.Zombie(
+                    net.minecraft.world.entity.EntityType.ZOMBIE, level);
+            zombie.setPos(player.getX() + 2.0, player.getY(), player.getZ());
+            zombie.setInvulnerable(false);
+            // 脱光护甲：僵尸默认带 2 点护甲，会让"实际掉血"≠"属性伤害"（实测 8.0 → 7.8720）
+            for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {
+                    net.minecraft.world.entity.EquipmentSlot.HEAD,
+                    net.minecraft.world.entity.EquipmentSlot.CHEST,
+                    net.minecraft.world.entity.EquipmentSlot.LEGS,
+                    net.minecraft.world.entity.EquipmentSlot.FEET }) {
+                zombie.setItemSlot(slot, ItemStack.EMPTY);
+            }
+            zombie.invulnerableTime = 0;
+            level.addFreshEntity(zombie);
+            zombie.invulnerableTime = 0;
+            float before = zombie.getHealth();
+            // ① 先读**命中前**那一侧的伤害（hurtEnemy 会把 ATTACK 翻转，翻转后再读就是下一发的值）
+            float dealtBefore = (float) ChaosWiring.attackDamageOf(sword);
+            // ② 物品的命中钩子（ChaosSwordItem#hurtEnemy ⇒ ATTACK 翻转）
+            sword.getItem().hurtEnemy(sword, zombie, player);
+            // ② **记账**：`MetalEvents#dispatchWeaponHit`（"命中挂 buff"那一路）对 chaosgold 会抛
+            //    `Config#weaponBuffChance` 的"未登记族"异常 —— 两族还没进配置系统
+            //    （立档歧义 ⑰，排轮9）。这里显式捕获并记成一条 INFO，避免它把整段读数带崩。
+            String buffPath = "not-thrown";
+            try {
+                MetalEvents.dispatchWeaponHit(player, sword, zombie);
+                buffPath = "ok";
+            } catch (RuntimeException ex) {
+                buffPath = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+            }
+            bettergold.LOGGER.info("{} INFO r3_buff_path :: chaosgold weapon dispatch -> {}", TAG, buffPath);
+            // ② 伤害管线：Player#attack 里就是拿属性算出的这个数字去 hurt。
+            //    ⚠ 这里刻意**不**吞异常：`MetalEvents#onLivingDamaged` 会对本模组武器派发
+            //      `dispatchWeaponHit` ⇒ chaosgold 会撞上 `Config#weaponBuffChance` 的
+            //      "未登记族"异常（两族还没进配置系统，立档歧义 ⑰ 排轮9）。
+            //      这条**生产路径**在 chaos 器具上是真的会抛 —— 本轮如实记进交接清单。
+            float dealtAfter = (float) ChaosWiring.attackDamageOf(sword);
+            var src = level.damageSources().playerAttack(player);
+            String hurtPath = "ok";
+            try {
+                zombie.hurt(src, dealtAfter);
+            } catch (RuntimeException ex) {
+                hurtPath = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+            }
+            float lost = before - zombie.getHealth();
+            boolean flipped = ChaosRange.isHigh(sword, ChaosRange.Channel.ATTACK) != startHigh;
+            boolean damageOk = Math.abs(dealtBefore - expected) < 1e-4
+                    && Math.abs(dealtAfter - (startHigh ? 4.0F : 8.0F)) < 1e-4
+                    && lost >= dealtAfter * 0.8F && lost <= dealtAfter + 1e-4;
+            rows.add("start=" + (startHigh ? "high(8.0)" : "low(4.0)")
+                    + " damageBefore=" + round4(dealtBefore) + " damageAfter=" + round4(dealtAfter)
+                    + " hpLost=" + round4(lost) + " flipped=" + flipped + " hurtPath=" + hurtPath);
+            if (!damageOk || !flipped) {
+                bad.add("expected before=" + expected + " after=" + (startHigh ? 4.0F : 8.0F)
+                        + " got " + dealtBefore + "/" + dealtAfter + " lost=" + lost
+                        + " flipped=" + flipped);
+            }
+            zombie.discard();
+        }
+        check("r3_melee_damage_equals_current", bad.isEmpty(), "rows=" + rows + " bad=" + bad);
+        // ③ 近战命中的「攻击后翻转」也要能从**事件**那一侧看到：把物品换回低端、再打一次，
+        //    确认翻转是 hurtEnemy 干的（而不是被别的路径顺手翻了）
+        ItemStack sword = new ItemStack(item("chaosgold_sword"));
+        ChaosRange.setHigh(sword, ChaosRange.Channel.ATTACK, false);
+        var z2 = new net.minecraft.world.entity.monster.Zombie(
+                net.minecraft.world.entity.EntityType.ZOMBIE, level);
+        z2.setPos(player.getX() + 2.0, player.getY(), player.getZ());
+        level.addFreshEntity(z2);
+        z2.invulnerableTime = 0;
+        sword.getItem().hurtEnemy(sword, z2, player);
+        boolean nowHigh = ChaosRange.isHigh(sword, ChaosRange.Channel.ATTACK);
+        check("r3_melee_flip_is_from_hurtEnemy", nowHigh,
+                "低端 → 一次 hurtEnemy ⇒ 高端：" + (sword.get(ChaosRange.FLIP.get()) != null));
+        z2.discard();
+        player.discard();
+    }
+
+    /**
+     * 远程：① 弓的弹射物基础伤害读区间；② 真拉满放箭 ⇒ 命中后（{@code LivingDamageEvent.Post}
+     * + {@code DamageSource#getWeaponItem()}）翻转 ATTACK。
+     *
+     * <p>用<b>真的</b> {@code BowItem#releaseUsing} 路径（而不是手搓 Arrow+DamageSource）——
+     * 否则 {@code DamageSource#getWeaponItem()} 拿不到弓（它取的是 {@code directEntity.getWeaponItem()}，
+     * 而那条链靠原版 {@code ProjectileWeaponItem#shoot} 埋进去的武器组件），
+     * 探针就会把"测不到"误读成"没接线"。</p>
+     */
+    private static void stageRanged(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10vbow");
+        player.getAbilities().instabuild = false;
+        player.onUpdateAbilities();
+        ItemStack bow = new ItemStack(item("chaosgold_bow"));
+        ChaosRange.setHigh(bow, ChaosRange.Channel.ATTACK, false);
+        player.setItemInHand(InteractionHand.MAIN_HAND, bow);
+        // ① 弹射物基础伤害：静态读一次（低/高两端）
+        ItemStack probeBow = new ItemStack(item("chaosgold_bow"));
+        ChaosRange.setHigh(probeBow, ChaosRange.Channel.ATTACK, false);
+        float lowBase = MetalWeapons.MetalBowItem.bowBaseDamage(probeBow);
+        ChaosRange.setHigh(probeBow, ChaosRange.Channel.ATTACK, true);
+        float highBase = MetalWeapons.MetalBowItem.bowBaseDamage(probeBow);
+        check("r3_bow_projectile_damage_from_range",
+                Math.abs(lowBase - 2.0F) < 1e-4 && Math.abs(highBase - 3.5F) < 1e-4,
+                "bow baseDamage low/high = " + lowBase + "/" + highBase + " 期望 2.0/3.5");
+        // ② 真放箭：靶子在 6 格外（起始生命 20）
+        var zombie = new net.minecraft.world.entity.monster.Zombie(
+                net.minecraft.world.entity.EntityType.ZOMBIE, level);
+        zombie.setPos(player.getX() + 6.0, player.getY(), player.getZ());
+        zombie.setNoAi(true);
+        for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET }) {
+            zombie.setItemSlot(slot, ItemStack.EMPTY);
+        }
+        level.addFreshEntity(zombie);
+        player.getInventory().add(new ItemStack(net.minecraft.world.item.Items.ARROW, 16));
+        List<String> rows = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        boolean flipSeen = false;
+        float damageSum = 0.0F;
+        for (int shot = 0; shot < 3; shot++) {
+            boolean wasHigh = ChaosRange.isHigh(bow, ChaosRange.Channel.ATTACK);
+            float expectedBase = wasHigh ? 3.5F : 2.0F;
+            zombie.invulnerableTime = 0;
+            float hpBefore = zombie.getHealth();
+            player.stopUsingItem();
+            player.startUsingItem(InteractionHand.MAIN_HAND);
+            MetalWeapons.MetalBowItem bowItem = (MetalWeapons.MetalBowItem) bow.getItem();
+            String shotPath = "ok";
+            try {
+                // ⚠ 真正的命中就发生在这一步内部（箭由原版在放箭后立刻命中靶子）；
+                //   chaos 器具会撞上 `Config#weaponBuffChance` 的"未登记族"异常 ⇒ 显式记账。
+                bowItem.releaseUsing(bow, level, player, 7200 - 20);
+            } catch (RuntimeException ex) {
+                shotPath = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+            }
+            boolean flipped = ChaosRange.isHigh(bow, ChaosRange.Channel.ATTACK) != wasHigh;
+            // 把这一发箭**手动喂给靶子**：`AbstractArrow#onHitEntity` 里就是
+            // `damageSources().arrow(this, owner)` + `target.hurt(...)` 这两句
+            // （探针里箭不会自己飞过去：区块 tick 在无玩家时不会推进投射物）。
+            net.minecraft.world.entity.projectile.AbstractArrow fired = null;
+            for (var e : level.getEntities().getAll()) {
+                if (e instanceof net.minecraft.world.entity.projectile.AbstractArrow a && a.isAlive()
+                        && a.getOwner() == player) {
+                    fired = a;
+                    break;
+                }
+            }
+            String weaponSeen = "-";
+            String hurtPath = "no-arrow";
+            if (fired != null && !flipped) {
+                var src = level.damageSources().arrow(fired, player);
+                weaponSeen = String.valueOf(src.getWeaponItem() == null ? "null"
+                        : src.getWeaponItem().getItem());
+                try {
+                    zombie.hurt(src, (float) fired.getBaseDamage());
+                    hurtPath = "ok";
+                } catch (RuntimeException ex) {
+                    // 已知的配置缺口（歧义 ⑰）会在**伤害之后**的 Post 事件里抛，前一层已生效
+                    hurtPath = ex.getClass().getSimpleName();
+                }
+                flipped = ChaosRange.isHigh(bow, ChaosRange.Channel.ATTACK) != wasHigh;
+            }
+            float hpLost = hpBefore - zombie.getHealth();
+            flipSeen |= flipped;
+            damageSum += hpLost;
+            rows.add("shot" + shot + " wasHigh=" + wasHigh + " expectedBase=" + expectedBase
+                    + " arrowBase=" + (fired == null ? "-" : round4((float) fired.getBaseDamage()))
+                    + " weaponItem=" + weaponSeen + " hpLost=" + round4(hpLost)
+                    + " flipped=" + flipped + " shotPath=" + shotPath + " hurtPath=" + hurtPath);
+            if (fired != null) {
+                fired.discard();
+            }
+            if (hpLost <= 0.0F || !flipped) {
+                bad.add("shot" + shot + " lost=" + hpLost + " flipped=" + flipped + " path=" + shotPath);
+            }
+        }
+        check("r3_ranged_shot_flips_and_lands", bad.isEmpty(),
+                "rows=" + rows + " flipSeen=" + flipSeen + " damageSum=" + round4(damageSum)
+                        + "（放箭用真 BowItem#releaseUsing；命中走 DamageSource#getWeaponItem 派发）");
+        // ③ 负向：原版弓 + 既有族弓不许被本翻转碰到
+        ItemStack sturdyBow = new ItemStack(item("sturdygold_bow"));
+        ChaosRange.setHigh(sturdyBow, ChaosRange.Channel.ATTACK, false);
+        check("r3_ranged_negative_control",
+                ChaosRange.current(sturdyBow, MetalFamily.of(sturdyBow), ChaosRange.Channel.ATTACK) == null,
+                "既有族弓的 ATTACK 区间 = "
+                        + ChaosRange.current(sturdyBow, MetalFamily.of(sturdyBow), ChaosRange.Channel.ATTACK)
+                        + "（期望 null = 一个字节都没接）");
+        zombie.discard();
+        player.discard();
+    }
+
+    /** 让箭（及其它投射物）在服务端往前走一步：直接 tick 该维度里的投射物 */
+    private static void tickArrowStep(ServerLevel level) {
+        for (var e : level.getEntities().getAll()) {
+            if (e instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow && arrow.isAlive()) {
+                arrow.tick();
+            }
+        }
+    }
+
+    /**
+     * 边界确认 + <b>客户端侧</b>（runClient 时才走得出真值）的读数。
+     *
+     * <ul>
+     *   <li>世界名断言：只许是本轮自建的 ASCII 探针世界（作者存档名 {@code 新的世界} 是硬红线）；</li>
+     *   <li>客户端模型解析：{@code Minecraft.getInstance().getModelManager()} 里每个 bettergold
+     *       物品的 inventory 模型都不许落到 missing model（= "无紫黑格"的运行时判据）；</li>
+     *   <li>日志里的模型 / 贴图加载失败计数。</li>
+     * </ul>
+     */
+    private static void stageBoundary(MinecraftServer server) {
+        // ① 世界名（服务端侧从这里读；客户端跑时整合服务端也在同一 JVM 里）
+        String world = ((net.minecraft.world.level.storage.ServerLevelData) level(server).getLevelData())
+                .getLevelName();
+        check("v_world_name_is_probe_world",
+                world.equals("bgn10vworld") || world.equals("bgn10vprobe"),
+                "world=" + world + "（只许本轮自建的 ASCII 探针世界；作者存档名必须**不出现**）");
+        // ② 客户端模型解析（只有真客户端才有 Minecraft.getInstance）
+        try {
+            var mc = net.minecraft.client.Minecraft.getInstance();
+            if (mc == null || mc.getModelManager() == null) {
+                bettergold.LOGGER.info("{} INFO client_models :: SKIP（服务端侧没有 Minecraft 实例）", TAG);
+            } else {
+                var mm = mc.getModelManager();
+                int checked = 0;
+                List<String> missing = new ArrayList<>();
+                for (var entry : BuiltInRegistries.ITEM.entrySet()) {
+                    String id = entry.getKey().location().toString();
+                    if (!id.startsWith("bettergold:")) {
+                        continue;
+                    }
+                    checked++;
+                    var loc = net.minecraft.client.resources.model.ModelResourceLocation
+                            .inventory(net.minecraft.resources.ResourceLocation.parse(id));
+                    var model = mm.getModel(loc);
+                    boolean isMissing = model == mm.getMissingModel();
+                    if (isMissing) {
+                        missing.add(id);
+                    }
+                }
+                check("v_client_models_no_missing", missing.isEmpty(),
+                        "checked=" + checked + " missing=" + missing);
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.info("{} INFO client_models :: SKIP（{}）", TAG, t.getClass().getSimpleName());
+        }
+        // ③ 日志里的资源加载失败
+        Path log = gameDir().resolve("logs").resolve("latest.log");
+        int failedLoad = 0;
+        int missingModel = 0;
+        int missingTexture = 0;
+        try {
+            if (Files.exists(log)) {
+                for (String line : Files.readAllLines(log, java.nio.charset.StandardCharsets.UTF_8)) {
+                    if (line.contains("Failed to load ") || line.contains("Unable to load model")) {
+                        failedLoad++;
+                    }
+                    if (line.contains("Missing model")) {
+                        missingModel++;
+                    }
+                    if (line.contains("Missing texture") || line.contains("no such texture")) {
+                        missingTexture++;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            fail("v_log_scan_io", String.valueOf(e));
+        }
+        check("v_no_resource_load_failures",
+                failedLoad == 0 && missingModel == 0 && missingTexture == 0,
+                "Failed to load=" + failedLoad + " Missing model=" + missingModel
+                        + " Missing texture=" + missingTexture);
+    }
+
+    private static void summaryAndHalt(MinecraftServer server) {
+        done = true;
+        unforceAll(server);
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        // ⚠ 只调一次 halt(false)（跑测铁律：先 stopServer 再 halt 会走两遍关闭流程）
+        server.halt(false);
+    }
+
+    private static void unforceAll(MinecraftServer server) {
+        if (FORCED.isEmpty()) {
+            return;
+        }
+        ServerLevel level = level(server);
+        for (BlockPos p : FORCED) {
+            level.setChunkForced(p.getX(), p.getZ(), false);
+        }
+        FORCED.clear();
+        bettergold.LOGGER.info("{} INFO forceload_released :: forcedAfter={}", TAG, level.getForcedChunks().size());
+    }
+}

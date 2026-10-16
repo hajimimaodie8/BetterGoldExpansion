@@ -85,6 +85,9 @@ public class bettergold {
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.MetalEvents.class);
         // 1.7（bg-n10 轮1 后半）：「区间值」的触发点 —— ①挖掘成功 ②重新手持（作者裁定 ① 原文）
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ChaosRange.Triggers.class);
+        // 1.7（bg-n10 轮3）：「区间值」的**接线层** —— 攻击伤害（属性差值）/ 挖掘速度（BreakSpeed）/
+        // 远程命中翻转（DamageSource#getWeaponItem）。规则本体仍在 ChaosRange（公式只有一处）。
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ChaosWiring.class);
         // Register the Deferred Register to the mod event bus so creative tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
         // Register custom recipe serializers

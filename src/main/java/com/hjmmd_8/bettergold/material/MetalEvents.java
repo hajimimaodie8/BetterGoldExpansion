@@ -1326,7 +1326,14 @@ public final class MetalEvents {
         }
         var stack = weaponOf(source, attacker);
         if (stack.getItem() instanceof net.minecraft.world.item.MaceItem) {
-            event.setNewDamage(event.getNewDamage() * MetalWeapons.MACE_FINAL_DAMAGE_MULTIPLIER);
+            // ⚠ 1.7 bg-n10 轮3：倍率改成**按族取**（既有 8 族 = 1.2；作者给的混沌金 = 1.0，
+            //   立档 §2.4「重锤 3..7，**最终伤 ×1.0**（即不额外乘算）」）。
+            //   旧口径原文保留：`event.setNewDamage(event.getNewDamage() * MetalWeapons.MACE_FINAL_DAMAGE_MULTIPLIER);`
+            MetalFamily family = MetalFamily.of(stack);
+            float multiplier = family == null
+                    ? MetalWeapons.MACE_FINAL_DAMAGE_MULTIPLIER
+                    : family.maceFinalDamageMultiplier;
+            event.setNewDamage(event.getNewDamage() * multiplier);
         }
     }
 
@@ -1384,7 +1391,16 @@ public final class MetalEvents {
         if (family == null || !family.isWeapon(stack.getItem())) {
             return;
         }
-        event.setNewDamage(event.getNewDamage() * (OUR_THROWN_TRIDENT_DAMAGE / VANILLA_THROWN_TRIDENT_DAMAGE));
+        // ⚠ 1.7 bg-n10 轮3：投掷伤害改成**按族/按当前区间值**给。
+        float throwDamage = OUR_THROWN_TRIDENT_DAMAGE;
+        ChaosRange.Range throwRange = family.tridentThrowRange;
+        if (throwRange != null) {
+            // 投掷那一档是**独立的**区间（混沌金 9..13），与近战的 7..11 共用同一个翻转位
+            //   （作者：「伤害随攻击与切手转换」⇒ 投掷与近战在同一个"当前端"上）
+            throwDamage = ChaosRange.isHigh(stack, ChaosRange.Channel.ATTACK)
+                    ? throwRange.max() : throwRange.min();
+        }
+        event.setNewDamage(event.getNewDamage() * (throwDamage / VANILLA_THROWN_TRIDENT_DAMAGE));
     }
 
 
