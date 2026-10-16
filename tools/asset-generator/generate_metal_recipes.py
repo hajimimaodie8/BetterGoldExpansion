@@ -16,7 +16,11 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import metal_forms as MF   # noqa: E402  「形态子集 / 轮次边界」的 Python 唯一真源（1.7 bg-n10）
 
 REPO = Path(__file__).resolve().parents[2]
 RECIPES = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "recipe"
@@ -37,7 +41,62 @@ METALS = {
     # 原料合成（raw_echogold = 集束回响碎片 + 金锭 …）与其余 27 条配方模板照旧。
     "thornsgold": "glittering_vine",
     "echogold": "bundled_echo_shard",
+    # 1.7（bg-n10 轮1 后半 / 轮2）：
+    #   chaosgold  没有 raw（zip 无「混沌金原料」贴图，歧义 ⑱c）也没有升级模板（歧义 ㉑）
+    #              ⇒ 这两个字段**本轮用不到**，登记它只是为了"表里有一行"（轮3/轮4 补齐时改这里）。
+    #   chaosalloy 同上（它的模板配方不是本脚本的 `sturdygold_upgrade_template` 模板能表达的，
+    #              作者截图给的是另一条，属轮7）。
+    "chaosgold": "chaos_coin",
+    "chaosalloy": "chaos_coin",
 }
+
+# 每条模板 → (配方类别, 该配方依赖的形态)；类别与形态都由 metal_forms.py 判定，
+# 这里**只做一次映射**，不在下面写 if 分支（加族时不用回来改）。
+#   类别 material / building / gear 见 metal_forms.RECIPE_SCOPE；
+#   形态 None = 该条不属于任何形态（锻造升级：靠 `gear` 类别 + 模板形态一起把关）。
+TEMPLATE_META = {
+    "raw_sturdygold.json": ("material", "raw"),
+    "raw_sturdygold_smelting.json": ("material", "raw"),
+    "raw_sturdygold_blasting.json": ("material", "raw"),
+    "sturdygold_block_from_ingot.json": ("material", "block"),
+    "sturdygold_ingot_from_block.json": ("material", "block"),
+    "sturdygold_ingot_from_nugget.json": ("material", "nugget"),
+    "sturdygold_nugget_from_ingot.json": ("material", "nugget"),
+    "sturdygold_bricks_from_block.json": ("building", "bricks"),
+    "sturdygold_bricks_slab.json": ("building", "bricks_slab"),
+    "sturdygold_bricks_stairs.json": ("building", "bricks_stairs"),
+    "sturdygold_bricks_wall.json": ("building", "bricks_wall"),
+    "sturdygold_bars_from_ingot.json": ("building", "bars"),
+    "sturdygold_chain.json": ("building", "chain"),
+    "sturdygold_lantern.json": ("building", "lantern"),
+    "sturdygold_door_from_ingot.json": ("building", "door"),
+    "sturdygold_trapdoor_from_ingot.json": ("building", "trapdoor"),
+    "craft_sturdygold_pillar.json": ("building", "pillar"),
+    "sturdygold_upgrade_template.json": ("gear", "upgrade_template"),
+    "smithing_sturdygold_sword.json": ("gear", None),
+    "smithing_sturdygold_axe.json": ("gear", None),
+    "smithing_sturdygold_pickaxe.json": ("gear", None),
+    "smithing_sturdygold_shovel.json": ("gear", None),
+    "smithing_sturdygold_hoe.json": ("gear", None),
+    "smithing_sturdygold_helmet.json": ("gear", None),
+    "smithing_sturdygold_chestplate.json": ("gear", None),
+    "smithing_sturdygold_leggings.json": ("gear", None),
+    "smithing_sturdygold_boots.json": ("gear", None),
+    "smithing_sturdygold_knife.json": ("gear", None),
+}
+
+
+def keep_template(metal: str, tpl: str) -> bool:
+    """这条模板该不该给这个族产出（形态子集 + 本轮配方类别）"""
+    meta = TEMPLATE_META.get(tpl)
+    if meta is None:
+        return True          # 表里没登记的模板：保持旧行为（不静默丢）
+    category, form = meta
+    if category not in MF.recipe_scope_of(metal):
+        return False
+    if form is not None and not MF.has(metal, form):
+        return False
+    return True
 
 # 原料合成配方的模板文件（1.5 起对非万坚金金属注入 exchange / result 两个字段）
 RAW_CRAFT_TEMPLATE = "raw_sturdygold.json"
@@ -95,8 +154,12 @@ def main() -> None:
     args = ap.parse_args()
 
     written, missing = [], []
+    skipped = []
     for metal, special in METALS.items():
         for tpl in TEMPLATES:
+            if not keep_template(metal, tpl):
+                skipped.append(f"{metal}:{tpl}")
+                continue
             src = RECIPES / tpl
             if not src.is_file():
                 missing.append(tpl)
@@ -139,7 +202,9 @@ def main() -> None:
             written.append(dst)
 
     print(f"{'已写入' if args.apply else '演练'}: {len(written)} 个配方文件"
-          f"（{len(TEMPLATES)} 模板 × {len(METALS)} 套）")
+          f"（{len(TEMPLATES)} 模板 × {len(METALS)} 套，其中按形态/轮次跳过 {len(skipped)} 条）")
+    if skipped:
+        print(f"[说明] 跳过的（形态子集 / 本轮不产）共 {len(skipped)} 条：{skipped[:6]} …")
     if missing:
         print(f"[警告] 缺模板: {sorted(set(missing))}")
 
@@ -161,7 +226,8 @@ def main() -> None:
     #   3. 没有任何 @@ 占位符 / raw_sturdygold 残留。
     chain_bad: list[str] = []
     seen_input: dict[tuple[str, str], str] = {}
-    for metal in ["sturdygold", *METALS]:
+    raw_metals = [m for m in ["sturdygold", *METALS] if MF.has(m, "raw")]
+    for metal in raw_metals:
         for kind in ("smelting", "blasting"):
             name = f"raw_{metal}_{kind}.json"
             p = RECIPES / name
@@ -191,7 +257,7 @@ def main() -> None:
     # 此时按序列化器默认值（金钱贝 / raw_sturdygold）理解。
     raw_bad: list[str] = []
     seen_result: dict[str, str] = {}
-    for metal in ["sturdygold", *METALS]:
+    for metal in raw_metals:
         name = f"raw_{metal}.json"
         p = RECIPES / name
         if not p.is_file():

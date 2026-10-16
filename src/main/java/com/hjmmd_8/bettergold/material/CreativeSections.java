@@ -40,7 +40,11 @@ public final class CreativeSections {
             "indigoseagold",  // 靛海金（1.5，作者指定：在万坚金与巫毒金之间）
             "voodoogold",     // 巫毒金
             "thundergold",    // 结雷金
-            "illusiongold");  // 幻惑金（1.5）
+            "illusiongold",   // 幻惑金（1.5）
+            // 1.7（bg-n10）：混沌金 / 崩乱合金。作者**未点名**这两族的出场位次
+            // ⇒ 按"新金属往后加"的既有规则排在最末（工作值，作者一句话即可改）。
+            "chaosgold",      // 混沌金
+            "chaosalloy");    // 崩乱合金
 
     /** 分区种类（枚举顺序 = 显示顺序） */
     public enum Kind {

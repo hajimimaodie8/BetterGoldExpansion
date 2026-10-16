@@ -26,6 +26,10 @@
     "bettergold:thornsgold_pillar",
     "bettergold:echogold_block",
     "bettergold:echogold_bricks",
-    "bettergold:echogold_pillar"
+    "bettergold:echogold_pillar",
+    "bettergold:chaosgold_block",
+    "bettergold:chaosgold_bricks",
+    "bettergold:chaosgold_pillar",
+    "bettergold:chaosalloy_block"
   ]
 }

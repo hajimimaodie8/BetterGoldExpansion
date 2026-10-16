@@ -20,6 +20,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import metal_forms as MF   # noqa: E402  「形态子集」的 Python 唯一真源（1.7 bg-n10）
+
 REPO = Path(__file__).resolve().parents[2]
 RES = REPO / "src" / "main" / "resources"
 DATA = RES / "data"
@@ -34,6 +37,12 @@ METALS = {
     # 1.6（bg-16）：树棘金（核心材料 = 闪耀藤条，掉落物）/ 幽咆金（核心材料 = 集束回响碎片，合成）。
     "thornsgold":    {"cn": "树棘金", "en": "Thornsgold",   "special_cn": "闪耀藤条",     "special_en": "Glittering Vine",     "special_id": "glittering_vine"},
     "echogold":      {"cn": "幽咆金", "en": "Echogold",     "special_cn": "集束回响碎片", "special_en": "Bundled Echo Shard",  "special_id": "bundled_echo_shard"},
+    # 1.7（bg-n10 轮1 后半 / 轮2）：
+    #   chaosgold  核心材料 = **混沌金币**（`chaos_coin`，Spec.coreItem；立档 §2.2 可执行口径第 2 条）
+    #   chaosalloy **没有**核心材料（它的锭是"下界合金锭 + 混沌金块 + 高精度炼金油"合出来的，
+    #             原料链不在本族里）⇒ special_* 一律不许写，下面的写入必须判空。
+    "chaosgold":     {"cn": "混沌金", "en": "Chaosgold",   "special_cn": "混沌金币",     "special_en": "Chaos Coin",          "special_id": "chaos_coin"},
+    "chaosalloy":    {"cn": "崩乱合金", "en": "Chaosalloy"},
 }
 
 # 物品 id 后缀 -> (中文模板, 英文模板)
@@ -112,8 +121,13 @@ def main() -> None:
     for mid, meta in METALS.items():
         cn, en_name = meta["cn"], meta["en"]
         # ---------- 语言 ----------
-        zh[f"item.bettergold.{meta['special_id']}"] = meta["special_cn"]
-        en[f"item.bettergold.{meta['special_id']}"] = meta["special_en"]
+        # ⚠ 1.7 bg-n10 轮1 后半：**故意全量占位**（作者要求"语言键占位、只加不删"）——
+        #   即使某族没有 raw / upgrade_template 这类形态，也照样写它的键
+        #   （多出来的键不会被任何物品引用，纯占位；少写会让 `validate_metal_data.py`
+        #   的"全部物品与方块都要有语言键"那一段变红）。
+        if meta.get("special_id"):
+            zh[f"item.bettergold.{meta['special_id']}"] = meta["special_cn"]
+            en[f"item.bettergold.{meta['special_id']}"] = meta["special_en"]
         for suffix, (z, e) in ITEM_NAMES.items():
             item_id = f"raw_{mid}" if suffix == "raw" else f"{mid}_{suffix}"
             key = f"{'block' if suffix in BLOCK_SUFFIXES else 'item'}.bettergold.{item_id}"
@@ -137,8 +151,10 @@ def main() -> None:
         zh[f"trim_material.bettergold.{mid}"] = f"{cn}质"
         en[f"trim_material.bettergold.{mid}"] = en_name
 
-        # ---------- 战利品表：复制万坚金的 11 张 ----------
-        for suffix in BLOCK_SUFFIXES:
+        # ---------- 战利品表：按**该族实际声明的建材形态**复制万坚金的同名表 ----------
+        # （旧口径 = 无条件 11 张，原文保留：`for suffix in BLOCK_SUFFIXES:`；
+        #   崩乱合金只有"块"⇒ 生成 11 张会让 10 张引用不存在的方块。）
+        for suffix in MF.loot_blocks_of(mid):
             src = DATA / "bettergold" / "loot_table" / "blocks" / f"sturdygold_{suffix}.json"
             if not src.is_file():
                 print(f"[警告] 缺少战利品表模板 {src.name}")

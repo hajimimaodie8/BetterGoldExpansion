@@ -1,0 +1,77 @@
+﻿崩乱合金\崩乱合金锄.png	->	item/chaosalloy_hoe.png
+崩乱合金\崩乱合金刀.png	->	item/chaosalloy_knife.png
+崩乱合金\崩乱合金锭.png	->	item/chaosalloy_ingot.png
+崩乱合金\崩乱合金盾牌.png	->	entity/shield_chaosalloy.png
+崩乱合金\崩乱合金斧.png	->	item/chaosalloy_axe.png
+崩乱合金\崩乱合金镐.png	->	item/chaosalloy_pickaxe.png
+崩乱合金\崩乱合金弓1.png	->	item/chaosalloy_bow.png
+崩乱合金\崩乱合金弓2.png	->	item/chaosalloy_bow_pulling_0.png
+崩乱合金\崩乱合金弓3.png	->	item/chaosalloy_bow_pulling_1.png
+崩乱合金\崩乱合金弓4.png	->	item/chaosalloy_bow_pulling_2.png
+崩乱合金\崩乱合金护腿.png	->	item/chaosalloy_leggings.png
+崩乱合金\崩乱合金剑.png	->	item/chaosalloy_sword.png
+崩乱合金\崩乱合金块.png	->	block/chaosalloy_block.png
+崩乱合金\崩乱合金盔甲1.png	->	models/armor/chaosalloy_layer_1.png
+崩乱合金\崩乱合金盔甲2.png	->	models/armor/chaosalloy_layer_2.png
+崩乱合金\崩乱合金弩1.png	->	item/chaosalloy_crossbow.png
+崩乱合金\崩乱合金弩2.png	->	item/chaosalloy_crossbow_pulling_0.png
+崩乱合金\崩乱合金弩3.png	->	item/chaosalloy_crossbow_pulling_1.png
+崩乱合金\崩乱合金弩4.png	->	item/chaosalloy_crossbow_pulling_2.png
+崩乱合金\崩乱合金弩5.png	->	item/chaosalloy_crossbow_arrow.png
+崩乱合金\崩乱合金弩6.png	->	item/chaosalloy_crossbow_firework.png
+崩乱合金\崩乱合金锹.png	->	item/chaosalloy_shovel.png
+崩乱合金\崩乱合金三叉戟 物品.png	->	item/chaosalloy_trident.png
+崩乱合金\崩乱合金三叉戟.png	->	entity/trident_chaosalloy.png
+崩乱合金\崩乱合金升级锻造模板.png	->	item/chaosalloy_upgrade_template.png
+崩乱合金\崩乱合金头盔.png	->	item/chaosalloy_helmet.png
+崩乱合金\崩乱合金纹饰色卡.png	->	trims/color_palettes/chaosalloy.png
+崩乱合金\崩乱合金胸甲.png	->	item/chaosalloy_chestplate.png
+崩乱合金\崩乱合金靴子.png	->	item/chaosalloy_boots.png
+崩乱合金\崩乱合金重锤.png	->	item/chaosalloy_mace.png
+崩乱合金\崩乱禁果.png	->	item/chaosalloy_forbidden_fruit.png
+崩乱合金\抗性失衡.png	->	mob_effect/resistance_imbalance.png
+崩乱合金\力量失衡.png	->	mob_effect/power_imbalance.png
+混沌金\混沌金币.png	->	item/chaos_coin.png
+混沌金\混沌金锄.png	->	item/chaosgold_hoe.png
+混沌金\混沌金刀.png	->	item/chaosgold_knife.png
+混沌金\混沌金灯笼 物品.png	->	item/chaosgold_lantern.png
+混沌金\混沌金灯笼.png	->	block/chaosgold_lantern.png
+混沌金\混沌金锭.png	->	item/chaosgold_ingot.png
+混沌金\混沌金盾牌.png	->	entity/shield_chaosgold.png
+混沌金\混沌金斧.png	->	item/chaosgold_axe.png
+混沌金\混沌金附魔书.png	->	item/chaosgold_enchanting_book.png
+混沌金\混沌金镐.png	->	item/chaosgold_pickaxe.png
+混沌金\混沌金弓1.png	->	item/chaosgold_bow.png
+混沌金\混沌金弓2.png	->	item/chaosgold_bow_pulling_0.png
+混沌金\混沌金弓3.png	->	item/chaosgold_bow_pulling_1.png
+混沌金\混沌金弓4.png	->	item/chaosgold_bow_pulling_2.png
+混沌金\混沌金护腿.png	->	item/chaosgold_leggings.png
+混沌金\混沌金活板门.png	->	block/chaosgold_trapdoor.png
+混沌金\混沌金剑.png	->	item/chaosgold_sword.png
+混沌金\混沌金禁果.png	->	item/chaosgold_forbidden_fruit.png
+混沌金\混沌金块.png	->	block/chaosgold_block.png
+混沌金\混沌金盔甲1.png	->	models/armor/chaosgold_layer_1.png
+混沌金\混沌金盔甲2.png	->	models/armor/chaosgold_layer_2.png
+混沌金\混沌金栏杆.png	->	block/chaosgold_bars.png
+混沌金\混沌金粒.png	->	item/chaosgold_nugget.png
+混沌金\混沌金链 物品.png	->	item/chaosgold_chain.png
+混沌金\混沌金链.png	->	block/chaosgold_chain.png
+混沌金\混沌金门 上.png	->	block/chaosgold_door_top.png
+混沌金\混沌金门 物品.png	->	item/chaosgold_door.png
+混沌金\混沌金门 下.png	->	block/chaosgold_door_bottom.png
+混沌金\混沌金弩1.png	->	item/chaosgold_crossbow.png
+混沌金\混沌金弩2.png	->	item/chaosgold_crossbow_pulling_0.png
+混沌金\混沌金弩3.png	->	item/chaosgold_crossbow_pulling_1.png
+混沌金\混沌金弩4.png	->	item/chaosgold_crossbow_pulling_2.png
+混沌金\混沌金弩5.png	->	item/chaosgold_crossbow_arrow.png
+混沌金\混沌金弩6.png	->	item/chaosgold_crossbow_firework.png
+混沌金\混沌金锹.png	->	item/chaosgold_shovel.png
+混沌金\混沌金三叉戟 物品.png	->	item/chaosgold_trident.png
+混沌金\混沌金三叉戟.png	->	entity/trident_chaosgold.png
+混沌金\混沌金头盔.png	->	item/chaosgold_helmet.png
+混沌金\混沌金纹饰色卡.png	->	trims/color_palettes/chaosgold.png
+混沌金\混沌金胸甲.png	->	item/chaosgold_chestplate.png
+混沌金\混沌金靴子.png	->	item/chaosgold_boots.png
+混沌金\混沌金重锤.png	->	item/chaosgold_mace.png
+混沌金\混沌金柱.png	->	block/chaosgold_pillar.png
+混沌金\混沌金砖块.png	->	block/chaosgold_bricks.png

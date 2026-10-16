@@ -50,7 +50,9 @@
         "indigoseagold": "bettergold:trims/color_palettes/indigoseagold",
         "illusiongold": "bettergold:trims/color_palettes/illusiongold",
         "thornsgold": "bettergold:trims/color_palettes/thornsgold",
-        "echogold": "bettergold:trims/color_palettes/echogold"
+        "echogold": "bettergold:trims/color_palettes/echogold",
+        "chaosgold": "bettergold:trims/color_palettes/chaosgold",
+        "chaosalloy": "bettergold:trims/color_palettes/chaosalloy"
       }
     }
   ]

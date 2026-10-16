@@ -1,0 +1,64 @@
+﻿===== generate_metal_assets exit=0 =====
+��д��: 626 ���ļ�
+  ��ȼ��    flamegold    69 ��
+  �׶���    voodoogold   69 ��
+  ���׽�    thundergold  69 ��
+  �庣��    indigoseagold 69 ��
+  �û��    illusiongold 69 ��
+  ������    thornsgold   69 ��
+  ���ؽ�    echogold     69 ��
+  �����    chaosgold    98 ��
+  ���ҺϽ�   chaosalloy   41 ��
+ȫ��ģ�����زľ���ƥ�䡣
+===== generate_weapon_assets exit=0 =====
+��д��: 187 ���ļ�
+[��ʾ] ����û�С����ֿ����б���: 123 �ţ��Ͻ�����ֻ���°��ĳ����¾���������
+ȫ���ز���ģ�����ƥ�䡣
+===== generate_metal_data exit=0 =====
+��д��: ������Ŀ 63 ��, Ӣ����Ŀ 63 ��, ս��Ʒ�� 89 ��
+===== generate_weapon_lang exit=0 =====
+[��ʾ] zh_cn.json �Ѵ��ڵ�ֵ��ͬ: item.bettergold.golden_bow_blank = '���ƹ��ߵ�'������ԭֵ��
+��д��: zh_cn ���� 10 ������ 795����en_us ���� 10 ������ 795��
+===== generate_metal_tags exit=0 =====
+bettergold\tags\block\storage_blocks.json                  +2   �� 10
+bettergold\tags\item\ingots.json                           +2   �� 10
+bettergold\tags\item\nuggets.json                          +1   �� 9
+bettergold\tags\item\raw_materials.json                    +0   �� 8  (��������)
+bettergold\tags\item\storage_blocks.json                   +2   �� 10
+minecraft\tags\block\beacon_base_blocks.json               +4   �� 30
+minecraft\tags\block\mineable\pickaxe.json                 +12  �� 113
+minecraft\tags\block\needs_diamond_tool.json               +12  �� 100
+minecraft\tags\block\walls.json                            +1   �� 10
+minecraft\tags\item\axes.json                              +2   �� 12
+minecraft\tags\item\chest_armor.json                       +2   �� 10
+minecraft\tags\item\foot_armor.json                        +2   �� 10
+minecraft\tags\item\head_armor.json                        +2   �� 10
+minecraft\tags\item\hoes.json                              +2   �� 12
+minecraft\tags\item\leg_armor.json                         +2   �� 10
+minecraft\tags\item\pickaxes.json                          +2   �� 12
+minecraft\tags\item\shovels.json                           +2   �� 12
+minecraft\tags\item\swords.json                            +2   �� 12
+��д��: ������ 54 ����ǩ����
+��ѡ��ǩ bettergold\tags\item\antique_knives.json              1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\chaosalloy_knives.json           0 -> 1
+��ѡ��ǩ bettergold\tags\item\chaosgold_knives.json            0 -> 1
+��ѡ��ǩ bettergold\tags\item\echogold_knives.json             1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\flamegold_knives.json            1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\handbook.json                    1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\illusiongold_knives.json         1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\indigoseagold_knives.json        1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\netherite_antique_knives.json    1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\sturdygold_knives.json           1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\thornsgold_knives.json           1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\thundergold_knives.json          1 -> 1  (��������)
+��ѡ��ǩ bettergold\tags\item\voodoogold_knives.json           1 -> 1  (��������)
+��д��: ��ѡ��Ŀ��ǩ 13 �ţ��������ݱ仯 2 ��
+===== generate_metal_recipes exit=0 =====
+��д��: 210 ���䷽�ļ���28 ģ�� �� 9 �ף����а���̬/�ִ����� 42 ����
+[˵��] �����ģ���̬�Ӽ� / ���ֲ������� 42 ����['chaosgold:raw_sturdygold.json', 'chaosgold:raw_sturdygold_smelting.json', 'chaosgold:raw_sturdygold_blasting.json', 'chaosgold:sturdygold_upgrade_template.json', 'chaosgold:smithing_sturdygold_sword.json', 'chaosgold:smithing_sturdygold_axe.json'] ��
+JSON У��ʧ��: 0 []
+ԭ�ϡ��� ����У��ʧ��: 0 []
+ԭ�Ϻϳ��䷽У��ʧ��: 0 []
+===== generate_metal_trims exit=0 =====
+��д��: ���β��� 9 ��, ͼ���û����� 4 �� (armor_trims +2 / blocks +2), ��ǩ���� 2 ��
+ɫ��ȱʧ: ��

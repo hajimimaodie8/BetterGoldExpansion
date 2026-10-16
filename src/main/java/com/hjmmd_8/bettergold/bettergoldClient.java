@@ -121,11 +121,23 @@ public class bettergoldClient {
             // 全部金属（含万坚金：1.4 起它是金属族的一员）的同类方块都要注册透明层，
             // 否则透明像素会被渲染成黑块。万坚金原来在这里的 5 行显式注册已由本循环覆盖。
             for (var family : com.hjmmd_8.bettergold.material.MetalFamily.all()) {
-                ItemBlockRenderTypes.setRenderLayer(family.lantern.get(), cutout);
-                ItemBlockRenderTypes.setRenderLayer(family.door.get(), cutout);
-                ItemBlockRenderTypes.setRenderLayer(family.trapdoor.get(), cutout);
-                ItemBlockRenderTypes.setRenderLayer(family.bars.get(), cutoutMipped);
-                ItemBlockRenderTypes.setRenderLayer(family.chain.get(), cutoutMipped);
+                // ⚠ 1.7 bg-n10 轮1 后半：形态子集外的那几个字段是 null（例如崩乱合金没有这些细节件）
+                //   ⇒ 必须先判空，否则启动即 NPE。
+                if (family.lantern != null) {
+                    ItemBlockRenderTypes.setRenderLayer(family.lantern.get(), cutout);
+                }
+                if (family.door != null) {
+                    ItemBlockRenderTypes.setRenderLayer(family.door.get(), cutout);
+                }
+                if (family.trapdoor != null) {
+                    ItemBlockRenderTypes.setRenderLayer(family.trapdoor.get(), cutout);
+                }
+                if (family.bars != null) {
+                    ItemBlockRenderTypes.setRenderLayer(family.bars.get(), cutoutMipped);
+                }
+                if (family.chain != null) {
+                    ItemBlockRenderTypes.setRenderLayer(family.chain.get(), cutoutMipped);
+                }
             }
 
             // 作物方块：cross 模型需要 cutout

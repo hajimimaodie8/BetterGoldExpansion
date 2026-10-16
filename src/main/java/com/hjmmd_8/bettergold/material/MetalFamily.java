@@ -482,11 +482,11 @@ public final class MetalFamily {
     public final DeferredItem<MetalWeapons.MetalTridentItem> trident;
     public final DeferredItem<MetalWeapons.MetalShieldItem> shield;
 
-    // 材料链
+    // 材料链（⚠ 1.7 bg-n10 轮1 后半起：**形态子集**里没有的形态 = null，见 {@link Form}）
     public final DeferredItem<Item> ingot;
-    public final DeferredItem<Item> nugget;
-    public final DeferredItem<Item> raw;
-    public final DeferredItem<SmithingTemplateItem> upgradeTemplate;
+    public final @Nullable DeferredItem<Item> nugget;
+    public final @Nullable DeferredItem<Item> raw;
+    public final @Nullable DeferredItem<SmithingTemplateItem> upgradeTemplate;
 
     // 器具
     public final DeferredItem<SwordItem> sword;
@@ -501,31 +501,53 @@ public final class MetalFamily {
     public final DeferredItem<ArmorItem> leggings;
     public final DeferredItem<ArmorItem> boots;
 
-    // 建材
+    // 建材（⚠ 同上：形态子集外的形态 = null）
     public final DeferredBlock<Block> block;
-    public final DeferredBlock<Block> bricks;
-    public final DeferredBlock<StairBlock> bricksStairs;
-    public final DeferredBlock<SlabBlock> bricksSlab;
-    public final DeferredBlock<WallBlock> bricksWall;
-    public final DeferredBlock<RotatedPillarBlock> pillar;
-    public final DeferredBlock<DoorBlock> door;
-    public final DeferredBlock<TrapDoorBlock> trapdoor;
-    public final DeferredBlock<IronBarsBlock> bars;
-    public final DeferredBlock<ChainBlock> chain;
-    public final DeferredBlock<LanternBlock> lantern;
+    public final @Nullable DeferredBlock<Block> bricks;
+    public final @Nullable DeferredBlock<StairBlock> bricksStairs;
+    public final @Nullable DeferredBlock<SlabBlock> bricksSlab;
+    public final @Nullable DeferredBlock<WallBlock> bricksWall;
+    public final @Nullable DeferredBlock<RotatedPillarBlock> pillar;
+    public final @Nullable DeferredBlock<DoorBlock> door;
+    public final @Nullable DeferredBlock<TrapDoorBlock> trapdoor;
+    public final @Nullable DeferredBlock<IronBarsBlock> bars;
+    public final @Nullable DeferredBlock<ChainBlock> chain;
+    public final @Nullable DeferredBlock<LanternBlock> lantern;
 
     // 建材的物品形式
     public final DeferredItem<BlockItem> blockItem;
-    public final DeferredItem<BlockItem> bricksItem;
-    public final DeferredItem<BlockItem> bricksStairsItem;
-    public final DeferredItem<BlockItem> bricksSlabItem;
-    public final DeferredItem<BlockItem> bricksWallItem;
-    public final DeferredItem<BlockItem> pillarItem;
-    public final DeferredItem<BlockItem> doorItem;
-    public final DeferredItem<BlockItem> trapdoorItem;
-    public final DeferredItem<BlockItem> barsItem;
-    public final DeferredItem<BlockItem> chainItem;
-    public final DeferredItem<BlockItem> lanternItem;
+    public final @Nullable DeferredItem<BlockItem> bricksItem;
+    public final @Nullable DeferredItem<BlockItem> bricksStairsItem;
+    public final @Nullable DeferredItem<BlockItem> bricksSlabItem;
+    public final @Nullable DeferredItem<BlockItem> bricksWallItem;
+    public final @Nullable DeferredItem<BlockItem> pillarItem;
+    public final @Nullable DeferredItem<BlockItem> doorItem;
+    public final @Nullable DeferredItem<BlockItem> trapdoorItem;
+    public final @Nullable DeferredItem<BlockItem> barsItem;
+    public final @Nullable DeferredItem<BlockItem> chainItem;
+    public final @Nullable DeferredItem<BlockItem> lanternItem;
+
+    /**
+     * 本族<b>实际注册</b>的形态集合（{@link Spec#forms} 的只读快照）。
+     *
+     * <p>这是「形态子集」的唯一运行期真源：{@link #allItems} / {@link #allBlocks} /
+     * {@link #buildingBlocks()} 都由它推出来，生成器与校验器读的也是同一份声明
+     * （Python 侧镜像见 {@code tools/asset-generator/metal_forms.py}）。</p>
+     */
+    public final java.util.Set<Form> forms;
+
+    /** 本族声明的「区间值」通道（{@link ChaosRange}，1.7 起共用组件；默认空 = 不参与） */
+    public final java.util.Map<ChaosRange.Channel, ChaosRange.Range> chaosRanges;
+
+    /** 本族是否注册了该形态 */
+    public boolean has(Form form) {
+        return this.forms.contains(form);
+    }
+
+    /** 本族声明的「区间值」通道 → 两端值；没声明该通道 ⇒ {@code null}（见 {@link ChaosRange}） */
+    public ChaosRange.@Nullable Range range(ChaosRange.Channel channel) {
+        return this.chaosRanges.get(channel);
+    }
 
     /** 该金属的全部物品（含建材的 BlockItem），供创造页分类与遍历使用 */
     public final List<DeferredItem<?>> allItems;
@@ -666,6 +688,9 @@ public final class MetalFamily {
     private MetalFamily(Spec spec) {
         this.id = spec.id;
         this.cnName = spec.cnName;
+        // 形态子集 / 区间值（1.7 bg-n10 轮1 后半）：只读快照，之后的注册全部 read-only 地读它
+        this.forms = java.util.Collections.unmodifiableSet(java.util.EnumSet.copyOf(spec.forms));
+        this.chaosRanges = java.util.Map.copyOf(spec.chaosRanges);
         this.fireResistant = spec.fireResistant;
         this.autoSmelt = spec.autoSmelt;
         this.thunderStrike = spec.thunderStrike;
@@ -710,9 +735,11 @@ public final class MetalFamily {
         this.shieldBreakImmune = spec.shieldBreakImmune;
 
         // ---------- 材料链 ----------
+        // ⚠ 1.7 bg-n10 轮1 后半：锭与块是**必备形态**（恒定注册），其余按 Spec.forms(...) 的声明注册；
+        //   没声明的形态字段为 null 且**不注册**（否则会出现没有贴图的紫黑格物品）。
         this.ingot = AllItems.ITEMS.registerSimpleItem(this.id + "_ingot", props());
-        this.nugget = AllItems.ITEMS.registerSimpleItem(this.id + "_nugget", props());
-        this.raw = AllItems.ITEMS.registerSimpleItem("raw_" + this.id, props());
+        this.nugget = has(Form.NUGGET) ? AllItems.ITEMS.registerSimpleItem(this.id + "_nugget", props()) : null;
+        this.raw = has(Form.RAW) ? AllItems.ITEMS.registerSimpleItem("raw_" + this.id, props()) : null;
 
         // ---------- 工具材料 ----------
         this.tier = new SimpleTier(spec.durability, spec.miningSpeed, spec.attackDamageBonus,
@@ -801,6 +828,9 @@ public final class MetalFamily {
                 spec.enchantmentValue, spec.specialWeaponMetal, spec.shieldBreakImmune));
 
         // ---------- 建材 ----------
+        // ⚠ 全部按形态子集注册：{@link Form#BUILDING_FORMS} 里的 10 种细节件 + 必备的块。
+        //   没声明的（例如崩乱合金只声明块）= null 且不注册。旧口径（无条件注册 11 种）原文留档：
+        //   `this.bricks = AllBlocks.BLOCKS.register(this.id + "_bricks", ...)`（下面每一段的分支写法同此）
         this.block = AllBlocks.BLOCKS.register(this.id + "_block", () -> new AllBlocks.BeaconBaseBlock(
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.COLOR_BLACK)
@@ -808,47 +838,53 @@ public final class MetalFamily {
                         .strength(spec.blockStrength, spec.blockResistance)
                         .sound(SoundType.NETHERITE_BLOCK),
                 DyeColor.YELLOW));
-        this.bricks = AllBlocks.BLOCKS.register(this.id + "_bricks", () -> new AllBlocks.BeaconBaseBlock(
+        this.bricks = !has(Form.BRICKS) ? null : AllBlocks.BLOCKS.register(this.id + "_bricks",
+                () -> new AllBlocks.BeaconBaseBlock(
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.COLOR_BLACK)
                         .requiresCorrectToolForDrops()
                         .strength(spec.blockStrength, spec.blockResistance)
                         .sound(SoundType.NETHERITE_BLOCK),
                 DyeColor.YELLOW));
-        this.bricksStairs = AllBlocks.BLOCKS.register(this.id + "_bricks_stairs",
+        this.bricksStairs = !has(Form.BRICKS_STAIRS) ? null : AllBlocks.BLOCKS.register(this.id + "_bricks_stairs",
                 () -> new StairBlock(this.bricks.get().defaultBlockState(),
                         BlockBehaviour.Properties.ofFullCopy(this.bricks.get())));
-        this.bricksSlab = AllBlocks.BLOCKS.register(this.id + "_bricks_slab",
+        this.bricksSlab = !has(Form.BRICKS_SLAB) ? null : AllBlocks.BLOCKS.register(this.id + "_bricks_slab",
                 () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(this.bricks.get())));
-        this.bricksWall = AllBlocks.BLOCKS.register(this.id + "_bricks_wall",
+        this.bricksWall = !has(Form.BRICKS_WALL) ? null : AllBlocks.BLOCKS.register(this.id + "_bricks_wall",
                 () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(this.bricks.get())));
-        this.pillar = AllBlocks.BLOCKS.register(this.id + "_pillar", () -> new RotatedPillarBlock(
+        this.pillar = !has(Form.PILLAR) ? null : AllBlocks.BLOCKS.register(this.id + "_pillar",
+                () -> new RotatedPillarBlock(
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.COLOR_BLACK)
                         .requiresCorrectToolForDrops()
                         .strength(spec.blockStrength, spec.blockResistance)
                         .sound(SoundType.NETHERITE_BLOCK)));
-        this.bars = AllBlocks.BLOCKS.register(this.id + "_bars", () -> new IronBarsBlock(
+        this.bars = !has(Form.BARS) ? null : AllBlocks.BLOCKS.register(this.id + "_bars",
+                () -> new IronBarsBlock(
                 BlockBehaviour.Properties.of()
                         .requiresCorrectToolForDrops()
                         .strength(spec.detailStrength, spec.detailResistance)
                         .sound(SoundType.NETHERITE_BLOCK)
                         .noOcclusion()));
-        this.door = AllBlocks.BLOCKS.register(this.id + "_door", () -> new DoorBlock(BlockSetType.IRON,
-                BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.COLOR_BLACK)
-                        .requiresCorrectToolForDrops()
-                        .strength(spec.detailStrength, spec.detailResistance)
-                        .sound(SoundType.NETHERITE_BLOCK)
-                        .noOcclusion()));
-        this.trapdoor = AllBlocks.BLOCKS.register(this.id + "_trapdoor", () -> new TrapDoorBlock(BlockSetType.IRON,
+        this.door = !has(Form.DOOR) ? null : AllBlocks.BLOCKS.register(this.id + "_door",
+                () -> new DoorBlock(BlockSetType.IRON,
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.COLOR_BLACK)
                         .requiresCorrectToolForDrops()
                         .strength(spec.detailStrength, spec.detailResistance)
                         .sound(SoundType.NETHERITE_BLOCK)
                         .noOcclusion()));
-        this.lantern = AllBlocks.BLOCKS.register(this.id + "_lantern", () -> new LanternBlock(
+        this.trapdoor = !has(Form.TRAPDOOR) ? null : AllBlocks.BLOCKS.register(this.id + "_trapdoor",
+                () -> new TrapDoorBlock(BlockSetType.IRON,
+                BlockBehaviour.Properties.of()
+                        .mapColor(MapColor.COLOR_BLACK)
+                        .requiresCorrectToolForDrops()
+                        .strength(spec.detailStrength, spec.detailResistance)
+                        .sound(SoundType.NETHERITE_BLOCK)
+                        .noOcclusion()));
+        this.lantern = !has(Form.LANTERN) ? null : AllBlocks.BLOCKS.register(this.id + "_lantern",
+                () -> new LanternBlock(
                 BlockBehaviour.Properties.of()
                         .forceSolidOn()
                         .requiresCorrectToolForDrops()
@@ -856,7 +892,8 @@ public final class MetalFamily {
                         .sound(SoundType.NETHERITE_BLOCK)
                         .lightLevel(state -> 15)
                         .noOcclusion()));
-        this.chain = AllBlocks.BLOCKS.register(this.id + "_chain", () -> new ChainBlock(
+        this.chain = !has(Form.CHAIN) ? null : AllBlocks.BLOCKS.register(this.id + "_chain",
+                () -> new ChainBlock(
                 BlockBehaviour.Properties.of()
                         .forceSolidOn()
                         .requiresCorrectToolForDrops()
@@ -865,20 +902,25 @@ public final class MetalFamily {
                         .noOcclusion()));
 
         this.blockItem = AllItems.ITEMS.registerSimpleBlockItem(this.block);
-        this.bricksItem = AllItems.ITEMS.registerSimpleBlockItem(this.bricks);
-        this.bricksStairsItem = AllItems.ITEMS.registerSimpleBlockItem(this.bricksStairs);
-        this.bricksSlabItem = AllItems.ITEMS.registerSimpleBlockItem(this.bricksSlab);
-        this.bricksWallItem = AllItems.ITEMS.registerSimpleBlockItem(this.bricksWall);
-        this.pillarItem = AllItems.ITEMS.registerSimpleBlockItem(this.pillar);
-        this.doorItem = AllItems.ITEMS.registerSimpleBlockItem(this.door);
-        this.trapdoorItem = AllItems.ITEMS.registerSimpleBlockItem(this.trapdoor);
-        this.barsItem = AllItems.ITEMS.registerSimpleBlockItem(this.bars);
-        this.chainItem = AllItems.ITEMS.registerSimpleBlockItem(this.chain);
-        this.lanternItem = AllItems.ITEMS.registerSimpleBlockItem(this.lantern);
+        this.bricksItem = this.bricks == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.bricks);
+        this.bricksStairsItem = this.bricksStairs == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.bricksStairs);
+        this.bricksSlabItem = this.bricksSlab == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.bricksSlab);
+        this.bricksWallItem = this.bricksWall == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.bricksWall);
+        this.pillarItem = this.pillar == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.pillar);
+        this.doorItem = this.door == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.door);
+        this.trapdoorItem = this.trapdoor == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.trapdoor);
+        this.barsItem = this.bars == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.bars);
+        this.chainItem = this.chain == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.chain);
+        this.lanternItem = this.lantern == null ? null : AllItems.ITEMS.registerSimpleBlockItem(this.lantern);
 
         // ---------- 升级锻造模板 ----------
+        // ⚠ 混沌金**没有**这张贴图（作者 zip 里没有）⇒ 该族用 forms(...) 关掉本形态。
+        //   原口径（无条件注册）保留在下面这行注释里：
+        //   String key = "item.bettergold.smithing_template." + this.id + "_upgrade.";
+        //   this.upgradeTemplate = AllItems.ITEMS.register(this.id + "_upgrade_template", () -> new SmithingTemplateItem(...));
         String key = "item.bettergold.smithing_template." + this.id + "_upgrade.";
-        this.upgradeTemplate = AllItems.ITEMS.register(this.id + "_upgrade_template", () -> new SmithingTemplateItem(
+        this.upgradeTemplate = !has(Form.UPGRADE_TEMPLATE) ? null
+                : AllItems.ITEMS.register(this.id + "_upgrade_template", () -> new SmithingTemplateItem(
                 Component.translatable(key + "applies_to").withStyle(net.minecraft.ChatFormatting.BLUE),
                 Component.translatable(key + "ingredients").withStyle(net.minecraft.ChatFormatting.BLUE),
                 Component.translatable(key + "upgrade_description").withStyle(net.minecraft.ChatFormatting.GRAY),
@@ -897,14 +939,35 @@ public final class MetalFamily {
                 List.of(ResourceLocation.withDefaultNamespace("item/empty_slot_ingot"))));
 
         // ---------- 汇总 ----------
-        this.allItems = List.of(this.ingot, this.nugget, this.raw, this.upgradeTemplate,
+        // ⚠ 1.7 bg-n10 轮1 后半：形态子集外的形态是 null ⇒ 这里**必须**用"允许 null 的列表 + 过滤"
+        //   的写法。两个坑都实测过：
+        //     ① `List.of(...)` 遇到 null **在进入任何 filter 之前**就抛 NPE（第一次 runData 冒烟即崩）；
+        //     ② `Arrays.asList(...)` 允许 null，但要自己判空。
+        //   旧口径（无条件 List.of，形态恒全）原文保留在下面两行注释里：
+        //   this.allItems = List.of(this.ingot, this.nugget, this.raw, this.upgradeTemplate, ...);
+        //   this.allBlocks = List.of(this.block, this.bricks, ..., this.lantern);
+        var items = new java.util.ArrayList<DeferredItem<?>>();
+        var blocks = new java.util.ArrayList<DeferredBlock<?>>();
+        for (DeferredItem<?> holder : java.util.Arrays.asList(this.ingot, this.nugget, this.raw,
+                this.upgradeTemplate,
                 this.sword, this.axe, this.pickaxe, this.shovel, this.hoe,
                 this.mace, this.bow, this.crossbow, this.trident, this.shield,
                 this.helmet, this.chestplate, this.leggings, this.boots,
                 this.blockItem, this.bricksItem, this.bricksStairsItem, this.bricksSlabItem, this.bricksWallItem,
-                this.pillarItem, this.doorItem, this.trapdoorItem, this.barsItem, this.chainItem, this.lanternItem);
-        this.allBlocks = List.of(this.block, this.bricks, this.bricksStairs, this.bricksSlab, this.bricksWall,
-                this.pillar, this.door, this.trapdoor, this.bars, this.chain, this.lantern);
+                this.pillarItem, this.doorItem, this.trapdoorItem, this.barsItem, this.chainItem, this.lanternItem)) {
+            if (holder != null) {
+                items.add(holder);
+            }
+        }
+        for (DeferredBlock<?> holder : java.util.Arrays.asList(this.block, this.bricks, this.bricksStairs,
+                this.bricksSlab, this.bricksWall, this.pillar, this.door, this.trapdoor, this.bars,
+                this.chain, this.lantern)) {
+            if (holder != null) {
+                blocks.add(holder);
+            }
+        }
+        this.allItems = List.copyOf(items);
+        this.allBlocks = List.copyOf(blocks);
     }
 
     /** 物品属性：按"是否防火防爆"生成，避免多个物品共用同一个 Properties 实例 */
@@ -924,6 +987,79 @@ public final class MetalFamily {
         Item.Properties properties = props().durability(durability);
         return AllItems.ITEMS.register(name,
                 () -> new MetalArmorItem(this.armorMaterial, type, properties, this.swimSpeedPerPiece));
+    }
+
+    /**
+     * 金属族的<b>形态</b>枚举 —— 「形态子集开关」的<b>唯一真源</b>（1.7 bg-n10 轮1 后半落地）。
+     *
+     * <p><b>为什么要有它</b>（作者 2026-10-16 裁定，立档 §4.0 第 ⑪d 行）：
+     * 「崩乱合金」按作者原话与 zip 素材里只有 <b>锭 + 块 + 升级锻造模板 + 器具 + 盔甲 + 禁果</b>
+     * —— <b>不做</b>砖块 / 柱 / 栏杆 / 门 / 活板门 / 链 / 灯笼，也<b>没有</b>粒与原料；
+     * 而既有 {@code MetalFamily} 的构造函数是"一次注册 11 种建材 + 粒 + 原料 + 模板"的<b>无条件</b>写法。
+     * ⇒ 必须有一个声明式开关，否则要么给不存在的形态画贴图（作者禁止自己补画），
+     * 要么注册出一堆紫黑格方块。</p>
+     *
+     * <p><b>口径（照字面，不放宽）</b>：</p>
+     * <ul>
+     *   <li>默认 = <b>全部 15 种</b>（{@link Spec#forms} 的初值）⇒ 既有 8 族的注册结果<b>逐字不变</b>；</li>
+     *   <li>{@link #INGOT} 与 {@link #BLOCK} 是<b>必备形态</b>：任何族都不许关掉它们
+     *       （tier / 盔甲材质 / 信标基座 / 合成链都挂着它们），{@link #register} 会当场报错；</li>
+     *   <li>形态之外的「器具 / 武器 / 盔甲」<b>不在这张表里</b>：它们仍然无条件注册
+     *       （{@link Spec} 没有对应的开关，也不该有 —— 作者的"形态子集"讲的是建材与材料链）；</li>
+     *   <li>关闭一个形态 = 该字段为 {@code null} + 不注册 + 不进 {@link #allItems} / {@link #allBlocks}
+     *       ⇒ {@code MetalFamily.of(...)} 索引里自然没有它，{@code §9.7 例外集} 也不用改（按族自动推）。</li>
+     * </ul>
+     *
+     * <p>⚠ <b>生成器 / 校验器侧</b>必须读到同一份声明：Python 镜像 {@code tools/asset-generator/metal_forms.py}
+     * 是那一边的唯一真源，{@code validate_metal_data.py} 有一条断言核对两边一致
+     * （{@code [bgn10-forms-parity]}），所以加族时<b>只许改这两处</b>。</p>
+     */
+    public enum Form {
+        /** 锭（<b>必备</b>） */
+        INGOT("ingot"),
+        /** 粒 */
+        NUGGET("nugget"),
+        /** 原料（{@code raw_<族>}，id 前缀不是族 id） */
+        RAW("raw"),
+        /** 材料块（<b>必备</b>） */
+        BLOCK("block"),
+        /** 砖块 */
+        BRICKS("bricks"),
+        /** 砖楼梯 */
+        BRICKS_STAIRS("bricks_stairs"),
+        /** 砖台阶 */
+        BRICKS_SLAB("bricks_slab"),
+        /** 砖墙 */
+        BRICKS_WALL("bricks_wall"),
+        /** 柱 */
+        PILLAR("pillar"),
+        /** 栏杆 */
+        BARS("bars"),
+        /** 门 */
+        DOOR("door"),
+        /** 活板门 */
+        TRAPDOOR("trapdoor"),
+        /** 链 */
+        CHAIN("chain"),
+        /** 灯笼 */
+        LANTERN("lantern"),
+        /** 升级锻造模板 */
+        UPGRADE_TEMPLATE("upgrade_template");
+
+        /** 物品 / 方块 id 的后缀（{@code raw} 例外：真实 id 是 {@code raw_<族>}） */
+        public final String suffix;
+
+        Form(String suffix) {
+            this.suffix = suffix;
+        }
+
+        /** 11 种「建材」形态（作者口径：材料块 + 砖块/楼梯/台阶/墙 + 柱 + 栏杆 + 门 + 活板门 + 链 + 灯笼） */
+        public static final java.util.Set<Form> BUILDING_FORMS = java.util.EnumSet.of(
+                BLOCK, BRICKS, BRICKS_STAIRS, BRICKS_SLAB, BRICKS_WALL,
+                PILLAR, BARS, DOOR, TRAPDOOR, CHAIN, LANTERN);
+
+        /** 必备形态（不许被关掉） */
+        public static final java.util.Set<Form> REQUIRED_FORMS = java.util.EnumSet.of(INGOT, BLOCK);
     }
 
     /**
@@ -1055,6 +1191,66 @@ public final class MetalFamily {
          * 「特殊金属」彻底拆开（旧代码里两者是同一个字段，正是这轮要修的那一面）。</p>
          */
         public boolean shieldBreakImmune = true;
+
+        /**
+         * 本族注册的<b>形态子集</b>（{@link Form}）—— 默认 = 全部 15 种
+         * ⇒ 既有的 8 族一个字段都不用写，注册结果与加这个开关之前<b>逐字相同</b>。
+         *
+         * <p>作者 2026-10-16 裁定（立档 §4.0 ⑪d）：崩乱合金只做「锭 + 块 + 模板」，
+         * 混沌金缺「原料」与「升级锻造模板」⇒ 用 {@link #forms(Form...)} 声明，
+         * <b>不要</b>在 {@code MetalFamily} 里加 per-family 的 if 分支。</p>
+         */
+        public java.util.Set<Form> forms = java.util.EnumSet.allOf(Form.class);
+
+        /**
+         * 本族声明了哪些「区间值」通道（{@link ChaosRange}）—— 默认空表 ⇒ 既有 8 族
+         * <b>一个通道都不声明</b>，行为与加这套机制之前逐字相同。
+         *
+         * <p>规则 / 存储 / 触发点全在 {@link ChaosRange}（唯一实现）；本表<b>只放两端值</b>。</p>
+         */
+        public java.util.Map<ChaosRange.Channel, ChaosRange.Range> chaosRanges = java.util.Map.of();
+
+        /**
+         * 声明本族注册哪些形态（覆盖式：<b>只注册列出来的</b>）。
+         *
+         * <p>⚠ 这是「形态子集」的唯一入口；{@link Form#REQUIRED_FORMS}（锭 / 块）不在其中时
+         * {@link MetalFamily#register} 会抛异常（早失败，别让半个族静默注册出来）。</p>
+         */
+        public Spec forms(Form... forms) {
+            java.util.EnumSet<Form> set = java.util.EnumSet.noneOf(Form.class);
+            set.addAll(java.util.Arrays.asList(forms));
+            this.forms = set;
+            return this;
+        }
+
+        /** 从默认全集里去掉几个形态（{@code forms(全集)} 的减法写法，两者等价、择一使用） */
+        public Spec withoutForms(Form... forms) {
+            for (Form form : forms) {
+                this.forms.remove(form);
+            }
+            return this;
+        }
+
+        /** 本族是否注册该形态（注册前用） */
+        public boolean has(Form form) {
+            return this.forms.contains(form);
+        }
+
+        /**
+         * 声明一个区间通道的两端值（作者口径：混沌金挖掘 {@code 2..12}、混沌金盔甲 {@code 0..6}、
+         * 崩乱合金挖掘 {@code 8..16}、崩乱合金盔甲 {@code 4..10} …）。
+         *
+         * <p>⚠ 轮3 / 轮4 / 轮7 若需要"同一族的每把武器各有一档伤害区间"，在这张表上换成
+         * "按物品细分"的 key 即可（例如再叠一个 {@code Map<Item, ChaosRange.Range>}），
+         * <b>不要</b>把乒乓规则复制到武器类里。</p>
+         */
+        public Spec chaosRange(ChaosRange.Channel channel, int min, int max) {
+            if (this.chaosRanges.isEmpty()) {
+                this.chaosRanges = new java.util.EnumMap<>(ChaosRange.Channel.class);
+            }
+            this.chaosRanges.put(channel, new ChaosRange.Range(min, max));
+            return this;
+        }
 
         public Spec(String id, String cnName) {
             this.id = id;
@@ -1288,6 +1484,14 @@ public final class MetalFamily {
     public static MetalFamily register(Spec spec) {
         if (BY_ID.containsKey(spec.id)) {
             throw new IllegalStateException("金属族 " + spec.id + " 重复注册");
+        }
+        // 形态子集自检（1.7 bg-n10 轮1 后半）：锭 / 块是必备形态 —— tier、盔甲材质、信标基座、
+        // 以及所有以锭为原料的合成链都挂在它们身上，关掉是配置错误而不是"子集"⇒ 当场报错。
+        for (Form required : Form.REQUIRED_FORMS) {
+            if (!spec.forms.contains(required)) {
+                throw new IllegalStateException("金属族 " + spec.id + " 关掉了必备形态 " + required
+                        + "（" + required.suffix + " 是 tier / 盔甲材质 / 信标基座的依赖）");
+            }
         }
         MetalFamily family = new MetalFamily(spec);
         BY_ID.put(spec.id, family);

@@ -1,0 +1,4 @@
+﻿[bgn10-deadlink] 产物里实际写的 chaos* id = 47 个（分布在 62 个 JSON）
+[bgn10-deadlink] Java 侧注册集合 = 物品 48 + 方块 12
+[bgn10-deadlink] 死链 = 0
+[bgn10-deadlink] （仪表盘）注册了但 data/ 里没有任何引用的 id = 1: ['chaosalloy_upgrade_template']

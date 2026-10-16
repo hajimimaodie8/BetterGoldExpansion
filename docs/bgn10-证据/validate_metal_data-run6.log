@@ -1,0 +1,4 @@
+﻿  File "E:\mc\mcmod\bettergold-template-1.21.1\tools\asset-generator\validate_metal_data.py", line 6124
+    if not _ca or "forms(MetalFamily.Form.INGOT, MetalFamily.Form.BLOCK, "
+                                                                          ^
+SyntaxError: expected ':'

@@ -88,6 +88,18 @@
     "bettergold:echogold_trapdoor",
     "bettergold:echogold_bars",
     "bettergold:echogold_chain",
-    "bettergold:echogold_lantern"
+    "bettergold:echogold_lantern",
+    "bettergold:chaosgold_block",
+    "bettergold:chaosgold_bricks",
+    "bettergold:chaosgold_bricks_stairs",
+    "bettergold:chaosgold_bricks_slab",
+    "bettergold:chaosgold_bricks_wall",
+    "bettergold:chaosgold_pillar",
+    "bettergold:chaosgold_bars",
+    "bettergold:chaosgold_door",
+    "bettergold:chaosgold_trapdoor",
+    "bettergold:chaosgold_chain",
+    "bettergold:chaosgold_lantern",
+    "bettergold:chaosalloy_block"
   ]
 }

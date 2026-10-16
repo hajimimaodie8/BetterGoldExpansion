@@ -49,7 +49,10 @@ PALETTE_DIR = RES / "assets" / "bettergold" / "textures" / "trims" / "color_pale
 
 METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
           # 1.6（bg-16）：两套新金属（纹饰四样由这个生成器一次补齐）
-          "thornsgold", "echogold"]
+          "thornsgold", "echogold",
+          # 1.7（bg-n10 轮1 后半）：两族都有纹饰色卡（zip 里各一张 8×1）⇒ 纹饰四样照补。
+          # 形态子集不影响纹饰（它只依赖"锭"这个必备形态 + 色卡贴图）。
+          "chaosgold", "chaosalloy"]
 
 # item_model_index：必须互不相同、且避开原版 0.1~1.0（见文件头说明）
 ITEM_MODEL_INDEX = {
@@ -63,6 +66,11 @@ ITEM_MODEL_INDEX = {
     # 1.6：接着往下取，仍然全部落在原版 0.1~1.0 **之外**
     "thornsgold": 0.08,
     "echogold": 0.09,
+    # 1.7（bg-n10 轮1 后半）：⚠ **0.10 / 0.11 都不能用** —— 原版表里 0.1 = quartz（白灰阶），
+    # 撞上去纹饰一律显示成原版材质颜色（正是 1.5 修正⑦ 修的那个 bug）。
+    # 0.01~0.09 已用满一位小数 ⇒ 往两位小数取，仍然严格小于 0.1。
+    "chaosgold": 0.011,
+    "chaosalloy": 0.012,
 }
 
 

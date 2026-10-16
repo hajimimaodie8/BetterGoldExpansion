@@ -1,0 +1,178 @@
+﻿===== check_jar_clean exit=0 =====
+build/libs jars:
+  bettergold-1.5.0.jar  (1089906 bytes)
+  bettergold-1.6.0.jar  (1361212 bytes)
+
+产物 bettergold-1.6.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+  ⚠ build/libs 里有 2 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+jar 内 *Probe* 路径 = 0 []
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2409
+[jar-clean-anti-vacuum] 实际检查了 2409 项（jar 内条目数；必须 > 0）
+[jar-clean-ok] 产物 jar 干净（条目 2409；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+===== check_forced_chunks exit=0 =====
+chunks.dat top-level keys = ['data', 'DataVersion']
+chunks.dat data keys      = ['Forced']
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True
+[chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+[chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+===== validate_metal_assets exit=0 =====
+��� JSON: 595 ��
+����ʧ��: 0
+��ͼȱʧ: 0
+ר�����ȱ��: 0
+������ͼ/ģ��ȱ��: 0 []
+�ߵ���ͼ/ģ������: 0 []
+����/�����ʵ����ͼ�ߴ粻��: 0 []
+�������ģ�ͽṹ����: 0 []
+mixin ��������: 0 []
+flamegold    item=29  block=10  armor=2
+voodoogold   item=29  block=10  armor=2
+thundergold  item=29  block=10  armor=2
+indigoseagold item=29  block=10  armor=2
+illusiongold item=29  block=10  armor=2
+thornsgold   item=29  block=10  armor=2
+echogold     item=29  block=10  armor=2
+bg-16 ��Ȩ��ͼ��golden_trident_blank������: 0 []
+bgfinal3 ��Ȩɫ�����庣�����Σ�����: 0 []
+[bg-assets-anti-vacuum] ʵ�ʼ���� 595 �blockstates / models �����ֺ������ JSON������ > 0��
+[bg-assets-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+===== validate_metal_data exit=1 =====
+������Լ� 307 ����8 �׽����ȫ����Ʒ�뷽�� + 5 ���ߵף�
+ȱ����: 0 []
+ȱӢ��: 0 []
+ȱս��Ʒ��: 0 []
+С����ǩȱ��Ա: 0 []
+������ħ��ǩȱ��Ա/�����ߵ�: 0 []
+bg-15w �����֣�tooltip �� + ˫�������䷽ + �ߵ������ɼ�������: 0 []
+װ������˳�򣨡�9.1 ���� ��8.1������: 0 []
+��Ӿ�ٶ� SWIM_SPEED����8.3 �¿ھ�������: 0 []
+bg-15w ��� ׷���֢� ����ϼ�: 0 []
+���׽����ǩһ���ԣ�34 ����ǩ �� 8 �׽��������: 0 []
+�ű������ǩ #minecraft:beacon_base_blocks ����: 0 []
+  ������ 26 �� = ���׽��� �� 3 + 2 ����ϵ��ʵ����Ч��Ա 30 ����
+��9.2 �ظ�ԭ���䷽�����׸�һ�� + ���� legacy ������ʧ������: 0 []
+��9.3 �庣��������ˮ���ھ�ͷ�����: 0 []
+bg-15w ��� ׷���֢� ����ϼ�: 0 []
+[bgfix8-anti-vacuum] ǰ���ļ������ԣ��������=True / Config.java=True / �ֲ� golden_knowledge.json(zh,en)=True,True��ȱ 0 �������� = 0��
+bgfinal3 �����ö����庣���ĵ��ھ� / �ֲ�����һ�� / ����ܲ� placed_block������: 0 []
+bg-16 ���������������� / ��������ң�����: 1 ['AllMetals.java ������� 9 �� `.coreItem(() -> X.get())`��ӦΪ���� 8 ���� [bg16-cactus-coreitem-anti-vacuum]']
+bg-book �������ֲ�����: 0 []���ֲ� 20 ��Ŀ / 192 ҳ / 184 ���䷽���ã�
+bg-book ���� ׷���֣�������ҳ��ȫ������: 0 []������ 32 ҳ / 16 ���䷽���� / 115 ��ͼ�����ã�
+bg-append ׷���֣��ֲ��ߴ����� / ������Ч / ���ú��� / ��õ��ԣ�����: 0 []
+bg-fix 1.6 ������������: 1 ['AllMetals ��� MetalFamily.Spec ���� 8 ����ʵ�� 10������ת�ػ��� [bgfix-special-metal-predicate]']
+bg-fix4 ���������Ŷ����ɾ� / ˳����Դ����ͬ�� / ��3 ��1ҳ��ԭ / ����ҳ 11 �� / ����ҳ˳�����������: 4 ['AllMetals ��� MetalFamily.Spec ���� 8 ����ʵ�� 10������ת�ػ��� [bgfix4-vine-all-metals]', "˳����Դ�������� 2026-10-08 �� 8 ����˳��['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold', 'chaosgold', 'chaosalloy'] �� ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold'] [bgfix4-metal-order-single-source]", '˳����Դ���� 8 �������ʵ�� 10������ ����ת�ػ� [bgfix4-metal-order-single-source]', "Config.java �� 16 ������˳�� ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold'] �� ˳����Դ ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold', 'chaosgold', 'chaosalloy']������ 2026-10-08����ģ������ҲҪ�����ֹ������򡹣� [bgfix4-metal-order-single-source]"]����3 10 ҳ / ����ҳ��Ļ 8/8 / ͼ������ 115 ����
+bg-fix5�������� 8 ���ߴ��������̶� / �ʺ��� = ������ / �崦ͬ������: 2 ["˳����Դ ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold', 'chaosgold', 'chaosalloy'] �� ���� 2026-10-08 ˳�� ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold'] [bgfix5-metal-order-five-places]", '˳����Դ���� 8 ���壨ʵ�� 10������ ����ת�ػ� [bgfix5-metal-order-five-places]']�����������ڵ㺢�� 9 �� / �����ӳ�� 8 �壩
+bg-final 1.6 ��β�������������� / �ɾ�Ӣ�� / ��ȼ 1 ������ȼ������: 0 []
+bg-fix2 ����δ��Ч������ɫ��ȡ֤ / �������� / ���� / ��Ƿ� / ��ȼ���� / �ɾͣ�����: 1 ['trim_material JSON �� = 11������ 9������ת�ػ��� [bgfix2-trim-nine-materials]']
+bg-book ��� ׷���֣���װ����ǿ����9 �� / ������ / �׶����������ж�������: 0 []��9 �� 86 ҳ / �������� 112 �� / �ߵ����� 5 ����
+bg-book ��� ׷���֣���������Ŷ���3 �� / ��9.7 ���͵�ת�� / ������ռλ������: 1 ['������ MetalFamily �� allBlocks �嵥������ת�ػ��� [bgbook9-dust-convert-exempt]']��3 �� 20 ҳ / �䷽���� 11 �� / ͼ������ 19 ����
+bg-fix3 ���������������о� / ���µ� / �ֲ�ɾ���� / root �Ļ�� / �Ű� / ��ǩ���ƣ�����: 1 ["��ѡ��Ŀ��ǩ�ļ����� 11 �ţ�8 �嵶 + 2 �ŹŶ��� + handbook����ʵ�� 13��['antique_knives.json', 'chaosalloy_knives.json', 'chaosgold_knives.json', 'echogold_knives.json', 'flamegold_knives.json', 'illusiongold_knives.json', 'indigoseagold_knives.json', 'netherite_antique_knives.json', 'sturdygold_knives.json', 'thornsgold_knives.json', 'thundergold_knives.json', 'voodoogold_knives.json', 'handbook.json'] [bgfix3-tag-generator]"]
+bg-book ��ʮ ׷���֣�����ӵ�ʢ�硹5 �� / �����Ž��� / ���������߲�������: 0 []��5 �� 54 ҳ / �䷽���� 40 �� / ͼ������ 15 ����
+bg-fix4 ���������Ŷ����ɾ� / ˳����Դ����ͬ�� / ��3 ��1ҳ��ԭ / ����ҳ 11 �� / ����ҳ˳�����������: 4 ['AllMetals ��� MetalFamily.Spec ���� 8 ����ʵ�� 10������ת�ػ��� [bgfix4-vine-all-metals]', "˳����Դ�������� 2026-10-08 �� 8 ����˳��['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold', 'chaosgold', 'chaosalloy'] �� ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold'] [bgfix4-metal-order-single-source]", '˳����Դ���� 8 �������ʵ�� 10������ ����ת�ػ� [bgfix4-metal-order-single-source]', "Config.java �� 16 ������˳�� ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold'] �� ˳����Դ ['flamegold', 'sturdygold', 'thornsgold', 'echogold', 'indigoseagold', 'voodoogold', 'thundergold', 'illusiongold', 'chaosgold', 'chaosalloy']������ 2026-10-08����ģ������ҲҪ�����ֹ������򡹣� [bgfix4-metal-order-single-source]"]����3 10 ҳ / ����ҳ��Ļ 8/8 / ͼ������ 115 ����
+bg-fix7������ҳ���Ϸ���ǰ�벿�����ţ�����: 0 []��ǰ׺ 21 �� / ���� 61 �� / ����ǰ׺ 21 �
+[bg-data-anti-vacuum] ʵ�ʼ���� 307 ����Լ���+ 1819 �� JSON ���ɨ���ȱʧ 0 ����������� > 0��
+[bgfix7-anti-vacuum] ��������ֵ���գ����� bgfix7-creative-material-baseline.txt=True / ������ bgfix7-creative-material-prefix-order.txt=True��ȱʧ 0 �������� = 0��
+bgfix8��������ʾ�İ� + �ֲ���ҳ��Ļ/���ģ�����: 0 []��������Ŀ���˶� 14 �� / ���뷶Χ 16/16 / ��ҳ title='"���"װ������������ģ��' / ��ҳ���� 76 �֣�
+bgfix9����õ��� �� ��Ⱦ��������: 0 []�������� = ǡ�ý�õ��� 1 �� + DEFAULT ���䣻��Ⱦ���� TRUE �ع鱣���`#minecraft:dirt` �������� 0 ����
+bgfix11��en ����Ӣ�ģ�knowledge_1_summary ������ �� ��Ӣ�ģ�����: 1 ['[bgfix11-lang-k1s-en] zh_cn.json �� SHA256 = 717E39789409FFC2CA3F48ED3313E54F��������һ���� 695FA5A5347E1165F431A204D8CA6F19������ zh �౻������']���ü� en 294 �� / zh 104 �� / δ�䶯�Ӽ� 788 �� / �Ӽ� SHA256 94b471fe91882eca / en 7A7156E8 �� 07AA2FA0��
+bgfix10�������滻 zh ? en ͬ����6 ��ֵ / 20 ɾ�� / ����һ�£�����: 2 ['[bgfix10-lang-untouched-frozen] δ�䶯�Ӽ��� 788 ������������� 715 �������� ������ɾ��', '[bgfix10-lang-untouched-frozen] δ�䶯�Ӽ��Ĺ淶�� SHA256 = 94B471FE91882ECA3EB9FD5FF89C746E��������� 68A5441020CB829DD2ED9EC435E62746������ ���˶��˱��ֲ��ö��ļ���Ҫ������ʽ������������� ��31 ���ˣ�']��en 795 �� / zh 795 �� / δ�䶯�Ӽ� 788 �� / �Ӽ� SHA256 94b471fe91882eca��en ��ǰ B39CF069 �� �ĺ� 7A7156E8��
+[bg-data-fail] ����ϼ� 14 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+===== validate_trim_assets exit=0 =====
+== 1. data/bettergold/trim_material/*.json ==
+  sturdygold         asset_name=sturdygold         item_model_index=0.01  撞原版=无
+  unwanted_antique   asset_name=unwanted_antique   item_model_index=0.02  撞原版=无
+  flamegold          asset_name=flamegold          item_model_index=0.03  撞原版=无
+  voodoogold         asset_name=voodoogold         item_model_index=0.04  撞原版=无
+  thundergold        asset_name=thundergold        item_model_index=0.05  撞原版=无
+  indigoseagold      asset_name=indigoseagold      item_model_index=0.06  撞原版=无
+  illusiongold       asset_name=illusiongold       item_model_index=0.07  撞原版=无
+  thornsgold         asset_name=thornsgold         item_model_index=0.08  撞原版=无
+  echogold           asset_name=echogold           item_model_index=0.09  撞原版=无
+  唯一值个数=9 / 9（必须相等）
+  全部落在原版 0.1..1.0 之外 = True
+
+== 2. 色卡 assets/bettergold/textures/trims/color_palettes/<asset>.png（8×1） ==
+  sturdygold         size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(116, 31, 0, 255) 全白=False
+  unwanted_antique   size=(8, 1) 唯一像素=8 首=(124, 131, 110, 255) 末=(21, 26, 24, 255) 全白=False
+  flamegold          size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(116, 50, 0, 255) 全白=False
+  voodoogold         size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(41, 40, 74, 255) 全白=False
+  thundergold        size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(76, 23, 72, 255) 全白=False
+  indigoseagold      size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(16, 37, 76, 255) 全白=False
+  illusiongold       size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(149, 67, 108, 255) 全白=False
+  thornsgold         size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(30, 48, 4, 255) 全白=False
+  echogold           size=(8, 1) 唯一像素=8 首=(255, 242, 149, 255) 末=(3, 60, 74, 255) 全白=False
+  原版对比 trim_palette.png（palette_key，8×1 灰阶）：
+    size=(8, 1) 像素=[(224, 224, 224, 255), (192, 192, 192, 255), (160, 160, 160, 255), (128, 128, 128, 255), (96, 96, 96, 255), (64, 64, 64, 255), (32, 32, 32, 255), (0, 0, 0, 255)]
+  原版 quartz 色卡（作者看到的「白色」就是它）：
+    size=(8, 1) 像素=[(242, 239, 237, 255), (246, 234, 223, 255), (227, 219, 196, 255), (182, 173, 150, 255), (144, 142, 128, 255), (101, 97, 86, 255), (69, 67, 60, 255), (42, 40, 34, 255)]
+  [bgfix2-第1条] 与 quartz **逐像素完全相同**的我方色卡 = 无
+  [bgfinal3-indigosea-palette-restored] indigoseagold.png SHA256 = 9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d
+      期望 = 9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d（作者 2026-10-06 交回的 `靛海金/靛海金纹饰色卡.png` 字节原件；也是 docs/bg7-证据/04a-资源哈希-before.txt:720 留档的那个「改动前」哈希）
+      8 个像素 = [(255, 242, 149, 255), (197, 205, 166, 255), (138, 169, 184, 255), (98, 137, 179, 255), (59, 105, 174, 255), (35, 78, 153, 255), (24, 56, 114, 255), (16, 37, 76, 255)]
+
+== 3. 图集置换（两处，缺一不生效） ==
+  a) armor_trims.json（穿戴模型 trims/models/armor/*）: 11 条置换，我方全在 = True
+  b) blocks.json（物品形态 trims/items/*_trim）存在 = True
+     源贴图 = ['trims/items/helmet_trim', 'trims/items/chestplate_trim', 'trims/items/leggings_trim', 'trims/items/boots_trim']
+     palette_key = ['trims/color_palettes/trim_palette']
+     11 条置换，我方全在 = True
+     sturdygold         -> bettergold:trims/color_palettes/sturdygold
+     unwanted_antique   -> bettergold:trims/color_palettes/unwanted_antique
+     flamegold          -> bettergold:trims/color_palettes/flamegold
+     voodoogold         -> bettergold:trims/color_palettes/voodoogold
+     thundergold        -> bettergold:trims/color_palettes/thundergold
+     indigoseagold      -> bettergold:trims/color_palettes/indigoseagold
+     illusiongold       -> bettergold:trims/color_palettes/illusiongold
+     thornsgold         -> bettergold:trims/color_palettes/thornsgold
+     echogold           -> bettergold:trims/color_palettes/echogold
+     注意：SpriteSourceList.load 用的是 resourceManager.getResourceStack（同名文件**拼接**），
+     所以本文件是**追加**到原版 blocks.json 的源列表上，不会覆盖原版 14 个材质。
+
+== 4. 原版盔甲物品模型的 overrides（trim_type → 哪个模型） ==
+  trim_type 0.1 -> minecraft:item/netherite_chestplate_quartz_trim
+  trim_type 0.2 -> minecraft:item/netherite_chestplate_iron_trim
+  trim_type 0.3 -> minecraft:item/netherite_chestplate_netherite_darker_trim
+  trim_type 0.4 -> minecraft:item/netherite_chestplate_redstone_trim
+  trim_type 0.5 -> minecraft:item/netherite_chestplate_copper_trim
+  trim_type 0.6 -> minecraft:item/netherite_chestplate_gold_trim
+  trim_type 0.7 -> minecraft:item/netherite_chestplate_emerald_trim
+  trim_type 0.8 -> minecraft:item/netherite_chestplate_diamond_trim
+  trim_type 0.9 -> minecraft:item/netherite_chestplate_lapis_trim
+  trim_type 1.0 -> minecraft:item/netherite_chestplate_amethyst_trim
+  netherite_chestplate_quartz_trim.json textures = {'layer0': 'minecraft:item/netherite_chestplate', 'layer1': 'minecraft:trims/items/chestplate_trim_quartz'}
+  => 修复前我方六个金属的 item_model_index 全是 0.1，谓词值 0.1 命中的就是 quartz 那一行，
+     最终画的是 minecraft:trims/items/chestplate_trim_quartz（quartz 色卡 = 白灰阶）⇒ 「纹饰都是白色」。
+
+== 5. 我方盔甲物品模型（JSON 里没有 trim overlay，这是原样；overlay 由客户端 ArmorTrimItemModels 运行期补） ==
+  6 套 × 4 件 = 24 个模型全部只有 {parent: minecraft:item/generated, textures:{layer0}}，
+  没有 overrides / 没有 layer1（对照原版 netherite_chestplate.json）⇒ 修之前自家盔甲连纹饰都不画。
+  修法：client/ArmorTrimItemModels.java 在 ModelEvent.ModifyBakingResult 里给**所有**带纹饰槽位的
+  盔甲物品模型套一层包装，按纹饰材质的 asset_name 现算「原模型四边形 + 纹饰精灵」那一层；
+  这样原版 25 件与自家 24 件一起生效，也不需要复制/覆盖原版模型 JSON。
+
+== 6. 修正①：小刀必须进 #farmersdelight:tools/knives（附魔类别标签全靠它） ==
+  data/farmersdelight/tags/item/tools/knives.json: 10 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife']
+  data/c/tags/item/tools/knife.json: 10 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife']
+  FD jar 里 data/minecraft/tags/item/enchantable/{bow,crossbow,trident,mace,sword,sharp_weapon,
+  weapon,fire_aspect,durability,mining,mining_loot,vanishing}.json 都靠它拼出来；
+  1.5 的靛海金刀 / 幻惑金刀原先不在这个标签里 ⇒ 只有那两把不能附魔。
+
+[写出] E:\mc\mcmod\bettergold-template-1.21.1\build\p15fix-asset-audit.txt
+[bgfinal3-anti-vacuum] 实际检查了 72 项（trim_material 9 + 色卡 9 + 图集置换 + 我方盔甲模型；必须 > 0）
+OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+[bgfinal3-ok] 问题 0 条 / 检查 72 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_advancements exit=0 =====
+OK [bgach] 51 ���ɾ� / 125 �� criteria / �������� ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:villager_trade'] / recipe_crafted 0 �� / ���Լ� 102 ��
+OK [bgach] ����bg-fix3 ���� ��ʽ������ 3 ���ӣ�����I + ����ũҵ�������� root -> ����I -> ����II -> Ѱ;��Ѱ; 9 ���ӡ�Ⱦ�ϻƽ� 3 ���ӣ�3 ������������challenge 9 ����������� + ���ô�����
+OK [bgfix3-knife-in-gear] 8 �������ɾ͸��� `have_knife`��items = ���� `#bettergold:<��>_knives` ��ǩ����ǩ��Ŀһ�� required:false��? װ������ʱС������
+OK [bgfix3-root-obtain] root �о� = inventory_changed + `#bettergold:handbook`��ȫ�� recipe_crafted = 0 ��
+OK [bgfix4-antique-knife-in-gear] 2 ���Ŷ��ɾ͸��� `have_knife`��items = ������ǩ�ַ�������ǩ��Ŀ required:false��? װ������ʱ����/�Ϻ������룻`have` �� 5 ���� id ԭ·������
+OK [bgfix9-inv-one-predicate] �����⡹�� 13 ���ɾ� / 20 ���о�ȫ����**ǡ�� 1 ��ν��**��OR ? items.size()==1���������� / һ���ס��� 12 ��ȫ���ǡ�ÿ��һ���о� + ����һ�项����� AND����ν�� 119 �� / ������̬ 12 ����ȫ 51 ���� `conditions.player`��λ��/�ṹ�ţ�
+OK [bgfix9-raw-metal-shape] ? treasure/any_raw_metal.have = 1 ��ν�� + 8 ��ԭ�����飨��ȡ/�ϳ���һ����������[bgfix9-eggplant-no-structure] ? agriculture/eggplant_seeds.have = ��ý�Ǯ�����ӣ��޽ṹ�ţ�
+OK [bgach] ��Ʒ���� 122 ������ 11 �ű�ģ���ǩ��ȫ��������ע�����Դ��ʳ���嵥�� Java ��Դ����һ��
+OK [bgfinal-adv-lang] 102 ��Ӣ��ֵȫ������Ӣ�루en != zh���ǿա��� ASCII ��ĸ������ �� 120����Ӣ������ȫһ�£������� 0 ����
+[bgach-ok] ���� 0 �� / �ɾ� 51 �� / criteria 125 �� / ���Լ� 102 ������Լ��0 �� / 1 ������ / 2 ǰ�û���

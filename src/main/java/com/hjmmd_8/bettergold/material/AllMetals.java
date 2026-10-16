@@ -165,6 +165,83 @@ public final class AllMetals {
     public static final MetalFamily STURDYGOLD = registerSturdygold();
 
     /**
+     * 混沌金（1.7 · bg-n10 轮1 后半 / 轮2）：主题「混沌 / 区间值」。
+     *
+     * <p>作者数值（原话照抄）：<b>426 耐久 / 24 附魔能力 / 挖掘等级铁</b>；
+     * 「挖掘能力在挖掘成功和反复手持之间不断转换，最低 2 最高 12」；伤害区间见轮3。</p>
+     *
+     * <ul>
+     *   <li><b>形态子集</b>（作者 2026-10-16 裁定 §4.0 ⑪d + 立档 §3 的缺口表）：
+     *       11 种建材齐全 + 粒，但 zip 里<b>没有</b>「混沌金原料」与「混沌金升级锻造模板」
+     *       ⇒ {@link MetalFamily.Form#RAW} 与 {@link MetalFamily.Form#UPGRADE_TEMPLATE}
+     *       <b>不注册</b>（作者禁止自己补画；歧义 ⑱c / ㉑ 未裁 ⇒ 工作值 = 跳过）。</li>
+     *   <li><b>区间值</b>：挖掘 {@code 2..12} 落在共用组件 {@link ChaosRange} 上
+     *       （规则 / 存储 / 触发点只写那一处）；轮3 把它接进实际挖掘速度与伤害。</li>
+     *   <li><b>coreItem = 混沌金币</b>（{@code chaos_coin}）：立档 §2.2 可执行口径第 2 条给的默认
+     *       —— 没有 raw 时用金币当"材料链最前面那件"。</li>
+     *   <li>盔甲数值走 {@code Spec} 默认（作者说"照抄"，立档 D8：护甲 5·8·10·5 / 韧性 6 /
+     *       击退 15% / 附魔 24）；单件即猪灵中立由 {@link MetalFamily.MetalArmorItem} 自动继承。</li>
+     * </ul>
+     */
+    public static final MetalFamily CHAOSGOLD = registerChaosgold();
+
+    /**
+     * 崩乱合金（1.7 · bg-n10 轮1 后半）：主题「崩乱 / 失衡」。
+     *
+     * <p>作者数值（原话照抄）：<b>8192 耐久 / 32 附魔能力 / 挖掘等级下界合金</b>；
+     * 挖掘 {@code 8..16}；盔甲 <b>32 附魔能力 / 8 韧性 / 20% 击退抗性</b>；
+     * 块属性 = 下界合金块 ×3（立档 D7：{@code 150.0F} 硬度 / {@code 3600.0F} 抗爆）。</p>
+     *
+     * <ul>
+     *   <li><b>形态子集</b>（§4.0 ⑪d 裁定「按照现有的贴图标准来」+「这玩意可算不上是'贵金'」）：
+     *       只注册 <b>锭 + 块 + 升级锻造模板</b>（zip 里就只有这三件）——
+     *       砖块 / 楼梯 / 台阶 / 墙 / 柱 / 栏杆 / 门 / 活板门 / 链 / 灯笼、以及粒与原料<b>全部不做</b>，
+     *       且<b>不自己补画</b>贴图。</li>
+     *   <li>器具 / 武器 / 盔甲仍然照常注册（作者的"形态子集"讲的是建材与材料链）⇒
+     *       轮7 才接它们的数值与配方；本轮只有骨架 + 形态声明。</li>
+     *   <li>区间值只声明挖掘 {@code 8..16}；盔甲的 {@code 4%..10%} 与失衡概率属轮7。</li>
+     * </ul>
+     */
+    public static final MetalFamily CHAOSALLOY = registerChaosalloy();
+
+    /** 混沌金的规格：作者 2026-10-16 给的数逐项照抄（铁级挖掘 / 426 / 24 / 区间 2..12） */
+    private static MetalFamily registerChaosgold() {
+        MetalFamily.Spec spec = new MetalFamily.Spec("chaosgold", "混沌金")
+                .withoutForms(MetalFamily.Form.RAW, MetalFamily.Form.UPGRADE_TEMPLATE)
+                .chaosRange(ChaosRange.Channel.MINING, 2, 12)
+                .coreItem(() -> AllItems.CHAOS_COIN.get());
+        spec.durability = 426;
+        spec.enchantmentValue = 24;
+        spec.incorrectForDrops = BlockTags.INCORRECT_FOR_IRON_TOOL;   // 作者：挖掘等级「铁」
+        // ⚠ 挖掘速度本体只有一个数（Tier 是按族共享的），而作者要的是**区间 2..12** ⇒
+        //   这里先取区间上端当占位，轮3 用 ChaosRange 的当前值把这条接成"逐物品栈"的速度
+        //   （Tier 的 speed 字段改不动逐 itemstack，必须另走属性那条路 —— 轮3 定型）。
+        spec.miningSpeed = 12.0F;
+        // 盾牌：作者没点名混沌金盾的"格挡反 buff"⇒ 不调用 specialWeaponMetal（工作值，轮4 可一句话改）。
+        // 免疫破盾走 Spec 默认（shieldBreakImmune = true，七套金属一致）。
+        return MetalFamily.register(spec);
+    }
+
+    /** 崩乱合金的规格：8192 / 32 / 下界合金级 / 区间 8..16 / 盔甲 32·8·20% / 块 3 倍下界合金 */
+    private static MetalFamily registerChaosalloy() {
+        MetalFamily.Spec spec = new MetalFamily.Spec("chaosalloy", "崩乱合金")
+                .forms(MetalFamily.Form.INGOT, MetalFamily.Form.BLOCK, MetalFamily.Form.UPGRADE_TEMPLATE)
+                .chaosRange(ChaosRange.Channel.MINING, 8, 16);
+        spec.durability = 8192;
+        spec.enchantmentValue = 32;
+        spec.incorrectForDrops = BlockTags.INCORRECT_FOR_NETHERITE_TOOL;   // 作者：挖掘等级「下界合金」
+        spec.miningSpeed = 16.0F;      // 同上：区间 8..16 的上端占位，轮7 接线
+        spec.armorEnchantmentValue = 32;
+        spec.armorToughness = 8.0F;
+        spec.armorKnockbackResistance = 0.20F;
+        // 块属性 = 下界合金块 ×3（立档 D7 / 歧义 ⑪a 的 (A)）：下界合金块 50.0F / 1200.0F
+        spec.blockStrength = 150.0F;
+        spec.blockResistance = 3600.0F;
+        // 护甲值 / 耐久 / 细节件强度：作者没给 ⇒ 走 Spec 默认（崩乱合金没有细节件形态，后者用不到）
+        return MetalFamily.register(spec);
+    }
+
+    /**
      * 万坚金的规格：逐项照抄迁移前的实现，一个数都不改。
      *
      * <ul>

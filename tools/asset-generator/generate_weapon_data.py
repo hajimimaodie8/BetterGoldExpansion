@@ -71,14 +71,32 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import metal_forms as MF   # noqa: E402  「形态子集 / 轮次边界」的 Python 唯一真源（1.7 bg-n10）
+
 REPO = Path(__file__).resolve().parents[2]
 RECIPES = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "recipe"
 TAGS = REPO / "src" / "main" / "resources" / "data" / "minecraft" / "tags" / "item" / "enchantable"
 
 METALS = ["sturdygold", "flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
           # 1.6（bg-16）：两套新金属（五类武器的锻造配方 + 附魔类别标签 + mut 变体一起生成）
-          "thornsgold", "echogold"]
+          "thornsgold", "echogold",
+          # 1.7（bg-n10 轮1 后半）：两套新族。
+          #   ⚠ **附魔类别标签（enchantable/*）本轮就要给它们补上** —— 1.21 的附魔台
+          #     `stack.is(definition.supportedItems)` 全是物品标签，武器不进这些标签
+          #     = 附魔台一个选项都不给，而且**不报错**（AGENTS 红线 3）。与"配方做不做"无关。
+          #   ⚠ **锻造升级配方本轮不给它们做**（见 SMITHING_METALS 的过滤）：
+          #     chaosgold 没有 `chaosgold_upgrade_template`（zip 无该贴图，歧义 ㉑ 未裁）；
+          #     chaosalloy 的器具/甲胄属轮7。
+          "chaosgold", "chaosalloy"]
 WEAPONS = ["mace", "bow", "crossbow", "trident", "shield"]
+
+# 本轮要产「锻造升级配方（自产胚底 / MUT 两份）」的族：
+#   ① 必须有 `upgrade_template` 这个形态（没有模板 = 配方里 template 字段指向不存在的物品）；
+#   ② 本轮配方类别必须含 `gear`（轮次边界，见 metal_forms.RECIPE_SCOPE）。
+# 过滤后仍是 8 套 × 5 类 = 40 条（与 bg-16 的口径逐字相同，见下面 expected_smithing）。
+SMITHING_METALS = [m for m in METALS
+                   if MF.has(m, "upgrade_template") and "gear" in MF.recipe_scope_of(m)]
 
 # 外部模组（已核实，见需求 §3.8 与附二的复现步骤）
 MUT_MODID = "mut"
@@ -230,10 +248,12 @@ def main() -> None:
             recipe = {"neoforge:conditions": [MUT_NOT_LOADED], **obj}
         write(RECIPES / f"{name}.json", j(recipe), args.apply, out)
 
-    # ---------- 5 类 × 6 金属的锻造升级：两份条件配方并存 ----------
+    # ---------- 5 类 × N 金属的锻造升级：两份条件配方并存 ----------
     #   smithing_<金属>_<武器>.json      base = 自产胚底          + not(mod_loaded(mut))
     #   smithing_mut_<金属>_<武器>.json  base = mut:golden_<武器> + mod_loaded(mut)
-    for metal in METALS:
+    # ⚠ 1.7：循环变量从 `METALS` 换成 `SMITHING_METALS`（= 有模板形态且本轮含 gear 类别的族）。
+    #   旧口径原文：`for metal in METALS:`
+    for metal in SMITHING_METALS:
         for weapon in WEAPONS:
             blank_obj = {
                 "type": "minecraft:smithing_transform",
@@ -318,11 +338,12 @@ def main() -> None:
     # 4. 锻造升级：两份条件配方都要对（同 (金属, 武器) 两条 id 必须不同）
     # ⚠ bg-16：这条不变量**必须由列表现算**，不许写死 30 —— 1.6 加了两套金属（6 → 8 套），
     #   写死 30 会让生成器自己在"新增一套金属"时报错（正是 AGENTS 红线 2「生成器不等于全覆盖」的形态）。
-    expected_smithing = len(METALS) * len(WEAPONS)
+    expected_smithing = len(SMITHING_METALS) * len(WEAPONS)
     if expected_smithing != 40:
-        problems.append(f"锻造升级配方不是 {len(WEAPONS)} 类 × {len(METALS)} 金属 = "
-                        f"{len(WEAPONS) * len(METALS)} 条（bg-16 起应为 8 套 × 5 类 = 40 条）")
-    for metal in METALS:
+        problems.append(f"锻造升级配方不是 {len(WEAPONS)} 类 × {len(SMITHING_METALS)} 金属 = "
+                        f"{len(WEAPONS) * len(SMITHING_METALS)} 条（bg-16 起应为 8 套 × 5 类 = 40 条；"
+                        f"1.7 两族按形态/轮次过滤后仍是 8 套）")
+    for metal in SMITHING_METALS:
         for weapon in WEAPONS:
             pairs = [
                 (RECIPES / f"smithing_{metal}_{weapon}.json",
@@ -388,8 +409,9 @@ def main() -> None:
     mode = "检测到 mut 才隐藏" if HIDE_BLANKS_WHEN_MUT_LOADED else "无条件可见"
     print(f"{'已写入' if args.apply else '演练（未写入）'}: {len(out)} 项"
           f"（{len(BASE_RECIPES)} 条胚底工作台配方 + "
-          f"{len(METALS) * len(WEAPONS) * 2} 条锻造升级（自产胚底 / MUT 各 30）+ "
-          f"{len(ENCHANTABLE_TAGS)} 附魔标签；口径 = {mode}）")
+          f"{len(SMITHING_METALS) * len(WEAPONS) * 2} 条锻造升级（自产胚底 / MUT 各 "
+          f"{len(SMITHING_METALS) * len(WEAPONS)}）+ "
+          f"{len(ENCHANTABLE_TAGS)} 附魔标签 × {len(METALS)} 套金属；口径 = {mode}）")
     if HIDE_BLANKS_WHEN_MUT_LOADED:
         print("没装 mut：胚底 5 条工作台配方 + 30 条 smithing_<金属>_<武器> 加载；"
               "smithing_mut_* 那 30 条不加载（正常）")

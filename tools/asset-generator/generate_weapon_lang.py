@@ -38,6 +38,10 @@ METALS = [
     # 1.6（bg-16）：两套新金属（五类武器的语言键在这里生成，物品/方块那些在 generate_metal_data.py）
     ("thornsgold", "树棘金", "Thornsgold"),
     ("echogold", "幽咆金", "Echogold"),
+    # 1.7（bg-n10 轮1 后半）：两套新族。武器/盾牌照常注册 ⇒ 它们的语言键**必须**有
+    # （缺了就是裸键名；`validate_metal_data.py` 按 ALL_METALS × WEAPONS 检查）。
+    ("chaosgold", "混沌金", "Chaosgold"),
+    ("chaosalloy", "崩乱合金", "Chaosalloy"),
 ]
 
 # 武器后缀 -> (中文名, 英文名)

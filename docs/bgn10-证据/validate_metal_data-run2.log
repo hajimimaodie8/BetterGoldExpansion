@@ -1,0 +1,40 @@
+﻿������Լ� 379 ����10 �׽����ȫ����Ʒ�뷽�� + 5 ���ߵף�
+ȱ����: 0 []
+ȱӢ��: 0 []
+ȱս��Ʒ��: 0 []������ 89 �� = ���彨����̬��֮�ͣ�
+С����ǩȱ��Ա: 4 ['knives.json <- bettergold:chaosgold_knife', 'knives.json <- bettergold:chaosalloy_knife', 'knife.json <- bettergold:chaosgold_knife', 'knife.json <- bettergold:chaosalloy_knife']
+������ħ��ǩȱ��Ա/�����ߵ�: 0 []
+bg-15w �����֣�tooltip �� + ˫�������䷽ + �ߵ������ɼ�������: 0 []
+װ������˳�򣨡�9.1 ���� ��8.1������: 0 []
+��Ӿ�ٶ� SWIM_SPEED����8.3 �¿ھ�������: 0 []
+bg-15w ��� ׷���֢� ����ϼ�: 0 []
+���׽����ǩһ���ԣ�34 ����ǩ �� 10 �׽��������: 6 ["farmersdelight/tags/item/tools/knives.json <- chaosgold ȱ ['bettergold:chaosgold_knife']", "farmersdelight/tags/item/tools/knives.json <- chaosalloy ȱ ['bettergold:chaosalloy_knife']", "farmersdelight/tags/item/tools/knives.json ���׽���ȱʧ����һ�� {'sturdygold': 0, 'flamegold': 0, 'voodoogold': 0, 'thundergold': 0, 'indigoseagold': 0, 'illusiongold': 0, 'thornsgold': 0, 'echogold': 0, 'chaosgold': 1, 'chaosalloy': 1}", "c/tags/item/tools/knife.json <- chaosgold ȱ ['bettergold:chaosgold_knife']", "c/tags/item/tools/knife.json <- chaosalloy ȱ ['bettergold:chaosalloy_knife']", "c/tags/item/tools/knife.json ���׽���ȱʧ����һ�� {'sturdygold': 0, 'flamegold': 0, 'voodoogold': 0, 'thundergold': 0, 'indigoseagold': 0, 'illusiongold': 0, 'thornsgold': 0, 'echogold': 0, 'chaosgold': 1, 'chaosalloy': 1}"]
+�ű������ǩ #minecraft:beacon_base_blocks ����: 0 []
+  ������ 30 �� = ���׽��� �� 3 + 2 ����ϵ��ʵ����Ч��Ա 30 ����
+��9.2 �ظ�ԭ���䷽�����׸�һ�� + ���� legacy ������ʧ������: 1 ['ֻ��鵽 8 ���Զ���ԭ���䷽������ 8��= ������ raw ��̬������������ת�ػ���']
+��9.3 �庣��������ˮ���ھ�ͷ�����: 0 []
+bg-15w ��� ׷���֢� ����ϼ�: 1 ['ֻ��鵽 8 ���Զ���ԭ���䷽������ 8��= ������ raw ��̬������������ת�ػ���']
+[bgfix8-anti-vacuum] ǰ���ļ������ԣ��������=True / Config.java=True / �ֲ� golden_knowledge.json(zh,en)=True,True��ȱ 0 �������� = 0��
+bgfinal3 �����ö����庣���ĵ��ھ� / �ֲ�����һ�� / ����ܲ� placed_block������: 0 []
+bg-16 ���������������� / ��������ң�����: 0 []
+bg-book �������ֲ�����: 0 []���ֲ� 20 ��Ŀ / 192 ҳ / 184 ���䷽���ã�
+bg-book ���� ׷���֣�������ҳ��ȫ������: 0 []������ 32 ҳ / 16 ���䷽���� / 115 ��ͼ�����ã�
+bg-append ׷���֣��ֲ��ߴ����� / ������Ч / ���ú��� / ��õ��ԣ�����: 0 []
+bg-fix 1.6 ������������: 0 []
+bg-fix4 ���������Ŷ����ɾ� / ˳����Դ����ͬ�� / ��3 ��1ҳ��ԭ / ����ҳ 11 �� / ����ҳ˳�����������: 0 []����3 10 ҳ / ����ҳ��Ļ 8/8 / ͼ������ 115 ����
+bg-fix5�������� 8 ���ߴ��������̶� / �ʺ��� = ������ / �崦ͬ������: 0 []�����������ڵ㺢�� 9 �� / �����ӳ�� 8 �壩
+bg-final 1.6 ��β�������������� / �ɾ�Ӣ�� / ��ȼ 1 ������ȼ������: 0 []
+bg-fix2 ����δ��Ч������ɫ��ȡ֤ / �������� / ���� / ��Ƿ� / ��ȼ���� / �ɾͣ�����: 0 []
+bg-book ��� ׷���֣���װ����ǿ����9 �� / ������ / �׶����������ж�������: 0 []��9 �� 86 ҳ / �������� 112 �� / �ߵ����� 5 ����
+bg-book ��� ׷���֣���������Ŷ���3 �� / ��9.7 ���͵�ת�� / ������ռλ������: 0 []��3 �� 20 ҳ / �䷽���� 11 �� / ͼ������ 19 ����
+bg-fix3 ���������������о� / ���µ� / �ֲ�ɾ���� / root �Ļ�� / �Ű� / ��ǩ���ƣ�����: 0 []
+bg-book ��ʮ ׷���֣�����ӵ�ʢ�硹5 �� / �����Ž��� / ���������߲�������: 0 []��5 �� 54 ҳ / �䷽���� 40 �� / ͼ������ 15 ����
+bg-fix4 ���������Ŷ����ɾ� / ˳����Դ����ͬ�� / ��3 ��1ҳ��ԭ / ����ҳ 11 �� / ����ҳ˳�����������: 0 []����3 10 ҳ / ����ҳ��Ļ 8/8 / ͼ������ 115 ����
+bg-fix7������ҳ���Ϸ���ǰ�벿�����ţ�����: 0 []��ǰ׺ 21 �� / ���� 61 �� / ����ǰ׺ 21 �
+[bg-data-anti-vacuum] ʵ�ʼ���� 379 ����Լ���+ 1819 �� JSON ���ɨ���ȱʧ 0 ����������� > 0��
+[bgfix7-anti-vacuum] ��������ֵ���գ����� bgfix7-creative-material-baseline.txt=True / ������ bgfix7-creative-material-prefix-order.txt=True��ȱʧ 0 �������� = 0��
+bgfix8��������ʾ�İ� + �ֲ���ҳ��Ļ/���ģ�����: 0 []��������Ŀ���˶� 14 �� / ���뷶Χ 16/16 / ��ҳ title='"���"װ������������ģ��' / ��ҳ���� 76 �֣�
+bgfix9����õ��� �� ��Ⱦ��������: 0 []�������� = ǡ�ý�õ��� 1 �� + DEFAULT ���䣻��Ⱦ���� TRUE �ع鱣���`#minecraft:dirt` �������� 0 ����
+bgfix11��en ����Ӣ�ģ�knowledge_1_summary ������ �� ��Ӣ�ģ�����: 0 []���ü� en 294 �� / zh 104 �� / δ�䶯�Ӽ� 715 �� / �Ӽ� SHA256 68a5441020cb829d / en 7A7156E8 �� 07AA2FA0��
+bgfix10�������滻 zh ? en ͬ����6 ��ֵ / 20 ɾ�� / ����һ�£�����: 0 []��en 795 �� / zh 795 �� / δ�䶯�Ӽ� 715 �� / �Ӽ� SHA256 68a5441020cb829d��en ��ǰ B39CF069 �� �ĺ� 7A7156E8��
+[bg-data-fail] ����ϼ� 11 ������Լ��0 �� / 1 ������ / 2 ǰ�û���

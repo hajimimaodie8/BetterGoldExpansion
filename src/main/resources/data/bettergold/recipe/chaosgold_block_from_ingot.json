@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "key": {
+    "I": { "item": "bettergold:chaosgold_ingot" }
+  },
+  "result": {
+    "id": "bettergold:chaosgold_block",
+    "count": 1
+  }
+}

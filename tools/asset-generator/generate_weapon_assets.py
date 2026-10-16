@@ -65,6 +65,15 @@ METALS = {
     # 下面的 tex_any(...) 两种布局都会试，第一个命中的胜出 ⇒ 老包与新包都能从零重建。
     "树棘金": "thornsgold",
     "幽咆金": "echogold",
+    # 1.7（bg-n10 轮1 后半 / 轮2）：两套新族。素材 = `更有用的金 新约10.zip`，
+    # 布局仍是「每套金属一个目录」（`混沌金/混沌金重锤.png` …）⇒ 新约9 那一路候选直接命中。
+    # ⚠ 本轮的**原始 zip 一个字节都不许动**（立档 §0.2.1）⇒ 走 `--from-dir` 读归档副本。
+    # 注意 新约10 的编号比 新约9 更靠前一位（`弓1` = 本体、`弓2..4` = 拉弓帧；`弩1` = 本体、
+    # `弩2..4` = 蓄力帧、`弩5` = 箭、`弩6` = 烟花；三叉戟物品图标叫 `三叉戟 物品`）——
+    # 本脚本的候选表命中的是"帧"那一批，**本体那几张**（弓/弩/三叉戟物品图标）走
+    # `tex_any` 的"仓库里已有就保留"那条路，不会误报缺失（见下方 tex_any 的注释）。
+    "混沌金": "chaosgold",
+    "崩乱合金": "chaosalloy",
 }
 
 # 胚底 id 后缀（物品 id = golden_<武器>_blank）
@@ -109,6 +118,17 @@ def read_zip(zip_path: Path) -> dict[str, bytes]:
         for info in z.infolist():
             if info.filename.lower().endswith(".png"):
                 out[decode_name(info)] = z.read(info)
+    return out
+
+
+def read_dir(root: Path) -> dict[str, bytes]:
+    """
+    读**已解压的归档副本**（1.7 bg-n10 轮1 后半新增；与 `--zip` 的条目名布局逐字一致：
+    `<中文名>/<文件名>.png`）。⚠ 只读 —— 归档目录一个字节都不许写（立档 §0.2.1）。
+    """
+    out: dict[str, bytes] = {}
+    for p in sorted(root.rglob("*.png")):
+        out[p.relative_to(root).as_posix()] = p.read_bytes()
     return out
 
 
@@ -322,14 +342,22 @@ def blank_model(blank_id: str) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--zip", required=True)
+    src = ap.add_mutually_exclusive_group(required=True)
+    src.add_argument("--zip", help="素材压缩包路径（**只读**打开；原始 zip 绝不许改）")
+    src.add_argument("--from-dir", help="已解压的素材目录（1.7 bg-n10 起；只读）")
     ap.add_argument("--apply", action="store_true")
     args = ap.parse_args()
 
-    zip_path = Path(args.zip)
-    if not zip_path.is_file():
-        fail(f"找不到压缩包 {zip_path}")
-    textures = read_zip(zip_path)
+    if args.zip:
+        zip_path = Path(args.zip)
+        if not zip_path.is_file():
+            fail(f"找不到压缩包 {zip_path}")
+        textures = read_zip(zip_path)
+    else:
+        root = Path(args.from_dir)
+        if not root.is_dir():
+            fail(f"找不到素材目录 {root}")
+        textures = read_dir(root)
 
     def write(rel: str, data: bytes | str) -> None:
         written.append(rel)
@@ -394,7 +422,15 @@ def main() -> None:
         tex_any([f"弩/{cn}弩4.png", f"{cn}/{cn}弩5.png"], f"{TEX_ITEM}/{wid}_crossbow_arrow.png", (16, 16))
         tex_any([f"弩/{cn}弩5.png", f"{cn}/{cn}弩6.png"], f"{TEX_ITEM}/{wid}_crossbow_firework.png", (16, 16))
 
-        tex_any([f"三叉戟/{cn}三叉戟.png", f"{cn}/{cn}三叉戟.png"], f"{TEX_ITEM}/{wid}_trident.png", (16, 16))
+        # ⚠ 候选顺序有讲究（1.7 bg-n10 轮1 后半）：新约10 的三叉戟**物品图标**叫
+        #   `混沌金三叉戟 物品.png`，而**同目录下**还有一张同名的 `混沌金三叉戟.png`（32×32 实体）。
+        #   若把后者排在前面，tex() 会先命中它、再因"尺寸不符 32×32 ≠ 16×16"直接放弃
+        #   （`return None`）⇒ 物品图标只能靠"仓库里已有就保留"兜住。
+        #   把**带「物品」的那个候选放最前**，新包就能正面命中；老包（新约8/9 没有这种写法）
+        #   照旧落到后面两条候选上 ⇒ 三只包都能从零重建。
+        tex_any([f"{cn}/{cn}三叉戟 物品.png", f"三叉戟/{cn}三叉戟 物品.png",
+                 f"三叉戟/{cn}三叉戟.png", f"{cn}/{cn}三叉戟.png"],
+                f"{TEX_ITEM}/{wid}_trident.png", (16, 16))
         tex_any([f"三叉戟/{cn}三叉戟2.png", f"{cn}/{cn}三叉戟2.png"], f"{TEX_ENTITY}/trident_{wid}.png", (32, 32))
 
         tex_any([f"盾牌/{cn}盾牌.png", f"{cn}/{cn}盾牌.png"], f"{TEX_ENTITY}/shield_{wid}.png", (64, 64))

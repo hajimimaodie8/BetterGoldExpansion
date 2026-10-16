@@ -24,6 +24,9 @@ import sys
 import zipfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import metal_forms as MF   # noqa: E402  「形态子集」的 Python 唯一真源（1.7 bg-n10）
+
 REPO = Path(__file__).resolve().parents[2]
 ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
 BASE_METAL = "sturdygold"  # 模板来源
@@ -38,6 +41,12 @@ METALS = {
     # 1.6（bg-16）：两套新金属。素材 = `更有用的金 新约9.zip`，仍然是「每套金属一个顶级文件夹」的布局。
     "thornsgold":   {"cn": "树棘金", "folder": "树棘金"},
     "echogold":     {"cn": "幽咆金", "folder": "幽咆金"},
+    # 1.7（bg-n10 轮1 后半 / 轮2）：素材 = `更有用的金 新约10.zip`（归档副本在
+    # `docs/新约10-素材清单/新约10/<中文名>/`）。⚠ 原始 zip 一个字节都不许动（立档 §0.2.1）
+    # ⇒ 本轮用 `--from-dir` 读**归档副本**，连打开都不打开那个 zip。
+    #   形态子集见 metal_forms.py：chaosgold 缺 raw/模板；chaosalloy 只有锭/块/模板。
+    "chaosgold":    {"cn": "混沌金", "folder": "混沌金"},
+    "chaosalloy":   {"cn": "崩乱合金", "folder": "崩乱合金"},
 }
 
 # 新约9 起，五类武器的贴图与「三叉戟实体 32×32 / 盾牌实体 64×64」放在**各自的金属文件夹**里
@@ -48,6 +57,10 @@ WEAPON_SUFFIXES = {
     "重锤", "弓", "弓1", "弓2", "弓3", "弓4",
     "弩", "弩1", "弩2", "弩3", "弩4", "弩5", "弩6",
     "三叉戟", "三叉戟2", "盾牌",
+    # 1.7（bg-n10 轮1 后半）：新约10 的三叉戟**物品图标**带一个空格（`混沌金三叉戟 物品.png`），
+    # 与 `三叉戟`（32×32 实体贴图）不是同一张 ⇒ 必须也列进"由 generate_weapon_assets 负责"的
+    # 跳过清单，否则会被报成"未识别的文件"（旧两批素材没有这种写法，故 1.4/1.6 都没列）。
+    "三叉戟 物品",
 }
 
 # 中文名后缀 -> 目标路径(相对 assets/bettergold)。{id} 会替换成英文 id
@@ -109,6 +122,15 @@ SPECIAL_TEXTURES = {
                      "寄生": "textures/mob_effect/parasite.png"},
     "echogold":     {"集束回响碎片": "textures/item/bundled_echo_shard.png",
                      "音咆": "textures/mob_effect/echo_roar.png"},
+    # 1.7（bg-n10 轮1 后半 / 轮2）：这批的「专属」不是药材而是**尚未注册的后续轮次物品**
+    # （混沌金币已注册 = chaosgold 的 coreItem；禁果/附魔书属轮4，两失衡图标属轮7）
+    # ⇒ 映射照样登记（贴图已在 src 里，逐个核对过字节一致），**物品注册**由各自轮次做。
+    "chaosgold":    {"混沌金币": "textures/item/chaos_coin.png",
+                     "混沌金禁果": "textures/item/chaosgold_forbidden_fruit.png",
+                     "混沌金附魔书": "textures/item/chaosgold_enchanting_book.png"},
+    "chaosalloy":   {"崩乱禁果": "textures/item/chaosalloy_forbidden_fruit.png",
+                     "力量失衡": "textures/mob_effect/power_imbalance.png",
+                     "抗性失衡": "textures/mob_effect/resistance_imbalance.png"},
 }
 
 # 纹饰色卡目录
@@ -149,6 +171,57 @@ ITEM_MODEL_TEMPLATES = [
     "{m}_upgrade_template",
 ]
 
+# --------------------------------------------------------------------------------------
+# 1.7（bg-n10 轮1 后半）：**形态子集**（metal_forms.py 的 Python 唯一真源）
+# --------------------------------------------------------------------------------------
+# 没声明某形态的族**不产出**该形态的模板/贴图 —— 否则会留下引用不存在物品的
+# blockstate / model / 战利品表（客户端紫黑格、标签"必需条目缺失"整张被丢弃）。
+# 下面这张表把"模板名 / 贴图后缀"映射回形态；**表里没有的 = 器具 / 武器 / 盔甲**
+# （它们恒定注册，不受形态子集影响）。
+TEMPLATE_FORM = {
+    "raw": "raw", "ingot": "ingot", "nugget": "nugget", "block": "block",
+    "bricks": "bricks",
+    "bricks_inner_stairs": "bricks_stairs", "bricks_outer_stairs": "bricks_stairs",
+    "bricks_stairs": "bricks_stairs",
+    "bricks_slab": "bricks_slab", "bricks_slab_double": "bricks_slab", "bricks_slab_top": "bricks_slab",
+    "bricks_wall_inventory": "bricks_wall", "bricks_wall_post": "bricks_wall",
+    "bricks_wall_side": "bricks_wall", "bricks_wall_side_tall": "bricks_wall",
+    # ⚠ 下面这 4 个**裸名**是 1.7 实测漏掉的（`{m}_bars` / `{m}_door` / `{m}_trapdoor` /
+    #   `{m}_bricks_wall` 在 blockstate 与 item 模板里都是裸名，不带 `_side` / `_bottom` 后缀）——
+    #   漏了它们 ⇒ `template_form()` 返回 None ⇒ 当成"武器/盔甲、恒产出"⇒ 崩乱合金多出 4 件细节件。
+    #   本仓关卡 `[bgn10-forms-assets]` 正是在做完之后把这条抓出来的（第二形态的"生成器不等于全覆盖"）。
+    "bricks_wall": "bricks_wall",
+    "bars": "bars",
+    "door": "door",
+    "trapdoor": "trapdoor",
+    "pillar": "pillar",
+    "bars_cap": "bars", "bars_cap_alt": "bars", "bars_post": "bars", "bars_post_ends": "bars",
+    "bars_side": "bars", "bars_side_alt": "bars",
+    "chain": "chain",
+    "door_bottom_left": "door", "door_bottom_left_open": "door", "door_bottom_right": "door",
+    "door_bottom_right_open": "door", "door_top_left": "door", "door_top_left_open": "door",
+    "door_top_right": "door", "door_top_right_open": "door",
+    "trapdoor_bottom": "trapdoor", "trapdoor_open": "trapdoor", "trapdoor_top": "trapdoor",
+    "lantern": "lantern", "lantern_hanging": "lantern",
+    "upgrade_template": "upgrade_template",
+}
+
+# SUFFIX_MAP 的键 → 形态（**只在贴图侧**用；表里没有的键 = 武器/盔甲/专属材料，恒放行）
+SUFFIX_FORM = {
+    "锭": "ingot", "粒": "nugget", "原料": "raw", "块": "block",
+    "砖块": "bricks", "柱": "pillar",
+    "门 上": "door", "门 下": "door", "门 物品": "door", "门物品": "door",
+    "活板门": "trapdoor", "栏杆": "bars", "链": "chain", "链 物品": "chain",
+    "灯笼": "lantern", "灯笼 物品": "lantern",
+    "升级锻造模板": "upgrade_template",
+}
+
+
+def template_form(tpl: str) -> str | None:
+    """模板串（含 {m} / raw_{m}）→ 它所属的形态；None = 不属于任何形态（武器 / 盔甲）"""
+    name = tpl.replace("raw_{m}", "raw").replace("{m}_", "").replace("{m}", "")
+    return TEMPLATE_FORM.get(name)
+
 
 def fail(msg: str) -> None:
     print(f"[错误] {msg}")
@@ -165,6 +238,19 @@ def read_zip_textures(zip_path: Path) -> dict[str, bytes]:
     return out
 
 
+def read_dir_textures(root: Path) -> dict[str, bytes]:
+    """
+    把**已解压的归档副本**读进内存（1.7 bg-n10 轮1 后半新增）。
+
+    条目名 = 相对路径（`<中文名>/<文件名>.png`），与 zip 布局逐字一致 ⇒ 下游代码不用改。
+    ⚠ 只读：归档目录一个字节都不许写（立档 §0.2.1「归档副本只增不改」）。
+    """
+    out: dict[str, bytes] = {}
+    for p in sorted(root.rglob("*.png")):
+        out[p.relative_to(root).as_posix()] = p.read_bytes()
+    return out
+
+
 def write(path: Path, data: bytes | str, apply: bool, log: list[str], rel: Path) -> None:
     log.append(str(rel).replace("\\", "/"))
     if not apply:
@@ -178,15 +264,22 @@ def write(path: Path, data: bytes | str, apply: bool, log: list[str], rel: Path)
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--zip", required=True, help="素材压缩包路径")
+    src = ap.add_mutually_exclusive_group(required=True)
+    src.add_argument("--zip", help="素材压缩包路径（**只读**打开；原始 zip 绝不许改）")
+    src.add_argument("--from-dir", help="已解压的素材目录（1.7 bg-n10 起；只读）")
     ap.add_argument("--apply", action="store_true", help="真正写入（不加则只演练）")
     args = ap.parse_args()
 
-    zip_path = Path(args.zip)
-    if not zip_path.is_file():
-        fail(f"找不到压缩包 {zip_path}")
-
-    textures = read_zip_textures(zip_path)
+    if args.zip:
+        zip_path = Path(args.zip)
+        if not zip_path.is_file():
+            fail(f"找不到压缩包 {zip_path}")
+        textures = read_zip_textures(zip_path)
+    else:
+        root = Path(args.from_dir)
+        if not root.is_dir():
+            fail(f"找不到素材目录 {root}")
+        textures = read_dir_textures(root)
     written: list[str] = []
     missing: list[str] = []
     unknown: list[str] = []
@@ -209,6 +302,10 @@ def main() -> None:
                 # 五类武器（含三叉戟实体 / 盾牌实体）：由 generate_weapon_assets.py 负责，见上方常量注释
                 continue
             elif suffix in SUFFIX_MAP:
+                # 形态子集：该族没声明的形态**不落贴图**（表里没有的后缀 = 武器/盔甲，恒放行）
+                form = SUFFIX_FORM.get(suffix)
+                if form is not None and not MF.has(metal_id, form):
+                    continue
                 rel = Path(SUFFIX_MAP[suffix].format(id=metal_id))
             else:
                 unknown.append(f"{folder}/{name}")
@@ -247,6 +344,10 @@ def main() -> None:
             ("models/item", ITEM_MODEL_TEMPLATES),
         ):
             for tpl in templates:
+                # 形态子集（1.7 bg-n10 轮1 后半）：没声明的形态不产出模板（None = 武器/盔甲，恒产出）
+                tpl_form = template_form(tpl)
+                if tpl_form is not None and not MF.has(metal_id, tpl_form):
+                    continue
                 src_rel = Path(bucket) / (tpl.format(m=BASE_METAL) + ".json")
                 dst_rel = Path(bucket) / (tpl.format(m=metal_id) + ".json")
                 src = ASSETS / src_rel

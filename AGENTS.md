@@ -123,6 +123,15 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
 `[bgfinal3-indigosea-*]`）。
 ⇒ ★ **本项目的贴图授权白名单现在是「两张文件 / 三次授权」**：`indigoseagold.png`（第一、三次）、
 `golden_trident_blank.png`（第二次）。**除这两张之外一律不许改、也不许自己画**。）
+（**第四次授权 = 「新增」不是「改」（`bg-n10`，作者 2026-10-16 裁定「按现有贴图标准来」）**：
+把作者 zip `E:\mc\mc资料\更有用的金 新约10.zip` 与 `E:\mc\mc资料\金钱妖.zip` 里的**新素材**
+（混沌金 44 + 崩乱合金 33 张）落进 `src`，命名为工作值 `chaosgold` / `chaosalloy`；
+**来源 = 作者 zip + 该作者原话**。⚠ **与前三张的区别**：这是**新增文件**（`git status` 里是 `??`），
+**不是改既有贴图**（`M` 计数实测 = **0**）⇒ **白名单的两个文件名与三次授权一个字节都没动**。
+★★ **同时立下的硬红线（作者原话「你不要动原文件，你不要改变原来的压缩包哈」）**：
+**绝不修改 / 重打包 / 改名 / 移动原始 zip 与 zip 内任何文件**；只许只读解压到 `docs/` 归档，
+归档副本也只增不改。见 `docs/1.7-混沌金与崩乱合金-需求立档.md` §0.2.1 / §10.2
+与 `mod_experience\ex\06-贴图模型素材.md` §10.11 规则 9。）
 
 **7）mixin 基础设施（`bg-15w` 续工轮起才有）**
 - 配置：`src/main/resources/bettergold.mixins.json`（`client: ["ItemRendererTridentMixin"]`）+
@@ -198,6 +207,32 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
 - 细节（读 jar 得到的两条事实：`custom_book_item` 是**物品栈字符串**、`ItemModBook#use` 只认堆叠上的
   `patchouli:book` 组件；配方页**每页最多 2 个**）见 `docs/1.6-规格.md` §10.1；跨项目条目见
   `mod_experience` §4 第 50 条（optional 两种口径）与 §4（Patchouli 页面/条目 API 陷阱）。
+
+**11）「形态子集」与「区间值」两个共用组件（`bg-n10` 轮1 后半，2026-10-16）**
+- **形态子集**：`material/MetalFamily.java` 的嵌套枚举 **`MetalFamily.Form`**（15 种，`Form.BUILDING_FORMS` = 11 建材、
+  `Form.REQUIRED_FORMS` = 锭/块）是**唯一真源**；各族用 `Spec.forms(...)`/`withoutForms(...)` 声明，
+  注册链按 `!has(Form.X)` 开关，**没声明的形态字段 = `null` 且不注册**，`allItems`/`allBlocks` 必须
+  **允许 null + 逐项判空**（⚠ `List.of(...)` 遇到 null 会在 filter 之前抛 NPE —— 本项目实测崩在
+  `runData` 冒烟里）。Python 镜像 = **`tools/asset-generator/metal_forms.py`**（所有生成器/校验器只许
+  `import metal_forms as MF`，**不许再写第二份清单**）；两边一致性由 `validate_metal_data.py` 的
+  `[bgn10-forms-parity]` 守着。**加族只改三处**：`metal_forms.py` + `AllMetals.java` + 各生成器的 `METALS`。
+  ⚠ **生成器按形态过滤时最容易漏"裸名"**：模板/贴图后缀有的带限定后缀（`{m}_bars_side`、`{m}_door_top`、
+  `{m}_bricks_wall_post`），有的是**裸名**（`{m}_bars`、`{m}_door`、`{m}_trapdoor`、`{m}_bricks_wall`）；
+  只映射带后缀的那几个 ⇒ 裸名返回 `None` ⇒ 被当成"武器/盔甲、恒产出"⇒ 静默多产出垃圾资产
+  （本轮实测 8 个文件）。**关卡必须双向断言**（声明了必须有 + 没声明不许有），只查"该有的有没有"抓不到它。
+- **区间值**（作者裁定 ① / ⑥a / ⑦a / ⑭：**两端乒乓** `v = (v == min ? max : min)`，值存**数据组件**，
+  触发 = 挖掘成功 + 重新手持）：唯一实现 = **`material/ChaosRange.java`**（数据组件
+  `bettergold:chaos_range_flip` + 乒乓公式 + 两个触发点）；各族只声明两端值
+  （`Spec.chaosRange(Channel, min, max)`）。`validate_metal_data.py` 的 `[bgn10-chaos-range]` 钉住
+  "公式全仓恰好 1 处 + 组件与触发点在 `bettergold.java` 注册"。
+  ⚠ 把当前值**接进**挖掘速度 / 伤害 / 减伤是轮3/轮4/轮7 的活；本轮只落机制 + 声明。
+- 记录：`docs/1.7-混沌金与崩乱合金-需求立档.md` §11（执行记录 / 未完成项）、`docs/1.6-规格.md` §32
+  （1.6 的哪些断言因此改了、旧期望留档在哪）；跨项目条目见 `mod_experience` §3.2 规则 22/23。
+- ⚠ **Windows 上改源码/复原一律走 bytes**：PowerShell 5.1 的 `Get-Content`（按 ANSI 解码）→
+  `Set-Content`/`WriteAllLines`（按 UTF-8 编码）会把**整个文件的中文注释双重编码写坏**（不可逆），
+  `.ps1` 里的中文路径也会变乱码导致备份失败。本项目实测把 `MetalFamily.java` 写坏、只能用
+  `git checkout` 还原并把 13 处改动重做一遍。**用 Python `read_bytes`/`write_bytes`/`shutil.copyfile`，
+  或用编辑器工具**；扰动/复原脚本见 `docs/bgn10-证据/脚本副本/bgn10_perturb.py`（5 用例全过 + SHA256 自证）。
 
 ## 🔧 构建与跑测
 

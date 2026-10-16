@@ -1,0 +1,10 @@
+[OK] CASE1 comment-only: validate_metal_data => exit 0（期望 0）| [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      restore: sha256_equal=True
+[OK] CASE2 dirty(Python forms != Java): validate_metal_data => exit 1（期望 1）| [bg-data-fail] 问题合计 11 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      restore: sha256_equal=True
+[OK] CASE3 missing-prereq(metal_forms.py): validate_metal_data => exit 2（期望 2）| [bg-data-crash] 关卡自身出错（未捕获异常）⇒ exit 2
+      restore: sha256_equal=True
+[OK] CASE4 dirty(beacon tag): validate_metal_data => exit 1（期望 1）| [bg-data-fail] 问题合计 4 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      restore: sha256_equal=True
+[OK] CASE5 dirty(missing blockstate): validate_metal_assets => exit 1（期望 1）| [bg-assets-fail] 问题合计 1 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      restore: sha256_equal=True

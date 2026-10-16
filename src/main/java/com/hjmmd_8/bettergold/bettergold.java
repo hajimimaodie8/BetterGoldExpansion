@@ -83,6 +83,8 @@ public class bettergold {
         com.hjmmd_8.bettergold.material.MetalBlanks.bootstrap();
         // 新约 1.4：金属相关的全局事件（巫毒结束结算等）
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.MetalEvents.class);
+        // 1.7（bg-n10 轮1 后半）：「区间值」的触发点 —— ①挖掘成功 ②重新手持（作者裁定 ① 原文）
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ChaosRange.Triggers.class);
         // Register the Deferred Register to the mod event bus so creative tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
         // Register custom recipe serializers
@@ -97,6 +99,9 @@ public class bettergold {
         com.hjmmd_8.bettergold.registry.AllEntities.ENTITY_TYPES.register(modEventBus);
         // bg-15w：数据附件（掷出的三叉戟的金属 id，需要同步到客户端供实体渲染器取贴图）
         com.hjmmd_8.bettergold.registry.AllAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        // 1.7（bg-n10 轮1 后半）：「区间值」的数据组件（作者裁定：值存数据组件）
+        // —— 规则 / 存储 / 触发点的唯一实现在 material/ChaosRange，各族只用 Spec.chaosRange 声明两端。
+        com.hjmmd_8.bettergold.material.ChaosRange.COMPONENT_TYPES.register(modEventBus);
         // 新约 1.3：易金商人的工作站点（兴趣点）与村民职业
         com.hjmmd_8.bettergold.registry.AllVillagers.POI_TYPES.register(modEventBus);
         com.hjmmd_8.bettergold.registry.AllVillagers.PROFESSIONS.register(modEventBus);

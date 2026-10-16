@@ -19,7 +19,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import metal_forms as MF   # noqa: E402  「形态子集」的 Python 唯一真源（1.7 bg-n10）
 
 REPO = Path(__file__).resolve().parents[2]
 DATA = REPO / "src" / "main" / "resources" / "data"
@@ -27,7 +31,12 @@ DATA = REPO / "src" / "main" / "resources" / "data"
 METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
           # 1.6（bg-16）：两套新金属。加这一行就自动带上 家族标签 / 工具类别 / 盔甲类别 /
           # mineable+needs_diamond_tool，以及信标基座段（那段遍历 ALL_METALS ⇒ 块/砖/柱各一条）。
-          "thornsgold", "echogold"]
+          "thornsgold", "echogold",
+          # 1.7（bg-n10 轮1 后半）：
+          #   chaosgold   混沌金   = 除 raw / upgrade_template 外的全部形态（11 建材齐全 + 粒）
+          #   chaosalloy  崩乱合金 = **只有锭 + 块 + 升级锻造模板**（作者裁定「按现有贴图标准来」）
+          # ⚠ 这两族的形态子集由 metal_forms.py 声明（唯一真源），**不在这里**写第二份。
+          "chaosgold", "chaosalloy"]
 # 万坚金（sturdygold）是本模组最早的一套金属：它的数据 / 标签是 1.3 **手写**的，不进 METALS 循环
 # （进了会在 #minecraft:mineable/pickaxe 里留下与 "#bettergold:storage_blocks" 桥接重复的条目）。
 # 但凡口径是"六套金属一致"的标签，都必须显式把万坚金算进来 —— 见下面的 BEACON_SUFFIXES。
@@ -93,8 +102,17 @@ def build_plan() -> dict[Path, list[str]]:
 
     for m in METALS:
         add(DATA / "bettergold" / "tags" / "item" / "ingots.json", [f"bettergold:{m}_ingot"])
-        add(DATA / "bettergold" / "tags" / "item" / "nuggets.json", [f"bettergold:{m}_nugget"])
-        add(DATA / "bettergold" / "tags" / "item" / "raw_materials.json", [f"bettergold:raw_{m}"])
+        # ⚠ 1.7 bg-n10 轮1 后半：粒 / 原料 / 建材都**按该族声明的形态**加。
+        #   旧口径（无条件三行，原文保留在下面）会让崩乱合金的标签引用不存在的
+        #   `bettergold:chaosalloy_nugget` / `..._bricks` ⇒ 标签"必需条目缺失"
+        #   ⇒ 整张 tag 被丢弃（TagLoader 的 error 路径，见本文件头 bg-fix3 那段注释）。
+        #   old: add(... "nuggets.json", [f"bettergold:{m}_nugget"])
+        #   old: add(... "raw_materials.json", [f"bettergold:raw_{m}"])
+        #   old: add(... "mineable/pickaxe.json", [f"bettergold:{m}_{b}" for b in BLOCKS])
+        if MF.has(m, "nugget"):
+            add(DATA / "bettergold" / "tags" / "item" / "nuggets.json", [f"bettergold:{m}_nugget"])
+        if MF.has(m, "raw"):
+            add(DATA / "bettergold" / "tags" / "item" / "raw_materials.json", [f"bettergold:raw_{m}"])
         add(DATA / "bettergold" / "tags" / "item" / "storage_blocks.json", [f"bettergold:{m}_block"])
         add(DATA / "bettergold" / "tags" / "block" / "storage_blocks.json", [f"bettergold:{m}_block"])
 
@@ -103,20 +121,23 @@ def build_plan() -> dict[Path, list[str]]:
         for tag, suffix in ARMOR.items():
             add(DATA / "minecraft" / "tags" / "item" / f"{tag}.json", [f"bettergold:{m}_{suffix}"])
 
+        building_forms = MF.building_of(m)
         add(DATA / "minecraft" / "tags" / "block" / "mineable" / "pickaxe.json",
-            [f"bettergold:{m}_{b}" for b in BLOCKS])
+            [f"bettergold:{m}_{b}" for b in building_forms])
         add(DATA / "minecraft" / "tags" / "block" / "needs_diamond_tool.json",
-            [f"bettergold:{m}_{b}" for b in BLOCKS])
-        add(DATA / "minecraft" / "tags" / "block" / "walls.json", [f"bettergold:{m}_bricks_wall"])
+            [f"bettergold:{m}_{b}" for b in building_forms])
+        if "bricks_wall" in building_forms:
+            add(DATA / "minecraft" / "tags" / "block" / "walls.json", [f"bettergold:{m}_bricks_wall"])
 
-    # 信标基座：金系两块 + 六套金属 × {块, 砖, 柱}。
+    # 信标基座：金系两块 + 各套金属 × {块, 砖, 柱}（**按该族声明的形态**取子集）。
     # ⚠ 这一段**必须**留在 METALS 循环外并遍历 ALL_METALS：
     #   ① 柱子（pillar）原先完全不在生成器里（bg-15y 的 bug 根因）；
-    #   ② 万坚金不在 METALS 里，但它同样要有块/砖/柱三件。
+    #   ② 万坚金不在 METALS 里，但它同样要有块/砖/柱三件；
+    #   ③ 1.7 起崩乱合金只有"块"⇒ 必须按 metal_forms 的声明过滤，不能硬列三件。
     add(DATA / "minecraft" / "tags" / "block" / "beacon_base_blocks.json", BEACON_NON_FAMILY)
     for m in ALL_METALS:
         add(DATA / "minecraft" / "tags" / "block" / "beacon_base_blocks.json",
-            [f"bettergold:{m}_{s}" for s in BEACON_SUFFIXES])
+            [f"bettergold:{m}_{s}" for s in BEACON_SUFFIXES if MF.has(m, s)])
     return plan
 
 

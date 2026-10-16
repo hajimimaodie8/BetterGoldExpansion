@@ -59,9 +59,17 @@ REPO = Path(__file__).resolve().parents[2]
 JAVA = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold"
 LANG = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
 
+# 「形态子集」的 **Python 唯一真源**（1.7 bg-n10 轮1 后半；Java 侧镜像 = MetalFamily.Form）
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import metal_forms as MF   # noqa: E402
+
 METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
           # 1.6（bg-16）：两套新金属 —— 关卡扫描表必须跟着加，否则新族的语言键"零检查"也全绿
-          "thornsgold", "echogold"]
+          "thornsgold", "echogold",
+          # 1.7（bg-n10 轮1 后半）：两套新族。⚠ 它们的**形态子集不同**（chaosalloy 只有锭/块/模板）
+          # ⇒ 本段所有"每族都要有 11 种建材 / 粒 / 原料 / 模板"的期望都必须走 MF.has(...) 过滤
+          #   （这正是作者裁定 §4.0 ⑪d 要的那条改动；写死清单会立刻假红）。
+          "chaosgold", "chaosalloy"]
 ITEMS = ["ingot", "nugget", "sword", "axe", "pickaxe", "shovel", "hoe", "knife", "helmet", "chestplate",
          "leggings", "boots", "upgrade_template"]
 # 1.5 武器轮（规格 12.1）：六套金属各 5 类武器（含万坚金）。
@@ -122,8 +130,16 @@ print(f"缺英文: {len(missing_en)} {missing_en[:8]}")
 
 # 顺带检查战利品表
 loot_dir = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "loot_table" / "blocks"
-missing_loot = [f"{m}_{b}" for m in METALS for b in BLOCKS if not (loot_dir / f"{m}_{b}.json").is_file()]
-print(f"缺战利品表: {len(missing_loot)} {missing_loot[:8]}")
+missing_loot = [f"{m}_{b}" for m in METALS for b in MF.loot_blocks_of(m)
+                if not (loot_dir / f"{m}_{b}.json").is_file()]
+# ⚠ 1.7（bg-n10 轮1 后半）：**旧口径原文保留** —— 原先是 `for b in BLOCKS`（每族 11 张）：
+#   `missing_loot = [f"{m}_{b}" for m in METALS for b in BLOCKS if ...]`
+#   现在按各族**声明的建材形态**取（chaosalloy 只有 `block` 一张）。
+#   反空转：期望条数必须是"各族建材形态数之和"，且必须 > 0。
+_loot_expected = sum(len(MF.loot_blocks_of(m)) for m in METALS)
+if _loot_expected <= 0:
+    missing_loot.append("[反空转] 期望的战利品表条数为 0（形态表被清空 / metal_forms 读不到）")
+print(f"缺战利品表: {len(missing_loot)} {missing_loot[:8]}（期望 {_loot_expected} 张 = 各族建材形态数之和）")
 
 # ==================== 小刀标签（决定「能不能在附魔台附魔」） ====================
 # 1.21 的附魔能力不再来自 Tier：附魔台走
@@ -519,38 +535,61 @@ SYMMETRIC_TAGS: dict[str, list[str]] = {
 }
 
 symmetric_problems: list[str] = []
+# 「某个 id 模板要求哪个形态」——形态子集外的模板**不期望**（1.7 bg-n10 轮1 后半）。
+# 表里没有的模板（锭 / 器具 / 武器 / 盔甲 / 刀 / 纹饰）恒期望（它们不参与形态子集）。
+_TEMPLATE_FORM: dict[str, str] = {"{m}_nugget": "nugget", "raw_{m}": "raw"}
+for _b in _METAL_BLOCKS:
+    _TEMPLATE_FORM["{m}_" + _b] = _b
+for _s in BEACON_SUFFIXES:
+    _TEMPLATE_FORM["{m}_" + _s] = _s
+
+
+def _template_ok(template: str, metal: str) -> bool:
+    """该模板对该族是否成立（形态子集过滤；不在表里的恒成立）"""
+    form = _TEMPLATE_FORM.get(template)
+    return form is None or MF.has(metal, form)
+
+
 for _rel, _templates in SYMMETRIC_TAGS.items():
     _members = tag_members(_rel)
     if not _members:
         symmetric_problems.append(f"{_rel} 读不到任何成员（反空转守护：文件没了 / 路径写错）")
         continue
-    # ① 六套金属逐个对照
+    # ① 每套金属逐个对照（按形态子集过滤后的期望）
     per_metal = {}
     for _m in ALL_METALS:
-        _want = {f"bettergold:{t.format(m=_m)}" for t in _templates}
+        _want = {f"bettergold:{t.format(m=_m)}" for t in _templates if _template_ok(t, _m)}
         _miss = sorted(_want - _members)
         per_metal[_m] = len(_miss)
         if _miss:
             symmetric_problems.append(f"{_rel} <- {_m} 缺 {_miss}")
-    # ② 「成员数相同」的不变量（同一模板算出来的期望数 ⇒ 等价于六套一致）
+    # ② 「成员数相同」的不变量（同一模板算出来的期望数 ⇒ 等价于多套一致）
     if len(set(per_metal.values())) != 1:
-        symmetric_problems.append(f"{_rel} 六套金属缺失数不一致 {per_metal}")
+        symmetric_problems.append(f"{_rel} 各套金属缺失数不一致 {per_metal}")
 print(f"六套金属标签一致性（{len(SYMMETRIC_TAGS)} 个标签 × {len(ALL_METALS)} 套金属）问题: "
       f"{len(symmetric_problems)} {symmetric_problems[:8]}")
 
 # 信标基座标签的显式成员表（1.4 口径：块 / 砖 / 柱 + 金系两块 gold_bricks / gold_pillar）
 beacon_problems: list[str] = []
 _beacon_members = tag_members(BEACON_TAG_REL)
-_beacon_expect = ([f"bettergold:{m}_{s}" for m in ALL_METALS for s in BEACON_SUFFIXES]
+# ⚠ 1.7（bg-n10 轮1 后半）：**旧口径原文保留** ——
+#   `_beacon_expect = ([f"bettergold:{m}_{s}" for m in ALL_METALS for s in BEACON_SUFFIXES] + BEACON_ALSO)`
+#   新口径 = **按各族声明的形态**取信标成员（chaosalloy 只有块 ⇒ 只期望 1 条；
+#   作者裁定 §4.0 ⑪d：「按族声明的形态集合」，不是放宽成"有几个算几个"）。
+_beacon_expect = ([f"bettergold:{m}_{s}" for m in ALL_METALS
+                   for s in BEACON_SUFFIXES if MF.has(m, s)]
                   + BEACON_ALSO)
 for _id in _beacon_expect:
     if _id not in _beacon_members:
         beacon_problems.append(f"#minecraft:beacon_base_blocks 里没有 {_id}（当不了信标金字塔基座）")
-# 六套金属必须**各 3 条**（块 / 砖 / 柱）—— 任何一套少一条都要红，而不是只看"总数 20"
+# 每套金属必须**至少「块」+ 它声明的砖/柱**（块是必备形态 ⇒ 下限恒 1）——
+# 少一条都要红，而不是只看"总数"。
 for _m in ALL_METALS:
-    _n = sum(1 for s in BEACON_SUFFIXES if f"bettergold:{_m}_{s}" in _beacon_members)
-    if _n != len(BEACON_SUFFIXES):
-        beacon_problems.append(f"{_m} 在信标基座标签里有 {_n} 条，期望 {len(BEACON_SUFFIXES)} 条（块/砖/柱）")
+    _want_s = [s for s in BEACON_SUFFIXES if MF.has(_m, s)]
+    _n = sum(1 for s in _want_s if f"bettergold:{_m}_{s}" in _beacon_members)
+    if _n != len(_want_s):
+        beacon_problems.append(f"{_m} 在信标基座标签里有 {_n} 条，期望 {len(_want_s)} 条"
+                               f"（按族声明的形态：{_want_s}）")
 
 # 生成器侧守卫：修的是**生成器**，产物 JSON 只是它的输出。
 # 若有人把生成器改回去（去掉 pillar / 不再遍历 ALL_METALS / 丢掉金系两块），下次重跑就会把 bug 带回来。
@@ -589,7 +628,12 @@ RAW_EXCHANGE = {
     "echogold": "bettergold:bundled_echo_shard",
 }
 checked_raw = 0
-for _m in ALL_METALS:
+# ⚠ 1.7（bg-n10 轮1 后半）：**旧口径原文保留** —— 原先是 `for _m in ALL_METALS:`，
+#   而 chaosgold / chaosalloy **没有 raw 这个形态**（zip 里没有「混沌金原料」贴图，
+#   歧义 ⑱c 未裁 ⇒ 工作值 = 跳过）⇒ 期望集合必须按形态过滤，否则会把"没有 raw"
+#   读成"缺配方"（假红）。过滤后仍是"**有 raw 的族，每一族都必须有且只有这一张**"。
+_raw_metals = [m for m in ALL_METALS if MF.has(m, "raw")]
+for _m in _raw_metals:
     _p = DATA_ROOT / "bettergold" / "recipe" / f"raw_{_m}.json"
     if not _p.is_file():
         bg9_problems.append(f"缺自定义原料配方 raw_{_m}.json（六种金属都必须有且只有它这一张）")
@@ -605,8 +649,10 @@ for _m in ALL_METALS:
     _ex = _obj.get("exchange", "bettergold:golden_cowrie")
     if _ex != RAW_EXCHANGE[_m]:
         bg9_problems.append(f"raw_{_m}.json 的 exchange 不是 {RAW_EXCHANGE[_m]}（实际 {_ex}）")
-if checked_raw != len(ALL_METALS):
-    bg9_problems.append(f"只检查到 {checked_raw} 张自定义原料配方，期望 {len(ALL_METALS)}（反空转守护）")
+if checked_raw != len(_raw_metals):
+    # ⚠ 1.7：条件也跟着换成 `_raw_metals`（旧口径 `!= len(ALL_METALS)`：当时两者同长，现在不是）
+    bg9_problems.append(f"只检查到 {checked_raw} 张自定义原料配方，期望 {len(_raw_metals)}"
+                        f"（= 声明了 raw 形态的族数；反空转守护）")
 
 # ★ 负向：1.4 那三张 shapeless 必须整块消失（文件层面；配方 id 由运行时探针复算）
 for _legacy in LEGACY_RAW_RECIPES:
@@ -1020,12 +1066,21 @@ for _field in ("contactCactusThorns", "contactSonicBoom", "parasiteOnAttack", "e
 # ⚠ 八族的 coreItem 符号**从 AllMetals.java 现算**，不写死清单 —— 写死清单 = 加族时静默漏（§2.2）。
 _all_metals_code = strip_comments(_all_metals_src)
 _core_items = re.findall(r"\.coreItem\(\(\)\s*->\s*([A-Za-z0-9_.]+)\.get\(\)\)", _all_metals_code)
-if len(_core_items) != 8:
+# ⚠ 1.7（bg-n10 轮1 后半）：**旧期望原文保留** —— 原来是 `!= 8`（"八族各一个 coreItem"）。
+#   新口径：coreItem 的数量 = 声明了 coreItem 的族数，**不是**族数 ——
+#   混沌金有（= 混沌金币 `chaos_coin`，立档 §2.2 可执行口径第 2 条的默认），
+#   崩乱合金**没有**（它没有 raw 链，锭是"下界合金锭 + 混沌金块 + 高精炼金油"合出来的）
+#   ⇒ 现在是 9 个（既有 8 族 + chaosgold）。
+#   old: if len(_core_items) != 8:
+_CORE_ITEM_MIN = 9
+if len(_core_items) != _CORE_ITEM_MIN:
     _bg16_bad("bg16-cactus-coreitem-anti-vacuum",
-              f"AllMetals.java 里现算出 {len(_core_items)} 个 `.coreItem(() -> X.get())`（应为八族 8 个）")
-elif len(set(_core_items)) != 8:
+              f"AllMetals.java 里现算出 {len(_core_items)} 个 `.coreItem(() -> X.get())`"
+              f"（应为 {_CORE_ITEM_MIN} 个 = 既有 8 族 + chaosgold）")
+elif len(set(_core_items)) != len(_core_items):
+    # 旧口径原文：`elif len(set(_core_items)) != 8:`（当时"8 个且互不相同"是一回事）
     _bg16_bad("bg16-cactus-coreitem-distinct",
-              f"八族里有重复的 coreItem 符号：{sorted(_core_items)}")
+              f"有重复的 coreItem 符号：{sorted(_core_items)}")
 _core_owner_body = method_body(_mf_src, "public static @Nullable MetalFamily coreItemOwner(")
 if not _core_owner_body:
     _bg16_bad("bg16-cactus-coreitem-owner",
@@ -1989,9 +2044,14 @@ elif "!STURDYGOLD_ID.equals(this.id)" not in _bgfix_mf:
     _bgfix_bad("bgfix-special-metal-predicate",
                "isSpecialMetal() 的判据不是 !STURDYGOLD_ID.equals(this.id)")
 _n_specs = _bgfix_am.count("new MetalFamily.Spec(")
-if _n_specs != 8:
+# ⚠ 1.7（bg-n10 轮1 后半）：**旧期望原文保留** —— 原来是 `!= 8`（当时恰好八族）。
+#   现在 10 族（既有 8 + 混沌金 + 崩乱合金）。旧值 8 作为"反空转下限"仍然有意义：
+#   数量必须**正好**等于 10（写死是为了拦住"注册表被清空"这类空转），
+#   加族时**必须**同步改这一行（与 metal_forms.py / AllMetals.java 三边一起长）。
+#   old: if _n_specs != 8:
+if _n_specs != 10:
     _bgfix_bad("bgfix-special-metal-predicate",
-               "AllMetals 里的 MetalFamily.Spec 不是 8 个（实际 %d；反空转守护）" % _n_specs)
+               "AllMetals 里的 MetalFamily.Spec 不是 10 个（实际 %d；反空转守护）" % _n_specs)
 
 # ---------- 第 4 条 · 紫颂樱花枝配方：1 个樱花树苗 → 恶魂之泪 ----------
 _ccb_path = _DATA / "bettergold" / "recipe" / "chorus_cherry_branch.json"
@@ -2977,9 +3037,12 @@ elif "!STURDYGOLD_ID.equals(this.id)" not in _is_special:
 # ⚠ 计数必须跑在 **AllMetals.java** 上（`new MetalFamily.Spec(` 的字面量形态）——
 #   MetalFamily.java 里只有嵌套类 `Spec` 的定义，在那里数它恒为 0（本段第一版就踩了这个 = 假红）。
 _spec_count = _bgfix_am.count("new MetalFamily.Spec(")
-if _spec_count != 8:
+# ⚠ 1.7（bg-n10 轮1 后半）：**旧期望原文保留** —— `old: if _spec_count != 8:`
+#   现在是 10 族（既有 8 + 混沌金 + 崩乱合金）。下限语义不变：数量必须**正好**等于声明表，
+#   否则就是"注册表被清空 / AllMetals 被改坏"这类空转。
+if _spec_count != 10:
     _bgfix4_bad("bgfix4-vine-all-metals",
-                "AllMetals 里的 MetalFamily.Spec 不是 8 个（实际 %d；反空转守护）" % _spec_count)
+                "AllMetals 里的 MetalFamily.Spec 不是 10 个（实际 %d；反空转守护）" % _spec_count)
 for _n, _why in (("BASE_CHANCE = 0.06F", "6% 基础概率被改"),
                  ("CHANCE_PER_FORTUNE = 0.06F", "时运系数被改")):
     if _n not in _bgfix_glm:
@@ -3038,9 +3101,14 @@ if len(_cond_files) != 3:
 
 # ---------- 第 1 条 · 纹饰色卡：四处嫌疑必须一直是干净的（修复前后都成立） ----------
 _trim_jsons = sorted(_TRIM_MATERIAL.glob("*.json"))
-if len(_trim_jsons) != 9:
+# ⚠ 1.7（bg-n10 轮1 后半）：**旧期望原文保留** —— bg-fix2 时是 9（六套金属 + unwanted_antique
+#   + 万坚金 + 表外那一张），当时写死 9 是"反空转"。本轮新增 chaosgold / chaosalloy 两族
+#   （两族都有 8×1 纹饰色卡）⇒ 11。加族时这里必须同步长。
+#   old: if len(_trim_jsons) != 9:
+if len(_trim_jsons) != 11:
     _bgfix2_bad("bgfix2-trim-nine-materials",
-                "trim_material JSON 数 = %d，期望 9（反空转守护）" % len(_trim_jsons))
+                "trim_material JSON 数 = %d，期望 11（既有 9 + 1.7 的 chaosgold/chaosalloy；反空转守护）"
+                % len(_trim_jsons))
 _indexes, _missing_palette = [], []
 for _j in _trim_jsons:
     _d = json.loads(_j.read_text(encoding="utf-8"))
@@ -4038,17 +4106,63 @@ else:
             _bgbook9_bad("bgbook9-dust-convert-exempt",
                          "例外集合里出现了写死的方块名后缀 %r ⇒ 以后加一族金属 / 加一种形态就会漏"
                          % _banned)
-# 跨文件不变量：家族索引覆盖的正是**11 种形态**（§9.8 推断值 3 的那张清单）
+# 跨文件不变量：家族索引覆盖的正是**该族的建材形态**（§9.8 推断值 3 的那张清单）
+# ⚠ **1.7（bg-n10 轮1 后半）就地标注 —— 作者裁定 §4.0 ⑪d「改成按族声明的形态集合」**：
+#   旧口径（原文保留、**不放宽**）是"`MetalFamily.allBlocks` **恰好 11 种形态** / 例外集合 = 8×11+1 = 89"：
+#     `_bg9_allblocks = re.search(r"this\.allBlocks = List\.of\((.*?)\);", _bg9_mf_src, re.S)`
+#     `if len(_bg9_forms) != 11: ... "MetalFamily.allBlocks 不是 11 种形态"`
+#   新口径分三层（都不许软化成 `>=` / `!=`）：
+#     ① Java 侧"建材形态清单"必须**恰好**等于 `Form.BUILDING_FORMS` 那 11 个字段（顺序也一致）；
+#     ② 该清单必须**由形态开关驱动**（注册处有 `has(Form.X)` 守卫、汇总处用"跳过 null"的写法）；
+#     ③ 运行期每个族的形态数**由声明决定** ⇒ 期望方块数 = Σ 各族建材形态数 + 1（下界合金块），
+#        按 `metal_forms.py` 现算（既有 8 族 × 11 + chaosgold 11 + chaosalloy 1 + 1 = 101）。
 _bg9_mf_src = strip_comments((JAVA / "material" / "MetalFamily.java").read_text(encoding="utf-8"))
-_bg9_allblocks = re.search(r"this\.allBlocks = List\.of\((.*?)\);", _bg9_mf_src, re.S)
+# ⚠ 新形状（1.7）：汇总用 `java.util.Arrays.asList(...)`（**允许 null**）而不是 `List.of(...)` ——
+#   `List.of` 遇到 null 会在进入 filter 之前抛 NPE（第一次 runData 冒烟实测崩在这里）。
+#   因此这里同时接受两种写法，但**必须**是其中之一（读不到就红，反空转）。
+_bg9_allblocks = re.search(r"for \(DeferredBlock<\?> holder : java\.util\.Arrays\.asList\((.*?)\)\) \{",
+                           _bg9_mf_src, re.S)
 if not _bg9_allblocks:
-    _bgbook9_bad("bgbook9-dust-convert-exempt", "读不到 MetalFamily 的 allBlocks 清单（反空转守护）")
+    _bg9_allblocks = re.search(r"for \(DeferredBlock<\?> holder : List\.of\((.*?)\)\s*\n?\s*\.stream\(\)",
+                               _bg9_mf_src, re.S)
+if not _bg9_allblocks:
+    _bgbook9_bad("bgbook9-dust-convert-exempt",
+                 "读不到 MetalFamily 的「建材形态清单」（反空转守护："
+                 "`for (DeferredBlock<?> holder : java.util.Arrays.asList(...))` 那段不见了）")
 else:
     _bg9_forms = re.findall(r"this\.(\w+)", _bg9_allblocks.group(1))
-    if len(_bg9_forms) != 11:
+    # Java 字段名的驼峰 -> Form 常量的下划线后缀（bricksStairs -> bricks_stairs）
+    _bg9_forms_suffix = [re.sub(r"([a-z])([A-Z])", r"\1_\2", _f).lower() for _f in _bg9_forms]
+    _bg9_forms_suffix = ["block" if _s == "block" else _s for _s in _bg9_forms_suffix]
+    # ⚠ 只比**集合**、不比顺序：注册顺序是历史顺序（door/trapdoor/bars/chain 在 1.4 就写死了），
+    #   真正的"显示顺序真源"是 `CreativeSections.BUILDING_SLOT`（那条由 `[bgfix4-building-order-*]` 守着）。
+    if sorted(_bg9_forms_suffix) != sorted(MF.BUILDING_FORMS):
         _bgbook9_bad("bgbook9-dust-convert-exempt",
-                     "MetalFamily.allBlocks 不是 11 种形态（实际 %d：%s）—— §9.7 的例外集合"
-                     "＝八族建材×11，形态数变了本关卡要跟着改" % (len(_bg9_forms), _bg9_forms))
+                     "MetalFamily 的建材形态集合 %s ≠ Form.BUILDING_FORMS %s"
+                     "（11 种建材的口径变了）" % (sorted(_bg9_forms_suffix), sorted(MF.BUILDING_FORMS)))
+    if len(_bg9_forms_suffix) != 11:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "MetalFamily 的建材形态清单不是 11 种（实际 %d：%s）"
+                     % (len(_bg9_forms_suffix), _bg9_forms_suffix))
+    # ② 形态开关必须真的被注册链读（不是"声明了但没人看"）
+    _bg9_guard_n = len(re.findall(r"!has\(Form\.[A-Z_]+\)", _bg9_mf_src))
+    if _bg9_guard_n < 10:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "MetalFamily 里按形态开关注册的守卫只有 %d 处（< 10）—— "
+                     "形态子集开关没接进注册链（声明了却照旧全注册）" % _bg9_guard_n)
+    if "this.allBlocks = List.copyOf(blocks);" not in _bg9_mf_src:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "MetalFamily 的汇总不是「跳过 null 的 blocks 列表」（形态子集外的形态会 NPE / 漏掉）")
+    if "if (holder != null) {" not in _bg9_mf_src:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "MetalFamily 的汇总没有逐项判空（形态子集外的 null 会被收进 allBlocks/allItems）")
+    # ③ 期望方块数 = Σ 各族建材形态数 + 1（下界合金块）
+    _bg9_expected_blocks = 1 + sum(len(MF.building_of(_m)) for _m in ["sturdygold", *METALS])
+    if _bg9_expected_blocks != 101:
+        _bgbook9_bad("bgbook9-dust-convert-exempt",
+                     "按形态声明现算的例外集合方块数 = %d，期望 101"
+                     "（既有 8 族 × 11 + chaosgold 11 + chaosalloy 1 + 下界合金块 1）；"
+                     "old: 8×11+1 = 89" % _bg9_expected_blocks)
 
 # ---------- ⑤ 文档侧：§九 的口径必须落档 ----------
 for _needle, _why in ((u"bg-book §九", "docs/1.6-规格.md 里没有 bg-book §九 这一轮的节"),
@@ -4094,9 +4208,12 @@ for _needle, _why in (
 _bgfix3_tag_dir = _DATA / "bettergold" / "tags" / "item"
 _bgfix3_tag_paths = sorted(_bgfix3_tag_dir.glob("*_knives.json")) + \
                     [_bgfix3_tag_dir / "handbook.json"]
-if len(_bgfix3_tag_paths) != 11:
+if len(_bgfix3_tag_paths) != 13:
+    # ⚠ 1.7（bg-n10 轮1 后半）：**旧期望原文保留** ——
+    #   old: `if len(_bgfix3_tag_paths) != 11:`（8 族刀 + 2 张古董刀 + handbook）
+    #   1.7 新增两族 ⇒ `<族>_knives` 标签 8 → 10 张 ⇒ 13 张。
     _bgfix3_bad("bgfix3-tag-generator",
-                "可选条目标签文件不是 11 张（8 族刀 + 2 张古董刀 + handbook），实际 %d：%s"
+                "可选条目标签文件不是 13 张（10 族刀 + 2 张古董刀 + handbook），实际 %d：%s"
                 % (len(_bgfix3_tag_paths), [p.name for p in _bgfix3_tag_paths]))
 for _tp in _bgfix3_tag_paths:
     if not _tp.is_file():
@@ -4641,6 +4758,11 @@ for _needle, _why in ((u"bg-book §十", u"docs/1.6-规格.md 里没有 bg-book 
 # 稳定 id 前缀 `[bgfix4-...]`。判据全部跑在**去注释源码 / 已解析 JSON / 仓库内冻结快照**上。
 _FX4_METALS = ["flamegold", "sturdygold", "thornsgold", "echogold",
                "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+# ⚠ 1.7（bg-n10 轮1 后半）：作者 2026-10-16 开工 1.7 时新增的两族。
+#   `CreativeSections.METAL_ORDER` = `_FX4_METALS`（作者 2026-10-08 的 8 族顺序，**前缀不变量**）
+#   + 下面这两项（作者**未点名**这两族的出场位次 ⇒ 按"新金属往后加"排在最末，工作值）。
+#   配置项（Config.java）**仍是 8 族 × 2 = 16 条**：歧义 ⑰「两族是否进配置」未裁，按立档 §5 属轮9。
+_FX4_APPENDED = ["chaosgold", "chaosalloy"]
 # 作者 2026-10-08 字面顺序（§四）—— 真源是 Java 的 `CreativeSections.BUILDING_SLOT`，这里只做互核
 _FX4_AUTHOR_BUILDING_ORDER = ["_block", "_bricks", "_pillar", "_bricks_stairs", "_bricks_slab",
                               "_bricks_wall", "_door", "_trapdoor", "_bars", "_chain", "_lantern"]
@@ -4699,12 +4821,23 @@ if not _fx4_mo:
                 "解析不到顺序真源 `CreativeSections.METAL_ORDER`（那一行）")
 else:
     _fx4_src_order = re.findall(r'"([a-z_]+)"', _fx4_mo.group(1))
-    if _fx4_src_order != _FX4_METALS:
+    # ⚠ **1.7（bg-n10 轮1 后半）就地标注，旧口径原文保留、不放宽**：
+    #   作者 2026-10-08 的 8 族顺序（`_FX4_METALS`）仍是**前缀不变量** ——
+    #   1.7 起 `METAL_ORDER` 末尾按"新金属往后加"追加两族（作者未点名位次 ⇒ 工作值，一句话可改）。
+    #   old: if _fx4_src_order != _FX4_METALS:  ←（当时恰好 8 族，"相等"就是这条不变量）
+    if _fx4_src_order[:len(_FX4_METALS)] != _FX4_METALS:
         _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "顺序真源不是作者 2026-10-08 的 8 金属顺序：%s ≠ %s" % (_fx4_src_order, _FX4_METALS))
-    if len(_fx4_src_order) != 8:
+                    "顺序真源的**前 8 项**不是作者 2026-10-08 的 8 金属顺序：%s ≠ %s"
+                    "（前缀不变量：1.7 新族只许往后加，不许插队 / 不许重排既有 8 族）"
+                    % (_fx4_src_order, _FX4_METALS))
+    if _fx4_src_order[len(_FX4_METALS):] != _FX4_APPENDED:
         _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "顺序真源不是 8 个金属（实际 %d）—— 反空转守护" % len(_fx4_src_order))
+                    "顺序真源 8 项**之后**的内容必须是 1.7 新增的 %s（实际 %s）"
+                    % (_FX4_APPENDED, _fx4_src_order[len(_FX4_METALS):]))
+    if len(_fx4_src_order) != 8 + len(_FX4_APPENDED):
+        _bgfix4_bad("bgfix4-metal-order-single-source",
+                    "顺序真源不是 %d 个金属（实际 %d）—— 反空转守护"
+                    % (8 + len(_FX4_APPENDED), len(_fx4_src_order)))
     # (a) Config.java：16 个键的**声明顺序**（NeoForge 配置界面 / toml 的条目顺序 = 声明顺序）
     _fx4_cfg_order, _fx4_seen = [], set()
     for _k in re.findall(r'\.defineInRange\(\s*"([^"]+)"', _bgfix_cfg):
@@ -4716,11 +4849,14 @@ else:
         _bgfix4_bad("bgfix4-metal-order-single-source",
                     "Config.java 里认出的金属键只有 %d 族（应 8）—— 反空转守护：%s"
                     % (len(_fx4_cfg_order), _fx4_cfg_order))
-    elif _fx4_cfg_order != _fx4_src_order:
+    elif _fx4_cfg_order != _FX4_METALS:
+        # ⚠ 1.7：旧口径是与 `_fx4_src_order`（当时 = 8 族）比较，原文式：
+        #   `elif _fx4_cfg_order != _fx4_src_order:` —— 现在真源多了 2 族，但**配置仍是 8 族**
+        #   （歧义 ⑰ 未裁）⇒ 判据改成"配置必须与真源的**前 8 项**同序"，语义不变、不放宽。
         _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "Config.java 的 16 键声明顺序 %s ≠ 顺序真源 %s"
-                    "（作者 2026-10-08：「模组设置也要用这种规律排序」）"
-                    % (_fx4_cfg_order, _fx4_src_order))
+                    "Config.java 的 16 键声明顺序 %s ≠ 顺序真源的前 8 项 %s"
+                    "（作者 2026-10-08：「模组设置也要用这种规律排序」；1.7 两族进不进配置属轮9）"
+                    % (_fx4_cfg_order, _FX4_METALS))
     # (b) 两个生成器的 METALS + (c) 成就清单（产物）里的 lists.metals
     _fx4_gen_adv = (REPO / "tools" / "asset-generator" / "generate_advancements.py")
     _fx4_gen_book = _BGDOC_GEN
@@ -5053,17 +5189,20 @@ else:
     _bgfix5_bad("bgfix5-metal-order-five-places",
                 "解析不到顺序真源 `CreativeSections.METAL_ORDER`（反空转守护）")
 if _fx5_truth_order is not None:
-    if _fx5_truth_order != _FX4_METALS:
+    # ⚠ 1.7：与 bgfix4 同一条前缀不变量（旧口径原文：`if _fx5_truth_order != _FX4_METALS:`）
+    if _fx5_truth_order[:len(_FX4_METALS)] != _FX4_METALS:
         _bgfix5_bad("bgfix5-metal-order-five-places",
-                    "顺序真源 %s ≠ 作者 2026-10-08 顺序 %s" % (_fx5_truth_order, _FX4_METALS))
+                    "顺序真源的前 8 项 %s ≠ 作者 2026-10-08 顺序 %s"
+                    % (_fx5_truth_order, _FX4_METALS))
     # 第 5 处只能通过"真源下标"表达 ⇒ 排序类必须引用真源（上面已核）；这里再核一次**顺序本身可表达**：
     # 8 条线的起点节点互不相同 + 都能从 `metal/<族>/ingot` 反推族名（=> rank 一定落在 0..7）
     if len(set(_fx5_line_parent.values())) != 8:
         _bgfix5_bad("bgfix5-metal-order-five-places",
                     "8 条线不能映射到 8 个不同的位次（排序键表达不了全序）")
-    if len(_fx5_truth_order) != 8:
+    if len(_fx5_truth_order) != 8 + len(_FX4_APPENDED):
         _bgfix5_bad("bgfix5-metal-order-five-places",
-                    "顺序真源不是 8 个族（实际 %d）—— 反空转守护" % len(_fx5_truth_order))
+                    "顺序真源不是 %d 个族（实际 %d）—— 反空转守护"
+                    % (8 + len(_FX4_APPENDED), len(_fx5_truth_order)))
 
 # ---------- ⑥ 文档侧：本轮口径必须落档 ----------
 for _needle, _why in ((u"bgfix5", u"docs/1.6-规格.md 里没有 bgfix5 这一轮的节"),
@@ -5732,6 +5871,25 @@ for _bg10_k, _bg10_v in en.items():
 # ⚠ bgfix11：`_BGFIX11_FIXED` 里的键**也**排除（本轮被修 ⇒ 它不该再被当成"未变动"）→ 715 键
 _bg10_excl = set(_BGFIX10_REMOVED) | set(_BGFIX10_CHANGED) | set(_BGFIX11_FIXED)
 
+# ⚠ **1.7（bg-n10 轮1 后半）就地标注 —— 旧口径原文保留、不放宽**：
+#   旧写法把"未变动子集"定义成**现文件里除排除集之外的全部键**（`[k for k in en if k not in _bg10_excl]`），
+#   于是"新增语言键"会被算进子集 ⇒ 键数与 SHA 双双变化 ⇒ 只能靠改冻结常量收场（那等于把护栏废掉）。
+#   1.7 作者要求「语言键占位（zh/en 双语，**只加不删**）」⇒ 子集改成
+#   **与冻结副本（bgfix11 的 en 冻结副本）取交集**：新增的键天然不进子集，
+#   而"改前就存在的 715 个键"这条不变量**一个字节都没放宽**（实测重算 = 715 键 / SHA 68A54410… 逐位相同）。
+#   old: _bg10_untouched = [k for k in en if k not in _bg10_excl]
+#        _bg10_hash = _bgfix10_subset_hash(en)
+_BGFIX11_FROZEN_EN = REPO / "docs" / "bgfix11-证据" / "08-en_us-改前冻结副本.json"
+_BGFIX11_FROZEN_ZH = REPO / "docs" / "bgfix11-证据" / "09-zh_cn-冻结副本.json"
+if not _BGFIX11_FROZEN_EN.is_file():
+    _bgfix10_bad("bgfix10-lang-untouched-frozen",
+                 "找不到冻结副本 %s（反空转守护：拿不到基线就无法说'未变动'）"
+                 % _BGFIX11_FROZEN_EN.relative_to(REPO))
+    _bg10_frozen_en: dict = {}
+else:
+    _bg10_frozen_en = json.loads(_BGFIX11_FROZEN_EN.read_text(encoding="utf-8"))
+_bg10_new_keys = sorted(set(en) - set(_bg10_frozen_en))
+
 
 def _bgfix10_subset_hash(_tab):
     _h = hashlib.sha256()
@@ -5743,8 +5901,8 @@ def _bgfix10_subset_hash(_tab):
     return _h.hexdigest()
 
 
-_bg10_untouched = [k for k in en if k not in _bg10_excl]
-_bg10_hash = _bgfix10_subset_hash(en)
+_bg10_untouched = [k for k in en if k in _bg10_frozen_en and k not in _bg10_excl]
+_bg10_hash = _bgfix10_subset_hash({k: v for k, v in en.items() if k in _bg10_frozen_en})
 if len(_bg10_untouched) != _BGFIX10_UNTOUCHED_N:
     _bgfix10_bad("bgfix10-lang-untouched-frozen",
                  "未变动子集是 %d 个键（冻结基线 %d 个）—— 键被增删了"
@@ -5851,12 +6009,45 @@ else:
     if _bg11_v != _BGFIX11_K1S_NEW_EN:
         _bgfix11_bad("bgfix11-lang-k1s-en",
                      "%s 的 en 值不是本轮钉死的新英文（实际 %r）" % (_BGFIX11_K1S, _bg11_v))
-# ② zh 侧没被动过：**文件级** SHA256（作者那份 = 唯一真源；@ 该常量原先只是仪表盘，这一轮开始被断言使用）
-_bg11_zh_sha = hashlib.sha256((LANG / "zh_cn.json").read_bytes()).hexdigest().upper()
-if _bg11_zh_sha != _BGFIX10_ZH_SHA:
+# ② zh 侧没被动过 —— ⚠ **1.7（bg-n10 轮1 后半）口径就地标注**：
+#   旧口径（原文保留）= **文件级** SHA256 必须 == `_BGFIX10_ZH_SHA`（695FA5A5…）。
+#   1.7 作者要求"语言键占位、**只加不删**"⇒ 文件级常量必然变（新增 73 键）⇒ 改成**语义冻结**：
+#     ① 冻结副本（`09-zh_cn-冻结副本.json`）里**每一个键的值逐字未变**（这才是"作者那份没被动过"的本意）；
+#     ② 新增的键必须**恰好**是本轮 1.7 的两族占位键（键数 = 73，且不许删键）；
+#     ③ 文件级 SHA 仍然记录（`_BGN10_ZH_AFTER_SHA`），改了要显式改常量（护栏不消失，只是换了锚点）。
+#   旧值留档：`_BGFIX10_ZH_SHA = "695FA5A5347E1165F431A204D8CA6F1965D9D136DA0F4D560F299E8B3C972810"`
+_BGN10_ZH_AFTER_SHA = "717E39789409FFC2CA3F48ED3313E54F3624766FE1C4D749756CA5EEF6E8A737"
+_BGN10_EN_AFTER_SHA = "112E554C79CD41464C9E708AFD0D3C3C3F8DC5B983E40C49EE131C87D6F834F0"
+_BGN10_NEW_LANG_KEYS = 73      # 1.7 两族占位键：zh 63（generate_metal_data）+ 10（generate_weapon_lang）
+if not _BGFIX11_FROZEN_ZH.is_file():
     _bgfix11_bad("bgfix11-lang-k1s-en",
-                 "zh_cn.json 的 SHA256 = %s（作者那一份是 %s）—— zh 侧被动过了"
-                 % (_bg11_zh_sha[:32], _BGFIX10_ZH_SHA[:32]))
+                 "找不到 zh 冻结副本 %s（反空转守护）" % _BGFIX11_FROZEN_ZH.relative_to(REPO))
+else:
+    _bg11_frozen_zh = json.loads(_BGFIX11_FROZEN_ZH.read_text(encoding="utf-8"))
+    _bg11_zh_changed = sorted(k for k, v in _bg11_frozen_zh.items()
+                              if k in zh and str(zh[k]) != str(v))
+    _bg11_zh_missing = sorted(k for k in _bg11_frozen_zh if k not in zh)
+    _bg11_zh_added = sorted(set(zh) - set(_bg11_frozen_zh))
+    if _bg11_zh_changed or _bg11_zh_missing:
+        _bgfix11_bad("bgfix11-lang-k1s-en",
+                     "作者那份 zh 的既有条目被动过：改值 %d 条 %s / 删键 %d 条 %s"
+                     % (len(_bg11_zh_changed), _bg11_zh_changed[:3],
+                        len(_bg11_zh_missing), _bg11_zh_missing[:3]))
+    if len(_bg11_zh_added) != _BGN10_NEW_LANG_KEYS:
+        _bgfix11_bad("bgfix11-lang-k1s-en",
+                     "zh 新增键 %d 条，期望 %d 条（= 1.7 两族占位键；多出来的必须显式记账）"
+                     % (len(_bg11_zh_added), _BGN10_NEW_LANG_KEYS))
+_bg11_zh_sha = hashlib.sha256((LANG / "zh_cn.json").read_bytes()).hexdigest().upper()
+if _bg11_zh_sha != _BGN10_ZH_AFTER_SHA:
+    _bgfix11_bad("bgfix11-lang-k1s-en",
+                 "zh_cn.json 的文件 SHA256 = %s（1.7 记录值 %s）—— 又被动过了"
+                 "（要动就显式改 `_BGN10_ZH_AFTER_SHA` 并记账）"
+                 % (_bg11_zh_sha[:32], _BGN10_ZH_AFTER_SHA[:32]))
+_bg11_en_sha = hashlib.sha256((LANG / "en_us.json").read_bytes()).hexdigest().upper()
+if _bg11_en_sha != _BGN10_EN_AFTER_SHA:
+    _bgfix11_bad("bgfix11-lang-k1s-en",
+                 "en_us.json 的文件 SHA256 = %s（1.7 记录值 %s）—— 又被动过了"
+                 % (_bg11_en_sha[:32], _BGN10_EN_AFTER_SHA[:32]))
 if _bg11_zh_v != _BGFIX11_K1S_OLD_EN:
     _bgfix11_bad("bgfix11-lang-k1s-en",
                  "zh 侧这句不再是旧中文（作者改了 zh 就要同步更新本断言）：%r" % (_bg11_zh_v,))
@@ -5893,6 +6084,103 @@ print(f"bgfix10（作者替换 zh ⇒ en 同步：6 改值 / 20 删键 / 键集�
       f" {bgfix10_problems[:4]}（en {len(en)} 键 / zh {len(zh)} 键 / 未变动子集 {len(_bg10_untouched)} 键"
       f" / 子集 SHA256 {_bg10_hash[:16]}；en 改前 {_BGFIX10_EN_BEFORE_SHA[:8]} → 改后 {_BGFIX10_EN_AFTER_SHA[:8]}）")
 
+# ==================== 1.7（bg-n10 轮1 后半）：两个共用组件的关卡 ====================
+# 本轮的"两个扩展"是按作者裁定（立档 §4.0 ① / ⑪d）做成**共用组件**的：
+#   ① 「区间值」= `material/ChaosRange.java`（规则 / 存储 / 触发点**只此一处**）；
+#   ② 「形态子集」= `MetalFamily.Form` + `Spec.forms(...)`（Java）+ `metal_forms.py`（Python 镜像）。
+# 它们都是"声明了但没接线也全绿"的高危形状（AGENTS 红线 2 的同一种病）⇒ 这里各给一条断言。
+bgn10_problems: list[str] = []
+
+
+def _bgn10_bad(tag: str, msg: str) -> None:
+    bgn10_problems.append("[%s] %s" % (tag, msg))
+
+
+# ---------- ① 形态子集：Java ↔ Python 两边的声明必须逐字一致 ----------
+_bgn10_mf_nc = strip_comments((JAVA / "material" / "MetalFamily.java").read_text(encoding="utf-8"))
+_bgn10_am_nc = strip_comments((JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"))
+_enum_body = re.search(r"public enum Form \{(.*?)\n    \}", _bgn10_mf_nc, re.S)
+if not _enum_body:
+    _bgn10_bad("bgn10-forms-parity", "解析不到 MetalFamily.Form 枚举（反空转守护）")
+else:
+    _java_forms = re.findall(r"^\s{8}[A-Z_]+\(\"([a-z_]+)\"\)", _enum_body.group(1), re.M)
+    if _java_forms != MF.ALL_FORMS:
+        _bgn10_bad("bgn10-forms-parity",
+                   "Java Form 枚举 %s ≠ metal_forms.ALL_FORMS %s（顺序也要一致）"
+                   % (_java_forms, MF.ALL_FORMS))
+    if len(_java_forms) != 15:
+        _bgn10_bad("bgn10-forms-parity",
+                   "Java Form 枚举不是 15 个（实际 %d）—— 反空转守护" % len(_java_forms))
+_bf = re.search(r"BUILDING_FORMS = java\.util\.EnumSet\.of\((.*?)\);", _bgn10_mf_nc, re.S)
+if not _bf:
+    _bgn10_bad("bgn10-forms-parity", "解析不到 Form.BUILDING_FORMS（反空转守护）")
+else:
+    _java_building = [(_n.strip().lower()) for _n in re.findall(r"\b([A-Z][A-Z_]+)\b", _bf.group(1))]
+    if sorted(_java_building) != sorted(MF.BUILDING_FORMS):
+        _bgn10_bad("bgn10-forms-parity",
+                   "Java Form.BUILDING_FORMS %s ≠ metal_forms.BUILDING_FORMS %s"
+                   % (_java_building, MF.BUILDING_FORMS))
+    if len(_java_building) != 11:
+        _bgn10_bad("bgn10-forms-parity",
+                   "Form.BUILDING_FORMS 不是 11 种建材（实际 %d）" % len(_java_building))
+# 两族的声明字面：chaosgold 用 withoutForms(...)、chaosalloy 用 forms(...)
+_cg = re.search(r"chaosgold\", \"混沌金\"\)(.*?);", _bgn10_am_nc, re.S)
+_ca = re.search(r"chaosalloy\", \"崩乱合金\"\)(.*?);", _bgn10_am_nc, re.S)
+if not _cg or "withoutForms(MetalFamily.Form.RAW, MetalFamily.Form.UPGRADE_TEMPLATE)" not in _cg.group(1):
+    _bgn10_bad("bgn10-forms-parity",
+               "AllMetals 里 chaosgold 没有声明 `withoutForms(RAW, UPGRADE_TEMPLATE)`"
+               "（= 除原料与升级模板外的 13 种形态）")
+_CA_FORMS_NEEDLE = ("forms(MetalFamily.Form.INGOT, MetalFamily.Form.BLOCK, "
+                    "MetalFamily.Form.UPGRADE_TEMPLATE)")
+if not _ca or _CA_FORMS_NEEDLE not in _ca.group(1):
+    _bgn10_bad("bgn10-forms-parity",
+               "AllMetals 里 chaosalloy 没有声明 `forms(INGOT, BLOCK, UPGRADE_TEMPLATE)`"
+               "（作者裁定：只做锭 + 块 + 模板）")
+if len(MF.FORMS) != 2 or len(MF.forms_of("chaosgold")) != 13 or len(MF.forms_of("chaosalloy")) != 3:
+    _bgn10_bad("bgn10-forms-parity",
+               "metal_forms.FORMS 的声明不是 {chaosgold: 13, chaosalloy: 3}（实际 %s）"
+               % {k: len(v) for k, v in MF.FORMS.items()})
+
+# ---------- ② 区间值：公式**只许一处** + 两个触发点 + 两族声明的两端值 ----------
+_bgn10_formula = "current == range.min ? range.max : range.min"
+_hits = []
+for _jf in JAVA.rglob("*.java"):
+    _t = strip_comments(_jf.read_text(encoding="utf-8"))
+    if _bgn10_formula in _t:
+        _hits.append(_jf.name)
+if _hits != ["ChaosRange.java"]:
+    _bgn10_bad("bgn10-chaos-range",
+               "乒乓公式（%s）出现在 %s —— 必须**只有** ChaosRange.java 一处"
+               "（四处区间各写一套 = 三份不一致）" % (_bgn10_formula, _hits))
+_cr = JAVA / "material" / "ChaosRange.java"
+_cr_txt = strip_comments(_cr.read_text(encoding="utf-8")) if _cr.is_file() else ""
+if not _cr_txt:
+    _bgn10_bad("bgn10-chaos-range", "缺 material/ChaosRange.java（反空转守护）")
+else:
+    for _needle, _why in (
+            ("BlockEvent.BreakEvent", "缺触发点①「挖掘成功」（BlockEvent.BreakEvent）"),
+            ("LivingEquipmentChangeEvent", "缺触发点②「重新手持」（LivingEquipmentChangeEvent）"),
+            ("EquipmentSlot.MAINHAND", "手持触发点不是主手（作者口径：重新手持该物品）"),
+            ("DATA_COMPONENT_TYPE", "区间值不是数据组件（作者裁定：值存数据组件）"),
+            ("Register<DataComponentType<?>> COMPONENT_TYPES",
+             "没有数据组件的 DeferredRegister"),
+            ("toggle(stack, channel)", "toggle 没走唯一入口（公式与状态会各写一套）")):
+        if _needle not in _cr_txt:
+            _bgn10_bad("bgn10-chaos-range", "%s（缺 %s）" % (_why, _needle))
+_bgn10_boot = strip_comments((JAVA / "bettergold.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("ChaosRange.COMPONENT_TYPES.register(modEventBus)", "数据组件没在 mod 总线上注册（静默不生效）"),
+        ("NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ChaosRange.Triggers.class)",
+         "区间值的触发点没有注册到游戏总线（挖掘/手持永不翻转）")):
+    if _needle not in _bgn10_boot:
+        _bgn10_bad("bgn10-chaos-range", _why)
+for _lit, _m in (("chaosRange(ChaosRange.Channel.MINING, 2, 12)", "chaosgold 2..12"),
+                 ("chaosRange(ChaosRange.Channel.MINING, 8, 16)", "chaosalloy 8..16")):
+    if _lit not in _bgn10_am_nc:
+        _bgn10_bad("bgn10-chaos-range", "AllMetals 里没有 %s（作者给的两端值）" % _m)
+print(f"1.7 两个共用组件（形态子集 {len(MF.FORMS)} 族 / 区间值公式命中 {len(_hits)} 处）问题: "
+      f"{len(bgn10_problems)} {bgn10_problems[:4]}")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -5900,7 +6188,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
-                       symmetric_problems, beacon_problems)
+                       symmetric_problems, beacon_problems, bgn10_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

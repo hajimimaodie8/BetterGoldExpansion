@@ -245,6 +245,21 @@ public class AllItems {
     /** 混沌金币串：用于在制作下界合金锭时替代 1 个下界合金碎片 */
     public static final DeferredItem<Item> CHAOS_COIN_STRING = ITEMS.registerSimpleItem("chaos_coin_string");
 
+    /**
+     * 混沌金币（1.7 bg-n10 轮2 · 作者 zip「混沌金币.png」，工作值 id {@code chaos_coin}）。
+     *
+     * <p>定位：<b>货币 / 材料链的一环</b> —— 最普通的 {@code Item}（作者明确「充数功能」），
+     * <b>不进</b>任何 {@code #minecraft:enchantable/*}、<b>无</b>属性 / 耐久 / 附魔能力
+     * （与"胚底"同一条教训：物品类由用途决定，不由贴图或名字决定）。</p>
+     *
+     * <p>它是混沌金族的 {@code coreItem}（{@code AllMetals.CHAOSGOLD.coreItem}）⇒ 创造页
+     * 「材料」分区里排在混沌金那一组的最前面（{@code CreativeSections} 的 slot 0）。</p>
+     *
+     * <p>⚠ id 是<b>工作值</b>：立档 §4.0 的"仍未被点名的 3 条"之一（歧义 ⑱b 与既有
+     * {@code chaos_coin_string} 的关系未裁）⇒ 作者一句话即可改名，改名 = 一条脚本 + 语言键。</p>
+     */
+    public static final DeferredItem<Item> CHAOS_COIN = ITEMS.registerSimpleItem("chaos_coin");
+
     // ==================== 新约 1.2：金麦体系 ====================
 
     /** 金麦种子：1 小麦种子 + 3 金粒无序合成；种在金染耕地；可烧成金粒 */

@@ -49,8 +49,13 @@ ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
 DATA = REPO / "src" / "main" / "resources" / "data"
 METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
           # 1.6（bg-16）：两套新金属 —— 关卡必须跟着扫描表一起加，否则新族"零检查"也会全绿
-          "thornsgold", "echogold"]
+          "thornsgold", "echogold",
+          # 1.7（bg-n10 轮1 后半）：两套新族。⚠ 它们的**形态子集不同**（崩乱合金只有锭/块/模板）
+          # ⇒ 本段末尾那条 `[bgn10-forms-*]` 断言按 `metal_forms.py` 的声明逐个形态核对资产。
+          "chaosgold", "chaosalloy"]
 ALL_METALS = ["sturdygold", *METALS]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import metal_forms as MF   # noqa: E402  「形态子集」的 Python 唯一真源（1.7 bg-n10）
 # 1.5 武器轮：五类武器的 wid（武器 id 前缀）= 六套金属（金制武器不存在，见 1.5 修正轮）
 WEAPON_WIDS = ALL_METALS
 # 1.5 修正轮：五件「胚底」= 最普通的 item/generated 单层模型（没有任何 override），
@@ -61,7 +66,9 @@ BLANK_WIDS = [f"golden_{w}_blank" for w in ("mace", "bow", "crossbow", "trident"
 SPECIAL_ITEMS = ["blazing_rod", "voodoo_feather", "amethyst_energy_dust",
                  "indigo_ocean_heart", "chorus_cherry_branch",
                  # 1.6（bg-16）：树棘金 / 幽咆金 的核心材料（前者是掉落物、后者由合成得到）
-                 "glittering_vine", "bundled_echo_shard"]
+                 "glittering_vine", "bundled_echo_shard",
+                 # 1.7（bg-n10 轮2）：混沌金的核心材料 = 混沌金币（已注册物品 ⇒ 贴图 + 模型都要有）
+                 "chaos_coin"]
 
 bad_json, missing_tex, checked = [], [], 0
 tex_roots = [ASSETS / "textures"]
@@ -437,6 +444,50 @@ for rel, want in AUTHORIZED_PALETTE_TEXTURE.items():
             f"bgfix2 第 1 条报的 bug 本体）[bgfinal3-indigosea-not-quartz]")
 print(f"bgfinal3 授权色卡（靛海金纹饰）问题: {len(palette_hash_problems)} {palette_hash_problems[:4]}")
 
+# ==================== 1.7（bg-n10 轮1 后半）：形态子集 ⇒ 资产也按声明核对 ====================
+# 作者裁定（立档 §4.0 ⑪d）：崩乱合金只做「锭 + 块 + 升级锻造模板」⇒ 它的**建材细节件一件都不该有**；
+# 混沌金缺「原料」与「升级锻造模板」⇒ 那两件不该有。
+# 两个方向都断言（**只查"该有的有没有"会漏掉"多出来的垃圾资产"**）：
+#   ① 声明了的形态 ⇒ 必须有 blockstate（建材）/ 物品模型（材料链）；
+#   ② 没声明的形态 ⇒ blockstate / 物品模型 / 方块贴图 **一个都不许有**（否则是"忘了过滤"的残留）。
+forms_problems: list[str] = []
+_BS = ASSETS / "blockstates"
+_MI = ASSETS / "models" / "item"
+_TB = ASSETS / "textures" / "block"
+_ALL_FORMS = list(MF.ALL_FORMS)
+for _m in METALS:
+    for _f in _ALL_FORMS:
+        _declared = MF.has(_m, _f)
+        _bs = _BS / f"{_m}_{_f}.json"
+        _model = _MI / (f"raw_{_m}.json" if _f == "raw" else f"{_m}_{_f}.json")
+        _tex = _TB / f"{_m}_{_f}.png"
+        if _f == "raw":
+            _bs = _BS / f"raw_{_m}.json"          # 原料没有 blockstate，用模型判定即可
+        if _declared:
+            if not _model.is_file():
+                forms_problems.append(f"{_m} 声明了 {_f} 但缺物品模型 models/item/{_model.name}")
+            if _f in MF.BUILDING_FORMS and not _bs.is_file():
+                forms_problems.append(f"{_m} 声明了建材形态 {_f} 但缺 blockstates/{_bs.name}")
+        else:
+            for _hit in (_bs, _model, _tex):
+                if _hit.is_file():
+                    forms_problems.append(
+                        f"{_m} 没声明形态 {_f}，却还留着 {_hit.relative_to(ASSETS).as_posix()}"
+                        f"（生成器没按形态过滤）")
+    # 反向：blockstates 里不许有"未声明形态"的残留（崩乱合金一件细节件都不许有）
+    _building = set(MF.building_of(_m))
+    _extra = sorted(p.stem for p in _BS.glob(f"{_m}_*.json")
+                    if p.stem[len(_m) + 1:] in _ALL_FORMS
+                    and p.stem[len(_m) + 1:] not in _building)
+    if _extra:
+        forms_problems.append(f"{_m} 的 blockstates 里有未声明形态的残留：{_extra}")
+# 反空转：至少核对过 10 族 × 15 形态
+if len(METALS) * len(_ALL_FORMS) < 100:
+    forms_problems.append(f"[反空转] 只核对了 {len(METALS) * len(_ALL_FORMS)} 组形态"
+                          f"（< 100 ⇒ 形态表 / 扫描表被清空了）")
+print(f"形态子集资产（{len(METALS)} 族 × {len(_ALL_FORMS)} 形态）问题: {len(forms_problems)}"
+      f" {forms_problems[:6]}")
+
 # ==================== bgfix6（2026-10-08）：前置缺失 / 反空转 ⇒ exit 2 ====================
 # 旧行为（原文保留）：`checked` 只在上面 print，从不影响退出码 ⇒ "扫描到 0 个 JSON" 也会全绿。
 print(f"[bg-assets-anti-vacuum] 实际检查了 {checked} 项"
@@ -452,10 +503,11 @@ if checked <= 0:
 # 结论行（稳定 ASCII 结论码，便于扰动矩阵逐条命中）；判据与下面那行 sys.exit 完全一致。
 _problem_total = sum(len(_x) for _x in (
     bad_json, missing_tex, missing_special, missing_weapon_assets, missing_blank_assets,
-    size_bad, trident_problems, mixin_problems, blank_tex_hash_problems, palette_hash_problems))
+    size_bad, trident_problems, mixin_problems, blank_tex_hash_problems, palette_hash_problems,
+    forms_problems))
 print(f"[bg-assets-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
       f"（契约：0 绿 / 1 有问题 / 2 前置坏）")
 
 sys.exit(1 if (bad_json or missing_tex or missing_special or missing_weapon_assets
                or missing_blank_assets or size_bad or trident_problems or mixin_problems
-               or blank_tex_hash_problems or palette_hash_problems) else 0)
+               or blank_tex_hash_problems or palette_hash_problems or forms_problems) else 0)

@@ -41,7 +41,10 @@ VANILLA = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
 OURS = ["sturdygold", "unwanted_antique", "flamegold", "voodoogold", "thundergold",
         "indigoseagold", "illusiongold",
         # 1.6（bg-16）：两套新金属的纹饰（item_model_index 0.08 / 0.09，仍在原版 0.1~1.0 之外）
-        "thornsgold", "echogold"]
+        "thornsgold", "echogold",
+        # 1.7（bg-n10 轮1 后半）：两套新族（item_model_index 0.011 / 0.012 —— ⚠ **不能**用 0.10/0.11，
+        # 那会撞上原版 quartz 的 0.1，纹饰一律显示成白灰阶，正是本关卡守的那个 bug）。
+        "chaosgold", "chaosalloy"]
 VANILLA_INDEX = {"quartz": 0.1, "iron": 0.2, "netherite": 0.3, "redstone": 0.4, "copper": 0.5,
                  "gold": 0.6, "emerald": 0.7, "diamond": 0.8, "lapis": 0.9, "amethyst": 1.0}
 
