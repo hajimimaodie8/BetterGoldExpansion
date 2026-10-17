@@ -1,0 +1,70 @@
+{
+  "__comment": "万坚金砧（1.7 bg-n10 轮8）。几何 = 原版 assets/minecraft/models/block/template_anvil.json 的 4 个 element 逐字复制（坐标/uv/rotation 一字未改）—— 这样『照原版砧的形状』是硬事实，不是我的想象。只换贴图槽：作者给了 5 张面（砧体 上/前后/左右 + 底盘 上/下），所以把原版的两槽（body/top）拆成 5 槽。",
+  "parent": "block/block",
+  "textures": {
+    "particle": "bettergold:block/sturdygold_anvil_ns",
+    "ns": "bettergold:block/sturdygold_anvil_ns",
+    "ew": "bettergold:block/sturdygold_anvil_ew",
+    "top": "bettergold:block/sturdygold_anvil_top",
+    "base_top": "bettergold:block/sturdygold_anvil_base_top",
+    "base_bottom": "bettergold:block/sturdygold_anvil_base_bottom"
+  },
+  "display": {
+    "fixed": {
+      "rotation": [ 0, 90, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.5, 0.5, 0.5 ]
+    }
+  },
+  "elements": [
+    {
+      "__comment": "Anvil base（原版 element 1）",
+      "from": [ 2, 0, 2 ],
+      "to": [ 14, 4, 14 ],
+      "faces": {
+        "down":  { "uv": [ 2,  2, 14, 14 ], "texture": "#base_bottom", "rotation": 180, "cullface": "down" },
+        "up":    { "uv": [ 2,  2, 14, 14 ], "texture": "#base_top",    "rotation": 180 },
+        "north": { "uv": [ 2, 12, 14, 16 ], "texture": "#ns" },
+        "south": { "uv": [ 2, 12, 14, 16 ], "texture": "#ns" },
+        "west":  { "uv": [ 0,  2,  4, 14 ], "texture": "#ew", "rotation":  90 },
+        "east":  { "uv": [ 4,  2,  0, 14 ], "texture": "#ew", "rotation": 270 }
+      }
+    },
+    {
+      "__comment": "Lower narrow portion（原版 element 2）",
+      "from": [ 4, 4, 3 ],
+      "to": [ 12, 5, 13 ],
+      "faces": {
+        "up":    { "uv": [ 4,  3, 12, 13 ], "texture": "#ns", "rotation": 180 },
+        "north": { "uv": [ 4, 11, 12, 12 ], "texture": "#ns" },
+        "south": { "uv": [ 4, 11, 12, 12 ], "texture": "#ns" },
+        "west":  { "uv": [ 4,  3,  5, 13 ], "texture": "#ew", "rotation":  90 },
+        "east":  { "uv": [ 5,  3,  4, 13 ], "texture": "#ew", "rotation": 270 }
+      }
+    },
+    {
+      "__comment": "Wider section beneath top portion（原版 element 3）",
+      "from": [ 6, 5, 4 ],
+      "to": [ 10, 10, 12 ],
+      "faces": {
+        "north": { "uv": [  6,  6, 10, 11 ], "texture": "#ns" },
+        "south": { "uv": [  6,  6, 10, 11 ], "texture": "#ns" },
+        "west":  { "uv": [  5,  4, 10, 12 ], "texture": "#ew", "rotation":  90 },
+        "east":  { "uv": [ 10,  4,  5, 12 ], "texture": "#ew", "rotation": 270 }
+      }
+    },
+    {
+      "__comment": "Anvil top（原版 element 4）",
+      "from": [ 3, 10, 0 ],
+      "to": [ 13, 16, 16 ],
+      "faces": {
+        "down":  { "uv": [  3, 0, 13, 16 ], "texture": "#ns", "rotation": 180 },
+        "up":    { "uv": [  3, 0, 13, 16 ], "texture": "#top", "rotation": 180 },
+        "north": { "uv": [  3, 0, 13,  6 ], "texture": "#ns" },
+        "south": { "uv": [  3, 0, 13,  6 ], "texture": "#ns" },
+        "west":  { "uv": [ 10, 0, 16, 16 ], "texture": "#ew", "rotation":  90 },
+        "east":  { "uv": [ 16, 0, 10, 16 ], "texture": "#ew", "rotation": 270 }
+      }
+    }
+  ]
+}

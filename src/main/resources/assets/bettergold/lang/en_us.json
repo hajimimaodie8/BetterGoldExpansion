@@ -793,5 +793,7 @@
   "item.bettergold.refined_alchemic_oil": "Refined Alchemic Oil",
   "item.bettergold.chaosalloy_forbidden_fruit": "Chaosalloy Forbidden Fruit",
   "effect.bettergold.power_imbalance": "Power Imbalance",
-  "effect.bettergold.resistance_imbalance": "Resistance Imbalance"
+  "effect.bettergold.resistance_imbalance": "Resistance Imbalance",
+  "block.bettergold.sturdygold_anvil": "Sturdygold Anvil",
+  "container.bettergold.sturdygold_anvil": "Sturdygold Anvil"
 }

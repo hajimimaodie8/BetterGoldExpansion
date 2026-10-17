@@ -1,0 +1,43 @@
+轮8（万坚金砧）六校验器 —— 判据 = exit + 关键计数行（两列）
+运行方式：py -3 tools/asset-generator/<脚本>.py（PYTHONIOENCODING=utf-8）
+契约：0 绿 / 1 有问题 / 2 前置坏（未捕获异常一律 2）
+
+脚本 | exit | 关键计数行
+validate_metal_assets.py     | 0 | [bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0） / [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_metal_data.py       | 0 | [bgn10r8-ok] 万坚金砧：配方 9 格 / 硬度 -1 与抗爆 3600000 / 不进 #minecraft:anvil / 四向 blockstate + 几何逐字原版 / MenuType+Screen 双端注册 / 每币 maxDamage/4 / 全仓 0 处修复惩罚与互斥重写 / min(16%,1%×格数)×当前血量 全部通过 / [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_trim_assets.py      | 0 | [bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0） / [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements.py     | 0 | [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+check_jar_clean.py           | 0 | [jar-clean-anti-vacuum] 实际检查了 2745 项（jar 内条目数；必须 > 0） / [jar-clean-ok] 产物 jar 干净（条目 2745；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py       | 0 | [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0） / [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+===== validate_metal_assets.py  exit=0
+[bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+[bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+===== validate_metal_data.py  exit=0
+[bg-data-anti-vacuum] 实际检查了 310 项（语言键）+ 1860 个 JSON 产物（扫描根缺失 0 个；两项都必须 > 0）
+1.7 轮6（金钱妖：实体/弹射物/掉落/烈燃金双倍/米字弹幕）问题: 0 []（本段判定 79 条，循环已展开计数）
+1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 0 []（本段判定 72 条）
+1.7 轮7（崩乱合金：锭/块/模板/15 件器具/4 件盔甲/禁果/两个状态）问题: 0 []（本段判定 162 条）
+1.7 轮8（万坚金砧：不可破坏 + 自建 GUI + 金币串修复不累积惩罚 + 下落 16%）问题: 0 []（本段判定 103 条）
+[bgn10r8-ok] 万坚金砧：配方 9 格 / 硬度 -1 与抗爆 3600000 / 不进 #minecraft:anvil / 四向 blockstate + 几何逐字原版 / MenuType+Screen 双端注册 / 每币 maxDamage/4 / 全仓 0 处修复惩罚与互斥重写 / min(16%,1%×格数)×当前血量 全部通过
+[bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+===== validate_trim_assets.py  exit=0
+[bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0）
+[bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+===== validate_advancements.py  exit=0
+[bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+===== check_jar_clean.py  exit=0
+jar 内文件总数 = 2745
+[jar-clean-anti-vacuum] 实际检查了 2745 项（jar 内条目数；必须 > 0）
+[jar-clean-ok] 产物 jar 干净（条目 2745；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+===== check_forced_chunks.py  exit=0
+data.Forced               = []
+data.Forced length        = 0
+[chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+[chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+

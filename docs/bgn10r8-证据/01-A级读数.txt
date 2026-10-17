@@ -1,0 +1,49 @@
+轮8 A 级读数（真服务端 + 真 ServerPlayer + 真 ServerboundPlayerActionPacket；探针 BgN10r8Probe，收尾已整块删除）
+来源：gradlew runServer 的 log4j 日志（build/r8-rs.out）里 BGN10R8PROBE 的全部行
+判读：PASS/FAIL 逐条 + 末行 SUMMARY（pass / fail / forcedNow）
+开关文件：run/bgn10r8-probe.enabled（跑后已删除）
+====================================================================================================================
+
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO fake_channel :: connection.channel = EmbeddedChannel��openMenu �� hasChannel ��Ҫ����
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_forceload_set :: forcedAfter=9
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO world :: name=world base=(40,76,40)
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_anvil_block_present :: state=Block{bettergold:sturdygold_anvil}[facing=north]
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_indestructible_destroy_speed :: anvil=-1.0000 vanillaAnvil=5.0000 stone=0.5000
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_indestructible_explosion_resistance :: resistance=3600000.0000��ԭ���� 1200.0000��
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_indestructible_destroy_progress :: anvilProgress=0.0000 controlProgress=0.0133����������ʯ�䣩
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_indestructible_control_breakable :: ͬһ�������У�START + 200 tick + STOP�����������ڵ�=true��֤����·��������ۼ��㱾����ͨ�ģ�
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_indestructible_hold_loop :: START + 200 tick ��ס + STOP����ס�ڼ�����=true�����ֺ�����=true
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_gui_use_item_on :: useItemOn=CONSUME
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_gui_menu_class :: containerMenu=com.hjmmd_8.bettergold.menu.SturdygoldAnvilMenu
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_gui_open :: windowId=1
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_gui_menu_type :: type=bettergold:sturdygold_anvil
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_gui_slots :: slots=39��2 ���� + 1 ��� + ��� 9x3+9��
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_gui_still_valid_near :: near=true�������ڡ����� 0��
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_gui_still_valid_far :: far=false after move 12 blocks
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_repair_formula :: maxDamage=1561 perCoin=390 damageIn=1000
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_repair_result_damage :: out=minecraft:diamond_sword damage=0 expectedDamage=0��ÿ�� 390��1000 ���� ? 390+390+220 ����������
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_repair_coin_count :: coins=3 cost=3
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_repair_is_coin_path :: coinRepair=true
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_repair_may_pickup :: mayPickup=true��30 �� �� ���� 3��
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_repair_take :: levels 30 -> 27 coinsLeft=2 input0=0 minecraft:air
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_repair_consume_levels :: levelsAfter=27
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_repair_consume_coins :: coinsLeft=2
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_penalty_ours :: cost=[3, 3, 3] repairCost=[0, 0, 0]
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_penalty_ours_flat :: cost=[3, 3, 3] repairCost=[0, 0, 0]�������ý�Ҵ��� 3 �Σ��ͷ����ǡ����Ѳ��ǣ�
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_penalty_vanilla :: cost=[3, 4, 6] repairCost=[1, 3, 7]
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_penalty_vanilla_grows :: cost=[3, 4, 6] repairCost=[1, 3, 7]��ԭ���裺repairCost ÿ�� ��2+1 ? ���Ѹ����� = �죩
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_penalty_contrast :: ours=[0, 0, 0] vanilla=[1, 3, 7]
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_enchant_incompatible_rejected :: sharpness + bane_of_arthropods => out=EMPTY�����⣬ԭ�����
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_enchant_same_merged :: sharpness III + III => level=4��ԭ��ϲ�������ͬ�ȼ� +1��
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_fall_spawn :: ours intended=3 fromY=79 targetHealth=10.0000
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_fall_spawn :: ours intended=8 fromY=84 targetHealth=10.0000
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_fall_spawn :: ours intended=20 fromY=96 targetHealth=10.0000
+[19:23:48] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_fall_spawn :: vanilla intended=20 fromY=96 targetHealth=10.0000
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_fall_count :: records=4
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_fall_ours_3 :: ours/3 blocksRead=3 healthBefore=10.0000 damage=0.3000 block=bettergold:sturdygold_anvil expected=0.3000
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_fall_ours_8 :: ours/8 blocksRead=8 healthBefore=10.0000 damage=0.8000 block=bettergold:sturdygold_anvil expected=0.8000
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_fall_ours_20 :: ours/20 blocksRead=20 healthBefore=10.0000 damage=1.6000 block=bettergold:sturdygold_anvil expected=1.6000
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE PASS r8_fall_vanilla_control :: vanilla/20 blocksRead=20 healthBefore=10.0000 damage=38.0000 block=minecraft:anvil��ԭ�������� 2 ��/��δ���������д��16% �Ǹ��� = 1.6000��
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_fall_ours_all :: ours/3 blocksRead=3 healthBefore=10.0000 damage=0.3000 block=bettergold:sturdygold_anvil | ours/8 blocksRead=8 healthBefore=10.0000 damage=0.8000 block=bettergold:sturdygold_anvil | ours/20 blocksRead=20 healthBefore=10.0000 damage=1.6000 block=bettergold:sturdygold_anvil
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE INFO r8_fall_formula :: ÿ�� 1% / �ⶥ 16% �� Ŀ�굱ǰ����ֵ��Ѫ�� 10 ʱ 3 ��=0.3000 / 8 ��=0.8000 / 20 ��=1.6000
+[19:23:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R8PROBE SUMMARY pass=29 fail=0 forcedNow=0

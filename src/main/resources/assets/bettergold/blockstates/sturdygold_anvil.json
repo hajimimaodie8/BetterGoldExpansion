@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "bettergold:block/sturdygold_anvil",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "bettergold:block/sturdygold_anvil",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "bettergold:block/sturdygold_anvil"
+    },
+    "facing=west": {
+      "model": "bettergold:block/sturdygold_anvil",
+      "y": 90
+    }
+  }
+}

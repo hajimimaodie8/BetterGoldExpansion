@@ -419,6 +419,29 @@ public class AllBlocks {
     public static final DeferredItem<BlockItem> GOLDEN_TORCHFLOWER_ITEM =
             AllItems.ITEMS.registerSimpleBlockItem("golden_torchflower", GOLDEN_TORCHFLOWER);
 
+    // ==================== 1.7 轮8（bg-n10r8）：万坚金砧 ====================
+    // 作者原话（立档 §2.14）：「万坚金砧，详细合成配方请去看我所给的贴图文件里头，无法破坏，
+    // 一样会互斥附魔，主要功能为可以使用混沌金币串修复装备，且以这种方式的修复无法累积惩罚
+    // （就是不会出现过于昂贵），以及下落时根据坠落高度对被砸到的目标造成最多 16% 目标当前生命值的伤害」。
+    //
+    // 落点：方块本体 = block/SturdygoldAnvilBlock（继承原版 AnvilBlock：形状/四向/下落方块全复用），
+    //       界面 = menu/SturdygoldAnvilMenu（继承原版 AnvilMenu）+ client/SturdygoldAnvilScreen，
+    //       容器类型 = registry/AllMenus（本仓第一个 MenuType），下落公式 = block/SturdygoldAnvilFallDamage。
+    // ⚠ 刻意**不进** `#minecraft:anvil` 方块标签：那条标签是原版"下落砸到实体后随机裂开/消失"的守卫，
+    //   也是原版 AnvilMenu 的 isValidBlock 判据 —— 两者本项目都不需要（作者要"无法破坏"）。
+    // 属性：ofFullCopy(原版砧) 之后 strength(-1.0F, 3600000.0F) ⇒ 硬度 −1（生存/创造都挖不掉）、
+    //       抗爆 360 万（= 原版基岩/命令方块的写法，高于原版砧的 1200）。
+
+    /** 万坚金砧（不可破坏 + 自建界面的砧式方块） */
+    public static final DeferredBlock<com.hjmmd_8.bettergold.block.SturdygoldAnvilBlock> STURDYGOLD_ANVIL =
+            BLOCKS.register("sturdygold_anvil",
+                    () -> new com.hjmmd_8.bettergold.block.SturdygoldAnvilBlock(
+                            com.hjmmd_8.bettergold.block.SturdygoldAnvilBlock.defaultProperties()));
+
+    /** 万坚金砧的物品形态（创造页落在「建筑」分区的"其他建筑方块"段） */
+    public static final DeferredItem<BlockItem> STURDYGOLD_ANVIL_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("sturdygold_anvil", STURDYGOLD_ANVIL);
+
     private AllBlocks() {
     }
 

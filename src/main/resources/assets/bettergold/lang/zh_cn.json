@@ -793,5 +793,7 @@
   "item.bettergold.refined_alchemic_oil": "高精度炼金油",
   "item.bettergold.chaosalloy_forbidden_fruit": "崩乱合金禁果",
   "effect.bettergold.power_imbalance": "力量失衡",
-  "effect.bettergold.resistance_imbalance": "抗性失衡"
+  "effect.bettergold.resistance_imbalance": "抗性失衡",
+  "block.bettergold.sturdygold_anvil": "万坚金砧",
+  "container.bettergold.sturdygold_anvil": "万坚金砧"
 }

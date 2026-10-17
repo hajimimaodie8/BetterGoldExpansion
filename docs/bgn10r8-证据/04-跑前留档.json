@@ -1,0 +1,10 @@
+{
+  "server_properties_sha256": "A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4",
+  "saves": {
+    "新的世界": {
+      "entries": 29,
+      "digest": "AA8A9555AB5756D1601211D57FD0D3798B3E8596283D6B72F5BE6A0CF12F7E66"
+    }
+  },
+  "backup": "server.properties.bgn10r8.bak"
+}

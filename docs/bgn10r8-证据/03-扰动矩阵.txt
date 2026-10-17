@@ -1,0 +1,14 @@
+轮8（万坚金砧）扰动矩阵 —— 9 个用例（8 红 + 1 绿），每个用例逐字节复原 + SHA256 自证
+关卡：tools/asset-generator/validate_metal_data.py 的 [bgn10r8-*] 段
+
+用例 | 变更生效 | exit | 命中期望标签 | 逐字节复原 | 判定
+recipe-pattern         | True  | 1 | True  | True  | OK
+block-hardness         | True  | 1 | True  | True  | OK
+in-anvil-tag           | True  | 1 | True  | True  | OK
+texture-byte-flip      | True  | 1 | True  | True  | OK
+menu-super-delegation  | True  | 1 | True  | True  | OK
+fall-cap               | True  | 1 | True  | True  | OK
+screen-tab-width       | True  | 1 | True  | True  | OK
+needle-only-in-comment | True  | 1 | True  | True  | OK
+comment-only           | True  | 0 | False | True  | OK
+SUMMARY cases=9 ok=9 bad=0

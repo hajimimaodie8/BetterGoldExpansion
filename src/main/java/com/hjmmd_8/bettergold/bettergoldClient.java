@@ -118,6 +118,24 @@ public class bettergoldClient {
                 com.hjmmd_8.bettergold.client.MoneyGremlinModel::createBodyLayer);
     }
 
+    /**
+     * 1.7（bg-n10 轮8）：万坚金砧的界面注册 —— <b>本仓第一个自定义 Screen</b>。
+     *
+     * <p>NeoForge 21.1 的入口是 {@code RegisterMenuScreensEvent}（Forge 时代的
+     * {@code RegisterMenuTypes} 已不存在，见 {@code registry/AllMenus} 的类注释）。
+     * 这里注册的是"<b>MenuType → Screen 工厂</b>"这张表，客户端收到
+     * {@code ClientboundOpenScreenPacket} 后 {@code MenuScreens#create} 就靠它找界面；
+     * <b>漏了这一步的症状</b> = 服务端确实开了容器，客户端只打一行
+     * {@code Failed to create screen for menu type: bettergold:sturdygold_anvil}，界面根本不出来。</p>
+     */
+    @SubscribeEvent
+    static void onRegisterMenuScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+        event.register(com.hjmmd_8.bettergold.registry.AllMenus.STURDYGOLD_ANVIL.get(),
+                com.hjmmd_8.bettergold.client.SturdygoldAnvilScreen::new);
+        bettergold.LOGGER.info("万坚金砧界面已注册: {} -> SturdygoldAnvilScreen（本仓第一个自定义 Screen）",
+                com.hjmmd_8.bettergold.registry.AllMenus.STURDYGOLD_ANVIL.getId());
+    }
+
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code

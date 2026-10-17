@@ -107,6 +107,13 @@ public class bettergold {
         modEventBus.addListener(com.hjmmd_8.bettergold.network.BetterGoldNetwork::register);
         // Register custom mob effects
         AllEffects.EFFECTS.register(modEventBus);
+        // 1.7（bg-n10 轮8）：万坚金砧的**容器类型**（本仓第一个 MenuType）。
+        //   ⚠ 双端都注册（这里是主类 = 双端）；客户端的 Screen 才是单独一次注册，
+        //   走 bettergoldClient 的 RegisterMenuScreensEvent（NeoForge 21.1 没有 Forge 的 RegisterMenuTypes 事件）。
+        com.hjmmd_8.bettergold.registry.AllMenus.MENU_TYPES.register(modEventBus);
+        // 1.7（bg-n10 轮8）：万坚金砧「下落砸人」的**规则本体**（公式只在 block/SturdygoldAnvilFallDamage 一处）
+        com.hjmmd_8.bettergold.block.SturdygoldAnvilFallDamage.bootstrap();
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.block.SturdygoldAnvilFallDamage.class);
         // Register global loot modifiers
         AllLootModifiers.GLM.register(modEventBus);
         // 新约 1.3：投掷物实体注册

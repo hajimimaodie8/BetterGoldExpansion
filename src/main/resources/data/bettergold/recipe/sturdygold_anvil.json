@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB",
+    "ITI",
+    "ISI"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:gold_block"
+    },
+    "I": {
+      "item": "minecraft:gold_ingot"
+    },
+    "T": {
+      "item": "bettergold:sturdygold_upgrade_template"
+    },
+    "S": {
+      "item": "bettergold:sturdygold_ingot"
+    }
+  },
+  "result": {
+    "id": "bettergold:sturdygold_anvil",
+    "count": 1
+  }
+}

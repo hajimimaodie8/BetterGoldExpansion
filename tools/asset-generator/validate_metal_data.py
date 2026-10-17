@@ -6115,9 +6115,20 @@ else:
 #     `item.bettergold.smithing_template.chaosalloy_upgrade.applies_to`（金装备 → 混沌金装备）
 #     与 `.base_slot_description`（放入金制… → 放入混沌金…）；两条都不在冻结副本里
 #     （冻结副本 = 更早那份作者原稿），所以下面 ① 那条"既有条目被动过"仍是 0 条。
-_BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
-_BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
-_BGN10_NEW_LANG_KEYS = 73      # zh/en 各 73 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5 + 轮7 的 3
+# ⚠ **1.7 bg-n10r8（轮8 · 万坚金砧）第七次改常量**：新增 **2** 个键
+#   （`block.bettergold.sturdygold_anvil` / `container.bettergold.sturdygold_anvil`）⇒ 73 → **75**；
+#   两个文件级 SHA 同步换成本轮的值。旧值（轮7）原文留档（不删）：
+#     zh 7D2F9DE0D2BE3D7A84D3D81411861F8E… / en 22B350564878D89A413952A563CF8BAC… / 键数 73
+#   本轮仍是「只加不删」：冻结副本里每一个既有键的值逐字未变（下面 ① 那条会证明）。
+#   ⚠ 为什么是 2 条而不是 3 条：万坚金砧**不需要新物品**（配方用的全是既有物品），
+#     方块名 + 容器标题两个键就够；"花费 X 级"复用原版 `container.repair.cost`（不新增）。
+_BGN10_ZH_AFTER_SHA = "24348D4628134D39441CEE393B236D1B2694D2EF972263AC8FAE124FEB9C3F01"
+_BGN10_EN_AFTER_SHA = "116A20B59C9D46A068749835F1CD08DE0141D5FF9F5C7486EED1D2D49D14F995"
+_BGN10_NEW_LANG_KEYS = 75      # zh/en 各 75 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5 + 轮7 的 3 + 轮8 的 2
+# 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
+# _BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
+# _BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
+# _BGN10_NEW_LANG_KEYS = 73      # zh/en 各 73 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5 + 轮7 的 3
 # 旧值留档（原文保留，不删）：2026-10-17 轮6 的 65 → 轮5 的 70
 # _BGN10_ZH_AFTER_SHA = "4A23FF0AC6536BE0DF44E5E713CDD215BE373F254B169608110FC92D9C3BC6AA"
 # _BGN10_EN_AFTER_SHA = "D3FE7755F3C8778032619B453635D60386376C870796B61895B1542235CEDE07"
@@ -7448,6 +7459,360 @@ if not bgn10r7_problems:
     print("[bgn10r7-ok] 崩乱合金：20 条配方 / 块 ×3 + 信标 + §9.7 / 两个状态公式与无等级 / "
           "50% 三条派发 / 盔甲四件 / 禁果 11.6 全部通过")
 
+# ============================================================================
+# 1.7 轮8（bg-n10r8，2026-10-17）：万坚金砧（Sturdygold Anvil）
+#
+#   作者原话（立档 §2.14，逐字）：「万坚金砧，详细合成配方请去看我所给的贴图文件里头，无法破坏，
+#   一样会互斥附魔，主要功能为可以使用混沌金币串修复装备，且以这种方式的修复无法累积惩罚
+#   （就是不会出现过于昂贵），以及下落时根据坠落高度对被砸到的目标造成最多 16% 目标当前生命值的伤害」。
+#
+#   本段钉住（每一条都能单独变红）：
+#   ① 配方逐格（3 金块 + 4 金锭 + 1 万坚金模板 + 1 万坚金锭，产物 1 个）
+#   ② 「无法破坏」的两个数：strength(-1.0F, 3600000.0F) + ofFullCopy(原版砧)
+#   ③ **不进** #minecraft:anvil（这是"下落砸到实体后不像原版砧那样裂开/消失"的守卫）
+#   ④ 资产：blockstate 四向 / 模型（几何 = 原版 template_anvil 逐字）/ item 模型 / 掉落表 /
+#      7 张贴图的**字节原样**（SHA256 == 归档原件）
+#   ⑤ MenuType + Screen 的双端注册（本仓第一个 GUI）
+#   ⑥ 金币串修复 = 原版砧公式（每币 maxDamage/4）+ 界面常量与 176×166 主面板
+#   ⑦ 「不累积惩罚」只豁免这一条路：**全仓 0 处** calculateIncreasedRepairCost / REPAIR_COST
+#   ⑧ 「互斥附魔」只有原版那一份：**全仓 0 处** Enchantment.areCompatible
+#   ⑨ 下落伤害公式的唯一实现：min(16%, 1% × 格数) × 目标当前生命值
+#   ⑩ 语言键 / 文档落档
+# ============================================================================
+bgn10r8_problems: list[str] = []
+_bgn10r8_checked = 0
+
+
+def _bgn10r8_bad(tag: str, msg: str) -> None:
+    bgn10r8_problems.append("[%s] %s" % (tag, msg))
+
+
+_R8_JAVA = JAVA
+_R8_ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+_R8_DATA = REPO / "src" / "main" / "resources" / "data"
+_R8_ARCHIVE = REPO / "docs" / "新约10-素材清单" / "新约10"
+_R8_ANVIL = "sturdygold_anvil"
+
+
+def _r8_sha256(path):
+    import hashlib
+    if not path.is_file():
+        return ""
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+# ---------- ① 配方：3×3 逐格（立档 §1 的反解结果） ----------
+_r8_recipe = _R8_DATA / "bettergold" / "recipe" / (_R8_ANVIL + ".json")
+if not _r8_recipe.is_file():
+    _bgn10r8_bad("bgn10r8-recipe", "缺配方 data/bettergold/recipe/sturdygold_anvil.json")
+else:
+    _o = json.loads(_r8_recipe.read_text(encoding="utf-8"))
+    _pat = _o.get("pattern", [])
+    _key = _o.get("key", {})
+    _bgn10r8_checked += 11
+    if _o.get("type") != "minecraft:crafting_shaped":
+        _bgn10r8_bad("bgn10r8-recipe", "配方类型不是 crafting_shaped（立档给的是 3×3 排布）")
+    if _pat != ["BBB", "ITI", "ISI"]:
+        _bgn10r8_bad("bgn10r8-recipe", "3×3 排布不是立档那张图（金块×3 / 金锭-模板-金锭 / 金锭-万坚金锭-金锭）："
+                     + str(_pat))
+    _letters = "".join(_pat) if _pat else ""
+    if _letters.count("B") != 3:
+        _bgn10r8_bad("bgn10r8-recipe", "原版金块不是 3 个（实际 " + str(_letters.count("B")) + "）")
+    if _letters.count("I") != 4:
+        _bgn10r8_bad("bgn10r8-recipe", "原版金锭不是 4 个（实际 " + str(_letters.count("I")) + "）")
+    if _letters.count("T") != 1:
+        _bgn10r8_bad("bgn10r8-recipe", "万坚金升级模板不是 1 个（实际 " + str(_letters.count("T")) + "）")
+    if _letters.count("S") != 1:
+        _bgn10r8_bad("bgn10r8-recipe", "万坚金锭不是 1 个（实际 " + str(_letters.count("S")) + "）")
+    if _key.get("B", {}).get("item") != "minecraft:gold_block":
+        _bgn10r8_bad("bgn10r8-recipe", "B 不是原版金块（实际 " + str(_key.get("B")) + "）")
+    if _key.get("I", {}).get("item") != "minecraft:gold_ingot":
+        _bgn10r8_bad("bgn10r8-recipe", "I 不是原版金锭（实际 " + str(_key.get("I")) + "）")
+    if _key.get("T", {}).get("item") != "bettergold:sturdygold_upgrade_template":
+        _bgn10r8_bad("bgn10r8-recipe", "T 不是既有的万坚金升级锻造模板（实际 " + str(_key.get("T")) + "）")
+    if _key.get("S", {}).get("item") != "bettergold:sturdygold_ingot":
+        _bgn10r8_bad("bgn10r8-recipe", "S 不是既有的万坚金锭（实际 " + str(_key.get("S")) + "）")
+    if _o.get("result", {}).get("id") != "bettergold:sturdygold_anvil":
+        _bgn10r8_bad("bgn10r8-recipe", "产物不是 bettergold:sturdygold_anvil")
+    if _o.get("result", {}).get("count") != 1:
+        _bgn10r8_bad("bgn10r8-recipe", "产物数量不是 1")
+
+# ---------- ② 方块：继承原版砧 + 「无法破坏」的两个数 + codec ----------
+_r8_block_path = _R8_JAVA / "block" / "SturdygoldAnvilBlock.java"
+if not _r8_block_path.is_file():
+    _bgn10r8_bad("bgn10r8-block", "缺 block/SturdygoldAnvilBlock.java（方块本体）")
+    _r8_block = ""
+else:
+    _r8_block = strip_comments(_r8_block_path.read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("extends AnvilBlock", "方块不是继承原版 AnvilBlock（形状/四向/下落方块那几件本该免费复用）"),
+        ("ofFullCopy(Blocks.ANVIL)", "属性不是照原版砧全量复制（声音/挖掘要求会漂）"),
+        ("strength(-1.0F, 3600000.0F)", "「无法破坏」的两个数不是 硬度 -1.0F / 抗爆 3600000"),
+        ("public MapCodec<AnvilBlock> codec()", "codec() 没覆写（反序列化会造出原版砧）"),
+        ("simpleCodec(SturdygoldAnvilBlock::new)", "CODEC 的工厂不是本类构造器"),
+        ("new SturdygoldAnvilMenu(containerId, inventory, ContainerLevelAccess.create(level, pos))",
+         "服务端没有用带 ContainerLevelAccess 的本类菜单（stillValid 会永远 true）"),
+        ("setHurtsEntities(SturdygoldAnvilFallDamage.SIGNAL_PER_BLOCK",
+         "下落时没把原版那条路降级成高度信号（砸人伤害会走原版的固定数值）")):
+    _bgn10r8_checked += 1
+    if _needle not in _r8_block:
+        _bgn10r8_bad("bgn10r8-block", _why + "（缺 " + _needle + "）")
+
+# ---------- ③ 负向：**不进** #minecraft:anvil（下落砸到实体后不裂开 / 不消失的守卫） ----------
+_bgn10r8_checked += 2
+_r8_anvil_tag = _R8_DATA / "minecraft" / "tags" / "block" / "anvil.json"
+if _r8_anvil_tag.is_file():
+    _tv = [v if isinstance(v, str) else v.get("id")
+           for v in json.loads(_r8_anvil_tag.read_text(encoding="utf-8")).get("values", [])]
+    if "bettergold:sturdygold_anvil" in _tv:
+        _bgn10r8_bad("bgn10r8-not-in-anvil-tag",
+                     "万坚金砧被塞进了 #minecraft:anvil ⇒ 下落砸到实体会按原版概率裂开 / 消失（与「无法破坏」冲突）")
+if "BlockTags.ANVIL" in _r8_block:
+    _bgn10r8_bad("bgn10r8-not-in-anvil-tag", "方块类里引用了 BlockTags.ANVIL（原版砧的判据，本项目用的是自己的方块）")
+
+# ---------- ④ 资产：blockstate / 模型 / item 模型 / 掉落表 / 贴图字节原样 ----------
+_r8_bs = _R8_ASSETS / "blockstates" / (_R8_ANVIL + ".json")
+_bgn10r8_checked += 6
+if not _r8_bs.is_file():
+    _bgn10r8_bad("bgn10r8-assets", "缺 blockstates/sturdygold_anvil.json")
+else:
+    _bs = _r8_bs.read_text(encoding="utf-8")
+    for _facing, _y in (("east", 270), ("north", 180), ("south", None), ("west", 90)):
+        if ('"facing=' + _facing + '"') not in _bs:
+            _bgn10r8_bad("bgn10r8-assets", "blockstate 缺 facing=" + _facing + "（原版砧是四向）")
+        elif _y is not None and ('"y": ' + str(_y)) not in _bs:
+            _bgn10r8_bad("bgn10r8-assets", "facing=" + _facing + " 的 y 旋转不是 " + str(_y))
+    if '"model": "bettergold:block/sturdygold_anvil"' not in _bs:
+        _bgn10r8_bad("bgn10r8-assets", "blockstate 指的不是 bettergold:block/sturdygold_anvil")
+
+_r8_model = _R8_ASSETS / "models" / "block" / (_R8_ANVIL + ".json")
+_bgn10r8_checked += 8
+if not _r8_model.is_file():
+    _bgn10r8_bad("bgn10r8-assets", "缺 models/block/sturdygold_anvil.json")
+else:
+    _m = _r8_model.read_text(encoding="utf-8")
+    # 几何必须逐字等于原版 assets/minecraft/models/block/template_anvil.json 的四个 element
+    for _seg in ('"from": [ 2, 0, 2 ]', '"to": [ 14, 4, 14 ]',
+                 '"from": [ 4, 4, 3 ]', '"to": [ 12, 5, 13 ]',
+                 '"from": [ 6, 5, 4 ]', '"to": [ 10, 10, 12 ]',
+                 '"from": [ 3, 10, 0 ]', '"to": [ 13, 16, 16 ]'):
+        if _seg not in _m:
+            _bgn10r8_bad("bgn10r8-assets", "模型几何不是原版 template_anvil 逐字复制（缺 " + _seg + "）")
+    for _slot, _tex in (("particle", "sturdygold_anvil_ns"), ("ns", "sturdygold_anvil_ns"),
+                        ("ew", "sturdygold_anvil_ew"), ("top", "sturdygold_anvil_top"),
+                        ("base_top", "sturdygold_anvil_base_top"),
+                        ("base_bottom", "sturdygold_anvil_base_bottom")):
+        if ('"' + _slot + '": "bettergold:block/' + _tex + '"') not in _m:
+            _bgn10r8_bad("bgn10r8-assets", "模型的贴图槽 " + _slot + " 不是作者那张 " + _tex)
+
+_r8_item_model = _R8_ASSETS / "models" / "item" / (_R8_ANVIL + ".json")
+_bgn10r8_checked += 1
+if not _r8_item_model.is_file():
+    _bgn10r8_bad("bgn10r8-assets", "缺 models/item/sturdygold_anvil.json（物品会变紫黑格）")
+elif '"parent": "bettergold:block/sturdygold_anvil"' not in _r8_item_model.read_text(encoding="utf-8"):
+    _bgn10r8_bad("bgn10r8-assets", "item 模型的 parent 不是 bettergold:block/sturdygold_anvil")
+
+_r8_loot = _R8_DATA / "bettergold" / "loot_table" / "blocks" / (_R8_ANVIL + ".json")
+_bgn10r8_checked += 1
+if not _r8_loot.is_file():
+    _bgn10r8_bad("bgn10r8-assets", "缺掉落表 loot_table/blocks/sturdygold_anvil.json")
+elif "bettergold:sturdygold_anvil" not in _r8_loot.read_text(encoding="utf-8"):
+    _bgn10r8_bad("bgn10r8-assets", "掉落表掉的不是自己")
+
+# 贴图 7 张：字节必须与归档原件一致（作者素材不许改一个像素）
+_r8_tex_map = (
+    ("\u4e07\u575a\u91d1\u7827 \u4e0a.png", "textures/block/sturdygold_anvil_top.png"),
+    ("\u4e07\u575a\u91d1\u7827 \u524d\u540e.png", "textures/block/sturdygold_anvil_ns.png"),
+    ("\u4e07\u575a\u91d1\u7827 \u5de6\u53f3.png", "textures/block/sturdygold_anvil_ew.png"),
+    ("\u4e07\u575a\u91d1\u7827 \u5e95\u76d8\u4e0a\u90e8.png", "textures/block/sturdygold_anvil_base_top.png"),
+    ("\u4e07\u575a\u91d1\u7827 \u5e95\u76d8\u4e0b\u90e8.png", "textures/block/sturdygold_anvil_base_bottom.png"),
+    ("\u4e07\u575a\u91d1\u7827 gui.png", "textures/gui/container/sturdygold_anvil.png"),
+    ("\u7a7a\u69fd\u4e2d\u7684\u6df7\u6c8c\u91d1\u5e01\u4e32\u56fe\u6807.png",
+     "textures/gui/container/sturdygold_anvil_coin_ghost.png"),
+)
+for _src_name, _dst_rel in _r8_tex_map:
+    _bgn10r8_checked += 2
+    _src = _R8_ARCHIVE / _src_name
+    _dst = _R8_ASSETS / _dst_rel
+    if not _dst.is_file():
+        _bgn10r8_bad("bgn10r8-assets", "缺贴图 " + _dst_rel)
+    elif _r8_sha256(_src) != _r8_sha256(_dst):
+        _bgn10r8_bad("bgn10r8-assets", "贴图不是作者原件的字节原样：" + _dst_rel)
+
+# ---------- ⑤ MenuType + Menu（本仓第一个 GUI 的注册链） ----------
+_r8_menus_path = _R8_JAVA / "registry" / "AllMenus.java"
+_bgn10r8_checked += 4
+if not _r8_menus_path.is_file():
+    _bgn10r8_bad("bgn10r8-menu", "缺 registry/AllMenus.java")
+else:
+    _r8_menus = strip_comments(_r8_menus_path.read_text(encoding="utf-8"))
+    if "Registries.MENU" not in _r8_menus:
+        _bgn10r8_bad("bgn10r8-menu", "MenuType 没注册在 Registries.MENU 上")
+    if 'MENU_TYPES.register("sturdygold_anvil"' not in _r8_menus:
+        _bgn10r8_bad("bgn10r8-menu", "MenuType 的注册名不是 sturdygold_anvil")
+    if "SturdygoldAnvilMenu::new" not in _r8_menus:
+        _bgn10r8_bad("bgn10r8-menu", "MenuType 的工厂不是 SturdygoldAnvilMenu::new")
+    if "FeatureFlags.DEFAULT_FLAGS" not in _r8_menus:
+        _bgn10r8_bad("bgn10r8-menu", "MenuType 的世界特性集合不是 DEFAULT_FLAGS")
+
+_r8_main = strip_comments((_R8_JAVA / "bettergold.java").read_text(encoding="utf-8"))
+_bgn10r8_checked += 3
+if "com.hjmmd_8.bettergold.registry.AllMenus.MENU_TYPES.register(modEventBus)" not in _r8_main:
+    _bgn10r8_bad("bgn10r8-menu", "MenuType 注册表没挂到 mod 事件总线（双端都不会有容器类型）")
+if "com.hjmmd_8.bettergold.block.SturdygoldAnvilFallDamage.bootstrap()" not in _r8_main:
+    _bgn10r8_bad("bgn10r8-menu", "下落伤害的规则类没 bootstrap")
+if "NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.block.SturdygoldAnvilFallDamage.class)" not in _r8_main:
+    _bgn10r8_bad("bgn10r8-menu", "下落伤害的 @SubscribeEvent 没注册到游戏总线（伤害一条都不会跑）")
+
+_r8_client = strip_comments((_R8_JAVA / "bettergoldClient.java").read_text(encoding="utf-8"))
+_bgn10r8_checked += 3
+if "RegisterMenuScreensEvent" not in _r8_client:
+    _bgn10r8_bad("bgn10r8-screen", "客户端没监听 RegisterMenuScreensEvent（界面永远开不出来）")
+if "AllMenus.STURDYGOLD_ANVIL.get()" not in _r8_client:
+    _bgn10r8_bad("bgn10r8-screen", "Screen 没注册到我们的 MenuType 上")
+if "SturdygoldAnvilScreen::new" not in _r8_client:
+    _bgn10r8_bad("bgn10r8-screen", "Screen 工厂不是 SturdygoldAnvilScreen::new")
+
+# ---------- ⑥ 菜单：金币串修复 = 原版砧公式；界面 = 176×166 主面板 + 两处装饰 ----------
+_r8_menu_path = _R8_JAVA / "menu" / "SturdygoldAnvilMenu.java"
+if not _r8_menu_path.is_file():
+    _bgn10r8_bad("bgn10r8-menu", "缺 menu/SturdygoldAnvilMenu.java")
+    _r8_menu = ""
+else:
+    _r8_menu = strip_comments(_r8_menu_path.read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("extends AnvilMenu", "菜单不是继承原版 AnvilMenu（附魔合并就没法复用原版那一份）"),
+        ("public MenuType<?> getType()", "没覆写 getType()（客户端只会造出原版 AnvilMenu）"),
+        ("return AllMenus.STURDYGOLD_ANVIL.get();", "getType() 上报的不是自己的 MenuType"),
+        ("return state.is(AllBlocks.STURDYGOLD_ANVIL.get());", "isValidBlock 认的不是自己的方块"),
+        ("COIN_REPAIR_DIVISOR = 4", "「每币 maxDamage/4」的那个 4 没有单列常量"),
+        ("maxDamage / COIN_REPAIR_DIVISOR", "每币修复量不是 maxDamage / 4（原版砧公式）"),
+        ("AllItems.CHAOS_COIN_STRING.get()", "材料槽认的不是既有的混沌金币串"),
+        ("remaining -= Math.min(remaining, perCoin);", "扣损伤不是 min(剩余, 每币量) 逐币推进"),
+        ("result.setDamageValue(remaining);", "修完没有把剩余损伤写回结果"),
+        ("this.broadcastChanges();", "算完没有 broadcastChanges（客户端看不到结果）"),
+        ("super.createResult();", "其余各条路没有交回原版（复用合并逻辑的前提）"),
+        ("super.mayPickup(player, hasStack)", "非金币串那条路的取件判定没有交回原版"),
+        ("setMaximumCost(0)", "金币串这条路没有清掉原版那条 cost")):
+    _bgn10r8_checked += 1
+    if _needle not in _r8_menu:
+        _bgn10r8_bad("bgn10r8-menu", _why + "（缺 " + _needle + "）")
+
+# ⑦ 「不累积惩罚」= 只豁免金币串这一条路：全仓**零处** calculateIncreasedRepairCost / REPAIR_COST
+_hits_repair_cost = 0
+_hits_repair_component = 0
+for _p in JAVA.rglob("*.java"):
+    _t = strip_comments(_p.read_text(encoding="utf-8"))
+    if "calculateIncreasedRepairCost" in _t:
+        _hits_repair_cost += 1
+    if "REPAIR_COST" in _t:
+        _hits_repair_component += 1
+_bgn10r8_checked += 2
+if _hits_repair_cost != 0:
+    _bgn10r8_bad("bgn10r8-no-penalty",
+                 "全仓出现 calculateIncreasedRepairCost " + str(_hits_repair_cost) + " 处 —— "
+                 "「用金币串修复不累积惩罚」被破坏了（原版那条 ×2+1 只许留在原版 AnvilMenu 里）")
+if _hits_repair_component != 0:
+    _bgn10r8_bad("bgn10r8-no-penalty",
+                 "全仓出现 REPAIR_COST " + str(_hits_repair_component) + " 处 —— 我们不该碰修复惩罚组件")
+
+# ⑧ 「互斥附魔」= 只有原版那一份：全仓**零处** Enchantment.areCompatible（不许自己重写合并规则）
+_hits_compat = 0
+for _p in JAVA.rglob("*.java"):
+    if "areCompatible" in strip_comments(_p.read_text(encoding="utf-8")):
+        _hits_compat += 1
+_bgn10r8_checked += 1
+if _hits_compat != 0:
+    _bgn10r8_bad("bgn10r8-enchant-merge",
+                 "全仓出现 areCompatible " + str(_hits_compat) + " 处 —— 附魔互斥规则被第二份实现了"
+                 "（应当只走原版 AnvilMenu#createResult）")
+
+# ⑨ 下落伤害：公式的唯一实现 + 只认自己的方块
+_r8_fall_path = _R8_JAVA / "block" / "SturdygoldAnvilFallDamage.java"
+if not _r8_fall_path.is_file():
+    _bgn10r8_bad("bgn10r8-fall", "缺 block/SturdygoldAnvilFallDamage.java（下落伤害的规则本体）")
+    _r8_fall = ""
+else:
+    _r8_fall = strip_comments(_r8_fall_path.read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("SIGNAL_PER_BLOCK = 1.0F", "高度信号不是每格 1 点"),
+        ("PERCENT_PER_BLOCK = 0.01F", "每格坠落不是 1% 目标当前生命值"),
+        ("MAX_PERCENT = 0.16F", "封顶不是 16%（作者原话「最多 16%」）"),
+        ("return Math.min(MAX_PERCENT, PERCENT_PER_BLOCK * Math.max(0, blocks));",
+         "伤害比例的公式不是 min(16%, 1% × 格数)"),
+        ("return damageFraction(blocks) * currentHealth;",
+         "最终伤害不是 比例 × 目标当前生命值"),
+        ("event.setNewDamage(applyFallDamage(event.getEntity().getHealth(), blocks));",
+         "没有把伤害改成「按目标当前生命值」算出来的值"),
+        ("state.is(AllBlocks.STURDYGOLD_ANVIL.get())", "下落伤害没有限定在自己的方块上（会波及原版砧）")):
+    _bgn10r8_checked += 1
+    if _needle not in _r8_fall:
+        _bgn10r8_bad("bgn10r8-fall", _why + "（缺 " + _needle + "）")
+# 公式唯一：damageFraction 的定义只许一处
+_hits_fraction = 0
+for _p in JAVA.rglob("*.java"):
+    if "public static float damageFraction(" in strip_comments(_p.read_text(encoding="utf-8")):
+        _hits_fraction += 1
+_bgn10r8_checked += 1
+if _hits_fraction != 1:
+    _bgn10r8_bad("bgn10r8-fall", "伤害比例的公式出现处 = " + str(_hits_fraction) + "（必须恰好 1 处）")
+
+# 界面常量 + 两条禁令
+_r8_screen_path = _R8_JAVA / "client" / "SturdygoldAnvilScreen.java"
+if not _r8_screen_path.is_file():
+    _bgn10r8_bad("bgn10r8-screen", "缺 client/SturdygoldAnvilScreen.java")
+    _r8_screen = ""
+else:
+    _r8_screen = strip_comments(_r8_screen_path.read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("extends AbstractContainerScreen<SturdygoldAnvilMenu>", "界面不是自建 AbstractContainerScreen"),
+        ("PANEL_WIDTH = 176", "主面板宽度不是 176（原版砧尺寸，槽位才对齐）"),
+        ("PANEL_HEIGHT = 166", "主面板高度不是 166"),
+        ("TAB_W = 28", "右上装饰宽不是 28（原图 x 176..203）"),
+        ("TAB_H = 21", "右上装饰高不是 21（原图 y 0..20）"),
+        ("PLATES_W = 110", "左下两条灰条宽不是 110（原图 x 0..109）"),
+        ("PLATES_H = 32", "左下两条灰条高不是 32（原图 y 166..197）"),
+        ("TEX_W = 256", "blit 的 textureWidth 不是 256（uv 会算错）"),
+        ("setColor(1.0F, 1.0F, 1.0F, 0.35F)", "空槽幽灵图标不是 35% 半透明"),
+        ("setColor(1.0F, 1.0F, 1.0F, 1.0F)", "半透明画完没有还原 shader 颜色"),
+        ("ADDITIONAL_SLOT_X = 76", "幽灵图标的 x 不是输入 2 槽的 76"),
+        ("ADDITIONAL_SLOT_Y = 47", "幽灵图标的 y 不是输入 2 槽的 47")):
+    _bgn10r8_checked += 1
+    if _needle not in _r8_screen:
+        _bgn10r8_bad("bgn10r8-screen", _why + "（缺 " + _needle + "）")
+_bgn10r8_checked += 1
+if "blitSprite" in _r8_screen:
+    _bgn10r8_bad("bgn10r8-screen",
+                 "界面用了 blitSprite（gui/container 下的贴图不在 gui/sprites 图集里 ⇒ 静默紫黑格）")
+
+# ---------- ⑩ 语言键 / 文档 ----------
+for _k, _zh, _why in (
+        ("block.bettergold.sturdygold_anvil", "万坚金砧", "方块名"),
+        ("container.bettergold.sturdygold_anvil", "万坚金砧", "容器标题")):
+    _bgn10r8_checked += 2
+    if zh.get(_k) != _zh:
+        _bgn10r8_bad("bgn10r8-lang", "zh 的 " + _why + " 不是 " + _zh + "（实际 " + str(zh.get(_k)) + "）")
+    if en.get(_k) in (None, "") or en.get(_k) == zh.get(_k):
+        _bgn10r8_bad("bgn10r8-lang", "en 的 " + _why + " 缺失或与中文逐字相同")
+
+_r8_doc17 = REPO / "docs" / "1.7-\u6df7\u6c8c\u91d1\u4e0e\u5d29\u4e71\u5408\u91d1-\u9700\u6c42\u7acb\u6863.md"
+_r8_doc16 = REPO / "docs" / "1.6-\u89c4\u683c.md"
+_bgn10r8_checked += 2
+if not _r8_doc17.is_file() or "bg-n10r8" not in _r8_doc17.read_text(encoding="utf-8"):
+    _bgn10r8_bad("bgn10r8-doc", "docs/1.7 里没有轮8（bg-n10r8）这一节")
+if not _r8_doc16.is_file() or "bg-n10r8" not in _r8_doc16.read_text(encoding="utf-8"):
+    _bgn10r8_bad("bgn10r8-doc", "docs/1.6-规格.md 里没有轮8 对既有口径的改动一节")
+
+print("1.7 轮8（万坚金砧：不可破坏 + 自建 GUI + 金币串修复不累积惩罚 + 下落 16%）问题: "
+      + str(len(bgn10r8_problems)) + " " + str(bgn10r8_problems[:4])
+      + "（本段判定 " + str(_bgn10r8_checked) + " 条）")
+if _bgn10r8_checked <= 0:
+    _bgn10r8_bad("bgn10r8-anti-vacuum", "本段一条判定都没跑（反空转）")
+if not bgn10r8_problems:
+    print("[bgn10r8-ok] 万坚金砧：配方 9 格 / 硬度 -1 与抗爆 3600000 / 不进 #minecraft:anvil / "
+          "四向 blockstate + 几何逐字原版 / MenuType+Screen 双端注册 / 每币 maxDamage/4 / "
+          "全仓 0 处修复惩罚与互斥重写 / min(16%,1%×格数)×当前血量 全部通过")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -7456,7 +7821,8 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
-                       _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems)
+                       _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems,
+                       bgn10r8_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems
