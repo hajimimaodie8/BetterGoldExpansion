@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:chaosalloy_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:chaosgold_knife"
+  },
+  "addition": {
+    "item": "bettergold:chaosalloy_ingot"
+  },
+  "result": {
+    "id": "bettergold:chaosalloy_knife",
+    "count": 1
+  }
+}

@@ -1,0 +1,42 @@
+轮7 A 级读数（真服务端 + 真 ServerPlayer；探针 BgN10r7Probe，收尾已整块删除）
+来源：`gradlew runServer` 的 log4j 日志（run/logs/latest.log + build/bgn10r7_rs.out）里 BGN10R7PROBE 的全部行
+判读：PASS/FAIL 逐条 + 末行 SUMMARY（pass / fail / forcedNow）
+====================================================================================================================
+
+[1710月2026 18:54:11.559] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE probe registered (switch file found) gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[1710月2026 18:54:18.415] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_forceload_set :: forcedAfter=9
+[1710月2026 18:54:18.416] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE INFO world :: name=world base=(40,76,40)
+[1710月2026 18:54:18.619] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_recipe_ingot :: out=bettergold:chaosalloy_ingot count=1
+[1710月2026 18:54:18.624] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_recipe_template :: out=bettergold:chaosalloy_upgrade_template
+[1710月2026 18:54:18.625] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_recipe_block :: out=bettergold:chaosalloy_block
+[1710月2026 18:54:18.634] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_recipe_fruit :: out=bettergold:chaosalloy_forbidden_fruit
+[1710月2026 18:54:18.641] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_recipe_smithing_all :: ok=15/15 bad=[]
+[1710月2026 18:54:18.642] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_block_hardness_x3 :: chaosalloy=150.0000 netherite=50.0000 ratio=3.0000
+[1710月2026 18:54:18.642] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_block_resistance_x3 :: chaosalloy=3600.0000 netherite=1200.0000 ratio=3.0000
+[1710月2026 18:54:18.643] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_block_beacon_base :: tag=true netheriteControl=true
+[1710月2026 18:54:18.644] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_dust_exempt_positive :: chaosalloy_block exempt=true（家族索引自动覆盖，零代码）
+[1710月2026 18:54:18.644] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_dust_exempt_negative :: netherite_block exempt=true stone exempt=false
+[1710月2026 18:54:18.655] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_dust_event_antique_keeps_block :: dropsAfter=bettergold:chaosalloy_block（走的是 .7 的 if (!conversionExempt) 守卫）
+[1710月2026 18:54:18.657] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_effect_no_level_power :: amplifier=0 duration=320
+[1710月2026 18:54:18.658] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_effect_no_level_resistance :: amplifier=0 duration=320
+[1710月2026 18:54:18.672] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_resistance_imbalance_x2 :: control=4.0000 withEffect=8.0000（固定 ×2）
+[1710月2026 18:54:18.678] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_power_imbalance_control :: control=[6.0000, 6.0000]
+[1710月2026 18:54:18.680] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_power_imbalance_endpoints :: controlThenEffect=[6.0000, 1.0000, 6.0000, 1.0000]（最低 1 / 最高原本 6，两端乒乓）
+[1710月2026 18:54:18.691] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_imbalance_melee_50pct :: n=400 hits=202 ratio=0.5050 power=100 resistance=102（50% 挂不挂 × 50/50 二选一）
+[1710月2026 18:54:18.774] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_imbalance_ranged_50pct :: n=200 hits=107 ratio=0.5350 weaponItem=arrowWeaponSet
+[1710月2026 18:54:18.786] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_shield_break_immune :: specialMetal=true breakImmune=true cooldownBeforeTick=true cooldownAfterTick=false
+[1710月2026 18:54:18.786] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_family_flags :: imbalanceOnAttack=true imbalanceReflect=true
+[1710月2026 18:54:18.788] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_ranges_pingpong_all :: 8 件近战装配的 低端/高端 读数与声明逐项相等（刀含 FD 的 +4.5 攻击加成偏移）bad=[]
+[1710月2026 18:54:18.789] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_bow_range_3_5_4_5 :: low=3.5000 high=4.5000
+[1710月2026 18:54:18.789] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_bow_full_draw_20 :: fullDrawTicks=20
+[1710月2026 18:54:18.789] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_crossbow_charge_1_2 :: getUseDuration=27（= chargeDuration 24 + 3；1.2 秒）
+[1710月2026 18:54:18.789] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_mining_range_8_16 :: breakSpeed low=8.0000 high=16.0000（original=16 = Tier 基准）
+[1710月2026 18:54:18.792] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_mace_final_x1_4 :: mace=14.0000（10 × 1.4） siblingSword=10.0000（10，对照）
+[1710月2026 18:54:18.797] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE INFO armorDiag :: hurtApplied=true invulnerable=false abilitiesInv=false isInvulnerableTo=false health=11.599999 pct=0.1600
+[1710月2026 18:54:18.799] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_armor_range_reduction :: 6 发读数=[8.400001, 6.0, 8.400001, 6.0, 8.400001, 6.0]（公式 = 10 × (1 − 四件当前值之和)；出现 >= 2 个不同值 = 在乒乓）
+[1710月2026 18:54:18.883] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_armor_reflect_40pct :: n=400 procs=171 ratio=0.4275（4 × 10% = 40%）
+[1710月2026 18:54:18.883] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_fruit_nutrition_saturation :: nutrition=4 saturation=11.6000（原版金苹果 9.6 + 2 = 11.6）
+[1710月2026 18:54:18.892] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE INFO fruitDiag :: fruitCd=true controlCd=true
+[1710月2026 18:54:18.892] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_fruit_eat_saturation :: saturationDelta=11.6000 cooldown=true
+[1710月2026 18:54:18.898] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE PASS r7_fruit_effect_16min_1to4 :: effects=-Bad Omen[amp=0,dur=19200] 
+[1710月2026 18:54:18.899] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R7PROBE SUMMARY pass=32 fail=0 forcedNow=0

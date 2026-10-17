@@ -758,10 +758,10 @@
   "item.bettergold.chaosalloy_boots": "崩乱合金靴子",
   "item.bettergold.chaosalloy_upgrade_template": "崩乱合金升级锻造模板",
   "block.bettergold.chaosalloy_block": "崩乱合金块",
-  "item.bettergold.smithing_template.chaosalloy_upgrade.applies_to": "金装备",
+  "item.bettergold.smithing_template.chaosalloy_upgrade.applies_to": "混沌金装备",
   "item.bettergold.smithing_template.chaosalloy_upgrade.ingredients": "崩乱合金锭",
   "item.bettergold.smithing_template.chaosalloy_upgrade.upgrade_description": "崩乱合金升级",
-  "item.bettergold.smithing_template.chaosalloy_upgrade.base_slot_description": "放入金制盔甲、武器或工具",
+  "item.bettergold.smithing_template.chaosalloy_upgrade.base_slot_description": "放入混沌金盔甲、武器或工具",
   "item.bettergold.smithing_template.chaosalloy_upgrade.additions_slot_description": "放入崩乱合金锭",
   "trim_material.bettergold.chaosalloy": "崩乱合金质",
   "item.bettergold.chaosgold_mace": "混沌金重锤",
@@ -790,5 +790,8 @@
   "block.bettergold.golden_torchflower_crop": "金火把花作物",
   "block.bettergold.potted_golden_torchflower": "盆栽金火把花",
   "item.bettergold.golden_torchflower_seeds": "金火把花种子",
-  "item.bettergold.refined_alchemic_oil": "高精度炼金油"
+  "item.bettergold.refined_alchemic_oil": "高精度炼金油",
+  "item.bettergold.chaosalloy_forbidden_fruit": "崩乱合金禁果",
+  "effect.bettergold.power_imbalance": "力量失衡",
+  "effect.bettergold.resistance_imbalance": "抗性失衡"
 }

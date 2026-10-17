@@ -1239,6 +1239,13 @@ public final class MetalEvents {
         } else if (family.echoRoarOnAttack) { // 1.6 幽咆金：叠 1 级 6 秒音咆（内部 id echo_roar）
             stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.ECHO_ROAR,
                     MetalFamily.ECHO_ROAR_TICKS);
+        } else if (family.imbalanceOnAttack) {
+            // ---------- 1.7 bg-n10r7（轮7）崩乱合金：50% 概率随机挂 16 秒「力量失衡」或「抗性失衡」 ----------
+            // 作者原话（立档 §2.10）：「攻击时 50% 概率随机挂 16 秒力量失衡或抗性失衡（近战与远程都可）」。
+            // 「50% 挂不挂」由本方法开头的配置闸门（chaosalloyWeaponBuffChance = 0.5）承担；
+            // 这里只做「二选一」⇒ 每次命中各 25%（立档 §4 ⑬-c 未裁，按字面取该读法）。
+            // 近战 / 弓 / 弩 / 投掷三叉戟 / 盾牌格挡**全部**走这一条派发链（本方法是唯一派发点）。
+            com.hjmmd_8.bettergold.material.ImbalanceEffects.applyRandom(target);
         }
     }
 
@@ -1883,7 +1890,9 @@ public final class MetalEvents {
                 || FLAME_ID.equals(family.id) || VOODOO_ID.equals(family.id)
                 || THUNDER_ID.equals(family.id) || family.sedimentReflect
                 // 1.6（bg-16）：树棘金 / 幽咆金盔甲也是「每件 25%、四件 100%」那一档
-                || family.parasiteReflect || family.echoRoarReflect;
+                || family.parasiteReflect || family.echoRoarReflect
+                // 1.7（bg-n10r7）：崩乱合金盔甲 —— 每件 10%（配置项 chaosalloyArmorBuffChance）、四件 40%
+                || family.imbalanceReflect;
     }
 
     /**
@@ -1934,6 +1943,10 @@ public final class MetalEvents {
             } else if (family.echoRoarReflect) {   // 1.6 幽咆金：给攻击者叠 1 级幽咆
                 stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.ECHO_ROAR,
                         MetalFamily.ECHO_ROAR_TICKS);
+            } else if (family.imbalanceReflect) {
+                // 1.7（bg-n10r7）崩乱合金盔甲：每件 10%（配置项）、四件 40% ⇒ 给攻击者随机挂一个失衡
+                //（50/50 选「力量失衡 / 抗性失衡」，与器具命中同一个入口 ImbalanceEffects#applyRandom）
+                com.hjmmd_8.bettergold.material.ImbalanceEffects.applyRandom(attacker);
             }
         }
         // 结雷金：每件 25% 几率清除自身一次虚弱与颤栗

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GIG",
+    "GAG",
+    "GCG"
+  ],
+  "key": {
+    "G": {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    "I": {
+      "item": "minecraft:netherite_upgrade_smithing_template"
+    },
+    "A": {
+      "item": "bettergold:chaosalloy_ingot"
+    },
+    "C": {
+      "item": "bettergold:chaosgold_block"
+    }
+  },
+  "result": {
+    "id": "bettergold:chaosalloy_upgrade_template",
+    "count": 1
+  }
+}

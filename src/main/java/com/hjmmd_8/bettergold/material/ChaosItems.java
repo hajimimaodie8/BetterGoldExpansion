@@ -51,6 +51,25 @@ public final class ChaosItems {
     public static final int ENCHANTING_BOOK_MIN_ENCH_LEVEL = 1;
     public static final int ENCHANTING_BOOK_MAX_ENCH_LEVEL = 5;
 
+    // ==================== 1.7 bg-n10r7（轮7）：崩乱禁果 ====================
+    // 作者原话（立档 §2.13）：「混沌金苹果 + 崩乱合金锭（无序）」、「比原版金苹果**多 2 点饱和度**」、
+    //   「食用后 **16 分钟**任意 **1..4 级**状态效果」、「**16 分钟**冷却」。
+    /** 崩乱禁果：效果时长 16 分钟 = 19200 tick */
+    public static final int CHAOSALLOY_FRUIT_EFFECT_TICKS = 16 * 60 * 20;
+    /** 崩乱禁果：物品冷却 16 分钟 = 19200 tick */
+    public static final int CHAOSALLOY_FRUIT_COOLDOWN_TICKS = 16 * 60 * 20;
+    /** 崩乱禁果：效果等级 1..4（amplifier = 等级 − 1） */
+    public static final int CHAOSALLOY_FRUIT_MIN_LEVEL = 1;
+    public static final int CHAOSALLOY_FRUIT_MAX_LEVEL = 4;
+    /**
+     * 崩乱禁果的**饱和度系数**：绝对饱和 = 原版金苹果 9.6 **+ 2 = 11.6**（作者原话"多 2 点饱和度"）。
+     *
+     * <p>{@code FoodProperties} 的构造入口是 {@code saturationModifier(系数)}，
+     * 实际绝对饱和 = {@code nutrition × 系数 × 2} ⇒ 系数 = {@code 11.6 / (4 × 2)} = <b>1.45</b>
+     * （复算：4 × 1.45 × 2 = 11.6 ✓；原版金苹果 9.6 = 4 × 1.2 × 2）。</p>
+     */
+    public static final float CHAOSALLOY_FRUIT_SATURATION_MODIFIER = 1.45F;
+
     /**
      * 混沌禁果（{@code chaosgold_forbidden_fruit}）。
      *
@@ -85,35 +104,65 @@ public final class ChaosItems {
         public static final float GOLDEN_APPLE_SATURATION_MODIFIER = 1.2F;
 
         public ForbiddenFruitItem(Properties properties) {
-            super(properties);
+            this(properties, FORBIDDEN_FRUIT_EFFECT_TICKS, FORBIDDEN_FRUIT_COOLDOWN_TICKS,
+                    FORBIDDEN_FRUIT_MIN_LEVEL, FORBIDDEN_FRUIT_MAX_LEVEL);
         }
+
+        /**
+         * 1.7 轮7：把「时长 / 冷却 / 等级区间」参数化，好让<b>崩乱禁果</b>（16 分钟 / 1..4 级）复用同一份实现。
+         *
+         * <p>⚠ 那条"抽取池 = 全部已注册效果"的逻辑<b>只有一份</b>（{@link #applyRandomEffect(Player, int, int, int)}
+         * + {@link #pool()}），两个禁果的差别只在四个数上 —— 不许为第二颗果子再写一份抽取代码。</p>
+         */
+        public ForbiddenFruitItem(Properties properties, int effectTicks, int cooldownTicks,
+                int minLevel, int maxLevel) {
+            super(properties);
+            this.effectTicks = effectTicks;
+            this.cooldownTicks = cooldownTicks;
+            this.minLevel = minLevel;
+            this.maxLevel = maxLevel;
+        }
+
+        /** 本物的效果时长（混沌禁果 3600 / 崩乱禁果 19200） */
+        public final int effectTicks;
+        /** 本物的冷却（混沌禁果 3600 / 崩乱禁果 19200） */
+        public final int cooldownTicks;
+        /** 本物的效果等级下限 / 上限（混沌禁果 1..3 / 崩乱禁果 1..4） */
+        public final int minLevel;
+        public final int maxLevel;
 
         @Override
         public ItemStack finishUsingItem(ItemStack stack, Level level, net.minecraft.world.entity.LivingEntity entity) {
             ItemStack result = super.finishUsingItem(stack, level, entity);
             if (!level.isClientSide && entity instanceof Player player) {
-                // 冷却：3 分钟（原版 ItemCooldowns 的冷却按"物品"记，堆叠数量不影响）
-                player.getCooldowns().addCooldown(this, FORBIDDEN_FRUIT_COOLDOWN_TICKS);
-                applyRandomEffect(player);
+                // 冷却：混沌禁果 3 分钟 / 崩乱禁果 16 分钟（原版 ItemCooldowns 的冷却按"物品"记，堆叠数量不影响）
+                player.getCooldowns().addCooldown(this, cooldownTicks);
+                applyRandomEffect(player, effectTicks, minLevel, maxLevel);
             }
             return result;
         }
 
         /**
-         * 抽一条**任意**已注册状态效果并施加（1..3 级 / 3600 tick）。
+         * 抽一条**任意**已注册状态效果并施加（等级区间 / 时长由参数给；混沌禁果 = 1..3 级 / 3600 tick）。
          *
          * <p>读数接口：返回真正施加的那一条（探针用它证明"集合 = 全部已注册效果"），
          * 池子为空时返回 {@code null}（理论上不可能，但绝不 NPE）。</p>
          */
-        public static Holder<MobEffect> applyRandomEffect(Player player) {
+        public static Holder<MobEffect> applyRandomEffect(Player player, int effectTicks, int minLevel,
+                int maxLevel) {
             Holder<MobEffect> picked = pickRandomEffect(player);
             if (picked == null) {
                 return null;
             }
-            int level = FORBIDDEN_FRUIT_MIN_LEVEL
-                    + player.getRandom().nextInt(FORBIDDEN_FRUIT_MAX_LEVEL - FORBIDDEN_FRUIT_MIN_LEVEL + 1);
-            player.addEffect(new MobEffectInstance(picked, FORBIDDEN_FRUIT_EFFECT_TICKS, level - 1));
+            int level = minLevel + player.getRandom().nextInt(maxLevel - minLevel + 1);
+            player.addEffect(new MobEffectInstance(picked, effectTicks, level - 1));
             return picked;
+        }
+
+        /** 混沌禁果的固定口径（1..3 级 / 3600 tick）—— 旧签名保留，调用方一个字节都不变 */
+        public static Holder<MobEffect> applyRandomEffect(Player player) {
+            return applyRandomEffect(player, FORBIDDEN_FRUIT_EFFECT_TICKS,
+                    FORBIDDEN_FRUIT_MIN_LEVEL, FORBIDDEN_FRUIT_MAX_LEVEL);
         }
 
         /** 抽取池（= 全部已注册效果；探针用它枚举真源，证明"集合正确"而不是抽样） */
@@ -231,6 +280,28 @@ public final class ChaosItems {
             () -> new ChaosEnchantingBookItem(new Item.Properties().stacksTo(1)));
 
     /**
+     * <b>崩乱禁果</b>（{@code chaosalloy_forbidden_fruit}，1.7 bg-n10r7 轮7）。
+     *
+     * <p>作者原话（立档 §2.13）：「<b>混沌金苹果 + 崩乱合金锭</b>，<b>无序</b>」、
+     * 「比原版金苹果<b>多 2 点饱和度</b>」（⇒ 绝对饱和 9.6 + 2 = <b>11.6</b>，复算
+     * {@code 4 × 1.45 × 2 = 11.6}）、「食用后 <b>16 分钟</b>任意 <b>1..4 级</b>状态效果」、
+     * 「<b>16 分钟冷却</b>」。饥饿值与原版金苹果相同 = <b>4</b>。</p>
+     *
+     * <p>⚠ 「混沌金苹果」的所指（立档 §4 歧义 ㉒）按 §4.0「全部按字面」+ 轮4 的既成事实读作
+     * <b>混沌禁果 {@code chaosgold_forbidden_fruit}</b>（zip 里那张贴图就叫「混沌金禁果」）⇒
+     * 配方 = 1 混沌禁果 + 1 崩乱合金锭（无序）。</p>
+     */
+    public static final DeferredItem<Item> CHAOSALLOY_FORBIDDEN_FRUIT = AllItems.ITEMS.register(
+            "chaosalloy_forbidden_fruit",
+            () -> new ForbiddenFruitItem(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(ForbiddenFruitItem.GOLDEN_APPLE_NUTRITION)
+                            .saturationModifier(CHAOSALLOY_FRUIT_SATURATION_MODIFIER)
+                            .build()),
+                    CHAOSALLOY_FRUIT_EFFECT_TICKS, CHAOSALLOY_FRUIT_COOLDOWN_TICKS,
+                    CHAOSALLOY_FRUIT_MIN_LEVEL, CHAOSALLOY_FRUIT_MAX_LEVEL));
+
+    /**
      * 触发本类的静态初始化 + 注册（在 mod 构造器里调用；放在 {@code AllMetals.bootstrap()} 之前，
      * 因为创造页分类要用到本类的两个 id）。
      */
@@ -238,6 +309,12 @@ public final class ChaosItems {
         bettergold.LOGGER.info("混沌金专属物品已注册: {} / {}（禁果池 {} 条 / 附魔书门槛 {} 级）",
                 CHAOSGOLD_FORBIDDEN_FRUIT.getId(), CHAOSGOLD_ENCHANTING_BOOK.getId(),
                 ForbiddenFruitItem.pool().size(), ENCHANTING_BOOK_MIN_PLAYER_LEVEL);
+        // 1.7 轮7：崩乱禁果（16 分钟 / 1..4 级 / 冷却 19200 tick）
+        bettergold.LOGGER.info("崩乱禁果已注册: {}（{} tick / {}..{} 级 / 冷却 {} tick / 饱和 {}）",
+                CHAOSALLOY_FORBIDDEN_FRUIT.getId(), CHAOSALLOY_FRUIT_EFFECT_TICKS,
+                CHAOSALLOY_FRUIT_MIN_LEVEL, CHAOSALLOY_FRUIT_MAX_LEVEL,
+                CHAOSALLOY_FRUIT_COOLDOWN_TICKS,
+                ForbiddenFruitItem.GOLDEN_APPLE_NUTRITION * CHAOSALLOY_FRUIT_SATURATION_MODIFIER * 2);
     }
 
     private ChaosItems() {

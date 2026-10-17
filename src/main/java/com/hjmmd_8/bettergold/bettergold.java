@@ -95,6 +95,10 @@ public class bettergold {
         // 1.7（bg-n10 轮3）：「区间值」的**接线层** —— 攻击伤害（属性差值）/ 挖掘速度（BreakSpeed）/
         // 远程命中翻转（DamageSource#getWeaponItem）。规则本体仍在 ChaosRange（公式只有一处）。
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ChaosWiring.class);
+        // 1.7（bg-n10r7 轮7）：两个新状态效果「力量失衡 / 抗性失衡」的**规则本体**
+        //   —— 两条公式的唯一实现在 material/ImbalanceEffects（伤害事件里改写）。
+        com.hjmmd_8.bettergold.material.ImbalanceEffects.bootstrap();
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ImbalanceEffects.class);
         // Register the Deferred Register to the mod event bus so creative tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
         // Register custom recipe serializers

@@ -758,10 +758,10 @@
   "item.bettergold.chaosalloy_boots": "Chaosalloy Boots",
   "item.bettergold.chaosalloy_upgrade_template": "Chaosalloy Upgrade Smithing Template",
   "block.bettergold.chaosalloy_block": "Chaosalloy Block",
-  "item.bettergold.smithing_template.chaosalloy_upgrade.applies_to": "Golden Gear",
+  "item.bettergold.smithing_template.chaosalloy_upgrade.applies_to": "Chaosgold gear",
   "item.bettergold.smithing_template.chaosalloy_upgrade.ingredients": "Chaosalloy Ingot",
   "item.bettergold.smithing_template.chaosalloy_upgrade.upgrade_description": "Chaosalloy Upgrade",
-  "item.bettergold.smithing_template.chaosalloy_upgrade.base_slot_description": "Put golden armor, weapons or tools",
+  "item.bettergold.smithing_template.chaosalloy_upgrade.base_slot_description": "Put chaosgold armor, weapons or tools",
   "item.bettergold.smithing_template.chaosalloy_upgrade.additions_slot_description": "Put a Chaosalloy Ingot",
   "trim_material.bettergold.chaosalloy": "Chaosalloy",
   "item.bettergold.chaosgold_mace": "Chaosgold Mace",
@@ -790,5 +790,8 @@
   "block.bettergold.golden_torchflower_crop": "Golden Torchflower Crop",
   "block.bettergold.potted_golden_torchflower": "Potted Golden Torchflower",
   "item.bettergold.golden_torchflower_seeds": "Golden Torchflower Seeds",
-  "item.bettergold.refined_alchemic_oil": "Refined Alchemic Oil"
+  "item.bettergold.refined_alchemic_oil": "Refined Alchemic Oil",
+  "item.bettergold.chaosalloy_forbidden_fruit": "Chaosalloy Forbidden Fruit",
+  "effect.bettergold.power_imbalance": "Power Imbalance",
+  "effect.bettergold.resistance_imbalance": "Resistance Imbalance"
 }

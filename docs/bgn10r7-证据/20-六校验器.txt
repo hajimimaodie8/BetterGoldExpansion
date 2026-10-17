@@ -1,0 +1,16 @@
+轮7 构建与六校验器（判据 = exit 码 + 关键计数两列）
+====================================================================================================================
+
+compileJava / build   exit=0  BUILD SUCCESSFUL（仅有既有 GiftBoxItem 的 unchecked 提示）
+runData               exit=0  All providers took: 0 ms + BUILD SUCCESSFUL（Bootstrap/mixin 冒烟）
+runServer（A 级）      exit=0  SUMMARY pass=32 fail=0 forcedNow=0
+jar 产物               bettergold-1.6.0.jar（1556913 B / SHA256 A3888A26C10ADE6436D27FABA82D3DD3）
+
+validate_metal_assets.py     exit=0  [bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0） | [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_metal_data.py       exit=0  [bgn10r7-ok] 崩乱合金：20 条配方 / 块 ×3 + 信标 + §9.7 / 两个状态公式与无等级 / 50% 三条派发 / 盔甲四件 / 禁果 11.6 全部通过 | [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_trim_assets.py      exit=0  [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+check_jar_clean.py           exit=0  [jar-clean-ok] 产物 jar 干净（条目 2726；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py       exit=0  [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+validate_advancements.py     exit=0  [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+判读：以上六个 exit 全 0；关键计数行见上。本轮新增门禁 = validate_metal_data 的 「1.7 轮7（崩乱合金…）」段（162 条判定；扰动 7 用例见 03-扰动矩阵.txt）。

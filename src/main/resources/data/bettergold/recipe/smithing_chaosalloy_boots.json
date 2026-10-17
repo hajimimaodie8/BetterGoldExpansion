@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:chaosalloy_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:chaosgold_boots"
+  },
+  "addition": {
+    "item": "bettergold:chaosalloy_ingot"
+  },
+  "result": {
+    "id": "bettergold:chaosalloy_boots",
+    "count": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "bettergold:chaosgold_forbidden_fruit"
+    },
+    {
+      "item": "bettergold:chaosalloy_ingot"
+    }
+  ],
+  "result": {
+    "id": "bettergold:chaosalloy_forbidden_fruit",
+    "count": 1
+  }
+}

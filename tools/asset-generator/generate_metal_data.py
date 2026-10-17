@@ -41,8 +41,13 @@ METALS = {
     #   chaosgold  核心材料 = **混沌金币**（`chaos_coin`，Spec.coreItem；立档 §2.2 可执行口径第 2 条）
     #   chaosalloy **没有**核心材料（它的锭是"下界合金锭 + 混沌金块 + 高精度炼金油"合出来的，
     #             原料链不在本族里）⇒ special_* 一律不许写，下面的写入必须判空。
+    #   1.7 bg-n10r7 轮7：chaosalloy 多一件**禁果**（`chaosalloy_forbidden_fruit`）——
+    #     用 `forbidden_fruit: True` 单独声明，**不许**把 forbidden_fruit 塞进 ITEM_NAMES
+    #     （那一张表是"每族九件"的通用表，塞进去会为八族各写一条**死语言键**：
+    #      `flamegold_forbidden_fruit` 这类物品根本不存在 —— 与「语言键与注册物体一一对应」冲突，
+    #      实测由 `validate_metal_data.py` 的"全部物品都要有语言键 / 不许有死键"两段抓出来）。
     "chaosgold":     {"cn": "混沌金", "en": "Chaosgold",   "special_cn": "混沌金币",     "special_en": "Chaos Coin",          "special_id": "chaos_coin"},
-    "chaosalloy":    {"cn": "崩乱合金", "en": "Chaosalloy"},
+    "chaosalloy":    {"cn": "崩乱合金", "en": "Chaosalloy", "forbidden_fruit": True},
 }
 
 # 物品 id 后缀 -> (中文模板, 英文模板)
@@ -87,6 +92,9 @@ EFFECT_NAMES = {
     #   （作者素材里的文件名是「音咆.png」，这里只取图、不改名）。
     "parasite": ("寄生", "Parasite"),
     "echo_roar": ("幽咆", "Echo Roar"),
+    # 1.7（bg-n10r7 轮7）：崩乱合金的两个新状态（无等级 ⇒ 名字里不许出现 %s）
+    "power_imbalance": ("力量失衡", "Power Imbalance"),
+    "resistance_imbalance": ("抗性失衡", "Resistance Imbalance"),
 }
 
 
@@ -133,6 +141,10 @@ def main() -> None:
         if meta.get("special_id"):
             zh[f"item.bettergold.{meta['special_id']}"] = meta["special_cn"]
             en[f"item.bettergold.{meta['special_id']}"] = meta["special_en"]
+        # 1.7 轮7：崩乱禁果（只有声明了 forbidden_fruit 的族才写这一条 —— 见 METALS 里的注释）
+        if meta.get("forbidden_fruit"):
+            zh[f"item.bettergold.{mid}_forbidden_fruit"] = f"{cn}禁果"
+            en[f"item.bettergold.{mid}_forbidden_fruit"] = f"{en_name} Forbidden Fruit"
         for suffix, (z, e) in ITEM_NAMES.items():
             # 形态过滤：材料链三类（raw / nugget / upgrade_template）+ **11 种建材**都按
             # MF.has(...) 取（崩乱合金只有 block ⇒ 它只剩 block 一条建材语言键）；
@@ -147,14 +159,25 @@ def main() -> None:
         # 升级模板的 5 条说明（键名与万坚金一致）——只在**注册了模板形态**的族上写
         if MF.has(mid, "upgrade_template"):
             base = f"item.bettergold.smithing_template.{mid}_upgrade."
-            zh[base + "applies_to"] = "金装备"
-            en[base + "applies_to"] = "Golden Gear"
+            # ⚠ 1.7 bg-n10r7（轮7）：崩乱合金模板的 base 是**混沌金装备**（作者原话
+            #   「可应用于: 混沌金装备 / 所需材料: 崩乱合金锭」）⇒ 只有这一族覆盖 applies_to 与
+            #   base_slot_description；其余八族逐字仍是「金装备」。
+            #   ⚠ 这两条键在海那族**已经存在**（轮1/轮2 按"金装备"写过），而 `insert_lang`
+            #   只插缺失键、不会改既有值 ⇒ 产物侧另有一次同样的手改（两处都在，
+            #   口径见 `docs/1.7-...-需求立档.md` 轮7 节）。
+            applies_zh, applies_en = "金装备", "Golden Gear"
+            base_slot_zh, base_slot_en = "放入金制盔甲、武器或工具", "Put golden armor, weapons or tools"
+            if mid == "chaosalloy":
+                applies_zh, applies_en = "混沌金装备", "Chaosgold gear"
+                base_slot_zh, base_slot_en = "放入混沌金盔甲、武器或工具", "Put chaosgold armor, weapons or tools"
+            zh[base + "applies_to"] = applies_zh
+            en[base + "applies_to"] = applies_en
             zh[base + "ingredients"] = f"{cn}锭"
             en[base + "ingredients"] = f"{en_name} Ingot"
             zh[base + "upgrade_description"] = f"{cn}升级"
             en[base + "upgrade_description"] = f"{en_name} Upgrade"
-            zh[base + "base_slot_description"] = "放入金制盔甲、武器或工具"
-            en[base + "base_slot_description"] = "Put golden armor, weapons or tools"
+            zh[base + "base_slot_description"] = base_slot_zh
+            en[base + "base_slot_description"] = base_slot_en
             zh[base + "additions_slot_description"] = f"放入{cn}锭"
             en[base + "additions_slot_description"] = f"Put a {en_name} Ingot"
 

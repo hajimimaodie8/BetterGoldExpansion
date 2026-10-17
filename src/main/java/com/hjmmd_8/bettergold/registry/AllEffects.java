@@ -291,6 +291,39 @@ public class AllEffects {
             });
 
     /**
+     * <b>力量失衡（{@code power_imbalance}，1.7 bg-n10 轮7）</b> —— 崩乱合金器具 / 盔甲 / 盾牌 50% 概率施加的
+     * 两个新状态之一（作者原话：「让目标的<b>最低伤害为 1</b>、<b>最高为其原本伤害数值</b>」）。
+     *
+     * <ul>
+     *   <li><b>作用对象 = 被施加者"打出去"的伤害</b>（不是受到的伤害；后者是 {@link #RESISTANCE_IMBALANCE}）。</li>
+     *   <li><b>公式（唯一实现在 {@code material.ImbalanceEffects}）</b>：每次该实体造成伤害时，
+     *       把「本次攻击本来会造成的最终伤害 {@code D}」按<b>两端乒乓</b>替换为 {@code 1} 或 {@code D}
+     *       （{@code D < 1} 时下端取 {@code D}，不会反过来"加伤"）。</li>
+     *   <li>⚠ <b>口径记账（立档 §4 ⑬-a 未裁）</b>：另一种读法是 {@code clamp(D, 1, D)} ——
+     *       那在数学上是<b>恒等变换</b>（永远看不出效果、A 级无法读数），因此取"两端乒乓"这一读法；
+     *       与全族「区间值 = 两端乒乓」（裁定 ①）同一套语言。<b>作者一句话可改成 clamp。</b></li>
+     *   <li><b>无等级</b>：施加时永远 {@code amplifier = 0}（见 {@code ImbalanceEffects#apply}），
+     *       语言键不带 {@code %s} ⇒ 原版显示不出罗马数字。</li>
+     * </ul>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> POWER_IMBALANCE =
+            EFFECTS.register("power_imbalance", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xC2410C) {
+                // 纯标记型效果：伤害改写只在 ImbalanceEffects 的伤害事件里做（每 tick 无逻辑）
+            });
+
+    /**
+     * <b>抗性失衡（{@code resistance_imbalance}，1.7 bg-n10 轮7）</b> —— 作者原话：
+     * 「受伤害倍率<b>最高增长到 100%</b>（双倍增伤）」，立档 §4.0 ⑬b 裁定 = <b>固定 ×2</b>（不做 1.0..2.0 浮动）。
+     *
+     * <p>公式唯一实现在 {@code material.ImbalanceEffects#resistanceMultiplier()}；
+     * <b>无等级</b>，同 {@link #POWER_IMBALANCE}。</p>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> RESISTANCE_IMBALANCE =
+            EFFECTS.register("resistance_imbalance", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x0F766E) {
+                // 纯标记型效果：×2 只在 ImbalanceEffects 的伤害事件里做
+            });
+
+    /**
      * <b>高燃 / 沉淀的每秒伤害公式（唯一实现）</b>（bg-fix 第 6 条，作者 2026-10-05 裁定「曲线整体后移一级」）。
      *
      * <pre>伤害 = max(0, 等级 − 1)   ，其中 等级 = amplifier + 1

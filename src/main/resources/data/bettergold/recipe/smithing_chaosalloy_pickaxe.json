@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "bettergold:chaosalloy_upgrade_template"
+  },
+  "base": {
+    "item": "bettergold:chaosgold_pickaxe"
+  },
+  "addition": {
+    "item": "bettergold:chaosalloy_ingot"
+  },
+  "result": {
+    "id": "bettergold:chaosalloy_pickaxe",
+    "count": 1
+  }
+}

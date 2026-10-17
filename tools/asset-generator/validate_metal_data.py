@@ -6106,9 +6106,22 @@ else:
 #   旧值（轮6）原文留档（不删）：
 #     zh B3101EFE3448856648EB085DCC53CF26… / en E3C9EA8B2DCAF3A6D4080E03F89A16D3… / 键数 65
 #   本轮仍是「只加不删」：冻结副本里每一个既有键的值逐字未变（下面 ① 那条会证明）。
-_BGN10_ZH_AFTER_SHA = "4A23FF0AC6536BE0DF44E5E713CDD215BE373F254B169608110FC92D9C3BC6AA"
-_BGN10_EN_AFTER_SHA = "D3FE7755F3C8778032619B453635D60386376C870796B61895B1542235CEDE07"
-_BGN10_NEW_LANG_KEYS = 70      # zh/en 各 70 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5
+# ⚠ **1.7 bg-n10r7（轮7 · 崩乱合金）第六次改常量**：新增 **3** 个键
+#   （`effect.bettergold.power_imbalance` / `effect.bettergold.resistance_imbalance` /
+#    `item.bettergold.chaosalloy_forbidden_fruit`）⇒ 70 → **73**；两个文件级 SHA 同步换成本轮的值。
+#   旧值（轮5）原文留档（不删）：
+#     zh 4A23FF0AC6536BE0DF44E5E713CDD215… / en D3FE7755F3C8778032619B453635D603… / 键数 70
+#   ⚠ 本轮另外**改了 2 条既有键的值**（作者原话「可应用于: **混沌金装备**」）：
+#     `item.bettergold.smithing_template.chaosalloy_upgrade.applies_to`（金装备 → 混沌金装备）
+#     与 `.base_slot_description`（放入金制… → 放入混沌金…）；两条都不在冻结副本里
+#     （冻结副本 = 更早那份作者原稿），所以下面 ① 那条"既有条目被动过"仍是 0 条。
+_BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
+_BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
+_BGN10_NEW_LANG_KEYS = 73      # zh/en 各 73 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5 + 轮7 的 3
+# 旧值留档（原文保留，不删）：2026-10-17 轮6 的 65 → 轮5 的 70
+# _BGN10_ZH_AFTER_SHA = "4A23FF0AC6536BE0DF44E5E713CDD215BE373F254B169608110FC92D9C3BC6AA"
+# _BGN10_EN_AFTER_SHA = "D3FE7755F3C8778032619B453635D60386376C870796B61895B1542235CEDE07"
+# _BGN10_NEW_LANG_KEYS = 70      # zh/en 各 70 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5
 # 旧值留档（原文保留，不删）：2026-10-17 轮6 的 65
 # _BGN10_ZH_AFTER_SHA = "B3101EFE3448856648EB085DCC53CF266542EAABCB696AD311C933DEEAEFCACC"
 # _BGN10_EN_AFTER_SHA = "E3C9EA8B2DCAF3A6D4080E03F89A16D36419BA9C46A4B3174A627CAD06C5D7DD"
@@ -6347,11 +6360,38 @@ def _num(_s: str) -> float:
     return float(_s.rstrip("fF"))
 
 
-_b10w_ranges = {(_f, _c): (_num(_a), _num(_b)) for _f, _c, _a, _b in re.findall(
-    r"chaosRange\(MetalFamily\.Form\.([A-Z_]+), ChaosRange\.Channel\.([A-Z_]+),\s*([0-9.]+)[fF]?,\s*([0-9.]+)[fF]?\)",
-    _bgn10_am_nc)}
-_b10w_speeds = {_f: _num(_v) for _f, _v in re.findall(
-    r"attackSpeed\(MetalFamily\.Form\.([A-Z_]+),\s*([0-9.]+)[fF]?\)", _bgn10_am_nc)}
+# ⚠ 1.7 bg-n10r7（轮7）就地改造：解析改成**按族**（registerChaosgold / registerChaosalloy 各切各的方法体）。
+#   旧口径（原文保留）= 在整份 AllMetals 上反解成一张全局表：
+#     `_b10w_ranges = {(_f, _c): (_num(_a), _num(_b)) for _f, _c, _a, _b in re.findall(..., _bgn10_am_nc)}`
+#   ⇒ 轮7 给崩乱合金声明了同一批形态（SWORD+MACE…）之后，后声明的那一档会**覆盖**前一档，
+#     于是"混沌金的剑 4..8"被读成"8..16"⇒ 假红。改成按族切方法体后，两族各比各的期望表，
+#     并且多了一条**跨族不变量**：崩乱合金每一档都必须**严格高于**混沌金（作者：崩乱合金在上）。
+def _b10w_family_body(_method: str) -> str:
+    _m = re.search(r"private static MetalFamily %s\(\) \{(.*?)\n    \}" % _method, _bgn10_am_nc, re.S)
+    return _m.group(1) if _m else ""
+
+
+def _b10w_parse_ranges(_body: str) -> dict:
+    return {(_f, _c): (_num(_a), _num(_b)) for _f, _c, _a, _b in re.findall(
+        r"chaosRange\(MetalFamily\.Form\.([A-Z_]+), ChaosRange\.Channel\.([A-Z_]+),\s*"
+        r"([0-9.]+)[fF]?,\s*([0-9.]+)[fF]?\)", _body)}
+
+
+def _b10w_parse_speeds(_body: str) -> dict:
+    return {_f: _num(_v) for _f, _v in re.findall(
+        r"attackSpeed\(MetalFamily\.Form\.([A-Z_]+),\s*([0-9.]+)[fF]?\)", _body)}
+
+
+_b10w_body_cg = _b10w_family_body("registerChaosgold")
+_b10w_body_ca = _b10w_family_body("registerChaosalloy")
+if not _b10w_body_cg:
+    _bgn10w_bad("bgn10-chaos-wiring", "解析不到 AllMetals.registerChaosgold()（反空转守护）")
+if not _b10w_body_ca:
+    _bgn10w_bad("bgn10-chaos-wiring", "解析不到 AllMetals.registerChaosalloy()（反空转守护）")
+_b10w_ranges = _b10w_parse_ranges(_b10w_body_cg)
+_b10w_speeds = _b10w_parse_speeds(_b10w_body_cg)
+_b10w_ranges_ca = _b10w_parse_ranges(_b10w_body_ca)
+_b10w_speeds_ca = _b10w_parse_speeds(_b10w_body_ca)
 # 作者原话（立档 §2.4 / 任务口径）：剑 4..8 / 重锤 3..7 / 三叉戟 7..11 / 斧 7..10 / 镐 2..6 /
 #   锹 2.5..6.5 / 锄 1..5 / 刀 1.5..5.5（乐事）/ 弓 2.0..3.5 / 弩 3.5..4.5；投掷 9..13
 _B10W_WANT_RANGES = {
@@ -6368,25 +6408,66 @@ _B10W_WANT_RANGES = {
 }
 if len(_b10w_ranges) < len(_B10W_WANT_RANGES):
     _bgn10w_bad("bgn10-chaos-wiring",
-                "从 AllMetals 只反解到 %d 条形态区间声明（期望 >= %d；解析失败 / 声明被删）"
+                "从 AllMetals（混沌金）只反解到 %d 条形态区间声明（期望 >= %d；解析失败 / 声明被删）"
                 % (len(_b10w_ranges), len(_B10W_WANT_RANGES)))
 for _k, _want in _B10W_WANT_RANGES.items():
     _got = _b10w_ranges.get(_k)
     if _got != _want:
         _bgn10w_bad("bgn10-chaos-wiring",
-                    "AllMetals 的 %s+%s 声明的两端值 %s ≠ 作者给的 %s" % (_k[0], _k[1], _got, _want))
+                    "AllMetals（混沌金）的 %s+%s 声明的两端值 %s ≠ 作者给的 %s" % (_k[0], _k[1], _got, _want))
+# ---------- 崩乱合金（1.7 bg-n10r7 轮7）：作者逐件给的数 ----------
+# 剑 8..16 / 重锤 7..14 / 三叉戟 11..22 / 斧 10..20 / 镐 6..12 / 锹 6.5..13 / 锄 5..10 /
+#   刀 5.5..11（乐事）/ 弓 3.5..4.5 / 弩 4.5..5；投掷 9..13（⚠ 与混沌金一字不差 ⇒ 疑似笔误，待作者裁）
+_B10W_WANT_RANGES_CA = {
+    ("SWORD", "ATTACK"): (8.0, 16.0),
+    ("MACE", "ATTACK"): (7.0, 14.0),
+    ("TRIDENT", "ATTACK"): (11.0, 22.0),
+    ("AXE", "ATTACK"): (10.0, 20.0),
+    ("PICKAXE", "ATTACK"): (6.0, 12.0),
+    ("SHOVEL", "ATTACK"): (6.5, 13.0),
+    ("HOE", "ATTACK"): (5.0, 10.0),
+    ("KNIFE", "ATTACK"): (5.5, 11.0),
+    ("BOW", "ATTACK"): (3.5, 4.5),
+    ("CROSSBOW", "ATTACK"): (4.5, 5.0),
+}
+if len(_b10w_ranges_ca) < len(_B10W_WANT_RANGES_CA):
+    _bgn10w_bad("bgn10-chaos-wiring",
+                "从 AllMetals（崩乱合金）只反解到 %d 条形态区间声明（期望 >= %d）"
+                % (len(_b10w_ranges_ca), len(_B10W_WANT_RANGES_CA)))
+for _k, _want in _B10W_WANT_RANGES_CA.items():
+    _got = _b10w_ranges_ca.get(_k)
+    if _got != _want:
+        _bgn10w_bad("bgn10-chaos-wiring",
+                    "AllMetals（崩乱合金）的 %s+%s 声明的两端值 %s ≠ 作者给的 %s"
+                    % (_k[0], _k[1], _got, _want))
+# 跨族不变量：崩乱合金每一档都**严格高于**混沌金（作者：崩乱合金在混沌金之上）。
+#   ⇒ 拦"整段复制混沌金的值忘了改"这种静默错。
+for _k, _cg in _B10W_WANT_RANGES.items():
+    _ca = _b10w_ranges_ca.get(_k)
+    if _ca is not None and not (_ca[0] > _cg[0] and _ca[1] > _cg[1]):
+        _bgn10w_bad("bgn10-chaos-wiring",
+                    "崩乱合金的 %s 档 %s 没有严格高于混沌金 %s（两族数值疑似被复制成同一份）"
+                    % (_k[0], _ca, _cg))
 # 攻速：作者给的**最终值**（剑 1.6 / 重锤 0.6 / 三叉戟 1.1 / 斧 1 / 镐 1.2 / 锹 1 / 锄 4 / 刀 2）
 _B10W_WANT_SPEEDS = {"SWORD": 1.6, "MACE": 0.6, "TRIDENT": 1.1, "AXE": 1.0,
                      "PICKAXE": 1.2, "SHOVEL": 1.0, "HOE": 4.0, "KNIFE": 2.0}
 if len(_b10w_speeds) < len(_B10W_WANT_SPEEDS):
     _bgn10w_bad("bgn10-chaos-wiring",
-                "从 AllMetals 只反解到 %d 条攻速声明（期望 >= %d）"
+                "从 AllMetals（混沌金）只反解到 %d 条攻速声明（期望 >= %d）"
                 % (len(_b10w_speeds), len(_B10W_WANT_SPEEDS)))
 for _k, _want in _B10W_WANT_SPEEDS.items():
     if _b10w_speeds.get(_k) != _want:
         _bgn10w_bad("bgn10-chaos-wiring",
                     "%s 的攻速声明 %s ≠ 作者给的 %s" % (_k, _b10w_speeds.get(_k), _want))
-# 投掷 9..13 / 重锤 ×1.0 / 弓 20 tick / 弩 1.2 秒 / 刀 1.5+2.0 —— 逐条字面
+# 崩乱合金的攻速：作者只点名了 剑 1.6 / 重锤 0.6 / 三叉戟 1.1 / 刀 2，另四件用工作值
+#   （斧 1.0 / 镐 1.2 / 锹 1.0 / 锄 4.0，= 原版同类器具的最终攻速）——
+#   ⚠ 四件**必须显式声明**：`chaosAttributes` 的 ATTACK_SPEED 回退是 0.0（不写 = 最终攻速 4.0，刷手速）。
+for _k, _want in _B10W_WANT_SPEEDS.items():
+    if _b10w_speeds_ca.get(_k) != _want:
+        _bgn10w_bad("bgn10-chaos-wiring",
+                    "崩乱合金 %s 的攻速声明 %s ≠ %s（缺声明会让最终攻速变成 4.0）"
+                    % (_k, _b10w_speeds_ca.get(_k), _want))
+# 投掷 9..13 / 重锤 ×1.0 / 弓 20 tick / 弩 1.2 秒 / 刀 1.5+2.0 —— 逐条字面（混沌金）
 for _lit, _why in (
         ("tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)", "缺投掷 9..13（作者原话）"),
         ("maceFinalDamageMultiplier(1.0F)", "缺重锤「最终伤 ×1.0」"),
@@ -6395,6 +6476,19 @@ for _lit, _why in (
         ("knifeAttributes(1.5F, 2.0F)", "缺乐事刀「伤害 1.5 下端 / 攻速 2」")):
     if _lit not in _bgn10_am_nc:
         _bgn10w_bad("bgn10-chaos-wiring", "AllMetals 里%s（字面 `%s`）" % (_why, _lit))
+# 崩乱合金的区间外固定值：**逐条按作者原话**（与混沌金同名的三条 + 重锤 1.4 + 刀 5.5）
+for _lit, _why in (
+        ("tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)",
+         "崩乱合金缺投掷 9..13（⚠ 作者给的就是 9..13，与混沌金一字不差 ⇒ 疑似笔误，按字面做）"),
+        ("maceFinalDamageMultiplier(1.4F)", "崩乱合金缺重锤「最终伤 ×1.4 固定」"),
+        ("bowFullDraw(20, 0.0F)", "崩乱合金缺弓「最大拉弓 20」"),
+        ("crossbowCharge(1.2F)", "崩乱合金缺弩「蓄力 1.2 秒」"),
+        ("knifeAttributes(5.5F, 2.0F)", "崩乱合金缺乐事刀「伤害 5.5 下端 / 攻速 2」"),
+        ("imbalanceOnAttack()", "崩乱合金器具缺「命中挂失衡」"),
+        ("imbalanceReflect()", "崩乱合金盔甲缺「被击反挂失衡」"),
+        ("specialWeaponMetal(true, 2048)", "崩乱合金盾牌缺「格挡反 buff / 免疫破盾」那一档")):
+    if _lit not in _b10w_body_ca:
+        _bgn10w_bad("bgn10-chaos-wiring", "AllMetals（崩乱合金）里%s（字面 `%s`）" % (_why, _lit))
 # 挖掘速度：注册基准必须是**区间上端**（否则"当前值 − 上端"的差值算错）
 if "spec.miningSpeed = 12.0F" not in _bgn10_am_nc:
     _bgn10w_bad("bgn10-chaos-wiring", "chaosgold 的 miningSpeed 不是区间上端 12.0F（差值基准错）")
@@ -6497,7 +6591,17 @@ else:
             ("FORBIDDEN_FRUIT_EFFECT_TICKS = 3600", "效果时长不是 3 分钟 3600 tick"),
             ("FORBIDDEN_FRUIT_COOLDOWN_TICKS = 3600", "冷却不是 3 分钟 3600 tick"),
             ("FORBIDDEN_FRUIT_MAX_LEVEL = 3", "效果等级上限不是 3"),
-            ("addCooldown(this, FORBIDDEN_FRUIT_COOLDOWN_TICKS)", "没有真的挂 ItemCooldowns"),
+            # ⚠ 1.7 bg-n10r7（轮7）就地改造：轮7 把「时长 / 冷却 / 等级区间」参数化，
+            #   好让崩乱禁果（16 分钟 / 1..4 级）复用同一份实现 ⇒ 调用点的字面从
+            #   `addCooldown(this, FORBIDDEN_FRUIT_COOLDOWN_TICKS)` 变成 `addCooldown(this, cooldownTicks)`
+            #   （旧期望原文留档：`addCooldown(this, FORBIDDEN_FRUIT_COOLDOWN_TICKS)`）。
+            #   新判据**更强**：冷却必须由"每次读字段"给出（不是写死的常量），且两个禁果的参数都要在。
+            ("addCooldown(this, cooldownTicks)", "没有真的挂 ItemCooldowns（且冷却不是按本物参数给）"),
+            ("CHAOSALLOY_FRUIT_EFFECT_TICKS = 16 * 60 * 20", "崩乱禁果的效果时长不是 16 分钟"),
+            ("CHAOSALLOY_FRUIT_COOLDOWN_TICKS = 16 * 60 * 20", "崩乱禁果的冷却不是 16 分钟"),
+            ("CHAOSALLOY_FRUIT_MAX_LEVEL = 4", "崩乱禁果的效果等级上限不是 4"),
+            ("CHAOSALLOY_FRUIT_SATURATION_MODIFIER = 1.45F",
+             "崩乱禁果的饱和度系数不是 1.45（= 11.6 / (4×2)，原版金苹果 9.6 + 2）"),
             ("BuiltInRegistries.MOB_EFFECT.holders()", "效果抽取池不是「全部已注册效果」（含第三方）")):
         if _needle not in _ci_txt:
             _bgn10r4_bad("bgn10r4-forbidden-fruit", "%s（缺 %s）" % (_why, _needle))
@@ -7055,6 +7159,295 @@ if _bgn10r5_checked <= 0:
 if not bgn10r5_problems:
     print("[bgn10r5-ok] 金火把花：贴图哈希/模型/标签/语言键/亮度口径/作物阶段/酿造三端点 全部通过")
 
+# ==========================================================================================
+# 1.7 轮7（bg-n10r7，2026-10-17）：崩乱合金（锭 / 块 / 模板 / 14 件器具 + 刀 / 4 件盔甲 / 禁果 /
+#   两个新状态「力量失衡 · 抗性失衡」）
+# ==========================================================================================
+# 这一段钉的全是「声明了但没接线也全绿」的高危形状：
+#   ① 配方（20 条）逐条反解，不只查"文件在"；
+#   ② 块的硬度 / 抗爆 = 下界合金块 ×3（150 / 3600）+ 信标基座 + §9.7 例外集自动覆盖；
+#   ③ 两个状态的公式（力量两端 / 抗性 ×2）+ **无等级**（amplifier 恒 0）+ 公式只在 ImbalanceEffects 一处；
+#   ④ 50% 派发三条路（器具命中 / 盔甲被击 / 盾牌格挡）都走同一入口；
+#   ⑤ 盔甲四件（护甲值 / 耐久 / 32 / 8 / 0.20 / 4..10 区间）；
+#   ⑥ 崩乱禁果（饱和 11.6 / 19200 tick / 1..4 级 / 配方）；
+#   ⑦ 语言键与模板文案（"可应用于: 混沌金装备"）；
+#   ⑧ 文档落档。
+bgn10r7_problems: list[str] = []
+_bgn10r7_checked = 0
+
+
+def _bgn10r7_bad(tag: str, msg: str) -> None:
+    bgn10r7_problems.append("[%s] %s" % (tag, msg))
+
+
+_R7_JAVA = JAVA
+_R7_ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+_R7_DATA = REPO / "src" / "main" / "resources" / "data"
+_R7_RECIPES = _R7_DATA / "bettergold" / "recipe"
+_R7_METAL = "chaosalloy"
+
+# ---------- ① 配方：20 条（锭 / 块→锭 / 锭→块 / 模板 / 禁果 / 15 条锻造） ----------
+_R7_GEAR = ["sword", "mace", "trident", "bow", "crossbow",
+            "axe", "pickaxe", "shovel", "hoe", "shield",
+            "helmet", "chestplate", "leggings", "boots", "knife"]
+_R7_FILES = ([f"{_R7_METAL}_ingot.json", f"{_R7_METAL}_block_from_ingot.json",
+              f"{_R7_METAL}_ingot_from_block.json", f"{_R7_METAL}_upgrade_template.json",
+              f"{_R7_METAL}_forbidden_fruit.json"]
+             + [f"smithing_{_R7_METAL}_{g}.json" for g in _R7_GEAR])
+for _name in _R7_FILES:
+    _bgn10r7_checked += 1
+    if not (_R7_RECIPES / _name).is_file():
+        _bgn10r7_bad("bgn10r7-recipes", "缺配方 " + _name)
+
+# ①-a 锭：无序、**9 项** = 4 下界合金锭 + 4 混沌金块 + 1 高精度炼金油
+_p = _R7_RECIPES / f"{_R7_METAL}_ingot.json"
+if _p.is_file():
+    _bgn10r7_checked += 4
+    _o = json.loads(_p.read_text(encoding="utf-8"))
+    _ings = [i.get("item") for i in _o.get("ingredients", [])]
+    if _o.get("type") != "minecraft:crafting_shapeless":
+        _bgn10r7_bad("bgn10r7-recipes", "崩乱合金锭配方不是无序合成（作者原话：无序）")
+    if len(_ings) != 9:
+        _bgn10r7_bad("bgn10r7-recipes", "崩乱合金锭配方的材料数不是 9（实际 " + str(len(_ings)) + "）")
+    if _ings.count("minecraft:netherite_ingot") != 4:
+        _bgn10r7_bad("bgn10r7-recipes", "崩乱合金锭配方里下界合金锭不是 4 个")
+    if _ings.count("bettergold:chaosgold_block") != 4:
+        _bgn10r7_bad("bgn10r7-recipes", "崩乱合金锭配方里混沌金块不是 4 个")
+    if _ings.count("bettergold:refined_alchemic_oil") != 1:
+        _bgn10r7_bad("bgn10r7-recipes", "崩乱合金锭配方里高精度炼金油不是 1 个")
+
+# ①-b 模板：3×3 逐格（6 混沌金锭 + 原版下界合金升级模板 + 崩乱合金锭 + 混沌金块）
+_p = _R7_RECIPES / f"{_R7_METAL}_upgrade_template.json"
+if _p.is_file():
+    _bgn10r7_checked += 4
+    _o = json.loads(_p.read_text(encoding="utf-8"))
+    _pat = _o.get("pattern", [])
+    _key = _o.get("key", {})
+    if _pat != ["GIG", "GAG", "GCG"]:
+        _bgn10r7_bad("bgn10r7-recipes", "模板配方的 3×3 排布不是立档那张图 GIG/GAG/GCG")
+    if _key.get("I", {}).get("item") != "minecraft:netherite_upgrade_smithing_template":
+        _bgn10r7_bad("bgn10r7-recipes", "模板配方的中心不是原版下界合金升级模板")
+    if _key.get("A", {}).get("item") != "bettergold:chaosalloy_ingot":
+        _bgn10r7_bad("bgn10r7-recipes", "模板配方中心下格不是崩乱合金锭")
+    _letters = "".join(_pat)
+    if _letters.count("G") != 6 or _letters.count("C") != 1:
+        _bgn10r7_bad("bgn10r7-recipes",
+                     "模板配方的 混沌金锭 / 混沌金块 个数不是 6 / 1（实际 "
+                     + str(_letters.count("G")) + " / " + str(_letters.count("C")) + "）")
+
+# ①-c 15 条锻造：base = **混沌金**同名装备、addition = 崩乱合金锭、template = 本模板
+for _g in _R7_GEAR:
+    _p = _R7_RECIPES / f"smithing_{_R7_METAL}_{_g}.json"
+    if not _p.is_file():
+        continue
+    _bgn10r7_checked += 4
+    _o = json.loads(_p.read_text(encoding="utf-8"))
+    _base = _o.get("base", {}).get("item", "")
+    if _o.get("type") != "minecraft:smithing_transform":
+        _bgn10r7_bad("bgn10r7-recipes", "锻造 " + _g + " 不是 smithing_transform")
+    if _base != "bettergold:chaosgold_" + _g:
+        _bgn10r7_bad("bgn10r7-recipes",
+                     "锻造 " + _g + " 的 base 不是混沌金同名装备（实际 " + _base + "）")
+    if _base.startswith("minecraft:") or "_blank" in _base:
+        _bgn10r7_bad("bgn10r7-recipes",
+                     "锻造 " + _g + " 的 base 落到了原版金 / 胚底（那是既有八族的形状，抄错了）")
+    if _o.get("addition", {}).get("item") != "bettergold:chaosalloy_ingot":
+        _bgn10r7_bad("bgn10r7-recipes", "锻造 " + _g + " 的 addition 不是崩乱合金锭")
+    if _o.get("result", {}).get("id") != "bettergold:chaosalloy_" + _g:
+        _bgn10r7_bad("bgn10r7-recipes", "锻造 " + _g + " 的产物不是 bettergold:chaosalloy_" + _g)
+
+# ①-d 崩乱禁果：无序 2 项（混沌禁果 + 崩乱合金锭）
+_p = _R7_RECIPES / f"{_R7_METAL}_forbidden_fruit.json"
+if _p.is_file():
+    _bgn10r7_checked += 3
+    _o = json.loads(_p.read_text(encoding="utf-8"))
+    _ings = sorted(i.get("item") for i in _o.get("ingredients", []))
+    if _o.get("type") != "minecraft:crafting_shapeless":
+        _bgn10r7_bad("bgn10r7-fruit", "崩乱禁果配方不是无序合成（作者原话：无序）")
+    if _ings != sorted(["bettergold:chaosgold_forbidden_fruit", "bettergold:chaosalloy_ingot"]):
+        _bgn10r7_bad("bgn10r7-fruit", "崩乱禁果配方的材料不是 混沌禁果 + 崩乱合金锭（实际 " + str(_ings) + "）")
+    if _o.get("result", {}).get("id") != "bettergold:chaosalloy_forbidden_fruit":
+        _bgn10r7_bad("bgn10r7-fruit", "崩乱禁果配方的产物不是 chaosalloy_forbidden_fruit")
+
+# ---------- ② 块：硬度 / 抗爆 ×3（150 / 3600）+ 信标基座 + §9.7 例外集 ----------
+_bgn10r7_checked += 5
+if "spec.blockStrength = 150.0F" not in _bgn10_am_nc:
+    _bgn10r7_bad("bgn10r7-block", "崩乱合金块硬度不是 150.0F（= 下界合金块 50 × 3）")
+if "spec.blockResistance = 3600.0F" not in _bgn10_am_nc:
+    _bgn10r7_bad("bgn10r7-block", "崩乱合金块抗爆不是 3600.0F（= 下界合金块 1200 × 3）")
+_beacon = _R7_DATA / "minecraft" / "tags" / "block" / "beacon_base_blocks.json"
+if not _beacon.is_file():
+    _bgn10r7_bad("bgn10r7-block", "缺 #minecraft:beacon_base_blocks 标签文件")
+else:
+    _bv = [v if isinstance(v, str) else v.get("id")
+           for v in json.loads(_beacon.read_text(encoding="utf-8")).get("values", [])]
+    if "bettergold:chaosalloy_block" not in _bv:
+        _bgn10r7_bad("bgn10r7-block", "崩乱合金块不在 #minecraft:beacon_base_blocks 里（当不了信标基座）")
+# §9.7：古董器具挖它不被"生硬替代" —— 判据是例外集走家族索引，崩乱合金块自动在内（零代码）
+_mod_events = strip_comments((_R7_JAVA / "event" / "ModEvents.java").read_text(encoding="utf-8"))
+if "MetalFamily.of(state.getBlock()) != null" not in _mod_events:
+    _bgn10r7_bad("bgn10r7-block",
+                 "§9.7 例外集不再走 MetalFamily.of(block) ⇒ 崩乱合金块会被古董器具就地转换")
+if not MF.has(_R7_METAL, "block"):
+    _bgn10r7_bad("bgn10r7-block", "metal_forms 里崩乱合金没有声明 block 形态（例外集覆盖不到它）")
+
+# ---------- ③ 两个新状态：注册 / 无等级 / 16 秒 / 公式（力量两端 + 抗性 ×2）/ 公式只有一处 ----------
+_r7_effects = strip_comments((_R7_JAVA / "registry" / "AllEffects.java").read_text(encoding="utf-8"))
+for _id in ('"power_imbalance"', '"resistance_imbalance"'):
+    _bgn10r7_checked += 1
+    if _id not in _r7_effects:
+        _bgn10r7_bad("bgn10r7-effects", "AllEffects 没注册 " + _id)
+_r7_imb_path = _R7_JAVA / "material" / "ImbalanceEffects.java"
+if not _r7_imb_path.is_file():
+    _bgn10r7_bad("bgn10r7-effects", "缺 material/ImbalanceEffects.java（两个状态的规则本体）")
+    _r7_imb = ""
+else:
+    _r7_imb = strip_comments(_r7_imb_path.read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("TICKS = 16 * 20", "失衡时长不是 16 秒 = 320 tick"),
+        ("POWER_FLOOR = 1.0F", "力量失衡的下端不是 1 点"),
+        ("RESISTANCE_MULTIPLIER = 2.0F", "抗性失衡不是固定 ×2（裁定 ⑬b）"),
+        ("new MobEffectInstance(effect, TICKS, 0, false, true, true)",
+         "施加时不是 amplifier = 0（无等级没了）"),
+        ("? AllEffects.POWER_IMBALANCE.getDelegate()",
+         "50/50 二选一没有真的在两个效果之间选"),
+        ("event.setNewDamage(powerImbalanceDamage(attacker, event.getNewDamage()))",
+         "力量失衡没有改写攻击者的伤害"),
+        ("event.setNewDamage(resistanceImbalanceDamage(event.getNewDamage()))",
+         "抗性失衡没有改写受害者的伤害"),
+        ("attacker.hasEffect(AllEffects.POWER_IMBALANCE)",
+         "力量失衡判的是受害者而不是攻击者（方向反了）"),
+        ("target.hasEffect(AllEffects.RESISTANCE_IMBALANCE)",
+         "抗性失衡判的不是受害者")):
+    _bgn10r7_checked += 1
+    if _needle not in _r7_imb:
+        _bgn10r7_bad("bgn10r7-effects", _why + "（缺 " + _needle + "）")
+# 公式唯一性：两个公式的重心只许在 ImbalanceEffects 一处
+_hits_power = _hits_resist = 0
+for _p in JAVA.rglob("*.java"):
+    _t = strip_comments(_p.read_text(encoding="utf-8"))
+    if "float powerImbalanceDamage(" in _t:
+        _hits_power += 1
+    if "float resistanceImbalanceDamage(" in _t:
+        _hits_resist += 1
+_bgn10r7_checked += 2
+if _hits_power != 1:
+    _bgn10r7_bad("bgn10r7-effects",
+                 "力量失衡公式的出现处 = " + str(_hits_power) + "（必须恰好 1 处 —— 不许写第二份）")
+if _hits_resist != 1:
+    _bgn10r7_bad("bgn10r7-effects",
+                 "抗性失衡公式的出现处 = " + str(_hits_resist) + "（必须恰好 1 处）")
+# 注册在游戏总线（不然两条公式一条都不会跑）
+if ("NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ImbalanceEffects.class)"
+        not in strip_comments((_R7_JAVA / "bettergold.java").read_text(encoding="utf-8"))):
+    _bgn10r7_bad("bgn10r7-effects", "ImbalanceEffects 没注册到游戏总线（两个状态全部静默不生效）")
+
+# ---------- ④ 50% 派发：三条路都走 applyRandom（器具命中 / 盔甲被击 / 盾牌格挡） ----------
+_r7_me = strip_comments((_R7_JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("family.imbalanceOnAttack", "器具命中那条没有 imbalanceOnAttack 分支"),
+        ("ImbalanceEffects.applyRandom(target)", "器具命中没有走「随机挂一个失衡」的唯一入口"),
+        ("family.imbalanceReflect", "盔甲被击那条没有 imbalanceReflect"),
+        ("ImbalanceEffects.applyRandom(attacker)", "盔甲 / 盾牌没有走同一个入口给攻击者挂失衡")):
+    _bgn10r7_checked += 1
+    if _needle not in _r7_me:
+        _bgn10r7_bad("bgn10r7-imbalance-wiring", _why + "（缺 " + _needle + "）")
+# 概率的唯一真源 = 配置项（0.5 / 0.1），与既有 16 条同构
+_cfg = strip_comments((_R7_JAVA / "config" / "Config.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ('"chaosalloyWeaponBuffChance", 0.5D', "器具的 50% 概率不是配置项默认 0.5"),
+        ('"chaosalloyArmorBuffChance", 0.1D', "盔甲的每件 10% 概率不是配置项默认 0.1")):
+    _bgn10r7_checked += 1
+    if _needle not in _cfg:
+        _bgn10r7_bad("bgn10r7-imbalance-wiring", _why)
+
+# ---------- ⑤ 盔甲：数组 / 32 / 8 / 0.20 / 4..10 四件 ----------
+_bgn10r7_checked += 5
+for _needle, _why in (
+        ("spec.armorDefense = new int[] { 3, 6, 8, 3 }",
+         "护甲值数组不是 靴/腿/胸/头 = 3/6/8/3（= 派单的头 3 胸 8 腿 6 靴 3）"),
+        ("spec.armorDurability = new int[] { 2035, 2220, 2368, 1924 }",
+         "耐久数组不是 靴/腿/胸/头 = 2035/2220/2368/1924（派单四个数按位置对应）"),
+        ("spec.armorEnchantmentValue = 32", "盔甲附魔能力不是 32"),
+        ("spec.armorToughness = 8.0F", "盔甲韧性不是 8"),
+        ("spec.armorKnockbackResistance = 0.20F", "击退抗性不是 20%")):
+    if _needle not in _bgn10_am_nc:
+        _bgn10r7_bad("bgn10r7-armor", _why)
+for _f in ("HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"):
+    _bgn10r7_checked += 1
+    if ("chaosRange(MetalFamily.Form." + _f + ", ChaosRange.Channel.ARMOR, 4, 10)") not in _bgn10_am_nc:
+        _bgn10r7_bad("bgn10r7-armor", "崩乱合金 " + _f + " 没声明 4..10 的区间减伤")
+
+# ---------- ⑥ 崩乱禁果：饱和 11.6 / 19200 tick / 1..4 级 ----------
+_r7_ci = strip_comments((_R7_JAVA / "material" / "ChaosItems.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("CHAOSALLOY_FRUIT_EFFECT_TICKS = 16 * 60 * 20", "崩乱禁果效果时长不是 16 分钟"),
+        ("CHAOSALLOY_FRUIT_COOLDOWN_TICKS = 16 * 60 * 20", "崩乱禁果冷却不是 16 分钟"),
+        ("CHAOSALLOY_FRUIT_MAX_LEVEL = 4", "崩乱禁果效果等级上限不是 4"),
+        ("CHAOSALLOY_FRUIT_SATURATION_MODIFIER = 1.45F",
+         "崩乱禁果饱和度系数不是 1.45（复算 4 × 1.45 × 2 = 11.6）"),
+        ('"chaosalloy_forbidden_fruit"', "崩乱禁果没注册")):
+    _bgn10r7_checked += 1
+    if _needle not in _r7_ci:
+        _bgn10r7_bad("bgn10r7-fruit", _why)
+# 复算：绝对饱和 = nutrition × 系数 × 2 必须 == 11.6（原版金苹果 9.6 + 2）
+_bgn10r7_checked += 1
+if abs(4 * 1.45 * 2 - 11.6) > 1e-6:
+    _bgn10r7_bad("bgn10r7-fruit", "4 × 1.45 × 2 不等于 11.6（饱和复算失败）")
+
+# ---------- ⑦ 语言键 + 模板文案 ----------
+for _k, _zh, _en_should_not_equal in (
+        ("effect.bettergold.power_imbalance", "力量失衡", True),
+        ("effect.bettergold.resistance_imbalance", "抗性失衡", True)):
+    _bgn10r7_checked += 2
+    if zh.get(_k) != _zh:
+        _bgn10r7_bad("bgn10r7-lang", "zh 的 " + _k + " 不是 " + _zh)
+    if en.get(_k) in (None, "") or en.get(_k) == zh.get(_k):
+        _bgn10r7_bad("bgn10r7-lang", "en 的 " + _k + " 缺失或与中文逐字相同")
+_bgn10r7_checked += 2
+if zh.get("item.bettergold.smithing_template.chaosalloy_upgrade.applies_to") != "混沌金装备":
+    _bgn10r7_bad("bgn10r7-lang",
+                 "崩乱合金模板的 applies_to 不是「混沌金装备」（作者原话：可应用于: 混沌金装备）")
+if zh.get("item.bettergold.chaosalloy_forbidden_fruit") != "崩乱合金禁果":
+    _bgn10r7_bad("bgn10r7-lang", "崩乱合金禁果的 zh 名不是「崩乱合金禁果」")
+
+# ---------- ⑧ 贴图 / 模型：器具 15 + 盔甲 4 + 禁果 1 + 效果图标 2 ----------
+for _suffix in _R7_GEAR + ["helmet", "chestplate", "leggings", "boots", "forbidden_fruit"]:
+    _bgn10r7_checked += 1
+    _p = _R7_ASSETS / "models" / "item" / (_R7_METAL + "_" + _suffix + ".json")
+    if not _p.is_file():
+        _bgn10r7_bad("bgn10r7-assets", "缺模型 models/item/" + _R7_METAL + "_" + _suffix + ".json")
+for _icon in ("power_imbalance", "resistance_imbalance"):
+    _bgn10r7_checked += 1
+    if not (_R7_ASSETS / "textures" / "mob_effect" / (_icon + ".png")).is_file():
+        _bgn10r7_bad("bgn10r7-assets", "缺效果图标 textures/mob_effect/" + _icon + ".png")
+
+# ---------- ⑨ 生成器：轮7 的配方生成器必须自带自检（防"手写一套 JSON"） ----------
+_bgn10r7_checked += 3
+_r7_gen = REPO / "tools" / "asset-generator" / "generate_chaosalloy_recipes.py"
+if not _r7_gen.is_file():
+    _bgn10r7_bad("bgn10r7-generator", "缺 generate_chaosalloy_recipes.py（轮7 配方的唯一真源）")
+else:
+    _gt = _r7_gen.read_text(encoding="utf-8")
+    for _needle, _why in (("INGOT_INPUTS", "生成器里没有锭配方的材料表"),
+                          ("TEMPLATE_PATTERN", "生成器里没有模板排布"),
+                          ("def check(", "生成器没有自检函数")):
+        if _needle not in _gt:
+            _bgn10r7_bad("bgn10r7-generator", _why)
+
+# ---------- ⑩ 文档侧：本轮口径必须落档 ----------
+_bgn10r7_checked += 1
+if u"bg-n10r7" not in _bgfix_spec:
+    _bgn10r7_bad("bgn10r7-doc", "docs/1.7 里没有轮7（bg-n10r7）这一节")
+
+print(f"1.7 轮7（崩乱合金：锭/块/模板/15 件器具/4 件盔甲/禁果/两个状态）问题: "
+      f"{len(bgn10r7_problems)} {bgn10r7_problems[:4]}（本段判定 {_bgn10r7_checked} 条）")
+if _bgn10r7_checked <= 0:
+    _bgn10r7_bad("bgn10r7-anti-vacuum", "本段一条判定都没跑（反空转）")
+if not bgn10r7_problems:
+    print("[bgn10r7-ok] 崩乱合金：20 条配方 / 块 ×3 + 信标 + §9.7 / 两个状态公式与无等级 / "
+          "50% 三条派发 / 盔甲四件 / 禁果 11.6 全部通过")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -7063,7 +7456,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
-                       _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems)
+                       _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

@@ -276,18 +276,82 @@ public final class AllMetals {
     private static MetalFamily registerChaosalloy() {
         MetalFamily.Spec spec = new MetalFamily.Spec("chaosalloy", "崩乱合金")
                 .forms(MetalFamily.Form.INGOT, MetalFamily.Form.BLOCK, MetalFamily.Form.UPGRADE_TEMPLATE)
-                .chaosRange(ChaosRange.Channel.MINING, 8, 16);
+                // ---- 轮7：挖掘区间 8..16（作者原话；两端乒乓、触发 = 挖掘成功 + 重新手持）----
+                .chaosRange(ChaosRange.Channel.MINING, 8, 16)
+                // ---- 轮7：14 件套的伤害区间（作者逐件给的数；两端乒乓，当前值即实际值）----
+                //  ⚠ 下端就是**注册值**（`chaosAttributes` 读 range.min），上端由 ChaosWiring 补差值
+                //    ⇒ 这一张表是"注册值与差值"的唯一来源，别处不许再写一份。
+                .chaosRange(MetalFamily.Form.SWORD, ChaosRange.Channel.ATTACK, 8, 16)
+                .chaosRange(MetalFamily.Form.MACE, ChaosRange.Channel.ATTACK, 7, 14)
+                .chaosRange(MetalFamily.Form.TRIDENT, ChaosRange.Channel.ATTACK, 11, 22)
+                .chaosRange(MetalFamily.Form.AXE, ChaosRange.Channel.ATTACK, 10, 20)
+                .chaosRange(MetalFamily.Form.PICKAXE, ChaosRange.Channel.ATTACK, 6, 12)
+                .chaosRange(MetalFamily.Form.SHOVEL, ChaosRange.Channel.ATTACK, 6.5F, 13)
+                .chaosRange(MetalFamily.Form.HOE, ChaosRange.Channel.ATTACK, 5, 10)
+                .chaosRange(MetalFamily.Form.KNIFE, ChaosRange.Channel.ATTACK, 5.5F, 11)
+                .chaosRange(MetalFamily.Form.BOW, ChaosRange.Channel.ATTACK, 3.5F, 4.5F)
+                .chaosRange(MetalFamily.Form.CROSSBOW, ChaosRange.Channel.ATTACK, 4.5F, 5)
+                // ---- 攻速（作者给的是**最终攻速**；换算成属性修正的减法只在 gearSpeed 一处做）----
+                .attackSpeed(MetalFamily.Form.SWORD, 1.6F)
+                .attackSpeed(MetalFamily.Form.MACE, 0.6F)
+                .attackSpeed(MetalFamily.Form.TRIDENT, 1.1F)
+                // 斧 / 镐 / 锹 / 锄：作者没点名 ⇒ 工作值 = 原版同类器具的最终攻速
+                //   （斧 1.0 / 镐 1.2 / 锹 1.0 / 锄 4.0，与混沌金轮3 声明的那四个数一致）。
+                //   ⚠ 必须显式声明：`chaosAttributes` 的 ATTACK_SPEED 回退值是 0.0，
+                //     不写会变成"最终攻速 4.0"（刷手速），这一条在探针里有读数。
+                .attackSpeed(MetalFamily.Form.AXE, 1.0F)
+                .attackSpeed(MetalFamily.Form.PICKAXE, 1.2F)
+                .attackSpeed(MetalFamily.Form.SHOVEL, 1.0F)
+                .attackSpeed(MetalFamily.Form.HOE, 4.0F)
+                .attackSpeed(MetalFamily.Form.KNIFE, 2.0F)
+                // ---- 区间之外的固定值 ----
+                // ⚠ 三叉戟**投掷** 9..13：与混沌金一字不差 ⇒ 立档 §4 歧义 ⑫ **疑似笔误**
+                //   （作者未裁）。本轮按字面实现 9..13，并在规格 / 报告里标明"待作者确认"。
+                .tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)
+                // 重锤：作者「最终伤 ×1.4 固定」（既有 8 族是 1.2，混沌金是 1.0）
+                .maceFinalDamageMultiplier(1.4F)
+                // 弓：作者「最大拉弓 20」⇒ 满蓄力 20 tick，弹伤由 ATTACK 区间 3.5..4.5 给
+                .bowFullDraw(20, 0.0F)
+                // 弩：作者「蓄力 1.2 秒」= 24 tick，弹速由 ATTACK 区间 4.5..5 给
+                .crossbowCharge(1.2F)
+                // 乐事刀：伤害区间下端 5.5 / 攻速 2.0（与混沌金同一套口径）
+                .knifeAttributes(5.5F, 2.0F)
+                // 器具 / 武器 / 盾牌命中 ⇒ 按配置概率（0.5）随机挂 16 秒「力量 / 抗性失衡」；
+                //   盾牌同时拿到「格挡反 buff」（specialWeaponMetal 的另一半用途）与默认的免疫破盾。
+                .imbalanceOnAttack()
+                .imbalanceReflect()
+                .specialWeaponMetal(true, 2048);
         spec.durability = 8192;
         spec.enchantmentValue = 32;
         spec.incorrectForDrops = BlockTags.INCORRECT_FOR_NETHERITE_TOOL;   // 作者：挖掘等级「下界合金」
-        spec.miningSpeed = 16.0F;      // 同上：区间 8..16 的上端占位，轮7 接线
         spec.armorEnchantmentValue = 32;
         spec.armorToughness = 8.0F;
         spec.armorKnockbackResistance = 0.20F;
+        // ---------- 轮7：崩乱合金盔甲 ----------
+        // 作者原话：护甲值 3 / 8 / 6 / 3、耐久 1924 / 2368 / 2220 / 2035、
+        //   32 附魔能力 / 8 韧性 / 20% 击退抗性、单件 4%..10% 减伤 + 10% 概率挂失衡、全套 16%..40% + 40%。
+        // ⚠ 数组顺序是 **靴 / 腿 / 胸 / 头**（与既有各族 armorDefense 同序）。
+        //   派单给的两个列表按**位置对应**（头/胸/腿/靴）读 ⇒ 换算到本数组：
+        //     护甲值 头 3 / 胸 8 / 腿 6 / 靴 3 ⇒ { 3, 6, 8, 3 }
+        //     耐久   头 1924 / 胸 2368 / 腿 2220 / 靴 2035 ⇒ { 2035, 2220, 2368, 1924 }
+        //   ⚠ 记账：胸 2368 = 4×592、腿 2220 = 4×555 恰好等于「下界合金 ×4」，
+        //     而头 1924 = 4×481（靴的基数）、靴 2035 = 5×407（头的基数）——
+        //     这两个数**像是头/靴写反了**（若按 ×4，头应为 1628）。未裁 ⇒ 按字面，待作者一句话。
+        spec.armorDefense = new int[] { 3, 6, 8, 3 };
+        spec.armorDurability = new int[] { 2035, 2220, 2368, 1924 };
+        // 减伤：单件 4%..10%（区间值、乒乓、触发点 = 受到伤害），四件之和 = 16%..40%
+        //   —— 通道 `Channel.ARMOR` 的**第二个消费者**（第一是混沌金 0..6%；接线在 MetalEvents#onDamagePre）。
+        spec.chaosRange(MetalFamily.Form.HELMET, ChaosRange.Channel.ARMOR, 4, 10);
+        spec.chaosRange(MetalFamily.Form.CHESTPLATE, ChaosRange.Channel.ARMOR, 4, 10);
+        spec.chaosRange(MetalFamily.Form.LEGGINGS, ChaosRange.Channel.ARMOR, 4, 10);
+        spec.chaosRange(MetalFamily.Form.BOOTS, ChaosRange.Channel.ARMOR, 4, 10);
+        // 挖掘速度本体只有一个数（Tier 按族共享）⇒ 注册取区间**上端** 16.0F，
+        //   运行期由 ChaosWiring#onBreakSpeed 补「当前值 − 上端」的差值（与混沌金 12.0F 同构）。
+        spec.miningSpeed = 16.0F;
         // 块属性 = 下界合金块 ×3（立档 D7 / 歧义 ⑪a 的 (A)）：下界合金块 50.0F / 1200.0F
         spec.blockStrength = 150.0F;
         spec.blockResistance = 3600.0F;
-        // 护甲值 / 耐久 / 细节件强度：作者没给 ⇒ 走 Spec 默认（崩乱合金没有细节件形态，后者用不到）
+        // 护甲值 / 耐久已按作者原话给；细节件强度用不到（崩乱合金没有细节件形态）
         return MetalFamily.register(spec);
     }
 

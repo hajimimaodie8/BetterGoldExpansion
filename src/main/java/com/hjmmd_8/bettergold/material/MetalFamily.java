@@ -404,6 +404,13 @@ public final class MetalFamily {
     public final boolean parasiteReflect;
     /** 盔甲：每件 25% 几率给攻击者叠幽咆（幽咆金） */
     public final boolean echoRoarReflect;
+    /**
+     * 器具：命中时按配置概率挂 16 秒「力量失衡」或「抗性失衡」（1.7 崩乱合金；
+     * 规则本体在 {@link ImbalanceEffects}）。
+     */
+    public final boolean imbalanceOnAttack;
+    /** 盔甲：被击时按配置概率给攻击者挂 16 秒「力量 / 抗性失衡」（1.7 崩乱合金） */
+    public final boolean imbalanceReflect;
     /** 本族物品免疫仙人掌（掉落物不被摧毁 + 装备不因仙人掌伤害掉耐久；树棘金） */
     public final boolean cactusImmune;
 
@@ -1009,6 +1016,8 @@ public final class MetalFamily {
         this.sonicResist = spec.sonicResist;
         this.parasiteReflect = spec.parasiteReflect;
         this.echoRoarReflect = spec.echoRoarReflect;
+        this.imbalanceOnAttack = spec.imbalanceOnAttack;
+        this.imbalanceReflect = spec.imbalanceReflect;
         this.cactusImmune = spec.cactusImmune;
         this.specialWeaponMetal = spec.specialWeaponMetal;
         this.shieldDurability = spec.shieldDurability;
@@ -1525,6 +1534,16 @@ public final class MetalFamily {
         /** 盔甲：每件 25% 几率给攻击者叠 1 级幽咆、全套 100%（幽咆金） */
         public boolean echoRoarReflect = false;
         /**
+         * 器具：命中时挂 16 秒「力量失衡」或「抗性失衡」（1.7 崩乱合金）。
+         *
+         * <p>⚠ <b>这里只是"这一族有没有这条"的存在位，不是概率</b>：「50% 挂不挂」的唯一真源是
+         * 配置项 {@code chaosalloyWeaponBuffChance}（默认 0.5），与既有 {@code sootheOnAttackChance}
+         * 被 bg-fix 第 7 条降级成存在位是同一套口径。公式本体在 {@link ImbalanceEffects}。</p>
+         */
+        public boolean imbalanceOnAttack = false;
+        /** 盔甲：被击时给攻击者挂 16 秒失衡（1.7 崩乱合金；每件概率 = 配置项 {@code chaosalloyArmorBuffChance} 默认 0.1） */
+        public boolean imbalanceReflect = false;
+        /**
          * 本族物品<b>免疫仙人掌</b>（树棘金，§3.8）：
          * ① 掉落物形态（{@code ItemEntity}）不被仙人掌摧毁；
          * ② 装备（盔甲槽）不因仙人掌伤害扣耐久。
@@ -1958,6 +1977,24 @@ public final class MetalFamily {
         /** 盔甲：每件 25% 几率给攻击者叠幽咆（幽咆金） */
         public Spec echoRoarReflect() {
             this.echoRoarReflect = true;
+            return this;
+        }
+
+        /**
+         * 器具 / 武器 / 盾牌：命中时按<b>配置概率</b>挂 16 秒「力量失衡」或「抗性失衡」（1.7 崩乱合金）。
+         *
+         * <p>⚠ 概率不在这里给：「50% 挂不挂」的唯一真源是配置项 {@code chaosalloyWeaponBuffChance}（默认 0.5），
+         * 本旗标只表示"这一族有这条机制"（与 bg-fix 第 7 条把 {@code sootheOnAttackChance} 降级成存在位同构）。
+         * 公式本体在 {@link ImbalanceEffects}。</p>
+         */
+        public Spec imbalanceOnAttack() {
+            this.imbalanceOnAttack = true;
+            return this;
+        }
+
+        /** 盔甲：被击时按<b>每件配置概率</b>给攻击者挂 16 秒失衡（1.7 崩乱合金；四件 = 配置值 × 4） */
+        public Spec imbalanceReflect() {
+            this.imbalanceReflect = true;
             return this;
         }
 
