@@ -1,0 +1,41 @@
+bgn10hv 收尾复核（1.7 手册渲染验证轮）
+
+1) 共享文件逐字节复原（目标哈希 = 04-跑前留档.json 记的值）
+   run/server.properties   OK   A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+   build.gradle            OK   2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+   src/.../bettergold.java git 侧 diff 为空（注入行已按 .bak 字节复原：9B8BE2907BEDB09D5F29F0A5714A8D7F7B83AA5F1C867FCDDB3D12746B272171）
+
+2) build/moddev/clientRunProgramArgs.txt（Gradle 每次 runClient 都会重写）
+   跑前 SHA256 = A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB（394 B）
+   跑中 472 B（带上了临时的 --quickPlayPath/--quickPlaySingleplayer）
+   收尾已按 394 B 规范形态复原：SHA256 = A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB  => 与跑前一致
+   其余 11 个 *.txt：与跑前 SHA256 逐一相同（04-跑前留档.json 的 moddev_runargs 段）
+
+3) 探针残留
+   src/**/*.java grep(Bgn10hv|BGN10HV|TEMP PROBE) = 0 命中
+   src/main/java/com/hjmmd_8/bettergold/probe/ 目录 = 已删
+   probe/bgn10hv/ = 已删（源码已留档到 docs/bgn10hv-证据/脚本副本/）
+   tools/asset-generator/__pycache__ = ['metal_forms.cpython-314.pyc']（只保留原有的 metal_forms pyc）
+
+4) 临时世界 / 开关文件 / quickplay 日志
+   run/bgn10hvgen                           已删
+   run/saves/bgn10hvcw                      已删
+   run/logs/quickplay/bgn10hv.json          已删
+   run/bgn10hv-gen.enabled                  已删
+   run/bgn10hv-probe.enabled                已删
+
+5) run/saves 现状
+   新的世界         files=29
+
+6) 七条关卡（六校验器 + check_forced_chunks.py）全部 exit 0：
+   validate_metal_assets 712 项 / validate_metal_data / validate_trim_assets 76 项 /
+   validate_bg17_textures 630 项 / validate_advancements 59 成就 142 criteria /
+   check_jar_clean 2791 项（*Probe* 0、halt 0）/ check_forced_chunks（data.Forced 为空）
+
+7) 长文档改动 = 纯追加（git diff --numstat 证明「删除 0 行」）
+   docs/1.7-混沌金与崩乱合金-需求立档.md   +127 -0
+   docs/构建与跑测注意事项.md              +14  -0
+   mod_experience/ex/03-验证与证据.md      +10  -0（821 -> 831 行）
+   mod_experience/mcmod_experience.md      +1   -0（205 -> 206 行，附录 D 一行）
+
+8) 未 commit、未 push；原始 zip 与归档素材一字节未动。

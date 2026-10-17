@@ -1,0 +1,12 @@
+run/saves 跑前 / 跑后 清单对比（名字 + 文件数 + max_mtime + 内容摘要 SHA256）
+
+bgn10hvcw    跑前: None
+             跑后: {'files': 23, 'max_mtime': 1792248205, 'digest': '5D27F943795D8E7EF69B427806999D1229D1826176C9AA13FAC5E2CBDD6DB940'}
+             结论: **本轮新增的探针世界（收尾删除）**
+
+新的世界         跑前: {'files': 29, 'max_mtime': 1791542894, 'digest': 'DAAE552ED70DE22D45BEEF4FB4AAD56E9EB03405AB2A08F5263BC7A9756DD5F2'}
+             跑后: {'files': 29, 'max_mtime': 1791542894, 'digest': 'DAAE552ED70DE22D45BEEF4FB4AAD56E9EB03405AB2A08F5263BC7A9756DD5F2'}
+             结论: 一致（一字节未动）
+
+跑前 server.properties SHA256 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+跑前 build.gradle       SHA256 = 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F

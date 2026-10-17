@@ -1,0 +1,263 @@
+bgn10hv 三路对穿（真源 = generate_handbook_data.py / 资产 = zh_cn JSON / 运行时 = 客户端探针）
+日志 = build\bgn10hv\client3-latest.log
+
+### bettergold:chaos_materials
+  页数：真源=16 资产=16 运行时=16  HVROW=16
+  p0  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=混沌金的材料是四种：混沌金币、混沌金锭、混沌金粒、混沌金块。锭、粒、块由这一族自... title=- textOk=true
+  p1  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_ingot_from_nugget         r2=bettergold:chaosgold_ingot_from_block          stacks=None
+  p2  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_block_from_ingot          r2=bettergold:chaosgold_nugget_from_ingot         stacks=None
+  p3  真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=1
+      页上文字：body=混沌金币。作者原话：「（混沌金币的）充数功能」。~已知用法：把它放进~3×3~的... title=- textOk=true
+  p4  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:copper_block_with_chaos_coin        r2=bettergold:iron_block_with_chaos_coin          stacks=None
+  p5  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:gold_block_with_chaos_coin          r2=None                                           stacks=None
+  p6  真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=11
+      页上文字：body=- title=bettergold.handbook.page.chaos_materials... textOk=literal
+  p7  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_bricks_from_block         r2=bettergold:chaosgold_bricks_stairs             stacks=None
+  p8  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_bricks_slab               r2=bettergold:chaosgold_bricks_wall               stacks=None
+  p9  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_bars_from_ingot           r2=bettergold:chaosgold_chain                     stacks=None
+  p10 真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_door_from_ingot           r2=bettergold:chaosgold_trapdoor_from_ingot       stacks=None
+  p11 真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_lantern                   r2=bettergold:craft_chaosgold_pillar              stacks=None
+  p12 真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=崩乱合金只有三件形态：崩乱合金锭、崩乱合金块、崩乱合金升级锻造模板。~作者原话：... title=- textOk=true
+  p13 真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosalloy_ingot                    r2=bettergold:chaosalloy_upgrade_template         stacks=None
+  p14 真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosalloy_block_from_ingot         r2=bettergold:chaosalloy_ingot_from_block         stacks=None
+  p15 真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=3
+      页上文字：body=- title=bettergold.handbook.page.chaos_materials... textOk=literal
+
+### bettergold:chaos_feast
+  页数：真源=4 资产=4 运行时=4  HVROW=4
+  p0  真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=1
+      页上文字：body=混沌禁果。作者原话：「1~苹果~+~8~混沌金锭」「饥饿/饱和同原版金苹果」「食... title=- textOk=true
+  p1  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_forbidden_fruit           r2=None                                           stacks=None
+  p2  真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=1
+      页上文字：body=崩乱禁果。作者原话：「混沌金苹果~+~崩乱合金锭，无序」「比原版金苹果多~2~点... title=- textOk=true
+  p3  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosalloy_forbidden_fruit          r2=None                                           stacks=None
+
+### bettergold:gear_chaosgold
+  页数：真源=15 资产=15 运行时=15  HVROW=15
+  p0  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=混沌金器具（11~件）：剑、斧、镐、锹、锄、刀、重锤、弓、弩、三叉戟、盾牌。~作... title=- textOk=true
+  p1  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=盾牌：走与八族相同的默认口径（免疫破盾）。~（实现说明·1.7~bg-n10rg... title=- textOk=true
+  p2  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=混沌金盔甲（4~件）。作者原话：「每一单件可以提供最低到~0%~和~6%~的减伤... title=- textOk=true
+  p3  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_sword                     r2=bettergold:chaosgold_axe                       stacks=None
+  p4  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_pickaxe                   r2=bettergold:chaosgold_shovel                    stacks=None
+  p5  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_hoe                       r2=bettergold:chaosgold_helmet                    stacks=None
+  p6  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_chestplate                r2=bettergold:chaosgold_leggings                  stacks=None
+  p7  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_boots                     r2=bettergold:chaosgold_shield                    stacks=None
+  p8  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_crossbow                  r2=bettergold:chaosgold_bow                       stacks=None
+  p9  真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_mace                      r2=bettergold:chaosgold_trident                   stacks=None
+  p10 真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_knife                     r2=None                                           stacks=None
+  p11 真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=11
+      页上文字：body=- title=bettergold.handbook.page.gear_chaosgold_... textOk=literal
+  p12 真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=4
+      页上文字：body=- title=bettergold.handbook.page.gear_chaosgold_... textOk=literal
+  p13 真源=patchouli:spotlight  资产=patchouli:spotlight  运行时=patchouli:spotlight  err=none           r1=None                                           r2=None                                           stacks=1
+      页上文字：body=混沌金附魔书。作者原话：「右手装备~+~左手附魔书，右键消耗~1..5~等级经验... title=- textOk=true
+  p14 真源=patchouli:crafting   资产=patchouli:crafting   运行时=patchouli:crafting   err=none           r1=bettergold:chaosgold_enchanting_book           r2=None                                           stacks=None
+
+### bettergold:gear_chaosalloy
+  页数：真源=11 资产=11 运行时=11  HVROW=11
+  p0  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=崩乱合金器具（11~件）。作者原话：「8192~耐久~/~32~附魔能力~/~挖... title=- textOk=true
+  p1  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=盾牌：沿用八族的默认口径（免疫破盾）；格挡时的失衡派发与器具走同一条概率闸门。~... title=- textOk=true
+  p2  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=崩乱合金盔甲（4~件）。作者原话：「32~附魔能力~/~8~韧性~/~20%~击... title=- textOk=true
+  p3  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_sword           r2=bettergold:smithing_chaosalloy_mace            stacks=None
+  p4  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_trident         r2=bettergold:smithing_chaosalloy_bow             stacks=None
+  p5  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_crossbow        r2=bettergold:smithing_chaosalloy_axe             stacks=None
+  p6  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_pickaxe         r2=bettergold:smithing_chaosalloy_shovel          stacks=None
+  p7  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_hoe             r2=bettergold:smithing_chaosalloy_knife           stacks=None
+  p8  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_shield          r2=bettergold:smithing_chaosalloy_helmet          stacks=None
+  p9  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_chestplate      r2=bettergold:smithing_chaosalloy_leggings        stacks=None
+  p10 真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_chaosalloy_boots           r2=None                                           stacks=None
+
+### bettergold:gear_echogold
+  页数：真源=10 资产=10 运行时=10  HVROW=10
+  p0  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=使用幽咆金升级而成的金武器工具进行攻击可对目标附着高达~6~秒的音咆状态造成监守... title=- textOk=true
+  p1  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=使用幽咆金升级而成的盾牌不仅可以无视能造成破盾的攻击，还会对攻击者附着并叠加与武... title=- textOk=true
+  p2  真源=patchouli:text       资产=patchouli:text       运行时=patchouli:text       err=none           r1=None                                           r2=None                                           stacks=None
+      页上文字：body=使用幽咆金升级而成的盔甲穿戴后不仅能抵挡部分的监守者声波伤害，并有几率对攻击者附... title=- textOk=true
+  p3  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_echogold_sword             r2=bettergold:smithing_echogold_mace              stacks=None
+  p4  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_echogold_trident           r2=bettergold:smithing_echogold_bow               stacks=None
+  p5  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_echogold_crossbow          r2=bettergold:smithing_echogold_axe               stacks=None
+  p6  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_echogold_pickaxe           r2=bettergold:smithing_echogold_shovel            stacks=None
+  p7  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_echogold_hoe               r2=bettergold:smithing_echogold_shield            stacks=None
+  p8  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_echogold_helmet            r2=bettergold:smithing_echogold_chestplate        stacks=None
+  p9  真源=patchouli:smithing   资产=patchouli:smithing   运行时=patchouli:smithing   err=none           r1=bettergold:smithing_echogold_leggings          r2=bettergold:smithing_echogold_boots             stacks=None
+
+### 汇总
+  页数合计：真源=56 资产=56 运行时=56
+  页级不一致条数 = 0
+
+### 运行时读数摘要
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVWORLD levelName=bgn10hvgen levelId=bgn10hvcw root=E:\mc\mcmod\bettergold-template-1.21.1\run\saves\bgn10hvcw expectName=bgn10hvgen expectId=bgn10hvcw
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_world_levelname_is_probe :: LevelName=bgn10hvgen
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_world_levelid_is_probe :: levelId=bgn10hvcw
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_world_not_author_save :: levelName=bgn10hvgen levelId=bgn10hvcw
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_book_present :: book=bettergold:alchemy_handbook
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_book_contents_present :: contents=vazkii.patchouli.client.book.BookContents@5c3f3a3b
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_book_not_errored :: errored=false exception=null
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVBOOK entries=24 pages=238 categories=4 errored=false overflowMode=null
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVGEOM fullW=272 fullH=180 pageW=116 pageH=156 topPad=18 leftX=15 rightX=141 lineH=9
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVLANG lang=zh_cn keys=833
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVROW entry=bettergold:chaos_materials pages=16 icon=StackIcon[stack=1 bettergold:chaosgold_ingot]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=0 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.chaos_materials_1_left textOk=true body=混沌金的材料是四种：混沌金币、混沌金锭、混沌金粒、混沌金块。锭、粒、块由这一族自... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=1 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_ingot_from_nugget ok1=true r2=bettergold:chaosgold_ingot_from_block ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=2 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_block_from_ingot ok1=true r2=bettergold:chaosgold_nugget_from_ingot ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=3 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=1 items=bettergold:chaos_coin text=bettergold.handbook.page.chaos_materials_2_right textOk=true body=混沌金币。作者原话：「（混沌金币的）充数功能」。~已知用法：把它放进~3×3~的... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=4 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:copper_block_with_chaos_coin ok1=true r2=bettergold:iron_block_with_chaos_coin ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=5 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:gold_block_with_chaos_coin ok1=true r2=- ok2=- stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=6 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=11 items=bettergold:chaosgold_block|bettergold:chaosgold_bricks|bettergold:chaosgold_pillar|bettergold:chaosgold_bricks_stairs text=- textOk=literal body=- title=bettergold.handbook.page.chaos_materials...
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=7 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_bricks_from_block ok1=true r2=bettergold:chaosgold_bricks_stairs ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=8 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_bricks_slab ok1=true r2=bettergold:chaosgold_bricks_wall ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=9 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_bars_from_ingot ok1=true r2=bettergold:chaosgold_chain ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=10 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_door_from_ingot ok1=true r2=bettergold:chaosgold_trapdoor_from_ingot ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=11 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_lantern ok1=true r2=bettergold:craft_chaosgold_pillar ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=12 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.chaos_materials_4_left textOk=true body=崩乱合金只有三件形态：崩乱合金锭、崩乱合金块、崩乱合金升级锻造模板。~作者原话：... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=13 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosalloy_ingot ok1=true r2=bettergold:chaosalloy_upgrade_template ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=14 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosalloy_block_from_ingot ok1=true r2=bettergold:chaosalloy_ingot_from_block ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_materials idx=15 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=3 items=bettergold:chaosalloy_ingot|bettergold:chaosalloy_block|bettergold:chaosalloy_upgrade_template text=- textOk=literal body=- title=bettergold.handbook.page.chaos_materials...
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVROW entry=bettergold:chaos_feast pages=4 icon=StackIcon[stack=1 bettergold:chaosgold_forbidden_fruit]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_feast idx=0 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=1 items=bettergold:chaosgold_forbidden_fruit text=bettergold.handbook.page.chaos_feast_1_left textOk=true body=混沌禁果。作者原话：「1~苹果~+~8~混沌金锭」「饥饿/饱和同原版金苹果」「食... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_feast idx=1 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_forbidden_fruit ok1=true r2=- ok2=- stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_feast idx=2 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=1 items=bettergold:chaosalloy_forbidden_fruit text=bettergold.handbook.page.chaos_feast_2_left textOk=true body=崩乱禁果。作者原话：「混沌金苹果~+~崩乱合金锭，无序」「比原版金苹果多~2~点... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:chaos_feast idx=3 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosalloy_forbidden_fruit ok1=true r2=- ok2=- stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVROW entry=bettergold:gear_chaosgold pages=15 icon=StackIcon[stack=1 bettergold:chaosgold_sword]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=0 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_chaosgold_1_left textOk=true body=混沌金器具（11~件）：剑、斧、镐、锹、锄、刀、重锤、弓、弩、三叉戟、盾牌。~作... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=1 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_chaosgold_1_right textOk=true body=盾牌：走与八族相同的默认口径（免疫破盾）。~（实现说明·1.7~bg-n10rg... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=2 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_chaosgold_2_left textOk=true body=混沌金盔甲（4~件）。作者原话：「每一单件可以提供最低到~0%~和~6%~的减伤... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=3 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_sword ok1=true r2=bettergold:chaosgold_axe ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=4 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_pickaxe ok1=true r2=bettergold:chaosgold_shovel ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=5 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_hoe ok1=true r2=bettergold:chaosgold_helmet ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=6 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_chestplate ok1=true r2=bettergold:chaosgold_leggings ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=7 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_boots ok1=true r2=bettergold:chaosgold_shield ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=8 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_crossbow ok1=true r2=bettergold:chaosgold_bow ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=9 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_mace ok1=true r2=bettergold:chaosgold_trident ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=10 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_knife ok1=true r2=- ok2=- stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=11 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=11 items=bettergold:chaosgold_sword|bettergold:chaosgold_axe|bettergold:chaosgold_pickaxe|bettergold:chaosgold_shovel text=- textOk=literal body=- title=bettergold.handbook.page.gear_chaosgold_...
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=12 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=4 items=bettergold:chaosgold_helmet|bettergold:chaosgold_chestplate|bettergold:chaosgold_leggings|bettergold:chaosgold_boots text=- textOk=literal body=- title=bettergold.handbook.page.gear_chaosgold_...
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=13 type=patchouli:spotlight cls=PageSpotlight err=none r1=- ok1=- r2=- ok2=- stacks=1 items=bettergold:chaosgold_enchanting_book text=bettergold.handbook.page.gear_chaosgold_4_left textOk=true body=混沌金附魔书。作者原话：「右手装备~+~左手附魔书，右键消耗~1..5~等级经验... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosgold idx=14 type=patchouli:crafting cls=PageCrafting err=none r1=bettergold:chaosgold_enchanting_book ok1=true r2=- ok2=- stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVROW entry=bettergold:gear_chaosalloy pages=11 icon=StackIcon[stack=1 bettergold:chaosalloy_sword]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=0 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_chaosalloy_1_left textOk=true body=崩乱合金器具（11~件）。作者原话：「8192~耐久~/~32~附魔能力~/~挖... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=1 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_chaosalloy_1_right textOk=true body=盾牌：沿用八族的默认口径（免疫破盾）；格挡时的失衡派发与器具走同一条概率闸门。~... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=2 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_chaosalloy_2_left textOk=true body=崩乱合金盔甲（4~件）。作者原话：「32~附魔能力~/~8~韧性~/~20%~击... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=3 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_sword ok1=true r2=bettergold:smithing_chaosalloy_mace ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=4 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_trident ok1=true r2=bettergold:smithing_chaosalloy_bow ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=5 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_crossbow ok1=true r2=bettergold:smithing_chaosalloy_axe ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=6 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_pickaxe ok1=true r2=bettergold:smithing_chaosalloy_shovel ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=7 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_hoe ok1=true r2=bettergold:smithing_chaosalloy_knife ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=8 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_shield ok1=true r2=bettergold:smithing_chaosalloy_helmet ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=9 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_chestplate ok1=true r2=bettergold:smithing_chaosalloy_leggings ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_chaosalloy idx=10 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_chaosalloy_boots ok1=true r2=- ok2=- stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVROW entry=bettergold:gear_echogold pages=10 icon=StackIcon[stack=1 bettergold:echogold_sword]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=0 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_echogold_1_left textOk=true body=使用幽咆金升级而成的金武器工具进行攻击可对目标附着高达~6~秒的音咆状态造成监守... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=1 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_echogold_1_right textOk=true body=使用幽咆金升级而成的盾牌不仅可以无视能造成破盾的攻击，还会对攻击者附着并叠加与武... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=2 type=patchouli:text cls=PageText err=none r1=- ok1=- r2=- ok2=- stacks=- items=- text=bettergold.handbook.page.gear_echogold_2_left textOk=true body=使用幽咆金升级而成的盔甲穿戴后不仅能抵挡部分的监守者声波伤害，并有几率对攻击者附... title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=3 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_echogold_sword ok1=true r2=bettergold:smithing_echogold_mace ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=4 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_echogold_trident ok1=true r2=bettergold:smithing_echogold_bow ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=5 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_echogold_crossbow ok1=true r2=bettergold:smithing_echogold_axe ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=6 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_echogold_pickaxe ok1=true r2=bettergold:smithing_echogold_shovel ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=7 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_echogold_hoe ok1=true r2=bettergold:smithing_echogold_shield ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=8 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_echogold_helmet ok1=true r2=bettergold:smithing_echogold_chestplate ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVPG entry=bettergold:gear_echogold idx=9 type=patchouli:smithing cls=PageSmithing err=none r1=bettergold:smithing_echogold_leggings ok1=true r2=bettergold:smithing_echogold_boots ok2=true stacks=- items=- text=- textOk=literal body=- title=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_recipe_refs_all_resolved :: 配方引用=68 死链=0
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_spotlight_stacks_all_nonempty :: spotlight 页=8 空栈=0
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_text_keys_all_translated :: 文本键缺失=0（lang keys=833）
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_ingot_from_nugget present=true type=minecraft:crafting out=bettergold:chaosgold_ingot count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_ingot_from_block present=true type=minecraft:crafting out=bettergold:chaosgold_ingot count=9
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_block_from_ingot present=true type=minecraft:crafting out=bettergold:chaosgold_block count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_nugget_from_ingot present=true type=minecraft:crafting out=bettergold:chaosgold_nugget count=9
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:copper_block_with_chaos_coin present=true type=minecraft:crafting out=minecraft:copper_block count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:iron_block_with_chaos_coin present=true type=minecraft:crafting out=minecraft:iron_block count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:gold_block_with_chaos_coin present=true type=minecraft:crafting out=minecraft:gold_block count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_bricks_from_block present=true type=minecraft:crafting out=bettergold:chaosgold_bricks count=4
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_bricks_stairs present=true type=minecraft:crafting out=bettergold:chaosgold_bricks_stairs count=4
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_bricks_slab present=true type=minecraft:crafting out=bettergold:chaosgold_bricks_slab count=6
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_bricks_wall present=true type=minecraft:crafting out=bettergold:chaosgold_bricks_wall count=6
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_bars_from_ingot present=true type=minecraft:crafting out=bettergold:chaosgold_bars count=16
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_chain present=true type=minecraft:crafting out=bettergold:chaosgold_chain count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_door_from_ingot present=true type=minecraft:crafting out=bettergold:chaosgold_door count=3
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_trapdoor_from_ingot present=true type=minecraft:crafting out=bettergold:chaosgold_trapdoor count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_lantern present=true type=minecraft:crafting out=bettergold:chaosgold_lantern count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:craft_chaosgold_pillar present=true type=minecraft:crafting out=bettergold:chaosgold_pillar count=2
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosalloy_ingot present=true type=minecraft:crafting out=bettergold:chaosalloy_ingot count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosalloy_upgrade_template present=true type=minecraft:crafting out=bettergold:chaosalloy_upgrade_template count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosalloy_block_from_ingot present=true type=minecraft:crafting out=bettergold:chaosalloy_block count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosalloy_ingot_from_block present=true type=minecraft:crafting out=bettergold:chaosalloy_ingot count=9
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_forbidden_fruit present=true type=minecraft:crafting out=bettergold:chaosgold_forbidden_fruit count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosalloy_forbidden_fruit present=true type=minecraft:crafting out=bettergold:chaosalloy_forbidden_fruit count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_sword present=true type=minecraft:crafting out=bettergold:chaosgold_sword count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_axe present=true type=minecraft:crafting out=bettergold:chaosgold_axe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_pickaxe present=true type=minecraft:crafting out=bettergold:chaosgold_pickaxe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_shovel present=true type=minecraft:crafting out=bettergold:chaosgold_shovel count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_hoe present=true type=minecraft:crafting out=bettergold:chaosgold_hoe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_helmet present=true type=minecraft:crafting out=bettergold:chaosgold_helmet count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_chestplate present=true type=minecraft:crafting out=bettergold:chaosgold_chestplate count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_leggings present=true type=minecraft:crafting out=bettergold:chaosgold_leggings count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_boots present=true type=minecraft:crafting out=bettergold:chaosgold_boots count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_shield present=true type=minecraft:crafting out=bettergold:chaosgold_shield count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_crossbow present=true type=minecraft:crafting out=bettergold:chaosgold_crossbow count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_bow present=true type=minecraft:crafting out=bettergold:chaosgold_bow count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_mace present=true type=minecraft:crafting out=bettergold:chaosgold_mace count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_trident present=true type=minecraft:crafting out=bettergold:chaosgold_trident count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_knife present=true type=minecraft:crafting out=bettergold:chaosgold_knife count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:chaosgold_enchanting_book present=true type=minecraft:crafting out=bettergold:chaosgold_enchanting_book count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_sword present=true type=minecraft:smithing out=bettergold:chaosalloy_sword count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_mace present=true type=minecraft:smithing out=bettergold:chaosalloy_mace count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_trident present=true type=minecraft:smithing out=bettergold:chaosalloy_trident count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_bow present=true type=minecraft:smithing out=bettergold:chaosalloy_bow count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_crossbow present=true type=minecraft:smithing out=bettergold:chaosalloy_crossbow count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_axe present=true type=minecraft:smithing out=bettergold:chaosalloy_axe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_pickaxe present=true type=minecraft:smithing out=bettergold:chaosalloy_pickaxe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_shovel present=true type=minecraft:smithing out=bettergold:chaosalloy_shovel count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_hoe present=true type=minecraft:smithing out=bettergold:chaosalloy_hoe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_knife present=true type=minecraft:smithing out=bettergold:chaosalloy_knife count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_shield present=true type=minecraft:smithing out=bettergold:chaosalloy_shield count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_helmet present=true type=minecraft:smithing out=bettergold:chaosalloy_helmet count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_chestplate present=true type=minecraft:smithing out=bettergold:chaosalloy_chestplate count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_leggings present=true type=minecraft:smithing out=bettergold:chaosalloy_leggings count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_chaosalloy_boots present=true type=minecraft:smithing out=bettergold:chaosalloy_boots count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_sword present=true type=minecraft:smithing out=bettergold:echogold_sword count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_mace present=true type=minecraft:smithing out=bettergold:echogold_mace count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_trident present=true type=minecraft:smithing out=bettergold:echogold_trident count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_bow present=true type=minecraft:smithing out=bettergold:echogold_bow count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_crossbow present=true type=minecraft:smithing out=bettergold:echogold_crossbow count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_axe present=true type=minecraft:smithing out=bettergold:echogold_axe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_pickaxe present=true type=minecraft:smithing out=bettergold:echogold_pickaxe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_shovel present=true type=minecraft:smithing out=bettergold:echogold_shovel count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_hoe present=true type=minecraft:smithing out=bettergold:echogold_hoe count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_shield present=true type=minecraft:smithing out=bettergold:echogold_shield count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_helmet present=true type=minecraft:smithing out=bettergold:echogold_helmet count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_chestplate present=true type=minecraft:smithing out=bettergold:echogold_chestplate count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_leggings present=true type=minecraft:smithing out=bettergold:echogold_leggings count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVRM id=bettergold:smithing_echogold_boots present=true type=minecraft:smithing out=bettergold:echogold_boots count=1
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_recipe_manager_has_all_refs :: RecipeManager 查了 68 条，缺 0
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVJEI loaded=true
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVJEI recipeManagerAll=2052 bettergoldRecipes=458
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVLOG errorLines=0 unableToLines=0 patchouliErrorLines=0 samples=[]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_log_no_patchouli_errors :: patchouli ERROR=0
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVGUI entry=bettergold:chaos_materials screen=GuiBookEntry left=77 top=30 spread=0/8 lpage=PageText lwords=15 lscale=0.9830508 lh=22 lspan=y[22,156]x[0,1637] rpage=PageCrafting rwords=0 rscale=1.0 rh=137 rspan=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_gui_opened_chaos_materials :: screen=GuiBookEntry
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVGUI entry=bettergold:chaos_feast screen=GuiBookEntry left=77 top=30 spread=0/2 lpage=PageSpotlight lwords=9 lscale=1.0 lh=40 lspan=y[40,120]x[0,982] rpage=PageCrafting rwords=0 rscale=1.0 rh=69 rspan=-
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_gui_opened_chaos_feast :: screen=GuiBookEntry
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVGUI entry=bettergold:gear_chaosgold screen=GuiBookEntry left=77 top=30 spread=0/8 lpage=PageText lwords=16 lscale=0.928 lh=22 lspan=y[22,165]x[0,1857] rpage=PageText rwords=22 rscale=0.7682119 rh=-4 rspan=y[-4,193]x[0,3208]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_gui_opened_gear_chaosgold :: screen=GuiBookEntry
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVGUI entry=bettergold:gear_chaosalloy screen=GuiBookEntry left=77 top=30 spread=0/6 lpage=PageText lwords=14 lscale=0.991453 lh=22 lspan=y[22,147]x[0,1514] rpage=PageText rwords=7 rscale=1.0 rh=-4 rspan=y[-4,58]x[0,702]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_gui_opened_gear_chaosalloy :: screen=GuiBookEntry
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVGUI entry=bettergold:gear_echogold screen=GuiBookEntry left=77 top=30 spread=0/5 lpage=PageText lwords=13 lscale=1.0 lh=22 lspan=y[22,138]x[0,1381] rpage=PageText rwords=7 rscale=1.0 rh=-4 rspan=y[-4,58]x[0,666]
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE PASS c_gui_opened_gear_echogold :: screen=GuiBookEntry
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE HVLAYOUT pages=5 words=103
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE SUMMARY pass=16 fail=0 ticks=75
+  [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10HVCPROBE INFO exiting JVM（客户端没有「停服」；读数已落盘，探针直接退进程）
+
+### 日志扫描（整份客户端日志）
+  含 /ERROR 的行数 = 0
+  含 'Unable to ' 的行数 = 0
+  Patchouli 'Recipe ... not found' 警告行数 = 0

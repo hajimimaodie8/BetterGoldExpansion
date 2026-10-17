@@ -1,0 +1,65 @@
+bgn10hv 执行记录（run\ 独占 / 进程 / 参数 / 复原）—— 1.7 手册渲染验证轮
+================================================================================
+
+〇、一句话
+  全程只用**命令行 + 专用服务端**造世界，客户端只用 `--quickPlayPath` + `--quickPlaySingleplayer`
+  进世界；**从未用 UI 自动化**（没有 CreateWorldScreen、没有 openFresh、没有回车建世界）。
+
+一、探针世界的来源（新建，不是复用）
+  1. `run/server.properties` 的 `level-name` 由 `world` 改为 `bgn10hvgen`
+     （改前 **字节复制** -> `run/server.properties.bgn10hv.bak`，
+      改前/改后 SHA256：A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4 -> E5CAA964F3FC0E85C3683B866C33D10F42360D59E16670593BA33AB6F51799A2）。
+  2. 起**专用服务端** `.\gradlew.bat runServer`（`--nogui`，无玩家）：
+     服务端自己把 `bgn10hvgen` 建出来（日志：`Preparing level "bgn10hvgen"` / `Done (4.617s)!`）。
+     临时探针 `Bgn10hvGenProbe`（开关文件 `run/bgn10hv-gen.enabled`）等 120 tick 后**只调一次**
+     `server.halt(false)`；日志自证：
+       BGN10HVGEN INFO gen world levelName=bgn10hvgen dir=.\bgn10hvgen\.
+       BGN10HVGEN INFO SUMMARY ticks=120 forcedNow=0 -> halt(false) once
+       Stopping server / Saving chunks for level 'ServerLevel[bgn10hvgen]' ×3 / All chunks are saved
+     ⇒ 停服走的是**正常存盘流程**，`forcedNow=0`（全程没有 forceload）。
+  3. 世界**整目录复制** `run/bgn10hvgen` -> `run/saves/bgn10hvcw`（18 -> 23 个文件，客户端跑完 23）。
+     ⚠ 复制后 `level.dat` 里的 `LevelName` 仍是服务端那份 `bgn10hvgen`（复制不重写这个名字）——
+       所以客户端的世界名断言认 `bgn10hvgen`，存档 id 认 `bgn10hvcw`，两个都是本轮自己造的 ASCII 名。
+  4. `run/server.properties` 跑后从 `.bak` **逐字节复原**：
+     SHA256 回到 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4（= 跑前值）。
+
+二、客户端启动参数（走 build.gradle，**没有**贴 clientRunProgramArgs.txt）
+  `build.gradle` 的 `runs { client { … } }` 里临时加一行（换行符 LF，其余字节不动）：
+      programArguments.addAll '--quickPlayPath', 'logs/quickplay/bgn10hv.json', '--quickPlaySingleplayer', 'bgn10hvcw'
+  改前备份 `build/bgn10hv_build.gradle.bak`（SHA256 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F），
+  改后 SHA256 4570DCEE569B1E5AE94C7A06D4314B2D0EF9D097C3743CB2FFA473E54094C215，收尾**逐字节复原**。
+  客户端实收参数（日志自证，`ModLauncher running: args [...]`）：
+      --quickPlayPath logs/quickplay/bgn10hv.json --quickPlaySingleplayer bgn10hvcw
+  说明：`--quickPlayPath` 在 1.21.1 里其实是 **QuickPlayLog 的“输出”路径**（`QuickPlayLog.of(path)`），
+  不是输入 ⇒ 里面写不写内容都无所谓；但两个参数**都带**是上一轮实测出来的可用组合，本轮照办。
+
+三、三次客户端跑（前两次的教训都留在这里，不改游戏内容只改探针）
+  1. client.out（22:38:56）：世界闸门按“存档目录名 = bgn10hvcw”判，
+     `getWorldPath(LevelResource.ROOT).getFileName()` 在本机 dev 整合服务端上返回 **`.`**
+     ⇒ 误判 FAIL 并 `halt(2)`（一次跑空）。
+     读数仍是：`LevelName=bgn10hvgen` PASS、`not-author-save` PASS。
+  2. client2.out（22:40:53）：闸门改为 **LevelName 为准 + `storageSource.getLevelId()` 兜底** ⇒ 全过；
+     但“文本页的文本键”因为 `String.valueOf(IVariable)` 带引号而**整段没被检查**（textOk 全是 literal）。
+  3. client3.out（22:43:26，本轮**采用**的读数）：`IVariable#asString()` 取裸串 ⇒ 文本键真查了、
+     并把页上正文前 40 字打进读数。SUMMARY pass=16 fail=0 ticks=75。
+  ⚠ 三次都是 `Runtime.getRuntime().halt(0|1|2)` **各调一次**；每次跑完都确认进程退出（见下）才起下一次。
+
+四、进程与 run\ 独占
+  * 跑前：只有一个既有 **Gradle daemon**（PID 12344，20:57 起，不是游戏进程）—— 没动它。
+  * 造世界那条 `runServer` 结束（job 完成、exit 0）后才起客户端。
+  * 客户端每跑完一次都核对：`Get-CimInstance Win32_Process name='java.exe'` 里没有新的游戏进程；
+    另外用**独占打开** `run/logs/latest.log` / `run/options.txt` 验证没有被锁（都成功）⇒ `run\` 已空出来。
+  * 全程没有杀任何别人的进程；`run\` 三条跑测**串行**，没有并发。
+
+五、开关文件（收尾删除）
+  run/bgn10hv-gen.enabled（专用服务端造世界探针用）
+  run/bgn10hv-probe.enabled（客户端探针用）
+  ——两者都在 `run/` 根，客户端跑时整合服务端也会发 ServerStartedEvent/ServerTickEvent，
+    所以造世界探针额外加了 `server.isDedicatedServer()` 守卫（上一轮踩过：在整合服务端里 halt 会打断客户端读数）。
+
+六、临时文件清单（收尾全部删除，见 07-收尾复核.txt）
+  src/main/java/com/hjmmd_8/bettergold/probe/{Bgn10hvGenProbe,Bgn10hvClientProbe}.java
+  src/main/java/com/hjmmd_8/bettergold/bettergold.java 的注入行（// TEMP PROBE (bgn10hv) …）
+  run/bgn10hvgen/（服务端造的探针世界）、run/saves/bgn10hvcw/（客户端用的副本）
+  run/logs/quickplay/bgn10hv.json（QuickPlayLog 写出来的，本轮产物）
+  probe/bgn10hv/（源码已在 docs/bgn10hv-证据/脚本副本/ 留档后才删）

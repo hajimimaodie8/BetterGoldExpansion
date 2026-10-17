@@ -1,0 +1,18 @@
+客户端日志扫描（整份 run\logs\latest.log，共 315 行）
+
+① 含 '/ERROR' 的行数 = 0
+② 含 'Unable to ' 的行数 = 0
+③ Patchouli 'Recipe ... not found' 警告行数 = 0（配方页解析失败的唯一静默信号）
+④ 全部 WARN 行（12 条；逐条列出证明没有本模组/手册相关的）
+   [1710月2026 22:43:08.423] [main/WARN] [mixin/]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+   [1710月2026 22:43:15.922] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+   [1710月2026 22:43:15.924] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+   [1710月2026 22:43:15.927] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+   [1710月2026 22:43:15.927] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+   [1710月2026 22:43:15.928] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+   [1710月2026 22:43:16.021] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/assets/.mcassetsroot' uses unexpect
+   [1710月2026 22:43:16.021] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/data/.mcassetsroot' uses unexpected
+   [1710月2026 22:43:20.574] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
+   [1710月2026 22:43:20.574] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+   [1710月2026 22:43:22.417] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+   [1710月2026 22:43:26.741] [Render thread/WARN] [mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory/]: Item Group has no display items and no search tab display items. Items from this group will be missing from the JEI ingredient list. 管

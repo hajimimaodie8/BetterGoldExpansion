@@ -1,0 +1,51 @@
+bgn10hv 发现清单（**只记录，一条都没改** —— 本轮是验证轮）
+==============================================================================
+
+一、读数本身纠正的两条「判据口径」（不是模组 bug，但下次别再按老口径验）
+
+1. **本版 Patchouli 没有「每页 isErrored()」这个东西** `【读 jar：javap】`
+   - `BookPage` / `PageWithText` / `PageDoubleRecipe` / `PageSpotlight` 的成员里**都没有** `isErrored()`；
+     `isErrored()` 全仓只出现在 `BookContents`（整本书级）、`GuiBookLanding`、`ItemModBook`、`BookCrashHandler`。
+   - 配方页解析失败的**真实信号**是两条：① `PageDoubleRecipe.recipe1/recipe2` 为 `null`
+     ② `PageDoubleRecipeRegistry#loadRecipe` 打一条
+     `PatchouliAPI.LOGGER.warn("Recipe {} (of type {}) not found", id, type)` —— 是 **WARN，不是 ERROR**。
+   - ⇒ 任务书里「★ 每页是否 isErrored()」这条判据换成上面两条；本轮按新口径验：
+     **68 条配方引用全部 `recipe1/recipe2 != null`，日志 0 条 `Recipe ... not found`**。
+   - 另注：`PageSpotlight` 一个图标槽，失败形态是 `stacks` 为空数组/首元素空栈；本轮 8 个 spotlight 页全部非空
+     （栈数 1 / 3 / 4 / 11，与资产的 item 列表长度逐一对上）。
+
+2. **整合服务端的「存档目录名」不能用 `getWorldPath(LevelResource.ROOT).getFileName()` 取** `【实测，本机 dev】`
+   - 本机 1.21.1 dev 整合服务端上它返回 **`.`**（第一次跑测就因此被自己的闸门 halt 掉，白跑一轮）。
+   - 能用的两条：① `overworld().getLevelData()` 反射 `getLevelName()`（= level.dat 的 LevelName）；
+     ② 反射 `MinecraftServer#storageSource`（protected）调 `LevelStorageAccess#getLevelId()`。
+   - 本轮读数：`HVWORLD levelName=bgn10hvgen levelId=bgn10hvcw root=…\run\saves\bgn10hvcw` —— 三条互相印证。
+
+二、观感层面（**需要作者人眼定夺，不是 bug**）
+
+3. `gear_chaosgold` 第 2 页右栏（`gear_chaosgold_1_right`）正文是全 5 个条目里最挤的：
+   Patchouli 的 `BookTextRenderer#scale` 自动缩到 **0.768**（其余正文页 ≈ 0.93 / 0.98 / 1.0）。
+   ⇒ 纯观感（字变小），没有溢出/丢字；要不要把这段文案拆成两页，等作者一句话。
+4. `chaos_materials` 第 7 页（索引 6）是 **11 件建材**的轮换 spotlight（栈数 11，最长的那张轮换表）；
+   `PageSpotlight` 只有一个图标槽，所以页面上是**一次一个图标轮换**，不是 11 个图标同屏。
+   （与 `docs/1.6-规格.md` §十 的既定口径一致，本轮只是把"真渲染出来是 11 项轮换"再钉一次。）
+5. `book.overflowMode` 读出来是 `null`（book.json 没写这一项）。渲染没报错、自动缩放照常发生，
+   但说明这一版 Patchouli 的该字段允许 null；本轮未做任何改动。
+
+三、本轮**没有**发现的（明确记录，避免下一轮重复怀疑）
+
+6. 零死链：5 个条目 56 页 / 68 条配方引用，`recipe1|recipe2` 全部非 null，`RecipeManager.byKey` 68/68 命中。
+7. 零空图标：8 个 spotlight 页的 `stacks` 全非空，首项与资产 item 列表首项逐字相同。
+8. 零裸键：14 段正文 + 5 个 spotlight 页眉的文本键全部在 `zh_cn` 里翻得出来（833 个键的表），
+   页上正文前 40 字已抓进 `01-三路对穿.txt`（可读，不是"键名"）。
+9. 三路（生成器真源 / zh_cn 资产 / 运行时）**页级不一致 = 0**；页数合计 56 = 56 = 56。
+10. 整份客户端日志：`/ERROR` 0 行、`Unable to ` 0 行、Patchouli `Recipe ... not found` 0 行；
+    另 12 条 WARN 全是原版/Patchouli-dev/JEI 的固定噪声（见 `03-日志扫描.txt`）。
+11. JEI：装了（`jei` loaded=true），客户端 `RecipeManager` 2052 条、其中 `bettergold:` 458 条；
+    手册引用的 68 条（含混沌金 11+4 件的 15 条）都在表里 ⇒ JEI 的"能不能查到"就是这张表。
+
+四、仍未验证（人眼/像素）
+12. **没有截图像素比对**：本轮只读到部件尺寸（书 272×180、页 116×156、topPad 18、左页 x=15 / 右页 x=141、
+    行高 9）与排版结果（词数 / 缩放 / 坐标区间），**没有**"看起来是否好看"的人眼判定。
+13. 跨页配对：`spread/maxSpreads` 读数 = chaos_materials 0/8、chaos_feast 0/2、gear_chaosgold 0/8、
+    gear_chaosalloy 0/6、gear_echogold 0/5（与页数除以 2 完全一致）——但**只看了每章第 1 屏**，
+    其余 7+1+7+5+4 屏没有逐屏翻开（翻页要靠点 UI，本轮明令不许）。

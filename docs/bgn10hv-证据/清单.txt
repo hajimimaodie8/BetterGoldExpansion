@@ -1,0 +1,30 @@
+bgn10hv 证据目录清单（docs/bgn10hv-证据/）
+
+00-探针原始行.txt                                      42329  A9BAE4964533D70E
+01-三路对穿.txt                                       54271  2F637F7CBC591666
+02-saves清单对比.txt                                    879  88E7753F59F4DFC2
+03-日志扫描.txt                                        2870  9D1A7CAA1CC5D77C
+04-跑前留档.json                                       1818  E6E0CC0F22105003
+05-执行记录.txt                                        5572  9D70CC31700A4786
+06-发现清单.txt                                        4637  0E054B9AD1D8DBC8
+07-收尾复核.txt                                        2505  050AC6B5E18989EC
+08-客户端完整日志.log                                    66341  FC7786F686BAE226
+09-七关卡.txt                                         2428  33118A6BFD41A871
+脚本副本/bgn10hv_check.py                              9601  1EDC63F055B16E61
+脚本副本/bgn10hv_evidence.py                           4225  A7852FB4DFAA44E4
+脚本副本/bgn10hv_prep.py                               9746  962E8DF0B60973FD
+脚本副本/Bgn10hvClientProbe.java                      28967  08DE21CF7FD5C82C
+脚本副本/Bgn10hvGenProbe.java                          2978  DAC048D8BD0B7569
+
+说明：
+  00 探针原始行      客户端探针 160 行原样（UTF-8，取自 run/logs/latest.log）
+  01 三路对穿        真源(生成器) <-> zh_cn 资产 <-> 运行时，逐页 56 行 + 页上正文前 40 字
+  02 saves 对比      作者存档跑前跑后逐项相同；只新增过我方的探针副本（已删）
+  03 日志扫描        /ERROR 0、Unable to 0、Recipe not found 0；12 条 WARN 逐条列出
+  04 跑前留档        SHA256 + run/saves 摘要（跑前）
+  05 执行记录        造世界方式/启动参数/三次跑/进程独占/逐字节复原（含没用 UI 自动化的自证）
+  06 发现清单        两条判据口径纠正 + 观感项 + 明确没发现什么
+  07 收尾复核        共享文件 SHA、探针残留、临时文件、七关卡、行数变化
+  08 客户端完整日志  整份 latest.log（315 行，中文可读）
+  09 七关卡          七条关卡的 exit 与关键计数行
+  脚本副本/          两个探针源 + 三个 py（删前留档）
