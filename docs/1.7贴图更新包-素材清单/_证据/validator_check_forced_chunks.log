@@ -1,0 +1,10 @@
+### stdout
+chunks.dat top-level keys = ['data', 'DataVersion']
+chunks.dat data keys      = ['Forced']
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True
+[chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+[chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+### stderr

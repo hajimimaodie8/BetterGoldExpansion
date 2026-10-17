@@ -1,0 +1,348 @@
+package com.hjmmd_8.bettergold.probe.bgn10tex;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.imageio.ImageIO;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.mojang.blaze3d.platform.NativeImage;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * <b>临时探针</b>（1.7 <b>第五次贴图授权 / 1.7 贴图更新包</b> 的 A 级启动验证）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bg17tex-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p><b>为什么停在标题界面就够</b>：模型 / 图集在资源加载阶段就定稿。四组读数：</p>
+ * <ol>
+ *   <li><b>资源层</b>：72 个贴图 id 都能从资源管理器读到，{@code ImageIO} 读出的尺寸与认亲表一致
+ *       （16×16 / 16×48 / 64×32），并逐张打印 **classpath 上的 SHA-256**（供离线与清单对账）。</li>
+ *   <li><b>图集层</b>：64 张（排除 8 张盔甲层，**盔甲层不进图集**）在 BLOCKS 图集里取到 Sprite，
+ *       且 {@code SpriteContents#getOriginalImage()} 与 PNG **逐像素相等** ⇒ 游戏真正用的像素 = 作者给的字节。</li>
+ *   <li><b>帧数</b>：8 张 16×48 灯笼 {@code getUniqueFrames().count() == 3}
+ *       （{@code {"animation":{"frametime":8}}} 且未写 width/height ⇒ 48/16 = 3 帧）。</li>
+ *   <li><b>模型层</b>：{@code bettergold} 命名空间全部物品 + 全部方块状态逐个 resolve，
+ *       与 {@code ModelManager#getMissingModel()} 做同一性比较 ⇒ missing 必须为空。</li>
+ * </ol>
+ *
+ * <p>⚠ 探针纪律：<b>不建世界、不碰存档</b>；读完立刻 {@code Runtime.halt(0)}
+ * （客户端没有「停服」这回事；Windows 上该调用会以 0xC0000409 结束进程，属既有探针模式）。
+ * 不进世界 ⇒ 不涉及 {@code --quickPlayPath} / {@code --quickPlaySingleplayer}，也不碰作者的 {@code 新的世界}。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class Bg17texProbe {
+
+    private static final String TAG = "BG17TEXPROBE";
+    private static final String SWITCH = "bg17tex-probe.enabled";
+    private static final int CHECK_AT_TICK = 100;
+
+    private static final String[] FAMILIES = {
+        "flamegold", "sturdygold", "thornsgold", "echogold",
+        "indigoseagold", "voodoogold", "thundergold", "illusiongold"
+    };
+
+    /** 9 类 × 8 族 = 72 张（与本轮认亲表一致）；第三个字段 = 期望像素尺寸 */
+    private static final String[][] KINDS = {
+        {"block/%s_lantern", "16x48"},
+        {"models/armor/%s_layer_1", "64x32"},
+        {"item/%s_axe", "16x16"},
+        {"item/%s_shovel", "16x16"},
+        {"item/%s_knife", "16x16"},
+        {"block/%s_chain", "16x16"},
+        {"item/%s_chain", "16x16"},
+        {"block/%s_bars", "16x16"},
+        {"item/%s_leggings", "16x16"},
+    };
+
+    private static int ticks;
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private Bg17texProbe() {
+    }
+
+    private static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir"), SWITCH));
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (done || !enabled()) {
+            return;
+        }
+        ticks++;
+        if (ticks < CHECK_AT_TICK) {
+            return;
+        }
+        done = true;
+        try {
+            run();
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("t_exception", String.valueOf(t));
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        bettergold.LOGGER.info("{} INFO exiting JVM (title screen is enough; probe halts)", TAG);
+        Runtime.getRuntime().halt(0);
+    }
+
+    private static void run() throws Exception {
+        Minecraft mc = Minecraft.getInstance();
+        ModelManager mm = mc.getModelManager();
+        BakedModel missingModel = mm.getMissingModel();
+
+        List<String> ids = new ArrayList<>();
+        List<String> shapats = new ArrayList<>();
+        List<String> wants = new ArrayList<>();
+        for (String[] k : KINDS) {
+            for (String fam : FAMILIES) {
+                String p = String.format(k[0], fam);
+                ids.add(p);
+                shapats.add(p);
+                wants.add(k[1]);
+            }
+        }
+
+        // ---------- ① 资源层：尺寸 + classpath SHA-256 ----------
+        int resOk = 0;
+        List<String> resBad = new ArrayList<>();
+        byte[][] raw = new byte[ids.size()][];
+        for (int i = 0; i < ids.size(); i++) {
+            String path = ids.get(i);
+            String want = wants.get(i);
+            ResourceLocation texPath = ResourceLocation.fromNamespaceAndPath(
+                    bettergold.MODID, "textures/" + path + ".png");
+            Resource res = mc.getResourceManager().getResource(texPath).orElse(null);
+            if (res == null) {
+                resBad.add(path + " (no resource)");
+                continue;
+            }
+            byte[] bytes;
+            try (InputStream in = res.open()) {
+                bytes = in.readAllBytes();
+            }
+            raw[i] = bytes;
+            BufferedImage img = ImageIO.read(new ByteArrayInputStream(bytes));
+            if (img == null) {
+                resBad.add(path + " (undecodable)");
+                continue;
+            }
+            String got = img.getWidth() + "x" + img.getHeight();
+            if (want.equals(got)) {
+                resOk++;
+            } else {
+                resBad.add(path + " dims " + got + " want " + want);
+            }
+            bettergold.LOGGER.info("{} SHA {} {}", TAG, path, sha256(bytes));
+        }
+        check("resource_dims_match", resBad.isEmpty() && resOk == 72,
+                "ok=" + resOk + "/72 bad=" + resBad);
+
+        // ---------- ② 图集层：64 张逐像素相等（盔甲层不进图集，排除） ----------
+        int pxMatch = 0;
+        int pxChecked = 0;
+        List<String> pxBad = new ArrayList<>();
+        String order = "none";
+        for (int i = 0; i < ids.size(); i++) {
+            String path = ids.get(i);
+            if (path.startsWith("models/armor/")) {
+                continue;   // 盔甲层由 TextureManager 直接按路径载入，不参与图集缝合
+            }
+            pxChecked++;
+            ResourceLocation atlasId = ResourceLocation.fromNamespaceAndPath(bettergold.MODID, path);
+            TextureAtlasSprite sprite = mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(atlasId);
+            if (sprite == null) {
+                pxBad.add(path + " (no sprite)");
+                continue;
+            }
+            BufferedImage ref = ImageIO.read(new ByteArrayInputStream(raw[i]));
+            NativeImage img = sprite.contents().getOriginalImage();
+            int w = Math.min(ref.getWidth(), img.getWidth());
+            int h = Math.min(ref.getHeight(), img.getHeight());
+            int d0 = compare(img, ref, w, h, 0);
+            if (d0 == 0) {
+                pxMatch++;
+                order = "ABGR";
+                continue;
+            }
+            int d1 = compare(img, ref, w, h, 1);
+            if (d1 == 0) {
+                pxMatch++;
+                order = "RGBA";
+                continue;
+            }
+            pxBad.add(path + " diff=" + d0 + "/" + d1 + " sprite=" + img.getWidth() + "x"
+                    + img.getHeight());
+        }
+        check("atlas_pixels_equal_author_bytes", pxBad.isEmpty() && pxMatch == 64,
+                "matched=" + pxMatch + "/" + pxChecked + " bad=" + pxBad + " order=" + order);
+
+        // ---------- ③ 帧数：8 张灯笼必须 3 帧 ----------
+        int frameOk = 0;
+        List<String> frameBad = new ArrayList<>();
+        for (String fam : FAMILIES) {
+            String path = "block/" + fam + "_lantern";
+            ResourceLocation atlasId = ResourceLocation.fromNamespaceAndPath(bettergold.MODID, path);
+            TextureAtlasSprite sprite = mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(atlasId);
+            if (sprite == null) {
+                frameBad.add(path + " (no sprite)");
+                continue;
+            }
+            SpriteContents c = sprite.contents();
+            long frames = c.getUniqueFrames().count();
+            if (frames == 3 && c.width() == 16 && c.height() == 16) {
+                frameOk++;
+                pass("frame_" + fam + "_lantern", "frameSize=" + c.width() + "x" + c.height()
+                        + " frames=" + frames);
+            } else {
+                frameBad.add(path + " frames=" + frames + " size=" + c.width() + "x" + c.height());
+                fail("frame_" + fam + "_lantern", "frames=" + frames);
+            }
+        }
+        bettergold.LOGGER.info("{} INFO LANTERN_FRAMES ok={} bad={}", TAG, frameOk, frameBad);
+
+        // ---------- ④ 模型层 ----------
+        int itemTotal = 0;
+        List<String> itemMissing = new ArrayList<>();
+        for (Item item : BuiltInRegistries.ITEM) {
+            ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+            if (!bettergold.MODID.equals(id.getNamespace())) {
+                continue;
+            }
+            itemTotal++;
+            BakedModel m;
+            try {
+                m = mc.getItemRenderer().getModel(new ItemStack(item), null, null, 0);
+            } catch (Throwable t) {
+                itemMissing.add(id + " (throw " + t.getClass().getSimpleName() + ")");
+                continue;
+            }
+            if (m == null || m == missingModel) {
+                itemMissing.add(id.toString());
+            }
+        }
+        check("item_models_present", itemMissing.isEmpty(),
+                "items=" + itemTotal + " missing=" + itemMissing.size() + " list=" + itemMissing);
+
+        BlockModelShaper shaper = mc.getBlockRenderer().getBlockModelShaper();
+        int stateTotal = 0;
+        List<String> stateMissing = new ArrayList<>();
+        for (Block block : BuiltInRegistries.BLOCK) {
+            ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
+            if (!bettergold.MODID.equals(id.getNamespace())) {
+                continue;
+            }
+            for (BlockState st : block.getStateDefinition().getPossibleStates()) {
+                stateTotal++;
+                BakedModel m;
+                try {
+                    m = shaper.getBlockModel(st);
+                } catch (Throwable t) {
+                    stateMissing.add(st + " (throw " + t.getClass().getSimpleName() + ")");
+                    continue;
+                }
+                if (m == null || m == missingModel) {
+                    stateMissing.add(st.toString());
+                }
+            }
+        }
+        check("block_models_present", stateMissing.isEmpty(),
+                "blockstates=" + stateTotal + " missing=" + stateMissing.size()
+                        + " first=" + (stateMissing.isEmpty() ? "-" : stateMissing.get(0)));
+
+        bettergold.LOGGER.info("{} INFO READINGS resources_ok={} atlas_pixels_matched={}/{} "
+                        + "lantern_frames_ok={}/8 item_models={} blockstates={} missing={}",
+                TAG, resOk, pxMatch, pxChecked, frameOk, itemTotal, stateTotal,
+                itemMissing.size() + stateMissing.size());
+    }
+
+    private static String sha256(byte[] bytes) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] d = md.digest(bytes);
+        StringBuilder sb = new StringBuilder(d.length * 2);
+        for (byte b : d) {
+            sb.append(String.format(Locale.ROOT, "%02x", b));
+        }
+        return sb.toString();
+    }
+
+    /** 返回不同像素数；mode 0 = ABGR 打包（内存小端 RGBA），1 = 按 ARGB 解释 */
+    private static int compare(NativeImage img, BufferedImage ref, int w, int h, int mode) {
+        int diff = 0;
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int p = img.getPixelRGBA(x, y);
+                int a0;
+                int r0;
+                int g0;
+                int b0;
+                if (mode == 0) {
+                    r0 = p & 0xFF;
+                    g0 = (p >> 8) & 0xFF;
+                    b0 = (p >> 16) & 0xFF;
+                    a0 = (p >> 24) & 0xFF;
+                } else {
+                    a0 = (p >> 24) & 0xFF;
+                    r0 = (p >> 16) & 0xFF;
+                    g0 = (p >> 8) & 0xFF;
+                    b0 = p & 0xFF;
+                }
+                int argb = ref.getRGB(x, y);
+                int a1 = (argb >> 24) & 0xFF;
+                int r1 = (argb >> 16) & 0xFF;
+                int g1 = (argb >> 8) & 0xFF;
+                int b1 = argb & 0xFF;
+                if (a0 != a1 || r0 != r1 || g0 != g1 || b0 != b1) {
+                    diff++;
+                }
+            }
+        }
+        return diff;
+    }
+}

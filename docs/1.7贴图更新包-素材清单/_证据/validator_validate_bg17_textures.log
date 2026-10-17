@@ -1,0 +1,12 @@
+### stdout
+[bg16-authorized-blank-texture] ok item/golden_trident_blank.png
+[bgfinal3-indigosea-sha] ok trims/color_palettes/indigoseagold.png
+[bgfinal3-indigosea-not-quartz] ok coloured 8 of 8 px
+[bg17tex-model-ref] ok 64 of 64 replaced textures still referenced by model json
+[bg17tex-needle-src] ok armour layer convention present on stripped source (stripped bytes 36234)
+[bg17tex-auth] ok 72 of 72
+[bg17tex-untouched] ok 554 of 554
+[bg17tex-summary] checked=630 authorized=72 untouched=554 modelrefs=64 problems=0
+[bg17tex-ok] all invariants hold
+
+### stderr

@@ -1,0 +1,172 @@
+[1710月2026 20:42:53.726] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientdev, --version, 21.1.228, --assetIndex, 17, --assetsDir, C:\\Users\\Lenovo\\.gradle\\caches\\neoformruntime\\assets, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.228, --fml.neoFormVersion, 20240808.144430]
+[1710月2026 20:42:53.729] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: JVM identified as Microsoft OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[1710月2026 20:42:53.730] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Microsoft; OS Windows 11 arch amd64 version 10.0
+[1710月2026 20:42:53.849] [main/INFO] [net.neoforged.fml.loading.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
+[1710月2026 20:42:54.020] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
+[1710月2026 20:42:54.193] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.6 got version 4.6
+[1710月2026 20:42:54.271] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/Lenovo/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%23138!/ Service=ModLauncher Env=CLIENT
+[1710月2026 20:42:54.376] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: NVIDIA GeForce RTX 5060 Laptop GPU/PCIe/SSE2 GL version 4.6.0 NVIDIA 592.01, NVIDIA Corporation
+[1710月2026 20:42:54.989] [main/INFO] [net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[1710月2026 20:42:54.991] [main/INFO] [net.neoforged.fml.loading.moddiscovery.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		bettergold 1.6.0 (bettergold)
+		Farmer's Delight 1.3.4 (farmersdelight)
+		Just Enough Items 19.16.1.156 (jei)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.228 (neoforge)
+		Patchouli 1.21.1-93-NEOFORGE (patchouli)
+[1710月2026 20:42:56.474] [main/INFO] [mixin/]: Compatibility level set to JAVA_21
+[1710月2026 20:42:56.482] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientdev' with arguments [--version, 21.1.228, --gameDir, ., --assetsDir, C:\Users\Lenovo\.gradle\caches\neoformruntime\assets, --assetIndex, 17]
+[1710月2026 20:42:56.577] [main/WARN] [mixin/]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+[1710月2026 20:42:57.401] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[1710月2026 20:42:58.823] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 229 Datafixer optimizations took 309 milliseconds
+[1710月2026 20:43:04.016] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[1710月2026 20:43:04.016] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[1710月2026 20:43:04.020] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[1710月2026 20:43:04.021] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[1710月2026 20:43:04.022] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[1710月2026 20:43:04.113] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[1710月2026 20:43:04.113] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[1710月2026 20:43:04.182] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[1710月2026 20:43:04.199] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Setting user: Dev
+[1710月2026 20:43:04.282] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Backend library: LWJGL version 3.3.3+5
+[1710月2026 20:43:04.573] [modloading-worker-0/INFO] [net.neoforged.neoforge.common.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.228, for MC 1.21.1
+[1710月2026 20:43:04.720] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
+[1710月2026 20:43:04.726] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 3.617 ms
+[1710月2026 20:43:04.832] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[1710月2026 20:43:04.863] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 已注册金属族 10 套: [flamegold(烈燃金), voodoogold(巫毒金), thundergold(结雷金), indigoseagold(靛海金), illusiongold(幻惑金), thornsgold(树棘金), echogold(幽咆金), sturdygold(万坚金), chaosgold(混沌金), chaosalloy(崩乱合金)]
+[1710月2026 20:43:04.866] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 混沌金专属物品已注册: bettergold:chaosgold_forbidden_fruit / bettergold:chaosgold_enchanting_book（禁果池 39 条 / 附魔书门槛 5 级）
+[1710月2026 20:43:04.866] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 崩乱禁果已注册: bettergold:chaosalloy_forbidden_fruit（19200 tick / 1..4 级 / 冷却 19200 tick / 饱和 11.6）
+[1710月2026 20:43:04.894] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 失衡状态已注册: bettergold:power_imbalance / bettergold:resistance_imbalance（320 tick，无等级；力量下端 1.0 / 抗性倍率 ×2.0）
+[1710月2026 20:43:04.904] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 万坚金砧下落伤害已挂载：每格 1.0% / 封顶 16.0% 目标当前生命值（信号 1.0 点每格，上限 1000）
+[1710月2026 20:43:05.595] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[1710月2026 20:43:05.596] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] chaosgold[w=1.000 a=1.000] chaosalloy[w=0.500 a=0.100] sturdygoldArmorIntervalMultiplier=1.000
+[1710月2026 20:43:06.091] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: 1.5 武器轮：已为 10 件盾牌 + 10 件三叉戟登记自定义物品渲染器（MetalWeaponItemRenderer）
+[1710月2026 20:43:06.093] [Render thread/INFO] [net.neoforged.neoforge.gametest.GameTestHooks/]: Enabled Gametest Namespaces: [bettergold]
+[1710月2026 20:43:06.119] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: 万坚金砧界面已注册: bettergold:sturdygold_anvil -> SturdygoldAnvilScreen（本仓第一个自定义 Screen）
+[1710月2026 20:43:06.307] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources, mod/farmersdelight, mod/patchouli, mod/bettergold, mod/neoforge, mod/jei
+[1710月2026 20:43:06.342] [Worker-Main-1/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO FROM COMMON SETUP
+[1710月2026 20:43:06.344] [Worker-Main-1/INFO] [com.hjmmd_8.bettergold.bettergold/]: DIRT BLOCK >> minecraft:dirt
+[1710月2026 20:43:06.344] [Worker-Main-1/INFO] [com.hjmmd_8.bettergold.bettergold/]: The magic number is... 42
+[1710月2026 20:43:06.346] [Worker-Main-1/INFO] [com.hjmmd_8.bettergold.bettergold/]: ITEM >> minecraft:iron_ingot
+[1710月2026 20:43:06.463] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[1710月2026 20:43:06.464] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] chaosgold[w=1.000 a=1.000] chaosalloy[w=0.500 a=0.100] sturdygoldArmorIntervalMultiplier=1.000
+[1710月2026 20:43:06.501] [Worker-Main-8/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_jp_patch-15.1.05.hex, loading
+[1710月2026 20:43:06.501] [Worker-Main-9/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.1.05.hex, loading
+[1710月2026 20:43:06.606] [Worker-Main-5/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO FROM CLIENT SETUP
+[1710月2026 20:43:06.606] [Worker-Main-5/INFO] [com.hjmmd_8.bettergold.bettergold/]: MINECRAFT NAME >> Dev
+[1710月2026 20:43:06.660] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: 1.5 武器轮：已为 40 件武器登记物品模型谓词（弓 pull/pulling、弩 pull/pulling/charged/firework、三叉戟 throwing、盾牌 blocking）
+[1710月2026 20:43:07.720] [Worker-Main-10/INFO] [com.hjmmd_8.bettergold.bettergold/]: 1.5 武器轮：已登记 20 个三叉戟 additional model（6 金属 × 手持/蓄力）
+[1710月2026 20:43:08.151] [Worker-Main-10/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bettergold] 盔甲纹饰物品模型：已包装 65 件盔甲物品模型，我方纹饰材质 = [chaosalloy, echogold, voodoogold, thornsgold, thundergold, illusiongold, unwanted_antique, sturdygold, indigoseagold, chaosgold, flamegold]
+[1710月2026 20:43:08.338] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
+[1710月2026 20:43:08.338] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[1710月2026 20:43:09.982] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on 扬声器 (Realtek(R) Audio)
+[1710月2026 20:43:09.983] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
+[1710月2026 20:43:10.060] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[1710月2026 20:43:10.069] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/signs.png-atlas
+[1710月2026 20:43:10.069] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[1710月2026 20:43:10.069] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[1710月2026 20:43:10.070] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 2048x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[1710月2026 20:43:10.072] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[1710月2026 20:43:10.072] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[1710月2026 20:43:10.072] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[1710月2026 20:43:10.072] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[1710月2026 20:43:10.114] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[1710月2026 20:43:10.116] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[1710月2026 20:43:10.116] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[1710月2026 20:43:10.116] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 64x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[1710月2026 20:43:10.116] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x0 minecraft:textures/atlas/gui.png-atlas
+[1710月2026 20:43:10.131] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[1710月2026 20:43:10.166] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader preloaded 56 jsons
+[1710月2026 20:43:10.167] [Render thread/INFO] [net.neoforged.neoforge.client.entity.animation.json.AnimationLoader/]: Loaded 0 entity animations
+[1710月2026 20:43:10.167] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 jei:textures/atlas/gui.png-atlas
+[1710月2026 20:43:14.713] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/flamegold_lantern 5315424f84ad86a91c34d9478fd3a3a76aba5452e27f69e86773520e321d4c24
+[1710月2026 20:43:14.719] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/sturdygold_lantern 532663ec5d673a7018e93f09128b620e64def25adeb9982dcc885f00305c797a
+[1710月2026 20:43:14.723] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/thornsgold_lantern 682ffa5122a3a79f083ba93e36e4d669c70719b789d7ef23114cf8cc64f18252
+[1710月2026 20:43:14.728] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/echogold_lantern f8ea96c67965c4013488139d6655743e10f35807dce6a36d29205be4f1fc6161
+[1710月2026 20:43:14.733] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/indigoseagold_lantern b8c1f734ea30d8fa01f229f0add6ea64d1605789fe5e50794504f59ce9cf0ddd
+[1710月2026 20:43:14.739] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/voodoogold_lantern 5b67813dfde542f14ac8123680711ea990a4afedf0ec504815c7919028165273
+[1710月2026 20:43:14.743] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/thundergold_lantern a4002c5a8e367385083fa30b39f41103590650383d469ea4f22472fdfc5654e0
+[1710月2026 20:43:14.747] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/illusiongold_lantern 284f13a3f89b795aab2dbe899f780e3cb13a50b570c528c960cc64164f6d63b7
+[1710月2026 20:43:14.752] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/flamegold_layer_1 46031ba2b6b0defa77827590de585af57bed70674085c2bce9c9394830ff36b8
+[1710月2026 20:43:14.757] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/sturdygold_layer_1 57f0a3e7b4f9481d4432a3cfc0fac7bba4b27fbf0b89b1ed29cd89130d47b3af
+[1710月2026 20:43:14.762] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/thornsgold_layer_1 a878965980899ad158195ce13c3de712c88dfec704e74e7728d45dc01726f467
+[1710月2026 20:43:14.766] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/echogold_layer_1 7032f998a969cd787b6fd59f95839228b7668064a7f4a7377430ffb3aab5b06f
+[1710月2026 20:43:14.771] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/indigoseagold_layer_1 8bb458bfa87a00f39ab65cd4c1643c4eeb7ca6bc39a35ee8bcaf072ef5bd9c67
+[1710月2026 20:43:14.776] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/voodoogold_layer_1 63d3a5350980bf945bebf3664003e23e526bd38f9b03dfac72c0641aaa9934c4
+[1710月2026 20:43:14.781] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/thundergold_layer_1 f277daee30e009b48fb80eef99f60b7c5ec145cd64064d9d30661010c780dffa
+[1710月2026 20:43:14.787] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA models/armor/illusiongold_layer_1 e14f4f76a253c79b898a3da7836dc50f570d7af9d80df52abb9befd9e88d835a
+[1710月2026 20:43:14.791] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/flamegold_axe ad8a60c3abe78638c270ff791a823b22adb7acab011b581447e206cb9a8c44f9
+[1710月2026 20:43:14.794] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/sturdygold_axe ee8e5851e4b4a90f614dd4cdb3fa394d8647e60649aed6a681fdb61e7d6cb702
+[1710月2026 20:43:14.799] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thornsgold_axe 3771dce84f2710569c22ac0dc97e4ac7accef7dd1392da739ed05332f86533d4
+[1710月2026 20:43:14.803] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/echogold_axe 2581d14974b045498df45b18f642982883a07ec91a3fa92b9ba73c2a1187be39
+[1710月2026 20:43:14.806] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/indigoseagold_axe 26fab6ff7717d219886bab7630b6c90837846e9b15d7608afffb55a20b8daf49
+[1710月2026 20:43:14.810] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/voodoogold_axe deda647b7fca09361374c99b6d1917365eb954d8ed1fb11f5526eb8be872484a
+[1710月2026 20:43:14.814] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thundergold_axe 1351727de3db80b91cb55d66329af5f453e254b2acd7349cad3acaff7f0a847e
+[1710月2026 20:43:14.818] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/illusiongold_axe 1f8ba0b64115ae5a6e02ef03b859e24e98ca6d88917c9ff40af9b6b8aa663329
+[1710月2026 20:43:14.822] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/flamegold_shovel 4efd5b3e678845b06a8ccedf1e6488b8ad39a85b629d766217f58b7fa9b8b08b
+[1710月2026 20:43:14.825] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/sturdygold_shovel 7df94486f95b11b679efebc0992da7cbe054762e7841af9036f35101eea49ce5
+[1710月2026 20:43:14.829] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thornsgold_shovel 229024ad5f87407e818f3edbf72e22ff0f80f74b2ff86fcca53a4f768af9147b
+[1710月2026 20:43:14.832] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/echogold_shovel c4f664c2d22a85003af169257784cb82f1661f693f882d6ee773be0560e2aee7
+[1710月2026 20:43:14.837] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/indigoseagold_shovel fbbaa7aecdf13d3a23cedd84866f06e7a1b66aeb539086a26bd3e6c7ac3e6d50
+[1710月2026 20:43:14.842] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/voodoogold_shovel 62cb7544cf5301758bd99d185ea504e683c6cc480fc34fb6c48c88566f5653e3
+[1710月2026 20:43:14.845] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thundergold_shovel 1614c23e4463d36ce0d193a7a6844bbbe5f20042eca540b99667b1b4ffc16f12
+[1710月2026 20:43:14.849] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/illusiongold_shovel 9e36b262c5c3f44d023c3b5cf8f0d605cda82f353008688cdd3475a889d3db14
+[1710月2026 20:43:14.854] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/flamegold_knife fd648292f4f5d2210199ad394c457bff8918ef4bb7c6637b18b9ccce7f28c826
+[1710月2026 20:43:14.858] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/sturdygold_knife b2833345dc802159b4e5bb6571d12ccefb7d30a974aab267dfb8fdb5058336a4
+[1710月2026 20:43:14.862] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thornsgold_knife 4cf39f75bc56561d75f11ef4098204547d9ce028a3eb8b2ed822c80a82f4e2b6
+[1710月2026 20:43:14.866] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/echogold_knife 1e8234473be4c5eedfb1bcd6ceb1d30c856333ac3b19522106fa3b73c49a7449
+[1710月2026 20:43:14.869] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/indigoseagold_knife 8ebb1ac3f9564040e056dc98a7911e759242baaca7a57d1b93e6d13f20b0fc58
+[1710月2026 20:43:14.872] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/voodoogold_knife 3948fce8f9e85e696c1003d8fd1bba14ff26101e6ea5916a6ae8f3a1ea58f6ea
+[1710月2026 20:43:14.877] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thundergold_knife e4561dcc6de4e12b1940aa932a5af8e7d73f85b79b45aea085772f3874e086a0
+[1710月2026 20:43:14.881] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/illusiongold_knife 1dee4f67885c1e08b8b6be59d251ce3f28a9fbc2a0edcad32c03d634a224a4c4
+[1710月2026 20:43:14.885] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/flamegold_chain a2176e6edcdbba8007c9c54c2a15067078d183b932c6821184f8b9cf3ec0eac8
+[1710月2026 20:43:14.888] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/sturdygold_chain 5a766acb9c4ed4683304b5922adebcd865afa37ea487a0df97853f5411331227
+[1710月2026 20:43:14.892] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/thornsgold_chain 0f81ef582209e0bb1781f5d6967ed41b7fc6abb456fc52581419f03ea071e69d
+[1710月2026 20:43:14.896] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/echogold_chain b035c55b92ad768d4fbbb39c976b0d53e97732ee8c0e36201237337a86162b0c
+[1710月2026 20:43:14.899] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/indigoseagold_chain 45958a18d10d3c9b88d9afd3361877faef7a06fb408aaa318f6ee7abc01688e7
+[1710月2026 20:43:14.902] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/voodoogold_chain 91bf1620e4366ecd7903d5cfaf07cc4a146cf17e810034e87f16df58d0c424f2
+[1710月2026 20:43:14.906] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/thundergold_chain cdf7e4b6bd328342cdf18f2750fbe8c19b75b025290483db51cdafe1778a6269
+[1710月2026 20:43:14.910] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/illusiongold_chain d5e0bf26bf22afa665513569ff500404c72f8e67716569dbad3a4f88a8295b9e
+[1710月2026 20:43:14.914] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/flamegold_chain 8d31a394e2a14426b978663dc9a4202e4f95eb57d3076c543acbb9a02fdcf4fc
+[1710月2026 20:43:14.918] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/sturdygold_chain f16e1ec44c322da8550954d1b069c8cef1a78be1d8bd41e0aae4441691a09bd8
+[1710月2026 20:43:14.921] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thornsgold_chain 4c997361c280cb86decf5ad26546ee94920a85dbcd12d7795e21962d44083349
+[1710月2026 20:43:14.925] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/echogold_chain 1cfc1118d18f57f06b9b52389b3604e93a75f27de1a8d46d6d903cc5881be0c8
+[1710月2026 20:43:14.929] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/indigoseagold_chain 1bb08a92d0eafbc481f0fe88592aaddeee7cce0485825f891491a43b913025a2
+[1710月2026 20:43:14.933] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/voodoogold_chain f43576870295957ece7c93f070c51ff5b8ff20a973dfc048aab68a8976a23e0a
+[1710月2026 20:43:14.939] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thundergold_chain 5ab2c6512e322aa2939216c84bc1991820f54b9403f41d45e9725edd76d30fad
+[1710月2026 20:43:14.943] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/illusiongold_chain c2ae842a364eedd1116a3f79fac2eae104f0bd85af49c72dbe49e8dd58f070e2
+[1710月2026 20:43:14.946] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/flamegold_bars f3a8fbfafc59e8d91bd5a160647549f6a2833ef1ad1a8fb9a5d6e9091bc65daa
+[1710月2026 20:43:14.950] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/sturdygold_bars 3efe5fda6882fb752a8d0b4d7107ca4024f580fb2c61e4f39f631ca3a64bd46a
+[1710月2026 20:43:14.953] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/thornsgold_bars a9ed1072b770e9ec8a6479a4acc5cf72ccfeb2b4cf1d68351ef663e6742fdf2d
+[1710月2026 20:43:14.958] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/echogold_bars d12754267cc1f3e540e35d89e71d695b2fd27811f973640238fb31cac97974d3
+[1710月2026 20:43:14.961] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/indigoseagold_bars 6603ed61ee8f90f708603168164a6c9678023d77111ccb1fe3a3774c2cb84da1
+[1710月2026 20:43:14.965] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/voodoogold_bars 577a4cfb483d756d29093c20e0df6af42046d7d5a6d19100016b9a3f83a53431
+[1710月2026 20:43:14.969] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/thundergold_bars e45e2c216dbafd7be983976f368065f004bd17a292f4d7f48537a6f9260348e1
+[1710月2026 20:43:14.973] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA block/illusiongold_bars 5074bafe7e9f8a38bfea1b263530814cf648a530dd60198cdb5044efdd1312c3
+[1710月2026 20:43:14.978] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/flamegold_leggings e775e2ecbff99b97e1fa5dbaa3f89b439fbf31c2d066c96da5e6e9d515672d82
+[1710月2026 20:43:14.982] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/sturdygold_leggings e1229b318e9ebf13e7945333a2bc8231558815c2ec3e064c0f3e24735b41a932
+[1710月2026 20:43:14.985] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thornsgold_leggings a0351d05e9e2f1b1e73cb98e4e7d650abc5ba4d213be2ac9bb4cca3570f191cc
+[1710月2026 20:43:14.989] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/echogold_leggings 2d7cd96caa2a4075895309d50bff777dab0210bf9912939f3e93ef552ced13a5
+[1710月2026 20:43:14.992] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/indigoseagold_leggings f9a7b69e59f278d48a2f72d336cca187f056410b38b39d67b64bea534c008bf7
+[1710月2026 20:43:14.996] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/voodoogold_leggings 10f228a3fa777ac5e8c6ecd324d3b2d4d9301281a5cbd7cd45e10f6a0b56f061
+[1710月2026 20:43:15.000] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/thundergold_leggings 0da2069ed962dcb172211bca51f512d08f5eeab08be685ebf0c89fbe4aa6059d
+[1710月2026 20:43:15.004] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SHA item/illusiongold_leggings c8f209eede5952bc983ec6496bc04b6fddd9caf6f0e1ded4510efba871c7d689
+[1710月2026 20:43:15.004] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS resource_dims_match :: ok=72/72 bad=[]
+[1710月2026 20:43:15.182] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS atlas_pixels_equal_author_bytes :: matched=64/64 bad=[] order=ABGR
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_flamegold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_sturdygold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_thornsgold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_echogold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_indigoseagold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_voodoogold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_thundergold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS frame_illusiongold_lantern :: frameSize=16x16 frames=3
+[1710月2026 20:43:15.183] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE INFO LANTERN_FRAMES ok=8 bad=[]
+[1710月2026 20:43:15.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS item_models_present :: items=413 missing=0 list=[]
+[1710月2026 20:43:15.190] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE PASS block_models_present :: blockstates=5959 missing=0 first=-
+[1710月2026 20:43:15.190] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE INFO READINGS resources_ok=72 atlas_pixels_matched=64/64 lantern_frames_ok=8/8 item_models=413 blockstates=5959 missing=0
+[1710月2026 20:43:15.190] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE SUMMARY pass=12 fail=0
+[1710月2026 20:43:15.191] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BG17TEXPROBE INFO exiting JVM (title screen is enough; probe halts)

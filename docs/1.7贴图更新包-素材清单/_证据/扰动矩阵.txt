@@ -1,0 +1,15 @@
+# validate_bg17_textures.py 扰动矩阵（9 例）
+
+| 用例 | want_exit | got_exit | 结果 | 备注 |
+|---|---|---|---|---|
+| P0 baseline | 0 | 0 | PASS | [bg17tex-ok] |
+| P1 authorized texture overwritten | 1 | 1 | PASS | code_hit |
+| P2 unauthorized texture touched | 1 | 1 | PASS | code_hit |
+| P3 comment-only + blank lines | 0 | 0 | PASS | [bg17tex-ok] |
+| P3b needle only in comments -> not matched | 1 | 1 | PASS | 去注释后 needle 消失 |
+| P3c needle in code -> matched | 1 | 1 | PASS | stripped_len=99 |
+| P4 authorized texture deleted | 1 | 1 | PASS | code_hit |
+| P5 manifest missing (prereq broken) | 2 | 2 | PASS | prereq-fail |
+| P9 re-baseline green | 0 | 0 | PASS |  |
+
+合计 9 例，PASS 9，FAIL 0
