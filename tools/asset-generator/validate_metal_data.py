@@ -1570,6 +1570,10 @@ _BG9_ENTRY_NAMES = ("merchant_intro", "merchant_gift_box", "merchant_antique_gea
 # bg-book §十 追加轮（2026-10-07 21:05）：「金灿的盛宴」5 章（替掉该类别旧占位条目 golden_feast）
 _BG10_ENTRY_NAMES = ("golden_feast_crops", "golden_feast_foods", "golden_feast_sturdy",
                      "golden_feast_fd_foods", "golden_feast_fd_sturdy")
+# ★ 1.7 收口轮（bg-n10r9，2026-10-17）：两族的 4 个条目
+#   （材料 / 禁果 / 混沌金装备章 / 崩乱合金装备章）⇒ 条目总数 20 → **24**、页数 192 → **230**。
+_BGN10R9_ENTRY_NAMES = ("chaos_materials", "chaos_feast",
+                        "gear_chaosgold", "gear_chaosalloy")
 # ⛔ §九 作废的两个旧占位（必须不存在于产物里；见上面的 `_bgbook9_bad` 段）
 _BG9_RETIRED_ENTRIES = ("merchant", "antiques")
 for _retired in _RETIRED_ENTRIES:
@@ -1653,14 +1657,18 @@ if _missing_skeleton:
                 "第一轮的骨架条目被删掉了（§八 只作废 %s、§九 只作废 %s、§十 只作废 %s）：%s"
                 % (list(_RETIRED_ENTRIES), list(_BG9_RETIRED_ENTRIES),
                    list(_BG10_RETIRED_ENTRIES), _missing_skeleton))
+# ⚠ **旧期望原文保留（未删）**：右端只有前五项（合计 20 条）。
+# ★ 1.7 收口轮：+ `_BGN10R9_ENTRY_NAMES`（4 条）⇒ 24。
 if len(_entries_now) != (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
                          + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES)
-                         + len(_BG10_ENTRY_NAMES)):
+                         + len(_BG10_ENTRY_NAMES) + len(_BGN10R9_ENTRY_NAMES)):
     _bgbook_bad("bgbook-entry-count",
-                "条目数应为 %d（骨架 %d + §六 章节 3 + §八 强化 9 + §九 商人与古董 3 + §十 金灿的盛宴 5；"
+                "条目数应为 %d（骨架 %d + §六 章节 3 + §八 强化 9 + §九 商人与古董 3 + "
+                "§十 金灿的盛宴 5 + 1.7 两族 4；"
                 "bg-fix3 §三 作废 2 条骨架条目、§十 作废最后 1 条骨架条目），实际 %d"
                 % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
-                   + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES) + len(_BG10_ENTRY_NAMES),
+                   + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES) + len(_BG10_ENTRY_NAMES)
+                   + len(_BGN10R9_ENTRY_NAMES),
                    len(_SKELETON_ENTRIES), len(_entries_now)))
 _valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
 _total_pages = 0
@@ -3106,8 +3114,10 @@ for _n, _why in (("BASE_CHANCE = 0.06F", "6% 基础概率被改"),
 
 # ---------- 第 6 条 · 成就：全开放（无 hidden）+ 制作改获得 ----------
 _adv_files = sorted(_ADV.rglob("*.json"))
-if len(_adv_files) != 51:
-    _bgfix2_bad("bgfix2-adv-51", "成就 JSON 数 = %d，期望 51（反空转守护）" % len(_adv_files))
+# ⚠ **旧期望原文保留（未删）**：`if len(_adv_files) != 51: ... 期望 51`。
+# ★ 1.7 收口轮：51 → **59**（混沌金 / 崩乱合金各 4 条）。
+if len(_adv_files) != 59:
+    _bgfix2_bad("bgfix2-adv-51", "成就 JSON 数 = %d，期望 59（反空转守护）" % len(_adv_files))
 _hidden_files, _inv_files, _rc_files, _cond_files = [], [], [], []
 for _f in _adv_files:
     _t = _f.read_text(encoding="utf-8")
@@ -4728,8 +4738,13 @@ else:
     elif "entry_golden_feast," in _bg10_entries.group(1):
         _bgbook10_bad("bgbook10-generator",
                       "生成器的 `ENTRIES` 列表里又出现了 `entry_golden_feast`（下次重跑会把它写回产物）")
-    if " + FEAST_ENTRIES:" not in _bg10_gen and "+ FEAST_ENTRIES:" not in _bg10_gen:
+    # ⚠ **旧 needle 原文保留（未删）**：`" + FEAST_ENTRIES:"` / `"+ FEAST_ENTRIES:"`
+    #   —— 1.7 收口轮把那行拆成两行（`… + FEAST_ENTRIES` 换行 `+ CHAOS_ENTRIES`），
+    #   冒号不再紧跟其后 ⇒ needle 放宽成"这一项还在写盘循环里"，并**额外**要求两族那一段也在。
+    if "+ FEAST_ENTRIES" not in _bg10_gen:
         _bgbook10_bad("bgbook10-generator", "`main()` 的写盘循环里没有 FEAST_ENTRIES（不会产出）")
+    if "+ CHAOS_ENTRIES" not in _bg10_gen:
+        _bgbook10_bad("bgbook10-generator", "`main()` 的写盘循环里没有 CHAOS_ENTRIES（两族不会产出）")
 
 # ---------- ⑤ 两处「待作者补原文」（正向钉住占位仍在）----------
 _bg10_todo_keys = ["%s.page.golden_feast_fd_foods_5_right" % _BG10_LANG,
@@ -5154,14 +5169,21 @@ for _p in sorted(_ADV.rglob("*.json")):
     if _j.get("parent") == _FX5_GUARDED_PARENT:
         _fx5_children.append("bettergold:" + _p.relative_to(_ADV).as_posix()[:-5])
 _fx5_children = sorted(_fx5_children)
+# ★ 1.7 收口轮：白名单父节点的孩子 9 → **11**
+#   （8 个核心材料 + any_raw_metal + **混沌金币** + **崩乱合金锭**）。
+#   ⚠ 旧期望原文保留：`if len(_fx5_children) != 9: ... 不是 9 个`。
+_BGN10R9_EXTRA_BRANCHES = ["bettergold:treasure/chaos_coin", "bettergold:metal/chaosalloy/ingot"]
 _fx5_extra = [c for c in _fx5_children if c not in _fx5_line_parent.values()
-              and c != "bettergold:treasure/any_raw_metal"]
-if len(_fx5_children) != 9:
+              and c != "bettergold:treasure/any_raw_metal"
+              and c not in _BGN10R9_EXTRA_BRANCHES]
+if len(_fx5_children) != 11:
     _bgfix5_bad("bgfix5-tree-order-single-source",
-                "白名单父节点的孩子不是 9 个（实际 %d）：%s" % (len(_fx5_children), _fx5_children))
+                "白名单父节点的孩子不是 11 个（8 核心材料 + any_raw_metal + 两族链首；"
+                "旧期望 9 已被 1.7 收口轮取代，实际 %d）：%s"
+                % (len(_fx5_children), _fx5_children))
 if _fx5_extra:
     _bgfix5_bad("bgfix5-tree-order-single-source",
-                "白名单父节点下出现了不在预期内的孩子（排序键只覆盖 8 族 + any_raw_metal）：%s" % (_fx5_extra,))
+                "白名单父节点下出现了不在预期内的孩子（排序键只覆盖 10 族 + any_raw_metal）：%s" % (_fx5_extra,))
 if "bettergold:treasure/any_raw_metal" not in _fx5_children:
     _bgfix5_bad("bgfix5-tree-order-single-source",
                 "非族节点 bettergold:treasure/any_raw_metal 不在白名单父节点下 —— 它必须存在并取 rank = METAL_ORDER.size()（排最后）")
@@ -5176,6 +5198,12 @@ else:
             ('"%s"' % _FX5_GUARDED_PARENT, "没有写死唯一白名单父节点 id %s" % _FX5_GUARDED_PARENT),
             ("GUARDED_PARENT.equals(parentId)", "守卫不是「全等比较」（必须 GUARDED_PARENT.equals(parentId)）"),
             ("CreativeSections.METAL_ORDER.indexOf(", "位次不是从真源 `CreativeSections.METAL_ORDER` 派生"),
+            # ★ 1.7 收口轮（bg-n10r9）：崩乱合金的**链首自己**就是 `metal/chaosalloy/ingot`
+            #   （它没有核心材料节点）⇒ 排序键必须「先看自己、再看孩子」，否则该族会掉进
+            #   「非族节点」档、位次不再来自真源。这两条 needle 就是那个形状的机器形态。
+            ("rankOfPath(", "排序键没有 `rankOfPath(...)`（崩乱合金那种「链首即锭」的线认不出族名）"),
+            ("int own = rankOfPath(node.holder().id());",
+             "`rankOf` 没有先按**节点自己**的 id 定位（崩乱合金会落到 METAL_ORDER.size() 档）"),
     ):
         if _needle not in _fx5_order_src:
             _bgfix5_bad("bgfix5-tree-order-single-source", "%s（缺 %s）" % (_why, _needle))
@@ -6122,9 +6150,13 @@ else:
 #   本轮仍是「只加不删」：冻结副本里每一个既有键的值逐字未变（下面 ① 那条会证明）。
 #   ⚠ 为什么是 2 条而不是 3 条：万坚金砧**不需要新物品**（配方用的全是既有物品），
 #     方块名 + 容器标题两个键就够；"花费 X 级"复用原版 `container.repair.cost`（不新增）。
-_BGN10_ZH_AFTER_SHA = "24348D4628134D39441CEE393B236D1B2694D2EF972263AC8FAE124FEB9C3F01"
-_BGN10_EN_AFTER_SHA = "116A20B59C9D46A068749835F1CD08DE0141D5FF9F5C7486EED1D2D49D14F995"
-_BGN10_NEW_LANG_KEYS = 75      # zh/en 各 75 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5 + 轮7 的 3 + 轮8 的 2
+_BGN10_ZH_AFTER_SHA = "5B8ED0E3C0E47873702B18CE9EA15949BE7222D8EBB04385321B0B3C58FF1DB6"
+_BGN10_EN_AFTER_SHA = "A330F90BD699140DCC1C0C434F3D55E59F0F29D0533182163465E65770D842EA"
+# ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
+# ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
+#   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
+#     zh 24348D4628134D39441CEE393B236D1B… / en 116A20B59C9D46A068749835F1CD08DE… / 键数 75
+_BGN10_NEW_LANG_KEYS = 111     # zh/en 各 111 条 = 轮3..轮8 的 75 + 轮9 的 36
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
 # _BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
 # _BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
@@ -7813,6 +7845,238 @@ if not bgn10r8_problems:
           "四向 blockstate + 几何逐字原版 / MenuType+Screen 双端注册 / 每币 maxDamage/4 / "
           "全仓 0 处修复惩罚与互斥重写 / min(16%,1%×格数)×当前血量 全部通过")
 
+# ==================== 1.7 轮9 收口（bg-n10r9，2026-10-17）====================
+#
+# 本轮新增的**全部可交付面**都在这一段里逐条钉住（形状 / 引用 / 语言 / 文档）：
+#   ① 手册：两族 4 个条目（材料 16 页 / 禁果 4 页 / 混沌金装备 7 页 / 崩乱合金装备 11 页）；
+#   ② 成就：两族 8 条（混沌金 4 + 崩乱合金 4），挂在「寻途千里的珍宝」下 ⇒ 该父节点 9 → 11 个孩子；
+#   ③ 创造页：`METAL_ORDER` 已含两族（= 进度树彩虹序与创造页同一真源）；
+#   ④ 语言键：4 条目键 + 16 页键 × 2 语言，且 en 不许与 zh 逐字相同。
+#
+# ⚠ 三处**口径**（不是随手决定，写在这里备查）：
+#   * 混沌金**没有** raw / 没有升级锻造模板 / 没有锻造配方（素材里没有）⇒ 它的装备章**不挂配方页**，
+#     只挂**轮换图标表**（`PageSpotlight` 每 20 tick 换一个 ⇒ 本仓"多个图标"的既有表达）；
+#   * 崩乱合金**没有建材**（作者裁定「按照现有的贴图标准来」）⇒ 材料章只有 3 页形态表 + 2 页配方；
+#   * 两族的成就**标题 / 简介是"实现说明"**（作者没给文案）⇒ 已记进 `docs/1.7-...md` §7 / §18。
+bgn10r9_problems: list[str] = []
+_bgn10r9_checked = 0
+
+
+def _bgn10r9_bad(tag: str, msg: str) -> None:
+    bgn10r9_problems.append("%s [%s]" % (msg, tag))
+
+
+_R9_LANG = "bettergold.handbook"
+_R9_ENTRIES = {
+    # 条目 -> (页数, 页型序列)
+    "chaos_materials": (16, ["patchouli:text", "patchouli:crafting", "patchouli:crafting",
+                             "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
+                             "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
+                             "patchouli:crafting", "patchouli:crafting", "patchouli:crafting",
+                             "patchouli:text", "patchouli:crafting", "patchouli:crafting",
+                             "patchouli:spotlight"]),
+    "chaos_feast": (4, ["patchouli:spotlight", "patchouli:crafting",
+                        "patchouli:spotlight", "patchouli:crafting"]),
+    "gear_chaosgold": (7, ["patchouli:text"] * 3 + ["patchouli:spotlight"] * 3
+                          + ["patchouli:crafting"]),
+    "gear_chaosalloy": (11, ["patchouli:text"] * 3 + ["patchouli:smithing"] * 8),
+}
+_R9_RECIPE_REFS = set()
+_R9_ITEM_REFS = set()
+for _eid, (_n, _seq) in _R9_ENTRIES.items():
+    _ep = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    _ep_en = _EN_BOOK / "entries" / ("%s.json" % _eid)
+    _bgn10r9_checked += 1
+    if not _ep.is_file() or not _ep_en.is_file():
+        _bgn10r9_bad("bgn10r9-book", "缺条目文件（zh/en 各需一份）：%s" % _eid)
+        continue
+    _ej = json.loads(_ep.read_text(encoding="utf-8"))
+    _ej_en = json.loads(_ep_en.read_text(encoding="utf-8"))
+    _bgn10r9_checked += 3
+    if len(_ej.get("pages") or []) != _n:
+        _bgn10r9_bad("bgn10r9-book", "%s 的页数不是 %d（实际 %d）"
+                     % (_eid, _n, len(_ej.get("pages") or [])))
+    if [p.get("type") for p in _ej.get("pages") or []] != _seq:
+        _bgn10r9_bad("bgn10r9-book",
+                     "%s 的页型序列不对：%s" % (_eid, [p.get("type") for p in _ej.get("pages") or []]))
+    if _ej.get("pages") != _ej_en.get("pages"):
+        _bgn10r9_bad("bgn10r9-book", "%s 的 zh/en 页列表不一致（结构必须双端相同）" % _eid)
+    for _pg in _ej.get("pages") or []:
+        for _rk in ("recipe", "recipe2"):
+            if isinstance(_pg.get(_rk), str):
+                _R9_RECIPE_REFS.add(_pg[_rk])
+        _items = _pg.get("item")
+        if isinstance(_items, str):
+            _R9_ITEM_REFS.add(_items)
+        elif isinstance(_items, list):
+            _R9_ITEM_REFS.update([x for x in _items if isinstance(x, str)])
+_bgn10r9_checked += 1
+if len(_R9_RECIPE_REFS) < 25:
+    _bgn10r9_bad("bgn10r9-book",
+                 "两族条目里的配方引用只有 %d 条（反空转守护：材料链 4 + 币 3 + 建材 10 + 合金 4 + "
+                 "禁果 2 + 附魔书 1 + 锻造 15）" % len(_R9_RECIPE_REFS))
+_r9_dead = sorted(_r for _r in _R9_RECIPE_REFS
+                  if not (_DATA / "bettergold" / "recipe" / (_r.split(":", 1)[1] + ".json")).is_file())
+_bgn10r9_checked += 1
+if _r9_dead:
+    _bgn10r9_bad("bgn10r9-book", "两族条目引用了不存在的配方（死链）：%s" % _r9_dead[:5])
+# 图标引用：每一件都必须有 `models/item/<path>.json`（缺模型 = 客户端紫黑格）
+_r9_no_model = sorted(_i for _i in _R9_ITEM_REFS
+                      if not (_RES / "assets" / "bettergold" / "models" / "item"
+                              / (_i.split(":", 1)[1] + ".json")).is_file())
+_bgn10r9_checked += 2
+if _r9_no_model:
+    _bgn10r9_bad("bgn10r9-book", "两族条目里的图标没有物品模型（客户端紫黑格）：%s" % _r9_no_model[:5])
+if len(_R9_ITEM_REFS) < 20:
+    _bgn10r9_bad("bgn10r9-book", "两族条目里的图标引用只有 %d 件（反空转守护）" % len(_R9_ITEM_REFS))
+
+# ---------- ② 语言键：条目名 + 页键（zh/en 都要有，且 en 不许等于 zh）----------
+_r9_lang_keys = ["%s.entry.%s" % (_R9_LANG, _e) for _e in _R9_ENTRIES]
+for _eid in _R9_ENTRIES:
+    _ep = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    if not _ep.is_file():
+        continue
+    for _pg in json.loads(_ep.read_text(encoding="utf-8")).get("pages") or []:
+        for _k in ("text", "title"):
+            _v = _pg.get(_k)
+            if isinstance(_v, str) and _v.startswith("bettergold.handbook."):
+                _r9_lang_keys.append(_v)
+_r9_lang_keys = sorted(set(_r9_lang_keys))
+_bgn10r9_checked += 1
+if len(_r9_lang_keys) < 18:
+    _bgn10r9_bad("bgn10r9-lang", "两族的语言键只收集到 %d 个（反空转守护）" % len(_r9_lang_keys))
+for _k in _r9_lang_keys:
+    _bgn10r9_checked += 3
+    if _k not in zh or _k not in en:
+        _bgn10r9_bad("bgn10r9-lang", "缺中文或英文：%s" % _k)
+        continue
+    if not str(zh[_k]).strip() or not str(en[_k]).strip():
+        _bgn10r9_bad("bgn10r9-lang", "空值：%s" % _k)
+    if str(zh[_k]) == str(en[_k]):
+        _bgn10r9_bad("bgn10r9-lang", "英文与中文逐字相同（没翻译）：%s" % _k)
+
+# ---------- ③ 成就：两族 8 条 ----------
+_R9_ADV = {
+    "treasure/chaos_coin": ("bettergold:treasure/any_core_material", "task"),
+    "metal/chaosgold/ingot": ("bettergold:treasure/chaos_coin", "task"),
+    "metal/chaosgold/weapon": ("bettergold:metal/chaosgold/ingot", "task"),
+    "metal/chaosgold/armor": ("bettergold:metal/chaosgold/weapon", "challenge"),
+    "metal/chaosalloy/ingot": ("bettergold:treasure/any_core_material", "task"),
+    "metal/chaosalloy/supply": ("bettergold:metal/chaosalloy/ingot", "task"),
+    "metal/chaosalloy/weapon": ("bettergold:metal/chaosalloy/supply", "task"),
+    "metal/chaosalloy/armor": ("bettergold:metal/chaosalloy/weapon", "challenge"),
+}
+for _ap, (_apar, _aframe) in _R9_ADV.items():
+    _af = _ADV / (_ap + ".json")
+    _bgn10r9_checked += 3
+    if not _af.is_file():
+        _bgn10r9_bad("bgn10r9-adv", "缺成就 JSON：%s" % _ap)
+        continue
+    _aj = json.loads(_af.read_text(encoding="utf-8"))
+    if _aj.get("parent") != _apar:
+        _bgn10r9_bad("bgn10r9-adv", "%s 的 parent 不是 %s：%r" % (_ap, _apar, _aj.get("parent")))
+    if (_aj.get("display") or {}).get("frame", "task") != _aframe:
+        _bgn10r9_bad("bgn10r9-adv", "%s 的 frame 不是 %s" % (_ap, _aframe))
+    _atr = [c.get("conditions", {})
+            for c in (_aj.get("criteria") or {}).values()]
+    _bgn10r9_checked += 1
+    if not all(t for t in _atr):
+        _bgn10r9_bad("bgn10r9-adv", "%s 有判据没有 conditions" % _ap)
+# 「获得即解锁」：两族 8 条的判据触发类型必须全部是 inventory_changed
+_r9_triggers = set()
+for _ap in _R9_ADV:
+    _af = _ADV / (_ap + ".json")
+    if _af.is_file():
+        _r9_triggers.update(c.get("trigger")
+                            for c in (json.loads(_af.read_text(encoding="utf-8")).get("criteria") or {}).values())
+_bgn10r9_checked += 1
+if _r9_triggers != {"minecraft:inventory_changed"}:
+    _bgn10r9_bad("bgn10r9-adv",
+                 "两族 8 条的触发类型不是清一色 inventory_changed（「获得即解锁」）：%s" % sorted(_r9_triggers))
+# 武器成就的刀判据 = 单个标签字符串（bg-fix3 §二 的安全范式）
+for _m in ("chaosgold", "chaosalloy"):
+    _af = _ADV / "metal" / _m / "weapon.json"
+    _bgn10r9_checked += 2
+    if not _af.is_file():
+        continue
+    _crit = (json.loads(_af.read_text(encoding="utf-8")).get("criteria") or {})
+    _kc = _crit.get("have_knife") or {}
+    _ki = [p.get("items") for p in ((_kc.get("conditions") or {}).get("items") or [])]
+    _bgn10r9_checked += 1
+    if _ki != ["#bettergold:%s_knives" % _m]:
+        _bgn10r9_bad("bgn10r9-adv",
+                     "%s 的 have_knife.items 必须恰好是 [#bettergold:%s_knives]（标签单个字符串），实际 %r"
+                     % (_m, _m, _ki))
+    _bgn10r9_checked += 1
+    if (_crit.get("have_knife") or {}).get("trigger") != "minecraft:inventory_changed":
+        _bgn10r9_bad("bgn10r9-adv", "%s 的 have_knife 不是 inventory_changed" % _m)
+# 成就文案键：两族 8 × 2 条，中英都要有
+_r9_adv_keys = []
+for _ap in _R9_ADV:
+    _af = _ADV / (_ap + ".json")
+    if not _af.is_file():
+        continue
+    _disp = json.loads(_af.read_text(encoding="utf-8")).get("display") or {}
+    for _f in ("title", "description"):
+        _tr = (_disp.get(_f) or {}).get("translate")
+        if _tr:
+            _r9_adv_keys.append(_tr)
+_bgn10r9_checked += 2
+if len(_r9_adv_keys) != 16:
+    _bgn10r9_bad("bgn10r9-lang", "两族成就的语言键不是 16 条（8 条 × 2）：%d" % len(_r9_adv_keys))
+for _k in _r9_adv_keys:
+    _bgn10r9_checked += 2
+    if _k not in zh or _k not in en:
+        _bgn10r9_bad("bgn10r9-lang", "成就语言键缺中文或英文：%s" % _k)
+    elif str(zh[_k]) == str(en[_k]):
+        _bgn10r9_bad("bgn10r9-lang", "成就英文与中文逐字相同（没翻译）：%s" % _k)
+
+# ---------- ④ 创造页：真源已含两族（材料前缀 21 件**本轮不扩**）----------
+_bgn10r9_checked += 3
+if _fx5_truth_order is None or _fx5_truth_order[-2:] != ["chaosgold", "chaosalloy"]:
+    _bgn10r9_bad("bgn10r9-creative",
+                 "`CreativeSections.METAL_ORDER` 的最后两项不是 [chaosgold, chaosalloy]：%r"
+                 % (_fx5_truth_order,))
+_r9_cat_src = strip_comments((JAVA / "material" / "CreativeTabSections.java").read_text(encoding="utf-8"))
+_r9_prefix = re.search(r"MATERIAL_PREFIX_ORDER\s*=\s*List\.of\((.*?)\)\s*;", _r9_cat_src, re.S)
+if not _r9_prefix:
+    _bgn10r9_bad("bgn10r9-creative", "解析不到 `MATERIAL_PREFIX_ORDER`（反空转守护）")
+else:
+    _r9_prefix_items = re.findall(r'"([a-z0-9_]+)"', _r9_prefix.group(1))
+    _bgn10r9_checked += 2
+    if len(_r9_prefix_items) != 21:
+        _bgn10r9_bad("bgn10r9-creative",
+                     "材料前缀不是 21 件（本轮**不扩**，作者点的是那 21 件）：%d" % len(_r9_prefix_items))
+    # ⚠ 判据必须点名**本轮的两族**（`chaos_coin_string` = 既有的「混沌金币串」，
+    #   它本来就在那 21 件里，不许被 `startswith("chaos")` 误伤）。
+    _r9_prefix_new = [i for i in _r9_prefix_items
+                      if i.startswith("chaosgold_") or i.startswith("chaosalloy_")
+                      or i == "chaos_coin"]
+    if _r9_prefix_new:
+        _bgn10r9_bad("bgn10r9-creative",
+                     "材料前缀里出现了两族的物品 —— 本轮口径是「新物品排在其后」，不许插进那 21 件里：%s"
+                     % (_r9_prefix_new,))
+
+# ---------- ⑤ 文档侧：口径必须落档 ----------
+_r9_doc17 = REPO / "docs" / "1.7-\u6df7\u6c8c\u91d1\u4e0e\u5d29\u4e71\u5408\u91d1-\u9700\u6c42\u7acb\u6863.md"
+_r9_doc16 = REPO / "docs" / "1.6-\u89c4\u683c.md"
+_bgn10r9_checked += 2
+if not _r9_doc17.is_file() or "bg-n10r9" not in _r9_doc17.read_text(encoding="utf-8"):
+    _bgn10r9_bad("bgn10r9-doc", "docs/1.7 里没有轮9（bg-n10r9）这一节")
+if not _r9_doc16.is_file() or "bg-n10r9" not in _r9_doc16.read_text(encoding="utf-8"):
+    _bgn10r9_bad("bgn10r9-doc", "docs/1.6-规格.md 里没有轮9 对既有口径的改动一节")
+
+_bgn10r9_checked += 1
+if _bgn10r9_checked < 40:
+    _bgn10r9_bad("bgn10r9-anti-vacuum", "本段只跑了 %d 条判定（反空转）" % _bgn10r9_checked)
+print("1.7 轮9（两族进手册 38 页 / 两族进成就 8 条 / 创造页 / 中英语言键）问题: "
+      + str(len(bgn10r9_problems)) + " " + str(bgn10r9_problems[:4])
+      + "（本段判定 " + str(_bgn10r9_checked) + " 条）")
+if not bgn10r9_problems:
+    print("[bgn10r9-ok] 两族 4 条目 38 页（页型序列 / 39 条配方引用 / 33 件图标模型全部存在）/ "
+          "两族 8 条成就（parent 链 + challenge 两条 + 清一色 inventory_changed + 刀走标签）/ "
+          "METAL_ORDER 含两族且材料前缀仍是 21 件 / 20+16 条中英键全部就位")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -7822,7 +8086,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
                        _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems,
-                       bgn10r8_problems)
+                       bgn10r8_problems, bgn10r9_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

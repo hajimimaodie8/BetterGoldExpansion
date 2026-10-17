@@ -1,0 +1,57 @@
+{
+  "name": "bettergold.handbook.entry.gear_chaosgold",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:chaosgold_sword",
+  "sortnum": 9,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_chaosgold_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_chaosgold_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_chaosgold_2_left"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:chaosgold_sword",
+        "bettergold:chaosgold_axe",
+        "bettergold:chaosgold_pickaxe",
+        "bettergold:chaosgold_shovel",
+        "bettergold:chaosgold_hoe",
+        "bettergold:chaosgold_knife",
+        "bettergold:chaosgold_mace",
+        "bettergold:chaosgold_bow",
+        "bettergold:chaosgold_crossbow",
+        "bettergold:chaosgold_trident",
+        "bettergold:chaosgold_shield"
+      ],
+      "title": "bettergold.handbook.page.gear_chaosgold_3_left_title"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:chaosgold_helmet",
+        "bettergold:chaosgold_chestplate",
+        "bettergold:chaosgold_leggings",
+        "bettergold:chaosgold_boots"
+      ],
+      "title": "bettergold.handbook.page.gear_chaosgold_3_right_title"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:chaosgold_enchanting_book",
+      "text": "bettergold.handbook.page.gear_chaosgold_4_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_enchanting_book"
+    }
+  ]
+}

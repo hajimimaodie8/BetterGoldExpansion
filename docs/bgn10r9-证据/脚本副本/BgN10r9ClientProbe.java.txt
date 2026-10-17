@@ -1,0 +1,254 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * <b>客户端侧探针</b>（1.7 bg-n10 轮9 收口：手册真加载内容树 + 创造页无紫黑格）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件同样是 {@code run/bgn10r9-probe.enabled}；只在 {@link Dist#CLIENT} 注册。</p>
+ *
+ * <p><b>为什么停在标题界面就够</b>：模型 / 图集在资源加载阶段就定稿（"紫黑格"= missing model，
+ * {@code ModelManager} 里查得到）；手册的**类别 / 条目 / 页面**也在资源重载时由 Patchouli 建出来
+ * （`BookRegistry.INSTANCE.books` → `Book#getContents()` → `contents.entries`）。
+ * 只有**配方页的 recipe 解析**需要 {@code Level}（Patchouli 的 `PageDoubleRecipe#build` 拿 level 去
+ * `getRecipeManager()`）⇒ 标题界面这一档如果读到 null，本探针**如实记为读数**（不判红），
+ * 并在汇报里列为"进世界才能验"的未验证项。</p>
+ *
+ * <p>⚠ 探针纪律：不建世界、不碰存档；读完立刻 `Runtime.halt(0)`（客户端没有"停服"这回事）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgN10r9ClientProbe {
+
+    private static final String TAG = "BGN10R9CPROBE";
+    private static final int CHECK_AT_TICK = 100;
+
+    private static int ticks;
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private BgN10r9ClientProbe() {
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (done || !BgN10r9Probe.enabled()) {
+            return;
+        }
+        ticks++;
+        if (ticks < CHECK_AT_TICK) {
+            return;
+        }
+        done = true;
+        try {
+            run();
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("c_exception", String.valueOf(t));
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        bettergold.LOGGER.info("{} INFO exiting JVM（客户端没有「停服」这回事；探针收尾直接退进程）", TAG);
+        Runtime.getRuntime().halt(0);
+    }
+
+    private static void run() {
+        Minecraft mc = Minecraft.getInstance();
+
+        // ---------- ① 每个 bettergold 物品的 inventory 模型都不许落到 missing model ----------
+        var mm = mc.getModelManager();
+        int checked = 0;
+        List<String> missing = new ArrayList<>();
+        for (var entry : BuiltInRegistries.ITEM.entrySet()) {
+            String id = entry.getKey().location().toString();
+            if (!id.startsWith("bettergold:")) {
+                continue;
+            }
+            checked++;
+            var loc = net.minecraft.client.resources.model.ModelResourceLocation
+                    .inventory(ResourceLocation.parse(id));
+            if (mm.getModel(loc) == mm.getMissingModel()) {
+                missing.add(id);
+            }
+        }
+        check("c_client_models_no_missing", missing.isEmpty(),
+                "checked=" + checked + " missing=" + missing);
+
+        // ---------- ② 手册：Patchouli 真加载出来的内容树 ----------
+        if (!ModList.get().isLoaded("patchouli")) {
+            fail("c_book_present", "没装 Patchouli（本档 A 级必须在装了它的环境里跑）");
+        } else {
+            try {
+                bookChecks();
+            } catch (Throwable t) {
+                bettergold.LOGGER.error("{} book exception", TAG, t);
+                fail("c_book_exception", String.valueOf(t));
+            }
+        }
+
+        // ---------- ③ 客户端日志里的资源加载失败 ----------
+        Path log = Path.of(System.getProperty("user.dir")).resolve("logs").resolve("latest.log");
+        int failed = 0;
+        int missingModel = 0;
+        int patchouliErrors = 0;
+        try {
+            if (Files.exists(log)) {
+                for (String line : Files.readAllLines(log, java.nio.charset.StandardCharsets.UTF_8)) {
+                    if (line.contains("Unable to load model") || line.contains("Failed to load ")) {
+                        failed++;
+                    }
+                    if (line.contains("Missing model")) {
+                        missingModel++;
+                    }
+                    if (line.contains("vazkii.patchouli") && line.contains("ERROR")) {
+                        patchouliErrors++;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            fail("c_log_scan_io", String.valueOf(e));
+        }
+        check("c_no_resource_load_failures", failed == 0 && missingModel == 0,
+                "UnableToLoad/FailedToLoad=" + failed + " Missing model=" + missingModel);
+        check("c_no_patchouli_errors", patchouliErrors == 0, "patchouli ERROR lines=" + patchouliErrors);
+    }
+
+    /** 手册 4 个新条目的期望页数（与生成器**逐字同源**：16 / 4 / 7 / 11） */
+    private static final Map<String, Integer> R9_ENTRIES = new LinkedHashMap<>();
+
+    static {
+        R9_ENTRIES.put("bettergold:chaos_materials", 16);
+        R9_ENTRIES.put("bettergold:chaos_feast", 4);
+        R9_ENTRIES.put("bettergold:gear_chaosgold", 7);
+        R9_ENTRIES.put("bettergold:gear_chaosalloy", 11);
+    }
+
+    private static void bookChecks() {
+        var book = vazkii.patchouli.common.book.BookRegistry.INSTANCE.books
+                .get(ResourceLocation.parse("bettergold:alchemy_handbook"));
+        check("c_book_present", book != null, "book=" + (book == null ? "null" : book.id.toString()));
+        if (book == null) {
+            return;
+        }
+        var contents = book.getContents();
+        check("c_book_contents_present", contents != null, "contents=" + contents);
+        if (contents == null) {
+            return;
+        }
+        check("c_book_not_errored", !contents.isErrored(),
+                "errored=" + contents.isErrored() + " exception=" + contents.getException());
+
+        int entries = contents.entries.size();
+        int pages = 0;
+        for (var e : contents.entries.values()) {
+            pages += e.getPages().size();
+        }
+        check("c_book_entry_count", entries == 24, "entries=" + entries + "（期望 24）");
+        check("c_book_page_count", pages == 230, "pages=" + pages + "（期望 230）");
+
+        // 4 个新条目：存在 + 页数 + 页类序列（text / spotlight / crafting / smithing 逐页）
+        for (var spec : R9_ENTRIES.entrySet()) {
+            var id = ResourceLocation.parse(spec.getKey());
+            var entry = contents.entries.get(id);
+            if (entry == null) {
+                fail("c_book_entry_" + shortName(spec.getKey()), "条目不存在：" + spec.getKey());
+                continue;
+            }
+            var list = entry.getPages();
+            check("c_book_entry_" + shortName(spec.getKey()), list.size() == spec.getValue(),
+                    "pages=" + list.size() + "（期望 " + spec.getValue() + "）")
+            ;
+            StringBuilder classes = new StringBuilder();
+            for (var page : list) {
+                classes.append(page.getClass().getSimpleName()).append(',');
+            }
+            check("c_book_page_types_" + shortName(spec.getKey()),
+                    classes.indexOf("PageText") >= 0 && classes.indexOf("PageSpotlight") >= 0,
+                    "classes=" + classes);
+            // 图标真的解析出来了（spotlight 的 stacks 非空且不是空栈）
+            int spotlights = 0;
+            int badStacks = 0;
+            int recipePages = 0;
+            int resolved = 0;
+            for (var page : list) {
+                if (page instanceof vazkii.patchouli.client.book.page.PageSpotlight) {
+                    spotlights++;
+                    Object raw = field(page, "stacks");
+                    ItemStack[] stacks = (ItemStack[]) raw;
+                    if (stacks == null || stacks.length == 0 || stacks[0].isEmpty()) {
+                        badStacks++;
+                    }
+                }
+                if (page instanceof vazkii.patchouli.client.book.page.PageCrafting
+                        || page instanceof vazkii.patchouli.client.book.page.PageSmithing) {
+                    recipePages++;
+                    Object r1 = field(page, "recipe1");
+                    Object r2 = field(page, "recipe2Id");
+                    boolean has2 = r2 != null;
+                    if (r1 != null && (!has2 || field(page, "recipe2") != null)) {
+                        resolved++;
+                    }
+                }
+            }
+            check("c_book_spotlight_icons_" + shortName(spec.getKey()), spotlights > 0 && badStacks == 0,
+                    "spotlights=" + spotlights + " badStacks=" + badStacks);
+            bettergold.LOGGER.info("{} INFO c_book_recipe_resolution :: entry={} recipePages={} resolved={}",
+                    TAG, spec.getKey(), recipePages, resolved);
+        }
+    }
+
+    private static String shortName(String id) {
+        return id.replace("bettergold:", "").replace("/", "_");
+    }
+
+    /** 读 Patchouli 页面对象里的**包私有**字段（探针专用；不让它进生产代码） */
+    private static Object field(Object target, String name) {
+        Class<?> c = target.getClass();
+        while (c != null) {
+            try {
+                var f = c.getDeclaredField(name);
+                f.setAccessible(true);
+                return f.get(target);
+            } catch (NoSuchFieldException e) {
+                c = c.getSuperclass();
+            } catch (Throwable t) {
+                return null;
+            }
+        }
+        return null;
+    }
+}

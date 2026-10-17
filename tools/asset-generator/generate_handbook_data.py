@@ -117,13 +117,19 @@ def text_page(text_key, title_key=None):
     return page
 
 
-def smithing_page(recipe_a, recipe_b, title_key=None):
-    """One page holding TWO smithing recipes (Patchouli's maximum)."""
+def smithing_page(recipe_a, recipe_b=None, title_key=None):
+    """One page holding TWO smithing recipes (Patchouli's maximum).
+
+    ``recipe_b=None`` ⇒ **只写 ``recipe``**（1.7 收口轮加的可选槽）：崩乱合金 15 件锻造里
+    最后一页只剩 1 件，而 Patchouli 的 ``recipe2`` 若写成 ``null`` 会在页面上留一个空槽
+    （``PageDoubleRecipe`` 的两个槽各画一次）；不写这个键才是"只有一份配方"的既有形态。
+    """
     page = {
         "type": "patchouli:smithing",
         "recipe": "bettergold:%s" % recipe_a,
-        "recipe2": "bettergold:%s" % recipe_b,
     }
+    if recipe_b:
+        page["recipe2"] = "bettergold:%s" % recipe_b
     if title_key:
         page["title"] = title_key
     return page
@@ -935,6 +941,120 @@ def entry_golden_feast_fd_sturdy():
 FEAST_ENTRIES = [entry_golden_feast_crops, entry_golden_feast_foods, entry_golden_feast_sturdy,
                  entry_golden_feast_fd_foods, entry_golden_feast_fd_sturdy]
 
+# --------------------------------------------------------------------------------------
+# 1.7 收口轮（bg-n10r9，2026-10-17）：**混沌金 / 崩乱合金**两族的材料 / 食物 / 装备章节
+# --------------------------------------------------------------------------------------
+#
+# 形状**沿用 §八 / §十**（一行 = 一屏 = 两个 Patchouli 页），但两族的**素材事实**与八族不同
+# （立档 §1 / §3 的缺口表，不是本文件的取舍）⇒ 形状必须跟着变，**不许硬凑**：
+#
+#   * **混沌金没有「原料（raw）」、也没有「升级锻造模板」**（立档 §4.0 ⑱c / ㉑ 未裁；zip 里没有
+#     这两张贴图，作者禁止自己补画）⇒ 材料链只有 `混沌金币 → 锭 ⇄ 粒 / 块`，**没有第三段 §**；
+#   * 混沌金的器具 / 盔甲是**直接注册**的，**全仓没有 `smithing_chaosgold_*` 一类的锻造配方**
+#     （`generate_metal_recipes.py` 的 `RECIPE_SCOPE["chaosgold"] = {"material","building"}`）
+#     ⇒ 它的装备章节**不能**像八族那样挂 7 页锻造页；本轮挂**轮换图标表**
+#     （`PageSpotlight` 每 20 tick 换一个图标 = 本仓"多个图标"的既有表达，§八 / §十 同款）。
+#     ⚠ 这是**记账项**：混沌金装备的获取途径原话未给（立档 §7 第 3 条）⇒ 见
+#     `docs/1.7-...md` §18 与 §7。
+#   * **崩乱合金只有锭 / 块 / 升级锻造模板**（立档 §4.0 ⑪d 裁定「按照现有的贴图标准来」）
+#     ⇒ 它的材料章节只有 3 页，**没有**建材页（别硬凑 11 建材）。
+#
+# 文案口径（**不许假装是作者原话**）：
+#   * 能逐字取自立档 §2 的 `【原话·片段】` 的，逐字用（数值照抄作者给的数）；
+#   * 没有作者原文的地方（"没有原料 / 没有升级模板"、"装备获取途径未定"这类）**明确写成
+#     "这是实现说明"**，并同步进 `docs/1.7-...md` 的 §7 待作者补清单与 §18 本轮记录。
+#   * 生成器只写**语言键**；值（中 / 英）由一次性脚本追加进两份语言文件（沿用 §八 的既定分工）。
+CHAOS_CATEGORY_MATERIAL = "alchemy_start"
+CHAOS_CATEGORY_FEAST = "golden_feast"
+
+# 混沌金器具的**展示顺序**（= 作者给数的顺序：剑 / 斧 / 镐 / 锹 / 锄 / 刀 / 重锤 / 弓 / 弩 /
+#   三叉戟 / 盾牌；⚠ 与 §八 的 `FORGE_ORDER`（锻造页顺序）**不是同一张表**，两张表各有用途：
+#   那张是"配方页两两配对"的顺序，这张是"轮换图标"的顺序）。
+CHAOSGOLD_GEAR_SHOW = ["sword", "axe", "pickaxe", "shovel", "hoe", "knife",
+                       "mace", "bow", "crossbow", "trident", "shield"]
+# 崩乱合金的锻造页顺序 = §八 的 `FORGE_ORDER` **再补上乐事刀** ⇒ **15 件 = 8 页**
+#   （7 页 × 2 + 最后 1 页单配方）。⚠ §八 的八族 14 件（不含刀）是作者当时的清单；
+#   本轮派单明确「14 件器具（含乐事刀）」⇒ 两族都把刀算进来。
+CHAOSALLOY_FORGE_ORDER = FORGE_ORDER[:9] + ["knife"] + FORGE_ORDER[9:]
+assert len(CHAOSALLOY_FORGE_ORDER) == 15, "崩乱合金锻造页顺序不是 15 件"
+
+
+def entry_chaos_materials():
+    """混沌金 + 崩乱合金的**材料链 / 建材 / 币**（16 页）。"""
+    eid = "chaos_materials"
+    pages = [
+        # 1 左：混沌金材料链（含"没有原料 / 没有升级模板"的实现说明）
+        text_page(_ph(eid, "1_left")),
+        # 1 右：锭 ⇄ 粒 / 块（作者 §2.2 的截图只给了币的三条，材料链是族自动注册的产物）
+        crafting_page("chaosgold_ingot_from_nugget", "chaosgold_ingot_from_block"),
+        # 2 左：块 → 锭 / 锭 → 粒
+        crafting_page("chaosgold_block_from_ingot", "chaosgold_nugget_from_ingot"),
+        # 2 右：混沌金币本身（作者原话：「（混沌金币的）**充数功能**」）
+        spotlight_page("bettergold:chaos_coin", _ph(eid, "2_right")),
+        # 3 左 / 3 右：作者三张截图的**三条固定配方**（4 铜 / 6 铁 / 8 金 + 1 枚币）
+        crafting_page("copper_block_with_chaos_coin", "iron_block_with_chaos_coin"),
+        crafting_page("gold_block_with_chaos_coin"),
+        # 4 左：11 件建材的**轮换表**（标题 = 「混沌金的建筑方块」）
+        spotlight_page(building_forms("chaosgold"), None, _pht(eid, "3_left")),
+        # 4 右 ~ 6 右：11 件建材的配方（10 条 ⇒ 5 页 × 2）
+        crafting_page("chaosgold_bricks_from_block", "chaosgold_bricks_stairs"),
+        crafting_page("chaosgold_bricks_slab", "chaosgold_bricks_wall"),
+        crafting_page("chaosgold_bars_from_ingot", "chaosgold_chain"),
+        crafting_page("chaosgold_door_from_ingot", "chaosgold_trapdoor_from_ingot"),
+        crafting_page("chaosgold_lantern", "craft_chaosgold_pillar"),
+        # 7 左：崩乱合金材料链（含"没有建材 / 没有原料 / 没有粒"的实现说明）
+        text_page(_ph(eid, "4_left")),
+        # 7 右：锭（4 下界合金锭 + 4 混沌金块 + 1 高精度炼金油，作者原话）+ 升级锻造模板
+        crafting_page("chaosalloy_ingot", "chaosalloy_upgrade_template"),
+        # 8 左：块 ⇄ 锭
+        crafting_page("chaosalloy_block_from_ingot", "chaosalloy_ingot_from_block"),
+        # 8 右：崩乱合金的三件形态（轮换表）
+        spotlight_page(["bettergold:chaosalloy_ingot", "bettergold:chaosalloy_block",
+                        "bettergold:chaosalloy_upgrade_template"], None, _pht(eid, "5_left")),
+    ]
+    return entry(eid, CHAOS_CATEGORY_MATERIAL, "chaosgold_ingot", 5, pages)
+
+
+def entry_chaos_feast():
+    """两族的**禁果**（4 页：各 1 spotlight + 1 配方页）。"""
+    eid = "chaos_feast"
+    pages = [
+        spotlight_page("bettergold:chaosgold_forbidden_fruit", _ph(eid, "1_left")),
+        crafting_page("chaosgold_forbidden_fruit"),
+        spotlight_page("bettergold:chaosalloy_forbidden_fruit", _ph(eid, "2_left")),
+        crafting_page("chaosalloy_forbidden_fruit"),
+    ]
+    return entry(eid, CHAOS_CATEGORY_FEAST, "chaosgold_forbidden_fruit", 5, pages)
+
+
+def entry_gear_chaosgold():
+    """章10 · 混沌金装备（7 页）：3 文案 + 器具轮换 + 盔甲轮换 + 附魔书两页。"""
+    eid = "gear_chaosgold"
+    pages = [text_page(_k) for _k in _gear_text_keys("chaosgold")]
+    pages.append(spotlight_page(["bettergold:chaosgold_%s" % _s for _s in CHAOSGOLD_GEAR_SHOW],
+                                None, _pht(eid, "3_left")))
+    pages.append(spotlight_page(["bettergold:chaosgold_%s" % _s for _s in ARMOR],
+                                None, _pht(eid, "3_right")))
+    pages.append(spotlight_page("bettergold:chaosgold_enchanting_book", _ph(eid, "4_left")))
+    pages.append(crafting_page("chaosgold_enchanting_book"))
+    return entry(eid, GEAR_CATEGORY, "chaosgold_sword", 9, pages)
+
+
+def entry_gear_chaosalloy():
+    """章11 · 崩乱合金装备（11 页）：3 文案 + 15 件锻造 = 8 页（7×2 + 1）。"""
+    eid = "gear_chaosalloy"
+    pages = [text_page(_k) for _k in _gear_text_keys("chaosalloy")]
+    for _i in range(0, len(CHAOSALLOY_FORGE_ORDER), 2):
+        _a = CHAOSALLOY_FORGE_ORDER[_i]
+        _b = CHAOSALLOY_FORGE_ORDER[_i + 1] if _i + 1 < len(CHAOSALLOY_FORGE_ORDER) else None
+        pages.append(smithing_page("smithing_chaosalloy_%s" % _a,
+                                   ("smithing_chaosalloy_%s" % _b) if _b else None))
+    return entry(eid, GEAR_CATEGORY, "chaosalloy_sword", 10, pages)
+
+
+CHAOS_ENTRIES = [entry_chaos_materials, entry_chaos_feast,
+                 entry_gear_chaosgold, entry_gear_chaosalloy]
+
 # ⛔ **bg-book §十（作者 2026-10-07 21:03）**：第一轮骨架留下的最后一个占位条目
 #    `entry_golden_feast`（「金灿的盛宴」类别下的旧占位，7 页 = 1 文案 + 6 spotlight）
 #    **本轮也作废** —— 作者原话「你之前添加的那个也一样直接毙掉吧」。
@@ -987,7 +1107,8 @@ def main():
                 os.path.join(ASSET_DIR, lang, "categories", "%s.json" % name),
                 category(name, icon, sortnum),
             )
-        for builder in ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES + MERCHANT_ENTRIES + FEAST_ENTRIES:
+        for builder in (ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES + MERCHANT_ENTRIES + FEAST_ENTRIES
+                        + CHAOS_ENTRIES):
             data = builder()
             write_json(
                 os.path.join(ASSET_DIR, lang, "entries", "%s.json" % data["name"].rsplit(".", 1)[-1]),
@@ -999,14 +1120,16 @@ def main():
     gear_pages = sum(len(b()["pages"]) for b in GEAR_ENTRIES)
     merchant_pages = sum(len(b()["pages"]) for b in MERCHANT_ENTRIES)
     feast_pages = sum(len(b()["pages"]) for b in FEAST_ENTRIES)
+    chaos_pages = sum(len(b()["pages"]) for b in CHAOS_ENTRIES)
     retired_pages = sum(len(b()["pages"]) for b in RETIRED_ENTRIES)
     print(
         "handbook written: 1 book (data/) + %d categories + %d entries + %d pages x2 languages "
         "(assets/) -> %s + %s"
         % (len(CATEGORIES),
            len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES) + len(MERCHANT_ENTRIES)
-           + len(FEAST_ENTRIES),
-           pages + chapter_pages + gear_pages + merchant_pages + feast_pages, BOOK_DIR, ASSET_DIR)
+           + len(FEAST_ENTRIES) + len(CHAOS_ENTRIES),
+           pages + chapter_pages + gear_pages + merchant_pages + feast_pages + chaos_pages,
+           BOOK_DIR, ASSET_DIR)
     )
     print(
         "  §6 chapters (bg-book append round): %d entries / %d pages "
@@ -1044,9 +1167,18 @@ def main():
            len(entry_golden_feast_fd_sturdy()["pages"]))
     )
     print(
+        "  1.7 chaos chapters (bg-n10r9): %d entries / %d pages "
+        "(materials=%d, feast=%d, gear_chaosgold=%d, gear_chaosalloy=%d; "
+        "混沌金无 raw / 无升级模板 / 无锻造配方 => 装备章挂轮换图标表；崩乱合金无建材 => 材料 3 页)"
+        % (len(CHAOS_ENTRIES), chaos_pages,
+           len(entry_chaos_materials()["pages"]),
+           len(entry_chaos_feast()["pages"]),
+           len(entry_gear_chaosgold()["pages"]),
+           len(entry_gear_chaosalloy()["pages"]))
+    )
+    print(
         "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位 + bg-fix3 §三 两个骨架条目 "
-        "+ §十 最后一个骨架占位 golden_feast，不写盘): "
-        "tools=%d + armor=%d + merchant=%d + antiques=%d + metal_tour=%d + upgrade_templates=%d "
+        "+ §十 最后一个骨架占位 golden_feast，不写盘): "        "tools=%d + armor=%d + merchant=%d + antiques=%d + metal_tour=%d + upgrade_templates=%d "
         "+ golden_feast=%d = %d"
         % (len(entry_tools_per_family()["pages"]), len(entry_armor_per_family()["pages"]),
            len(entry_merchant()["pages"]), len(entry_antiques()["pages"]),

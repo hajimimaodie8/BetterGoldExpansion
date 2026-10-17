@@ -1,0 +1,55 @@
+{
+  "parent": "bettergold:metal/chaosgold/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaosgold_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosgold_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosgold_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:chaosgold_sword",
+              "bettergold:chaosgold_axe",
+              "bettergold:chaosgold_pickaxe",
+              "bettergold:chaosgold_shovel",
+              "bettergold:chaosgold_hoe",
+              "bettergold:chaosgold_mace",
+              "bettergold:chaosgold_bow",
+              "bettergold:chaosgold_crossbow",
+              "bettergold:chaosgold_trident",
+              "bettergold:chaosgold_shield"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:chaosgold_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

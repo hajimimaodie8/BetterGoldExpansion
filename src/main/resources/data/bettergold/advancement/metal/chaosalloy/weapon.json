@@ -1,0 +1,55 @@
+{
+  "parent": "bettergold:metal/chaosalloy/supply",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaosalloy_sword",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosalloy_weapon.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosalloy_weapon.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bettergold:chaosalloy_sword",
+              "bettergold:chaosalloy_axe",
+              "bettergold:chaosalloy_pickaxe",
+              "bettergold:chaosalloy_shovel",
+              "bettergold:chaosalloy_hoe",
+              "bettergold:chaosalloy_mace",
+              "bettergold:chaosalloy_bow",
+              "bettergold:chaosalloy_crossbow",
+              "bettergold:chaosalloy_trident",
+              "bettergold:chaosalloy_shield"
+            ]
+          }
+        ]
+      }
+    },
+    "have_knife": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#bettergold:chaosalloy_knives"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have",
+      "have_knife"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

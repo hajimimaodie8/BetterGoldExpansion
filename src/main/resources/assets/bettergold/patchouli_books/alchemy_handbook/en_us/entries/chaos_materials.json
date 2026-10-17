@@ -1,0 +1,102 @@
+{
+  "name": "bettergold.handbook.entry.chaos_materials",
+  "category": "bettergold:alchemy_start",
+  "icon": "bettergold:chaosgold_ingot",
+  "sortnum": 5,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.chaos_materials_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_ingot_from_nugget",
+      "recipe2": "bettergold:chaosgold_ingot_from_block"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_block_from_ingot",
+      "recipe2": "bettergold:chaosgold_nugget_from_ingot"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:chaos_coin",
+      "text": "bettergold.handbook.page.chaos_materials_2_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:copper_block_with_chaos_coin",
+      "recipe2": "bettergold:iron_block_with_chaos_coin"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:gold_block_with_chaos_coin"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:chaosgold_block",
+        "bettergold:chaosgold_bricks",
+        "bettergold:chaosgold_pillar",
+        "bettergold:chaosgold_bricks_stairs",
+        "bettergold:chaosgold_bricks_slab",
+        "bettergold:chaosgold_bricks_wall",
+        "bettergold:chaosgold_door",
+        "bettergold:chaosgold_trapdoor",
+        "bettergold:chaosgold_bars",
+        "bettergold:chaosgold_chain",
+        "bettergold:chaosgold_lantern"
+      ],
+      "title": "bettergold.handbook.page.chaos_materials_3_left_title"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_bricks_from_block",
+      "recipe2": "bettergold:chaosgold_bricks_stairs"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_bricks_slab",
+      "recipe2": "bettergold:chaosgold_bricks_wall"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_bars_from_ingot",
+      "recipe2": "bettergold:chaosgold_chain"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_door_from_ingot",
+      "recipe2": "bettergold:chaosgold_trapdoor_from_ingot"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_lantern",
+      "recipe2": "bettergold:craft_chaosgold_pillar"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.chaos_materials_4_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosalloy_ingot",
+      "recipe2": "bettergold:chaosalloy_upgrade_template"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosalloy_block_from_ingot",
+      "recipe2": "bettergold:chaosalloy_ingot_from_block"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:chaosalloy_ingot",
+        "bettergold:chaosalloy_block",
+        "bettergold:chaosalloy_upgrade_template"
+      ],
+      "title": "bettergold.handbook.page.chaos_materials_5_left_title"
+    }
+  ]
+}

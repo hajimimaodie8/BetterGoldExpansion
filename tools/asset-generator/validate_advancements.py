@@ -37,17 +37,24 @@ VANILLA_JAR = REPO / "build" / "moddev" / "artifacts" / \
     "neoforge-21.1.228-client-extra-aka-minecraft-resources.jar"
 
 NS = "bettergold"
-EXPECTED_COUNT = 51
+# 1.7 收口轮（bg-n10r9）：两族（混沌金 / 崩乱合金）。**不进 `METALS_ORDER`** —— 那张表是
+#   "8 族"的既有形状（多处按 8 计数），两族的链也不同构（崩乱合金没有核心材料）。
+CHAOS_ORDER = ("chaosgold", "chaosalloy")
+# ⚠ **旧期望原文保留（未删）**：`EXPECTED_COUNT = 51`。
+# ★ 1.7 收口轮（bg-n10r9，2026-10-17）：51 → **59**（混沌金 / 崩乱合金各 4 条）。
+EXPECTED_COUNT = 59
 FD_CONDITION = [{"type": "neoforge:mod_loaded", "modid": "farmersdelight"}]
 FD_PATHS = {"agriculture/alchemical_meat", "agriculture/midas_feast_2",
             "agriculture/sturdygold_feast_2"}
 # ⛔ **bg-fix3 §五②（作者 2026-10-07）**：「贵金相关的进度排版…**盔甲部分属于挑战进度**」
 #   ⇒ challenge 从 1 条变成 **9 条**（8 条 armor + 骷髅打金服）。
 #   ⚠ 旧期望原文保留（未删）：`CHALLENGE_PATHS = {"metal/sturdygold/skeleton"}`（只有万坚金的骷髅那条）。
+# ★ 1.7 收口轮：两族盔甲同样是 challenge（与八族逐字同构）⇒ 9 → **11** 条。
 CHALLENGE_PATHS = {"metal/sturdygold/skeleton"} | {
     f"metal/{m}/armor" for m in
     ("flamegold", "sturdygold", "thornsgold", "echogold",
-     "indigoseagold", "voodoogold", "thundergold", "illusiongold")}
+     "indigoseagold", "voodoogold", "thundergold", "illusiongold")
+} | {f"metal/{m}/armor" for m in CHAOS_ORDER}
 TRIGGER_WHITELIST = {
     "minecraft:inventory_changed", "minecraft:recipe_crafted", "minecraft:villager_trade",
     "minecraft:player_hurt_entity", "minecraft:placed_block", "minecraft:item_used_on_block",
@@ -68,10 +75,15 @@ VANILLA_TAGS = {"#minecraft:hoes", "#minecraft:skeletons"}
 #     里不许混进 `#tag` ⇒ 标签必须写成**单个字符串**。
 METALS_ORDER = ("flamegold", "sturdygold", "thornsgold", "echogold",
                 "indigoseagold", "voodoogold", "thundergold", "illusiongold")
-BGFIX3_KNIFE_TAGS = {f"#{NS}:{m}_knives": m for m in METALS_ORDER}
+# ★ 1.7 收口轮：两族（混沌金 / 崩乱合金）**不进 `METALS_ORDER`** —— 那张表是"8 族"的既有
+#   形状（多处按 8 计数），两族的链也不同构（崩乱合金没有核心材料）⇒ 单独一张表。
+#   ⚠ 定义位置必须在 `CHALLENGE_PATHS` **之前**（那条常量也用它）。
+# 两族的 `#<族>_knives` 标签**已经存在**（`generate_metal_tags.py` 产，条目 required:false），
+#   成就侧与八族同款引用 ⇒ 期望集合 8 → **10** 张刀标签。
+BGFIX3_KNIFE_TAGS = {f"#{NS}:{m}_knives": m for m in METALS_ORDER + CHAOS_ORDER}
 BGFIX3_HANDBOOK_TAG = f"#{NS}:handbook"
 BGFIX3_HANDBOOK_ITEM = f"{NS}:alchemy_student_handbook"
-BGFIX3_TAG_FILES = {f"{m}_knives": [f"{NS}:{m}_knife"] for m in METALS_ORDER}
+BGFIX3_TAG_FILES = {f"{m}_knives": [f"{NS}:{m}_knife"] for m in METALS_ORDER + CHAOS_ORDER}
 BGFIX3_TAG_FILES["handbook"] = [BGFIX3_HANDBOOK_ITEM]
 # ==================== bg-fix4 §一（2026-10-08）新增：两把古董刀 ====================
 # 作者原话「古董屠刀和幽冥断骸刀无法触发上古藏品和皇骸永存的进度」⇒ 两条商人线成就各得一条
@@ -139,6 +151,24 @@ def registry_ids() -> set[str]:
         for s in suffixes:
             ids.add(f"{NS}:{m}_{s}")
         ids.add(f"{NS}:raw_{m}")
+    # ★ 1.7 收口轮（bg-n10r9）：两族**按各自声明的形态**补进真源（`metal_forms.py` / `Spec`）：
+    #   * chaosgold  —— 没有 raw、没有 upgrade_template；建材 11 种（块 + 砖块系列 + 柱 +
+    #                   栏杆 + 门 + 活板门 + 链 + 灯笼）+ 粒 / 锭 + 11 件器具 + 4 件盔甲；
+    #   * chaosalloy —— 只有 锭 / 块 / upgrade_template + 11 件器具 + 4 件盔甲（无 raw / 粒 / 建材）。
+    #   ⚠ 这**不是**"放宽"：每一件都能在金属族注册的形态表里指名（立档 §3 的缺口表）。
+    _chaos_gear = ["sword", "axe", "pickaxe", "shovel", "hoe", "knife",
+                   "mace", "bow", "crossbow", "trident", "shield",
+                   "helmet", "chestplate", "leggings", "boots"]
+    _chaos_build = ["block", "bricks", "bricks_stairs", "bricks_slab", "bricks_wall",
+                    "pillar", "bars", "door", "trapdoor", "chain", "lantern"]
+    for s in ["ingot", "nugget", "upgrade_template"] + _chaos_gear + _chaos_build:
+        ids.add(f"{NS}:chaosgold_{s}")
+    for s in ["ingot", "block", "upgrade_template"] + _chaos_gear:
+        ids.add(f"{NS}:chaosalloy_{s}")
+    for must in (f"{NS}:chaosgold_ingot", f"{NS}:chaosalloy_ingot",
+                 f"{NS}:chaosgold_lantern", f"{NS}:chaosalloy_upgrade_template"):
+        if must not in ids:
+            bad("bgach-registry-selfcheck", f"两族形态没进真源：{must}")
     pat = re.compile(r'\.register[A-Za-z]*\(\s*"([a-z0-9_]+)"')
     for name in ("registry/AllItems.java", "material/MetalSpecialItems.java",
                  "fd/FdItems.java", "registry/AllBlocks.java"):
@@ -327,8 +357,12 @@ def main() -> int:
             bad("bgfix3-root-chain",
                 f"{_child} 的 parent 应是 {_parent}（bg-fix3 §五 的链式根链），实际 {_got}")
     tr_kids = sorted(children.get(f"{NS}:treasure/any_core_material", []))
-    if len(tr_kids) != 9:
-        bad("bgach-shape-treasure-children", f"「寻途千里的珍宝」的孩子应为 9 条（实际 {len(tr_kids)}）")
+    # ★ 1.7 收口轮：9 → **11**（8 个核心材料 + any_raw_metal + 混沌金币 + 崩乱合金锭）。
+    #   ⚠ **旧期望原文保留（未删）**：`if len(tr_kids) != 9: ... 应为 9 条`。
+    if len(tr_kids) != 11:
+        bad("bgach-shape-treasure-children",
+            f"「寻途千里的珍宝」的孩子应为 11 条（8 核心材料 + any_raw_metal + 两族链首；"
+            f"旧期望 9 条已被 1.7 收口轮取代），实际 {len(tr_kids)}")
     gold_kids = sorted(children.get(f"{NS}:metal/sturdygold/weapon", []))
     want_gold_kids = sorted([f"{NS}:metal/sturdygold/skeleton", f"{NS}:metal/sturdygold/armor",
                              f"{NS}:merchant/gold_ticket"])
@@ -358,6 +392,42 @@ def main() -> int:
                 bad("bgfix3-metal-chain",
                     f"{_path} 的 parent 应是 {_parent}（四级链：核心材料 -> 锭 -> 武器工具 -> 盔甲），"
                     f"实际 {_got}")
+
+    # ---- 2c. ★ 1.7 收口轮：两族链条逐条钉住（`[bgn10r9-adv-chaos-chain]`）----
+    #   混沌金： treasure/chaos_coin → metal/chaosgold/ingot → weapon → armor
+    #   崩乱合金：metal/chaosalloy/ingot → metal/chaosalloy/supply → weapon → armor
+    #     （`supply` = 「块 **或** 升级锻造模板」，两件同属材料链第二段 ⇒ 同一条 requirement 组）
+    _chaos_chain = {
+        "treasure/chaos_coin": f"{NS}:treasure/any_core_material",
+        "metal/chaosgold/ingot": f"{NS}:treasure/chaos_coin",
+        "metal/chaosgold/weapon": f"{NS}:metal/chaosgold/ingot",
+        "metal/chaosgold/armor": f"{NS}:metal/chaosgold/weapon",
+        "metal/chaosalloy/ingot": f"{NS}:treasure/any_core_material",
+        "metal/chaosalloy/supply": f"{NS}:metal/chaosalloy/ingot",
+        "metal/chaosalloy/weapon": f"{NS}:metal/chaosalloy/supply",
+        "metal/chaosalloy/armor": f"{NS}:metal/chaosalloy/weapon",
+    }
+    if len(_chaos_chain) != 8:
+        bad("bgn10r9-adv-chaos-chain", "两族链条不是 8 条 —— 反空转守护")
+    for _cpath, _cparent in _chaos_chain.items():
+        _got = advs.get(_cpath, {}).get("parent")
+        if _got != _cparent:
+            bad("bgn10r9-adv-chaos-chain",
+                f"{_cpath} 的 parent 应是 {_cparent}（1.7 两族链：链首 → 锭/块或模板 → 武器 → 盔甲），"
+                f"实际 {_got}")
+    _supply = advs.get("metal/chaosalloy/supply", {}).get("criteria") or {}
+    if sorted(_supply) != ["have_block", "have_template"]:
+        bad("bgn10r9-adv-chaos-chain",
+            f"metal/chaosalloy/supply 的判据应是 {{have_block, have_template}}，实际 {sorted(_supply)}")
+    if advs.get("metal/chaosalloy/supply", {}).get("requirements") != \
+            [["have_block", "have_template"]]:
+        bad("bgn10r9-adv-chaos-chain",
+            "metal/chaosalloy/supply 的 requirements 必须是 1 组 {{have_block, have_template}}"
+            "（组内 OR = 块**或**模板），否则「或」会变成「且」")
+    # 两族的链首 / 锭 必须有 display 图标（树上看不见的成就等于没做）
+    for _cpath in ("treasure/chaos_coin", "metal/chaosgold/ingot", "metal/chaosalloy/ingot"):
+        if not ((advs.get(_cpath, {}).get("display") or {}).get("icon") or {}).get("id"):
+            bad("bgn10r9-adv-chaos-chain", f"{_cpath} 没有 display.icon.id")
 
     # ---- 3. display / 文案键 ----
     for k, v in advs.items():
@@ -664,7 +734,8 @@ def main() -> int:
         bad("bgfix3-knife-in-gear", f"清单里的刀不是 8 把（实际 {len(KNIVES)}）—— 反空转守护")
     _gear_items: set[str] = set()
     _knife_ok = 0
-    for _m in METALS_ORDER:
+    # ★ 1.7 收口轮：两族的武器成就同样带 `have_knife` ⇒ 这条循环覆盖 10 族。
+    for _m in METALS_ORDER + CHAOS_ORDER:
         _p = f"metal/{_m}/weapon"
         _crits = (advs.get(_p, {}).get("criteria") or {})
         if len(_crits) < 2:
@@ -697,9 +768,11 @@ def main() -> int:
             bad("bgfix3-knife-in-gear",
                 f"{_p} 的 requirements 必须是 1 组 {{have, have_knife}}（组内 OR：10 件武器工具**或**小刀），"
                 f"实际 {_reqs}")
-    if _knife_ok != 8:
-        bad("bgfix3-knife-in-gear", f"8 条武器成就里只有 {_knife_ok} 条把刀正确纳入 —— 反空转守护")
-    if len(_gear_items) < 40:
+    # ⚠ **旧期望原文保留（未删）**：`if _knife_ok != 8: ... "8 条武器成就里只有 …"`。
+    if _knife_ok != 10:
+        bad("bgfix3-knife-in-gear",
+            f"10 条武器成就（8 族 + 两族）里只有 {_knife_ok} 条把刀正确纳入 —— 反空转守护")
+    if len(_gear_items) < 50:      # ⚠ 旧期望原文保留：`< 40`（8 族 × 10 件；现 10 族）
         bad("bgfix3-knife-in-gear",
             f"8 条武器成就的 `have` 判据只解析到 {len(_gear_items)} 个物品（应 >= 40）—— 反空转守护")
 
@@ -999,13 +1072,13 @@ def main() -> int:
         print(f"bg-ach 进度系统问题: {len(problems)}")
         print(f"[bgach-fail] 问题 {len(problems)} 条 ⇒ 本关卡 exit 1（契约：0 绿 / 1 有问题 / 2 前置坏）")
         return 1
-    print(f"OK [bgach] 51 个成就 / {total_criteria} 条 criteria / 触发类型 "
+    print(f"OK [bgach] {len(advs)} 个成就 / {total_criteria} 条 criteria / 触发类型 "
           f"{sorted(used_triggers)} / recipe_crafted {len(recipe_refs)} 条 / 语言键 {lang_n} 条")
     # ⚠ bg-fix3 §五 之后树形状与 challenge 数都变了；旧口径的措辞（「根 5 孩子…1 条 challenge」）
     #   原文保留在这里作历史留档。
     print(f"OK [bgach] 树（bg-fix3 §五 链式）：根 3 孩子（炼制I + 两条农业）、"
           f"根链 root -> 炼制I -> 炼制II -> 寻途、寻途 9 孩子、染上黄金 3 孩子；"
-          f"3 条乐事条件；challenge {len(challenge)} 条（八族盔甲 + 骷髅打金服）")
+          f"3 条乐事条件；challenge {len(challenge)} 条（十族盔甲 + 骷髅打金服）")
     print(f"OK [bgfix3-knife-in-gear] 8 条武器成就各带 `have_knife`（items = 该族 "
           f"`#bettergold:<族>_knives` 标签，标签条目一律 required:false）⇒ 装了乐事时小刀计入")
     print(f"OK [bgfix3-root-obtain] root 判据 = inventory_changed + `{BGFIX3_HANDBOOK_TAG}`；"
@@ -1016,7 +1089,7 @@ def main() -> int:
     print(f"OK [bgfix9-inv-one-predicate] 「任意」类 {len(_any_paths)} 条成就 / {_any_checked} 条判据"
           f"全部是**恰好 1 条谓词**（OR ⇔ items.size()==1）；「所有 / 一整套」类 {len(_all_paths)} 条"
           f"全部是「每件一条判据 + 各自一组」（组间 AND）；谓词 {_pred_checked} 条 / 数组形态 "
-          f"{_homog_checked} 个；全 51 条无 `conditions.player`（位置/结构门）")
+          f"{_homog_checked} 个；全 {len(advs)} 条无 `conditions.player`（位置/结构门）")
     print(f"OK [bgfix9-raw-metal-shape] ㊽ treasure/any_raw_metal.have = 1 条谓词 + "
           f"{len(_raw_want)} 项原料数组（拿取/合成任一即解锁）；"
           f"[bgfix9-eggplant-no-structure] ㊹ agriculture/eggplant_seeds.have = 获得金钱茄种子（无结构门）")

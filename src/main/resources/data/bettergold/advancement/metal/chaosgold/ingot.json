@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/chaos_coin",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaosgold_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosgold_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosgold_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:chaosgold_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

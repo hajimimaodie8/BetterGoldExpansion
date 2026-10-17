@@ -1,0 +1,60 @@
+{
+  "name": "bettergold.handbook.entry.gear_chaosalloy",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:chaosalloy_sword",
+  "sortnum": 10,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_chaosalloy_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_chaosalloy_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_chaosalloy_2_left"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_sword",
+      "recipe2": "bettergold:smithing_chaosalloy_mace"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_trident",
+      "recipe2": "bettergold:smithing_chaosalloy_bow"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_crossbow",
+      "recipe2": "bettergold:smithing_chaosalloy_axe"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_pickaxe",
+      "recipe2": "bettergold:smithing_chaosalloy_shovel"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_hoe",
+      "recipe2": "bettergold:smithing_chaosalloy_knife"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_shield",
+      "recipe2": "bettergold:smithing_chaosalloy_helmet"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_chestplate",
+      "recipe2": "bettergold:smithing_chaosalloy_leggings"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_chaosalloy_boots"
+    }
+  ]
+}

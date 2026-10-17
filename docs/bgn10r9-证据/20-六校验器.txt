@@ -1,0 +1,31 @@
+﻿轮9 六校验器（判据 = exit + 关键计数两列）—— 生成于 2026-10-17 20:18:43（收尾后最终构建）
+
+=== validate_metal_assets  exit=0
+    形态子集资产（9 族 × 15 形态）问题: 0 []
+    [bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+    [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+=== validate_metal_data  exit=0
+    1.7 轮9（两族进手册 38 页 / 两族进成就 8 条 / 创造页 / 中英语言键）问题: 0 []（本段判定 164 条）
+    [bgn10r9-ok] 两族 4 条目 38 页（页型序列 / 39 条配方引用 / 33 件图标模型全部存在）/ 两族 8 条成就（parent 链 + challenge 两条 + 清一色 inventory_changed + 刀走标签）/ METAL_ORDER 含两族且材料前缀仍是 21 件 / 20+16 条中英键全部就位
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+=== validate_trim_assets  exit=0
+    [bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0）
+    [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+=== validate_advancements  exit=0
+    OK [bgfix4-antique-knife-in-gear] 2 条古董成就各带 `have_knife`（items = 单个标签字符串，标签条目 required:false）⇒ 装了乐事时屠刀/断骸刀计入；`have` 那 5 件裸 id 原路径保留
+    OK [bgfix9-inv-one-predicate] 「任意」类 15 条成就 / 24 条判据全部是**恰好 1 条谓词**（OR ⇔ items.size()==1）；「所有 / 一整套」类 14 条全部是「每件一条判据 + 各自一组」（组间 AND）；谓词 136 条 / 数组形态 14 个；全 59 条无 `conditions.player`（位置/结构门）
+    [bgach-ok] 问题 0 条 / 成就 59 个 / criteria 142 条 / 语言键 118 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+=== check_jar_clean  exit=0
+    jar 内文件总数 = 2763
+    [jar-clean-anti-vacuum] 实际检查了 2763 项（jar 内条目数；必须 > 0）
+    [jar-clean-ok] 产物 jar 干净（条目 2763；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+=== check_forced_chunks  exit=0
+    data.Forced length        = 0
+    [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+

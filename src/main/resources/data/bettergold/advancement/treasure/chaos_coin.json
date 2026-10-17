@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaos_coin",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaos_coin.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaos_coin.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:chaos_coin"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

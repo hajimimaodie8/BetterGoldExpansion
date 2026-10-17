@@ -1,0 +1,36 @@
+轮9 客户端读数（真 runClient + quickPlay 进**探针世界副本**；探针 BgN10r9ClientProbe，收尾已整块删除）
+来源：build/r9_rc4.out；世界名 A 级断言 = world（不是作者的「新的世界」）
+为什么必须进世界：Patchouli 的 BookContents 在无 Level 时是**空壳**（标题界面 entries=0、不报错）
+==============================================================================================================
+
+  BGN10R9CPROBE PASS c_world_name_is_probe_world :: world=world
+  BGN10R9CPROBE PASS c_client_models_no_missing :: checked=413 missing=[]
+  BGN10R9CPROBE PASS c_book_present :: book=bettergold:alchemy_handbook
+  BGN10R9CPROBE PASS c_book_contents_present :: contents=vazkii.patchouli.client.book.BookContents@3afab566
+  BGN10R9CPROBE PASS c_book_not_errored :: errored=false exception=null
+  BGN10R9CPROBE PASS c_book_entry_count :: entries=24������ 24��
+  BGN10R9CPROBE PASS c_book_page_count :: pages=230������ 230��
+  BGN10R9CPROBE PASS c_book_entry_chaos_materials :: pages=16������ 16��
+  BGN10R9CPROBE PASS c_book_page_types_chaos_materials :: classes=PageText,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageText,PageCrafting,PageCrafting,PageSpotlight, ����=PageText,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageText,PageCrafting,PageCrafting,PageSpotlight,
+  BGN10R9CPROBE PASS c_book_spotlight_icons_chaos_materials :: spotlights=3������ 3��badStacks=0
+  BGN10R9CPROBE PASS c_book_recipes_chaos_materials :: recipePages=11 resolved=11��0/0 Ҳ���ԣ�
+  BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:chaos_materials recipePages=11 resolved=11
+  BGN10R9CPROBE PASS c_book_entry_chaos_feast :: pages=4������ 4��
+  BGN10R9CPROBE PASS c_book_page_types_chaos_feast :: classes=PageSpotlight,PageCrafting,PageSpotlight,PageCrafting, ����=PageSpotlight,PageCrafting,PageSpotlight,PageCrafting,
+  BGN10R9CPROBE PASS c_book_spotlight_icons_chaos_feast :: spotlights=2������ 2��badStacks=0
+  BGN10R9CPROBE PASS c_book_recipes_chaos_feast :: recipePages=2 resolved=2��0/0 Ҳ���ԣ�
+  BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:chaos_feast recipePages=2 resolved=2
+  BGN10R9CPROBE PASS c_book_entry_gear_chaosgold :: pages=7������ 7��
+  BGN10R9CPROBE PASS c_book_page_types_gear_chaosgold :: classes=PageText,PageText,PageText,PageSpotlight,PageSpotlight,PageSpotlight,PageCrafting, ����=PageText,PageText,PageText,PageSpotlight,PageSpotlight,PageSpotlight,PageCrafting,
+  BGN10R9CPROBE PASS c_book_spotlight_icons_gear_chaosgold :: spotlights=3������ 3��badStacks=0
+  BGN10R9CPROBE PASS c_book_recipes_gear_chaosgold :: recipePages=1 resolved=1��0/0 Ҳ���ԣ�
+  BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:gear_chaosgold recipePages=1 resolved=1
+  BGN10R9CPROBE PASS c_book_entry_gear_chaosalloy :: pages=11������ 11��
+  BGN10R9CPROBE PASS c_book_page_types_gear_chaosalloy :: classes=PageText,PageText,PageText,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing, ����=PageText,PageText,PageText,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,
+  BGN10R9CPROBE PASS c_book_spotlight_icons_gear_chaosalloy :: spotlights=0������ 0��badStacks=0
+  BGN10R9CPROBE PASS c_book_recipes_gear_chaosalloy :: recipePages=8 resolved=8��0/0 Ҳ���ԣ�
+  BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:gear_chaosalloy recipePages=8 resolved=8
+  BGN10R9CPROBE PASS c_no_resource_load_failures :: UnableToLoad/FailedToLoad=0 Missing model=0
+  BGN10R9CPROBE PASS c_no_patchouli_errors :: patchouli ERROR lines=0
+  BGN10R9CPROBE SUMMARY pass=25 fail=0
+  BGN10R9CPROBE INFO exiting JVM���ͻ���û�С�ͣ��������£�̽����βֱ���˽��̣�

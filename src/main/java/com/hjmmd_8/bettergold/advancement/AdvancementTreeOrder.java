@@ -47,6 +47,14 @@ import net.minecraft.resources.ResourceLocation;
  *
  * <p>⚠ 本类不注册任何东西、不持有状态、只读入参；{@link #order} 在守卫不匹配时
  * <b>返回传入的那个对象本身</b>（不复制、不包装）。</p>
+ *
+ * <p>★ <b>1.7 收口轮（bg-n10r9，2026-10-17）补记</b>：白名单父节点的孩子从 <b>9 条变成 11 条</b>
+ * —— 多了混沌金的链首（{@code bettergold:treasure/chaos_coin}）与崩乱合金的链首
+ * （{@code bettergold:metal/chaosalloy/ingot}）。上面那句「8 条线」是 1.6 时的口径，
+ * <b>原文留档不删</b>；现行口径 = <b>10 条金属线 + 1 个非族节点</b>，
+ * 排序键仍然只来自 {@link CreativeSections#METAL_ORDER}（本类里依旧没有任何族名字面量）。
+ * 崩乱合金的链首<b>自己</b>就是 {@code metal/<族>/ingot}（它没有核心材料节点）⇒
+ * {@link #rankOf} 先看节点自己的 id、再看孩子（旧口径只看孩子，原文留档在上面）。</p>
  */
 public final class AdvancementTreeOrder {
 
@@ -97,21 +105,39 @@ public final class AdvancementTreeOrder {
      *         认不出族（非族节点）时返回 {@code METAL_ORDER.size()}（恒排最后）
      */
     public static int rankOf(AdvancementNode node) {
+        // ★ 1.7 收口轮（bg-n10r9）：**分支首节点自己**就可能是某族的 `metal/<族>/ingot`
+        //   —— 崩乱合金没有核心材料节点，它的链首就是锭（`metal/chaosalloy/ingot`）。
+        //   ⚠ 旧口径（原文留档，未删）：只看**孩子**的 id ⇒ 这种链会被判成"非族节点"、
+        //     落到 METAL_ORDER.size() 档，只能靠 `ns:path` 字典序兜底"碰巧"排在最后。
+        //   现行：先看自己，再看孩子（两边都走同一个 {@link #rankOfPath}，不新增任何族名字面量）。
+        int own = rankOfPath(node.holder().id());
+        if (own >= 0) {
+            return own;
+        }
         int best = Integer.MAX_VALUE;
         for (AdvancementNode child : node.children()) {
-            ResourceLocation id = child.holder().id();
-            if (!NS.equals(id.getNamespace())) {
-                continue;
-            }
-            String path = id.getPath();
-            if (path.startsWith(METAL_PATH_PREFIX) && path.endsWith(INGOT_PATH_SUFFIX)) {
-                String family = path.substring(METAL_PATH_PREFIX.length(), path.length() - INGOT_PATH_SUFFIX.length());
-                int index = CreativeSections.METAL_ORDER.indexOf(family);
-                if (index >= 0 && index < best) {
-                    best = index;
-                }
+            int index = rankOfPath(child.holder().id());
+            if (index >= 0 && index < best) {
+                best = index;
             }
         }
         return best == Integer.MAX_VALUE ? CreativeSections.METAL_ORDER.size() : best;
+    }
+
+    /**
+     * `bettergold:metal/&lt;族&gt;/ingot` ⇒ 该族在 {@link CreativeSections#METAL_ORDER} 里的下标；
+     * 别的 id（本模组以外 / 不是"族-锭"形状）⇒ {@code -1}。
+     */
+    private static int rankOfPath(ResourceLocation id) {
+        if (!NS.equals(id.getNamespace())) {
+            return -1;
+        }
+        String path = id.getPath();
+        if (path.startsWith(METAL_PATH_PREFIX) && path.endsWith(INGOT_PATH_SUFFIX)) {
+            String family = path.substring(METAL_PATH_PREFIX.length(),
+                    path.length() - INGOT_PATH_SUFFIX.length());
+            return CreativeSections.METAL_ORDER.indexOf(family);
+        }
+        return -1;
     }
 }

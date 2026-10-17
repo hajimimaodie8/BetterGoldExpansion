@@ -49,6 +49,11 @@ NS = "bettergold"
 # ---------------------------------------------------------------- 物品清单（真源，逐个核过）
 METALS = ["flamegold", "sturdygold", "thornsgold", "echogold",
           "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+# 1.7 收口轮（bg-n10r9，2026-10-17）：混沌金 / 崩乱合金。
+#   ⚠ **刻意不并入 `METALS`**：那份清单是"8 族"的既有形状（刀具标签 / 清单 lists / 多处
+#   「8 族」断言都按它算），而两族的链**并不完全同构**（崩乱合金没有 raw、也没有核心材料）
+#   ⇒ 单独一张表 + 单独一段 build 逻辑，8 族的既有产物一个字节不动。
+CHAOS_METALS = ["chaosgold", "chaosalloy"]
 # 与 material/MetalFamily.java:671-745 的注册后缀逐字一致
 GEAR_SUFFIX = ["sword", "axe", "pickaxe", "shovel", "hoe",
                "mace", "bow", "crossbow", "trident", "shield"]
@@ -102,10 +107,16 @@ def armor(metal: str) -> list[str]:
 
 
 # 8 个核心材料（MetalSpecialItems.java + AllItems.GOLDEN_COWRIE）
+# ★ 1.7 收口轮：**第 9 个** = 混沌金币（`bettergold:chaos_coin`）。
+#   依据 = 唯一真源 `AllMetals.registerChaosgold()` 的 `.coreItem(() -> AllItems.CHAOS_COIN.get())`
+#   —— 混沌金没有 raw，所以它的"材料链最前面那件"就是金币（立档 §2.2 可执行口径第 2 条）。
+#   ⇒ 「寻途千里的珍宝」这条既有的成就**判据集合**因此从 8 件变 9 件（标题 / 简介一个字没动）。
+#   ⚠ 记账：这会让"拿到一枚混沌金币"也能解锁寻途 —— 与"核心材料 = 该族 coreItem"的既有口径一致；
+#     作者一句话可撤回（把这一行删掉即可）。
 CORE_MATERIALS = [
     f"{NS}:blazing_rod", f"{NS}:golden_cowrie", f"{NS}:glittering_vine",
     f"{NS}:bundled_echo_shard", f"{NS}:indigo_ocean_heart", f"{NS}:voodoo_feather",
-    f"{NS}:amethyst_energy_dust", f"{NS}:chorus_cherry_branch",
+    f"{NS}:amethyst_energy_dust", f"{NS}:chorus_cherry_branch", f"{NS}:chaos_coin",
 ]
 # 8 个原料（MetalFamily:662 `raw_` + id）—— 同时就是它们的配方 id
 RAW_MATERIALS = [f"{NS}:raw_{m}" for m in
@@ -427,6 +438,63 @@ def build() -> list[dict]:
                 f"{base}/weapon", {"hit": c_skeletons(gear("sturdygold"))}, [["hit"]],
                 frame="challenge")
 
+    # ---- §3.3b 1.7 收口轮（bg-n10r9）：混沌金 / 崩乱合金两条链（8 条）----
+    # 形状与八族**同构**：核心材料 → 锭 → 武器工具 → 盔甲（末两级的 parent 与 frame 照 bg-fix3 §五：
+    #   **盔甲挂在武器之下**、**frame = challenge**）。
+    # 两处**由素材事实决定**的差异（立档 §1 / §3 的缺口表，不是口味）：
+    #   ① 混沌金**没有 raw、没有升级锻造模板** ⇒ 链首 = **混沌金币**（= 该族 `coreItem`），
+    #      挂在「寻途千里的珍宝」下，与八族的 8 个核心材料节点**完全同构**；
+    #   ② 崩乱合金**没有核心材料**（没有 raw、没有 coreItem 之外的"原料"）⇒ 链首 = **锭**，
+    #      直接挂「寻途千里的珍宝」下；第二级 = 「块 **或** 升级锻造模板」
+    #      （两件同属"材料链的第二段"⇒ **同一条 requirement 组 = 组内 OR**）。
+    # ⚠ 两族的武器成就都**含乐事刀**，落法与八族**逐字同构**（bg-fix3 §二 的安全范式）：
+    #   判据 = 裸 id 列表（10 件恒存在）+ 该族刀具标签 `#bettergold:<族>_knives`
+    #   （标签文件无条件存在、条目 `required:false` ⇒ 没装乐事时不报错、不丢文件）。
+    #   ⇒ **不新建** `#bettergold:<族>_gear` 标签：全仓没有第二份"族 × 器具"标签，
+    #     而"物品恒存在"的 10 件写裸 id 本来就不会引起解析失败（`c_inv` 的既有形态）。
+    # ⚠ 标题 / 简介：**作者没有给过这两族的成就文案** ⇒ 本轮是**实现说明**（描述句逐字写判据），
+    #   已记进 `docs/1.7-...md` §7 待作者补清单与 §18（不许假装是作者原话）。
+    CHAOS_LINES = [
+        # (族, 中文族名, 链首标题, 链首简介)
+        ("chaosgold", "混沌金", "混沌的起点", "获得一枚混沌金币"),
+        ("chaosalloy", "崩乱合金", "崩乱的开端", "获得一个崩乱合金锭"),
+    ]
+    for metal, zh_name, head_title, head_desc in CHAOS_LINES:
+        base = f"metal/{metal}"
+        if metal == "chaosgold":
+            # ① 混沌金：金币（链首）→ 锭 → 武器 → 盔甲
+            add("treasure/chaos_coin", "chaos_coin", head_title, head_desc,
+                f"{NS}:chaos_coin", "treasure/any_core_material",
+                {"have": c_inv([f"{NS}:chaos_coin"])}, [["have"]])
+            add(f"{base}/ingot", "chaosgold_ingot", "混沌金，到手", "获得一个混沌金锭",
+                f"{NS}:chaosgold_ingot", "treasure/chaos_coin",
+                {"have": c_inv([f"{NS}:chaosgold_ingot"])}, [["have"]])
+            weapon_parent = f"{base}/ingot"
+        else:
+            # ② 崩乱合金：锭（链首）→（块 或 模板）→ 武器 → 盔甲
+            add(f"{base}/ingot", "chaosalloy_ingot", head_title, head_desc,
+                f"{NS}:chaosalloy_ingot", "treasure/any_core_material",
+                {"have": c_inv([f"{NS}:chaosalloy_ingot"])}, [["have"]])
+            add(f"{base}/supply", "chaosalloy_supply", "崩乱的结构",
+                "获得崩乱合金块或崩乱合金升级锻造模板", f"{NS}:chaosalloy_upgrade_template",
+                f"{base}/ingot",
+                {"have_block": c_inv([f"{NS}:chaosalloy_block"]),
+                 "have_template": c_inv([f"{NS}:chaosalloy_upgrade_template"])},
+                [["have_block", "have_template"]])
+            weapon_parent = f"{base}/supply"
+        add(f"{base}/weapon", f"{metal}_weapon",
+            "混沌的锋芒" if metal == "chaosgold" else "崩乱的锋刃",
+            f"获得任意一种{zh_name}武器工具", f"{NS}:{metal}_sword", weapon_parent,
+            {"have": c_inv([gear(metal)]),
+             "have_knife": c_inv_tag(f"{NS}:{metal}_knives")},
+            [["have", "have_knife"]])
+        add(f"{base}/armor", f"{metal}_armor",
+            "混沌的庇护" if metal == "chaosgold" else "崩乱的庇护",
+            f"获得一整套{zh_name}盔甲", f"{NS}:{metal}_chestplate", f"{base}/weapon",
+            {f"armor_{s}": c_inv([f"{NS}:{metal}_{s}"]) for s in ARMOR_SUFFIX},
+            [[f"armor_{s}"] for s in ARMOR_SUFFIX],
+            frame="challenge")
+
     # ---- §3.4 商人线（4）
     add("merchant/gold_ticket", "gift_gold_ticket", "奢华一票", "获得礼品金票",
         f"{NS}:gift_gold_ticket", "metal/sturdygold/weapon",
@@ -636,6 +704,19 @@ EN: dict[str, tuple[str, str]] = {  # advancement key -> (title, description)
                       "Obtain all Farmer's Delight golden foods."),
     "sturdygold_feast_2": ("Gilding Evolution II",
                            "Obtain all Farmer's Delight Sturdygold foods."),
+    # ---- 1.7 收口轮（bg-n10r9，2026-10-17）：混沌金 / 崩乱合金 8 条 ----
+    # ⚠ 中文标题 / 简介**不是作者原话**（作者没给这两族的成就文案）⇒ 是按判据写的**实现说明**；
+    #   英文与中文同一口径（真英译、不新造译名：Chaosgold / Chaosalloy / Chaos Coin 均沿用
+    #   `lang/en_us.json` 里已交付的物品译名）。记账见 `docs/1.7-...md` §7 / §18。
+    "chaos_coin": ("Where Chaos Begins", "Obtain a Chaos Coin."),
+    "chaosgold_ingot": ("Chaosgold in Hand", "Obtain a Chaosgold Ingot."),
+    "chaosgold_weapon": ("The Edge of Chaos", "Obtain any kind of Chaosgold weapon or tool."),
+    "chaosgold_armor": ("Shelter of Chaos", "Obtain a full set of Chaosgold armor."),
+    "chaosalloy_ingot": ("The Start of Collapse", "Obtain a Chaosalloy Ingot."),
+    "chaosalloy_supply": ("Structure of Collapse",
+                          "Obtain a Chaosalloy Block or its upgrade smithing template."),
+    "chaosalloy_weapon": ("Blade of Collapse", "Obtain any kind of Chaosalloy weapon or tool."),
+    "chaosalloy_armor": ("Shelter of Collapse", "Obtain a full set of Chaosalloy armor."),
 }
 
 
@@ -779,11 +860,15 @@ def to_json_obj(a: dict) -> dict:
 
 def main() -> int:
     A = build()
-    assert len(A) == 51, f"成就条数不是 51（实际 {len(A)}）"
+    # 1.7 收口轮（bg-n10r9）：51 → **59**（两族各 4 条：链首 / 锭（崩乱合金是块或模板）/ 武器 / 盔甲）。
+    #   ⚠ 旧期望原文保留：`assert len(A) == 51`。
+    assert len(A) == 59, f"成就条数不是 59（实际 {len(A)}）"
     ids = [a["path"] for a in A]
-    assert len(set(ids)) == 51, "有重复的成就路径"
+    # ⚠ 旧期望原文保留：`== 51`。
+    assert len(set(ids)) == 59, "有重复的成就路径"
     keys = [a["key"] for a in A]
-    assert len(set(keys)) == 51, "有重复的语言键"
+    # ⚠ 旧期望原文保留：`== 51`。
+    assert len(set(keys)) == 59, "有重复的语言键"
     for a in A:
         if a["path"] != "root":
             assert a["parent"] in ids, f"{a['path']} 的 parent {a['parent']} 不在表里"
@@ -822,6 +907,8 @@ def main() -> int:
         "lists": {
             "core_materials": CORE_MATERIALS, "raw_materials": RAW_MATERIALS,
             "gear_suffix": GEAR_SUFFIX, "armor_suffix": ARMOR_SUFFIX, "metals": METALS,
+            # 1.7 收口轮：两族单独一张表（**不进** `metals` —— 两族链形状不同构）
+            "chaos_metals": CHAOS_METALS,
             "gold_foods": GOLD_FOODS, "sturdygold_foods": STURDYGOLD_FOODS,
             "fd_gold_foods": FD_GOLD_FOODS, "fd_sturdygold_foods": FD_STURDYGOLD_FOODS,
             # bg-fix3 §二 起：刀**算**器具 ⇒ 这份清单是"必须被 `have_knife` 判据覆盖"的正向清单
@@ -847,7 +934,9 @@ def main() -> int:
     print(f"challenge: {[a['path'] for a in A if a['frame'] != 'task']}")
     # bg-fix3：两条"标签判据"的自证读数（刀/手册标签各覆盖几条成就、recipe_crafted 还剩几条）
     # bg-fix4 §一：+2 张古董刀标签 ⇒ 带刀判据的成就 8 → **10** 条
-    _all_knife_tags = [f"#{weapon_knife_tag(m)}" for m in METALS] \
+    # 1.7 收口轮：+ 两族的刀具标签（混沌金 / 崩乱合金各一张，同样 `required:false`）
+    #   ⇒ 带『乐事小刀』判据的成就 10 → **12** 条。
+    _all_knife_tags = [f"#{weapon_knife_tag(m)}" for m in METALS + CHAOS_METALS] \
         + [f"#{ANTIQUE_KNIFE_TAG}", f"#{NETHERITE_ANTIQUE_KNIFE_TAG}"]
     _knife_crits = [a["path"] for a in A
                     if any(t in json.dumps(a["criteria"], ensure_ascii=False) for t in _all_knife_tags)]
@@ -861,7 +950,8 @@ def main() -> int:
 
     if "--lang" in sys.argv:
         entries = lang_entries(A)
-        assert len(entries) == 102, f"语言键条数不是 102（{len(entries)}）"
+        # 1.7 收口轮：102 → **118**（59 成就 × 2）。⚠ 旧期望原文保留：`== 102`。
+        assert len(entries) == 118, f"语言键条数不是 118（{len(entries)}）"
         for lang, idx in (("zh_cn", 1), ("en_us", 2)):
             _append_lang(LANG / f"{lang}.json", [(k, (zh, en)[idx - 1])
                                                  for k, zh, en in entries])

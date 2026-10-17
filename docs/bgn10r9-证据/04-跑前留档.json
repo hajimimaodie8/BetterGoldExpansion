@@ -1,0 +1,11 @@
+{
+  "server_properties_sha256": "A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4",
+  "server_properties_bytes": 1440,
+  "saves": {
+    "新的世界": {
+      "entries": 29,
+      "digest": "DAAE552ED70DE22D45BEEF4FB4AAD56E9EB03405AB2A08F5263BC7A9756DD5F2"
+    }
+  },
+  "backup": "server.properties.bgn10r9.bak"
+}

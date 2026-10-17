@@ -1,0 +1,44 @@
+轮9 扰动矩阵（bg-n10r9）—— 每个用例：改字节 → 跑关卡 → 判读 → 逐字节复原 → SHA256 自证
+==============================================================================================================
+
+01 P01 手册配方引用改成不存在的 id                            关卡 exit=1（判 红）期望 红 ⇒ PASS  [bgbook-recipe-refs / bgn10r9-book]
+      · bg-15w §八 追加轮② 问题合计: 0 []
+      · bg-15w §九 追加轮③ 问题合计: 0 []
+      · [bg-data-fail] 问题合计 3 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      复原：sha256 一致 5E84C9A26ABBC28F782422BE08FB3DC3
+
+02 P02 chaos_feast 删掉第 3 页（spotlight）             关卡 exit=1（判 红）期望 红 ⇒ PASS  [bgn10r9-book]
+      · bg-15w §八 追加轮② 问题合计: 0 []
+      · bg-15w §九 追加轮③ 问题合计: 0 []
+      · [bg-data-fail] 问题合计 3 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      复原：sha256 一致 0AC244B8AD4381360430C15EF0FC09B9
+
+03 P03 supply 的 requirements 改成两组（OR→AND）         关卡 exit=1（判 红）期望 红 ⇒ PASS  [bgn10r9-adv-chaos-chain]
+      · FAIL [bgn10r9-adv-chaos-chain] metal/chaosalloy/supply 的 requirements 必须是 1 组 {{have_block, have_template}}（组内 OR = 块**或**模板），否则「或」会变成「且」
+      复原：sha256 一致 F5C2F685AE40AE20554DAEC645BCC412
+
+04 P04 混沌金武器 have_knife 换成裸 id                    关卡 exit=1（判 红）期望 红 ⇒ PASS  [bgfix3-knife-in-gear]
+      · FAIL [bgfix3-adv-tag-refs] 成就里引用的 bettergold 标签集合不对：['#bettergold:antique_knives', '#bettergold:chaosalloy_knives', '#bettergold:echogold_knives', '#bettergold:flamegold_knives', '#bettergold:handbook
+      · FAIL [bgfix3-knife-in-gear] metal/chaosgold/weapon.have_knife 的 items 必须恰好是单个标签字符串 [#bettergold:chaosgold_knives]（混写列表 / 裸 id 都会在『没装乐事』时把整份 JSON 弄坏），实际 ['bettergold:chaosgold_knife']
+      · FAIL [bgfix3-knife-in-gear] 10 条武器成就（8 族 + 两族）里只有 9 条把刀正确纳入 —— 反空转守护
+      复原：sha256 一致 0EA0D5C25F89B8D15F2376F5FB9A1FFC
+
+05 P05 新 en 值改成与 zh 逐字相同                          关卡 exit=1（判 红）期望 红 ⇒ PASS  [bgn10r9-lang]
+      · bg-15w §八 追加轮② 问题合计: 0 []
+      · bg-15w §九 追加轮③ 问题合计: 0 []
+      · [bg-data-fail] 问题合计 3 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      复原：sha256 一致 A330F90BD699140DCC1C0C434F3D55E5
+
+06 P06 只加一行注释（必须仍绿）                               关卡 exit=0（判 绿）期望 绿 ⇒ PASS  [-]
+      · bg-15w §八 追加轮② 问题合计: 0 []
+      · bg-15w §九 追加轮③ 问题合计: 0 []
+      · [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+      复原：sha256 一致 2308F653D05AFA28198EF16EB269C8BE
+
+07 P07 删掉 treasure/chaos_coin（treasure 只剩 10 个孩子） 关卡 exit=1（判 红）期望 红 ⇒ PASS  [bgach-shape-treasure-children]
+      · FAIL [bgach-parse] treasure/chaos_coin.json 解析失败：Expecting value: line 1 column 1 (char 0)
+      · FAIL [bgach-manifest-parity] 产物与生成器清单不一致：产物多 [] / 少 ['bettergold:treasure/chaos_coin']
+      · FAIL [bgach-tree-parent] bettergold:metal/chaosgold/ingot 的 parent bettergold:treasure/chaos_coin 不在本模组成就里
+      复原：sha256 一致 3903FE86DA5EB9D719C24D73F2C9453D
+
+结论：全过（7 个用例）

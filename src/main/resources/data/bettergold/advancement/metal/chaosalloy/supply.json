@@ -1,0 +1,44 @@
+{
+  "parent": "bettergold:metal/chaosalloy/ingot",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaosalloy_upgrade_template",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosalloy_supply.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosalloy_supply.description"
+    }
+  },
+  "criteria": {
+    "have_block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:chaosalloy_block"
+          }
+        ]
+      }
+    },
+    "have_template": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:chaosalloy_upgrade_template"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have_block",
+      "have_template"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

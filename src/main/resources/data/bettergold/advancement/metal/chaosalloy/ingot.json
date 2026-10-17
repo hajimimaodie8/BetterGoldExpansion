@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/any_core_material",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaosalloy_ingot",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosalloy_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosalloy_ingot.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:chaosalloy_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

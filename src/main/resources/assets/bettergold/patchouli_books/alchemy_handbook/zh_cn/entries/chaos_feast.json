@@ -1,0 +1,27 @@
+{
+  "name": "bettergold.handbook.entry.chaos_feast",
+  "category": "bettergold:golden_feast",
+  "icon": "bettergold:chaosgold_forbidden_fruit",
+  "sortnum": 5,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:chaosgold_forbidden_fruit",
+      "text": "bettergold.handbook.page.chaos_feast_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_forbidden_fruit"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "bettergold:chaosalloy_forbidden_fruit",
+      "text": "bettergold.handbook.page.chaos_feast_2_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosalloy_forbidden_fruit"
+    }
+  ]
+}

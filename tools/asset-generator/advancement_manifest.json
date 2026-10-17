@@ -1,5 +1,5 @@
 {
-  "count": 51,
+  "count": 59,
   "lang_prefix": "advancements.bettergold",
   "advancements": [
     {
@@ -370,7 +370,6 @@
       "icon": "bettergold:echogold_sword",
       "frame": "task",
       "fd": false,
-      "_bgfix10_old_title": "等着看好戏吧，关于鼓手的",
       "title": "台上这鼓手有力气",
       "description": "获得任意一种幽咆金武器工具",
       "triggers": [
@@ -568,6 +567,126 @@
       "fd": false,
       "title": "就这样静下心来吧～",
       "description": "获得一整套幻惑金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:treasure/chaos_coin",
+      "path": "treasure/chaos_coin",
+      "key": "chaos_coin",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:chaos_coin",
+      "frame": "task",
+      "fd": false,
+      "title": "混沌的起点",
+      "description": "获得一枚混沌金币",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosgold/ingot",
+      "path": "metal/chaosgold/ingot",
+      "key": "chaosgold_ingot",
+      "parent": "bettergold:treasure/chaos_coin",
+      "icon": "bettergold:chaosgold_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "混沌金，到手",
+      "description": "获得一个混沌金锭",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosgold/weapon",
+      "path": "metal/chaosgold/weapon",
+      "key": "chaosgold_weapon",
+      "parent": "bettergold:metal/chaosgold/ingot",
+      "icon": "bettergold:chaosgold_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "混沌的锋芒",
+      "description": "获得任意一种混沌金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosgold/armor",
+      "path": "metal/chaosgold/armor",
+      "key": "chaosgold_armor",
+      "parent": "bettergold:metal/chaosgold/weapon",
+      "icon": "bettergold:chaosgold_chestplate",
+      "frame": "challenge",
+      "fd": false,
+      "title": "混沌的庇护",
+      "description": "获得一整套混沌金盔甲",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosalloy/ingot",
+      "path": "metal/chaosalloy/ingot",
+      "key": "chaosalloy_ingot",
+      "parent": "bettergold:treasure/any_core_material",
+      "icon": "bettergold:chaosalloy_ingot",
+      "frame": "task",
+      "fd": false,
+      "title": "崩乱的开端",
+      "description": "获得一个崩乱合金锭",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosalloy/supply",
+      "path": "metal/chaosalloy/supply",
+      "key": "chaosalloy_supply",
+      "parent": "bettergold:metal/chaosalloy/ingot",
+      "icon": "bettergold:chaosalloy_upgrade_template",
+      "frame": "task",
+      "fd": false,
+      "title": "崩乱的结构",
+      "description": "获得崩乱合金块或崩乱合金升级锻造模板",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosalloy/weapon",
+      "path": "metal/chaosalloy/weapon",
+      "key": "chaosalloy_weapon",
+      "parent": "bettergold:metal/chaosalloy/supply",
+      "icon": "bettergold:chaosalloy_sword",
+      "frame": "task",
+      "fd": false,
+      "title": "崩乱的锋刃",
+      "description": "获得任意一种崩乱合金武器工具",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosalloy/armor",
+      "path": "metal/chaosalloy/armor",
+      "key": "chaosalloy_armor",
+      "parent": "bettergold:metal/chaosalloy/weapon",
+      "icon": "bettergold:chaosalloy_chestplate",
+      "frame": "challenge",
+      "fd": false,
+      "title": "崩乱的庇护",
+      "description": "获得一整套崩乱合金盔甲",
       "triggers": [
         "minecraft:inventory_changed"
       ],
@@ -779,7 +898,8 @@
       "bettergold:indigo_ocean_heart",
       "bettergold:voodoo_feather",
       "bettergold:amethyst_energy_dust",
-      "bettergold:chorus_cherry_branch"
+      "bettergold:chorus_cherry_branch",
+      "bettergold:chaos_coin"
     ],
     "raw_materials": [
       "bettergold:raw_flamegold",
@@ -818,6 +938,10 @@
       "voodoogold",
       "thundergold",
       "illusiongold"
+    ],
+    "chaos_metals": [
+      "chaosgold",
+      "chaosalloy"
     ],
     "gold_foods": [
       "minecraft:golden_apple",

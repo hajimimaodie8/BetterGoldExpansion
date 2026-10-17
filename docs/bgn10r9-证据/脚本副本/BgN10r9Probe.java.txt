@@ -1,0 +1,266 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+
+/**
+ * 临时探针（1.7 bg-n10 <b>轮9 收口</b>：两族进成就 + 进度树彩虹序）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10r9-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>四组读数：① 阴性对照（什么都没拿 ⇒ 两族 8 条一条都不解锁）② 混沌金链（金币 → 锭 → 武器 → 盔甲）
+ * ③ 崩乱合金链（锭 → 块/模板 → 武器 → 盔甲）④ 进度树「寻途千里的珍宝」的 11 个孩子的**实际次序**
+ * （= 客户端拿去算 TreeNodePosition 的那个序，同一构建连跑 3 次必须一致）。</p>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} 只调一次；不 forceload、不放方块、不碰存档；
+ * 玩家是 {@code new ServerPlayer(...)} 造的假玩家（与轮5/轮8 同一套，不写 playerdata）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgN10r9Probe {
+
+    private static final String TAG = "BGN10R9PROBE";
+    private static final String SWITCH = "bgn10r9-probe.enabled";
+
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private static ServerLevel level;
+    private static ServerPlayer dummy;
+    private static MinecraftServer serverRef;
+
+    private BgN10r9Probe() {
+    }
+
+    /** 开关文件（`user.dir` 在 ModDevGradle 的 runServer/runClient 里就是 `run/`） */
+    public static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir"), SWITCH));
+    }
+
+    public static void install() {
+        // 事件注册靠 @EventBusSubscriber；这个入口只是让 bettergold.java 有一处**可 grep 的注入点**，
+        // 收尾时与探针源一起删除（`grep -r PROBE src` 必须零命中）。
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static void info(String msg) {
+        bettergold.LOGGER.info("{} INFO {}", TAG, msg);
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        done = true;
+        MinecraftServer server = event.getServer();
+        try {
+            run(server);
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("r9_exception", String.valueOf(t));
+        }
+        info("forceload :: forcedNow=" + level.getForcedChunks().size());
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} forcedNow={}", TAG, passes, fails,
+                level.getForcedChunks().size());
+        server.halt(false);
+    }
+
+    private static void run(MinecraftServer server) {
+        serverRef = server;
+        level = server.overworld();
+        dummy = new ServerPlayer(server, level,
+                new GameProfile(UUID.randomUUID(), "bgn10r9dummy"), ClientInformation.createDefault());
+        dummy.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                dummy,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "bgn10r9probe"), false));
+        dummy.moveTo(1008.5D, 120.0D, 1008.5D, 0.0F, 0.0F);
+        info("ready dummy=" + dummy.getGameProfile().getName());
+
+        // ---------- ① 阴性对照：什么都没拿 ----------
+        for (String id : R9_ALL) {
+            check("r9_negative_initial_" + shortName(id), !isDone(id), "done=" + isDone(id));
+        }
+
+        // ---------- ①-b 阴性对照：拿一根木棍（与本模组无关） ----------
+        give("minecraft:stick");
+        for (String id : R9_ALL) {
+            check("r9_negative_stick_" + shortName(id), !isDone(id), "done=" + isDone(id));
+        }
+
+        // ---------- ② 混沌金链 ----------
+        give("bettergold:chaos_coin");
+        check("r9_chaos_coin_unlocks", isDone("bettergold:treasure/chaos_coin"),
+                "treasure/chaos_coin done=" + isDone("bettergold:treasure/chaos_coin"));
+        // ★ 1.7 改了「寻途千里的珍宝」的判据集合（第 9 件 = 混沌金币）⇒ 这里正面读一次
+        check("r9_treasure_includes_chaos_coin", isDone("bettergold:treasure/any_core_material"),
+                "any_core_material done=" + isDone("bettergold:treasure/any_core_material"));
+        give("bettergold:chaosgold_ingot");
+        check("r9_chaosgold_ingot_unlocks", isDone("bettergold:metal/chaosgold/ingot"),
+                "metal/chaosgold/ingot done=" + isDone("bettergold:metal/chaosgold/ingot"));
+        give("bettergold:chaosgold_sword");
+        check("r9_chaosgold_weapon_unlocks", isDone("bettergold:metal/chaosgold/weapon"),
+                "metal/chaosgold/weapon done=" + isDone("bettergold:metal/chaosgold/weapon"));
+        // 阳性对照：一件**别的族**的武器不许让它解锁（负向）
+        check("r9_chaosgold_weapon_negative_other_family",
+                !isDone("bettergold:metal/chaosalloy/weapon"),
+                "metal/chaosalloy/weapon done=" + isDone("bettergold:metal/chaosalloy/weapon"));
+        // ★ 单件盔甲不许解锁「整套」（requirements = 每件一组 ⇒ 组间 AND）
+        give("bettergold:chaosgold_helmet");
+        check("r9_chaosgold_armor_single_piece_negative",
+                !isDone("bettergold:metal/chaosgold/armor"),
+                "hair helmet only ⇒ armor done=" + isDone("bettergold:metal/chaosgold/armor"));
+        for (String s : new String[] {"chestplate", "leggings", "boots"}) {
+            give("bettergold:chaosgold_" + s);
+        }
+        check("r9_chaosgold_armor_full_set_unlocks", isDone("bettergold:metal/chaosgold/armor"),
+                "metal/chaosgold/armor done=" + isDone("bettergold:metal/chaosgold/armor"));
+
+        // ---------- ③ 崩乱合金链 ----------
+        give("bettergold:chaosalloy_ingot");
+        check("r9_chaosalloy_ingot_unlocks", isDone("bettergold:metal/chaosalloy/ingot"),
+                "metal/chaosalloy/ingot done=" + isDone("bettergold:metal/chaosalloy/ingot"));
+        check("r9_chaosalloy_supply_not_yet", !isDone("bettergold:metal/chaosalloy/supply"),
+                "metal/chaosalloy/supply done=" + isDone("bettergold:metal/chaosalloy/supply"));
+        give("bettergold:chaosalloy_upgrade_template");
+        check("r9_chaosalloy_supply_template_unlocks", isDone("bettergold:metal/chaosalloy/supply"),
+                "metal/chaosalloy/supply done=" + isDone("bettergold:metal/chaosalloy/supply"));
+        give("bettergold:chaosalloy_sword");
+        check("r9_chaosalloy_weapon_unlocks", isDone("bettergold:metal/chaosalloy/weapon"),
+                "metal/chaosalloy/weapon done=" + isDone("bettergold:metal/chaosalloy/weapon"));
+        for (String s : new String[] {"helmet", "chestplate", "leggings", "boots"}) {
+            give("bettergold:chaosalloy_" + s);
+        }
+        check("r9_chaosalloy_armor_full_set_unlocks", isDone("bettergold:metal/chaosalloy/armor"),
+                "metal/chaosalloy/armor done=" + isDone("bettergold:metal/chaosalloy/armor"));
+
+        // ---------- ④ 进度树：白名单父节点的 11 个孩子（客户端排序输入） ----------
+        var tree = server.getAdvancements().getTree();
+        AdvancementNode parent = tree.get(ResourceLocation.parse("bettergold:treasure/any_core_material"));
+        if (parent == null) {
+            fail("r9_tree_node", "读不到 any_core_material 节点");
+            return;
+        }
+        List<String> order = new ArrayList<>();
+        for (AdvancementNode child : parent.children()) {
+            order.add(child.holder().id().toString());
+        }
+        check("r9_tree_children_count", order.size() == 11, "count=" + order.size() + " order=" + order);
+        check("r9_tree_order_rainbow",
+                order.equals(R9_EXPECTED_ORDER),
+                "actual=" + order + " expected=" + R9_EXPECTED_ORDER);
+        info("tree_order :: " + String.join(",", order));
+        // 第二轮遍历：同一个 JVM 里再读一次，必须逐字相同（Iterable 包装是否稳定的自证）
+        List<String> again = new ArrayList<>();
+        for (AdvancementNode child : parent.children()) {
+            again.add(child.holder().id().toString());
+        }
+        check("r9_tree_order_repeatable_in_jvm", order.equals(again), "second=" + again);
+    }
+
+    private static final String[] R9_ALL = {
+        "bettergold:treasure/chaos_coin",
+        "bettergold:metal/chaosgold/ingot",
+        "bettergold:metal/chaosgold/weapon",
+        "bettergold:metal/chaosgold/armor",
+        "bettergold:metal/chaosalloy/ingot",
+        "bettergold:metal/chaosalloy/supply",
+        "bettergold:metal/chaosalloy/weapon",
+        "bettergold:metal/chaosalloy/armor",
+    };
+
+    /**
+     * 期望次序 = `CreativeSections.METAL_ORDER` 的 10 族顺序 + 非族节点 `any_raw_metal` 排最后
+     * （族 ↔ 链首节点的对应：混沌金 = `treasure/chaos_coin`（它的孩子是 metal/chaosgold/ingot），
+     * 崩乱合金 = `metal/chaosalloy/ingot` 自己）。
+     */
+    private static final List<String> R9_EXPECTED_ORDER = List.of(
+            "bettergold:treasure/blazing_rod",
+            "bettergold:treasure/golden_cowrie",
+            "bettergold:treasure/glittering_vine",
+            "bettergold:treasure/bundled_echo_shard",
+            "bettergold:treasure/indigo_ocean_heart",
+            "bettergold:treasure/voodoo_feather",
+            "bettergold:treasure/amethyst_energy_dust",
+            "bettergold:treasure/chorus_cherry_branch",
+            "bettergold:treasure/chaos_coin",
+            "bettergold:metal/chaosalloy/ingot",
+            "bettergold:treasure/any_raw_metal");
+
+    private static String shortName(String id) {
+        return id.replace("bettergold:", "").replace("/", "_");
+    }
+
+    private static boolean isDone(String id) {
+        return isDone(dummy, id);
+    }
+
+    private static boolean isDone(ServerPlayer player, String id) {
+        AdvancementHolder holder = serverRef.getAdvancements().get(ResourceLocation.parse(id));
+        if (holder == null) {
+            fail("r9_adv_missing", "注册表里没有成就 " + id);
+            return false;
+        }
+        return player.getAdvancements().getOrStartProgress(holder).isDone();
+    }
+
+    private static void give(String id) {
+        giveTo(dummy, id);
+    }
+
+    /** 真「获得」路径：进背包 + 触发原版 `inventory_changed`（与玩家拾取/合成走同一个 trigger） */
+    private static void giveTo(ServerPlayer player, String id) {
+        Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM
+                .get(ResourceLocation.parse(id));
+        if (item == null || item == net.minecraft.world.item.Items.AIR) {
+            fail("r9_item_missing", "物品注册表里没有 " + id);
+            return;
+        }
+        ItemStack stack = new ItemStack(item);
+        player.getInventory().add(stack);
+        CriteriaTriggers.INVENTORY_CHANGED.trigger(player, player.getInventory(), stack);
+        info("gave " + id + " -> slots=" + player.getInventory().getContainerSize());
+    }
+}

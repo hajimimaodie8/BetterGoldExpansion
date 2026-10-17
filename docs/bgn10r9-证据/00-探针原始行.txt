@@ -1,0 +1,240 @@
+轮9 探针原始行（从 build/ 的跑测日志原样摘录；探针源码副本见 脚本副本/）
+==============================================================================================================
+
+### runServer r9_rs3.out
+BGN10R9PROBE INFO ready dummy=bgn10r9dummy
+BGN10R9PROBE PASS r9_negative_initial_treasure_chaos_coin :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_armor :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_supply :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_armor :: done=false
+BGN10R9PROBE INFO gave minecraft:stick -> slots=41
+BGN10R9PROBE INFO debug item=minecraft:stick :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_negative_stick_treasure_chaos_coin :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_armor :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_supply :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_armor :: done=false
+BGN10R9PROBE INFO gave bettergold:chaos_coin -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaos_coin :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO debug adv bettergold:treasure/chaos_coin criteria=[have] remaining=[] completed=[have] done=true
+BGN10R9PROBE PASS r9_chaos_coin_unlocks :: treasure/chaos_coin done=true
+BGN10R9PROBE PASS r9_treasure_includes_chaos_coin :: any_core_material done=true
+BGN10R9PROBE INFO gave bettergold:chaosgold_ingot -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_ingot :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_ingot_unlocks :: metal/chaosgold/ingot done=true
+BGN10R9PROBE INFO gave bettergold:chaosgold_sword -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_sword :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_weapon_unlocks :: metal/chaosgold/weapon done=true
+BGN10R9PROBE PASS r9_chaosgold_weapon_negative_other_family :: metal/chaosalloy/weapon done=false
+BGN10R9PROBE INFO gave bettergold:chaosgold_helmet -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_helmet :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_armor_single_piece_negative :: hair helmet only ? armor done=false
+BGN10R9PROBE INFO gave bettergold:chaosgold_chestplate -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_chestplate :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosgold_leggings -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_leggings :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosgold_boots -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_boots :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_armor_full_set_unlocks :: metal/chaosgold/armor done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_ingot -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_ingot :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_ingot_unlocks :: metal/chaosalloy/ingot done=true
+BGN10R9PROBE PASS r9_chaosalloy_supply_not_yet :: metal/chaosalloy/supply done=false
+BGN10R9PROBE INFO gave bettergold:chaosalloy_upgrade_template -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_upgrade_template :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_supply_template_unlocks :: metal/chaosalloy/supply done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_sword -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_sword :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_weapon_unlocks :: metal/chaosalloy/weapon done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_helmet -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_helmet :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_chestplate -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_chestplate :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_leggings -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_leggings :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_boots -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_boots :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_armor_full_set_unlocks :: metal/chaosalloy/armor done=true
+BGN10R9PROBE PASS r9_tree_children_count :: count=11 order=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE PASS r9_tree_order_rainbow :: actual=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal] expected=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE INFO tree_order :: bettergold:treasure/blazing_rod,bettergold:treasure/golden_cowrie,bettergold:treasure/glittering_vine,bettergold:treasure/bundled_echo_shard,bettergold:treasure/indigo_ocean_heart,bettergold:treasure/voodoo_feather,bettergold:treasure/amethyst_energy_dust,bettergold:treasure/chorus_cherry_branch,bettergold:treasure/chaos_coin,bettergold:metal/chaosalloy/ingot,bettergold:treasure/any_raw_metal
+BGN10R9PROBE PASS r9_tree_order_repeatable_in_jvm :: second=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE INFO forceload :: forcedNow=0
+BGN10R9PROBE SUMMARY pass=31 fail=0 forcedNow=0
+
+### runServer r9_rs4.out
+BGN10R9PROBE INFO ready dummy=bgn10r9dummy
+BGN10R9PROBE PASS r9_negative_initial_treasure_chaos_coin :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_armor :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_supply :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_armor :: done=false
+BGN10R9PROBE INFO gave minecraft:stick -> slots=41
+BGN10R9PROBE INFO debug item=minecraft:stick :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_negative_stick_treasure_chaos_coin :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_armor :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_supply :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_armor :: done=false
+BGN10R9PROBE INFO gave bettergold:chaos_coin -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaos_coin :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO debug adv bettergold:treasure/chaos_coin criteria=[have] remaining=[] completed=[have] done=true
+BGN10R9PROBE PASS r9_chaos_coin_unlocks :: treasure/chaos_coin done=true
+BGN10R9PROBE PASS r9_treasure_includes_chaos_coin :: any_core_material done=true
+BGN10R9PROBE INFO gave bettergold:chaosgold_ingot -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_ingot :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_ingot_unlocks :: metal/chaosgold/ingot done=true
+BGN10R9PROBE INFO gave bettergold:chaosgold_sword -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_sword :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_weapon_unlocks :: metal/chaosgold/weapon done=true
+BGN10R9PROBE PASS r9_chaosgold_weapon_negative_other_family :: metal/chaosalloy/weapon done=false
+BGN10R9PROBE INFO gave bettergold:chaosgold_helmet -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_helmet :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_armor_single_piece_negative :: hair helmet only ? armor done=false
+BGN10R9PROBE INFO gave bettergold:chaosgold_chestplate -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_chestplate :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosgold_leggings -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_leggings :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosgold_boots -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_boots :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_armor_full_set_unlocks :: metal/chaosgold/armor done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_ingot -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_ingot :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_ingot_unlocks :: metal/chaosalloy/ingot done=true
+BGN10R9PROBE PASS r9_chaosalloy_supply_not_yet :: metal/chaosalloy/supply done=false
+BGN10R9PROBE INFO gave bettergold:chaosalloy_upgrade_template -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_upgrade_template :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_supply_template_unlocks :: metal/chaosalloy/supply done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_sword -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_sword :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_weapon_unlocks :: metal/chaosalloy/weapon done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_helmet -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_helmet :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_chestplate -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_chestplate :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_leggings -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_leggings :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_boots -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_boots :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_armor_full_set_unlocks :: metal/chaosalloy/armor done=true
+BGN10R9PROBE PASS r9_tree_children_count :: count=11 order=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE PASS r9_tree_order_rainbow :: actual=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal] expected=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE INFO tree_order :: bettergold:treasure/blazing_rod,bettergold:treasure/golden_cowrie,bettergold:treasure/glittering_vine,bettergold:treasure/bundled_echo_shard,bettergold:treasure/indigo_ocean_heart,bettergold:treasure/voodoo_feather,bettergold:treasure/amethyst_energy_dust,bettergold:treasure/chorus_cherry_branch,bettergold:treasure/chaos_coin,bettergold:metal/chaosalloy/ingot,bettergold:treasure/any_raw_metal
+BGN10R9PROBE PASS r9_tree_order_repeatable_in_jvm :: second=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE INFO forceload :: forcedNow=0
+BGN10R9PROBE SUMMARY pass=31 fail=0 forcedNow=0
+
+### runServer r9_rs5.out
+BGN10R9PROBE INFO ready dummy=bgn10r9dummy
+BGN10R9PROBE PASS r9_negative_initial_treasure_chaos_coin :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_armor :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_supply :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_armor :: done=false
+BGN10R9PROBE INFO gave minecraft:stick -> slots=41
+BGN10R9PROBE INFO debug item=minecraft:stick :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_negative_stick_treasure_chaos_coin :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_armor :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_ingot :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_supply :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_weapon :: done=false
+BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_armor :: done=false
+BGN10R9PROBE INFO gave bettergold:chaos_coin -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaos_coin :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO debug adv bettergold:treasure/chaos_coin criteria=[have] remaining=[] completed=[have] done=true
+BGN10R9PROBE PASS r9_chaos_coin_unlocks :: treasure/chaos_coin done=true
+BGN10R9PROBE PASS r9_treasure_includes_chaos_coin :: any_core_material done=true
+BGN10R9PROBE INFO gave bettergold:chaosgold_ingot -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_ingot :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_ingot_unlocks :: metal/chaosgold/ingot done=true
+BGN10R9PROBE INFO gave bettergold:chaosgold_sword -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_sword :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_weapon_unlocks :: metal/chaosgold/weapon done=true
+BGN10R9PROBE PASS r9_chaosgold_weapon_negative_other_family :: metal/chaosalloy/weapon done=false
+BGN10R9PROBE INFO gave bettergold:chaosgold_helmet -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_helmet :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_armor_single_piece_negative :: hair helmet only ? armor done=false
+BGN10R9PROBE INFO gave bettergold:chaosgold_chestplate -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_chestplate :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosgold_leggings -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_leggings :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosgold_boots -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosgold_boots :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosgold_armor_full_set_unlocks :: metal/chaosgold/armor done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_ingot -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_ingot :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_ingot_unlocks :: metal/chaosalloy/ingot done=true
+BGN10R9PROBE PASS r9_chaosalloy_supply_not_yet :: metal/chaosalloy/supply done=false
+BGN10R9PROBE INFO gave bettergold:chaosalloy_upgrade_template -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_upgrade_template :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_supply_template_unlocks :: metal/chaosalloy/supply done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_sword -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_sword :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_weapon_unlocks :: metal/chaosalloy/weapon done=true
+BGN10R9PROBE INFO gave bettergold:chaosalloy_helmet -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_helmet :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_chestplate -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_chestplate :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_leggings -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_leggings :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE INFO gave bettergold:chaosalloy_boots -> slots=41
+BGN10R9PROBE INFO debug item=bettergold:chaosalloy_boots :: û��ͬ���ɾͣ�������������Ʒû�У�
+BGN10R9PROBE PASS r9_chaosalloy_armor_full_set_unlocks :: metal/chaosalloy/armor done=true
+BGN10R9PROBE PASS r9_tree_children_count :: count=11 order=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE PASS r9_tree_order_rainbow :: actual=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal] expected=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE INFO tree_order :: bettergold:treasure/blazing_rod,bettergold:treasure/golden_cowrie,bettergold:treasure/glittering_vine,bettergold:treasure/bundled_echo_shard,bettergold:treasure/indigo_ocean_heart,bettergold:treasure/voodoo_feather,bettergold:treasure/amethyst_energy_dust,bettergold:treasure/chorus_cherry_branch,bettergold:treasure/chaos_coin,bettergold:metal/chaosalloy/ingot,bettergold:treasure/any_raw_metal
+BGN10R9PROBE PASS r9_tree_order_repeatable_in_jvm :: second=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+BGN10R9PROBE INFO forceload :: forcedNow=0
+BGN10R9PROBE SUMMARY pass=31 fail=0 forcedNow=0
+
+### runClient r9_rc4.out
+BGN10R9CPROBE PASS c_world_name_is_probe_world :: world=world
+BGN10R9CPROBE PASS c_client_models_no_missing :: checked=413 missing=[]
+BGN10R9CPROBE PASS c_book_present :: book=bettergold:alchemy_handbook
+BGN10R9CPROBE PASS c_book_contents_present :: contents=vazkii.patchouli.client.book.BookContents@3afab566
+BGN10R9CPROBE PASS c_book_not_errored :: errored=false exception=null
+BGN10R9CPROBE PASS c_book_entry_count :: entries=24������ 24��
+BGN10R9CPROBE PASS c_book_page_count :: pages=230������ 230��
+BGN10R9CPROBE PASS c_book_entry_chaos_materials :: pages=16������ 16��
+BGN10R9CPROBE PASS c_book_page_types_chaos_materials :: classes=PageText,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageText,PageCrafting,PageCrafting,PageSpotlight, ����=PageText,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageSpotlight,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageCrafting,PageText,PageCrafting,PageCrafting,PageSpotlight,
+BGN10R9CPROBE PASS c_book_spotlight_icons_chaos_materials :: spotlights=3������ 3��badStacks=0
+BGN10R9CPROBE PASS c_book_recipes_chaos_materials :: recipePages=11 resolved=11��0/0 Ҳ���ԣ�
+BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:chaos_materials recipePages=11 resolved=11
+BGN10R9CPROBE PASS c_book_entry_chaos_feast :: pages=4������ 4��
+BGN10R9CPROBE PASS c_book_page_types_chaos_feast :: classes=PageSpotlight,PageCrafting,PageSpotlight,PageCrafting, ����=PageSpotlight,PageCrafting,PageSpotlight,PageCrafting,
+BGN10R9CPROBE PASS c_book_spotlight_icons_chaos_feast :: spotlights=2������ 2��badStacks=0
+BGN10R9CPROBE PASS c_book_recipes_chaos_feast :: recipePages=2 resolved=2��0/0 Ҳ���ԣ�
+BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:chaos_feast recipePages=2 resolved=2
+BGN10R9CPROBE PASS c_book_entry_gear_chaosgold :: pages=7������ 7��
+BGN10R9CPROBE PASS c_book_page_types_gear_chaosgold :: classes=PageText,PageText,PageText,PageSpotlight,PageSpotlight,PageSpotlight,PageCrafting, ����=PageText,PageText,PageText,PageSpotlight,PageSpotlight,PageSpotlight,PageCrafting,
+BGN10R9CPROBE PASS c_book_spotlight_icons_gear_chaosgold :: spotlights=3������ 3��badStacks=0
+BGN10R9CPROBE PASS c_book_recipes_gear_chaosgold :: recipePages=1 resolved=1��0/0 Ҳ���ԣ�
+BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:gear_chaosgold recipePages=1 resolved=1
+BGN10R9CPROBE PASS c_book_entry_gear_chaosalloy :: pages=11������ 11��
+BGN10R9CPROBE PASS c_book_page_types_gear_chaosalloy :: classes=PageText,PageText,PageText,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing, ����=PageText,PageText,PageText,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,PageSmithing,
+BGN10R9CPROBE PASS c_book_spotlight_icons_gear_chaosalloy :: spotlights=0������ 0��badStacks=0
+BGN10R9CPROBE PASS c_book_recipes_gear_chaosalloy :: recipePages=8 resolved=8��0/0 Ҳ���ԣ�
+BGN10R9CPROBE INFO c_book_recipe_resolution :: entry=bettergold:gear_chaosalloy recipePages=8 resolved=8
+BGN10R9CPROBE PASS c_no_resource_load_failures :: UnableToLoad/FailedToLoad=0 Missing model=0
+BGN10R9CPROBE PASS c_no_patchouli_errors :: patchouli ERROR lines=0
+BGN10R9CPROBE SUMMARY pass=25 fail=0
+BGN10R9CPROBE INFO exiting JVM���ͻ���û�С�ͣ��������£�̽����βֱ���˽��̣�
+

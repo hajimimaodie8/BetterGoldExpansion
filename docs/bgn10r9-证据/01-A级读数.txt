@@ -1,0 +1,51 @@
+轮9 A 级读数（真专用服务端 + 真 ServerPlayer；探针 BgN10r9Probe，收尾已整块删除）
+来源：build/r9_rs3.out / r9_rs4.out / r9_rs5.out（**同一构建连跑 3 次**）
+判读：PASS/FAIL 逐条 + 末行 SUMMARY；forceload 双向归零
+==============================================================================================================
+
+### r9_rs3.out：PASS=31 FAIL=0
+  BGN10R9PROBE SUMMARY pass=31 fail=0 forcedNow=0
+  BGN10R9PROBE INFO tree_order :: bettergold:treasure/blazing_rod,bettergold:treasure/golden_cowrie,bettergold:treasure/glittering_vine,bettergold:treasure/bundled_echo_shard,bettergold:treasure/indigo_ocean_heart,bettergold:treasure/voodoo_feather,bettergold:treasure/amethyst_energy_dust,bettergold:treasure/chorus_cherry_branch,bettergold:treasure/chaos_coin,bettergold:metal/chaosalloy/ingot,bettergold:treasure/any_raw_metal
+
+### r9_rs4.out：PASS=31 FAIL=0
+  BGN10R9PROBE SUMMARY pass=31 fail=0 forcedNow=0
+  BGN10R9PROBE INFO tree_order :: bettergold:treasure/blazing_rod,bettergold:treasure/golden_cowrie,bettergold:treasure/glittering_vine,bettergold:treasure/bundled_echo_shard,bettergold:treasure/indigo_ocean_heart,bettergold:treasure/voodoo_feather,bettergold:treasure/amethyst_energy_dust,bettergold:treasure/chorus_cherry_branch,bettergold:treasure/chaos_coin,bettergold:metal/chaosalloy/ingot,bettergold:treasure/any_raw_metal
+
+### r9_rs5.out：PASS=31 FAIL=0
+  BGN10R9PROBE SUMMARY pass=31 fail=0 forcedNow=0
+  BGN10R9PROBE INFO tree_order :: bettergold:treasure/blazing_rod,bettergold:treasure/golden_cowrie,bettergold:treasure/glittering_vine,bettergold:treasure/bundled_echo_shard,bettergold:treasure/indigo_ocean_heart,bettergold:treasure/voodoo_feather,bettergold:treasure/amethyst_energy_dust,bettergold:treasure/chorus_cherry_branch,bettergold:treasure/chaos_coin,bettergold:metal/chaosalloy/ingot,bettergold:treasure/any_raw_metal
+
+三次 runServer 的 tree_order 逐字相同：True
+
+### 逐条读数（第 3 次 runServer，r9_rs5.out）
+  BGN10R9PROBE PASS r9_negative_initial_treasure_chaos_coin :: done=false
+  BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_ingot :: done=false
+  BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_weapon :: done=false
+  BGN10R9PROBE PASS r9_negative_initial_metal_chaosgold_armor :: done=false
+  BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_ingot :: done=false
+  BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_supply :: done=false
+  BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_weapon :: done=false
+  BGN10R9PROBE PASS r9_negative_initial_metal_chaosalloy_armor :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_treasure_chaos_coin :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_ingot :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_weapon :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_metal_chaosgold_armor :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_ingot :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_supply :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_weapon :: done=false
+  BGN10R9PROBE PASS r9_negative_stick_metal_chaosalloy_armor :: done=false
+  BGN10R9PROBE PASS r9_chaos_coin_unlocks :: treasure/chaos_coin done=true
+  BGN10R9PROBE PASS r9_treasure_includes_chaos_coin :: any_core_material done=true
+  BGN10R9PROBE PASS r9_chaosgold_ingot_unlocks :: metal/chaosgold/ingot done=true
+  BGN10R9PROBE PASS r9_chaosgold_weapon_unlocks :: metal/chaosgold/weapon done=true
+  BGN10R9PROBE PASS r9_chaosgold_weapon_negative_other_family :: metal/chaosalloy/weapon done=false
+  BGN10R9PROBE PASS r9_chaosgold_armor_single_piece_negative :: hair helmet only ? armor done=false
+  BGN10R9PROBE PASS r9_chaosgold_armor_full_set_unlocks :: metal/chaosgold/armor done=true
+  BGN10R9PROBE PASS r9_chaosalloy_ingot_unlocks :: metal/chaosalloy/ingot done=true
+  BGN10R9PROBE PASS r9_chaosalloy_supply_not_yet :: metal/chaosalloy/supply done=false
+  BGN10R9PROBE PASS r9_chaosalloy_supply_template_unlocks :: metal/chaosalloy/supply done=true
+  BGN10R9PROBE PASS r9_chaosalloy_weapon_unlocks :: metal/chaosalloy/weapon done=true
+  BGN10R9PROBE PASS r9_chaosalloy_armor_full_set_unlocks :: metal/chaosalloy/armor done=true
+  BGN10R9PROBE PASS r9_tree_children_count :: count=11 order=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+  BGN10R9PROBE PASS r9_tree_order_rainbow :: actual=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal] expected=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
+  BGN10R9PROBE PASS r9_tree_order_repeatable_in_jvm :: second=[bettergold:treasure/blazing_rod, bettergold:treasure/golden_cowrie, bettergold:treasure/glittering_vine, bettergold:treasure/bundled_echo_shard, bettergold:treasure/indigo_ocean_heart, bettergold:treasure/voodoo_feather, bettergold:treasure/amethyst_energy_dust, bettergold:treasure/chorus_cherry_branch, bettergold:treasure/chaos_coin, bettergold:metal/chaosalloy/ingot, bettergold:treasure/any_raw_metal]
