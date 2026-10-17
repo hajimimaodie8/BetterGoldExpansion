@@ -26,6 +26,16 @@
     },
     {
       "type": "patchouli:crafting",
+      "recipe": "bettergold:chaos_coin_from_string",
+      "text": "bettergold.handbook.page.chaos_materials_upstream_string"
+    },
+    {
+      "type": "patchouli:smelting",
+      "recipe": "bettergold:chaos_coin_smelting",
+      "text": "bettergold.handbook.page.chaos_materials_upstream_smelt"
+    },
+    {
+      "type": "patchouli:crafting",
       "recipe": "bettergold:copper_block_with_chaos_coin",
       "recipe2": "bettergold:iron_block_with_chaos_coin"
     },

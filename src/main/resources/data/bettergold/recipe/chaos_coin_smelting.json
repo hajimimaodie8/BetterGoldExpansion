@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": {
+    "item": "bettergold:chaos_coin"
+  },
+  "result": {
+    "id": "bettergold:chaosgold_nugget"
+  },
+  "experience": 1.0,
+  "cookingtime": 200
+}

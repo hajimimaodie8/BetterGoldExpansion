@@ -1,0 +1,18 @@
+1.7 bg-n10up 客户端启动探针（标题界面，**未进世界**；Patchouli=true）
+==========================================================================================
+[1710月2026 23:17:30.187] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_title_screen :: 界面=net.minecraft.client.gui.screens.TitleScreen（期望 TitleScreen；**没有进世界**）
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_chaos_materials :: chaos_materials zh=true en=true
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_chaos_feast :: chaos_feast zh=true en=true
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_gear_chaosgold :: gear_chaosgold zh=true en=true
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_gear_chaosalloy :: gear_chaosalloy zh=true en=true
+[1710月2026 23:17:30.198] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entries_count :: zh 条目数=24（期望 24）
+[1710月2026 23:17:30.198] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_pages_total :: zh 总页数=240（期望 240；bg-n10up 后材料章 16 -> 18）
+[1710月2026 23:17:30.198] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_chaos_materials_pages :: chaos_materials 页数=18
+[1710月2026 23:17:30.199] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_page5 :: 第 5 页={"type":"patchouli:crafting","recipe":"bettergold:chaos_coin_from_string","text":"bettergold.handbook.page.chaos_materials_upstream_string"}
+[1710月2026 23:17:30.199] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_page6 :: 第 6 页={"type":"patchouli:smelting","recipe":"bettergold:chaos_coin_smelting","text":"bettergold.handbook.page.chaos_materials_upstream_smelt"}
+[1710月2026 23:17:30.200] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_lang_new_keys :: zh/en 都有 upstream_string + upstream_smelt
+[1710月2026 23:17:30.200] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_lang_author_words :: 「混沌金币」页已换成作者原话、旧句不再出现
+[1710月2026 23:17:30.200] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT SUMMARY pass=12 fail=0 patchouli=true
+
+--- 整份客户端日志的 ERROR 行：0 条
+

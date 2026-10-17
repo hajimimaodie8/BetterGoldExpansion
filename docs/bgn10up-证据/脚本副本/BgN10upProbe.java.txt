@@ -1,0 +1,565 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.inventory.FurnaceMenu;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+
+/**
+ * 临时探针（1.7 <b>bg-n10up</b>：混沌金锭上游三条 + 端到端链路）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10up-probe.enabled}（不存在则什么都不做）。</p>
+ *
+ * <p>真什么：真 {@link ServerPlayer}（{@code new ServerPlayer} + 假连接）+ 真 {@link CraftingMenu}
+ * （真 {@code ContainerLevelAccess}、真 {@code slotsChanged} → 真 {@code RecipeManager} → 真
+ * {@code assemble}、真 {@code ResultSlot#onTake} 逐格 −1）+ 真 {@link FurnaceMenu}
+ * （真 {@link AbstractFurnaceBlockEntity#serverTick}、真燃料消耗、真 {@code setRecipeUsed}、
+ * 真 {@code FurnaceResultSlot#onTake} → 真 {@code awardUsedRecipesAndPopExperience} 掉经验球）。
+ * 原料**真的从背包里拿**（{@code takeFromInventory}）⇒ 端到端那条是真链路，不是三张互不相干的读数。</p>
+ *
+ * <p>读数：</p>
+ * <ol>
+ *   <li>① 运行时把两条配方从 {@code RecipeManager} 里读出来（类型 / xp / 时间）；</li>
+ *   <li>② 币串 → 3 币：<b>两个不同摆位</b>都成立（无序才有这一条）+ 币串被消耗 1 个 + 落袋 3 个；</li>
+ *   <li>③ 币 →（烧炼）→ 粒：真烧 1 个，<b>第 200 tick 出粒</b>、产品格 1 粒、经验球总值 1（xp 1.0）；</li>
+ *   <li>④ 9 粒 → 1 锭：<b>9 格逐格 −1</b>；<b>8 粒（两处洞位）/ 3 粒都不给锭</b>（位置敏感）；</li>
+ *   <li>★ 端到端：3 个币串 → 9 币 →（真烧 9 次）→ 9 粒 → 1 锭 ⇒ 成本 = 3 币串 / 锭。</li>
+ * </ol>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} <b>只调一次</b>；不 forceload、不碰存档（假玩家不写 playerdata）；
+ * 收尾整块删除。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgN10upProbe {
+
+    private static final String TAG = "BGN10UPPROBE";
+    private static final String SWITCH = "bgn10up-probe.enabled";
+
+    private static final String COIN_STRING = "bettergold:chaos_coin_string";
+    private static final String COIN = "bettergold:chaos_coin";
+    private static final String NUGGET = "bettergold:chaosgold_nugget";
+    private static final String INGOT = "bettergold:chaosgold_ingot";
+    // 探针方块都摆在 (400..405, 200, 380) ⇒ 同一个 chunk (25, 23)
+    private static final int FORCE_CHUNK_X = 25;
+    private static final int FORCE_CHUNK_Z = 23;
+
+    private static int passes;
+    private static int fails;
+
+    private static ServerLevel level;
+    private static ServerPlayer dummy;
+    private static boolean done;
+
+    private static BlockPos furnacePos;
+    private static AbstractFurnaceBlockEntity furnace;
+    private static FurnaceMenu furnaceMenu;
+
+    private BgN10upProbe() {
+    }
+
+    /** 开关文件（`user.dir` 在 ModDevGradle 的 runServer 里就是 `run/`） */
+    public static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir"), SWITCH));
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static void info(String msg) {
+        bettergold.LOGGER.info("{} INFO {}", TAG, msg);
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled()) {
+            return;
+        }
+        // ⚠ 经验球是**实体**：`ServerChunkCache#addEntity` 只往**ticking chunk** 里加 ⇒ 先把探针用的
+        //   那一块 forceload（双向 0：收尾前取消并断言 `getForcedChunks()` 为空），等服务器真的 tick
+        //   40 次（> 2 s）之后再跑。否则 `ExperienceOrb.award` 会静默失败、经验读成 0（本轮实测踩过）。
+        level = event.getServer().overworld();
+        boolean changed = level.setChunkForced(FORCE_CHUNK_X, FORCE_CHUNK_Z, true);
+        bettergold.LOGGER.info("{} INFO force chunk ({},{}) changed={} forcedNow={}",
+                TAG, FORCE_CHUNK_X, FORCE_CHUNK_Z, changed, level.getForcedChunks().size());
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+        MinecraftServer server = event.getServer();
+        if (!enabled() || done) {
+            return;
+        }
+        if (server.getTickCount() < 40) {
+            return;
+        }
+        done = true;
+        try {
+            run(server);
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("up_exception", String.valueOf(t));
+        }
+        if (level != null) {
+            level.setChunkForced(FORCE_CHUNK_X, FORCE_CHUNK_Z, false);
+        }
+        int forcedNow = level == null ? -1 : level.getForcedChunks().size();
+        check("up_forceload_back_to_zero", forcedNow == 0,
+                "收尾时 forced chunks=" + forcedNow + "（双向 0：探测前加、探测后撤）");
+        info("forceload :: forcedNow=" + forcedNow);
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} forcedNow={}", TAG, passes, fails, forcedNow);
+        server.halt(false);
+    }
+
+    private static void run(MinecraftServer server) {
+        level = server.overworld();
+        dummy = new ServerPlayer(server, level,
+                new GameProfile(UUID.randomUUID(), "bgn10updummy"), ClientInformation.createDefault());
+        dummy.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                dummy,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "bgn10upprobe"), false));
+        dummy.moveTo(400.5D, 200.0D, 380.5D, 0.0F, 0.0F);
+        info("ready dummy=" + dummy.getGameProfile().getName() + " level=" + level.dimension().location());
+
+        // ① 运行时读配方：两条新配方真的被数据包加载了吗（只读 JSON 不算验证）
+        readRecipes();
+
+        // ② 币串 → 3 币：两个摆位（无序才两条都成立）
+        dummy.getInventory().clearContent();
+        dummy.getInventory().add(new ItemStack(item(COIN_STRING), 2));
+        craft("up_string_at0", new String[] {
+                COIN_STRING, null, null,
+                null, null, null,
+                null, null, null,
+        }, COIN, 3, true);
+        craft("up_string_at4", new String[] {
+                null, null, null,
+                null, COIN_STRING, null,
+                null, null, null,
+        }, COIN, 3, true);
+        check("up_string_consumed_one", countInInventory(COIN_STRING) == 0,
+                "两次合计消耗币串 2 个 ⇒ 背包剩余=" + countInInventory(COIN_STRING) + "（期望 0）");
+        check("up_string_three_each", countInInventory(COIN) == 6,
+                "两次合计得到混沌金币=" + countInInventory(COIN) + "（期望 6 = 2 × 3）");
+
+        // ③ 币 →（烧炼）→ 粒：真烧 1 个（原料从背包里拿）
+        furnaceSetup();
+        smelt("up_coin_one", 1);
+
+        // ④ 9 粒 → 1 锭：9 格逐格 −1
+        dummy.getInventory().clearContent();
+        dummy.getInventory().add(new ItemStack(item(NUGGET), 9));
+        craft("up_nine_nuggets", nineNuggets(), INGOT, 1, true);
+
+        // ⑤ 反向：8 粒（两处洞位）/ 3 粒 都不给锭（位置敏感，计数相等抓不到）
+        String[] holeCenter = nineNuggets();
+        holeCenter[4] = null;
+        craft("up_eight_center_hole", holeCenter, null, 0, false);
+        String[] holeCorner = nineNuggets();
+        holeCorner[0] = null;
+        craft("up_eight_corner_hole", holeCorner, null, 0, false);
+        craft("up_three_nuggets", new String[] {
+                NUGGET, NUGGET, NUGGET,
+                null, null, null,
+                null, null, null,
+        }, null, 0, false);
+
+        // ★ 端到端：3 个币串 → 9 币 → 9 粒 → 1 锭（每一段都从上一段的产物里拿）
+        endToEnd();
+    }
+
+    private static String[] nineNuggets() {
+        return new String[] {
+                NUGGET, NUGGET, NUGGET,
+                NUGGET, NUGGET, NUGGET,
+                NUGGET, NUGGET, NUGGET,
+        };
+    }
+
+    /** 把两条新配方从**运行中的** RecipeManager 里读出来（数据包真加载的证明）。 */
+    private static void readRecipes() {
+        try {
+            RecipeHolder<?> h1 = level.getRecipeManager()
+                    .byKey(ResourceLocation.parse("bettergold:chaos_coin_from_string")).orElse(null);
+            check("up_recipe_loaded_string", h1 != null,
+                    "bettergold:chaos_coin_from_string 在 RecipeManager 里=" + (h1 != null)
+                            + "（type=" + (h1 == null ? "-" : h1.value().getType()) + "）");
+            RecipeHolder<?> h2 = level.getRecipeManager()
+                    .byKey(ResourceLocation.parse("bettergold:chaos_coin_smelting")).orElse(null);
+            boolean isCooking = h2 != null && h2.value() instanceof AbstractCookingRecipe;
+            check("up_recipe_loaded_smelt", isCooking,
+                    "bettergold:chaos_coin_smelting 在 RecipeManager 里=" + (h2 != null)
+                            + "（type=" + (h2 == null ? "-" : h2.value().getType()) + "）");
+            if (isCooking) {
+                AbstractCookingRecipe c = (AbstractCookingRecipe) h2.value();
+                check("up_recipe_smelt_xp", c.getExperience() == 1.0F,
+                        "运行时读到的 experience=" + c.getExperience() + "（期望 1.0）");
+                check("up_recipe_smelt_time", c.getCookingTime() == 200,
+                        "运行时读到的 cookingtime=" + c.getCookingTime() + "（期望 200）");
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION readRecipes", TAG, t);
+            fail("up_recipe_loaded", String.valueOf(t));
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // 工作台：真 CraftingMenu + 真 slotsChanged + 两次真点击
+    // ------------------------------------------------------------------------------------------
+
+    /**
+     * 一次真合成（工作台 3×3）。
+     *
+     * @param fromInv  {@code true} ⇒ 每一格的道具**真的从背包里拿**（拿不到就 FAIL）；
+     *                 {@code false} ⇒ 直接摆进格（只用于负向用例：本来就不该合成）
+     * @param wantId   {@code null} = 期望**没有**任何配方匹配
+     */
+    private static void craft(String tag, String[] grid, String wantId, int wantCount, boolean fromInv) {
+        BlockPos pos = new BlockPos(400, 200, 380);
+        level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
+        int stringsAtStart = countInInventory(COIN_STRING);
+
+        String[] idsUsed = new String[9];
+        for (int i = 0; i < 9; i++) {
+            if (grid[i] == null) {
+                continue;
+            }
+            if (fromInv) {
+                int got = takeFromInventory(grid[i], 1);
+                check(tag + "_take" + i, got == 1,
+                        "第 " + i + " 格从背包拿 " + grid[i] + "：" + got + "（期望 1）");
+            }
+            idsUsed[i] = grid[i];
+        }
+
+        CraftingMenu menu = new CraftingMenu(0, dummy.getInventory(),
+                ContainerLevelAccess.create(level, pos));
+        dummy.containerMenu = menu;
+        menu.setCarried(ItemStack.EMPTY);
+
+        StringBuilder lc = new StringBuilder();
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = idsUsed[i] == null ? ItemStack.EMPTY : new ItemStack(item(idsUsed[i]));
+            menu.getSlot(1 + i).set(stack);
+            lc.append(idsUsed[i] == null ? "-" : idsUsed[i].substring(idsUsed[i].indexOf(':') + 1));
+            lc.append(i % 3 == 2 ? " | " : " ");
+        }
+        info(tag + " :: 摆位 " + lc);
+
+        menu.slotsChanged(menu.getSlot(1).container);
+        ItemStack r1 = menu.getSlot(0).getItem().copy();
+
+        if (wantId == null) {
+            check(tag + "_no_match", r1.isEmpty(), "负向：结果格=" + desc(r1) + "（期望空）");
+            check(tag + "_grid_untouched", gridIntact(menu, idsUsed), "负向：原料格没有被消耗");
+            return;
+        }
+        boolean idOk = !r1.isEmpty()
+                && BuiltInRegistries.ITEM.getKey(r1.getItem()).toString().equals(wantId);
+        check(tag + "_result", idOk && r1.getCount() == wantCount,
+                "结果格=" + desc(r1) + "（期望 " + wantCount + "x " + wantId + "）");
+        if (r1.isEmpty()) {
+            return;
+        }
+
+        int before = countInInventory(wantId);
+        int[] beforeGrid = new int[9];
+        for (int i = 0; i < 9; i++) {
+            beforeGrid[i] = menu.getSlot(1 + i).getItem().getCount();
+        }
+        int free = freeSlot(menu);
+        menu.clicked(0, 0, ClickType.PICKUP, dummy);
+        boolean resultCleared = menu.getSlot(0).getItem().isEmpty();
+        if (free >= 0) {
+            menu.clicked(free, 0, ClickType.PICKUP, dummy);
+        }
+
+        List<String> wrong = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            int now = menu.getSlot(1 + i).getItem().getCount();
+            int want = idsUsed[i] == null ? 0 : Math.max(0, beforeGrid[i] - 1);
+            if (now != want) {
+                wrong.add("格" + i + "(" + (idsUsed[i] == null ? "-" : idsUsed[i]) + ")=" + now + "期望" + want);
+            }
+        }
+        check(tag + "_consumed", wrong.isEmpty(),
+                "逐格 −1 " + (wrong.isEmpty() ? "全部正确" : String.valueOf(wrong))
+                        + "；结果格点击后已空=" + resultCleared);
+        check(tag + "_landed", countInInventory(wantId) - before == wantCount,
+                "两次真点击后落进背包=" + (countInInventory(wantId) - before) + "x（期望 " + wantCount
+                        + "）freeSlot=" + free);
+        if (COIN.equals(wantId)) {
+            int after = countInInventory(COIN_STRING);
+            check(tag + "_string_gone", after == stringsAtStart - 1,
+                    "币串：" + stringsAtStart + " -> " + after + "（期望恰好 −1：消耗 1 个、不返还）");
+        }
+    }
+
+    private static boolean gridIntact(CraftingMenu menu, String[] idsUsed) {
+        for (int i = 0; i < 9; i++) {
+            int now = menu.getSlot(1 + i).getItem().getCount();
+            int want = idsUsed[i] == null ? 0 : 1;
+            if (now != want) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static int freeSlot(AbstractContainerMenu menu) {
+        for (int i = 10; i <= 45; i++) {
+            if (menu.getSlot(i).getItem().isEmpty()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // 熔炉：真 FurnaceMenu + 真 AbstractFurnaceBlockEntity.serverTick + 真点击
+    // ------------------------------------------------------------------------------------------
+
+    private static void furnaceSetup() {
+        furnacePos = new BlockPos(405, 200, 380);
+        level.setBlockAndUpdate(furnacePos, Blocks.FURNACE.defaultBlockState());
+        BlockEntity be = level.getBlockEntity(furnacePos);
+        check("up_furnace_be", be instanceof FurnaceBlockEntity,
+                "方块实体=" + (be == null ? "<null>" : be.getClass().getSimpleName()));
+        if (!(be instanceof AbstractFurnaceBlockEntity)) {
+            return;
+        }
+        furnace = (AbstractFurnaceBlockEntity) be;
+        furnaceMenu = new FurnaceMenu(1, dummy.getInventory(), furnace, new SimpleContainerData(4));
+        dummy.containerMenu = furnaceMenu;
+    }
+
+    /** 真烧一把：原料 = {@code count} 个混沌金币（**从背包里拿**）、燃料 = 1 个煤炭块（16000 tick）。 */
+    private static void smelt(String tag, int count) {
+        // 每次都重建熔炉（**冷炉**）⇒ 燃料消耗可确定地断言 = 1；
+        // 复用同一个热炉时第二次不再吃燃料（litTime 还有 15800）——那不是 bug，是"不该断言的量"。
+        level.setBlockAndUpdate(furnacePos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(furnacePos, Blocks.FURNACE.defaultBlockState());
+        BlockEntity be = level.getBlockEntity(furnacePos);
+        if (!(be instanceof AbstractFurnaceBlockEntity)) {
+            fail(tag + "_nofurnace", "熔炉没建起来：" + (be == null ? "<null>" : be.getClass().getSimpleName()));
+            return;
+        }
+        furnace = (AbstractFurnaceBlockEntity) be;
+        furnaceMenu = new FurnaceMenu(1, dummy.getInventory(), furnace, new SimpleContainerData(4));
+        dummy.containerMenu = furnaceMenu;
+        furnaceMenu.setCarried(ItemStack.EMPTY);
+        for (int i = 0; i < 3; i++) {
+            furnaceMenu.getSlot(i).set(ItemStack.EMPTY);
+        }
+        int taken = takeFromInventory(COIN, count);
+        check(tag + "_taken", taken == count,
+                "从背包拿出混沌金币 " + taken + " 个（期望 " + count + "）");
+        furnaceMenu.getSlot(0).set(new ItemStack(item(COIN), taken));
+        furnaceMenu.getSlot(1).set(new ItemStack(Items.COAL_BLOCK));
+        int fuelBefore = furnaceMenu.getSlot(1).getItem().getCount();
+        int orbBefore = orbValue();
+
+        int ticks = 0;
+        int firstAt = -1;
+        while (ticks < count * 200 + 800) {
+            BlockState st = level.getBlockState(furnacePos);
+            AbstractFurnaceBlockEntity.serverTick(level, furnacePos, st, furnace);
+            ticks++;
+            if (firstAt < 0 && !furnaceMenu.getSlot(2).getItem().isEmpty()) {
+                firstAt = ticks;
+            }
+            if (furnaceMenu.getSlot(2).getItem().getCount() >= count) {
+                break;
+            }
+        }
+        ItemStack out = furnaceMenu.getSlot(2).getItem().copy();
+        boolean outOk = !out.isEmpty()
+                && BuiltInRegistries.ITEM.getKey(out.getItem()).toString().equals(NUGGET)
+                && out.getCount() == count;
+        check(tag + "_result", outOk, "产品格=" + desc(out) + "（期望 " + count + "x " + NUGGET
+                + "）；共跑 " + ticks + " tick");
+        check(tag + "_first_cook_200", firstAt == 200,
+                "产品格第一次出现 = 第 " + firstAt + " tick（期望 200 = 配方 cookingtime）");
+        check(tag + "_input_consumed", furnaceMenu.getSlot(0).getItem().isEmpty(),
+                "原料格=" + desc(furnaceMenu.getSlot(0).getItem()) + "（期望空）");
+        check(tag + "_fuel_consumed", fuelBefore - furnaceMenu.getSlot(1).getItem().getCount() == 1,
+                "燃料消耗=" + (fuelBefore - furnaceMenu.getSlot(1).getItem().getCount()) + "（期望 1 个煤炭块）");
+
+        int free = freeSlot(furnaceMenu);
+        info(tag + " :: resultSlot=" + furnaceMenu.getSlot(2).getClass().getSimpleName()
+                + " recipesUsed=" + recipesUsed()
+                + " orbsBefore=" + orbBefore + " dummyPos=" + dummy.position());
+        furnaceMenu.clicked(2, 0, ClickType.PICKUP, dummy);
+        if (free >= 0) {
+            furnaceMenu.clicked(free, 0, ClickType.PICKUP, dummy);
+        }
+        info(tag + " :: 点击后 orbs=" + orbs().size() + " orbValue=" + orbValue()
+                + " totalXp=" + dummy.totalExperience + " recipesUsed=" + recipesUsed());
+        check(tag + "_landed", countInInventory(NUGGET) == count,
+                "真点击后落进背包=" + countInInventory(NUGGET) + "x（期望 " + count + "）");
+        int orbDelta = orbValue() - orbBefore;
+        check(tag + "_xp_orbs", orbDelta == count,
+                "掉出来的经验球总值=" + orbDelta + "（期望 " + count + "：xp 1.0/个）");
+        // 把经验球真的吃进玩家（真 pickup，不是读常量）
+        for (ExperienceOrb orb : orbs()) {
+            orb.playerTouch(dummy);
+        }
+        check(tag + "_xp_accumulated", dummy.totalExperience > 0,
+                "玩家 totalExperience=" + dummy.totalExperience + "（期望 > 0）");
+    }
+
+    private static List<ExperienceOrb> orbs() {
+        AABB box = AABB.ofSize(dummy.position(), 32.0D, 32.0D, 32.0D);
+        return level.getEntitiesOfClass(ExperienceOrb.class, box);
+    }
+
+    /** 诊断用：熔炉里"待发经验"的配方记录（`recipesUsed`）。 */
+    private static String recipesUsed() {
+        try {
+            java.lang.reflect.Field f = AbstractFurnaceBlockEntity.class.getDeclaredField("recipesUsed");
+            f.setAccessible(true);
+            Object map = f.get(furnace);
+            return String.valueOf(map);
+        } catch (Throwable t) {
+            return "<读不到:" + t + ">";
+        }
+    }
+
+    private static int orbValue() {
+        int v = 0;
+        for (ExperienceOrb o : orbs()) {
+            v += o.getValue();
+        }
+        return v;
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // ★ 端到端：3 个币串 → 9 币 → 9 粒 → 1 锭（每一段都从上一段的产物里拿）
+    // ------------------------------------------------------------------------------------------
+
+    private static void endToEnd() {
+        dummy.getInventory().clearContent();
+        dummy.getInventory().add(new ItemStack(item(COIN_STRING), 3));
+        check("e2e_start", countInInventory(COIN_STRING) == 3,
+                "起点：背包 3 个混沌金币串=" + countInInventory(COIN_STRING));
+        for (int i = 0; i < 3; i++) {
+            String[] grid = new String[9];
+            grid[4] = COIN_STRING;                      // 每次摆在中心（无序配方，位置无关）
+            craft("e2e_string_" + (i + 1), grid, COIN, 3, true);
+        }
+        check("e2e_nine_coins", countInInventory(COIN) == 9,
+                "3 个币串合成完 ⇒ 背包混沌金币=" + countInInventory(COIN) + "（期望 9）");
+
+        smelt("e2e_smelt_9", 9);
+
+        check("e2e_nine_nuggets", countInInventory(NUGGET) == 9,
+                "9 个混沌金币烧完 ⇒ 背包混沌金粒=" + countInInventory(NUGGET) + "（期望 9）");
+        check("e2e_coins_all_gone", countInInventory(COIN) == 0,
+                "9 个混沌金币全部进炉 ⇒ 背包金币=" + countInInventory(COIN) + "（期望 0）");
+
+        craft("e2e_ingot", nineNuggets(), INGOT, 1, true);
+        check("e2e_nuggets_all_gone", countInInventory(NUGGET) == 0,
+                "9 个混沌金粒全部上桌 ⇒ 背包金粒=" + countInInventory(NUGGET) + "（期望 0）");
+        check("e2e_ingot_final", countInInventory(INGOT) == 1,
+                "整条链的产物 = 混沌金锭 " + countInInventory(INGOT) + " 个（期望 1）");
+        info("e2e :: 3 个混沌金币串 -> 9 个混沌金币 -> 9 个混沌金粒 -> 1 个混沌金锭"
+                + "（成本 = 3 币串 / 锭；1 个币串只够 3 粒，离 9 粒差 6 粒）");
+    }
+
+    // ------------------------------------------------------------------------------------------
+
+    /** 从背包里真拿 {@code count} 个 {@code id}，返回实际拿到几个。 */
+    private static int takeFromInventory(String id, int count) {
+        int need = count;
+        for (int i = 0; i < dummy.getInventory().getContainerSize() && need > 0; i++) {
+            ItemStack s = dummy.getInventory().getItem(i);
+            if (s.isEmpty() || !id.equals(BuiltInRegistries.ITEM.getKey(s.getItem()).toString())) {
+                continue;
+            }
+            int take = Math.min(need, s.getCount());
+            s.shrink(take);
+            if (s.isEmpty()) {
+                dummy.getInventory().setItem(i, ItemStack.EMPTY);
+            }
+            need -= take;
+        }
+        return count - need;
+    }
+
+    private static String desc(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return "<空>";
+        }
+        return stack.getCount() + "x " + BuiltInRegistries.ITEM.getKey(stack.getItem());
+    }
+
+    private static Item item(String id) {
+        Item it = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+        if (it == null || it == Items.AIR) {
+            fail("up_item_missing", "物品注册表里没有 " + id);
+        }
+        return it;
+    }
+
+    private static int countInInventory(String id) {
+        int n = 0;
+        for (int i = 0; i < dummy.getInventory().getContainerSize(); i++) {
+            ItemStack s = dummy.getInventory().getItem(i);
+            if (!s.isEmpty() && BuiltInRegistries.ITEM.getKey(s.getItem()).toString().equals(id)) {
+                n += s.getCount();
+            }
+        }
+        return n;
+    }
+}

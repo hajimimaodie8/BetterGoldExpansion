@@ -1,0 +1,28 @@
+七关卡读数（判据 = exit + 关键计数，两列）
+================================================================================================
+
+validate_metal_assets.py       exit 0
+    [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_metal_data.py         exit 0
+    bg-15w §九 追加轮③ 问题合计: 0 []
+    1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 0 []（本段判定 115 项）
+    [bgn10up-ok] 币串 → 3 币（shapeless，消耗 1 个）/ 币 →（smelting，与 8 条 raw_*_smelting 同档 1.0 xp 200 tick misc）→ 粒 / 9 粒 → 1 锭逐格（NNN 满格）与它的逆 1 锭 → 9 粒都原样 / 反向：无币串产线、无第二种金币来源、无高炉烟熏 / 手册 18 页（两条各 1 页）无死链
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_trim_assets.py        exit 0
+    [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_advancements.py       exit 0
+    [bgach-ok] 问题 0 条 / 成就 59 个 / criteria 142 条 / 语言键 118 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_bg17_textures.py      exit 0
+    [bg17tex-summary] checked=630 authorized=72 untouched=553 modelrefs=64 problems=0
+
+check_jar_clean.py             exit 0
+    [jar-clean-ok] 产物 jar 干净（条目 2793；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+check_forced_chunks.py         exit 0
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+七条全部 exit 0 = True

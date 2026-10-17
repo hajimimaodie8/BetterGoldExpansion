@@ -1,0 +1,26 @@
+bg-n10up 跑测留档与复原（判据 = 目标 SHA256 逐字节一致）
+================================================================================
+
+1) run/server.properties
+   跑前（字节复制成 .bak）           A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+   runServer 之后（Gradle 重写）     A3B4A7108BE4C9253D7C7643316147A090F613A5F07638FC425B58514F8524E2
+   从 .bak 逐字节复原后              A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+   结论：OK（与 .bak 相同）
+
+2) build.gradle
+   跑前 / 跑后                       2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F（**本轮没动过**：客户端不进世界，不需要 quickPlay 参数）
+
+3) build/moddev/clientRunProgramArgs.txt
+   跑前 / 跑后                       A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB（394 B，规范形态；Gradle 自己写回同一个值）
+
+4) run\ 下的共享文件（52 个：options.txt / patchouli_data.json / server.properties / *.json ...）
+   跑前快照 = build/bgn10up-run-snapshot.json；客户端跑完逐个比对：**changed files = 0**
+   ⇒ 没动过任何一个共享文件（不需要复原）。
+
+5) run/saves
+   跑前 / 跑后：`新的世界` = **29 个文件 / max_mtime = 1791542894**（与 bg-n10hv 的记录相同）
+   ⇒ 作者存档一字节未动、也**没有被打开**（本轮从未进世界；服务端探针用的是 run/world）。
+
+6) 语言文件（本轮**故意改**的两份，留哈希备查）
+   zh_cn.json 65C45198982830B343543F1A27D668CF7E125E4CC25C30427E96C3105FC00643
+   en_us.json E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B

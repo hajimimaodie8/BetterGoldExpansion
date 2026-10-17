@@ -1,0 +1,98 @@
+[1710月2026 23:17:16.301] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientdev, --version, 21.1.228, --assetIndex, 17, --assetsDir, C:\\Users\\Lenovo\\.gradle\\caches\\neoformruntime\\assets, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.228, --fml.neoFormVersion, 20240808.144430]
+[1710月2026 23:17:16.303] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: JVM identified as Microsoft OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[1710月2026 23:17:16.305] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Microsoft; OS Windows 11 arch amd64 version 10.0
+[1710月2026 23:17:16.425] [main/INFO] [net.neoforged.fml.loading.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
+[1710月2026 23:17:16.579] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
+[1710月2026 23:17:16.730] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.6 got version 4.6
+[1710月2026 23:17:16.832] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/Lenovo/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%23138!/ Service=ModLauncher Env=CLIENT
+[1710月2026 23:17:16.924] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: NVIDIA GeForce RTX 5060 Laptop GPU/PCIe/SSE2 GL version 4.6.0 NVIDIA 592.01, NVIDIA Corporation
+[1710月2026 23:17:17.300] [main/INFO] [net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[1710月2026 23:17:17.301] [main/INFO] [net.neoforged.fml.loading.moddiscovery.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		bettergold 1.6.0 (bettergold)
+		Farmer's Delight 1.3.4 (farmersdelight)
+		Just Enough Items 19.16.1.156 (jei)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.228 (neoforge)
+		Patchouli 1.21.1-93-NEOFORGE (patchouli)
+[1710月2026 23:17:18.328] [main/INFO] [mixin/]: Compatibility level set to JAVA_21
+[1710月2026 23:17:18.340] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientdev' with arguments [--version, 21.1.228, --gameDir, ., --assetsDir, C:\Users\Lenovo\.gradle\caches\neoformruntime\assets, --assetIndex, 17]
+[1710月2026 23:17:18.393] [main/WARN] [mixin/]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+[1710月2026 23:17:19.175] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[1710月2026 23:17:20.191] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 229 Datafixer optimizations took 262 milliseconds
+[1710月2026 23:17:24.404] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[1710月2026 23:17:24.404] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[1710月2026 23:17:24.406] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[1710月2026 23:17:24.406] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[1710月2026 23:17:24.407] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[1710月2026 23:17:24.484] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[1710月2026 23:17:24.484] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/E:/mc/mcmod/bettergold-template-1.21.1/build/moddev/artifacts/neoforge-21.1.228.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[1710月2026 23:17:24.525] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[1710月2026 23:17:24.531] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Setting user: Dev
+[1710月2026 23:17:24.594] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Backend library: LWJGL version 3.3.3+5
+[1710月2026 23:17:24.828] [modloading-worker-0/INFO] [net.neoforged.neoforge.common.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.228, for MC 1.21.1
+[1710月2026 23:17:24.921] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
+[1710月2026 23:17:24.927] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 2.634 ms
+[1710月2026 23:17:24.970] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bg-book] Patchouli loaded -> registering bettergold:alchemy_student_handbook
+[1710月2026 23:17:24.993] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 已注册金属族 10 套: [flamegold(烈燃金), voodoogold(巫毒金), thundergold(结雷金), indigoseagold(靛海金), illusiongold(幻惑金), thornsgold(树棘金), echogold(幽咆金), sturdygold(万坚金), chaosgold(混沌金), chaosalloy(崩乱合金)]
+[1710月2026 23:17:24.995] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 混沌金专属物品已注册: bettergold:chaosgold_forbidden_fruit / bettergold:chaosgold_enchanting_book（禁果池 39 条 / 附魔书门槛 5 级）
+[1710月2026 23:17:24.995] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 崩乱禁果已注册: bettergold:chaosalloy_forbidden_fruit（19200 tick / 1..4 级 / 冷却 19200 tick / 饱和 11.6）
+[1710月2026 23:17:25.022] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 失衡状态已注册: bettergold:power_imbalance / bettergold:resistance_imbalance（320 tick，无等级；力量下端 1.0 / 抗性倍率 ×2.0）
+[1710月2026 23:17:25.027] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: 万坚金砧下落伤害已挂载：每格 1.0% / 封顶 16.0% 目标当前生命值（信号 1.0 点每格，上限 1000）
+[1710月2026 23:17:25.639] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[1710月2026 23:17:25.639] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] chaosgold[w=1.000 a=1.000] chaosalloy[w=0.500 a=0.100] sturdygoldArmorIntervalMultiplier=1.000
+[1710月2026 23:17:26.021] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: 1.5 武器轮：已为 10 件盾牌 + 10 件三叉戟登记自定义物品渲染器（MetalWeaponItemRenderer）
+[1710月2026 23:17:26.022] [Render thread/INFO] [net.neoforged.neoforge.gametest.GameTestHooks/]: Enabled Gametest Namespaces: [bettergold]
+[1710月2026 23:17:26.042] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: 万坚金砧界面已注册: bettergold:sturdygold_anvil -> SturdygoldAnvilScreen（本仓第一个自定义 Screen）
+[1710月2026 23:17:26.232] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources, mod/farmersdelight, mod/patchouli, mod/bettergold, mod/neoforge, mod/jei
+[1710月2026 23:17:26.269] [Worker-Main-2/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO FROM COMMON SETUP
+[1710月2026 23:17:26.270] [Worker-Main-2/INFO] [com.hjmmd_8.bettergold.bettergold/]: DIRT BLOCK >> minecraft:dirt
+[1710月2026 23:17:26.271] [Worker-Main-2/INFO] [com.hjmmd_8.bettergold.bettergold/]: The magic number is... 42
+[1710月2026 23:17:26.272] [Worker-Main-2/INFO] [com.hjmmd_8.bettergold.bettergold/]: ITEM >> minecraft:iron_ingot
+[1710月2026 23:17:26.388] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[1710月2026 23:17:26.388] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] chaosgold[w=1.000 a=1.000] chaosalloy[w=0.500 a=0.100] sturdygoldArmorIntervalMultiplier=1.000
+[1710月2026 23:17:26.434] [Worker-Main-10/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.1.05.hex, loading
+[1710月2026 23:17:26.434] [Worker-Main-12/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_jp_patch-15.1.05.hex, loading
+[1710月2026 23:17:26.514] [Worker-Main-14/INFO] [com.hjmmd_8.bettergold.bettergold/]: HELLO FROM CLIENT SETUP
+[1710月2026 23:17:26.515] [Worker-Main-14/INFO] [com.hjmmd_8.bettergold.bettergold/]: MINECRAFT NAME >> Dev
+[1710月2026 23:17:26.584] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: 1.5 武器轮：已为 40 件武器登记物品模型谓词（弓 pull/pulling、弩 pull/pulling/charged/firework、三叉戟 throwing、盾牌 blocking）
+[1710月2026 23:17:27.718] [Worker-Main-5/INFO] [com.hjmmd_8.bettergold.bettergold/]: 1.5 武器轮：已登记 20 个三叉戟 additional model（6 金属 × 手持/蓄力）
+[1710月2026 23:17:28.156] [Worker-Main-5/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bettergold] 盔甲纹饰物品模型：已包装 65 件盔甲物品模型，我方纹饰材质 = [thundergold, thornsgold, voodoogold, echogold, chaosalloy, flamegold, chaosgold, indigoseagold, sturdygold, unwanted_antique, illusiongold]
+[1710月2026 23:17:28.341] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
+[1710月2026 23:17:28.341] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[1710月2026 23:17:29.990] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on 扬声器 (Realtek(R) Audio)
+[1710月2026 23:17:29.991] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
+[1710月2026 23:17:30.048] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[1710月2026 23:17:30.053] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/signs.png-atlas
+[1710月2026 23:17:30.054] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[1710月2026 23:17:30.054] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[1710月2026 23:17:30.054] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 2048x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[1710月2026 23:17:30.058] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[1710月2026 23:17:30.058] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[1710月2026 23:17:30.058] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[1710月2026 23:17:30.058] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[1710月2026 23:17:30.110] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[1710月2026 23:17:30.111] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[1710月2026 23:17:30.111] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[1710月2026 23:17:30.111] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 64x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[1710月2026 23:17:30.111] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x0 minecraft:textures/atlas/gui.png-atlas
+[1710月2026 23:17:30.131] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[1710月2026 23:17:30.170] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader preloaded 56 jsons
+[1710月2026 23:17:30.171] [Render thread/INFO] [net.neoforged.neoforge.client.entity.animation.json.AnimationLoader/]: Loaded 0 entity animations
+[1710月2026 23:17:30.171] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 jei:textures/atlas/gui.png-atlas
+[1710月2026 23:17:30.187] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_title_screen :: 界面=net.minecraft.client.gui.screens.TitleScreen（期望 TitleScreen；**没有进世界**）
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_chaos_materials :: chaos_materials zh=true en=true
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_chaos_feast :: chaos_feast zh=true en=true
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_gear_chaosgold :: gear_chaosgold zh=true en=true
+[1710月2026 23:17:30.188] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entry_gear_chaosalloy :: gear_chaosalloy zh=true en=true
+[1710月2026 23:17:30.198] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_entries_count :: zh 条目数=24（期望 24）
+[1710月2026 23:17:30.198] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_pages_total :: zh 总页数=240（期望 240；bg-n10up 后材料章 16 -> 18）
+[1710月2026 23:17:30.198] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_chaos_materials_pages :: chaos_materials 页数=18
+[1710月2026 23:17:30.199] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_page5 :: 第 5 页={"type":"patchouli:crafting","recipe":"bettergold:chaos_coin_from_string","text":"bettergold.handbook.page.chaos_materials_upstream_string"}
+[1710月2026 23:17:30.199] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_page6 :: 第 6 页={"type":"patchouli:smelting","recipe":"bettergold:chaos_coin_smelting","text":"bettergold.handbook.page.chaos_materials_upstream_smelt"}
+[1710月2026 23:17:30.200] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_lang_new_keys :: zh/en 都有 upstream_string + upstream_smelt
+[1710月2026 23:17:30.200] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT PASS client_lang_author_words :: 「混沌金币」页已换成作者原话、旧句不再出现
+[1710月2026 23:17:30.200] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPCLIENT SUMMARY pass=12 fail=0 patchouli=true
+[1710月2026 23:17:30.205] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Stopping!

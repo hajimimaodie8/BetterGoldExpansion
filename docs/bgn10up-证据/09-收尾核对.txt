@@ -1,0 +1,38 @@
+bg-n10up 收尾核对
+================================================================================
+
+1) 探针残留
+   src/**/*.java 里 BgN10up / BGN10UP / TEMP PROBE 命中 = 0 []
+   src/main/java/com/hjmmd_8/bettergold/probe/            存在 = False
+   probe/bgn10up/                                        存在 = False
+   run/bgn10up-probe.enabled / run/bgn10up-client.enabled 存在 = False / False
+   tools/asset-generator/__pycache__                     = ['metal_forms.cpython-314.pyc']
+   jar（bettergold-1.6.0.jar）条目 2793，*Probe* 命中 = 0
+
+2) git 状态（未 commit、未 push）
+M "docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+ M src/main/resources/assets/bettergold/lang/en_us.json
+ M src/main/resources/assets/bettergold/lang/zh_cn.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/chaos_materials.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/chaos_materials.json
+ M tools/asset-generator/generate_chaosgold_recipes.py
+ M tools/asset-generator/generate_handbook_data.py
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bgn10up-\350\257\201\346\215\256/"
+?? src/main/resources/data/bettergold/recipe/chaos_coin_from_string.json
+?? src/main/resources/data/bettergold/recipe/chaos_coin_smelting.json
+3) git diff --numstat
+309	0	"docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+4	2	src/main/resources/assets/bettergold/lang/en_us.json
+4	2	src/main/resources/assets/bettergold/lang/zh_cn.json
+10	0	src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/chaos_materials.json
+10	0	src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/chaos_materials.json
+147	4	tools/asset-generator/generate_chaosgold_recipes.py
+27	8	tools/asset-generator/generate_handbook_data.py
+431	8	tools/asset-generator/validate_metal_data.py
+4) 配方目录里被改（M）的文件 = 0 个 []
+   ⇒ "不许动既有配方"成立（第 ③ 条 9 粒 → 1 锭是**既有**的，本轮只核对）
+
+5) 关卡：见 07-七关卡.txt（七条全部 exit 0）
+6) run/saves：新的世界 = 29 文件 / max_mtime 1791542894（未变；见 10-saves现状.json）
+7) 原始 zip 与归档素材：本轮没有任何贴图/素材改动（git status 里 assets/**/*.png = 0 条）

@@ -1,0 +1,66 @@
+bg-n10up 扰动矩阵（判据 = exit 码 + 命中的 `[bgn10up-*]` 行 + 逐字节复原）
+====================================================================================================
+
+用例 1 改一格（熔炉输入 币→币串）
+  目标文件 : chaos_coin_smelting.json
+  exit     : 1
+  命中预期 : 是
+  命中行   : 1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 3 ["[bgn10up-smelt] 输入不是恰好 1 个 bettergold:chaos_coin：{'item': 'bettergold:chaos_coin_string'}", "[bgn10up-reverse] 消耗币串的配方不是恰好那 3 条（附魔书 / 下界合金锭 / 本轮这条）：['chaos_coin_from_string.json'
+  总问题行 : [bg-data-fail] 问题合计 3 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原     : 逐字节一致（SHA256 相同）
+
+用例 2 改数量 3→2
+  目标文件 : chaos_coin_from_string.json
+  exit     : 1
+  命中预期 : 是
+  命中行   : 1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 2 ["[bgn10up-string] 产物不是 bettergold:chaos_coin ×3：{'id': 'bettergold:chaos_coin', 'count': 2}", "[bgn10up-generator] 上游配方与唯一真源不再逐字节一致：['chaos_coin_from_string.json']"]（本段判定 115 项）
+  总问题行 : [bg-data-fail] 问题合计 2 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原     : 逐字节一致（SHA256 相同）
+
+用例 3 shapeless → shaped
+  目标文件 : chaos_coin_from_string.json
+  exit     : 1
+  命中预期 : 是
+  命中行   : 1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 2 ["[bgn10up-string] 币串 → 币的 type 不是 crafting_shapeless（作者口径：「在合成表上**无序**转换」）：'minecraft:crafting_shaped'", "[bgn10up-generator] 上游配方与唯一真源不再逐字节一致：['chaos_coin_from_string.json']"]（本段
+  总问题行 : [bg-data-fail] 问题合计 2 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原     : 逐字节一致（SHA256 相同）
+
+用例 4 给金币加高炉
+  目标文件 : chaos_coin_blasting.json（新增）
+  exit     : 1
+  命中预期 : 是
+  命中行   : 1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 2 ["[bgn10up-reverse] 产出混沌金粒的配方不是恰好「烧炼 + 锭 → 粒」两条：['chaos_coin_blasting.json', 'chaos_coin_smelting.json', 'chaosgold_nugget_from_ingot.json']", "[bgn10up-reverse] 出现了金币 / 金粒的高炉、烟熏、营
+  总问题行 : [bg-data-fail] 问题合计 2 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原     : 逐字节一致（SHA256 相同）
+
+用例 5 手册删一页
+  目标文件 : chaos_materials.json(zh)
+  exit     : 1
+  命中预期 : 是
+  命中行   : 1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 2 ['[bgn10up-handbook] zh 的 chaos_materials 不是 18 页（实际 17）', '[bgn10up-handbook] chaos_materials 的 zh / en 页列表不一致']（本段判定 94 项）
+  总问题行 : [bg-data-fail] 问题合计 5 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原     : 逐字节一致（SHA256 相同）
+
+用例 6 9→1 挖一个洞
+  目标文件 : chaosgold_ingot_from_nugget.json
+  exit     : 1
+  命中预期 : 是
+  命中行   : 1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 4 ["[bgn10up-ingot] pattern 不是 3×3 满格 nnn/nnn/nnn：['NNN', 'NNN', 'NN ']", '[bgn10up-ingot] 这些格子不是 bettergold:chaosgold_nugget（位置错 / 图例错）：[(2, 2)]', '[bgn10up-ingot] 混沌金粒的格子数不是 9', '[
+  总问题行 : [bg-data-fail] 问题合计 4 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原     : 逐字节一致（SHA256 相同）
+
+用例 7 只改注释
+  目标文件 : generate_chaosgold_recipes.py
+  exit     : 0
+  命中预期 : 是
+  命中行   : 1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: 0 []（本段判定 115 项）
+  总问题行 : [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原     : 逐字节一致（SHA256 相同）
+
+全部用例符合预期 = True
+复原后 SHA256：
+  chaos_coin_smelting.json                       9A30E57E522181E0C446E8924302AD59 OK
+  chaos_coin_from_string.json                    2C2F99368ACF5CE110083BD7F9D60FAD OK
+  chaosgold_ingot_from_nugget.json               E2D3316981B55EACAB42B15E308BEF8F OK
+  chaos_materials.json                           9E87A9CC284AB4FCBA3E1DDBAC5D2BC4 OK
+  generate_chaosgold_recipes.py                  54BBC941F90B5172D92F7A7ACD5F344E OK

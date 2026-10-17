@@ -1,0 +1,39 @@
+bg-n10up「只加这三条」自证（`git status` / `git diff` 里没有别的配方）
+================================================================================
+
+git status --porcelain：
+M "docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+ M src/main/resources/assets/bettergold/lang/en_us.json
+ M src/main/resources/assets/bettergold/lang/zh_cn.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/chaos_materials.json
+ M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/chaos_materials.json
+ M tools/asset-generator/generate_chaosgold_recipes.py
+ M tools/asset-generator/generate_handbook_data.py
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bgn10up-\350\257\201\346\215\256/"
+?? src/main/resources/data/bettergold/recipe/chaos_coin_from_string.json
+?? src/main/resources/data/bettergold/recipe/chaos_coin_smelting.json
+
+git diff --numstat：
+309	0	"docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+4	2	src/main/resources/assets/bettergold/lang/en_us.json
+4	2	src/main/resources/assets/bettergold/lang/zh_cn.json
+10	0	src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/chaos_materials.json
+10	0	src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/chaos_materials.json
+147	4	tools/asset-generator/generate_chaosgold_recipes.py
+27	8	tools/asset-generator/generate_handbook_data.py
+431	8	tools/asset-generator/validate_metal_data.py
+
+配方目录：`git status -- src/main/resources/data/bettergold/recipe/`
+?? src/main/resources/data/bettergold/recipe/chaos_coin_from_string.json
+?? src/main/resources/data/bettergold/recipe/chaos_coin_smelting.json
+   ⇒ 被改（M）= 0 条；新增（??）= 2 条：
+     ?? src/main/resources/data/bettergold/recipe/chaos_coin_from_string.json
+     ?? src/main/resources/data/bettergold/recipe/chaos_coin_smelting.json
+
+三个"不许动"的点逐个核对（都是读源码/读 JSON，不是印象）：
+  1. 9 粒 ⇄ 1 锭那一侧：`chaosgold_nugget_from_ingot.json`（1 锭 → 9 粒）与
+     `chaosgold_ingot_from_nugget.json`（9 粒 → 1 锭）都**不在 git status 里** ⇒ 与 HEAD 逐字节一致；
+  2. `raw_sturdygold*` 的 catalyst / count：`raw_sturdygold*.json` 与 `*_doubled.json` 全都**不在**
+     git status 里；关卡 `[bgn10rg-*]` 照旧绿；
+  3. 返瓶：`RawSturdygoldRecipe.java` / `AllItems.java` 的 git 侧 diff 为**空**（本轮没碰 Java）。

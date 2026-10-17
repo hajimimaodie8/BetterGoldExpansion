@@ -1,0 +1,106 @@
+1.7 bg-n10up A 级读数（真 ServerPlayer + 真 CraftingMenu + 真 FurnaceMenu；原样摘自 run/logs/latest.log）
+====================================================================================================
+[1710月2026 23:15:26.763] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO force chunk (25,23) changed=true forcedNow=1
+[1710月2026 23:15:28.790] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO ready dummy=bgn10updummy level=minecraft:overworld
+[1710月2026 23:15:28.791] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_recipe_loaded_string :: bettergold:chaos_coin_from_string 在 RecipeManager 里=true（type=crafting）
+[1710月2026 23:15:28.791] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_recipe_loaded_smelt :: bettergold:chaos_coin_smelting 在 RecipeManager 里=true（type=smelting）
+[1710月2026 23:15:28.791] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_recipe_smelt_xp :: 运行时读到的 experience=1.0（期望 1.0）
+[1710月2026 23:15:28.791] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_recipe_smelt_time :: 运行时读到的 cookingtime=200（期望 200）
+[1710月2026 23:15:28.792] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at0_take0 :: 第 0 格从背包拿 bettergold:chaos_coin_string：1（期望 1）
+[1710月2026 23:15:28.797] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_string_at0 :: 摆位 chaos_coin_string - - | - - - | - - - | 
+[1710月2026 23:15:28.797] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at0_result :: 结果格=3x bettergold:chaos_coin（期望 3x bettergold:chaos_coin）
+[1710月2026 23:15:28.802] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at0_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 23:15:28.802] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at0_landed :: 两次真点击后落进背包=3x（期望 3）freeSlot=10
+[1710月2026 23:15:28.803] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at0_string_gone :: 币串：2 -> 1（期望恰好 −1：消耗 1 个、不返还）
+[1710月2026 23:15:28.803] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at4_take4 :: 第 4 格从背包拿 bettergold:chaos_coin_string：1（期望 1）
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_string_at4 :: 摆位 - - - | - chaos_coin_string - | - - - | 
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at4_result :: 结果格=3x bettergold:chaos_coin（期望 3x bettergold:chaos_coin）
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at4_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at4_landed :: 两次真点击后落进背包=3x（期望 3）freeSlot=11
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_at4_string_gone :: 币串：1 -> 0（期望恰好 −1：消耗 1 个、不返还）
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_consumed_one :: 两次合计消耗币串 2 个 ⇒ 背包剩余=0（期望 0）
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_string_three_each :: 两次合计得到混沌金币=6（期望 6 = 2 × 3）
+[1710月2026 23:15:28.804] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_furnace_be :: 方块实体=FurnaceBlockEntity
+[1710月2026 23:15:28.807] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_taken :: 从背包拿出混沌金币 1 个（期望 1）
+[1710月2026 23:15:28.808] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_result :: 产品格=1x bettergold:chaosgold_nugget（期望 1x bettergold:chaosgold_nugget）；共跑 200 tick
+[1710月2026 23:15:28.808] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_first_cook_200 :: 产品格第一次出现 = 第 200 tick（期望 200 = 配方 cookingtime）
+[1710月2026 23:15:28.808] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_input_consumed :: 原料格=<空>（期望空）
+[1710月2026 23:15:28.808] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_fuel_consumed :: 燃料消耗=1（期望 1 个煤炭块）
+[1710月2026 23:15:28.811] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_coin_one :: resultSlot=FurnaceResultSlot recipesUsed={bettergold:chaos_coin_smelting=>1} orbsBefore=20 dummyPos=(400.5, 200.0, 380.5)
+[1710月2026 23:15:28.813] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_coin_one :: 点击后 orbs=9 orbValue=21 totalXp=0 recipesUsed={}
+[1710月2026 23:15:28.813] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_landed :: 真点击后落进背包=1x（期望 1）
+[1710月2026 23:15:28.813] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_xp_orbs :: 掉出来的经验球总值=1（期望 1：xp 1.0/个）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_coin_one_xp_accumulated :: 玩家 totalExperience=1（期望 > 0）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take0 :: 第 0 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take1 :: 第 1 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take2 :: 第 2 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take3 :: 第 3 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take4 :: 第 4 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take5 :: 第 5 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take6 :: 第 6 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take7 :: 第 7 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.817] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_take8 :: 第 8 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.828] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_nine_nuggets :: 摆位 chaosgold_nugget chaosgold_nugget chaosgold_nugget | chaosgold_nugget chaosgold_nugget chaosgold_nugget | chaosgold_nugget chaosgold_nugget chaosgold_nugget | 
+[1710月2026 23:15:28.829] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_result :: 结果格=1x bettergold:chaosgold_ingot（期望 1x bettergold:chaosgold_ingot）
+[1710月2026 23:15:28.832] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 23:15:28.832] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_nine_nuggets_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 23:15:28.833] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_eight_center_hole :: 摆位 chaosgold_nugget chaosgold_nugget chaosgold_nugget | chaosgold_nugget - chaosgold_nugget | chaosgold_nugget chaosgold_nugget chaosgold_nugget | 
+[1710月2026 23:15:28.834] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_eight_center_hole_no_match :: 负向：结果格=<空>（期望空）
+[1710月2026 23:15:28.834] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_eight_center_hole_grid_untouched :: 负向：原料格没有被消耗
+[1710月2026 23:15:28.835] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_eight_corner_hole :: 摆位 - chaosgold_nugget chaosgold_nugget | chaosgold_nugget chaosgold_nugget chaosgold_nugget | chaosgold_nugget chaosgold_nugget chaosgold_nugget | 
+[1710月2026 23:15:28.835] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_eight_corner_hole_no_match :: 负向：结果格=<空>（期望空）
+[1710月2026 23:15:28.835] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_eight_corner_hole_grid_untouched :: 负向：原料格没有被消耗
+[1710月2026 23:15:28.836] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO up_three_nuggets :: 摆位 chaosgold_nugget chaosgold_nugget chaosgold_nugget | - - - | - - - | 
+[1710月2026 23:15:28.837] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_three_nuggets_no_match :: 负向：结果格=<空>（期望空）
+[1710月2026 23:15:28.837] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_three_nuggets_grid_untouched :: 负向：原料格没有被消耗
+[1710月2026 23:15:28.837] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_start :: 起点：背包 3 个混沌金币串=3
+[1710月2026 23:15:28.837] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_1_take4 :: 第 4 格从背包拿 bettergold:chaos_coin_string：1（期望 1）
+[1710月2026 23:15:28.838] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO e2e_string_1 :: 摆位 - - - | - chaos_coin_string - | - - - | 
+[1710月2026 23:15:28.838] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_1_result :: 结果格=3x bettergold:chaos_coin（期望 3x bettergold:chaos_coin）
+[1710月2026 23:15:28.838] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_1_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 23:15:28.838] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_1_landed :: 两次真点击后落进背包=3x（期望 3）freeSlot=10
+[1710月2026 23:15:28.839] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_1_string_gone :: 币串：3 -> 2（期望恰好 −1：消耗 1 个、不返还）
+[1710月2026 23:15:28.839] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_2_take4 :: 第 4 格从背包拿 bettergold:chaos_coin_string：1（期望 1）
+[1710月2026 23:15:28.839] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO e2e_string_2 :: 摆位 - - - | - chaos_coin_string - | - - - | 
+[1710月2026 23:15:28.839] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_2_result :: 结果格=3x bettergold:chaos_coin（期望 3x bettergold:chaos_coin）
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_2_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_2_landed :: 两次真点击后落进背包=3x（期望 3）freeSlot=11
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_2_string_gone :: 币串：2 -> 1（期望恰好 −1：消耗 1 个、不返还）
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_3_take4 :: 第 4 格从背包拿 bettergold:chaos_coin_string：1（期望 1）
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO e2e_string_3 :: 摆位 - - - | - chaos_coin_string - | - - - | 
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_3_result :: 结果格=3x bettergold:chaos_coin（期望 3x bettergold:chaos_coin）
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_3_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_3_landed :: 两次真点击后落进背包=3x（期望 3）freeSlot=12
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_string_3_string_gone :: 币串：1 -> 0（期望恰好 −1：消耗 1 个、不返还）
+[1710月2026 23:15:28.840] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_nine_coins :: 3 个币串合成完 ⇒ 背包混沌金币=9（期望 9）
+[1710月2026 23:15:28.841] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_taken :: 从背包拿出混沌金币 9 个（期望 9）
+[1710月2026 23:15:28.845] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_result :: 产品格=9x bettergold:chaosgold_nugget（期望 9x bettergold:chaosgold_nugget）；共跑 1800 tick
+[1710月2026 23:15:28.845] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_first_cook_200 :: 产品格第一次出现 = 第 200 tick（期望 200 = 配方 cookingtime）
+[1710月2026 23:15:28.845] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_input_consumed :: 原料格=<空>（期望空）
+[1710月2026 23:15:28.845] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_fuel_consumed :: 燃料消耗=1（期望 1 个煤炭块）
+[1710月2026 23:15:28.845] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO e2e_smelt_9 :: resultSlot=FurnaceResultSlot recipesUsed={bettergold:chaos_coin_smelting=>9} orbsBefore=20 dummyPos=(400.5, 200.0, 380.5)
+[1710月2026 23:15:28.845] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO e2e_smelt_9 :: 点击后 orbs=11 orbValue=29 totalXp=1 recipesUsed={}
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_landed :: 真点击后落进背包=9x（期望 9）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_xp_orbs :: 掉出来的经验球总值=9（期望 9：xp 1.0/个）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_smelt_9_xp_accumulated :: 玩家 totalExperience=1（期望 > 0）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_nine_nuggets :: 9 个混沌金币烧完 ⇒ 背包混沌金粒=9（期望 9）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_coins_all_gone :: 9 个混沌金币全部进炉 ⇒ 背包金币=0（期望 0）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take0 :: 第 0 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take1 :: 第 1 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take2 :: 第 2 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take3 :: 第 3 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take4 :: 第 4 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take5 :: 第 5 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take6 :: 第 6 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take7 :: 第 7 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.846] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_take8 :: 第 8 格从背包拿 bettergold:chaosgold_nugget：1（期望 1）
+[1710月2026 23:15:28.847] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO e2e_ingot :: 摆位 chaosgold_nugget chaosgold_nugget chaosgold_nugget | chaosgold_nugget chaosgold_nugget chaosgold_nugget | chaosgold_nugget chaosgold_nugget chaosgold_nugget | 
+[1710月2026 23:15:28.848] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_result :: 结果格=1x bettergold:chaosgold_ingot（期望 1x bettergold:chaosgold_ingot）
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_nuggets_all_gone :: 9 个混沌金粒全部上桌 ⇒ 背包金粒=0（期望 0）
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS e2e_ingot_final :: 整条链的产物 = 混沌金锭 1 个（期望 1）
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO e2e :: 3 个混沌金币串 -> 9 个混沌金币 -> 9 个混沌金粒 -> 1 个混沌金锭（成本 = 3 币串 / 锭；1 个币串只够 3 粒，离 9 粒差 6 粒）
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE PASS up_forceload_back_to_zero :: 收尾时 forced chunks=0（双向 0：探测前加、探测后撤）
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE INFO forceload :: forcedNow=0
+[1710月2026 23:15:28.849] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10UPPROBE SUMMARY pass=85 fail=0 forcedNow=0

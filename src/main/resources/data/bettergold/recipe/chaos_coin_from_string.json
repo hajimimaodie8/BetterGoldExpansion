@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "bettergold:chaos_coin_string"
+    }
+  ],
+  "result": {
+    "id": "bettergold:chaos_coin",
+    "count": 3
+  }
+}

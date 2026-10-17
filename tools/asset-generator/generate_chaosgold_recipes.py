@@ -186,6 +186,144 @@ GEAR = ["sword", "axe", "pickaxe", "shovel", "hoe",
 # "按 §21 的四条读法补齐"。⇒ 本表保留（空），关卡仍按 `EXCLUDED` 断言"该有的必须 0 件"。
 EXCLUDED: dict[str, str] = {}
 
+# ---------------------------------------------------------------------------------------
+# 1.7 `bg-n10up`（2026-10-18）：**混沌金锭的上游**（作者补的最后一个功能缺口）
+#
+# 作者原话（**新的权威口径**，逐字）
+# > 「用 **9 个混沌金粒** 合成的，然后**混沌金粒由烧炼混沌金币获得**，而
+# >  **混沌金币是由混沌金币串合成分解出的三个**」
+#
+# 落法（**照字面，一条不多**）：
+#   ① `chaos_coin_string` → **3 × `chaos_coin`**
+#      作者最早那句是「在合成表上**无序转换**」⇒ **`crafting_shapeless`**（不是 shaped）；
+#      **币串被消耗 1 个**（`ingredients` 里就它一个、没有 `count`、没有剩余物 ⇒ 不是返瓶类）。
+#   ② `chaos_coin` →（**烧炼**）→ `chaosgold_nugget`：**只做 `minecraft:smelting` 一条**。
+#      xp / time / category = **既有「原料 → 锭」那一档**（8 条 `raw_*_smelting` 实测全是
+#      `1.0 / 200 / misc`）；这三项在这里是**常量**，`check_upstream()` 会拿它们与那 8 条
+#      **逐项比对**，不是凭印象填的数字（依据与记账见 `docs/1.7-...md` §23）。
+#      ⚠ 「也应该能高炉 / 烟熏吧」= **不自己加**（作者只说了"烧炼"）⇒ 进"待作者确认"。
+#   ③ 9 × `chaosgold_nugget` → 1 × `chaosgold_ingot`：**既有**（`bg-n10` 起就有
+#      `chaosgold_ingot_from_nugget.json`，`generate_metal_recipes.py` 从万坚金模板产出，
+#      `NNN / NNN / NNN`）⇒ **本脚本不重复生成**（再来一条同形配方 = 两条同产物打架），
+#      只在 `check_upstream()` 里**逐格**钉住它 + 钉住它的**逆**（1 锭 → 9 粒）仍在。
+# ---------------------------------------------------------------------------------------
+COIN_STRING = NS + ":chaos_coin_string"
+COIN = NS + ":chaos_coin"
+NUGGET = NS + ":chaosgold_nugget"
+STRING_TO_COIN_FILE = "chaos_coin_from_string.json"
+COIN_SMELT_FILE = "chaos_coin_smelting.json"
+# 「同档」锚点：既有 8 条 `raw_*_smelting` 的实测值（自检里逐项比对，改一处就红）
+SMELT_EXPERIENCE = 1.0
+SMELT_TIME = 200
+SMELT_CATEGORY = "misc"
+# ③ 既有那两条（本脚本**不写**它们，只核对）
+INGOT_FROM_NUGGET_FILE = "chaosgold_ingot_from_nugget.json"
+NUGGET_FROM_INGOT_FILE = "chaosgold_nugget_from_ingot.json"
+
+
+def upstream_recipes() -> dict[str, dict]:
+    """上游两条（**只有这两条**）。dict 保持插入顺序 = 写盘顺序 = 手册页顺序。"""
+    return {
+        STRING_TO_COIN_FILE: {
+            "type": "minecraft:crafting_shapeless",
+            "ingredients": [{"item": COIN_STRING}],
+            "result": {"id": COIN, "count": 3},
+        },
+        COIN_SMELT_FILE: {
+            "type": "minecraft:smelting",
+            "category": SMELT_CATEGORY,
+            "ingredient": {"item": COIN},
+            "result": {"id": NUGGET},
+            "experience": SMELT_EXPERIENCE,
+            "cookingtime": SMELT_TIME,
+        },
+    }
+
+
+def upstream_targets() -> list[tuple[str, dict]]:
+    return list(upstream_recipes().items())
+
+
+def _raw_smelting_anchor() -> dict:
+    """既有「原料 → 锭」那一档的真实值（**唯一依据**，不在代码里另写一份）。"""
+    return json.loads((RECIPES / "raw_sturdygold_smelting.json").read_text(encoding="utf-8"))
+
+
+def check_upstream(files: list[tuple[str, dict]]) -> list[str]:
+    """上游两条 + 第 3 条（既有的 9 → 1）的**逐项 / 逐格**自检。"""
+    bad: list[str] = []
+    names = [name for name, _ in files]
+    if names != [STRING_TO_COIN_FILE, COIN_SMELT_FILE]:
+        bad.append(f"上游配方不是恰好这两条（顺序也要稳定）：{names}")
+    got = dict(files)
+
+    # ① 币串 → 3 币：无序、恰好消耗 1 个币串、产物恰好 3 个
+    coin_from_string = got.get(STRING_TO_COIN_FILE) or {}
+    if coin_from_string.get("type") != "minecraft:crafting_shapeless":
+        bad.append(f"{STRING_TO_COIN_FILE} 不是 crafting_shapeless（作者口径是「无序转换」）")
+    ing = coin_from_string.get("ingredients")
+    if not isinstance(ing, list) or len(ing) != 1:
+        bad.append(f"{STRING_TO_COIN_FILE} 的 ingredients 不是恰好 1 项：{ing!r}")
+    elif ing[0] != {"item": COIN_STRING}:
+        bad.append(f"{STRING_TO_COIN_FILE} 的唯一原料不是 {COIN_STRING}（消耗 1 个、不许带 count）：{ing[0]!r}")
+    if coin_from_string.get("result") != {"id": COIN, "count": 3}:
+        bad.append(f"{STRING_TO_COIN_FILE} 的产物不是 {COIN} ×3：{coin_from_string.get('result')!r}")
+
+    # ② 币 →（烧炼）→ 粒：只做 smelting 一条；xp / time / category 与既有同档逐项一致
+    smelt = got.get(COIN_SMELT_FILE) or {}
+    if smelt.get("type") != "minecraft:smelting":
+        bad.append(f"{COIN_SMELT_FILE} 的 type 不是 minecraft:smelting（本轮只做熔炉一条）")
+    if smelt.get("ingredient") != {"item": COIN}:
+        bad.append(f"{COIN_SMELT_FILE} 的输入不是 {COIN}：{smelt.get('ingredient')!r}")
+    if smelt.get("result") != {"id": NUGGET}:
+        bad.append(f"{COIN_SMELT_FILE} 的产物不是 {NUGGET} ×1：{smelt.get('result')!r}")
+    try:
+        anchor = _raw_smelting_anchor()
+    except Exception as exc:                              # noqa: BLE001
+        bad.append(f"读不到同档锚点 raw_sturdygold_smelting.json：{exc!r}")
+        anchor = {}
+    for field, mine in (("category", smelt.get("category")),
+                        ("experience", smelt.get("experience")),
+                        ("cookingtime", smelt.get("cookingtime"))):
+        if mine != anchor.get(field):
+            bad.append(f"{COIN_SMELT_FILE} 的 {field}={mine!r} 与既有同档 raw_sturdygold_smelting 的 "
+                       f"{anchor.get(field)!r} 不一致")
+    if (smelt.get("experience"), smelt.get("cookingtime")) != (SMELT_EXPERIENCE, SMELT_TIME):
+        bad.append("常量 SMELT_EXPERIENCE / SMELT_TIME 与产物不一致（改了产物没改常量？）")
+
+    # ③ 第 3 条 = **既有**的 9 粒 → 1 锭：本脚本不生成它，但必须逐格核对它没被本轮撞坏
+    if INGOT_FROM_NUGGET_FILE in got:
+        bad.append(f"{INGOT_FROM_NUGGET_FILE} 不该由本脚本生成（它归 generate_metal_recipes.py）")
+    p3 = RECIPES / INGOT_FROM_NUGGET_FILE
+    if not p3.is_file():
+        bad.append(f"缺既有的 {INGOT_FROM_NUGGET_FILE}（9 粒 → 1 锭）")
+    else:
+        o3 = json.loads(p3.read_text(encoding="utf-8"))
+        if o3.get("type") != "minecraft:crafting_shaped":
+            bad.append(f"{INGOT_FROM_NUGGET_FILE} 不是 crafting_shaped")
+        if o3.get("pattern") != ["NNN", "NNN", "NNN"]:
+            bad.append(f"{INGOT_FROM_NUGGET_FILE} 的 pattern 不是 3×3 满格：{o3.get('pattern')!r}")
+        if o3.get("key") != {"N": {"item": NUGGET}}:
+            bad.append(f"{INGOT_FROM_NUGGET_FILE} 的 key 不是恰好 N={NUGGET}：{o3.get('key')!r}")
+        if o3.get("result") != {"id": INGOT}:
+            bad.append(f"{INGOT_FROM_NUGGET_FILE} 的产物不是 {INGOT} ×1：{o3.get('result')!r}")
+        cells = [o3.get("key", {}).get(ch, {}) for row in o3.get("pattern") or [] for ch in row]
+        if len(cells) != 9 or any(c != {"item": NUGGET} for c in cells):
+            bad.append(f"{INGOT_FROM_NUGGET_FILE} 的 9 格不是逐格都为 {NUGGET}：{cells!r}")
+    # 它的逆（1 锭 → 9 粒）必须还在、且没被改成别的数量
+    p3r = RECIPES / NUGGET_FROM_INGOT_FILE
+    if not p3r.is_file():
+        bad.append(f"缺既有的 {NUGGET_FROM_INGOT_FILE}（1 锭 → 9 粒，9 → 1 的逆）")
+    else:
+        o3r = json.loads(p3r.read_text(encoding="utf-8"))
+        if o3r.get("type") != "minecraft:crafting_shapeless":
+            bad.append(f"{NUGGET_FROM_INGOT_FILE} 不是 crafting_shapeless")
+        if o3r.get("ingredients") != [{"item": INGOT}]:
+            bad.append(f"{NUGGET_FROM_INGOT_FILE} 的原料不是恰好 1 个 {INGOT}：{o3r.get('ingredients')!r}")
+        if o3r.get("result") != {"id": NUGGET, "count": 9}:
+            bad.append(f"{NUGGET_FROM_INGOT_FILE} 的产物不是 {NUGGET} ×9：{o3r.get('result')!r}")
+    return bad
+
 
 def _spec(gear: str) -> tuple[str, list[str], dict[str, dict], dict[str, str], dict | None, bool]:
     """件 -> (来源说明, pattern, key, {图例字符: 换成的物品 id}, 条件, 是否原创形状)。
@@ -290,17 +428,22 @@ def main() -> None:
 
     files = targets()
     bad = check(files)
+    # ★ 1.7 `bg-n10up`：上游两条（① 币串 → 3 币 / ② 币 →（烧炼）→ 粒）。第 3 条是既有配方，
+    #   由 `generate_metal_recipes.py` 产出 ⇒ 这里**只核对**，不写盘（见 `check_upstream`）。
+    up = upstream_targets()
+    up_bad = check_upstream(up)
     written = 0
-    for name, obj in files:
+    for name, obj in files + up:
         text = json.dumps(obj, ensure_ascii=False, indent=2) + "\n"
         json.loads(text)                      # 合法 JSON（不合法这里就抛）
         if args.apply:
             (RECIPES / name).write_text(text, encoding="utf-8", newline="\n")
             written += 1
-    print(f"{'已写入' if args.apply else '演练'}: {written or len(files)} 条混沌金工作台配方"
-          f"（{len(GEAR)} 件；不生成 {len(EXCLUDED)} 件：{sorted(EXCLUDED)}）")
+    print(f"{'已写入' if args.apply else '演练'}: {written or (len(files) + len(up))} 条混沌金配方"
+          f"（工作台 {len(GEAR)} 件 + 上游 {len(up)} 条；不生成 {len(EXCLUDED)} 件：{sorted(EXCLUDED)}）")
     print(f"配方自检失败: {len(bad)} {bad[:4]}")
-    if bad:
+    print(f"上游自检失败: {len(up_bad)} {up_bad[:4]}")
+    if bad or up_bad:
         raise SystemExit(1)
 
 

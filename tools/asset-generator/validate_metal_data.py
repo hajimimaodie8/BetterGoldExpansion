@@ -3,9 +3,10 @@
 """校验：MetalFamily 会注册出来的每个物品/方块，在 zh_cn / en_us 里是否都有语言条目。
 
 ==================== 关卡退出码契约（bgfix6，2026-10-08）====================
-  0 = 全绿；1 = 有「问题」（文件末尾 `_EXIT_PROBLEM_LISTS` 里 29 个列表任一非空；
+  0 = 全绿；1 = 有「问题」（文件末尾 `_EXIT_PROBLEM_LISTS` 里 30 个列表任一非空；
       ⚠ 原文写的是「24 个」—— bgfix7~bgfix11 又加了 5 个列表而那句没跟着改，
-      **bgfix11 就地更正为 29**，旧数字留档在此，判定口径一字未动）；
+      **bgfix11 就地更正为 29**，旧数字留档在此，判定口径一字未动；
+      **bg-n10up 又加 1 个（`bgn10up_problems`）⇒ 30**）；
   2 = 基线被破坏 / 前置缺失 / 脚本自身出错（扫描根目录不在、**实际检查项数 = 0**、
       未捕获异常）。★ 任何未捕获异常都不许变成 0；顶层兜底一律转成 2。
   ★ 反空转：必须打印「实际检查了 N 项」并断言 N > 0。
@@ -6166,15 +6167,24 @@ else:
 #   ⇒ 两个**文件级** SHA 同步换成本轮的值（护栏不消失，只换锚点）。
 #   旧值（bg-n10rg，原文留档、不删）：
 #     zh 432A5297852A47B7D72A7C5D235BE8CD… / en 51F3FD6F0686D0CDB2CBFE553ED0C314… / 键数 111
-_BGN10_ZH_AFTER_SHA = "54BBC7A51136E9883B0F46E954554593455F0349919FEE2AF7B80ED8612B29B8"
+# ⚠ **1.7 bg-n10up（2026-10-18）第十次改常量**：本轮**改了 values、也加了 2 个键**：
+#   ① 改值 2 条既有键：`page.chaos_materials_1_left`（材料链补上游）/`..._2_right`
+#      （旧的「（实现说明）…两者的上下游关系作者还没有说明」= **被作者原话替换**）；
+#   ② 新增 2 条页码键：`..._upstream_string` / `..._upstream_smelt` ⇒ 键数 **111 → 113**。
+#   旧值（bg-n10rc2，原文留档、不删）：
+#     zh 54BBC7A51136E9883B0F46E954554593… / en 2EFA1997FF53366C9FD811836DC29554… / 键数 111
+_BGN10_ZH_AFTER_SHA = "65C45198982830B343543F1A27D668CF7E125E4CC25C30427E96C3105FC00643"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
-_BGN10_EN_AFTER_SHA = "2EFA1997FF53366C9FD811836DC295545933531322750A3F91B4E5DA250A120A"
+# 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
+_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
 #     zh 24348D4628134D39441CEE393B236D1B… / en 116A20B59C9D46A068749835F1CD08DE… / 键数 75
-_BGN10_NEW_LANG_KEYS = 111     # zh/en 各 111 条 = 轮3..轮8 的 75 + 轮9 的 36
+# ★ 1.7 bg-n10up：+ **2** 条（材料章新增两页的正文键：`upstream_string` / `upstream_smelt`）
+#   ⇒ 111 → **113**。旧值（轮9 的 111）原文留档、不删。
+_BGN10_NEW_LANG_KEYS = 113    # zh/en 各 113 条 = 轮3..轮8 的 75 + 轮9 的 36 + bg-n10up 的 2
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
 # _BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
 # _BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
@@ -7895,8 +7905,20 @@ def _bgn10r9_bad(tag: str, msg: str) -> None:
 _R9_LANG = "bettergold.handbook"
 _R9_ENTRIES = {
     # 条目 -> (页数, 页型序列)
-    "chaos_materials": (16, ["patchouli:text", "patchouli:crafting", "patchouli:crafting",
-                             "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
+    # ⚠ 1.7 `bg-n10up`（2026-10-18）第三次换锚点：作者补了**混沌金锭的上游**（币串 → 3 币 /
+    #   币 →（烧炼）→ 粒）⇒ 材料章 **16 → 18 页**：在第 4 页（币的 spotlight）之后插入
+    #   「patchouli:crafting（币串→3币）」+「patchouli:smelting（币→粒）」两页，各 1 条配方。
+    #   旧期望（16 页 / 无 smelting 页）**原文留档、已作废**：
+    #     "chaos_materials": (16, ["patchouli:text", "patchouli:crafting", "patchouli:crafting",
+    #                              "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
+    #                              "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
+    #                              "patchouli:crafting", "patchouli:crafting", "patchouli:crafting",
+    #                              "patchouli:text", "patchouli:crafting", "patchouli:crafting",
+    #                              "patchouli:spotlight"]),
+    #   页数变了**不等于放宽**：这两条的具体 id / 页序 / 每页配方数由 `[bgn10up-*]` 逐条钉住。
+    "chaos_materials": (18, ["patchouli:text", "patchouli:crafting", "patchouli:crafting",
+                             "patchouli:spotlight", "patchouli:crafting", "patchouli:smelting",
+                             "patchouli:crafting", "patchouli:crafting",
                              "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
                              "patchouli:crafting", "patchouli:crafting", "patchouli:crafting",
                              "patchouli:text", "patchouli:crafting", "patchouli:crafting",
@@ -9289,6 +9311,406 @@ if not bgn10rc2_problems:
           "mod_loaded(farmersdelight)）/ 其余 14 条无条件 / 高阶炼金油的物品级 remainder 恰好 1 处且"
           "与配方层按配方互斥（GLASS_BOTTLE 合计 2 处 = 不双返）/ 手册 15 页 15 条引用")
 
+# ==================== 1.7 bg-n10up（混沌金锭的**上游**，2026-10-18）====================
+#
+# 作者原话（**新的权威口径**，逐字）：
+#   「用 **9 个混沌金粒** 合成的，然后**混沌金粒由烧炼混沌金币获得**，
+#     而**混沌金币是由混沌金币串合成分解出的三个**」
+#
+# 本段只钉**这三条**（"多一条都不加"由反向断言兜住，不是靠自觉）：
+#   ① `chaos_coin_from_string.json` —— **crafting_shapeless**（作者最早那句「在合成表上无序转换」），
+#      1 个币串 → **3** 个币，币串被**消耗 1 个**（单原料、没有 count、没有剩余物）；
+#   ② `chaos_coin_smelting.json` —— **minecraft:smelting** 一条，1 币 → 1 粒；
+#      xp / time / category 必须与既有「原料 → 锭」那一档（8 条 `raw_*_smelting`）**逐项相同**；
+#   ③ `chaosgold_ingot_from_nugget.json` —— **既有**（bg-n10 起由 `generate_metal_recipes.py` 产出），
+#      `NNN / NNN / NNN` 满格 9 粒 → 1 锭；它的**逆** `chaosgold_nugget_from_ingot.json`（1 锭 → 9 粒）
+#      必须原样还在（本轮不许动它）。
+#
+# 反向断言（都是"**没加**"的口径）：
+#   * 全仓**没有**产出 `chaos_coin_string` 的配方（币串怎么来 = 作者没说 ⇒ 不做）；
+#   * 币串**只被**这 3 条消耗（附魔书 / 下界合金锭 / 本轮这条），没有第四条；
+#   * 币**只有**本轮这一条产线；粒只有「烧炼」与「锭 → 粒」两条产线；
+#   * 币 / 粒**没有**高炉 / 烟熏 / 营火（作者只说了"烧炼" ⇒ 只做 smelting 一条）。
+bgn10up_problems: list[str] = []
+_bgn10up_checked = 0
+
+
+def _bgn10up_bad(tag: str, msg: str) -> None:
+    bgn10up_problems.append("[%s] %s" % (tag, msg))
+
+
+_UP_CS = "bettergold:chaos_coin_string"
+_UP_COIN = "bettergold:chaos_coin"
+_UP_NUGGET = "bettergold:chaosgold_nugget"
+_UP_INGOT = "bettergold:chaosgold_ingot"
+_UP_F1 = "chaos_coin_from_string.json"
+_UP_F2 = "chaos_coin_smelting.json"
+_UP_F3 = "chaosgold_ingot_from_nugget.json"
+_UP_F3R = "chaosgold_nugget_from_ingot.json"
+_UP_STRING_CONSUMERS = {"chaosgold_enchanting_book.json",
+                        "netherite_ingot_with_chaos_coin_string.json",
+                        _UP_F1}
+_UP_INGOT_PRODUCERS = {"chaosgold_ingot_from_block.json", _UP_F3}
+_UP_NUGGET_PRODUCERS = {_UP_F3R, _UP_F2}
+
+
+def _up_load(name: str):
+    p = _RC_DATA / name
+    if not p.is_file():
+        _bgn10up_bad("bgn10up-file", "缺配方文件 " + name)
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception as _e:                               # noqa: BLE001
+        _bgn10up_bad("bgn10up-file", name + " 读不出来：" + repr(_e))
+        return None
+
+
+def _up_walk(node, out: set) -> None:
+    """收集节点里所有的 `item` / `tag` 字符串（只看传给它的那一支）。"""
+    if isinstance(node, dict):
+        for _k in ("item", "tag"):
+            if isinstance(node.get(_k), str):
+                out.add(node[_k])
+        for _v in node.values():
+            _up_walk(_v, out)
+    elif isinstance(node, list):
+        for _v in node:
+            _up_walk(_v, out)
+
+
+def _up_inputs(obj: dict) -> set:
+    out: set = set()
+    for _f in ("ingredients", "ingredient", "key"):
+        if _f in obj:
+            _up_walk(obj[_f], out)
+    return out
+
+
+def _up_outputs(obj: dict) -> set:
+    out: set = set()
+    _r = obj.get("result")
+    if isinstance(_r, str):
+        out.add(_r)
+    elif isinstance(_r, dict) and isinstance(_r.get("id"), str):
+        out.add(_r["id"])
+    if isinstance(obj.get("results"), list):
+        for _x in obj["results"]:
+            if isinstance(_x, dict) and isinstance(_x.get("id"), str):
+                out.add(_x["id"])
+    return out
+
+
+def _up_strip_py_comments(text: str) -> str:
+    """Python 的"去注释源码"：逐行砍掉 `#` 起的部分（本文件里被断言的这些行不含 # 字符串）。
+
+    ⚠ 正向 needle **必须**跑在去注释版本上（`docs/构建与跑测注意事项.md` §六）：
+    否则注释里写一句 needle 就能让断言假绿。
+    """
+    return "\n".join(_line.split("#", 1)[0] for _line in text.splitlines())
+
+
+_up_f1 = _up_load(_UP_F1)
+_up_f2 = _up_load(_UP_F2)
+_up_f3 = _up_load(_UP_F3)
+_up_f3r = _up_load(_UP_F3R)
+
+# ---------- ① 币串 → 3 币：逐项（类型 / 单原料 / 消耗 1 个 / 产物 3 个 / 没有任何附加键）----------
+if _up_f1 is not None:
+    _bgn10up_checked += 7
+    if _up_f1.get("type") != "minecraft:crafting_shapeless":
+        _bgn10up_bad("bgn10up-string",
+                     "币串 → 币的 type 不是 crafting_shapeless（作者口径：「在合成表上**无序**转换」）："
+                     + repr(_up_f1.get("type")))
+    if set(_up_f1) != {"type", "ingredients", "result"}:
+        _bgn10up_bad("bgn10up-string",
+                     "币串 → 币的顶层键不是恰好 type/ingredients/result（多一个键就是多一条口径）："
+                     + repr(sorted(_up_f1)))
+    _ing1 = _up_f1.get("ingredients")
+    if not isinstance(_ing1, list) or len(_ing1) != 1:
+        _bgn10up_bad("bgn10up-string", "ingredients 不是恰好 1 项：" + repr(_ing1))
+    elif _ing1[0] != {"item": _UP_CS}:
+        _bgn10up_bad("bgn10up-string",
+                     "唯一原料不是恰好 1 个 " + _UP_CS + "（带 count 就不是消耗 1 个）：" + repr(_ing1[0]))
+    _res1 = _up_f1.get("result")
+    if _res1 != {"id": _UP_COIN, "count": 3}:
+        _bgn10up_bad("bgn10up-string", "产物不是 " + _UP_COIN + " ×3：" + repr(_res1))
+    elif type(_res1.get("count")) is not int or _res1.get("count") != 3:
+        _bgn10up_bad("bgn10up-string", "count 不是整数 3：" + repr(_res1.get("count")))
+    _consumed1 = 0
+    for _e in (_ing1 or []):
+        if isinstance(_e, dict) and _e.get("item") == _UP_CS:
+            _consumed1 += _e.get("count", 1)
+    if _consumed1 != 1:
+        _bgn10up_bad("bgn10up-string", "币串的消耗量不是 1（实际 " + str(_consumed1) + "）")
+
+# ---------- ② 币 →（烧炼）→ 粒：逐项 + 与既有同档逐项比对（不是抄数字）----------
+if _up_f2 is not None:
+    _bgn10up_checked += 8
+    if _up_f2.get("type") != "minecraft:smelting":
+        _bgn10up_bad("bgn10up-smelt",
+                     "币 → 粒的 type 不是 minecraft:smelting（本轮只做熔炉一条）：" + repr(_up_f2.get("type")))
+    if set(_up_f2) != {"type", "category", "ingredient", "result", "experience", "cookingtime"}:
+        _bgn10up_bad("bgn10up-smelt",
+                     "币 → 粒的顶层键不是恰好 6 个（多一个键 = 多一条口径）：" + repr(sorted(_up_f2)))
+    if _up_f2.get("category") != "misc":
+        _bgn10up_bad("bgn10up-smelt", "category 不是 misc：" + repr(_up_f2.get("category")))
+    if _up_f2.get("ingredient") != {"item": _UP_COIN}:
+        _bgn10up_bad("bgn10up-smelt", "输入不是恰好 1 个 " + _UP_COIN + "：" + repr(_up_f2.get("ingredient")))
+    if _up_f2.get("result") != {"id": _UP_NUGGET}:
+        _bgn10up_bad("bgn10up-smelt", "产物不是 " + _UP_NUGGET + " ×1：" + repr(_up_f2.get("result")))
+    _up_anchor = {}
+    _anchor_path = _RC_DATA / "raw_sturdygold_smelting.json"
+    if not _anchor_path.is_file():
+        _bgn10up_bad("bgn10up-smelt", "缺同档锚点 raw_sturdygold_smelting.json")
+    else:
+        _up_anchor = json.loads(_anchor_path.read_text(encoding="utf-8"))
+    _up_tier = [_up_anchor.get("category"), _up_anchor.get("experience"), _up_anchor.get("cookingtime")]
+    _up_mine = [_up_f2.get("category"), _up_f2.get("experience"), _up_f2.get("cookingtime")]
+    if _up_tier != _up_mine:
+        _bgn10up_bad("bgn10up-smelt",
+                     "category/experience/cookingtime 与既有同档 anchor 不同：" + repr(_up_mine) + " != " + repr(_up_tier))
+    # 8 条 raw_*_smelting 必须**全部**与它同档（"同档"是从仓库里取的事实，不是本段写的期望）
+    _up_raw_smelts = sorted(_RC_DATA.glob("raw_*_smelting.json"))
+    _bgn10up_checked += 1
+    if len(_up_raw_smelts) != 8:
+        _bgn10up_bad("bgn10up-smelt",
+                     "raw_*_smelting 不是 8 条（反空转：同档比对会假绿）：" + str(len(_up_raw_smelts)))
+    _up_off_tier = []
+    for _rp in _up_raw_smelts:
+        _ro = json.loads(_rp.read_text(encoding="utf-8"))
+        if [_ro.get("category"), _ro.get("experience"), _ro.get("cookingtime")] != _up_mine:
+            _up_off_tier.append(_rp.name)
+    _bgn10up_checked += 1
+    if _up_off_tier:
+        _bgn10up_bad("bgn10up-smelt", "这些 raw_*_smelting 与本条不同档：" + repr(_up_off_tier))
+
+# ---------- ③ 9 粒 → 1 锭：**逐格**钉住（计数相等抓不到位置错）----------
+if _up_f3 is not None:
+    _bgn10up_checked += 7
+    if _up_f3.get("type") != "minecraft:crafting_shaped":
+        _bgn10up_bad("bgn10up-ingot", "9 粒 → 1 锭不是 crafting_shaped：" + repr(_up_f3.get("type")))
+    if _up_f3.get("pattern") != ["NNN", "NNN", "NNN"]:
+        _bgn10up_bad("bgn10up-ingot", "pattern 不是 3×3 满格 nnn/nnn/nnn：" + repr(_up_f3.get("pattern")))
+    if _up_f3.get("key") != {"N": {"item": _UP_NUGGET}}:
+        _bgn10up_bad("bgn10up-ingot", "key 不是恰好 N=" + _UP_NUGGET + "：" + repr(_up_f3.get("key")))
+    if _up_f3.get("result") != {"id": _UP_INGOT}:
+        _bgn10up_bad("bgn10up-ingot", "产物不是 " + _UP_INGOT + " ×1：" + repr(_up_f3.get("result")))
+    _up_grid = []
+    for _row in (_up_f3.get("pattern") or []):
+        _up_grid.append([(_up_f3.get("key") or {}).get(_ch) for _ch in _row])
+    if len(_up_grid) != 3 or any(len(_r) != 3 for _r in _up_grid):
+        _bgn10up_bad("bgn10up-ingot", "格子不是 3×3：" + repr(_up_grid))
+    _up_bad_cells = [( _r, _c) for _r in range(len(_up_grid)) for _c in range(len(_up_grid[_r]))
+                     if _up_grid[_r][_c] != {"item": _UP_NUGGET}]
+    if _up_bad_cells:
+        _bgn10up_bad("bgn10up-ingot",
+                     "这些格子不是 " + _UP_NUGGET + "（位置错 / 图例错）：" + repr(_up_bad_cells[:5]))
+    if sum(1 for _r in _up_grid for _c in _r if _c == {"item": _UP_NUGGET}) != 9:
+        _bgn10up_bad("bgn10up-ingot", "混沌金粒的格子数不是 9")
+if _up_f3r is not None:
+    _bgn10up_checked += 4
+    if _up_f3r.get("type") != "minecraft:crafting_shapeless":
+        _bgn10up_bad("bgn10up-ingot", "1 锭 → 9 粒（9 → 1 的逆）不是 crafting_shapeless")
+    if _up_f3r.get("ingredients") != [{"item": _UP_INGOT}]:
+        _bgn10up_bad("bgn10up-ingot", "1 锭 → 9 粒的原料被改了：" + repr(_up_f3r.get("ingredients")))
+    if _up_f3r.get("result") != {"id": _UP_NUGGET, "count": 9}:
+        _bgn10up_bad("bgn10up-ingot", "1 锭 → 9 粒的产物被改了：" + repr(_up_f3r.get("result")))
+    if set(_up_f3r) != {"type", "ingredients", "result"}:
+        _bgn10up_bad("bgn10up-ingot", "1 锭 → 9 粒多出了别的键：" + repr(sorted(_up_f3r)))
+
+# ---------- 反向断言：三条以外的产线 / 高炉烟熏 一条都不许有 ----------
+_up_all = {}
+_up_parse_bad = []
+for _rp in sorted(_RC_DATA.glob("*.json")):
+    try:
+        _up_all[_rp.name] = json.loads(_rp.read_text(encoding="utf-8"))
+    except Exception as _e:                               # noqa: BLE001
+        _up_parse_bad.append(_rp.name + ":" + repr(_e))
+_bgn10up_checked += 2
+if _up_parse_bad:
+    _bgn10up_bad("bgn10up-scan", "有配方 JSON 读不出来：" + repr(_up_parse_bad[:3]))
+if len(_up_all) < 400:
+    _bgn10up_bad("bgn10up-scan", "配方总数只有 " + str(len(_up_all)) + "（反空转：反向断言会假绿）")
+
+_up_prod_cs = sorted(n for n, o in _up_all.items() if _UP_CS in _up_outputs(o))
+_up_use_cs = sorted(n for n, o in _up_all.items() if _UP_CS in _up_inputs(o))
+_up_prod_coin = sorted(n for n, o in _up_all.items() if _UP_COIN in _up_outputs(o))
+_up_prod_nug = sorted(n for n, o in _up_all.items() if _UP_NUGGET in _up_outputs(o))
+_up_prod_ing = sorted(n for n, o in _up_all.items() if _UP_INGOT in _up_outputs(o))
+_up_hot_forbidden = sorted(
+    n for n, o in _up_all.items()
+    if o.get("type") in ("minecraft:blasting", "minecraft:smoking", "minecraft:campfire_cooking")
+    and (_UP_COIN in _up_inputs(o) or _UP_COIN in _up_outputs(o)
+         or _UP_NUGGET in _up_outputs(o) or _UP_NUGGET in _up_inputs(o)))
+_bgn10up_checked += 5
+if _up_prod_cs:
+    _bgn10up_bad("bgn10up-reverse", "全仓有产出混沌金币串的配方（作者没说币串怎么来）：" + repr(_up_prod_cs))
+if set(_up_use_cs) != _UP_STRING_CONSUMERS:
+    _bgn10up_bad("bgn10up-reverse",
+                 "消耗币串的配方不是恰好那 3 条（附魔书 / 下界合金锭 / 本轮这条）：" + repr(_up_use_cs))
+if set(_up_prod_coin) != {_UP_F1}:
+    _bgn10up_bad("bgn10up-reverse", "产出混沌金币的配方不是恰好 1 条：" + repr(_up_prod_coin))
+if set(_up_prod_nug) != _UP_NUGGET_PRODUCERS:
+    _bgn10up_bad("bgn10up-reverse",
+                 "产出混沌金粒的配方不是恰好「烧炼 + 锭 → 粒」两条：" + repr(_up_prod_nug))
+if set(_up_prod_ing) != _UP_INGOT_PRODUCERS:
+    _bgn10up_bad("bgn10up-reverse", "产出混沌金锭的配方不是恰好「9 → 1 + 块 → 锭」两条：" + repr(_up_prod_ing))
+if _up_hot_forbidden:
+    _bgn10up_bad("bgn10up-reverse",
+                 "出现了金币 / 金粒的高炉、烟熏、营火配方（本轮只做 smelting 一条）：" + repr(_up_hot_forbidden))
+
+# ---------- 生成器 = 唯一真源：自检 + 产物逐字节 + 去注释源码 needle ----------
+_bgn10up_checked += 6
+try:
+    import importlib.util as _up_ilu
+    _up_dwb = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        _up_spec = _up_ilu.spec_from_file_location(
+            "_bgn10up_gen", REPO / "tools" / "asset-generator" / "generate_chaosgold_recipes.py")
+        _up_gen = _up_ilu.module_from_spec(_up_spec)
+        _up_spec.loader.exec_module(_up_gen)
+    finally:
+        sys.dont_write_bytecode = _up_dwb
+    _up_targets = _up_gen.upstream_targets()
+    _bgn10up_checked += 1
+    if len(_up_targets) != 2 or [n for n, _ in _up_targets] != [_UP_F1, _UP_F2]:
+        _bgn10up_bad("bgn10up-generator", "生成器的上游 recipe 表不是恰好这两条：" + repr([n for n, _ in _up_targets]))
+    _up_self = list(_up_gen.check_upstream(_up_targets))
+    _bgn10up_checked += 1
+    if _up_self:
+        _bgn10up_bad("bgn10up-generator", "生成器上游自检不通过：" + repr(_up_self[:4]))
+    _up_diff = []
+    for _n, _o in _up_targets:
+        _bgn10up_checked += 1
+        _p = _RC_DATA / _n
+        if not _p.is_file() or _p.read_text(encoding="utf-8") != json.dumps(_o, ensure_ascii=False, indent=2) + "\n":
+            _up_diff.append(_n)
+    if _up_diff:
+        _bgn10up_bad("bgn10up-generator", "上游配方与唯一真源不再逐字节一致：" + repr(_up_diff))
+    # 正向 needle 跑在**去注释**源码上（注释里写 needle 不许算数）
+    _up_src = _up_strip_py_comments(
+        (REPO / "tools" / "asset-generator" / "generate_chaosgold_recipes.py").read_text(encoding="utf-8"))
+    for _needle, _why in (("def upstream_targets", "生成器里没有上游产物的入口函数"),
+                          ("def check_upstream", "生成器里没有上游自检函数"),
+                          ('":chaos_coin_string"', "生成器里没有币串的 id"),
+                          ('"minecraft:crafting_shapeless"', "生成器里没有无序合成（币串 → 3 币）"),
+                          ('"minecraft:smelting"', "生成器里没有熔炉（币 → 粒）")):
+        if _needle not in _up_src:
+            _bgn10up_bad("bgn10up-generator", _why + "：缺 " + _needle + "（去注释源码里）")
+    for _needle in ('"minecraft:blasting"', '"minecraft:smoking"', '"minecraft:campfire_cooking"'):
+        if _needle in _up_src:
+            _bgn10up_bad("bgn10up-generator", "生成器里出现了 " + _needle + "（作者只说了烧炼，只做 smelting 一条）")
+except Exception as _e:                                   # noqa: BLE001
+    _bgn10up_bad("bgn10up-generator", "生成器加载失败：" + repr(_e))
+
+# ---------- 手册：chaos_materials 18 页 + 两条新配方**各自单独一页** + 无死链 ----------
+_bgn10up_checked += 4
+for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
+    _ep = _d / "entries" / "chaos_materials.json"
+    if not _ep.is_file():
+        _bgn10up_bad("bgn10up-handbook", _tag + " 缺 entries/chaos_materials.json")
+        continue
+    _pages = json.loads(_ep.read_text(encoding="utf-8")).get("pages") or []
+    _bgn10up_checked += 1
+    if len(_pages) != 18:
+        _bgn10up_bad("bgn10up-handbook", _tag + " 的 chaos_materials 不是 18 页（实际 " + str(len(_pages)) + "）")
+        continue
+    # 第 5 / 6 页（下标 4 / 5）= 本轮两条，顺序固定
+    _bgn10up_checked += 3
+    _p5, _p6 = _pages[4], _pages[5]
+    if (_p5.get("type"), _p5.get("recipe"), _p5.get("recipe2")) != ("patchouli:crafting", "bettergold:chaos_coin_from_string", None):
+        _bgn10up_bad("bgn10up-handbook", _tag + " 第 5 页不是「币串 → 3 币」的单配方页：" + repr(_p5))
+    if (_p6.get("type"), _p6.get("recipe"), _p6.get("recipe2")) != ("patchouli:smelting", "bettergold:chaos_coin_smelting", None):
+        _bgn10up_bad("bgn10up-handbook", _tag + " 第 6 页不是「币 → 粒」的单配方页：" + repr(_p6))
+    # 每页配方数 ≤ 2（Patchouli 的结构上限）+ 引用不许死链
+    for _pg in _pages:
+        _on = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
+        _bgn10up_checked += 1
+        if len(_on) > 2:
+            _bgn10up_bad("bgn10up-handbook", _tag + " 有配方页塞了 " + str(len(_on)) + " 条（上限 2）")
+        for _r in _on:
+            if not (_RC_DATA / (_r.split(":", 1)[1] + ".json")).is_file():
+                _bgn10up_bad("bgn10up-handbook", _tag + " 配方页死链：" + _r)
+_bgn10up_checked += 1
+if _ZH_BOOK.is_dir() and _EN_BOOK.is_dir():
+    _zp = _ZH_BOOK / "entries" / "chaos_materials.json"
+    _epn = _EN_BOOK / "entries" / "chaos_materials.json"
+    if _zp.is_file() and _epn.is_file() and (json.loads(_zp.read_text(encoding="utf-8")).get("pages")
+                                             != json.loads(_epn.read_text(encoding="utf-8")).get("pages")):
+        _bgn10up_bad("bgn10up-handbook", "chaos_materials 的 zh / en 页列表不一致")
+
+# ---------- 文案：旧的「实现说明（关系未定）」必须已被作者原话替换 ----------
+_bgn10up_checked += 8
+_up_zh = zh
+_up_en = en
+_up_2r = str(_up_zh.get("bettergold.handbook.page.chaos_materials_2_right", ""))
+_up_1l = str(_up_zh.get("bettergold.handbook.page.chaos_materials_1_left", ""))
+if "关系作者还没有说明" in _up_2r or "两件不同的物品" in _up_2r:
+    _bgn10up_bad("bgn10up-lang", "手册「混沌金币」页仍是旧口径（「两件不同物品 / 关系未定」）")
+for _needle, _why in (("混沌金币串合成分解出的三个", "没把作者原话收进「币」那一页"),
+                      ("3 个混沌金币", "没说清 1 个币串给 3 个币"),
+                      ("第 3 屏", "没有指向新的上游那一屏")):
+    if _needle not in _up_2r:
+        _bgn10up_bad("bgn10up-lang", "手册「混沌金币」页缺「" + _needle + "」：" + _why)
+for _needle, _why in (("混沌金币串", "材料链正文没提币串"),
+                      ("烧炼", "材料链正文没提烧炼"),
+                      ("9 个混沌金粒", "材料链正文没提 9 粒 → 1 锭")):
+    if _needle not in _up_1l:
+        _bgn10up_bad("bgn10up-lang", "手册材料链正文缺「" + _needle + "」：" + _why)
+for _k in ("bettergold.handbook.page.chaos_materials_upstream_string",
+           "bettergold.handbook.page.chaos_materials_upstream_smelt"):
+    _bgn10up_checked += 1
+    if _k not in _up_zh or _k not in _up_en:
+        _bgn10up_bad("bgn10up-lang", "新页正文缺中文或英文：" + _k)
+    elif not str(_up_zh[_k]).strip() or str(_up_zh[_k]) == str(_up_en[_k]):
+        _bgn10up_bad("bgn10up-lang", "新页正文空值或中英逐字相同：" + _k)
+_up_en2r = str(_up_en.get("bettergold.handbook.page.chaos_materials_2_right", ""))
+if "has not been stated by the author" in _up_en2r:
+    _bgn10up_bad("bgn10up-lang", "英文「混沌金币」页仍是旧口径（未说明上下游）")
+
+# ---------- 手册生成器：这两页是**生成器**写的（不是手改产物）----------
+_up_hb_src = _up_strip_py_comments(
+    (REPO / "tools" / "asset-generator" / "generate_handbook_data.py").read_text(encoding="utf-8"))
+_bgn10up_checked += 2
+for _needle, _why in (('crafting_page("chaos_coin_from_string"', "手册生成器里没有「币串 → 3 币」那一页"),
+                      ('smelting_page("chaos_coin_smelting"', "手册生成器里没有「币 → 粒」那一页")):
+    if _needle not in _up_hb_src:
+        _bgn10up_bad("bgn10up-handbook-gen", _why + "：缺 " + _needle + "（去注释源码里）")
+
+# ---------- 文档：新口径 + 成本算清 + 旧句留档 + 「只做 smelting」的待确认 ----------
+_bgn10up_checked += 9
+_up_doc = REPO / "docs" / "1.7-\u6df7\u6c8c\u91d1\u4e0e\u5d29\u4e71\u5408\u91d1-\u9700\u6c42\u7acb\u6863.md"
+if not _up_doc.is_file():
+    _bgn10up_bad("bgn10up-doc", "缺 docs/1.7-混沌金与崩乱合金-需求立档.md")
+else:
+    _up_doc_txt = _up_doc.read_text(encoding="utf-8")
+    for _needle, _why in (
+            ("bg-n10up", "立档里没有本轮标记（bg-n10up）"),
+            ("9 个混沌金粒", "没把作者「9 个混沌金粒」那句原话收进立档"),
+            ("合成的，然后", "没把作者原话的句式收进立档（「…9 个混沌金粒 合成的，然后…」）"),
+            ("混沌金粒由烧炼混沌金币获得", "没把作者「烧炼获得」那句原话收进立档"),
+            ("混沌金币是由混沌金币串合成分解出的三个", "没把作者「币串合成出三个」那句原话收进立档"),
+            ("3 个混沌金币串 = 1 个混沌金锭", "没把端到端成本算清（3 币串 = 1 锭）"),
+            ("两者的上下游关系作者还没有说明", "旧句（实现说明）没有原文留档"),
+            ("只做 smelting", "没写「只做 smelting、高炉/烟熏待作者确认」"),
+            ("待作者确认", "没写待作者确认项"),
+            ("1.0", "没记账 smelting 的 xp 取值依据")):
+        if _needle not in _up_doc_txt:
+            _bgn10up_bad("bgn10up-doc", _why + "：缺「" + _needle + "」")
+
+if _bgn10up_checked < 55:
+    _bgn10up_bad("bgn10up-anti-vacuum",
+                 "本段只检查了 " + str(_bgn10up_checked) + " 项（反空转守护：应远大于 55）")
+print("1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: "
+      + str(len(bgn10up_problems)) + " " + str(bgn10up_problems[:4])
+      + "（本段判定 " + str(_bgn10up_checked) + " 项）")
+if not bgn10up_problems:
+    print("[bgn10up-ok] 币串 → 3 币（shapeless，消耗 1 个）/ 币 →（smelting，与 8 条 raw_*_smelting 同档 "
+          "1.0 xp 200 tick misc）→ 粒 / 9 粒 → 1 锭逐格（NNN 满格）与它的逆 1 锭 → 9 粒都原样 / "
+          "反向：无币串产线、无第二种金币来源、无高炉烟熏 / 手册 18 页（两条各 1 页）无死链")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -9299,7 +9721,8 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
                        _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems,
                        bgn10r8_problems, bgn10r9_problems,
-                       bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems)
+                       bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems,
+                       bgn10up_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

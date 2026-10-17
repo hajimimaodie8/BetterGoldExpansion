@@ -1,0 +1,18 @@
+bg-n10up 证据目录清单（13 份 + scripts/ + 脚本副本/）
+================================================================================
+  01-A级读数.txt
+  02-客户端启动探针读数.txt
+  03-扰动矩阵.txt
+  04-跑前留档.json
+  05-执行记录.txt
+  06-跑测留档与复原.txt
+  07-七关卡.txt
+  08-服务端完整日志.log
+  09-收尾核对.txt
+  10-saves现状.json
+  11-只加这三条自证.txt
+  12-客户端完整日志.log
+  清单.txt
+
+scripts/      ：bgn10up_append_doc.py / bgn10up_gates.py / bgn10up_perturb.py / bgn10up_exp_return.py / bgn10up_evidence.py
+脚本副本/     ：BgN10upProbe.java.txt / BgN10upClientProbe.java.txt（收尾删除前的源码留档）

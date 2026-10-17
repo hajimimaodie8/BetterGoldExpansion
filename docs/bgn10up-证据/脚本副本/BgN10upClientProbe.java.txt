@@ -1,0 +1,153 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * 临时客户端探针（1.7 <b>bg-n10up</b>：手册页数 / 配方页引用，从**客户端真正挂载的资源包**里读）
+ * —— <b>收尾时整块删除</b>。
+ *
+ * <p>只做"启动探针"：等标题界面出现（**不进任何世界**、不读写存档），把
+ * {@code assets/bettergold/patchouli_books/alchemy_handbook/} 下的条目 JSON 从
+ * {@link ResourceManager} 里读出来，数页数 / 查两条新配方引用 / 查 data 包里的配方文件，
+ * 然后 {@link Minecraft#stop()} **只调一次**。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgN10upClientProbe {
+
+    private static final String TAG = "BGN10UPCLIENT";
+    private static final String BOOK = "patchouli_books/alchemy_handbook";
+
+    private static boolean done;
+    private static int passes;
+    private static int fails;
+
+    private BgN10upClientProbe() {
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            passes++;
+            bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+        } else {
+            fails++;
+            bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (done || mc.screen == null) {
+            return;
+        }
+        // 开关文件（`user.dir` 在 ModDevGradle 的 runClient 里就是 `run/`）
+        if (!java.nio.file.Files.exists(java.nio.file.Path.of(System.getProperty("user.dir"),
+                "bgn10up-client.enabled"))) {
+            return;
+        }
+        done = true;
+        try {
+            run(mc);
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fails++;
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} patchouli={}", TAG, passes, fails,
+                ModList.get().isLoaded("patchouli"));
+        mc.stop();                       // ⚠ 只调一次（收尾）
+    }
+
+    private static void run(Minecraft mc) throws Exception {
+        check("client_title_screen", mc.screen instanceof TitleScreen,
+                "界面=" + mc.screen.getClass().getName() + "（期望 TitleScreen；**没有进世界**）");
+        ResourceManager rm = mc.getResourceManager();
+
+        // ① 4 个条目在**客户端资源包**里都在（`book.json` 与配方 JSON 在 data 包里，
+        //    客户端标题界面**读不到**——那两条由服务端探针的 RecipeManager 读数负责，这里不断言）
+        String[] entries = { "chaos_materials", "chaos_feast", "gear_chaosgold", "gear_chaosalloy" };
+        for (String e : entries) {
+            boolean zh = resource(rm, "bettergold", BOOK + "/zh_cn/entries/" + e + ".json") != null;
+            boolean en = resource(rm, "bettergold", BOOK + "/en_us/entries/" + e + ".json") != null;
+            check("client_entry_" + e, zh && en, e + " zh=" + zh + " en=" + en);
+        }
+
+        // ② 全部条目 + 总页数（**从这个客户端真正挂载的资源包**里数，不是读仓库文件）
+        Map<ResourceLocation, Resource> zhEntries = rm.listResources(BOOK + "/zh_cn/entries",
+                rl -> rl.getPath().endsWith(".json"));
+        int totalPages = 0;
+        for (Resource r : zhEntries.values()) {
+            totalPages += pages(r).size();
+        }
+        check("client_entries_count", zhEntries.size() == 24,
+                "zh 条目数=" + zhEntries.size() + "（期望 24）");
+        check("client_pages_total", totalPages == 240,
+                "zh 总页数=" + totalPages + "（期望 240；bg-n10up 后材料章 16 -> 18）");
+
+        // ③ chaos_materials：18 页 + 第 5/6 页正是本轮两条（各 1 条配方）
+        JsonObject mat = json(resource(rm, "bettergold", BOOK + "/zh_cn/entries/chaos_materials.json"));
+        JsonArray pages = mat.getAsJsonArray("pages");
+        check("client_chaos_materials_pages", pages.size() == 18, "chaos_materials 页数=" + pages.size());
+        JsonObject p5 = pages.get(4).getAsJsonObject();
+        JsonObject p6 = pages.get(5).getAsJsonObject();
+        check("client_page5", "patchouli:crafting".equals(str(p5, "type"))
+                        && "bettergold:chaos_coin_from_string".equals(str(p5, "recipe"))
+                        && !p5.has("recipe2"),
+                "第 5 页=" + p5);
+        check("client_page6", "patchouli:smelting".equals(str(p6, "type"))
+                        && "bettergold:chaos_coin_smelting".equals(str(p6, "recipe"))
+                        && !p6.has("recipe2"),
+                "第 6 页=" + p6);
+
+        // ④ 语言文件（assets，客户端真的会读）：两条新页键在、旧口径那句已经不在
+        JsonObject zhLang = json(resource(rm, "bettergold", "lang/zh_cn.json"));
+        JsonObject enLang = json(resource(rm, "bettergold", "lang/en_us.json"));
+        String kStr = "bettergold.handbook.page.chaos_materials_upstream_string";
+        String kSmelt = "bettergold.handbook.page.chaos_materials_upstream_smelt";
+        String coinPage = "bettergold.handbook.page.chaos_materials_2_right";
+        check("client_lang_new_keys", zhLang.has(kStr) && zhLang.has(kSmelt)
+                        && enLang.has(kStr) && enLang.has(kSmelt),
+                "zh/en 都有 upstream_string + upstream_smelt");
+        check("client_lang_author_words", zhLang.get(coinPage).getAsString().contains("混沌金币串合成分解出的三个")
+                        && !zhLang.get(coinPage).getAsString().contains("关系作者还没有说明"),
+                "「混沌金币」页已换成作者原话、旧句不再出现");
+    }
+
+    private static String str(JsonObject o, String key) {
+        return o.has(key) && !o.get(key).isJsonNull() ? o.get(key).getAsString() : null;
+    }
+
+    private static JsonObject json(Resource r) throws Exception {
+        try (InputStream in = r.open(); InputStreamReader rd = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+            return JsonParser.parseReader(rd).getAsJsonObject();
+        }
+    }
+
+    private static JsonArray pages(Resource r) throws Exception {
+        return json(r).getAsJsonArray("pages");
+    }
+
+    /** data 包路径要看 `data/<ns>/<path>`：客户端资源包是合并视图，这里按路径再找一次。 */
+    private static Resource resource(ResourceManager rm, String ns, String path) {
+        return rm.getResource(ResourceLocation.fromNamespaceAndPath(ns, path)).orElse(null);
+    }
+}

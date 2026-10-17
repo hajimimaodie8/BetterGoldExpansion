@@ -1,0 +1,37 @@
+bg-n10up 执行记录（run\ 独占 / 进程 / 参数 / forceload）—— 1.7 混沌金锭上游轮
+================================================================================
+
+〇、一句话
+  本轮**没有任何客户端进入世界**：A 级用专用服务端（`runServer`）+ 探针；手册用**客户端启动探针**
+  （跑到标题界面就 `Minecraft#stop()`），所以**不需要** `--quickPlaySingleplayer`、
+  **没有改 `build.gradle`**、**没有碰 `run/saves`**。
+
+一、`run\` 独占
+  1. 起跑前查进程：只有 1 个 idle 的 **Gradle daemon**（PID 12344，命令行含 `GradleDaemon`）；
+     `run/logs/latest.log` 的 mtime 停在上一轮（22:43），没有正在跑的实例。
+  2. 逐条串行、每条都**等进程退出**再起下一条：
+     compileJava(exit 0) -> runData(exit 0) -> build(exit 0) -> runServer(exit 0) -> runClient(exit 0)
+     ->（收尾）compileJava/build(exit 0)。
+  3. 没有杀任何别的进程。
+
+二、服务端探针（A 级）
+  * 开关文件 `run/bgn10up-probe.enabled`（收尾已删）；
+  * `ServerStartedEvent` 里**先** `level.setChunkForced(25, 23, true)`（探针的方块都在 chunk (25,23)），
+    **等服务器真 tick 40 次**（`ServerTickEvent.Post`）再跑 —— 否则 `ExperienceOrb.award` 在
+    非 ticking 区块里**静默不生效**（本轮前两次实测：经验读成 0）；
+  * 探针自己 `halt(false)` **一次**；之前先 `setChunkForced(..., false)` 并断言 `getForcedChunks()` 为空：
+    日志 `up_forceload_back_to_zero :: 收尾时 forced chunks=0` / `forcedNow=0`（**双向 0**）；
+  * 读数：`SUMMARY pass=85 fail=0 forcedNow=0`（原样在 `01-A级读数.txt`）。
+
+三、客户端启动探针
+  * 开关文件 `run/bgn10up-client.enabled`（收尾已删）；
+  * 参数：**没有**动 `build.gradle`，也没有 `--quickPlay*` —— 客户端停在标题界面
+    （`mc.screen instanceof TitleScreen`），从**客户端真正挂载的资源包**里读手册条目/页数/语言文件，
+    然后 `Minecraft#stop()` **只调一次**；
+  * 读数：`SUMMARY pass=12 fail=0 patchouli=true`，整份客户端日志 **0 条 ERROR**。
+
+四、探针纪律
+  * 源码**先留档**到 `docs/bgn10up-证据/脚本副本/`（两个类各一份 `.java.txt`），再整块删除；
+  * `src` 内 `BgN10up` / `BGN10UP` / `TEMP PROBE` grep **0 命中**；
+  * 哨兵 `removed probe/`：`probe/bgn10up/` 已删、`probe/` 只剩空目录；
+  * 临时世界：没有新建；`run/world` 是服务端探针世界（只在里面摆了 1 个石头 + 1 个熔炉）。

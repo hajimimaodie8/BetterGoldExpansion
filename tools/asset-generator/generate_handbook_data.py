@@ -956,6 +956,11 @@ FEAST_ENTRIES = [entry_golden_feast_crops, entry_golden_feast_foods, entry_golde
 #
 #   * **混沌金没有「原料（raw）」、也没有「升级锻造模板」**（立档 §4.0 ⑱c / ㉑ 未裁；zip 里没有
 #     这两张贴图，作者禁止自己补画）⇒ 材料链只有 `混沌金币 → 锭 ⇄ 粒 / 块`，**没有第三段 §**；
+#     ▸ **1.7 `bg-n10up` 就地标注（2026-10-18）**：上面这句"只有"**在"没有 raw"这个意义上仍然成立**，
+#       但作者当轮补了**币自己的上游**（「混沌金币是由混沌金币串合成分解出的三个」+
+#       「混沌金粒由烧炼混沌金币获得」）⇒ 材料链现在是
+#       `混沌金币串 →（无序）3 币 →（烧炼）粒 → 9 粒 = 1 锭 ⇄ 块`，本章 16 → **18 页**
+#       （新增两页各 1 条配方）。旧句原文保留，详见 `docs/1.7-...md` §23。
 #   * 混沌金的器具 / 盔甲是**直接注册**的，**全仓没有 `smithing_chaosgold_*` 一类的锻造配方**
 #     （`generate_metal_recipes.py` 的 `RECIPE_SCOPE["chaosgold"] = {"material","building"}`）
 #     ⇒ 它的装备章节**不能**像八族那样挂 7 页锻造页；本轮挂**轮换图标表**
@@ -1007,7 +1012,18 @@ assert len(CHAOSALLOY_FORGE_ORDER) == 15, "崩乱合金锻造页顺序不是 15 
 
 
 def entry_chaos_materials():
-    """混沌金 + 崩乱合金的**材料链 / 建材 / 币**（16 页）。"""
+    """混沌金 + 崩乱合金的**材料链 / 建材 / 币**（18 页）。
+
+    ★ 1.7 `bg-n10up`（2026-10-18）：作者补了**混沌金锭的上游** ⇒ 本章 **16 → 18 页**：
+    ① 「币串 → 3 币」一页（`crafting_page`，1 个配方）+ ② 「币 →（烧炼）→ 粒」一页
+    （`smelting_page`，1 个配方）；**配方页 ≤2 个/页** 的上限没破（两页各只有 1 条，
+    而且是**不同页型**，本来就不能合并）。
+
+    插在「币」那一屏之后 ⇒ 读起来是「币 ← 币串」「币 → 粒」，再往下才是币的三条固定配方。
+    ⚠ 这一插让后面几屏的**屏号**整体 +1（币的三条截图从第 3 屏变**第 4 屏**）；
+    手册正文里那两处「第 N 屏」已同步改（`zh_cn` / `en_us` 的 `_1_left` 与 `_2_right`），
+    旧文案原文留档在 `docs/1.7-...md` §23。
+    """
     eid = "chaos_materials"
     pages = [
         # 1 左：混沌金材料链（含"没有原料 / 没有升级模板"的实现说明）
@@ -1018,24 +1034,27 @@ def entry_chaos_materials():
         crafting_page("chaosgold_block_from_ingot", "chaosgold_nugget_from_ingot"),
         # 2 右：混沌金币本身（作者原话：「（混沌金币的）**充数功能**」）
         spotlight_page("bettergold:chaos_coin", _ph(eid, "2_right")),
-        # 3 左 / 3 右：作者三张截图的**三条固定配方**（4 铜 / 6 铁 / 8 金 + 1 枚币）
+        # 3 左 / 3 右（★ 本轮新增）：上游两条 —— 币串 → 3 币（无序）/ 币 →（烧炼）→ 粒
+        crafting_page("chaos_coin_from_string", None, None, _ph(eid, "upstream_string")),
+        smelting_page("chaos_coin_smelting", None, None, _ph(eid, "upstream_smelt")),
+        # 4 左 / 4 右：作者三张截图的**三条固定配方**（4 铜 / 6 铁 / 8 金 + 1 枚币）
         crafting_page("copper_block_with_chaos_coin", "iron_block_with_chaos_coin"),
         crafting_page("gold_block_with_chaos_coin"),
-        # 4 左：11 件建材的**轮换表**（标题 = 「混沌金的建筑方块」）
+        # 5 左：11 件建材的**轮换表**（标题 = 「混沌金的建筑方块」）
         spotlight_page(building_forms("chaosgold"), None, _pht(eid, "3_left")),
-        # 4 右 ~ 6 右：11 件建材的配方（10 条 ⇒ 5 页 × 2）
+        # 5 右 ~ 7 右：11 件建材的配方（10 条 ⇒ 5 页 × 2）
         crafting_page("chaosgold_bricks_from_block", "chaosgold_bricks_stairs"),
         crafting_page("chaosgold_bricks_slab", "chaosgold_bricks_wall"),
         crafting_page("chaosgold_bars_from_ingot", "chaosgold_chain"),
         crafting_page("chaosgold_door_from_ingot", "chaosgold_trapdoor_from_ingot"),
         crafting_page("chaosgold_lantern", "craft_chaosgold_pillar"),
-        # 7 左：崩乱合金材料链（含"没有建材 / 没有原料 / 没有粒"的实现说明）
+        # 8 左：崩乱合金材料链（含"没有建材 / 没有原料 / 没有粒"的实现说明）
         text_page(_ph(eid, "4_left")),
-        # 7 右：锭（4 下界合金锭 + 4 混沌金块 + 1 高精度炼金油，作者原话）+ 升级锻造模板
+        # 8 右：锭（4 下界合金锭 + 4 混沌金块 + 1 高精度炼金油，作者原话）+ 升级锻造模板
         crafting_page("chaosalloy_ingot", "chaosalloy_upgrade_template"),
-        # 8 左：块 ⇄ 锭
+        # 9 左：块 ⇄ 锭
         crafting_page("chaosalloy_block_from_ingot", "chaosalloy_ingot_from_block"),
-        # 8 右：崩乱合金的三件形态（轮换表）
+        # 9 右：崩乱合金的三件形态（轮换表）
         spotlight_page(["bettergold:chaosalloy_ingot", "bettergold:chaosalloy_block",
                         "bettergold:chaosalloy_upgrade_template"], None, _pht(eid, "5_left")),
     ]
