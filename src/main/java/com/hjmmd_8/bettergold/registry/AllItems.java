@@ -20,6 +20,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SmithingTemplateItem;
@@ -120,8 +121,37 @@ public class AllItems {
      * {@code docs/bgn10r5-证据/11-本轮配方素材缺口.txt}），逐格反解出来的 4 条配方分别是
      * 万坚金砧 / 崩乱合金升级模板 / 混沌金币充数 / 混沌金附魔书 ⇒ <b>翻倍规则的输入、产物、是否消耗油全无依据</b>。
      * 按「不许自己发明一套翻倍算法」的口径：这里只落物品本体，规则待作者补（见 1.7 立档 §15.6）。</p>
+     *
+     * <p>★ <b>1.7 {@code bg-n10rc2}（作者 2026-10-18「第二个需要扩」）：这瓶油现在挂<b>物品级</b>
+     * {@code craftRemainder(Items.GLASS_BOTTLE)}</b>。作者原话是「任何吃高阶炼金油的配方都会开始返瓶」
+     * ——他接受这个副作用。1.21.1 的实证（{@code 【读源码】} sources jar）：</p>
+     * <ul>
+     *   <li>{@code Item.Properties#craftRemainder(Item)} <b>仍在</b>（{@code Item.java:436}），
+     *       存进 {@code Item.craftingRemainingItem}（{@code Item.java:70}）；</li>
+     *   <li>{@code DataComponents} 里<b>没有</b> {@code CRAFTING_REMAINDER} 这一类组件（全文件 0 命中）
+     *       ⇒ 1.21.1 <b>没迁到数据组件</b>，用属性就是现行做法；</li>
+     *   <li>原版先例：蜂蜜瓶 {@code Items.java:1935-1936} {@code .craftRemainder(GLASS_BOTTLE)}、
+     *       龙息 {@code Items.java:1770}、水/岩浆/奶桶 {@code Items.java:1215-1222}
+     *       （而<b>药水三件套</b> {@code Items.java:1368/1772/1779} <b>没有</b> remainder —— 瓶子由酿造台返还，
+     *       不是合成返还）；</li>
+     *   <li>生效点：{@code Recipe#getRemainingItems} 的默认实现（{@code Recipe.java:30-41}）逐格
+     *       {@code hasCraftingRemainingItem() → getCraftingRemainingItem()}；落点 = {@code ResultSlot#onTake}
+     *       （{@code ResultSlot.java:85-106}，每格 {@code removeItem(i,1)} 后 {@code setItem(i, remainder)}）
+     *       ⇒ 每格<b>恰好一份</b>剩余物。</li>
+     * </ul>
+     *
+     * <p>⚠ <b>与配方层那条并存，但不许双返</b>：{@code RawSturdygoldRecipe#getRemainingItems}
+     * <b>覆盖</b>了默认实现（从不调用 {@code Recipe.super}）⇒ 走「贵金原料」那几条时，
+     * 物品级 remainder <b>根本不参与</b>，返瓶仍由那一层给（炼金燃油 1.5 起的行为因此原样保留）；
+     * 反过来，任何<b>别的</b>吃这瓶油的配方（如 {@code chaosalloy_ingot}）走默认实现 ⇒ 只读物品级。
+     * 两条路径<b>按配方类型互斥</b>，同一次合成都只有一处会给出玻璃瓶。
+     * 关卡 {@code [bgn10rc2-remainder-*]} 钉死"两条路径各恰好 1 处 + 不许互相调用"，
+     * A 级再按"背包里只多 1 个瓶"实测。
+     * （⚠ <b>不要</b>给 {@code alchemic_fuel} 也挂物品级 remainder：那是另一个物品，
+     * 作者这轮只点名了高阶炼金油。）</p>
      */
-    public static final DeferredItem<Item> REFINED_ALCHEMIC_OIL = ITEMS.registerSimpleItem("refined_alchemic_oil");
+    public static final DeferredItem<Item> REFINED_ALCHEMIC_OIL = ITEMS.register("refined_alchemic_oil",
+            () -> new Item(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE)));
 
     /** 金钱贝 */
     public static final DeferredItem<Item> GOLDEN_COWRIE = ITEMS.registerSimpleItem("golden_cowrie");

@@ -968,6 +968,11 @@ FEAST_ENTRIES = [entry_golden_feast_crops, entry_golden_feast_foods, entry_golde
 #     （11 件，逐格照原版），上面那句"不能挂配方页 / 只展示不展示配方"**只对 1.7 收口轮成立**，
 #     已由 `docs/1.7-...md` §20 取代。轮换图标表保留（它负责展示**没有**工作台配方的 4 件：
 #     弓 / 三叉戟 / 重锤 / 乐事刀 —— 见 `generate_chaosgold_recipes.py` 的 `EXCLUDED`）。
+#     ▸ **1.7 `bg-n10rc2` 就地标注（2026-10-18）**：作者对"剩下 4 件"的裁定是「**第一个可以考虑**」
+#       ⇒ 弓 / 重锤 / 三叉戟 / 乐事刀 **也补上了工作台配方**，`EXCLUDED` 由 4 件变 **0 件**，
+#       配方页由 6 页变 **8 页**（15 件 = 7 页 × 2 + 1 页单条），本章 13 页 → **15 页**。
+#       上面那句"轮换图标表负责展示没有配方的 4 件"**已作废**（图标表照旧保留，它本来就是
+#       "器具/盔甲一屏展示"的既有表达，不承担"没有配方"的语义）。详见 `docs/1.7-...md` §21。
 #   * **崩乱合金只有锭 / 块 / 升级锻造模板**（立档 §4.0 ⑪d 裁定「按照现有的贴图标准来」）
 #     ⇒ 它的材料章节只有 3 页，**没有**建材页（别硬凑 11 建材）。
 #
@@ -986,10 +991,12 @@ CHAOSGOLD_GEAR_SHOW = ["sword", "axe", "pickaxe", "shovel", "hoe", "knife",
                        "mace", "bow", "crossbow", "trident", "shield"]
 # ★ 1.7 `bg-n10rg`：混沌金**工作台配方**的 11 件（= 配方页顺序）。
 # ⚠ 这张表**不在本文件写第二份**：直接取唯一真源 `generate_chaosgold_recipes.GEAR`
-#   （那个脚本负责 11 条配方 JSON 的字节；这里只负责"把它们排成 6 页"）。
+#   （那个脚本负责配方 JSON 的字节；这里只负责"把它们排成页"）。
 #   4 件没有工作台配方的（弓 / 三叉戟 / 重锤 / 乐事刀）在那边是 `EXCLUDED`，本文件只提醒一句。
+# ▸ 1.7 `bg-n10rc2`（2026-10-18）：4 件已补齐 ⇒ `GEAR` 由 **11 → 15**，`EXCLUDED` 由 **4 → 0**。
+#   旧断言数字（11）原文留档在这里：`assert len(CHAOSGOLD_CRAFT_ORDER) == 11`。
 CHAOSGOLD_CRAFT_ORDER = CHAOSGOLD_RECIPES.GEAR
-assert len(CHAOSGOLD_CRAFT_ORDER) == 11, "混沌金工作台配方不是 11 件"
+assert len(CHAOSGOLD_CRAFT_ORDER) == 15, "混沌金工作台配方不是 15 件"
 assert not (set(CHAOSGOLD_CRAFT_ORDER) & set(CHAOSGOLD_RECIPES.EXCLUDED)), \
     "工作台配方的件与被排除的件重叠了（两张表打架，改 generate_chaosgold_recipes.py）"
 # 崩乱合金的锻造页顺序 = §八 的 `FORGE_ORDER` **再补上乐事刀** ⇒ **15 件 = 8 页**
@@ -1048,12 +1055,17 @@ def entry_chaos_feast():
 
 
 def entry_gear_chaosgold():
-    """章10 · 混沌金装备（13 页）：3 文案 + **6 页工作台配方（11 件）** + 3 轮换图标 + 附魔书配方。
+    """章10 · 混沌金装备（15 页）：3 文案 + **8 页工作台配方（15 件）** + 3 轮换图标 + 附魔书配方。
 
     1.7 `bg-n10rg`：11 件器具/盔甲的配方页，配方 id 与 `generate_chaosgold_recipes.py` 的
     `GEAR` **共用同一张表**（那个脚本是唯一真源，本文件不再写第二份清单）；
     页型 = `patchouli:crafting`（工作台），**每页 2 条**（Patchouli 结构上限）。
-    弓 / 三叉戟 / 重锤 / 乐事刀 4 件没有工作台配方 ⇒ 只出现在轮换图标表里。
+
+    1.7 `bg-n10rc2`（作者 2026-10-18「第一个可以考虑」）：弓 / 重锤 / 三叉戟 / 乐事刀
+    **也补上了配方** ⇒ 15 件 = 7 页 × 2 + 最后 1 页单条（`crafting_page` 不写 `recipe2`
+    ⇒ 页面上只有一个配方槽，不会留空位）。
+    ⚠ 乐事刀那条带 `neoforge:mod_loaded(farmersdelight)` ⇒ **没装乐事时这一页是空的**
+    （与 §八 的 E2 记账、`gear_chaosalloy` 的刀页同一种情形：手册树是单份静态 JSON、不按环境分岔）。
     """
     eid = "gear_chaosgold"
     pages = [text_page(_k) for _k in _gear_text_keys("chaosgold")]
@@ -1200,7 +1212,7 @@ def main():
     print(
         "  1.7 chaos chapters (bg-n10r9): %d entries / %d pages "
         "(materials=%d, feast=%d, gear_chaosgold=%d, gear_chaosalloy=%d; "
-        "混沌金无 raw / 无升级模板 / 无锻造配方 => 装备章 11 件走工作台配方（6 页）+ 轮换图标表；"
+        "混沌金无 raw / 无升级模板 / 无锻造配方 => 装备章 15 件走工作台配方（8 页）+ 轮换图标表；"
         "崩乱合金无建材 => 材料 3 页)"
         % (len(CHAOS_ENTRIES), chaos_pages,
            len(entry_chaos_materials()["pages"]),

@@ -1,0 +1,12 @@
+七关卡读数（判据 = exit + 关键计数，两列）
+
+脚本                           exit   关键计数行
+validate_metal_assets.py     0      [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_metal_data.py       0      [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_trim_assets.py      0      [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements.py     0      [bgach-ok] 问题 0 条 / 成就 59 个 / criteria 142 条 / 语言键 118 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+check_jar_clean.py           0      [jar-clean-ok] 产物 jar 干净（条目 2791；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py       0      [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+validate_bg17_textures.py    0      [bg17tex-summary] checked=630 authorized=72 untouched=553 modelrefs=64 problems=0
+
+七个 exit 全 0 = True

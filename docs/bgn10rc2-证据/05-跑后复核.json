@@ -1,0 +1,161 @@
+{
+  "tag": "after",
+  "server_properties_sha256": "20278CA0CF5CE0EEC6333F92BD6695B1F00A919E19EC97400C87C63A719A44DF",
+  "saves_dirs": [
+    "新的世界"
+  ],
+  "saves_file_count": 29,
+  "saves_total_bytes": 18862026,
+  "saves_files": [
+    {
+      "path": "saves/新的世界/advancements/380df991-f603-344c-a090-369bad2a924a.json",
+      "size": 4358,
+      "mtime": 1791542893768685700
+    },
+    {
+      "path": "saves/新的世界/data/chunks.dat",
+      "size": 59,
+      "mtime": 1790922561248794300
+    },
+    {
+      "path": "saves/新的世界/data/neoforge_data_attachments.dat",
+      "size": 48,
+      "mtime": 1791542893897232100
+    },
+    {
+      "path": "saves/新的世界/data/raids.dat",
+      "size": 90,
+      "mtime": 1791542893893197800
+    },
+    {
+      "path": "saves/新的世界/data/random_sequences.dat",
+      "size": 548,
+      "mtime": 1791541289672375800
+    },
+    {
+      "path": "saves/新的世界/DIM-1/data/neoforge_data_attachments.dat",
+      "size": 48,
+      "mtime": 1791542894000464500
+    },
+    {
+      "path": "saves/新的世界/DIM-1/data/raids.dat",
+      "size": 90,
+      "mtime": 1791542893998452900
+    },
+    {
+      "path": "saves/新的世界/DIM1/data/neoforge_data_attachments.dat",
+      "size": 48,
+      "mtime": 1791542893995383900
+    },
+    {
+      "path": "saves/新的世界/DIM1/data/raids_end.dat",
+      "size": 90,
+      "mtime": 1791542893991821100
+    },
+    {
+      "path": "saves/新的世界/entities/r.-1.-1.mca",
+      "size": 159744,
+      "mtime": 1791542893985613600
+    },
+    {
+      "path": "saves/新的世界/entities/r.-1.0.mca",
+      "size": 180224,
+      "mtime": 1791542893987628100
+    },
+    {
+      "path": "saves/新的世界/entities/r.0.-1.mca",
+      "size": 319488,
+      "mtime": 1791542893987628100
+    },
+    {
+      "path": "saves/新的世界/entities/r.0.0.mca",
+      "size": 307200,
+      "mtime": 1791542893987628100
+    },
+    {
+      "path": "saves/新的世界/icon.png",
+      "size": 8269,
+      "mtime": 1787840593063602200
+    },
+    {
+      "path": "saves/新的世界/level.dat",
+      "size": 2867,
+      "mtime": 1791542894008124900
+    },
+    {
+      "path": "saves/新的世界/level.dat_old",
+      "size": 2873,
+      "mtime": 1791542796276135000
+    },
+    {
+      "path": "saves/新的世界/playerdata/380df991-f603-344c-a090-369bad2a924a.dat",
+      "size": 1268,
+      "mtime": 1791542893749193000
+    },
+    {
+      "path": "saves/新的世界/playerdata/380df991-f603-344c-a090-369bad2a924a.dat_old",
+      "size": 1275,
+      "mtime": 1791541289654114000
+    },
+    {
+      "path": "saves/新的世界/poi/r.-1.-1.mca",
+      "size": 0,
+      "mtime": 1787840632582544700
+    },
+    {
+      "path": "saves/新的世界/poi/r.-1.0.mca",
+      "size": 20480,
+      "mtime": 1787840645465066800
+    },
+    {
+      "path": "saves/新的世界/poi/r.0.-1.mca",
+      "size": 24576,
+      "mtime": 1789137781369518700
+    },
+    {
+      "path": "saves/新的世界/poi/r.0.0.mca",
+      "size": 36864,
+      "mtime": 1787840645465066800
+    },
+    {
+      "path": "saves/新的世界/region/r.-1.-1.mca",
+      "size": 4161536,
+      "mtime": 1791542893849540700
+    },
+    {
+      "path": "saves/新的世界/region/r.-1.0.mca",
+      "size": 3403776,
+      "mtime": 1791542810290415100
+    },
+    {
+      "path": "saves/新的世界/region/r.0.-1.mca",
+      "size": 5382144,
+      "mtime": 1791542893857020700
+    },
+    {
+      "path": "saves/新的世界/region/r.0.0.mca",
+      "size": 4841472,
+      "mtime": 1791542893855672800
+    },
+    {
+      "path": "saves/新的世界/serverconfig/readme.txt",
+      "size": 469,
+      "mtime": 1787840586591447800
+    },
+    {
+      "path": "saves/新的世界/session.lock",
+      "size": 3,
+      "mtime": 1791542794871061100
+    },
+    {
+      "path": "saves/新的世界/stats/380df991-f603-344c-a090-369bad2a924a.json",
+      "size": 2119,
+      "mtime": 1791542893761071800
+    }
+  ],
+  "world_file_count": 63,
+  "world_total_bytes": 50115707,
+  "server_properties_sha256_note": "字段 server_properties_sha256 = 服务器自己重写后的值（复原前）；server_properties_sha256_restored = 用跑前 .bak 字节复制复原后的值",
+  "server_properties_sha256_restored": "A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4",
+  "server_properties_bak_sha256": "A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4"
+}

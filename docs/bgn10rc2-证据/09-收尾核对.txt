@@ -1,0 +1,66 @@
+bg-n10rc2 收尾核对
+
+src 内 BgN10rc2 命中                              0        期望 0      OK
+src 内 BGN10RC2 命中                              0        期望 0      OK
+src 内 halt( 命中                                 0        期望 0      OK
+src/…/probe/ 目录存在                              0        期望 0      OK
+开关文件 run/bgn10rc2-probe.enabled 存在             0        期望 0      OK
+probe/bgn10rc2 目录存在                            0        期望 0      OK
+__pycache__ 里未跟踪的那个 pyc 存在（应为 0）               0        期望 0      OK
+__pycache__ 里**仓库跟踪**的 metal_forms pyc 存在（应为 1） 1        期望 1      OK
+jar 条目数                                        2791     期望 2791   OK
+jar 内 *Probe* 条目                               0        期望 0      OK
+run/saves 文件数（跑前==跑后）                          1        期望 1      OK
+run/server.properties 复原后 SHA == 跑前            1        期望 1      OK
+git status 行数（M 9 + ?? 5 = 14）                 14       期望 14     OK
+
+git status --short（收尾态）：
+  M "docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+   M src/main/java/com/hjmmd_8/bettergold/registry/AllItems.java
+   M src/main/resources/assets/bettergold/lang/en_us.json
+   M src/main/resources/assets/bettergold/lang/zh_cn.json
+   M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/gear_chaosgold.json
+   M src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/gear_chaosgold.json
+   M tools/asset-generator/generate_chaosgold_recipes.py
+   M tools/asset-generator/generate_handbook_data.py
+   M tools/asset-generator/validate_metal_data.py
+  ?? "docs/bgn10rc2-\350\257\201\346\215\256/"
+  ?? src/main/resources/data/bettergold/recipe/chaosgold_bow.json
+  ?? src/main/resources/data/bettergold/recipe/chaosgold_knife.json
+  ?? src/main/resources/data/bettergold/recipe/chaosgold_mace.json
+  ?? src/main/resources/data/bettergold/recipe/chaosgold_trident.json
+
+证据目录清单：
+  01-A级读数.txt                                              6519 B
+  02-双返负向读数.txt                                            6608 B
+  03-扰动矩阵.txt                                              1378 B
+  04-跑前留档.json                                             4189 B
+  05-跑后复核.json                                             4599 B
+  06-跑测留档与复原.txt                                           1234 B
+  09-收尾核对.txt                                              4562 B
+  10-七关卡.txt                                               1035 B
+  scripts/bgn10rc2_annotate_old.py                         3411 B
+  scripts/bgn10rc2_append_doc.py                          15848 B
+  scripts/bgn10rc2_closeout.py                             4376 B
+  scripts/bgn10rc2_dedup_doc.py                            1746 B
+  scripts/bgn10rc2_evidence.py                             2798 B
+  scripts/bgn10rc2_exp_return.py                           7983 B
+  scripts/bgn10rc2_fill_doc.py                            11627 B
+  scripts/bgn10rc2_finalize_doc.py                         2962 B
+  scripts/bgn10rc2_fix_gitstatus.py                        2686 B
+  scripts/bgn10rc2_gates.py                                1991 B
+  scripts/bgn10rc2_inject_double.py                        2798 B
+  scripts/bgn10rc2_perturb.py                              5946 B
+  scripts/bgn10rc2_run_prep.py                             3252 B
+  scripts/bgn10rc2_run_record.py                           3354 B
+  清单.txt                                                   1396 B
+  脚本副本/BgN10rc2Probe.java.txt                             17152 B
+  脚本副本/扰动备份-comment-only__RawSturdygoldRecipe.java.orig    12660 B
+  脚本副本/扰动备份-double-bottle__RawSturdygoldRecipe.java.orig    12660 B
+  脚本副本/扰动备份-drop-fd-condition__chaosgold_knife.json.orig      419 B
+  脚本副本/扰动备份-grid-swap__chaosgold_trident.json.orig          323 B
+  脚本副本/扰动备份-mace-block-to-ingot__chaosgold_mace.json.orig      314 B
+  脚本副本/扰动备份-RawSturdygoldRecipe.java.orig                 12660 B
+  脚本副本/扰动备份-result-count__chaosgold_bow.json.orig           320 B
+
+全部核对通过: True

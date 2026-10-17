@@ -1,0 +1,49 @@
+# bg-n10rc2 双返负向（故意注入「第二格也塞瓶」）：期望 _bottle_total=2 ⇒ 红
+# 来源 = run/logs 汇总（gradlew runServer 的 stdout）: bgn10rc2-runserver-2-double.log
+# 说明：日志本体是 UTF-16LE，本文件已转成 UTF-8、只保留探针行
+
+BGN10RC2PROBE INFO ready dummy=bgn10rc2dummy level=minecraft:overworld
+BGN10RC2PROBE PASS c2_oil_has_remainder :: refined_alchemic_oil.hasCraftingRemainingItem()=true
+BGN10RC2PROBE PASS c2_oil_remainder_is_bottle :: getCraftingRemainingItem()=minecraft:glass_bottle
+BGN10RC2PROBE PASS c2_fuel_no_remainder :: alchemic_fuel.hasCraftingRemainingItem()=false�����򣺷�ƿֻ�����**�߽�������**�ϣ�
+BGN10RC2PROBE INFO c2_farmersdelight_loaded :: true�����µ������䷽���� mod_loaded(farmersdelight) ? ֻ����Ϊ true ʱ�Ÿô��ڣ�
+BGN10RC2PROBE INFO c2_bow :: ��λ - chaosgold_ingot string | chaosgold_ingot - string | - chaosgold_ingot string | 
+BGN10RC2PROBE PASS c2_bow_result :: �����=1x bettergold:chaosgold_bow������ 1x bettergold:chaosgold_bow��
+BGN10RC2PROBE PASS c2_bow_consumed :: ��� ?1 ȫ����ȷ������������ѿ�=true
+BGN10RC2PROBE PASS c2_bow_landed :: �����������������=1x������ 1��freeSlot=10
+BGN10RC2PROBE PASS c2_bow_bottle_total :: ���Ų˵�+���+�����Ĳ���ƿ�ϼ�=0������ 0��**˫������� 2**��
+BGN10RC2PROBE INFO c2_mace :: ��λ - chaosgold_block - | - breeze_rod - | - - - | 
+BGN10RC2PROBE PASS c2_mace_result :: �����=1x bettergold:chaosgold_mace������ 1x bettergold:chaosgold_mace��
+BGN10RC2PROBE PASS c2_mace_consumed :: ��� ?1 ȫ����ȷ������������ѿ�=true
+BGN10RC2PROBE PASS c2_mace_landed :: �����������������=1x������ 1��freeSlot=10
+BGN10RC2PROBE PASS c2_mace_bottle_total :: ���Ų˵�+���+�����Ĳ���ƿ�ϼ�=0������ 0��**˫������� 2**��
+BGN10RC2PROBE INFO c2_trident :: ��λ chaosgold_ingot chaosgold_ingot chaosgold_ingot | - chaosgold_ingot - | - stick - | 
+BGN10RC2PROBE PASS c2_trident_result :: �����=1x bettergold:chaosgold_trident������ 1x bettergold:chaosgold_trident��
+BGN10RC2PROBE PASS c2_trident_consumed :: ��� ?1 ȫ����ȷ������������ѿ�=true
+BGN10RC2PROBE PASS c2_trident_landed :: �����������������=1x������ 1��freeSlot=10
+BGN10RC2PROBE PASS c2_trident_bottle_total :: ���Ų˵�+���+�����Ĳ���ƿ�ϼ�=0������ 0��**˫������� 2**��
+BGN10RC2PROBE INFO c2_knife :: ��λ chaosgold_ingot - - | stick - - | - - - | 
+BGN10RC2PROBE PASS c2_knife_result :: �����=1x bettergold:chaosgold_knife������ 1x bettergold:chaosgold_knife��
+BGN10RC2PROBE PASS c2_knife_consumed :: ��� ?1 ȫ����ȷ������������ѿ�=true
+BGN10RC2PROBE PASS c2_knife_landed :: �����������������=1x������ 1��freeSlot=10
+BGN10RC2PROBE PASS c2_knife_bottle_total :: ���Ų˵�+���+�����Ĳ���ƿ�ϼ�=0������ 0��**˫������� 2**��
+BGN10RC2PROBE INFO c2_doubled_echogold :: ��λ mixed_crystal_pile mixed_crystal_pile redstone | redstone gold_block gold_block | netherite_ingot bundled_echo_shard refined_alchemic_oil | 
+BGN10RC2PROBE PASS c2_doubled_echogold_result :: �����=2x bettergold:raw_echogold������ 2x bettergold:raw_echogold��
+BGN10RC2PROBE FAIL c2_doubled_echogold_consumed :: ��� ?1 [��7(bettergold:bundled_echo_shard)=1����0]������������ѿ�=true
+BGN10RC2PROBE PASS c2_doubled_echogold_landed :: �����������������=2x������ 2��freeSlot=10
+BGN10RC2PROBE FAIL c2_doubled_echogold_bottle_total :: ���Ų˵�+���+�����Ĳ���ƿ�ϼ�=2������ 1��**˫������� 2**��
+BGN10RC2PROBE PASS c2_doubled_echogold_bottle_in_inventory :: �����ﲣ��ƿ=1������ǡ�� 1����Ϊ 2 ����˫����
+BGN10RC2PROBE INFO c2_chaosalloy_ingot :: ��λ netherite_ingot netherite_ingot netherite_ingot | netherite_ingot chaosgold_block chaosgold_block | chaosgold_block chaosgold_block refined_alchemic_oil | 
+BGN10RC2PROBE PASS c2_chaosalloy_ingot_result :: �����=1x bettergold:chaosalloy_ingot������ 1x bettergold:chaosalloy_ingot��
+BGN10RC2PROBE PASS c2_chaosalloy_ingot_consumed :: ��� ?1 ȫ����ȷ������������ѿ�=true
+BGN10RC2PROBE PASS c2_chaosalloy_ingot_landed :: �����������������=1x������ 1��freeSlot=10
+BGN10RC2PROBE PASS c2_chaosalloy_ingot_bottle_total :: ���Ų˵�+���+�����Ĳ���ƿ�ϼ�=1������ 1��**˫������� 2**��
+BGN10RC2PROBE PASS c2_chaosalloy_ingot_bottle_in_inventory :: �����ﲣ��ƿ=1������ǡ�� 1����Ϊ 2 ����˫����
+BGN10RC2PROBE INFO c2_base_fuel_echogold :: ��λ mixed_crystal_pile mixed_crystal_pile redstone | redstone gold_block gold_block | netherite_ingot bundled_echo_shard alchemic_fuel | 
+BGN10RC2PROBE PASS c2_base_fuel_echogold_result :: �����=1x bettergold:raw_echogold������ 1x bettergold:raw_echogold��
+BGN10RC2PROBE FAIL c2_base_fuel_echogold_consumed :: ��� ?1 [��7(bettergold:bundled_echo_shard)=1����0]������������ѿ�=true
+BGN10RC2PROBE PASS c2_base_fuel_echogold_landed :: �����������������=1x������ 1��freeSlot=10
+BGN10RC2PROBE FAIL c2_base_fuel_echogold_bottle_total :: ���Ų˵�+���+�����Ĳ���ƿ�ϼ�=2������ 1��**˫������� 2**��
+BGN10RC2PROBE PASS c2_base_fuel_echogold_bottle_in_inventory :: �����ﲣ��ƿ=1������ǡ�� 1����Ϊ 2 ����˫����
+BGN10RC2PROBE INFO forceload :: forcedNow=0
+BGN10RC2PROBE SUMMARY pass=30 fail=4 forcedNow=0

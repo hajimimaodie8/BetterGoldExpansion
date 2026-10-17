@@ -1,0 +1,368 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+
+/**
+ * 临时探针（1.7 <b>bg-n10rc2</b>：4 件补齐的工作台配方 + 返瓶扩到物品级）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10rc2-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>真什么：真 {@link ServerPlayer}（{@code new ServerPlayer} + 假连接）+ 真 {@link CraftingMenu}
+ * （<b>真</b> {@code ContainerLevelAccess}）+ 真 {@code slotsChanged}
+ * （{@code CraftingMenu.slotChangedCraftingGrid} → 真 {@code RecipeManager} → 真 {@code assemble}）
+ * + <b>两次真点击</b>（结果格 → 光标 → 背包空槽）；消耗由 {@code ResultSlot#onTake} 真的逐格 −1，
+ * 剩余物（玻璃瓶）也是它按 {@code ResultSlot.java:85-106} 放回<b>原格</b>的。</p>
+ *
+ * <p>五组读数：</p>
+ * <ol>
+ *   <li><b>机制</b>：{@code refined_alchemic_oil.getCraftingRemainingItem() == Items.GLASS_BOTTLE}
+ *       （物品级 remainder 真的挂上了），且 {@code alchemic_fuel} <b>没有</b> remainder（负向）；</li>
+ *   <li><b>①</b> 弓 / 重锤 / 三叉戟 / 乐事刀 逐件真合成（产物 + 9 格逐格 −1 + 落袋）；
+ *       乐事刀只在农夫乐事装着时才有配方（探针会打印 FD 是否加载）；</li>
+ *   <li><b>②</b> 双倍贵金原料（高阶炼金油）⇒ 产出 <b>2</b> + 催化剂那格变玻璃瓶 + 背包多 1 瓶；</li>
+ *   <li><b>★</b> <b>只返 1 个瓶</b>：整张菜单 + 背包 + 光标合计玻璃瓶 <b>恰好 1</b>
+ *       （若"配方层 + 物品级"双返，这里会读到 2 ⇒ 必须红）；</li>
+ *   <li><b>③</b> 另一条吃高阶油的配方 {@code chaosalloy_ingot}（无序）⇒ 也<b>恰好返 1 瓶</b>
+ *       （这就是作者「第二个需要扩」的目的）；</li>
+ *   <li><b>④</b> 炼金燃油那条基础原料 ⇒ 产出 <b>1</b>、也返 1 瓶（1.5 起的既有行为，扩之前之后一致）。</li>
+ * </ol>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} <b>只调一次</b>；不 forceload、不碰存档（假玩家不写 playerdata）；
+ * 收尾整块删除。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgN10rc2Probe {
+
+    private static final String TAG = "BGN10RC2PROBE";
+    private static final String SWITCH = "bgn10rc2-probe.enabled";
+
+    private static final String INGOT = "bettergold:chaosgold_ingot";
+    private static final String CBLOCK = "bettergold:chaosgold_block";
+    private static final String STICK = "minecraft:stick";
+    private static final String STRING = "minecraft:string";
+    private static final String BREEZE = "minecraft:breeze_rod";
+
+    private static final String CRYSTAL = "bettergold:mixed_crystal_pile";
+    private static final String REDSTONE = "minecraft:redstone";
+    private static final String GOLD_BLOCK = "minecraft:gold_block";
+    private static final String NETHERITE = "minecraft:netherite_ingot";
+    private static final String OIL = "bettergold:refined_alchemic_oil";
+    private static final String FUEL = "bettergold:alchemic_fuel";
+    private static final String ECHO_SHARD = "bettergold:bundled_echo_shard";
+    private static final String RAW_ECHOGOLD = "bettergold:raw_echogold";
+    private static final String CHAOSALLOY = "bettergold:chaosalloy_ingot";
+    private static final String BOTTLE = "minecraft:glass_bottle";
+
+    private static int passes;
+    private static int fails;
+
+    private static ServerLevel level;
+    private static ServerPlayer dummy;
+
+    private BgN10rc2Probe() {
+    }
+
+    /** 开关文件（`user.dir` 在 ModDevGradle 的 runServer 里就是 `run/`） */
+    public static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir"), SWITCH));
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static void info(String msg) {
+        bettergold.LOGGER.info("{} INFO {}", TAG, msg);
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        done = true;
+        MinecraftServer server = event.getServer();
+        try {
+            run(server);
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("c2_exception", String.valueOf(t));
+        }
+        info("forceload :: forcedNow=" + (level == null ? -1 : level.getForcedChunks().size()));
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} forcedNow={}", TAG, passes, fails,
+                level == null ? -1 : level.getForcedChunks().size());
+        server.halt(false);
+    }
+
+    private static boolean done;
+
+    private static void run(MinecraftServer server) {
+        level = server.overworld();
+        dummy = new ServerPlayer(server, level,
+                new GameProfile(UUID.randomUUID(), "bgn10rc2dummy"), ClientInformation.createDefault());
+        dummy.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                dummy,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "bgn10rc2probe"), false));
+        dummy.moveTo(1008.5D, 120.0D, 1008.5D, 0.0F, 0.0F);
+        info("ready dummy=" + dummy.getGameProfile().getName() + " level=" + level.dimension().location());
+
+        // ---------- ⓪ 机制读数：物品级 remainder ----------
+        Item oil = item(OIL);
+        Item fuel = item(FUEL);
+        check("c2_oil_has_remainder", oil.hasCraftingRemainingItem(),
+                "refined_alchemic_oil.hasCraftingRemainingItem()=" + oil.hasCraftingRemainingItem());
+        check("c2_oil_remainder_is_bottle", oil.getCraftingRemainingItem() == Items.GLASS_BOTTLE,
+                "getCraftingRemainingItem()=" + (oil.getCraftingRemainingItem() == null
+                        ? "<null>" : BuiltInRegistries.ITEM.getKey(oil.getCraftingRemainingItem())));
+        check("c2_fuel_no_remainder", !fuel.hasCraftingRemainingItem(),
+                "alchemic_fuel.hasCraftingRemainingItem()=" + fuel.hasCraftingRemainingItem()
+                        + "（负向：返瓶只许加在**高阶炼金油**上）");
+
+        boolean fd = ModList.get().isLoaded("farmersdelight");
+        info("c2_farmersdelight_loaded :: " + fd
+                + "（乐事刀那条配方挂了 mod_loaded(farmersdelight) ⇒ 只有它为 true 时才该存在）");
+
+        // ---------- ① 4 件：逐件真合成（产物 + 9 格逐格 −1 + 落袋） ----------
+        // 弓：原版 ` #X / # X / #X`，**棍那一格换成混沌金锭** ⇒ 3 锭 + 3 线
+        craft("c2_bow", new String[] {
+                null, INGOT, STRING,
+                INGOT, null, STRING,
+                null, INGOT, STRING,
+        }, "bettergold:chaosgold_bow", 1, -1);
+        // 重锤：原版 ` # /  I `，**重核那一格换成混沌金块** ⇒ 1 块 + 1 微风棒
+        craft("c2_mace", new String[] {
+                null, CBLOCK, null,
+                null, BREEZE, null,
+                null, null, null,
+        }, "bettergold:chaosgold_mace", 1, -1);
+        // 三叉戟：**原创形状**（上排 3 锭 + 中列再 1 锭 + 底部 1 棍）
+        craft("c2_trident", new String[] {
+                INGOT, INGOT, INGOT,
+                null, INGOT, null,
+                null, STICK, null,
+        }, "bettergold:chaosgold_trident", 1, -1);
+        // 乐事刀：1 混沌金锭 + 1 棍（只在装 FD 时存在）
+        if (fd) {
+            craft("c2_knife", new String[] {
+                    INGOT, null, null,
+                    STICK, null, null,
+                    null, null, null,
+            }, "bettergold:chaosgold_knife", 1, -1);
+        } else {
+            info("c2_knife_skipped :: farmersdelight 未装 ⇒ 这条配方按 mod_loaded 条件不产出，"
+                    + "本轮只能在有 FD 的环境实测（本行就是「未实测」的记账）");
+        }
+
+        // ---------- ② 双倍贵金原料（高阶炼金油）：产出 2 + 催化剂格变瓶 + ★ 只返 1 个瓶 ----------
+        craft("c2_doubled_echogold", new String[] {
+                CRYSTAL, CRYSTAL, REDSTONE,
+                REDSTONE, GOLD_BLOCK, GOLD_BLOCK,
+                NETHERITE, ECHO_SHARD, OIL,
+        }, RAW_ECHOGOLD, 2, 8);
+
+        // ---------- ③ 另一条吃高阶油的配方（chaosalloy_ingot，无序）⇒ 也恰好返 1 瓶 ----------
+        craft("c2_chaosalloy_ingot", new String[] {
+                NETHERITE, NETHERITE, NETHERITE,
+                NETHERITE, CBLOCK, CBLOCK,
+                CBLOCK, CBLOCK, OIL,
+        }, CHAOSALLOY, 1, 8);
+
+        // ---------- ④ 炼金燃油那条（基础原料，产出 1）：返瓶行为与扩之前一致 ----------
+        craft("c2_base_fuel_echogold", new String[] {
+                CRYSTAL, CRYSTAL, REDSTONE,
+                REDSTONE, GOLD_BLOCK, GOLD_BLOCK,
+                NETHERITE, ECHO_SHARD, FUEL,
+        }, RAW_ECHOGOLD, 1, 8);
+    }
+
+    private static String desc(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return "<空>";
+        }
+        return stack.getCount() + "x " + BuiltInRegistries.ITEM.getKey(stack.getItem());
+    }
+
+    private static Item item(String id) {
+        Item it = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+        if (it == null || it == Items.AIR) {
+            fail("c2_item_missing", "物品注册表里没有 " + id);
+        }
+        return it;
+    }
+
+    private static int countInInventory(String id) {
+        int n = 0;
+        for (int i = 0; i < dummy.getInventory().getContainerSize(); i++) {
+            ItemStack s = dummy.getInventory().getItem(i);
+            if (!s.isEmpty() && BuiltInRegistries.ITEM.getKey(s.getItem()).toString().equals(id)) {
+                n += s.getCount();
+            }
+        }
+        return n;
+    }
+
+    /** 整张菜单（46 格）+ 光标 + 玩家背包里某物品的合计数量。 */
+    private static int countEverywhere(CraftingMenu menu, String id) {
+        int n = 0;
+        for (int i = 0; i < menu.slots.size(); i++) {
+            ItemStack s = menu.getSlot(i).getItem();
+            if (!s.isEmpty() && BuiltInRegistries.ITEM.getKey(s.getItem()).toString().equals(id)) {
+                n += s.getCount();
+            }
+        }
+        ItemStack carried = menu.getCarried();
+        if (!carried.isEmpty() && BuiltInRegistries.ITEM.getKey(carried.getItem()).toString().equals(id)) {
+            n += carried.getCount();
+        }
+        n += countInInventory(id);
+        return n;
+    }
+
+    /**
+     * 一次真合成（工作台 3×3）：真 CraftingMenu + 真 slotsChanged + 两次真点击。
+     *
+     * @param wantId     期望产物 id；{@code null} = 期望**没有**任何配方匹配
+     * @param bottleCell 期望在点击后留下**恰好 1 个玻璃瓶**的格子下标（0..8；{@code -1} = 不该有瓶子）
+     */
+    private static void craft(String tag, String[] grid, String wantId, int wantCount, int bottleCell) {
+        BlockPos pos = new BlockPos(400, 200, 380);
+        level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
+        dummy.getInventory().clearContent();
+
+        CraftingMenu menu = new CraftingMenu(0, dummy.getInventory(),
+                ContainerLevelAccess.create(level, pos));
+        dummy.containerMenu = menu;
+        menu.setCarried(ItemStack.EMPTY);
+
+        StringBuilder lc = new StringBuilder();
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = grid[i] == null ? ItemStack.EMPTY : new ItemStack(item(grid[i]));
+            menu.getSlot(1 + i).set(stack);
+            lc.append(grid[i] == null ? "-" : grid[i].substring(grid[i].indexOf(':') + 1));
+            lc.append(i % 3 == 2 ? " | " : " ");
+        }
+        info(tag + " :: 摆位 " + lc);
+
+        menu.slotsChanged(menu.getSlot(1).container);
+        ItemStack r1 = menu.getSlot(0).getItem().copy();
+
+        if (wantId == null) {
+            check(tag + "_no_match", r1.isEmpty(), "负向：结果格=" + desc(r1) + "（期望空）");
+            return;
+        }
+        boolean idOk = !r1.isEmpty()
+                && BuiltInRegistries.ITEM.getKey(r1.getItem()).toString().equals(wantId);
+        check(tag + "_result", idOk && r1.getCount() == wantCount,
+                "结果格=" + desc(r1) + "（期望 " + wantCount + "x " + wantId + "）");
+        if (r1.isEmpty()) {
+            return;
+        }
+
+        int[] before = new int[9];
+        for (int i = 0; i < 9; i++) {
+            before[i] = menu.getSlot(1 + i).getItem().getCount();
+        }
+        int free = -1;
+        for (int i = 10; i <= 45; i++) {
+            if (menu.getSlot(i).getItem().isEmpty()) {
+                free = i;
+                break;
+            }
+        }
+        menu.clicked(0, 0, ClickType.PICKUP, dummy);         // 结果格 → 光标（onTake 扣原料）
+        boolean resultCleared = menu.getSlot(0).getItem().isEmpty();
+        menu.clicked(free, 0, ClickType.PICKUP, dummy);      // 光标 → 背包空槽
+
+        List<String> wrong = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            ItemStack nowStack = menu.getSlot(1 + i).getItem();
+            if (i == bottleCell) {
+                boolean isBottle = !nowStack.isEmpty()
+                        && BuiltInRegistries.ITEM.getKey(nowStack.getItem()).toString().equals(BOTTLE);
+                if (!isBottle || nowStack.getCount() != 1) {
+                    wrong.add("格" + i + "(催化剂)=" + desc(nowStack) + "期望1x " + BOTTLE);
+                }
+                continue;
+            }
+            int now = nowStack.getCount();
+            int want = grid[i] == null ? 0 : Math.max(0, before[i] - 1);
+            if (now != want) {
+                wrong.add("格" + i + "(" + (grid[i] == null ? "-" : grid[i]) + ")=" + now + "期望" + want);
+            }
+        }
+        check(tag + "_consumed", wrong.isEmpty(),
+                "逐格 −1 " + (wrong.isEmpty() ? "全部正确" : String.valueOf(wrong))
+                        + "；结果格点击后已空=" + resultCleared);
+        check(tag + "_landed", countInInventory(wantId) == wantCount,
+                "两次真点击后落进背包=" + countInInventory(wantId) + "x（期望 " + wantCount
+                        + "）freeSlot=" + free);
+
+        // ★ 只返 1 个瓶：整张菜单 + 光标 + 背包合计
+        int bottles = countEverywhere(menu, BOTTLE);
+        check(tag + "_bottle_total", bottles == (bottleCell >= 0 ? 1 : 0),
+                "整张菜单+光标+背包的玻璃瓶合计=" + bottles + "（期望 "
+                        + (bottleCell >= 0 ? 1 : 0) + "；**双返会读到 2**）");
+
+        if (bottleCell >= 0) {
+            // 把瓶子从那一格真点进背包 ⇒ "背包里多 1 瓶"
+            int dest = -1;
+            for (int i = 10; i <= 45; i++) {
+                if (menu.getSlot(i).getItem().isEmpty()) {
+                    dest = i;
+                    break;
+                }
+            }
+            menu.clicked(1 + bottleCell, 0, ClickType.PICKUP, dummy);
+            if (dest >= 0) {
+                menu.clicked(dest, 0, ClickType.PICKUP, dummy);
+            }
+            int inInv = countInInventory(BOTTLE);
+            check(tag + "_bottle_in_inventory", inInv == 1,
+                    "背包里玻璃瓶=" + inInv + "（期望恰好 1；若为 2 就是双返）");
+        }
+    }
+}

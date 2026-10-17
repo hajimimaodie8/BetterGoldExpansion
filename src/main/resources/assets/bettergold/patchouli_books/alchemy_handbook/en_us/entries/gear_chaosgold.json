@@ -44,7 +44,17 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "bettergold:chaosgold_crossbow"
+      "recipe": "bettergold:chaosgold_crossbow",
+      "recipe2": "bettergold:chaosgold_bow"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_mace",
+      "recipe2": "bettergold:chaosgold_trident"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_knife"
     },
     {
       "type": "patchouli:spotlight",

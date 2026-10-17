@@ -1,0 +1,22 @@
+bg-n10rc2 跑测留档与复原
+
+run/server.properties:
+  跑前              : A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  服务器重写后      : 20278CA0CF5CE0EEC6333F92BD6695B1F00A919E19EC97400C87C63A719A44DF  （= 05 json 的 server_properties_sha256）
+  跑前 .bak         : A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  复原后            : A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  复原方式          : Python shutil.copyfile(.bak -> server.properties)（逐字节）
+  复原后 == 跑前    : True
+
+run/saves（作者的存档，绝不打开）:
+  跑前: 目录 ['新的世界'] / 29 文件 / 18862026 B
+  跑后: 目录 ['新的世界'] / 29 文件 / 18862026 B
+  逐文件（path+size+mtime_ns）全等: True
+
+run/world（探针服端世界）: 63 文件 / 50115707 B
+  说明：字节数与跑前差 -1，属服务器正常存盘（[Server thread/INFO] Saving chunks for level 'ServerLevel[world]'）
+
+探针收尾:
+  src 内 BgN10rc2 / BGN10RC2 = 0 命中；halt( = 0 命中；src/…/probe/ 目录已删
+  开关文件 run/bgn10rc2-probe.enabled 已删
+  halt(false) 只调一次；forceload 双向 0（forcedNow=0）

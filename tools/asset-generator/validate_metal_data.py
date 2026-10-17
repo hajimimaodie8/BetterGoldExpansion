@@ -6158,9 +6158,18 @@ else:
 #   旧值（轮8，原文留档、不删）：
 #     zh 5B8ED0E3C0E47873702B18CE9EA15949… / en A330F90BD699140DCC1C0C434F3D55E5… / 键数 111
 # 旧值（bg-n10rg 把手册正文里弩的材料数写错后改正，原文留档、不删）：zh 641220C040C9139732D964BEBA4EA6EA…
-_BGN10_ZH_AFTER_SHA = "432A5297852A47B7D72A7C5D235BE8CD26CC1DB1BEDF79091ACAB92E2B26CD95"
+# ⚠ **1.7 bg-n10rc2（2026-10-18）第九次改常量**：本轮**没有增删键**（键数仍是 111），
+#   改的仍是**同一条既有键的值** —— `bettergold.handbook.page.gear_chaosgold_1_right`
+#   （旧口径「…剩下 4 件暂时没有工作台配方，后面几页的图标表仍然展示它们」→
+#    新口径「15 件全部走工作台：弓 = 3 锭 + 3 线 / 重锤 = 1 块 + 1 微风棒 / 乐事刀 = 1 锭 + 1 棍 +
+#    FD 条件 / 三叉戟 = **原创形状、待作者确认**」）。
+#   ⇒ 两个**文件级** SHA 同步换成本轮的值（护栏不消失，只换锚点）。
+#   旧值（bg-n10rg，原文留档、不删）：
+#     zh 432A5297852A47B7D72A7C5D235BE8CD… / en 51F3FD6F0686D0CDB2CBFE553ED0C314… / 键数 111
+_BGN10_ZH_AFTER_SHA = "54BBC7A51136E9883B0F46E954554593455F0349919FEE2AF7B80ED8612B29B8"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
-_BGN10_EN_AFTER_SHA = "51F3FD6F0686D0CDB2CBFE553ED0C3143B92EC52767AB0ED150FB8E193B1DCA7"
+# 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
+_BGN10_EN_AFTER_SHA = "2EFA1997FF53366C9FD811836DC295545933531322750A3F91B4E5DA250A120A"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -7901,7 +7910,10 @@ _R9_ENTRIES = {
     #   混沌金装备有 **11 件工作台配方** ⇒ 本章 13 页 = 3 文案 + **6 页配方** + 3 轮换图标
     #   + 1 附魔书配方。页数与页型序列跟着改，**不等于放宽**：那 11 条具体引用由
     #   `[bgn10rg-handbook]` 逐条钉住（顺序 / 每页最多 2 条 / 无死链）。
-    "gear_chaosgold": (13, ["patchouli:text"] * 3 + ["patchouli:crafting"] * 6
+    # ⚠ 第二次换锚点（`bg-n10rc2`，2026-10-18）：4 件补齐 ⇒ **15 件配方 = 8 页**
+    #   ⇒ 本章 **15 页** = 3 文案 + **8 页配方** + 3 轮换图标 + 1 附魔书配方。
+    #   旧期望（13 页 / 6 页配方）**原文留档**：`"gear_chaosgold": (13, [...crafting]*6 + ...)`。
+    "gear_chaosgold": (15, ["patchouli:text"] * 3 + ["patchouli:crafting"] * 8
                            + ["patchouli:spotlight"] * 3 + ["patchouli:crafting"]),
     "gear_chaosalloy": (11, ["patchouli:text"] * 3 + ["patchouli:smithing"] * 8),
 }
@@ -8388,7 +8400,13 @@ _RG_GEAR = ("sword", "axe", "pickaxe", "shovel", "hoe",
 #   mace     : 重核 + 微风棒，没有锭
 #   trident  : 原版没有合成配方（溺尸掉落 / 试炼密室）
 #   knife    : 乐事小刀 farmersdelight:golden_knife = 1 锭 + 1 棍，不是原版
-_RG_EXCLUDED = ("bow", "mace", "trident", "knife")
+# ⚠ **旧口径就地标注（2026-10-18，`bg-n10rc2`）**：作者对"剩下 4 件"的裁定是「第一个可以考虑」
+#   ⇒ 这 4 件**也补了配方**，`EXCLUDED` 由 4 件变 **0 件**。旧元组原文留档（已作废、不删）：
+#       _RG_EXCLUDED = ("bow", "mace", "trident", "knife")
+#   新的逐格期望在文件末尾的 `[bgn10rc2-*]` 段（独立副本、逐格点名）。
+_RG_EXCLUDED: tuple[str, ...] = ()
+# 15 件（= 生成器 GEAR / 手册配方页顺序）：前 11 = 上面 `_RG_GEAR`，后 4 = `bg-n10rc2` 补的
+_RG_GEAR_ALL = _RG_GEAR + ("bow", "mace", "trident", "knife")
 _RG_ROWS = ("第1行", "第2行", "第3行")
 _RG_COLS = ("第1列(左)", "第2列(中)", "第3列(右)")
 
@@ -8534,13 +8552,18 @@ for _gear in _RG_GEAR:
                      _name + " 还残留原版金属 " + repr(_left) + " —— 换漏了")
 
 # 反向：4 件**不许**偷偷有工作台配方（本轮明确「停下报告、等作者」）
-for _gear in _RG_EXCLUDED:
+# ⚠ 旧口径（`bg-n10rg`，2026-10-17）**原文留档、已作废**（作者 2026-10-18「第一个可以考虑」）：
+#   for _gear in ("bow", "mace", "trident", "knife"):
+#       if (_RC_DATA / ("chaosgold_" + _gear + ".json")).is_file():
+#           _bgn10rg_bad("bgn10rg-gear-excluded", "... 不该存在 ...")
+#   现在改成**正向存在性**：这 4 条必须都在（逐格由 `[bgn10rc2-*]` 段钉住）。
+for _gear in ("bow", "mace", "trident", "knife"):
     _bgn10rg_checked += 1
     _p = _RC_DATA / ("chaosgold_" + _gear + ".json")
-    if _p.is_file():
-        _bgn10rg_bad("bgn10rg-gear-excluded",
-                     "chaosgold_" + _gear + ".json 不该存在：这一件本轮判定为「停下报告」"
-                     "（原版没有可照抄的金属格），等作者裁定后再加")
+    if not _p.is_file():
+        _bgn10rg_bad("bgn10rc2-gear-added",
+                     "chaosgold_" + _gear + ".json 不存在：这 4 件已由作者 2026-10-18"
+                     "「第一个可以考虑」裁定补齐（旧口径是「停下报告」）")
 
 # ---------- ② 双倍贵金原料：每一条「贵金原料合成」都必须有同形的双倍版 ----------
 _rg_bases = []
@@ -8659,12 +8682,12 @@ try:
     _rg_gen_bad = list(_rg_gen.check(_rg_gen.targets()))
     if _rg_gen_bad:
         _bgn10rg_bad("bgn10rg-generator", "混沌金配方生成器自检不通过：" + repr(_rg_gen_bad[:4]))
-    if tuple(_rg_gen.GEAR) != _RG_GEAR:
+    if tuple(_rg_gen.GEAR) != _RG_GEAR_ALL:
         _bgn10rg_bad("bgn10rg-generator",
-                     "生成器的 GEAR 与本段的 11 件不一致：" + repr(_rg_gen.GEAR))
+                     "生成器的 GEAR 与本段的 15 件不一致：" + repr(_rg_gen.GEAR))
     if tuple(sorted(_rg_gen.EXCLUDED)) != tuple(sorted(_RG_EXCLUDED)):
         _bgn10rg_bad("bgn10rg-generator",
-                     "生成器的 EXCLUDED（停下报告的 4 件）与本段不一致："
+                     "生成器的 EXCLUDED 与本段不一致（旧口径是 4 件停下报告，本轮应为 0 件）："
                      + repr(sorted(_rg_gen.EXCLUDED)))
     # (b) 11 条产物与磁盘**逐字节**一致（手改产物立刻红）
     _rg_diff = []
@@ -8699,8 +8722,9 @@ except SystemExit:
 except Exception as _e:                           # noqa: BLE001
     _bgn10rg_bad("bgn10rg-generator", "生成器加载失败：" + repr(_e))
 
-# ---------- ⑤ 手册：gear_chaosgold 的 13 页（3 文案 + 6 页配方 + 3 图标 + 1 附魔书配方） ----------
-_RG_BOOK_PAGES = 13
+# ---------- ⑤ 手册：gear_chaosgold 的 15 页（3 文案 + 8 页配方 + 3 图标 + 1 附魔书配方） ----------
+#   ⚠ 旧值 13（6 页配方 / 11 件）**原文留档、已作废**：`_RG_BOOK_PAGES = 13`。
+_RG_BOOK_PAGES = 15
 _bgn10rg_checked += 5
 for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
     _ep = _d / "entries" / "gear_chaosgold.json"
@@ -8715,24 +8739,24 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
                      + "（实际 " + str(len(_pages)) + "）")
         continue
     _types = [p.get("type") for p in _pages]
-    _want_types = (["patchouli:text"] * 3 + ["patchouli:crafting"] * 6
+    _want_types = (["patchouli:text"] * 3 + ["patchouli:crafting"] * 8
                    + ["patchouli:spotlight"] * 3 + ["patchouli:crafting"])
     if _types != _want_types:
         _bgn10rg_bad("bgn10rg-handbook",
                      _tag + " 的页型序列不对：" + repr(_types))
-    # 配方页（第 4~9 页）必须**恰好**是这 11 件、顺序 = _RG_GEAR、每页最多 2 条
+    # 配方页（第 4~11 页）必须**恰好**是这 15 件、顺序 = _RG_GEAR_ALL、每页最多 2 条
     _refs = []
-    for _pg in _pages[3:9]:
+    for _pg in _pages[3:11]:
         _on_page = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
         _bgn10rg_checked += 1
         if len(_on_page) > 2:
             _bgn10rg_bad("bgn10rg-handbook",
                          _tag + " 有配方页塞了 " + str(len(_on_page)) + " 条（Patchouli 上限 2）")
         _refs.extend(_on_page)
-    _want_refs = [_RG_NS + ":chaosgold_" + _g for _g in _RG_GEAR]
+    _want_refs = [_RG_NS + ":chaosgold_" + _g for _g in _RG_GEAR_ALL]
     if _refs != _want_refs:
         _bgn10rg_bad("bgn10rg-handbook",
-                     _tag + " 的 11 件配方引用与 _RG_GEAR 不一致：" + repr(_refs))
+                     _tag + " 的 15 件配方引用与 _RG_GEAR_ALL 不一致：" + repr(_refs))
     # 死链：每条引用都要真的落在 data/bettergold/recipe/
     _dead = [_r for _r in _refs
              if not (_RC_DATA / (_r.split(":", 1)[1] + ".json")).is_file()]
@@ -8790,9 +8814,9 @@ print("1.7 bg-n10rg（混沌金工作台配方 + 双倍贵金原料）问题: "
       + str(len(bgn10rg_problems)) + " " + str(bgn10rg_problems[:4])
       + "（本段判定 " + str(_bgn10rg_checked) + " 项）")
 if not bgn10rg_problems:
-    print("[bgn10rg-ok] 混沌金 11 件工作台配方逐格照原版（金属格 = 混沌金锭）+ 4 件按判定停下报告 / "
-          "9 条双倍贵金原料（催化剂 = 高阶炼金油、数量 2、与基础版逐字段同形且基础版未被改）/ "
-          "返还玻璃瓶按催化剂那一格判（去注释源码 2 处）/ 手册 gear_chaosgold 13 页 11 条配方无死链")
+    print("[bgn10rg-ok] 混沌金 15 件工作台配方逐格照原版（前 11 件金属格 = 混沌金锭；后 4 件见 "
+          "[bgn10rc2-*]）/ 9 条双倍贵金原料（催化剂 = 高阶炼金油、数量 2、与基础版逐字段同形且基础版未被改）/ "
+          "返还玻璃瓶按催化剂那一格判（去注释源码 2 处）/ 手册 gear_chaosgold 15 页 15 条配方无死链")
 
 # ==========================================================================================
 # 1.7 bg-n10d（2026-10-18，裁定 #13）：金火把花种子 = 原版种子那 4 条标签
@@ -8900,6 +8924,371 @@ if not bgn10d_problems:
     print("[bgn10d-seed-tags-ok] 4 张原版种子标签各含金火把花种子、replace 不是 true、"
           "没有别的本模组物品混入、种子也没有出现在这 4 张之外")
 
+# ==========================================================================================
+# 1.7 bg-n10rc2（2026-10-18）：作者两条裁定的落地关卡
+#   ① 「第一个可以考虑」⇒ 弓 / 重锤 / 三叉戟 / 乐事刀 这 4 件补工作台配方（**逐格**钉住）
+#   ② 「第二个需要扩」 ⇒ 返瓶从"配方层"扩到"物品级"（`refined_alchemic_oil` 的 craftRemainder）
+#   ③ 「第三个我再问一问」⇒ 混沌金锭**上游未动**（本段不发明任何"锭怎么来"的配方/掉落）
+#
+# ⚠ 与 `[bgn10rg-*]` 的分工：那一段管**前 11 件**的逐格 + 双倍原料；本段管**后 4 件** + 返瓶机制。
+# ⚠ 期望表是本段**自己的独立副本**（不从生成器 import —— 生成器自己抄错时，共用一份表就永远抓不到，
+#   那是本仓"拿期望表自比"的假绿老路）。
+# ⚠ 所有正向 needle 都跑在 `strip_comments()` 之后（注释里写一句就喂饱断言 = 假绿）。
+# ⚠ 失败文案里**不出现裸百分号**（只用于格式化）。
+# ==========================================================================================
+bgn10rc2_problems: list[str] = []
+_bgn10rc2_checked = 0
+
+
+def _bgn10rc2_bad(tag: str, msg: str) -> None:
+    bgn10rc2_problems.append("[{}] {}".format(tag, msg))
+
+
+_RC2_GEAR = ("bow", "mace", "trident", "knife")
+_RC2_ROWS = ("第1行", "第2行", "第3行")
+_RC2_COLS = ("第1列(左)", "第2列(中)", "第3列(右)")
+_RC2_INGOT = "item:bettergold:chaosgold_ingot"
+_RC2_BLOCK = "item:bettergold:chaosgold_block"
+_RC2_STICK = "item:minecraft:stick"
+_RC2_FD_CONDITION = [{"type": "neoforge:mod_loaded", "modid": "farmersdelight"}]
+
+# 期望的 3×3（**逐格**；金属格已替换成混沌金材料）—— 本段独立抄的一份
+_RC2_WANT = {
+    # 原版 bow.json 逐字：`#` 棍 / `X` 线 ⇒ **棍那一格换成混沌金锭**（3 锭 + 3 线）
+    "bow": ([" #X", "# X", " #X"], {"#": _RC2_INGOT, "X": "item:minecraft:string"}),
+    # 原版 mace.json 逐字：`#` 重核 / `I` 微风棒 ⇒ **重核那一格换成混沌金块**（1 块 + 1 微风棒）
+    "mace": ([" # ", " I "], {"#": _RC2_BLOCK, "I": "item:minecraft:breeze_rod"}),
+    # ⚠ 原版**没有**三叉戟配方 ⇒ 这条是**原创形状**（上排 3 锭 + 中列再 1 锭 + 底部 1 棍）
+    "trident": (["XXX", " X ", " # "], {"X": _RC2_INGOT, "#": _RC2_STICK}),
+    # 乐事 farmersdelight:golden_knife 逐字：`m` 金锭 / `s` 棍 ⇒ 1 混沌金锭 + 1 棍
+    "knife": (["m", "s"], {"m": _RC2_INGOT, "s": _RC2_STICK}),
+}
+# 来源（bow / mace 逐字抄自原版 1.21.1 的 `data/minecraft/recipe/<文件>`；
+#       knife 抄自农夫乐事的 `data/farmersdelight/recipe/golden_knife.json`；
+#       trident **没有**来源 ⇒ 下表故意不写它，并在下面单独断言"它是原创"）
+_RC2_SOURCE = {
+    "bow": ([" #X", "# X", " #X"], {"#": _RC2_STICK, "X": "item:minecraft:string"}),
+    "mace": ([" # ", " I "], {"#": "item:minecraft:heavy_core",
+                              "I": "item:minecraft:breeze_rod"}),
+    "knife": (["m", "s"], {"m": "item:minecraft:gold_ingot", "s": _RC2_STICK}),
+}
+
+
+def _rc2_cell(ing) -> str:
+    if not isinstance(ing, dict):
+        return "<缺失>"
+    if isinstance(ing.get("item"), str):
+        return "item:" + ing["item"]
+    if isinstance(ing.get("tag"), str):
+        return "tag:" + ing["tag"]
+    return "<形状不认识>"
+
+
+def _rc2_grid(pattern, key) -> list[list[str]]:
+    grid = [["" for _ in range(3)] for _ in range(3)]
+    rows = list(pattern or [])
+    for _i in range(min(3, len(rows))):
+        row = str(rows[_i])
+        for _j in range(min(3, len(row))):
+            ch = row[_j]
+            if ch == " ":
+                continue
+            grid[_i][_j] = _rc2_cell((key or {}).get(ch))
+    return grid
+
+
+def _rc2_want_grid(gear: str) -> list[list[str]]:
+    pattern, key = _RC2_WANT[gear]
+    want = [["" for _ in range(3)] for _ in range(3)]
+    for _i in range(min(3, len(pattern))):
+        for _j in range(min(3, len(pattern[_i]))):
+            ch = pattern[_i][_j]
+            if ch == " ":
+                continue
+            want[_i][_j] = key[ch]
+    return want
+
+
+def _rc2_grid_text(grid) -> str:
+    return " / ".join(" ".join((grid[_i][_j] or "-") for _j in range(3)) for _i in range(3))
+
+
+# ---------- ① 4 件新配方：逐格（9 格逐格点名，错的格子报「第N行第M列」） ----------
+for _g in _RC2_GEAR:
+    _nm = "chaosgold_" + _g
+    _bgn10rc2_checked += 2
+    if not _nm.isascii() or re.fullmatch(r"[a-z0-9_]+", _nm) is None:
+        _bgn10rc2_bad("bgn10rc2-id", "配方文件名不是稳定 ASCII：" + _nm)
+    _path = _RC_DATA / (_nm + ".json")
+    if not _path.is_file():
+        _bgn10rc2_bad("bgn10rc2-file", "缺配方 data/bettergold/recipe/" + _nm + ".json")
+        continue
+    try:
+        _obj = json.loads(_path.read_text(encoding="utf-8"))
+    except Exception as _e:                                # noqa: BLE001
+        _bgn10rc2_bad("bgn10rc2-file", _nm + ".json 不是合法 JSON：" + repr(_e))
+        continue
+    _bgn10rc2_checked += 4
+    if _obj.get("type") != "minecraft:crafting_shaped":
+        _bgn10rc2_bad("bgn10rc2-type", _nm + " 的 type 不是 minecraft:crafting_shaped：" + repr(_obj.get("type")))
+    if _obj.get("category") != "equipment":
+        _bgn10rc2_bad("bgn10rc2-type", _nm + " 的 category 不是 equipment：" + repr(_obj.get("category")))
+    _pat = _obj.get("pattern") or []
+    if len(_pat) > 3 or any(len(str(_r)) > 3 for _r in _pat):
+        _bgn10rc2_bad("bgn10rc2-shape", _nm + " 的 pattern 超过 3×3：" + repr(_pat))
+    if len(_pat) != len(_RC2_WANT[_g][0]):
+        _bgn10rc2_bad("bgn10rc2-shape",
+                      _nm + " 的行数不是 " + str(len(_RC2_WANT[_g][0])) + "：" + repr(_pat))
+    _got = _rc2_grid(_pat, _obj.get("key"))
+    _want = _rc2_want_grid(_g)
+    for _i in range(3):
+        for _j in range(3):
+            _bgn10rc2_checked += 1
+            if _got[_i][_j] != _want[_i][_j]:
+                _bgn10rc2_bad("bgn10rc2-cell",
+                              _nm + " 的「" + _RC2_ROWS[_i] + _RC2_COLS[_j] + "」是 "
+                              + (_got[_i][_j] or "<空>") + "，按 §21 的读法应为 "
+                              + (_want[_i][_j] or "<空>")
+                              + "（期望表： " + _rc2_grid_text(_want) + "；实际： "
+                              + _rc2_grid_text(_got) + "）")
+    _res = _obj.get("result") or {}
+    _bgn10rc2_checked += 2
+    if _res.get("id") != "bettergold:" + _nm:
+        _bgn10rc2_bad("bgn10rc2-result", _nm + " 的产物不是 bettergold:" + _nm + "：" + repr(_res))
+    if _res.get("count") != 1:
+        _bgn10rc2_bad("bgn10rc2-result", _nm + " 的产物数量不是 1：" + repr(_res))
+    _cells = [c for _row in _got for c in _row]
+    _bgn10rc2_checked += 2
+    if not any(c in (_RC2_INGOT, _RC2_BLOCK) for c in _cells):
+        _bgn10rc2_bad("bgn10rc2-metal", _nm + " 里一格混沌金材料都没有")
+    _left = sorted(set(c for c in _cells
+                       if c in ("item:minecraft:gold_ingot", "item:minecraft:iron_ingot")))
+    if _left:
+        _bgn10rc2_bad("bgn10rc2-metal", _nm + " 还残留原版金属 " + repr(_left) + " —— 换漏了")
+
+# ---------- ② 逐件的针对性负向（这 4 条各自最容易写错的那种） ----------
+# 弓：⚠ **不许**做成"3 棍 + 3 线"（那样一格混沌金都不用 = 零成本白送混沌金弓）
+_bgn10rc2_checked += 2
+_bow = _RC2_WANT["bow"]
+_bow_obj_path = _RC_DATA / "chaosgold_bow.json"
+if _bow_obj_path.is_file():
+    _bo = json.loads(_bow_obj_path.read_text(encoding="utf-8"))
+    _bo_cells = [c for _row in _rc2_grid(_bo.get("pattern"), _bo.get("key")) for c in _row]
+    if _bo_cells.count(_RC2_STICK) != 0:
+        _bgn10rc2_bad("bgn10rc2-bow-metal",
+                      "chaosgold_bow 里还有木棍 —— 弓的金属格就是**棍那一格**，留着棍等于零成本合出混沌金弓")
+    if _bo_cells.count(_RC2_INGOT) != 3:
+        _bgn10rc2_bad("bgn10rc2-bow-metal",
+                      "chaosgold_bow 的混沌金锭不是 3 个（实际 " + str(_bo_cells.count(_RC2_INGOT)) + "）")
+
+# 重锤：⚠ 金属那一格是**重核** ⇒ 必须是**混沌金块**，不许残留重核、也不许写成锭
+_bgn10rc2_checked += 2
+_mace_obj_path = _RC_DATA / "chaosgold_mace.json"
+if _mace_obj_path.is_file():
+    _mo = json.loads(_mace_obj_path.read_text(encoding="utf-8"))
+    _mo_cells = [c for _row in _rc2_grid(_mo.get("pattern"), _mo.get("key")) for c in _row]
+    if _mo_cells.count(_RC2_BLOCK) != 1:
+        _bgn10rc2_bad("bgn10rc2-mace-block",
+                      "chaosgold_mace 的混沌金块不是恰好 1 个（实际 " + str(_mo_cells.count(_RC2_BLOCK)) + "）")
+    if _mo_cells.count("item:minecraft:heavy_core") != 0:
+        _bgn10rc2_bad("bgn10rc2-mace-block", "chaosgold_mace 里还留着原版重核（金属格没换）")
+    if _mo_cells.count(_RC2_INGOT) != 0:
+        _bgn10rc2_bad("bgn10rc2-mace-block",
+                      "chaosgold_mace 里写了混沌金锭 —— §21 的口径是重核 → **块**")
+
+# 三叉戟：⚠ 原版没有配方 ⇒ **原创形状**；格数与结构一起钉（4 锭 + 1 棍）
+_bgn10rc2_checked += 3
+_tri_obj_path = _RC_DATA / "chaosgold_trident.json"
+if _tri_obj_path.is_file():
+    _to = json.loads(_tri_obj_path.read_text(encoding="utf-8"))
+    _to_cells = [c for _row in _rc2_grid(_to.get("pattern"), _to.get("key")) for c in _row]
+    if _to_cells.count(_RC2_INGOT) != 4:
+        _bgn10rc2_bad("bgn10rc2-trident",
+                      "chaosgold_trident 的混沌金锭不是 4 个（实际 " + str(_to_cells.count(_RC2_INGOT)) + "）")
+    if _to_cells.count(_RC2_STICK) != 1:
+        _bgn10rc2_bad("bgn10rc2-trident",
+                      "chaosgold_trident 的木棍不是 1 个（实际 " + str(_to_cells.count(_RC2_STICK)) + "）")
+    if _RC2_WANT["trident"][0] != ["XXX", " X ", " # "]:
+        _bgn10rc2_bad("bgn10rc2-trident", "本段期望表里的三叉戟形状被改了（应为原创的 XXX /  X  /  # ）")
+
+# 乐事刀：⚠ 必须挂 `neoforge:mod_loaded(farmersdelight)`（没装乐事 ⇒ 这条配方根本不产出）
+_bgn10rc2_checked += 3
+_knife_obj_path = _RC_DATA / "chaosgold_knife.json"
+if _knife_obj_path.is_file():
+    _ko = json.loads(_knife_obj_path.read_text(encoding="utf-8"))
+    if _ko.get("neoforge:conditions") != _RC2_FD_CONDITION:
+        _bgn10rc2_bad("bgn10rc2-knife-cond",
+                      "chaosgold_knife 的 neoforge:conditions 不是恰好 mod_loaded(farmersdelight)："
+                      + repr(_ko.get("neoforge:conditions")))
+    _kcells = [c for _row in _rc2_grid(_ko.get("pattern"), _ko.get("key")) for c in _row]
+    if _kcells.count(_RC2_INGOT) != 1 or _kcells.count(_RC2_STICK) != 1:
+        _bgn10rc2_bad("bgn10rc2-knife-cond",
+                      "chaosgold_knife 不是 1 锭 + 1 棍：" + _rc2_grid_text(_rc2_grid(_ko.get("pattern"), _ko.get("key"))))
+
+# 其余 14 条**不许**带任何 conditions（没装乐事的机器上它们照样要能合出来）
+for _g in ("sword", "axe", "pickaxe", "shovel", "hoe", "helmet", "chestplate", "leggings",
+           "boots", "shield", "crossbow", "bow", "mace", "trident"):
+    _bgn10rc2_checked += 1
+    _p14 = _RC_DATA / ("chaosgold_" + _g + ".json")
+    if not _p14.is_file():
+        _bgn10rc2_bad("bgn10rc2-cond-scope", "缺 " + _p14.name)
+        continue
+    if "neoforge:conditions" in json.loads(_p14.read_text(encoding="utf-8")):
+        _bgn10rc2_bad("bgn10rc2-cond-scope",
+                      "chaosgold_" + _g + ".json 带了 neoforge:conditions —— 只有乐事刀该挂")
+
+# ---------- ③ 来源保真：bow / mace / knife 的 pattern 与图例必须与来源逐字同形 ----------
+for _g in ("bow", "mace", "knife"):
+    _bgn10rc2_checked += 2
+    _sp, _sk = _RC2_SOURCE[_g]
+    _wp, _wk = _RC2_WANT[_g]
+    if list(_sp) != list(_wp):
+        _bgn10rc2_bad("bgn10rc2-source", _g + " 的期望 pattern 与来源不同：" + repr(_wp) + " != " + repr(_sp))
+    if sorted(_sk) != sorted(_wk):
+        _bgn10rc2_bad("bgn10rc2-source", _g + " 的图例键集合与来源不同：" + repr(sorted(_wk)) + " != " + repr(sorted(_sk)))
+
+# ---------- ④ 返瓶：物品级 craftRemainder + 与配方层**互斥**（只许一处生效、不许双返） ----------
+_rc2_items_path = JAVA / "registry" / "AllItems.java"
+_rc2_recipe_path = JAVA / "recipe" / "RawSturdygoldRecipe.java"
+_bgn10rc2_checked += 4
+if not _rc2_items_path.is_file():
+    _bgn10rc2_bad("bgn10rc2-remainder-item", "缺 AllItems.java")
+    _rc2_items_code = ""
+else:
+    _rc2_items_code = strip_comments(_rc2_items_path.read_text(encoding="utf-8"))
+if not _rc2_recipe_path.is_file():
+    _bgn10rc2_bad("bgn10rc2-remainder-recipe", "缺 RawSturdygoldRecipe.java")
+    _rc2_recipe_code = ""
+else:
+    _rc2_recipe_code = strip_comments(_rc2_recipe_path.read_text(encoding="utf-8"))
+
+# (a) 物品级：高阶炼金油那一行必须挂 craftRemainder(GLASS_BOTTLE)，且**全文件恰好 1 处**
+_CR = "craftRemainder(Items.GLASS_BOTTLE)"
+_bgn10rc2_checked += 2
+if _rc2_items_code.count(_CR) != 1:
+    _bgn10rc2_bad("bgn10rc2-remainder-item",
+                  "去注释后的 AllItems.java 里 " + _CR + " 不是恰好 1 处（实际 "
+                  + str(_rc2_items_code.count(_CR)) + "）")
+_oil_at = _rc2_items_code.find('"refined_alchemic_oil"')
+_stmt_end = _rc2_items_code.find(";", _oil_at) if _oil_at >= 0 else -1
+_oil_stmt = _rc2_items_code[_oil_at:_stmt_end] if _oil_at >= 0 and _stmt_end > _oil_at else ""
+if _CR not in _oil_stmt:
+    _bgn10rc2_bad("bgn10rc2-remainder-item",
+                  "物品级 remainder 没有挂在 refined_alchemic_oil 的注册语句上："
+                  + (_oil_stmt.replace("\n", " ")[:160] if _oil_stmt else "<找不到该注册语句>"))
+
+# (b) 负向：**不许**给 alchemic_fuel 也挂（作者只点名了高阶炼金油）
+_bgn10rc2_checked += 1
+_fuel_at = _rc2_items_code.find('"alchemic_fuel"')
+_fuel_end = _rc2_items_code.find(";", _fuel_at) if _fuel_at >= 0 else -1
+_fuel_stmt = _rc2_items_code[_fuel_at:_fuel_end] if _fuel_at >= 0 and _fuel_end > _fuel_at else ""
+if _fuel_at < 0:
+    _bgn10rc2_bad("bgn10rc2-remainder-fuel", "AllItems.java 里找不到 alchemic_fuel 的注册语句")
+elif "craftRemainder" in _fuel_stmt:
+    _bgn10rc2_bad("bgn10rc2-remainder-fuel",
+                  "alchemic_fuel 也挂了 craftRemainder —— 那是另一个物品，作者这轮只点名了高阶炼金油")
+
+# (c) 互斥：RawSturdygoldRecipe **覆盖**了 getRemainingItems（不调默认实现）
+#     ⇒ 走「贵金原料」那几条时物品级 remainder 根本不参与；别的配方只走默认实现。
+_bgn10rc2_checked += 3
+if "getRemainingItems" not in _rc2_recipe_code:
+    _bgn10rc2_bad("bgn10rc2-remainder-exclusive",
+                  "RawSturdygoldRecipe 没有覆盖 getRemainingItems（返瓶行为会退回到物品级）")
+if "getCraftingRemainingItem" in _rc2_recipe_code:
+    _bgn10rc2_bad("bgn10rc2-remainder-exclusive",
+                  "RawSturdygoldRecipe 里直接读了 getCraftingRemainingItem —— 两条路径会同时生效")
+if "Recipe.super" in _rc2_recipe_code:
+    _bgn10rc2_bad("bgn10rc2-remainder-exclusive",
+                  "RawSturdygoldRecipe 调了 Recipe.super.getRemainingItems —— 配方层 + 物品级 = 同一次合成返 2 个瓶")
+
+# (d) 唯一性：两个文件合计 GLASS_BOTTLE **恰好 2 处**（1 物品级 + 1 配方层）。
+#     多一处 = 会返 2 个瓶；少一处 = 有一条路径不再返瓶。
+_bgn10rc2_checked += 2
+_glass_total = _rc2_items_code.count("GLASS_BOTTLE") + _rc2_recipe_code.count("GLASS_BOTTLE")
+if _glass_total != 2:
+    _bgn10rc2_bad("bgn10rc2-remainder-unique",
+                  "AllItems + RawSturdygoldRecipe 里的 GLASS_BOTTLE 合计不是恰好 2 处（实际 "
+                  + str(_glass_total) + "）：1 处物品级 + 1 处配方层，多一处就是一次合成返 2 个瓶")
+if _rc2_recipe_code.count("new ItemStack(Items.GLASS_BOTTLE)") != 1:
+    _bgn10rc2_bad("bgn10rc2-remainder-unique",
+                  "配方层的玻璃瓶构造不是恰好 1 处（实际 "
+                  + str(_rc2_recipe_code.count("new ItemStack(Items.GLASS_BOTTLE)")) + "）")
+
+# ---------- ⑤ 手册：4 件新配方各有引用；乐事刀那一页**单独一条**（不占第二个槽） ----------
+_bgn10rc2_checked += 6
+for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
+    _ep = _d / "entries" / "gear_chaosgold.json"
+    if not _ep.is_file():
+        _bgn10rc2_bad("bgn10rc2-handbook", _tag + " 缺 entries/gear_chaosgold.json")
+        continue
+    _pages = json.loads(_ep.read_text(encoding="utf-8")).get("pages") or []
+    _all_refs = []
+    for _pg in _pages:
+        _all_refs.extend([x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)])
+    for _g in _RC2_GEAR:
+        _bgn10rc2_checked += 1
+        if "bettergold:chaosgold_" + _g not in _all_refs:
+            _bgn10rc2_bad("bgn10rc2-handbook",
+                          _tag + " 手册的配方页里没有 bettergold:chaosgold_" + _g)
+    _knife_pages = [_pg for _pg in _pages if _pg.get("recipe") == "bettergold:chaosgold_knife"
+                    or _pg.get("recipe2") == "bettergold:chaosgold_knife"]
+    _bgn10rc2_checked += 2
+    if len(_knife_pages) != 1:
+        _bgn10rc2_bad("bgn10rc2-handbook",
+                      _tag + " 手册里 chaosgold_knife 出现了 " + str(len(_knife_pages)) + " 次（应恰好 1 页）")
+    elif _knife_pages[0].get("recipe2") is not None:
+        _bgn10rc2_bad("bgn10rc2-handbook",
+                      _tag + " 的乐事刀那一页还占了 recipe2 槽（当页只有它一条配方）")
+
+# ---------- ⑥ 文案口径：手册正文必须换成"15 件 / 4 件已补"，旧口径不许复现 ----------
+_bgn10rc2_checked += 5
+try:
+    _rc2_zh_lang = json.loads((_RES / "assets" / "bettergold" / "lang" / "zh_cn.json")
+                              .read_text(encoding="utf-8"))
+except Exception as _e:                                    # noqa: BLE001
+    _rc2_zh_lang = {}
+    _bgn10rc2_bad("bgn10rc2-lang", "读不了 zh_cn.json：" + repr(_e))
+_rc2_text = _rc2_zh_lang.get("bettergold.handbook.page.gear_chaosgold_1_right", "")
+for _needle, _why in (("15 件", "新口径必须写清 15 件（11 + 补的 4）"),
+                      ("原创形状", "三叉戟必须写明是原创形状"),
+                      ("待作者确认", "三叉戟的原创形状必须标注待作者确认"),
+                      ("乐事", "乐事刀那条必须提到（它挂 FD 条件）")):
+    if _needle not in _rc2_text:
+        _bgn10rc2_bad("bgn10rc2-lang", "手册「混沌金装备」正文没有「" + _needle + "」：" + _why)
+if "暂时没有工作台配方" in _rc2_text:
+    _bgn10rc2_bad("bgn10rc2-lang",
+                  "手册正文仍是旧口径（「暂时没有工作台配方」）—— 4 件已经补齐了")
+
+# ---------- ⑦ 文档侧：本轮口径 + 旧口径标注 + 「第三个不动」都要落档 ----------
+_RC2_DOC = REPO / "docs" / "1.7-\u6df7\u6c8c\u91d1\u4e0e\u5d29\u4e71\u5408\u91d1-\u9700\u6c42\u7acb\u6863.md"
+_bgn10rc2_checked += 8
+if not _RC2_DOC.is_file():
+    _bgn10rc2_bad("bgn10rc2-doc", "缺 docs/1.7-混沌金与崩乱合金-需求立档.md")
+else:
+    _rc2_doc = _RC2_DOC.read_text(encoding="utf-8")
+    for _needle, _why in (
+            ("bg-n10rc2", "立档里没有本轮标记（bg-n10rc2）"),
+            ("第一个可以考虑", "没把作者「第一个可以考虑」逐字收进立档"),
+            ("第二个需要扩", "没把作者「第二个需要扩」逐字收进立档"),
+            ("第三个我再问一问", "没把作者「第三个我再问一问」逐字收进立档"),
+            ("原创", "没写三叉戟是原创形状"),
+            ("待作者确认", "没写三叉戟的原创形状待作者确认"),
+            ("craftRemainder", "没写返瓶的机制落点（物品级 craftRemainder）"),
+            ("只返 1 个瓶", "没写「只返 1 个瓶」这条验收口径")):
+        if _needle not in _rc2_doc:
+            _bgn10rc2_bad("bgn10rc2-doc", _why + "：缺「" + _needle + "」")
+
+if _bgn10rc2_checked < 60:
+    _bgn10rc2_bad("bgn10rc2-anti-vacuum",
+                  "本段只检查了 " + str(_bgn10rc2_checked) + " 项（反空转守护：应远大于 60）")
+print("1.7 bg-n10rc2（4 件补齐 + 返瓶扩到物品级）问题: "
+      + str(len(bgn10rc2_problems)) + " " + str(bgn10rc2_problems[:4])
+      + "（本段判定 " + str(_bgn10rc2_checked) + " 项）")
+if not bgn10rc2_problems:
+    print("[bgn10rc2-ok] 弓/重锤/三叉戟/乐事刀 4 条配方逐格钉住（三叉戟 = 原创形状待确认 + 乐事刀挂 "
+          "mod_loaded(farmersdelight)）/ 其余 14 条无条件 / 高阶炼金油的物品级 remainder 恰好 1 处且"
+          "与配方层按配方互斥（GLASS_BOTTLE 合计 2 处 = 不双返）/ 手册 15 页 15 条引用")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -8910,7 +9299,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
                        _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems,
                        bgn10r8_problems, bgn10r9_problems,
-                       bgn10rc_problems, bgn10rg_problems, bgn10d_problems)
+                       bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems
