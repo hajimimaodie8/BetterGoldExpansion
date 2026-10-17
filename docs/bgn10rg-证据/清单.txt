@@ -1,0 +1,24 @@
+# docs/bgn10rg-证据 清单（sha256 前 16 位）
+
+00-探针原始行.txt                                                      12117 B  408a6e2c05c251bb
+01-A级读数.txt                                                       13128 B  1efd774fcd799795
+03-扰动矩阵.txt                                                        1167 B  ac011e8f0937f074
+04-跑前留档.json                                                       8264 B  80bc25c40b2f6826
+05-跑后复核.json                                                       8264 B  4ed56667de256391
+06-跑测留档与复原.txt                                                      814 B  53bd5db2e940f09a
+09-收尾核对.txt                                                        3806 B  a46714183a7a92c6
+20-六校验器.txt                                                        3063 B  08c1651f33bff798
+清单.txt                                                             1959 B  a734f3903138b004
+脚本副本/BgN10rgClientProbe.java.txt                                  12379 B  039ee433d2f488ab
+脚本副本/BgN10rgProbe.java.txt                                        17514 B  635bc7195ef10e7f
+脚本副本/bgn10rg_append.py                                             1527 B  52464373784bb63f
+脚本副本/bgn10rg_fix_crossbow.py                                       3071 B  532275ff4482f762
+脚本副本/bgn10rg_fix_sha.py                                            3353 B  f8e0a005c461a93e
+脚本副本/bgn10rg_gate_block.py                                        24478 B  48484feb4579f6b7
+脚本副本/bgn10rg_grid_table.py                                         2270 B  ad5d0355d441b31a
+脚本副本/bgn10rg_lang.py                                               4041 B  5c60b4c354f9cccf
+脚本副本/bgn10rg_lang_sha.py                                           2376 B  87f8fe5df2a9b113
+脚本副本/bgn10rg_patch_gate.py                                         1770 B  31eb455ae7f275ac
+脚本副本/bgn10rg_perturb.py                                            7849 B  ebe5f24c0ade99f9
+脚本副本/bgn10rg_run_prep.py                                           5458 B  3c800f8013413067
+脚本副本/bgn10rg_six.py                                                1908 B  64807c3cc380c613

@@ -1,0 +1,192 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.MobEffectTextureManager;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffect;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+import com.mojang.blaze3d.platform.NativeImage;
+
+/**
+ * 临时探针（1.7 <b>bg-n10d</b>：裁定 #12 `tremble.png` 替换后的客户端读数）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10d-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p><b>为什么停在标题界面就够</b>：状态效果图标走的是 {@code mob_effects} 图集
+ * （{@code MobEffectTextureManager.java:16}），图集在**资源重载**阶段就缝合完了，
+ * 与"有没有进世界"无关 ⇒ 本探针**不建世界、不碰存档、不 quickPlay**。</p>
+ *
+ * <p>四组读数：① {@code bettergold:tremble} 的 sprite 名字/尺寸；② sprite 的**原始像素**哈希
+ * （对比 png 的 RGBA 字节哈希 ⇒ 证明图集里拿到的就是**新那张**的像素，不是旧图也不是 missing）；
+ * ③ 本模组**全部**状态效果图标都能解析（sprite 名 == 注册 id，一张 missing 都不许有）；
+ * ④ 客户端日志里的资源加载失败计数。</p>
+ *
+ * <p>⚠ 探针纪律：{@code halt(0)} 只调一次；不建世界、不 spawn、不写存档。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgN10dClientProbe {
+
+    private static final String TAG = "BGN10DCPROBE";
+    private static final String SWITCH = "bgn10d-probe.enabled";
+    private static final int CHECK_AT_TICK = 120;
+
+    /** 新 `tremble.png` 的 RGBA 行优先字节 SHA-256（Python 侧同一算法：PIL convert("RGBA").tobytes()） */
+    private static final String EXPECTED_PIXEL_SHA =
+            "6ae90277f0b73e479f0a4701a79f24b27947a6d98356f92cfbe39eda514f134b";
+    /** 改前那张的像素哈希（**负向**：图集里不许拿到这一份，否则等于替换没生效） */
+    private static final String OLD_PIXEL_SHA =
+            "69582cae7466770a413b8a600eeeabe010161607d9fe3f1958d497f00821ef76";
+
+    private static int ticks;
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private BgN10dClientProbe() {
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir"), SWITCH));
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (done || !enabled()) {
+            return;
+        }
+        ticks++;
+        if (ticks < CHECK_AT_TICK) {
+            return;
+        }
+        done = true;
+        try {
+            run();
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("c_exception", String.valueOf(t));
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        bettergold.LOGGER.info("{} INFO 退出 JVM（标题界面就够；从未建世界 / 从未 quickPlay）", TAG);
+        Runtime.getRuntime().halt(0);
+    }
+
+    private static void run() throws Exception {
+        Minecraft mc = Minecraft.getInstance();
+        MobEffectTextureManager tm = mc.getMobEffectTextures();
+
+        // ---------- ① bettergold:tremble 的 sprite ----------
+        MobEffect tremble = AllEffects.TREMBLE.get();
+        Holder<MobEffect> holder = BuiltInRegistries.MOB_EFFECT.wrapAsHolder(tremble);
+        TextureAtlasSprite sp = tm.get(holder);
+        SpriteContents c = sp.contents();
+        String name = c.name().toString();
+        check("c_tremble_sprite_name", "bettergold:tremble".equals(name),
+                "sprite contents name=" + name + "（missing sprite 会是 minecraft:missingno）");
+        check("c_tremble_sprite_size", c.width() == 18 && c.height() == 18,
+                "sprite 尺寸=" + c.width() + "x" + c.height() + "（期望 18x18）");
+        NativeImage img = c.getOriginalImage();
+        check("c_tremble_image_size", img.getWidth() == 18 && img.getHeight() == 18,
+                "原始图=" + img.getWidth() + "x" + img.getHeight() + " format=" + img.format());
+
+        // ---------- ② 像素哈希：图集里拿到的必须就是**新那张** ----------
+        String sha = pixelSha(img);
+        bettergold.LOGGER.info("{} INFO c_tremble_pixel_sha :: {}", TAG, sha);
+        check("c_tremble_pixel_sha_new", EXPECTED_PIXEL_SHA.equals(sha),
+                "sprite 像素 RGBA-SHA256=" + sha + " 期望(新 png)=" + EXPECTED_PIXEL_SHA);
+        check("c_tremble_pixel_sha_not_old", !OLD_PIXEL_SHA.equals(sha),
+                "sprite 像素 RGBA-SHA256 != 改前那张（否则替换没生效）");
+
+        // ---------- ③ 本模组所有状态效果图标都能解析（一张 missing 都不许有） ----------
+        int n = 0;
+        List<String> bad = new ArrayList<>();
+        for (var e : BuiltInRegistries.MOB_EFFECT.entrySet()) {
+            String id = e.getKey().location().toString();
+            if (!id.startsWith("bettergold:")) {
+                continue;
+            }
+            n++;
+            TextureAtlasSprite s2 = tm.get(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(e.getValue()));
+            String nm = s2.contents().name().toString();
+            if (!nm.equals(id)) {
+                bad.add(id + "->" + nm);
+            }
+        }
+        check("c_all_effect_icons_resolve", n > 0 && bad.isEmpty(),
+                "bettergold 效果数=" + n + " 解析失败=" + bad);
+
+        // ---------- ④ 日志：资源加载失败 / missing model ----------
+        Path log = Path.of(System.getProperty("user.dir")).resolve("logs").resolve("latest.log");
+        int failed = 0;
+        int missingModel = 0;
+        if (Files.exists(log)) {
+            for (String line : Files.readAllLines(log, java.nio.charset.StandardCharsets.UTF_8)) {
+                if (line.contains("Unable to load model") || line.contains("Failed to load ")) {
+                    failed++;
+                }
+                if (line.contains("Missing model")) {
+                    missingModel++;
+                }
+            }
+        }
+        check("c_no_resource_load_failures", failed == 0 && missingModel == 0,
+                "UnableToLoad/FailedToLoad=" + failed + " Missing model=" + missingModel);
+    }
+
+    /** 与 Python 侧 `PIL.Image.convert("RGBA").tobytes()` 同序：行优先、每像素 r,g,b,a。 */
+    private static String pixelSha(NativeImage img) throws Exception {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        byte[] raw = new byte[w * h * 4];
+        int k = 0;
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int v = img.getPixelRGBA(x, y);
+                raw[k++] = (byte) (v & 0xFF);
+                raw[k++] = (byte) ((v >> 8) & 0xFF);
+                raw[k++] = (byte) ((v >> 16) & 0xFF);
+                raw[k++] = (byte) ((v >> 24) & 0xFF);
+            }
+        }
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] d = md.digest(raw);
+        StringBuilder sb = new StringBuilder(d.length * 2);
+        for (byte b : d) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+}

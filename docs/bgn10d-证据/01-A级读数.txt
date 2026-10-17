@@ -1,0 +1,39 @@
+bg-n10d A 级 · 服务端探针（#13 四条原版种子标签 · stack.is(tag) 逐条）
+来源日志：run/logs/latest.log
+探针开关文件：run/bgn10d-probe.enabled（跑完已删除）
+行数：34（PASS 23 / FAIL 0）
+
+BGN10DPROBE PASS s_seed_item_present :: stack=1 bettergold:golden_torchflower_seeds
+BGN10DPROBE INFO s_seed_item :: bettergold:golden_torchflower_seeds
+BGN10DPROBE INFO s_tag_members :: chicken_food -> [bettergold:golden_torchflower_seeds, farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds, minecraft:beetroot_seeds, minecraft:melon_seeds, minecraft:pitcher_pod, minecraft:pumpkin_seeds, minecraft:torchflower_seeds, minecraft:wheat_seeds]
+BGN10DPROBE PASS s_chicken_food_has_ours :: members=[bettergold:golden_torchflower_seeds, farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds, minecraft:beetroot_seeds, minecraft:melon_seeds, minecraft:pitcher_pod, minecraft:pumpkin_seeds, minecraft:torchflower_seeds, minecraft:wheat_seeds]
+BGN10DPROBE PASS s_chicken_food_keeps_vanilla :: 被覆盖掉的原版条目=[]（合并不是覆盖）
+BGN10DPROBE INFO s_tag_other_modules :: chicken_food -> [farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds]
+BGN10DPROBE PASS s_chicken_food_member_count :: 成员数=10（下界 = 原版 6 + 我们 1；其它模组另加 [farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds]）
+BGN10DPROBE INFO s_tag_members :: parrot_food -> [bettergold:golden_torchflower_seeds, farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds, minecraft:beetroot_seeds, minecraft:melon_seeds, minecraft:pitcher_pod, minecraft:pumpkin_seeds, minecraft:torchflower_seeds, minecraft:wheat_seeds]
+BGN10DPROBE PASS s_parrot_food_has_ours :: members=[bettergold:golden_torchflower_seeds, farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds, minecraft:beetroot_seeds, minecraft:melon_seeds, minecraft:pitcher_pod, minecraft:pumpkin_seeds, minecraft:torchflower_seeds, minecraft:wheat_seeds]
+BGN10DPROBE PASS s_parrot_food_keeps_vanilla :: 被覆盖掉的原版条目=[]（合并不是覆盖）
+BGN10DPROBE INFO s_tag_other_modules :: parrot_food -> [farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds]
+BGN10DPROBE PASS s_parrot_food_member_count :: 成员数=10（下界 = 原版 6 + 我们 1；其它模组另加 [farmersdelight:cabbage_seeds, farmersdelight:rice, farmersdelight:tomato_seeds]）
+BGN10DPROBE INFO s_tag_members :: sniffer_food -> [bettergold:golden_torchflower_seeds, minecraft:torchflower_seeds]
+BGN10DPROBE PASS s_sniffer_food_has_ours :: members=[bettergold:golden_torchflower_seeds, minecraft:torchflower_seeds]
+BGN10DPROBE PASS s_sniffer_food_keeps_vanilla :: 被覆盖掉的原版条目=[]（合并不是覆盖）
+BGN10DPROBE PASS s_sniffer_food_member_count :: 成员数=2（下界 = 原版 1 + 我们 1；其它模组另加 []）
+BGN10DPROBE INFO s_tag_members :: villager_plantable_seeds -> [bettergold:golden_torchflower_seeds, farmersdelight:cabbage_seeds, farmersdelight:onion, farmersdelight:tomato_seeds, minecraft:beetroot_seeds, minecraft:carrot, minecraft:pitcher_pod, minecraft:potato, minecraft:torchflower_seeds, minecraft:wheat_seeds]
+BGN10DPROBE PASS s_villager_plantable_seeds_has_ours :: members=[bettergold:golden_torchflower_seeds, farmersdelight:cabbage_seeds, farmersdelight:onion, farmersdelight:tomato_seeds, minecraft:beetroot_seeds, minecraft:carrot, minecraft:pitcher_pod, minecraft:potato, minecraft:torchflower_seeds, minecraft:wheat_seeds]
+BGN10DPROBE PASS s_villager_plantable_seeds_keeps_vanilla :: 被覆盖掉的原版条目=[]（合并不是覆盖）
+BGN10DPROBE INFO s_tag_other_modules :: villager_plantable_seeds -> [farmersdelight:cabbage_seeds, farmersdelight:onion, farmersdelight:tomato_seeds]
+BGN10DPROBE PASS s_villager_plantable_seeds_member_count :: 成员数=10（下界 = 原版 6 + 我们 1；其它模组另加 [farmersdelight:cabbage_seeds, farmersdelight:onion, farmersdelight:tomato_seeds]）
+BGN10DPROBE PASS s_is_chicken_food :: stack.is(chicken_food)=true
+BGN10DPROBE PASS s_is_parrot_food :: stack.is(parrot_food)=true
+BGN10DPROBE PASS s_is_sniffer_food :: stack.is(sniffer_food)=true
+BGN10DPROBE PASS s_is_villager_plantable_seeds :: stack.is(villager_plantable_seeds)=true
+BGN10DPROBE PASS s_negative_stick :: 木棍命中条数=0（期望 0）
+BGN10DPROBE PASS s_negative_iron :: 铁锭命中条数=0（期望 0）
+BGN10DPROBE PASS s_negative_same_item_present :: 阳性对照件=1 bettergold:golden_torchflower_seeds
+BGN10DPROBE PASS s_flower_not_in_seed_tags :: bettergold:golden_torchflower 在 chicken_food 里=false（期望 false）
+BGN10DPROBE PASS s_seed_registry_id :: 注册 id=bettergold:golden_torchflower_seeds
+BGN10DPROBE PASS s_tag_registry_is_item :: TagKey.registry == Registries.ITEM
+BGN10DPROBE INFO s_server :: 1.21.1
+BGN10DPROBE SUMMARY pass=23 fail=0
+BGN10DPROBE INFO forceload 从未调用；世界只加载、不改写区块

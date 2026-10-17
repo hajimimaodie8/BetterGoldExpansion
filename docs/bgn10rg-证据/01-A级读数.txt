@@ -1,0 +1,72 @@
+bg-n10rg A 级读数（真服务端 `gradlew runServer` + 真 `ServerPlayer` + 真 `CraftingMenu` + 真点击）
+==============================================================================================================
+来源：run/logs/latest.log（UTF-8）逐行摘录；探针源码：脚本副本/BgN10rgProbe.java.txt（17,514 B）。
+世界：run/world（服务器 level-name=world），**不是**作者的 run/saves/新的世界。
+【总结】SUMMARY pass=43 fail=0 forcedNow=0
+
+⚠ 第一轮（20:52:50）是 pass=41 / fail=1：唯一那条 FAIL 是**负向我第一版写错了**
+（"用原版金锭摆出原版金剑 ⇒ 期望空"，而工作台里原版配方本来就是活的 ⇒ 真的合出 minecraft:golden_sword）。
+改成"没有任何配方能匹配的摆位"（3 锭的剑 / 少一格的胸甲）后第二轮全绿。两轮日志都在 build/ 里留档
+（bgn10rg-runserver-1.log / 修正后为 run/logs/latest.log）。下面这份是**第二轮（修正后）**的逐行读数。
+
+[1710月2026 20:53:21.548] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO ready dummy=bgn10rgdummy level=minecraft:overworld
+[1710月2026 20:53:21.652] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_sword :: 摆位 chaosgold_ingot - - | chaosgold_ingot - - | stick - - | 
+[1710月2026 20:53:21.652] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_sword_result :: 结果格=1x bettergold:chaosgold_sword（期望 1x bettergold:chaosgold_sword）
+[1710月2026 20:53:21.675] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_sword_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.679] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_sword_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.690] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_axe :: 摆位 chaosgold_ingot chaosgold_ingot - | chaosgold_ingot stick - | - stick - | 
+[1710月2026 20:53:21.690] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_axe_result :: 结果格=1x bettergold:chaosgold_axe（期望 1x bettergold:chaosgold_axe）
+[1710月2026 20:53:21.692] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_axe_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.692] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_axe_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.695] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_pickaxe :: 摆位 chaosgold_ingot chaosgold_ingot chaosgold_ingot | - stick - | - stick - | 
+[1710月2026 20:53:21.695] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_pickaxe_result :: 结果格=1x bettergold:chaosgold_pickaxe（期望 1x bettergold:chaosgold_pickaxe）
+[1710月2026 20:53:21.698] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_pickaxe_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.698] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_pickaxe_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.701] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_shovel :: 摆位 chaosgold_ingot - - | stick - - | stick - - | 
+[1710月2026 20:53:21.702] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_shovel_result :: 结果格=1x bettergold:chaosgold_shovel（期望 1x bettergold:chaosgold_shovel）
+[1710月2026 20:53:21.704] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_shovel_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.704] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_shovel_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.706] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_hoe :: 摆位 chaosgold_ingot chaosgold_ingot - | - stick - | - stick - | 
+[1710月2026 20:53:21.706] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_hoe_result :: 结果格=1x bettergold:chaosgold_hoe（期望 1x bettergold:chaosgold_hoe）
+[1710月2026 20:53:21.707] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_hoe_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.707] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_hoe_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.709] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_helmet :: 摆位 chaosgold_ingot chaosgold_ingot chaosgold_ingot | chaosgold_ingot - chaosgold_ingot | - - - | 
+[1710月2026 20:53:21.709] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_helmet_result :: 结果格=1x bettergold:chaosgold_helmet（期望 1x bettergold:chaosgold_helmet）
+[1710月2026 20:53:21.712] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_helmet_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.712] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_helmet_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.715] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_chestplate :: 摆位 chaosgold_ingot - chaosgold_ingot | chaosgold_ingot chaosgold_ingot chaosgold_ingot | chaosgold_ingot chaosgold_ingot chaosgold_ingot | 
+[1710月2026 20:53:21.715] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_chestplate_result :: 结果格=1x bettergold:chaosgold_chestplate（期望 1x bettergold:chaosgold_chestplate）
+[1710月2026 20:53:21.718] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_chestplate_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.718] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_chestplate_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.720] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_leggings :: 摆位 chaosgold_ingot chaosgold_ingot chaosgold_ingot | chaosgold_ingot - chaosgold_ingot | chaosgold_ingot - chaosgold_ingot | 
+[1710月2026 20:53:21.721] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_leggings_result :: 结果格=1x bettergold:chaosgold_leggings（期望 1x bettergold:chaosgold_leggings）
+[1710月2026 20:53:21.723] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_leggings_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.723] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_leggings_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.724] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_boots :: 摆位 chaosgold_ingot - chaosgold_ingot | chaosgold_ingot - chaosgold_ingot | - - - | 
+[1710月2026 20:53:21.724] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_boots_result :: 结果格=1x bettergold:chaosgold_boots（期望 1x bettergold:chaosgold_boots）
+[1710月2026 20:53:21.727] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_boots_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.727] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_boots_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.728] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_shield :: 摆位 oak_planks chaosgold_ingot oak_planks | oak_planks oak_planks oak_planks | - oak_planks - | 
+[1710月2026 20:53:21.728] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_shield_result :: 结果格=1x bettergold:chaosgold_shield（期望 1x bettergold:chaosgold_shield）
+[1710月2026 20:53:21.729] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_shield_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.730] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_shield_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.731] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_crossbow :: 摆位 stick chaosgold_ingot stick | string tripwire_hook string | - stick - | 
+[1710月2026 20:53:21.732] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_crossbow_result :: 结果格=1x bettergold:chaosgold_crossbow（期望 1x bettergold:chaosgold_crossbow）
+[1710月2026 20:53:21.734] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_crossbow_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+[1710月2026 20:53:21.734] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_crossbow_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+[1710月2026 20:53:21.734] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_doubled_echogold :: 摆位 mixed_crystal_pile mixed_crystal_pile redstone | redstone gold_block gold_block | netherite_ingot bundled_echo_shard refined_alchemic_oil | （催化剂 = bettergold:refined_alchemic_oil 在第 8 格）
+[1710月2026 20:53:21.736] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_doubled_echogold_result :: 结果格=2x bettergold:raw_echogold（期望 2x bettergold:raw_echogold）
+[1710月2026 20:53:21.738] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_doubled_echogold_catalyst_slot :: 催化剂格点击后=1x minecraft:glass_bottle（期望 1x minecraft:glass_bottle）
+[1710月2026 20:53:21.739] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_doubled_echogold_bottle_in_inventory :: 背包里玻璃瓶=1（期望 1）
+[1710月2026 20:53:21.739] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_doubled_echogold_consumed :: 八格原料逐格 −1 全部正确
+[1710月2026 20:53:21.742] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_base_fuel_echogold :: 摆位 mixed_crystal_pile mixed_crystal_pile redstone | redstone gold_block gold_block | netherite_ingot bundled_echo_shard alchemic_fuel | （催化剂 = bettergold:alchemic_fuel 在第 8 格）
+[1710月2026 20:53:21.743] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_base_fuel_echogold_result :: 结果格=1x bettergold:raw_echogold（期望 1x bettergold:raw_echogold）
+[1710月2026 20:53:21.746] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_base_fuel_echogold_catalyst_slot :: 催化剂格点击后=1x minecraft:glass_bottle（期望 1x minecraft:glass_bottle）
+[1710月2026 20:53:21.746] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_base_fuel_echogold_bottle_in_inventory :: 背包里玻璃瓶=1（期望 1）
+[1710月2026 20:53:21.747] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_base_fuel_echogold_consumed :: 八格原料逐格 −1 全部正确
+[1710月2026 20:53:21.749] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_neg_sword_three_ingots :: 摆位 chaosgold_ingot - - | chaosgold_ingot - - | chaosgold_ingot - - | 
+[1710月2026 20:53:21.749] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_neg_sword_three_ingots_no_match :: 负向：结果格=<空>（期望空）
+[1710月2026 20:53:21.750] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO rg_neg_chestplate_missing_cell :: 摆位 chaosgold_ingot - chaosgold_ingot | chaosgold_ingot chaosgold_ingot chaosgold_ingot | chaosgold_ingot - chaosgold_ingot | 
+[1710月2026 20:53:21.750] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE PASS rg_neg_chestplate_missing_cell_no_match :: 负向：结果格=<空>（期望空）
+[1710月2026 20:53:21.766] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE INFO forceload :: forcedNow=0
+[1710月2026 20:53:21.766] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10RGPROBE SUMMARY pass=43 fail=0 forcedNow=0

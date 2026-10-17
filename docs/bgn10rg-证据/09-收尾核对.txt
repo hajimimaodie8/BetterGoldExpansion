@@ -1,0 +1,48 @@
+bg-n10rg 收尾核对（2026-10-17）
+================================================================================================
+
+【1】HEAD 与工作树
+  HEAD = 543e1d0ee5a9df0ae4d924aad2c556310e54ccde
+  最近 3 条提交：
+    543e1d0 bg-n10tex 1.7 贴图更新包：72 张按像素认亲后 1:1 翻新 + 第七个关卡
+    7680845 bg-n10rc：四类配方逐格核对（发现并修正 1 处对角写反）+ 逐格关卡 + 真合成 A 级
+    f9e60eb bg-n10r9 轮9：1.7 收口 —— 两族进手册 / 进成就 / 创造页 / 英文 / 六校验器全绿
+  `git status` 共 42 条：M=14 / ??=28 / D=0
+  → 其中 `textures/` 命中 **1** 条：[' M src/main/resources/assets/bettergold/textures/mob_effect/tremble.png']
+     本轮**没有**任何贴图动作：开工时工作树里有 **72 张**贴图 `M`（1.7 贴图更新包那轮的在制品），
+     我一个字节都没动；那轮随后把它们提交成 `543e1d0`。现在这一条 `M tremble.png` 是**另一个会话**
+     （`bg-n10d`，AGENTS 第六次授权）的在制品，与本轮无关。
+
+【2】本轮改动的 tracked 文件（sha256 前 16 位）
+  src/main/java/com/hjmmd_8/bettergold/recipe/RawSturdygoldRecipe.java                             6A21F97CCA4AB084
+  tools/asset-generator/generate_chaosgold_recipes.py                                              24FA9041E7A26B11
+  tools/asset-generator/generate_metal_recipes.py                                                  370B3A1AAF3EF475
+  tools/asset-generator/generate_handbook_data.py                                                  89A9D106A65537E6
+  tools/asset-generator/validate_metal_data.py                                                     A2355A202844CE51
+  src/main/resources/assets/bettergold/lang/zh_cn.json                                             432A5297852A47B7
+  src/main/resources/assets/bettergold/lang/en_us.json                                             51F3FD6F0686D0CD
+  n/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/gear_chaosgold.json 0BF592A83A512156
+  n/resources/assets/bettergold/patchouli_books/alchemy_handbook/en_us/entries/gear_chaosgold.json 0BF592A83A512156
+  docs/1.7-混沌金与崩乱合金-需求立档.md                                                                        4C37E1FB4D0AADD4
+
+【3】本轮新增的文件
+  工作台配方 11 个：['chaosgold_axe.json', 'chaosgold_boots.json', 'chaosgold_chestplate.json', 'chaosgold_crossbow.json', 'chaosgold_helmet.json', 'chaosgold_hoe.json', 'chaosgold_leggings.json', 'chaosgold_pickaxe.json', 'chaosgold_shield.json', 'chaosgold_shovel.json', 'chaosgold_sword.json']
+  双倍原料 9 个：['raw_echogold_doubled.json', 'raw_flamegold_doubled.json', 'raw_illusiongold_doubled.json', 'raw_indigoseagold_doubled.json', 'raw_sturdygold_doubled.json', 'raw_sturdygold_eggplant_doubled.json', 'raw_thornsgold_doubled.json', 'raw_thundergold_doubled.json', 'raw_voodoogold_doubled.json']
+
+【4】探针清理自证
+  probe 目录不存在
+  src 里 `BgN10rg|BG-N10RG|BGN10RGPROBE|bgn10rg` 命中 = 0 []
+  开关文件 run/bgn10rg-probe.enabled 存在 = False
+
+【5】run\ 与作者存档
+  run/saves（作者的 新的世界）：files 29 → 29 / bytes 18862026 → 18862026 / 逐文件全等 = True
+  run/server.properties：跑前 A2229937BA8AB742 → 复原后 A2229937BA8AB742（逐字节一致 = True）
+  run/world：files 63 → 63
+
+【6】jar 产物
+  build/libs/bettergold-1.6.0.jar = 1600278 B / mtime 2026-10-17 21:00:14
+
+【7】纪律
+  未 commit、未 push（由父代理提交）
+  原始 zip / 归档素材：本轮无任何贴图动作（textures 命中 0 条）
+  没碰另一会话的在制品：tremble.png / 种子标签 / generate_metal_tags.py / 它加的关卡段 / 它的文档 / BgN10d* 探针

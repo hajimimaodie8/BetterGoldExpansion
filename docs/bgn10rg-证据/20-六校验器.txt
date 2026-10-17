@@ -1,0 +1,32 @@
+====================================================================================================
+validate_metal_assets.py  exit=0
+    [bg-assets-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+====================================================================================================
+validate_metal_data.py  exit=0
+    [bgn10rg-ok] ����� 11 ������̨�䷽�����ԭ�棨������ = ����𶧣�+ 4 �����ж�ͣ�±��� / 9 ��˫�����ԭ�ϣ��߻��� = �߽������͡����� 2������������ֶ�ͬ���һ�����δ���ģ�/ ��������ƿ���߻�����һ���У�ȥע��Դ�� 2 ����/ �ֲ� gear_chaosgold 13 ҳ 11 ���䷽������
+    [bg-data-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+====================================================================================================
+validate_trim_assets.py  exit=0
+    唯一值个数=11 / 11（必须相等）
+    [bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0）
+    [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+====================================================================================================
+validate_advancements.py  exit=0
+    OK [bgach] 59 ���ɾ� / 142 �� criteria / �������� ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:villager_trade'] / recipe_crafted 0 �� / ���Լ� 118 ��
+    [bgach-ok] ���� 0 �� / �ɾ� 59 �� / criteria 142 �� / ���Լ� 118 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+====================================================================================================
+validate_bg17_textures.py  exit=0
+    [bg17tex-untouched] ok 553 of 553
+    [bg17tex-auth6] ok 1 of 1���������Ȩ֮�⡢���� #12 ��������һ�ţ�
+    [bg17tex-summary] checked=630 authorized=72 untouched=553 modelrefs=64 problems=0
+    [bg17tex-ok] all invariants hold
+====================================================================================================
+check_jar_clean.py  exit=0
+    jar 内 *Probe* 路径 = 0 []
+    [jar-clean-anti-vacuum] 实际检查了 2787 项（jar 内条目数；必须 > 0）
+    [jar-clean-ok] 产物 jar 干净（条目 2787；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+====================================================================================================
+check_forced_chunks.py  exit=0
+    data.Forced               = []
+    data.Forced length        = 0
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）

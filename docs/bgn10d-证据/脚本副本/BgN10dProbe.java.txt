@@ -1,0 +1,204 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.registry.AllItems;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+
+/**
+ * 临时探针（1.7 <b>bg-n10d</b>：裁定 #13 四条原版种子标签的服务端读数）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10d-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>读数分三层，缺一层都不算验证：
+ * <ol>
+ *   <li><b>运行期标签内容</b>（{@code BuiltInRegistries.ITEM.getOrCreateTag(key)} 的成员列表）
+ *       ⇒ 证明"合并不是覆盖"：原版那几条种子**都还在**，我们的种子也进来了；</li>
+ *   <li><b>原版那 4 个 {@code ItemTags} 常量</b>逐条 {@code stack.is(tag)}
+ *       ⇒ 走的是游戏真正用的判定入口（不是我们自己拼的字符串）；</li>
+ *   <li><b>阴性对照</b>：木棍 / 铁锭 / 金火把（花，不是种子）在 4 条标签里都必须 {@code false}。</li>
+ * </ol>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} 只调一次；不 forceload、不放方块、不 spawn 实体、
+ * 不碰存档（标签只跟数据包加载有关，{@code ServerStartedEvent} 那一刻已经定稿）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgN10dProbe {
+
+    private static final String TAG = "BGN10DPROBE";
+    private static final String SWITCH = "bgn10d-probe.enabled";
+
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private BgN10dProbe() {
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir"), SWITCH));
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        done = true;
+        MinecraftServer server = event.getServer();
+        try {
+            run(server);
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("s_exception", String.valueOf(t));
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        bettergold.LOGGER.info("{} INFO forceload 从未调用；世界只加载、不改写区块", TAG);
+        server.halt(false);
+    }
+
+    private static void run(MinecraftServer server) {
+        ItemStack seeds = new ItemStack(AllItems.GOLDEN_TORCHFLOWER_SEEDS.get());
+        check("s_seed_item_present", !seeds.isEmpty(), "stack=" + seeds);
+        bettergold.LOGGER.info("{} INFO s_seed_item :: {}", TAG, seeds.getItem());
+
+        // ---------- ① 4 条标签：成员列表（证明与原版合并，而不是覆盖） ----------
+        Object[][] cases = new Object[][] {
+            {"chicken_food", ItemTags.CHICKEN_FOOD,
+             new String[] {"minecraft:wheat_seeds", "minecraft:melon_seeds", "minecraft:pumpkin_seeds",
+                           "minecraft:beetroot_seeds", "minecraft:torchflower_seeds",
+                           "minecraft:pitcher_pod"}},
+            {"parrot_food", ItemTags.PARROT_FOOD,
+             new String[] {"minecraft:wheat_seeds", "minecraft:melon_seeds", "minecraft:pumpkin_seeds",
+                           "minecraft:beetroot_seeds", "minecraft:torchflower_seeds",
+                           "minecraft:pitcher_pod"}},
+            {"sniffer_food", ItemTags.SNIFFER_FOOD,
+             new String[] {"minecraft:torchflower_seeds"}},
+            {"villager_plantable_seeds", ItemTags.VILLAGER_PLANTABLE_SEEDS,
+             new String[] {"minecraft:wheat_seeds", "minecraft:potato", "minecraft:carrot",
+                           "minecraft:beetroot_seeds", "minecraft:torchflower_seeds",
+                           "minecraft:pitcher_pod"}},
+        };
+
+        for (Object[] row : cases) {
+            String tagName = (String) row[0];
+            @SuppressWarnings("unchecked")
+            TagKey<Item> key = (TagKey<Item>) row[1];
+            String[] vanilla = (String[]) row[2];
+
+            List<String> members = BuiltInRegistries.ITEM.getOrCreateTag(key).stream()
+                    .map(h -> h.unwrapKey().map(k -> k.location().toString()).orElse("?"))
+                    .sorted()
+                    .collect(Collectors.toList());
+            bettergold.LOGGER.info("{} INFO s_tag_members :: {} -> {}", TAG, tagName, members);
+
+            check("s_" + tagName + "_has_ours", members.contains("bettergold:golden_torchflower_seeds"),
+                    "members=" + members);
+            List<String> missingVanilla = new ArrayList<>();
+            for (String v : vanilla) {
+                if (!members.contains(v)) {
+                    missingVanilla.add(v);
+                }
+            }
+            check("s_" + tagName + "_keeps_vanilla", missingVanilla.isEmpty(),
+                    "被覆盖掉的原版条目=" + missingVanilla + "（合并不是覆盖）");
+            // ⚠ 成员总数**不能**写死成「原版 N + 我们 1」：dev 环境常驻的农夫乐事也会往
+            //   `chicken_food` / `parrot_food` / `villager_plantable_seeds` 里加种子
+            //   （实测 cabbage_seeds / rice / tomato_seeds / onion）⇒ 只断言**下界**，
+            //   并把"别的模组加的"如实打成读数。
+            List<String> otherMods = members.stream()
+                    .filter(m -> !m.startsWith("minecraft:") && !m.startsWith("bettergold:"))
+                    .sorted().collect(Collectors.toList());
+            if (!otherMods.isEmpty()) {
+                bettergold.LOGGER.info("{} INFO s_tag_other_modules :: {} -> {}", TAG, tagName, otherMods);
+            }
+            check("s_" + tagName + "_member_count", members.size() >= vanilla.length + 1,
+                    "成员数=" + members.size() + "（下界 = 原版 " + vanilla.length + " + 我们 1；"
+                            + "其它模组另加 " + otherMods + "）");
+        }
+
+        // ---------- ② 4 个 ItemTags 常量逐条 stack.is(tag) ----------
+        TagKey<Item>[] keys = new TagKey[] {ItemTags.CHICKEN_FOOD, ItemTags.PARROT_FOOD,
+                ItemTags.SNIFFER_FOOD, ItemTags.VILLAGER_PLANTABLE_SEEDS};
+        String[] names = new String[] {"chicken_food", "parrot_food", "sniffer_food",
+                "villager_plantable_seeds"};
+        for (int i = 0; i < keys.length; i++) {
+            check("s_is_" + names[i], seeds.is(keys[i]),
+                    "stack.is(" + names[i] + ")=" + seeds.is(keys[i]));
+        }
+
+        // ---------- ③ 阴性对照 ----------
+        ItemStack stick = new ItemStack(Items.STICK);
+        ItemStack iron = new ItemStack(Items.IRON_INGOT);
+        ItemStack flower = new ItemStack(AllItems.GOLDEN_TORCHFLOWER_SEEDS.get());
+        int stickHits = 0;
+        int ironHits = 0;
+        for (TagKey<Item> k : keys) {
+            if (stick.is(k)) {
+                stickHits++;
+            }
+            if (iron.is(k)) {
+                ironHits++;
+            }
+        }
+        check("s_negative_stick", stickHits == 0, "木棍命中条数=" + stickHits + "（期望 0）");
+        check("s_negative_iron", ironHits == 0, "铁锭命中条数=" + ironHits + "（期望 0）");
+        check("s_negative_same_item_present", !flower.isEmpty(), "阳性对照件=" + flower);
+
+        // 原版那个"花"不在种子标签里（我们只加了"种子"，没把花塞进去）
+        TagKey<Item> chicken = ItemTags.CHICKEN_FOOD;
+        boolean flowerInSeeds = membersContains(chicken, "bettergold:golden_torchflower");
+        check("s_flower_not_in_seed_tags", !flowerInSeeds,
+                "bettergold:golden_torchflower 在 chicken_food 里=" + flowerInSeeds + "（期望 false）");
+
+        // ④ 注册表侧硬对齐：种子 id 与 AllItems 注册名一致（防止"标签里写了个不存在的 id"）
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(seeds.getItem());
+        check("s_seed_registry_id", "bettergold:golden_torchflower_seeds".equals(id.toString()),
+                "注册 id=" + id);
+        boolean tagIsItemRegistry = TagKey.create(Registries.ITEM,
+                ResourceLocation.parse("minecraft:chicken_food")).registry().equals(Registries.ITEM);
+        check("s_tag_registry_is_item", tagIsItemRegistry, "TagKey.registry == Registries.ITEM");
+        bettergold.LOGGER.info("{} INFO s_server :: {}", TAG, server.getServerVersion());
+    }
+
+    private static boolean membersContains(TagKey<Item> key, String id) {
+        return BuiltInRegistries.ITEM.getOrCreateTag(key).stream()
+                .anyMatch(h -> h.unwrapKey().map(k -> k.location().toString()).orElse("").equals(id));
+    }
+}

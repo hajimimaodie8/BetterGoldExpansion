@@ -444,6 +444,127 @@ for rel, want in AUTHORIZED_PALETTE_TEXTURE.items():
             f"bgfix2 第 1 条报的 bug 本体）[bgfinal3-indigosea-not-quartz]")
 print(f"bgfinal3 授权色卡（靛海金纹饰）问题: {len(palette_hash_problems)} {palette_hash_problems[:4]}")
 
+# ==================== 1.7 bg-n10d（2026-10-18，裁定 #12）：第六次贴图授权 ====================
+# 作者原话：「第 12 条，你可以看看备份，然后替换掉。」 ⇒ 把归档里那张 `颤栗(新图标).png`
+#   **1:1 字节复制**到 `assets/bettergold/textures/mob_effect/tremble.png`（**唯一一次"改既有贴图"** 的本轮授权）。
+#
+# 为什么 `mob_effect/` 下的图标是 18×18（【读源码】+【实测】两条独立依据）：
+#   ① `MobEffectTextureManager.java:16`（1.21.1 sources jar）——
+#        `super(textureManager, ResourceLocation.withDefaultNamespace("textures/atlas/mob_effects.png"),
+#               ResourceLocation.withDefaultNamespace("mob_effects"))`
+#      ⇒ 状态效果图标走的是**独立的 `mob_effects` 图集**（**不是** `gui` 图集，也不是逐张直读）。
+#   ② 该图集的贴图来源 = 原版数据包 `assets/minecraft/atlases/mob_effects.json`：
+#        {"sources":[{"type":"directory","source":"mob_effect","prefix":""}]}
+#      ⇒ `textures/mob_effect/` 下**每一个** png 都被收进图集，sprite 名 = `<ns>:<文件名>`；
+#      `MobEffectTextureManager#get` 用 `effect` 的注册 id 去查 ⇒ **文件名的 stem 必须等于注册 id**。
+#   ③ 原版 39 张 `textures/mob_effect/*.png` **全部 18×18**（其中 8 张是 8 位 RGBA）⇒ 尺寸口径以原版为准。
+#      （实测命令见 docs/bgn10d-证据/12-颤栗贴图对比/，本关卡把这 3 条不变量都钉住。）
+#
+# 断言四件事：
+#   ① 内容 = 作者归档那一张（SHA256 锚点）；
+#   ② **负向**：不许等于改前那张（82db54af…）—— 被回退 / 换回旧图必须当场红；
+#   ③ 结构 = 18×18 / 8 位 / RGBA（与原版 39 张同规格，图集与 GUI 的 18×18 方框才对得上）；
+#   ④ 正向 needle（跑在**去注释**源码上）：`AllEffects` 里确实注册了 `"tremble"` ⇒ 贴图不是孤儿
+#      （反空转：注册 id 改名而贴图没跟着改，这里会红）。
+TREMBLE_ICON = "textures/mob_effect/tremble.png"
+TREMBLE_NEW_SHA = "2f912961e4ed5a4337a6f81b911575b169e97172a81e7ee194653ba5fd9ce768"
+TREMBLE_OLD_SHA = "82db54af5f9de098203cd26e42e3922f46335b09c014609830f7b91fe83be422"
+tremble_tex_problems = []
+
+
+def _strip_java_comments(src: str) -> str:
+    """去掉 `//` 行注释与 `/* */` 块注释（字符串字面量原样保留）。
+
+    正向 needle 必须跑在去注释后的源码上，否则"注释里写着 tremble"会让关卡假绿。
+    """
+    out = []
+    i, n = 0, len(src)
+    state = "code"
+    while i < n:
+        c = src[i]
+        two = src[i:i + 2]
+        if state == "code":
+            if two == "//":
+                state = "line"
+                i += 2
+                continue
+            if two == "/*":
+                state = "block"
+                i += 2
+                continue
+            if c == '"':
+                state = "str"
+            elif c == "'":
+                state = "chr"
+            out.append(c)
+            i += 1
+            continue
+        if state == "line":
+            if c == "\n":
+                state = "code"
+                out.append(c)
+            i += 1
+            continue
+        if state == "block":
+            if two == "*/":
+                state = "code"
+                i += 2
+                continue
+            i += 1
+            continue
+        if c == "\\" and state in ("str", "chr"):
+            out.append(src[i:i + 2])
+            i += 2
+            continue
+        if (state == "str" and c == '"') or (state == "chr" and c == "'"):
+            state = "code"
+        out.append(c)
+        i += 1
+    return "".join(out)
+
+
+_tremble_path = ASSETS / TREMBLE_ICON
+if not _tremble_path.is_file():
+    tremble_tex_problems.append(f"缺 {TREMBLE_ICON}（反空转守护）[bgn10d-tremble-missing]")
+else:
+    _b = _tremble_path.read_bytes()
+    _got = hashlib.sha256(_b).hexdigest()
+    if _got != TREMBLE_NEW_SHA:
+        tremble_tex_problems.append(
+            f"{TREMBLE_ICON} 的 SHA256 不是作者授权的第六张 [bgn10d-tremble-sha] "
+            f"(got {_got}, want {TREMBLE_NEW_SHA})")
+    if _got == TREMBLE_OLD_SHA:
+        tremble_tex_problems.append(
+            f"{TREMBLE_ICON} 逐字节等于改前那张（= #12 的替换被回退了）[bgn10d-tremble-revert]")
+    # IHDR：宽 / 高 / 位深 / 颜色类型（8 位 + 6 = RGBA，与原版 39 张同规格）
+    _w = int.from_bytes(_b[16:20], "big")
+    _h = int.from_bytes(_b[20:24], "big")
+    _bd, _ct = _b[24], _b[25]
+    if (_w, _h) != (18, 18):
+        tremble_tex_problems.append(
+            f"{TREMBLE_ICON} 不是 18x18（实际 {_w}x{_h}；原版 39 张 mob_effect 图标全是 18x18）"
+            f" [bgn10d-tremble-size]")
+    if (_bd, _ct) != (8, 6):
+        tremble_tex_problems.append(
+            f"{TREMBLE_ICON} 不是 8 位 RGBA（实际 bitdepth={_bd} colortype={_ct}）"
+            f" [bgn10d-tremble-format]")
+
+_effects_java = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "registry" / "AllEffects.java"
+if not _effects_java.is_file():
+    tremble_tex_problems.append("缺 registry/AllEffects.java（正向 needle 无处可跑）[bgn10d-tremble-needle]")
+else:
+    _raw = _effects_java.read_text(encoding="utf-8", errors="replace")
+    _stripped = _strip_java_comments(_raw)
+    if len(_raw) - len(_stripped) <= 0:
+        tremble_tex_problems.append(
+            "去注释后一个字节都没减少 ⇒ 去注释器自己坏了（正向 needle 会假绿）[bgn10d-tremble-needle]")
+    elif 'EFFECTS.register("tremble"' not in _stripped:
+        tremble_tex_problems.append(
+            "AllEffects 的去注释源码里没有 EFFECTS.register(\"tremble\" ⇒ 贴图与注册 id 脱钩"
+            " [bgn10d-tremble-needle]")
+print(f"bgn10d 授权贴图（第六张 tremble）问题: {len(tremble_tex_problems)} {tremble_tex_problems[:4]}")
+
+
 # ==================== 1.7（bg-n10 轮1 后半）：形态子集 ⇒ 资产也按声明核对 ====================
 # 作者裁定（立档 §4.0 ⑪d）：崩乱合金只做「锭 + 块 + 升级锻造模板」⇒ 它的**建材细节件一件都不该有**；
 # 混沌金缺「原料」与「升级锻造模板」⇒ 那两件不该有。
@@ -501,13 +622,19 @@ if checked <= 0:
     sys.exit(2)
 
 # 结论行（稳定 ASCII 结论码，便于扰动矩阵逐条命中）；判据与下面那行 sys.exit 完全一致。
+# ⚠ 1.7 bg-n10d（裁定 #12）：问题列表从 **10 个**变成 **11 个**（新增 `tremble_tex_problems`
+#   = 第六次贴图授权的 SHA256 锚点 + 反回退 + 18x18/RGBA + 注册 id 正向 needle）。
+#   旧形态原文留档（未删）：
+#     `_problem_total = sum(len(_x) for _x in (...) forms_problems))`
+#     `sys.exit(1 if (... or palette_hash_problems or forms_problems) else 0)`
 _problem_total = sum(len(_x) for _x in (
     bad_json, missing_tex, missing_special, missing_weapon_assets, missing_blank_assets,
     size_bad, trident_problems, mixin_problems, blank_tex_hash_problems, palette_hash_problems,
-    forms_problems))
+    forms_problems, tremble_tex_problems))
 print(f"[bg-assets-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
       f"（契约：0 绿 / 1 有问题 / 2 前置坏）")
 
 sys.exit(1 if (bad_json or missing_tex or missing_special or missing_weapon_assets
                or missing_blank_assets or size_bad or trident_problems or mixin_problems
-               or blank_tex_hash_problems or palette_hash_problems or forms_problems) else 0)
+               or blank_tex_hash_problems or palette_hash_problems or forms_problems
+               or tremble_tex_problems) else 0)

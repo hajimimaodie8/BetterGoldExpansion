@@ -1,0 +1,42 @@
+bg-n10d 七关卡读数（exit 码 + 关键计数行）
+跑测时刻：2026-10-17 21:02:47
+python：C:\Users\Lenovo\AppData\Local\Python\pythoncore-3.14-64\python.exe
+
+====================================================================================================
+validate_metal_assets.py     exit=0   （资产/贴图/模型/mixin + bgn10d tremble 锚点）
+    [bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+    [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+====================================================================================================
+validate_metal_data.py       exit=0   （语言键/数据/标签 + bgn10d 4 条种子标签）
+    [bg-data-anti-vacuum] 实际检查了 310 项（语言键）+ 1900 个 JSON 产物（扫描根缺失 0 个；两项都必须 > 0）
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+====================================================================================================
+validate_trim_assets.py      exit=0   （纹饰色卡与图集置换）
+    OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+    [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+====================================================================================================
+validate_advancements.py     exit=0   （51 条成就的落点与判据）
+    OK [bgach] 59 个成就 / 142 条 criteria / 触发类型 ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:villager_trade'] / recipe_crafted 0 条 / 语言键 118 条
+    OK [bgach] 树（bg-fix3 §五 链式）：根 3 孩子（炼制I + 两条农业）、根链 root -> 炼制I -> 炼制II -> 寻途、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；challenge 11 条（十族盔甲 + 骷髅打金服）
+    OK [bgfix3-knife-in-gear] 8 条武器成就各带 `have_knife`（items = 该族 `#bettergold:<族>_knives` 标签，标签条目一律 required:false）⇒ 装了乐事时小刀计入
+    OK [bgfix3-root-obtain] root 判据 = inventory_changed + `#bettergold:handbook`；全仓 recipe_crafted = 0 条
+    OK [bgfix4-antique-knife-in-gear] 2 条古董成就各带 `have_knife`（items = 单个标签字符串，标签条目 required:false）⇒ 装了乐事时屠刀/断骸刀计入；`have` 那 5 件裸 id 原路径保留
+    OK [bgfix9-inv-one-predicate] 「任意」类 15 条成就 / 24 条判据全部是**恰好 1 条谓词**（OR ⇔ items.size()==1）；「所有 / 一整套」类 14 条全部是「每件一条判据 + 各自一组」（组间 AND）；谓词 136 条 / 数组形态 14 个；全 59 条无 `conditions.player`（位置/结构门）
+    OK [bgfix9-raw-metal-shape] ㊽ treasure/any_raw_metal.have = 1 条谓词 + 8 项原料数组（拿取/合成任一即解锁）；[bgfix9-eggplant-no-structure] ㊹ agriculture/eggplant_seeds.have = 获得金钱茄种子（无结构门）
+    OK [bgach] 物品引用 139 个（含 13 张本模组标签）全部存在于注册表真源；食物清单与 Java 真源逐条一致
+====================================================================================================
+check_jar_clean.py           exit=0   （jar 里不许有探针/临时物）
+    jar 内含 'BG-PROBE' 常量的 class = 0 []
+    [jar-clean-ok] 产物 jar 干净（条目 2787；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+====================================================================================================
+check_forced_chunks.py       exit=0   （存档里 forceload 双向 0）
+    chunks.dat 侧 forceload 为 0 = True
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+====================================================================================================
+validate_bg17_textures.py    exit=0   （1.7 贴图更新包 72 张 + tremble 后加授权）
+    [bg17tex-auth6] ok mob_effect/tremble.png sha256=2f912961e4ed5a4337a6f81b911575b169e97172a81e7ee194653ba5fd9ce768
+    [bg17tex-auth6] ok 1 of 1（第五次授权之外、作者 #12 另批的那一张）
+    [bg17tex-summary] checked=630 authorized=72 untouched=553 modelrefs=64 problems=0
+    [bg17tex-ok] all invariants hold
+====================================================================================================
+[bgn10d-validators] 非 0 的关卡数 = 0（共 7 个）

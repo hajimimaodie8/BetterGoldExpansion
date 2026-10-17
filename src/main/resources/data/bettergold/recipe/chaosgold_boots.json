@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "X X",
+    "X X"
+  ],
+  "key": {
+    "X": {
+      "item": "bettergold:chaosgold_ingot"
+    }
+  },
+  "result": {
+    "id": "bettergold:chaosgold_boots",
+    "count": 1
+  }
+}

@@ -146,6 +146,21 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
 「**72 张文件 + 五个来源**（三张单张 + 新约10 新增 + 1.7 更新包）」。**除这 72 张之外仍然一律不许改/自己画**。
 ★ 原始 zip 红线继续有效：**绝不修改 / 重打包 / 改名 / 移动**（只读解压到 `docs\`，归档只增不改）。
 详见 `docs\1.7-贴图更新包翻新.md`。）
+（**第六次授权 = `颤栗(新图标).png` → `textures/mob_effect/tremble.png`（作者 2026-10-18 原话
+「**第 12 条**，你可以看看备份，然后**替换掉**」）**：把 `docs\新约10-素材清单\新约10\颤栗(新图标).png`
+（466 B / **18×18** / 8 位 / RGBA / SHA256 `2f912961e4ed5a4337a6f81b911575b169e97172a81e7ee194653ba5fd9ce768`）
+**1:1 字节复制**到 `textures/mob_effect/tremble.png`，替掉改前那张
+（623 B / 18×18 / SHA256 `82db54af5f9de098203cd26e42e3922f46335b09c014609830f7b91fe83be422`）；
+改前原件留档在 `docs\bgn10d-证据\12-颤栗贴图对比\tremble.png.before-82db54af.png`。
+⚠ 这是本轮**唯一一次"改既有贴图"**（`M` 计数实测 = **1 张**，其余新文件都是 `??`）⇒ 白名单从
+「**72 张文件 + 五个来源**」扩成「**73 张文件 + 六个来源**」（本次 = **1 张**）。
+**关卡**：主锚点 `validate_metal_assets.py` 的 `[bgn10d-tremble-sha/-revert/-size/-format/-needle]`
+（SHA + **反回退**"不许等于改前那张" + 18×18 + 8 位 RGBA + 去注释源码里 `EFFECTS.register("tremble"` 正向 needle）；
+`validate_bg17_textures.py` 的 `[bg17tex-auth6]`（第五次授权的 626 张 manifest **不改**，
+把这一行读成"后加的单独授权"，另加 `[bg17tex-auth6-anchor]` 守住 manifest 那一行仍是 `untouched`）。
+18×18 的依据：`MobEffectTextureManager.java:16` 走独立 `mob_effects` 图集 +
+原版 `assets/minecraft/atlases/mob_effects.json` 是 `directory: mob_effect` +
+原版 39 张效果贴图**全部 18×18**（详见 `docs\1.7-裁定落实-4-5-12-13-14.md` §C）。）
 
 **7）mixin 基础设施（`bg-15w` 续工轮起才有）**
 - 配置：`src/main/resources/bettergold.mixins.json`（`client: ["ItemRendererTridentMixin"]`）+

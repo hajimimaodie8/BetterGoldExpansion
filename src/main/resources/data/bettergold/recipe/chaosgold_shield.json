@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "WoW",
+    "WWW",
+    " W "
+  ],
+  "key": {
+    "W": {
+      "tag": "minecraft:planks"
+    },
+    "o": {
+      "item": "bettergold:chaosgold_ingot"
+    }
+  },
+  "result": {
+    "id": "bettergold:chaosgold_shield",
+    "count": 1
+  }
+}

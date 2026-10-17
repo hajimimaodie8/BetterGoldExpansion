@@ -1,0 +1,277 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * <b>客户端侧探针</b>（1.7 bg-n10rg：手册 `gear_chaosgold` 的 11 条配方页**真进世界**读内容树）
+ * —— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件 {@code run/bgn10rg-probe.enabled}；只在 {@link Dist#CLIENT} 注册。
+ * 用 {@code --quickPlayPath <file> --quickPlaySingleplayer bg10rgprobe} 进到一个**ASCII 名字的探针世界**
+ * （由 `run/world` 整目录复制而来）。</p>
+ *
+ * <p><b>为什么必须进世界</b>：标题界面那一档 `BookContents` 是**空壳**（条目 0、`isErrored=false`、不报错），
+ * 而且 `PageDoubleRecipe#build` 要拿 `Level` 去 `getRecipeManager()` 解析 recipe id
+ * ⇒ "配方页无死链"只有在世界里才验得出来（1.6 规格 §5.6 的结论）。</p>
+ *
+ * <p>⚠ 探针纪律：不建世界、**绝不打开作者的 `run/saves/新的世界`**（进世界后第一件事就是断言
+ * 存档目录名 = `bg10rgprobe`，不等就立刻 `halt(1)`）；读完 `Runtime.halt(0)`（客户端没有"停服"）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID, value = Dist.CLIENT)
+public final class BgN10rgClientProbe {
+
+    private static final String TAG = "BGN10RGCPROBE";
+    private static final String SWITCH = "bgn10rg-probe.enabled";
+    private static final String PROBE_WORLD = "bg10rgprobe";
+    /** 手册总页数（bg-n10rg 之后：230 + 6 页工作台配方页） */
+    private static final int EXPECT_PAGES = 236;
+    private static final int EXPECT_ENTRIES = 24;
+
+    private static int ticks;
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private BgN10rgClientProbe() {
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static void info(String msg) {
+        bettergold.LOGGER.info("{} INFO {}", TAG, msg);
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (done || !Files.exists(Path.of(System.getProperty("user.dir"), SWITCH))) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        // 等到"真进了世界且整合服务端起来了"再开始计数（每个 tick 都在推进，不受加载时长影响）
+        if (mc.level == null || mc.getSingleplayerServer() == null) {
+            return;
+        }
+        ticks++;
+        if (ticks < 60) {                     // 进世界后再等 60 tick：配方同步 + Patchouli 建内容树
+            return;
+        }
+        done = true;
+        int code = 0;
+        try {
+            code = run(mc) ? 0 : 1;
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("c_exception", String.valueOf(t));
+            code = 1;
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        bettergold.LOGGER.info("{} INFO exiting JVM（客户端没有「停服」这回事；探针收尾直接退进程）", TAG);
+        Runtime.getRuntime().halt(code);
+    }
+
+    private static boolean run(Minecraft mc) {
+        // ---------- ① 先证明"我在探针世界里"，不是作者的存档 ----------
+        String levelId = "<?>";
+        try {
+            // `MinecraftServer#storageSource` 是 protected ⇒ 走 public 的 `getWorldPath(ROOT)` 取目录名
+            levelId = mc.getSingleplayerServer()
+                    .getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT)
+                    .getFileName().toString();
+        } catch (Throwable t) {
+            fail("c_world_level_id", "读不到存档目录名：" + t);
+        }
+        check("c_world_is_probe_world",
+                PROBE_WORLD.equals(levelId),
+                "存档目录名=" + levelId + "（期望 " + PROBE_WORLD + "；**绝不是** 新的世界）");
+        check("c_world_name_not_author_save",
+                !"新的世界".equals(levelId),
+                "levelId=" + levelId);
+        if (!PROBE_WORLD.equals(levelId)) {
+            info("世界名不对 ⇒ 立刻停止一切动作，不再读写任何东西");
+            return false;
+        }
+
+        // ---------- ② 手册内容树（真进世界之后才有内容） ----------
+        if (!ModList.get().isLoaded("patchouli")) {
+            fail("c_book_present", "没装 Patchouli（run/mods 里应当常驻）");
+            return false;
+        }
+        var book = vazkii.patchouli.common.book.BookRegistry.INSTANCE.books
+                .get(ResourceLocation.parse("bettergold:alchemy_handbook"));
+        check("c_book_present", book != null, "book=" + (book == null ? "null" : book.id.toString()));
+        if (book == null) {
+            return false;
+        }
+        var contents = book.getContents();
+        check("c_book_contents_present", contents != null, "contents=" + contents);
+        if (contents == null) {
+            return false;
+        }
+        check("c_book_not_errored", !contents.isErrored(),
+                "errored=" + contents.isErrored() + " exception=" + contents.getException());
+
+        int entries = contents.entries.size();
+        int pages = 0;
+        for (var e : contents.entries.values()) {
+            pages += e.getPages().size();
+        }
+        check("c_book_entry_count", entries == EXPECT_ENTRIES,
+                "entries=" + entries + "（期望 " + EXPECT_ENTRIES + "）");
+        check("c_book_page_count", pages == EXPECT_PAGES,
+                "pages=" + pages + "（期望 " + EXPECT_PAGES + "）");
+
+        // ---------- ③ gear_chaosgold：13 页 + 6 页配方页的 11 条 recipe **真解析出来了** ----------
+        var entryId = ResourceLocation.parse("bettergold:gear_chaosgold");
+        var entry = contents.entries.get(entryId);
+        check("c_entry_gear_chaosgold", entry != null, "entry=" + entry);
+        if (entry == null) {
+            return false;
+        }
+        List<?> list = entry.getPages();
+        check("c_gear_pages_13", list.size() == 13, "pages=" + list.size() + "（期望 13）");
+
+        StringBuilder classes = new StringBuilder();
+        List<Object> recipePages = new ArrayList<>();
+        int spotlights = 0;
+        int badStacks = 0;
+        for (Object page : list) {
+            String cn = page.getClass().getSimpleName();
+            classes.append(cn).append(',');
+            if (page instanceof vazkii.patchouli.client.book.page.PageCrafting) {
+                recipePages.add(page);
+            }
+            if (page instanceof vazkii.patchouli.client.book.page.PageSpotlight) {
+                spotlights++;
+                Object raw = field(page, "stacks");
+                ItemStack[] stacks = (ItemStack[]) raw;
+                if (stacks == null || stacks.length == 0 || stacks[0].isEmpty()) {
+                    badStacks++;
+                }
+            }
+        }
+        check("c_gear_page_classes",
+                classes.toString().startsWith("PageText,PageText,PageText,PageCrafting,")
+                        && classes.toString().contains("PageSpotlight"),
+                "classes=" + classes);
+        check("c_gear_spotlight_icons", spotlights == 3 && badStacks == 0,
+                "spotlights=" + spotlights + " badStacks=" + badStacks);
+
+        // 配方页：PageDoubleRecipe 的 `recipe1` / `recipe2`（transient 解析结果）必须**都真的非 null**
+        //   ⚠ 字段名以 Patchouli jar 为准（javap）：`recipeId` / `recipe2Id`（ResourceLocation）
+        //     与 `recipe1` / `recipe2`（transient T）。1.6 规格 §5.6 的结论：只有 world 里才解析得出来。
+        List<String> resolved = new ArrayList<>();
+        List<String> dead = new ArrayList<>();
+        for (Object page : recipePages) {
+            for (String[] pair : new String[][] {{"recipeId", "recipe1"}, {"recipe2Id", "recipe2"}}) {
+                Object idField = field(page, pair[0]);
+                if (idField == null) {
+                    continue;                     // 该页只有一条配方
+                }
+                String rid = String.valueOf(idField);
+                if (field(page, pair[1]) == null) {
+                    dead.add(pair[1] + "=" + rid);
+                } else {
+                    resolved.add(rid);
+                }
+            }
+        }
+        check("c_gear_recipes_resolved", dead.isEmpty() && resolved.size() == 11,
+                "解析出 " + resolved.size() + " 条（期望 11）死链=" + dead);
+        check("c_gear_recipes_all_11",
+                resolved.size() == 11 && resolved.stream().allMatch(r -> r.startsWith("bettergold:chaosgold_")),
+                "resolved=" + resolved);
+
+        // ---------- ④ 配方表里真有这 11 条（Patchouli 就是拿 id 去 RecipeManager 查的） ----------
+        var rm = mc.level.getRecipeManager();
+        List<String> missing = new ArrayList<>();
+        for (Object page : recipePages) {
+            for (String slot : new String[] {"recipeId", "recipe2Id"}) {
+                Object idField = field(page, slot);
+                if (idField == null) {
+                    continue;
+                }
+                String rid = String.valueOf(idField);
+                var key = ResourceLocation.tryParse(rid);
+                if (key == null || rm.byKey(key).isEmpty()) {
+                    missing.add(rid);
+                }
+            }
+        }
+        check("c_gear_recipes_in_manager", missing.isEmpty(),
+                "RecipeManager 里查不到=" + missing);
+
+        // ---------- ⑤ 客户端日志里没有资源加载失败 / Patchouli 报错 ----------
+        Path log = Path.of(System.getProperty("user.dir")).resolve("logs").resolve("latest.log");
+        int failed = 0;
+        int patchouliErrors = 0;
+        try {
+            if (Files.exists(log)) {
+                for (String line : Files.readAllLines(log, java.nio.charset.StandardCharsets.UTF_8)) {
+                    if (line.contains("Unable to load model") || line.contains("Missing model")) {
+                        failed++;
+                    }
+                    if (line.contains("vazkii.patchouli") && line.contains("ERROR")) {
+                        patchouliErrors++;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            fail("c_log_scan_io", String.valueOf(e));
+        }
+        check("c_no_resource_load_failures", failed == 0, "UnableToLoad/Missing model 行数=" + failed);
+        check("c_no_patchouli_errors", patchouliErrors == 0, "patchouli ERROR 行数=" + patchouliErrors);
+        return fails == 0;
+    }
+
+    /** 读 Patchouli 页面对象里的**包私有**字段（探针专用；不让它进生产代码） */
+    private static Object field(Object target, String name) {
+        Class<?> c = target.getClass();
+        while (c != null) {
+            try {
+                var f = c.getDeclaredField(name);
+                f.setAccessible(true);
+                return f.get(target);
+            } catch (NoSuchFieldException e) {
+                c = c.getSuperclass();
+            } catch (Throwable t) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /** 仅供编译器别把未使用的 map 警告当错误（探针里不需要它） */
+    private static final Map<String, Integer> UNUSED = new LinkedHashMap<>();
+}

@@ -101,6 +101,89 @@ def keep_template(metal: str, tpl: str) -> bool:
 # 原料合成配方的模板文件（1.5 起对非万坚金金属注入 exchange / result 两个字段）
 RAW_CRAFT_TEMPLATE = "raw_sturdygold.json"
 
+# ---------------------------------------------------------------------------------------
+# 1.7 `bg-n10rg`：「双倍贵金原料」（作者 2026-10-17 原话）
+#   「"贵金"原料**双倍合成**就是**直接把炼金燃油的位置换成高阶炼金油**，
+#     然后**原料的合成量改为 2**，**记得返还玻璃瓶**」
+# ---------------------------------------------------------------------------------------
+# 落法：**不改**基础那条（炼金燃油版），而是给每一条「贵金原料合成配方」加一条**同形**的双倍版
+#   `raw_<族>[_eggplant]_doubled.json`：
+#       {**基础那条的全部字段}, "catalyst": 高阶炼金油, "count": 2
+#   ⇒ 双倍版 = 基础版 + **只有这两个字段**（不是手抄一遍再比，是代码里就这一条规则）。
+#
+# 为什么"两条并存"而不是"直接改那条"：作者原话是「直接把…换成…」，字面可以读成"改掉原配方"；
+#   但那样会让**已经存在的炼金燃油**在原料合成里彻底没用（1.4/1.5/1.6 的玩家路线被无声掐断），
+#   而两条并存既满足"用高阶油能双倍"，又不删既有内容 ⇒ 记账见 `docs/1.7-...md` §20.3。
+#
+# 返还玻璃瓶不在这里做：1.21.1 的剩余物由 `RawSturdygoldRecipe#getRemainingItems` 按**催化剂那一格**
+#   放玻璃瓶（`alchemic_fuel` 从 1.5 起就是这样）⇒ 双倍版换的是 catalyst 字段，瓶子自动跟着换。
+RAW_CATALYST_FIELD = "catalyst"
+RAW_COUNT_FIELD = "count"
+DOUBLED_OIL = "bettergold:refined_alchemic_oil"
+DOUBLED_COUNT = 2
+DOUBLED_SUFFIX = "_doubled"
+
+
+def _is_raw_craft(obj: dict) -> bool:
+    """这条配方是不是「贵金原料合成」那一种（两个序列化器都算）"""
+    t = obj.get("type")
+    return isinstance(t, str) and t.startswith(RAW_RECIPE_TYPE)
+
+
+def raw_craft_bases() -> list[Path]:
+    """recipe 目录里所有「贵金原料合成」的基础配方（**数据驱动**，不写死文件名）"""
+    out = []
+    for p in sorted(RECIPES.glob("*.json")):
+        if p.stem.endswith(DOUBLED_SUFFIX):
+            continue
+        try:
+            obj = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:                     # noqa: BLE001  别的形状坏了不归本脚本管
+            continue
+        if _is_raw_craft(obj):
+            out.append(p)
+    return out
+
+
+def doubled_raw_targets() -> list[tuple[str, dict, dict]]:
+    """[(双倍版文件名, 双倍版 JSON, 基础版 JSON)]"""
+    out = []
+    for base in raw_craft_bases():
+        base_obj = json.loads(base.read_text(encoding="utf-8"))
+        obj = dict(base_obj)
+        obj[RAW_CATALYST_FIELD] = DOUBLED_OIL
+        obj[RAW_COUNT_FIELD] = DOUBLED_COUNT
+        out.append((base.stem + DOUBLED_SUFFIX + ".json", obj, base_obj))
+    return out
+
+
+def check_doubled(targets: list[tuple[str, dict, dict]]) -> list[str]:
+    """双倍版的三个不变量（每条都能单独变红）"""
+    bad: list[str] = []
+    if not targets:
+        bad.append("一条「贵金原料合成」基础配方都没找到（数据驱动扫描扫空了 = 假绿）")
+    for name, obj, base_obj in targets:
+        # ① 双倍版 = 基础版 + 恰好两个字段（别的字段一个都不许多、不许少）
+        extra = sorted(set(obj) - set(base_obj))
+        if extra != sorted([RAW_CATALYST_FIELD, RAW_COUNT_FIELD]):
+            bad.append(f"{name} 比基础版多出的字段不是 [catalyst, count]：{extra}")
+        missing = sorted(set(base_obj) - set(obj))
+        if missing:
+            bad.append(f"{name} 比基础版少了字段：{missing}")
+        # ② 催化剂必须是高阶炼金油、数量必须是 2
+        if obj.get(RAW_CATALYST_FIELD) != DOUBLED_OIL:
+            bad.append(f"{name} 的 catalyst 不是 {DOUBLED_OIL}：{obj.get(RAW_CATALYST_FIELD)}")
+        if obj.get(RAW_COUNT_FIELD) != DOUBLED_COUNT:
+            bad.append(f"{name} 的 count 不是 {DOUBLED_COUNT}：{obj.get(RAW_COUNT_FIELD)}")
+        # ③ 兑换物 / 产物 / 类型必须与基础版**逐字相同**（双倍只换催化剂与数量）
+        for f in ("exchange", "result", "type"):
+            if obj.get(f) != base_obj.get(f):
+                bad.append(f"{name} 的 {f} 与基础版不同：{obj.get(f)} != {base_obj.get(f)}")
+        # ④ 基础版**不许**被写成双倍口径（本轮不动既有那条）
+        if RAW_CATALYST_FIELD in base_obj or RAW_COUNT_FIELD in base_obj:
+            bad.append(f"{name} 的基础版自己被写进了 catalyst/count（作者没要求改那条）")
+    return bad
+
 # 本模组的自定义配方序列化器（"配方类型"，不是物品 id）：原料合成配方用它。
 # 它绝不能跟着金属改名（改了就报 Unknown recipe_serializer），所以替换时要先保护起来 ——
 # 但**保护范围必须只限 type 字段**。
@@ -151,12 +234,14 @@ TEMPLATES = [
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--only-doubled", action="store_true",
+                    help="只写「双倍贵金原料」那一批（不动万坚金模板产出的既有配方）")
     args = ap.parse_args()
 
     written, missing = [], []
     skipped = []
     for metal, special in METALS.items():
-        for tpl in TEMPLATES:
+        for tpl in ([] if args.only_doubled else TEMPLATES):
             if not keep_template(metal, tpl):
                 skipped.append(f"{metal}:{tpl}")
                 continue
@@ -281,7 +366,21 @@ def main() -> None:
         seen_result[result] = name
     print(f"原料合成配方校验失败: {len(raw_bad)} {raw_bad[:4]}")
 
-    if chain_bad or raw_bad:
+    # 「双倍贵金原料」（1.7 bg-n10rg）：基础版一条都不动，只**派生**同形的双倍版。
+    doubled = doubled_raw_targets()
+    doubled_bad = check_doubled(doubled)
+    doubled_written = 0
+    for name, obj, _base in doubled:
+        text = json.dumps(obj, ensure_ascii=False, indent=2) + "\n"
+        json.loads(text)                      # 合法 JSON
+        if args.apply:
+            (RECIPES / name).write_text(text, encoding="utf-8", newline="\n")
+            doubled_written += 1
+    print(f"{'已写入' if args.apply else '演练'}: {doubled_written or len(doubled)} 条双倍贵金原料配方"
+          f"（催化剂 {DOUBLED_OIL}、数量 {DOUBLED_COUNT}）")
+    print(f"双倍贵金原料自检失败: {len(doubled_bad)} {doubled_bad[:4]}")
+
+    if chain_bad or raw_bad or doubled_bad:
         raise SystemExit(1)
 
 

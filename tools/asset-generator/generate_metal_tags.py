@@ -93,6 +93,25 @@ OPTIONAL_ITEM_TAG_VALUES["antique_knives"] = [
 OPTIONAL_ITEM_TAG_VALUES["netherite_antique_knives"] = [
     {"id": "bettergold:netherite_antique_knife", "required": False}]
 
+# --------------------------------------------------------------------------------------
+# 1.7 bg-n10d（2026-10-18，裁定 #13）：金火把花种子 = 原版种子那 **4 条**标签
+# --------------------------------------------------------------------------------------
+# 作者原话：「第 13 条。这个要不要做？我觉得吧，可以加上。」
+# 依据（【读源码】1.21.1 原版数据包；下面 4 份 JSON 的 values 里**都**有 minecraft:torchflower_seeds）：
+#   data/minecraft/tags/item/chicken_food.json             鸡：喂食 / 繁殖
+#   data/minecraft/tags/item/parrot_food.json              鹦鹉：喂食（跳舞）
+#   data/minecraft/tags/item/sniffer_food.json             嗅探兽：喂食 / 繁殖
+#   data/minecraft/tags/item/villager_plantable_seeds.json 村民：**农民会把它种进耕地**
+# 全仓 grep 原版 jar：含 torchflower_seeds 的标签**恰好 4 个**（不多不少）。
+# ⚠ 刻意**不加**的：`#minecraft:flowers` / `small_flowers`（那是"花"，我们的花已经单独加过）、
+#   `fox_food`（原版只有两种浆果）、`piglin_food` / `horse_food` 等（原版不含火把花种子）。
+# ⚠ 副作用（作者已明确接受）：村民会把金火把花种子种进耕地 ⇒ 长成金火把花；
+#   鸡 / 鹦鹉 / 嗅探兽会把它当食物，嗅探兽还会把它刨出来。见 docs/1.7-裁定落实-4-5-12-13-14.md §B。
+# ⚠ 反向约束由关卡守：这 4 张标签里**只许**多出这一条目，不许把别的物品塞进去
+#   （validate_metal_data.py 的 `[bgn10d-seed-tags-*]`）。
+SEED_ITEM = "bettergold:golden_torchflower_seeds"
+SEED_FOOD_TAGS = ("chicken_food", "parrot_food", "sniffer_food", "villager_plantable_seeds")
+
 # 目标文件 -> 要并入的物品/方块 id 列表
 def build_plan() -> dict[Path, list[str]]:
     plan: dict[Path, list[str]] = {}
@@ -138,6 +157,10 @@ def build_plan() -> dict[Path, list[str]]:
     for m in ALL_METALS:
         add(DATA / "minecraft" / "tags" / "block" / "beacon_base_blocks.json",
             [f"bettergold:{m}_{s}" for s in BEACON_SUFFIXES if MF.has(m, s)])
+
+    # 1.7 bg-n10d 裁定 #13：金火把花种子进原版那 4 条种子标签（照 minecraft:torchflower_seeds 的实证）
+    for tag in SEED_FOOD_TAGS:
+        add(DATA / "minecraft" / "tags" / "item" / f"{tag}.json", [SEED_ITEM])
     return plan
 
 

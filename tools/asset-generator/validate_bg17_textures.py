@@ -17,6 +17,8 @@
   [bgfinal3-indigosea-not-quartz]    该色卡不是白灰阶（负向）
   [bg17tex-model-ref]                被替换贴图仍被模型 JSON 引用（正向 needle）
   [bg17tex-needle-src]               盔甲层命名约定仍在（正向 needle，跑在去注释源码上）
+  [bg17tex-auth6]                    1.7 bg-n10d 裁定 #12「第六次授权」：tremble.png 后加替换
+  [bg17tex-auth6-anchor]             该行在 manifest 里仍是 untouched（第五次授权快照没被改）
   [bg17tex-summary]                  计数行
 """
 import sys, os, json, hashlib
@@ -44,6 +46,21 @@ ANCHORS = {
 EXPECT_AUTH = 72
 EXPECT_UNTOUCHED = 554
 EXPECT_TOTAL = 626
+
+# ==================== 1.7 bg-n10d（2026-10-18，裁定 #12）：第六次贴图授权 ====================
+# manifest 是**第五次授权那一刻**的 626 张快照（72 `authorized` + 554 `untouched`），其中
+#   `mob_effect/tremble.png` 被记为 `untouched`。作者 2026-10-18 另外授权替换了这一张
+#   （原话「第 12 条，你可以看看备份，然后替换掉」）⇒ **不改 manifest**（保住第五次授权的 72/554 口径，
+#   否则"72 张"这个证据就再也无法复算），而是把这一行读成「后加的单独授权」，在这里单独判：
+#   ① 内容 = 归档那一张（`validate_metal_assets.py` 的 `[bgn10d-tremble-*]` 是主锚点）；
+#   ② **反回退**：不许等于改前那张；
+#   ③ manifest 里这一行必须仍是 `untouched` 单行 —— 有人删/改它，`[bg17tex-auth6-anchor]` 当场红。
+LATER_AUTH = {
+    "mob_effect/tremble.png": (
+        "2f912961e4ed5a4337a6f81b911575b169e97172a81e7ee194653ba5fd9ce768",  # 改后（授权件）
+        "82db54af5f9de098203cd26e42e3922f46335b09c014609830f7b91fe83be422",  # 改前（反回退）
+    ),
+}
 
 
 def sha(p):
@@ -192,9 +209,13 @@ def main():
             continue
         auth_ok += 1
 
-    # ---- ② 其余 554 张：负向断言 ----
+    # ---- ② 其余 554 张：负向断言（其中 `LATER_AUTH` 的那几张走 ②-b 单独判） ----
     un_ok = 0
+    later_skipped = 0
     for r in untouched:
+        if r["path"] in LATER_AUTH:
+            later_skipped += 1     # 交给 ②-b；总数不算丢，见下面的身份断言
+            continue
         p = os.path.join(TEX, r["path"].replace("/", os.sep))
         if not os.path.exists(p):
             P.add("bg17tex-untouched-fail", "missing file " + r["path"])
@@ -206,6 +227,32 @@ def main():
             P.add("bg17tex-untouched-fail", r["path"] + " changed but not authorized")
             continue
         un_ok += 1
+
+    # ---- ②-b 第六次授权（后加）：manifest 里记为 untouched 的那一张，单独判 SHA + 反回退 ----
+    later_ok = 0
+    for rel, (want, old_sha) in sorted(LATER_AUTH.items()):
+        rows_hit = [r for r in rows if r["path"] == rel]
+        if len(rows_hit) != 1 or rows_hit[0]["role"] != "untouched":
+            P.add("bg17tex-auth6-anchor",
+                  rel + " 在 manifest 里不再是 untouched 单行（第五次授权快照被改）")
+        p = os.path.join(TEX, rel.replace("/", os.sep))
+        checked += 1
+        if not os.path.exists(p):
+            P.add("bg17tex-auth6-fail", "missing file " + rel)
+            continue
+        s = sha(p)
+        if s == old_sha:
+            P.add("bg17tex-revert", rel + " 等于改前那张（#12 的替换被回退了）")
+            continue
+        if s != want:
+            P.add("bg17tex-auth6-fail", rel + " sha mismatch")
+            continue
+        later_ok += 1
+        sys.stdout.write("[bg17tex-auth6] ok {0} sha256={1}\n".format(rel, s))
+    if later_skipped != len(LATER_AUTH):
+        P.add("bg17tex-auth6-anchor",
+              "被跳过的 untouched 行 {0} != LATER_AUTH {1}（身份对不上）".format(
+                  later_skipped, len(LATER_AUTH)))
 
     # ---- ③ 两条既有锚点 ----
     anchor_ok = 0
@@ -291,7 +338,16 @@ def main():
 
     # ---- 汇总 ----
     sys.stdout.write("[bg17tex-auth] ok {0} of {1}\n".format(auth_ok, EXPECT_AUTH))
-    sys.stdout.write("[bg17tex-untouched] ok {0} of {1}\n".format(un_ok, EXPECT_UNTOUCHED))
+    # ⚠ bg-n10d 就地标注（旧形态原文留档、未删）：
+    #   `sys.stdout.write("[bg17tex-untouched] ok {0} of {1}\n".format(un_ok, EXPECT_UNTOUCHED))`
+    #   —— 现在分母要减去"后加授权"的那几张（本轮 1 张），否则 553/554 看起来像少查了一张。
+    sys.stdout.write("[bg17tex-untouched] ok {0} of {1}\n".format(un_ok, EXPECT_UNTOUCHED - len(LATER_AUTH)))
+    sys.stdout.write("[bg17tex-auth6] ok {0} of {1}（第五次授权之外、作者 #12 另批的那一张）\n"
+                     .format(later_ok, len(LATER_AUTH)))
+    # 身份断言：554 = 553（未动）+ 1（后加授权）—— 少一张、多一张都在这里红
+    if un_ok + later_ok != EXPECT_UNTOUCHED:
+        P.add("bg17tex-auth6-anchor",
+              "untouched 身份对不上：{0} + {1} != {2}".format(un_ok, later_ok, EXPECT_UNTOUCHED))
     sys.stdout.write("[bg17tex-summary] checked={0} authorized={1} untouched={2} modelrefs={3} problems={4}\n"
                      .format(checked, auth_ok, un_ok, ref_ok, len(P.items)))
 

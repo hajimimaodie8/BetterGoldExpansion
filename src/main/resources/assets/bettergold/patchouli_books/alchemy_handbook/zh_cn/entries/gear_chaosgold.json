@@ -18,6 +18,35 @@
       "text": "bettergold.handbook.page.gear_chaosgold_2_left"
     },
     {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_sword",
+      "recipe2": "bettergold:chaosgold_axe"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_pickaxe",
+      "recipe2": "bettergold:chaosgold_shovel"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_hoe",
+      "recipe2": "bettergold:chaosgold_helmet"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_chestplate",
+      "recipe2": "bettergold:chaosgold_leggings"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_boots",
+      "recipe2": "bettergold:chaosgold_shield"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_crossbow"
+    },
+    {
       "type": "patchouli:spotlight",
       "item": [
         "bettergold:chaosgold_sword",

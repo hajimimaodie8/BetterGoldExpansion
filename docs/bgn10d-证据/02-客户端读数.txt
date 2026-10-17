@@ -1,0 +1,15 @@
+bg-n10d A 级 · 客户端启动探针（#12 tremble 图标被 mob_effects 图集解析）
+来源日志：run/logs/debug-3.log.gz
+探针开关文件：run/bgn10d-probe.enabled（跑完已删除）
+行数：10（PASS 7 / FAIL 0）
+
+BGN10DCPROBE PASS c_tremble_sprite_name :: sprite contents name=bettergold:tremble（missing sprite 会是 minecraft:missingno）
+BGN10DCPROBE PASS c_tremble_sprite_size :: sprite 尺寸=18x18（期望 18x18）
+BGN10DCPROBE PASS c_tremble_image_size :: 原始图=18x18 format=RGBA
+BGN10DCPROBE INFO c_tremble_pixel_sha :: 6ae90277f0b73e479f0a4701a79f24b27947a6d98356f92cfbe39eda514f134b
+BGN10DCPROBE PASS c_tremble_pixel_sha_new :: sprite 像素 RGBA-SHA256=6ae90277f0b73e479f0a4701a79f24b27947a6d98356f92cfbe39eda514f134b 期望(新 png)=6ae90277f0b73e479f0a4701a79f24b27947a6d98356f92cfbe39eda514f134b
+BGN10DCPROBE PASS c_tremble_pixel_sha_not_old :: sprite 像素 RGBA-SHA256 != 改前那张（否则替换没生效）
+BGN10DCPROBE PASS c_all_effect_icons_resolve :: bettergold 效果数=10 解析失败=[]
+BGN10DCPROBE PASS c_no_resource_load_failures :: UnableToLoad/FailedToLoad=0 Missing model=0
+BGN10DCPROBE SUMMARY pass=7 fail=0
+BGN10DCPROBE INFO 退出 JVM（标题界面就够；从未建世界 / 从未 quickPlay）

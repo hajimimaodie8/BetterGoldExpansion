@@ -1,0 +1,10 @@
+grid-swap（换一格：斧 第2行第2列 棍→锭） | script_exit=1 | 本段问题=2 | 命中=True | 复原=True | PASS
+result-count（剑 产物 1→2） | script_exit=1 | 本段问题=2 | 命中=True | 复原=True | PASS
+doubled-catalyst（双倍版 催化剂→炼金燃油） | script_exit=1 | 本段问题=2 | 命中=True | 复原=True | PASS
+doubled-count（双倍版 数量 2→1） | script_exit=1 | 本段问题=2 | 命中=True | 复原=True | PASS
+base-mutated（基础版被写进 catalyst） | script_exit=1 | 本段问题=3 | 命中=True | 复原=True | PASS
+java-fuel（返瓶改回按 ALCHEMIC_FUEL 判） | script_exit=1 | 本段问题=2 | 命中=True | 复原=True | PASS
+java-count（产物不带数量） | script_exit=1 | 本段问题=1 | 命中=True | 复原=True | PASS
+handbook-page（删一页配方页 13→12） | script_exit=1 | 本段问题=2 | 命中=True | 复原=True | PASS
+generator-gear（真源 GEAR 多一件 bow） | script_exit=1 | 本段问题=1 | 命中=True | 复原=True | PASS
+comment-only（只在 Java 里加注释，注释里写出被禁的两串） | script_exit=0 | 本段问题=0 | 命中=— | 复原=True | PASS

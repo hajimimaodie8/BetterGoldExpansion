@@ -1,0 +1,12 @@
+[跑前留档] 2026-10-17 20:52:23
+  run/saves   : files=29 bytes=18862026 max_mtime=1791542894
+  run/world   : files=63 bytes=50078844
+  server.props: sha=A2229937BA8AB742 bytes=1440
+  已备份 → build/bgn10rg-server.properties.bak（sha A2229937BA8AB742）
+[跑后复核] 2026-10-17 20:53:29
+  run/saves   : files 29 → 29 / bytes 18862026 → 18862026 / 逐文件全等=True
+  run/world   : files 63 → 63 / bytes 50078844 → 50115710
+  server.props: A2229937BA8AB742 (1440) → 05E81EF7DEDBD6FC (1440)
+  ⇒ 作者存档 run/saves 是否一个字节没动：是
+[复原] server.properties 用跑前 .bak 字节复制回来
+  sha256 期望 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4 / 实际 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4 / 一致=True
