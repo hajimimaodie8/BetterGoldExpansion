@@ -6094,9 +6094,18 @@ else:
 # ⚠ 1.7 bg-n10r4 收尾：zh 的落点按"与 en 逐条镜像"写（chaosgoldArmor 在 chaosgoldWeapon 之后）
 # ⇒ 文件 SHA 与上一轮中断时那次写入不同。旧常量原文留档（当时那次的落点/文案已无法逐字节复现）：
 #   `_BGN10_ZH_AFTER_SHA = "BF9DA6E316C087D68C934790CDEB6FAD36FA3804219AA174DCB289B4DCE7561A"`
-_BGN10_ZH_AFTER_SHA = "B4DE1D53B72B6E6763F633D377940CAEA11A0B7322C3933E43A6E09B7245A891"
-_BGN10_EN_AFTER_SHA = "254C26C00CC7CD709C0003B9F7679255D8958F5AE33FF2659579B7903C003C67"
-_BGN10_NEW_LANG_KEYS = 61      # zh/en 各 61 条 = 轮3 的 54 + 轮4 的 7（3 条物品/提示 + 4 条配置界面名）
+# ⚠ **1.7 bg-n10r6（轮6 · 金钱妖）第四次改常量**：新增 4 个键（实体名 / 刷怪蛋 /
+#   两条死亡提示 `death.attack.bettergold.money_gremlin_melee|chaos_coin`）⇒ 61 → **65**；
+#   两个文件级 SHA 同步换成本轮的值。旧值（轮4）原文留档：
+#     zh B4DE1D53B72B6E67… / en 254C26C00CC7CD70… / 键数 61
+#   本轮的语言键仍是「只加不删」：冻结副本里每一个既有键的值逐字未变（下面 ① 那条会证明）。
+_BGN10_ZH_AFTER_SHA = "B3101EFE3448856648EB085DCC53CF266542EAABCB696AD311C933DEEAEFCACC"
+_BGN10_EN_AFTER_SHA = "E3C9EA8B2DCAF3A6D4080E03F89A16D36419BA9C46A4B3174A627CAD06C5D7DD"
+_BGN10_NEW_LANG_KEYS = 65      # zh/en 各 65 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4
+# 旧值留档（原文保留，不删）：2026-10-17 轮6 之前的 61
+# _BGN10_ZH_AFTER_SHA = "B4DE1D53B72B6E6763F633D377940CAEA11A0B7322C3933E43A6E09B7245A891"
+# _BGN10_EN_AFTER_SHA = "254C26C00CC7CD709C0003B9F7679255D8958F5AE33FF2659579B7903C003C67"
+# _BGN10_NEW_LANG_KEYS = 61      # zh/en 各 61 条 = 轮3 的 54 + 轮4 的 7（3 条物品/提示 + 4 条配置界面名）
 if not _BGFIX11_FROZEN_ZH.is_file():
     _bgfix11_bad("bgfix11-lang-k1s-en",
                  "找不到 zh 冻结副本 %s（反空转守护）" % _BGFIX11_FROZEN_ZH.relative_to(REPO))
@@ -6567,6 +6576,235 @@ for _k in ("item.bettergold.chaosgold_forbidden_fruit",
     if _zh_r4.get(_k) == _en_r4.get(_k):
         _bgn10r4_bad("bgn10r4-items-registered", "%s 的中英逐字相同（等于没译）" % _k)
 
+# ==================== 1.7（bg-n10 轮6）：金钱妖 ====================
+# 本仓第一个活体生物。它没有既有关卡可依 ⇒ 这一节就是它的门禁：
+#   ① 实体 / 弹射物 / 生成蛋 / 属性 / 近战表 / 弹幕表 / 饥饿叠加 都必须在**去注释源码**上落到字面；
+#   ② 两个伤害类型 JSON 必须存在且 scaling=never（否则显式表会被原版难度再乘一遍）；
+#   ③ 自然生成（biome modifier）与 spawn placement 必须存在；
+#   ④ 贴图必须与归档副本**逐字节相同**（作者素材原样）；
+#   ⑤ 双倍伤害只有一个判定入口（旧族行为不变）；
+#   ⑥ 动画恰好两套（idle / walk，不造第三套）。
+bgn10r6_problems: list[str] = []
+_r6_checked = 0
+
+
+def _bgn10r6_bad(tag: str, msg: str) -> None:
+    bgn10r6_problems.append("[%s] %s" % (tag, msg))
+
+
+_R6_RES = REPO / "src/main/resources"
+_R6_ARCHIVE = REPO / "docs" / "新约10-素材清单" / "金钱妖"
+
+# ---------- ① 实体注册（AllEntities）：活体生物 + 弹射物 ----------
+_r6_entities = strip_comments((JAVA / "registry" / "AllEntities.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ('"money_gremlin"', "金钱妖实体没注册（注册名）"),
+        ('"chaos_coin"', "混沌金币弹射物没注册（注册名）"),
+        ("MobCategory.MONSTER", "金钱妖不是 MONSTER 类别"),
+        ("MoneyGremlin::new", "金钱妖的 EntityType 工厂不是 MoneyGremlin"),
+        ("ChaosCoinProjectile::new", "弹射物的 EntityType 工厂不是 ChaosCoinProjectile")):
+    _r6_checked += 1
+    if _needle not in _r6_entities:
+        _bgn10r6_bad("bgn10r6-entity", "%s（缺 %s）" % (_why, _needle))
+_r6_checked += 1
+if ".sized(1.2F, 1.2F)" not in _r6_entities:
+    _bgn10r6_bad("bgn10r6-entity", "金钱妖命中箱不是工作值 1.2×1.2（改了就同步记账）")
+
+# ---------- ② 生物类：所有作者原话数值都必须是字面常量/表 ----------
+_r6_mob = strip_comments((JAVA / "entity" / "MoneyGremlin.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("extends Monster", "父类不是 Monster（普通敌对生物口径）"),
+        ("MAX_HEALTH = 30.0D", "最大生命值不是 30"),
+        ("CHASE_RANGE = 32.0D", "追击/丢失范围不是 32"),
+        ("TARGET_RANGE = 32.0D", "目标选择范围不是 32（作者要求两个数分开写）"),
+        ("BARRAGE_INTERVAL_TICKS = 120", "弹幕间隔不是 120 tick"),
+        ("BARRAGE_RANGE = 3.0D", "弹幕间距不是 3 格"),
+        ("BARRAGE_COUNT = 8", "弹幕枚数不是 8"),
+        ("case EASY -> 4.0F", "近战简单难度不是 4"),
+        ("case NORMAL -> 8.0F", "近战普通难度不是 8"),
+        ("case HARD -> 12.0F", "近战困难难度不是 12"),
+        ("getBoundingBox().getCenter()", "弹幕原点不是碰撞箱几何中心"),
+        ("Vec3.directionFromRotation(0.0F, i * 45.0F)", "米字方向不是水平 45°×8 / pitch 0"),
+        ("dropCustomDeathLoot", "掉落没走 dropCustomDeathLoot"),
+        ("COWRIE_MOLD_BASE_CHANCE = 0.16F", "金钱贝模具基础概率不是 16%"),
+        ("EXPERIENCE_REWARD = 10", "经验不是 10"),
+        ("isFireOrLava", "没有火焰/岩浆伤害类型判据"),
+        ("DamageTypes.ON_FIRE", "火焰伤害集合没有 on_fire"),
+        ("DamageTypes.IN_FIRE", "火焰伤害集合没有 in_fire"),
+        ("DamageTypes.LAVA", "火焰伤害集合没有 lava")):
+    _r6_checked += 1
+    if _needle not in _r6_mob:
+        _bgn10r6_bad("bgn10r6-mob", "%s（缺 %s）" % (_why, _needle))
+# 显式难度表：不许出现「读 ATTACK_DAMAGE 再交给原版」的写法（doHurtTarget 里只许调 meleeDamageFor）
+_r6_checked += 2
+_r6_hurttarget = method_body(_r6_mob, "public boolean doHurtTarget(")
+if "meleeDamageFor" not in _r6_hurttarget:
+    _bgn10r6_bad("bgn10r6-mob", "doHurtTarget 没有走显式难度表 meleeDamageFor（会被原版难度再乘一遍）")
+if "getAttributeValue(Attributes.ATTACK_DAMAGE)" in _r6_hurttarget:
+    _bgn10r6_bad("bgn10r6-mob", "doHurtTarget 读了 ATTACK_DAMAGE 属性（作者要求显式查表）")
+# 弹幕节流 / 只在有目标时：customServerAiStep 里必须同时出现 target / cooldown / 距离三件事
+_r6_ai = method_body(_r6_mob, "protected void customServerAiStep()")
+for _needle in ("getTarget()", "barrageCooldown", "isWithinBarrageRange"):
+    _r6_checked += 1
+    if _needle not in _r6_ai:
+        _bgn10r6_bad("bgn10r6-barrage", "customServerAiStep 缺 %s（有目标 / 节流 / 间距 三件事）" % _needle)
+
+# ---------- ③ 弹射物类：表 / 重力 0 / 饥饿公式 ----------
+_r6_coin = strip_comments((JAVA / "entity" / "ChaosCoinProjectile.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("case EASY -> 2.0F", "弹射物简单难度不是 2"),
+        ("case NORMAL -> 4.0F", "弹射物普通难度不是 4"),
+        ("case HARD -> 6.0F", "弹射物困难难度不是 6"),
+        ("HUNGER_DURATION_TICKS = 36 * 20", "饥饿时长不是 36 秒"),
+        ("HUNGER_MAX_LEVEL = 12", "饥饿层数上限不是 12"),
+        ("getDefaultGravity", "没有覆写 getDefaultGravity（「笔直」= 重力 0）"),
+        ("Math.min(currentLevel + 1, HUNGER_MAX_LEVEL)", "饥饿叠加不是「等级 +1、上限 12」"),
+        ("removeEffect(MobEffects.HUNGER)", "饥饿没有先移除再挂（等级语义会漂）")):
+    _r6_checked += 1
+    if _needle not in _r6_coin:
+        _bgn10r6_bad("bgn10r6-coin", "%s（缺 %s）" % (_why, _needle))
+_r6_checked += 1
+if "return 0.0D;" not in method_body(_r6_coin, "protected double getDefaultGravity()"):
+    _bgn10r6_bad("bgn10r6-coin", "getDefaultGravity 没有返回 0.0D")
+
+# ---------- ④ 伤害类型 JSON：scaling=never（显式表不被原版难度再乘） ----------
+for _id, _msg in (("money_gremlin_melee", "bettergold.money_gremlin_melee"),
+                  ("chaos_coin", "bettergold.chaos_coin")):
+    _p = _R6_RES / "data" / "bettergold" / "damage_type" / (_id + ".json")
+    _r6_checked += 3
+    if not _p.is_file():
+        _bgn10r6_bad("bgn10r6-damage-type", "缺 %s" % _p.relative_to(REPO))
+        continue
+    try:
+        _d = json.loads(_p.read_text(encoding="utf-8"))
+    except Exception as _e:  # noqa: BLE001
+        _bgn10r6_bad("bgn10r6-damage-type", "%s 解析失败：%s" % (_id, _e))
+        continue
+    if _d.get("scaling") != "never":
+        _bgn10r6_bad("bgn10r6-damage-type",
+                     "%s 的 scaling=%r（必须是 never，否则玩家受伤会被难度再乘）"
+                     % (_id, _d.get("scaling")))
+    if _d.get("message_id") != _msg:
+        _bgn10r6_bad("bgn10r6-damage-type", "%s 的 message_id=%r ≠ %r"
+                     % (_id, _d.get("message_id"), _msg))
+
+# ---------- ⑤ 自然生成 + spawn placement + 生成蛋 ----------
+_r6_checked += 5
+_r6_biome = _R6_RES / "data" / "bettergold" / "neoforge" / "biome_modifier" / "add_money_gremlin.json"
+if not _r6_biome.is_file():
+    _bgn10r6_bad("bgn10r6-spawn", "缺 biome modifier add_money_gremlin.json")
+else:
+    try:
+        _b = json.loads(_r6_biome.read_text(encoding="utf-8"))
+        if _b.get("type") != "neoforge:add_spawns":
+            _bgn10r6_bad("bgn10r6-spawn", "biome modifier type=%r" % _b.get("type"))
+        _sp = _b.get("spawners") or {}
+        if (_sp.get("type") if isinstance(_sp, dict) else None) != "bettergold:money_gremlin":
+            _bgn10r6_bad("bgn10r6-spawn", "biome modifier 的 spawner.type 不是 bettergold:money_gremlin")
+    except Exception as _e:  # noqa: BLE001
+        _bgn10r6_bad("bgn10r6-spawn", "biome modifier 解析失败：%s" % _e)
+_r6_boot = strip_comments((JAVA / "bettergold.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("EntityAttributeCreationEvent", "没有注册金钱妖属性（EntityAttributeCreationEvent）"),
+        ("RegisterSpawnPlacementsEvent", "没有注册自然生成规则（RegisterSpawnPlacementsEvent）"),
+        ("MoneyGremlinEvents.class", "没有挂金钱妖的伤害事件"),
+        ("Monster::checkMonsterSpawnRules", "自然生成没走「黑暗处」的 Monster 判据")):
+    _r6_checked += 1
+    if _needle not in _r6_boot:
+        _bgn10r6_bad("bgn10r6-spawn", "%s（缺 %s）" % (_why, _needle))
+_r6_items = strip_comments((JAVA / "registry" / "AllItems.java").read_text(encoding="utf-8"))
+if '"money_gremlin_spawn_egg"' not in _r6_items or "DeferredSpawnEggItem" not in _r6_items:
+    _bgn10r6_bad("bgn10r6-spawn", "金钱妖刷怪蛋没注册（或不是 DeferredSpawnEggItem）")
+_r6_checked += 2
+_r6_egg_model = _R6_RES / "assets" / "bettergold" / "models" / "item" / "money_gremlin_spawn_egg.json"
+if not _r6_egg_model.is_file():
+    _bgn10r6_bad("bgn10r6-spawn", "缺刷怪蛋模型 money_gremlin_spawn_egg.json")
+else:
+    _em = json.loads(_r6_egg_model.read_text(encoding="utf-8"))
+    if _em.get("parent") != "minecraft:item/template_spawn_egg":
+        _bgn10r6_bad("bgn10r6-spawn", "刷怪蛋模型 parent=%r" % _em.get("parent"))
+
+# ---------- ⑥ 贴图：与归档副本逐字节相同（64×64） ----------
+_r6_checked += 4
+_r6_tex = _R6_RES / "assets" / "bettergold" / "textures" / "entity" / "money_gremlin.png"
+_r6_arc_tex = _R6_ARCHIVE / "money_gremlin.png"
+if not _r6_tex.is_file():
+    _bgn10r6_bad("bgn10r6-texture", "缺 textures/entity/money_gremlin.png")
+elif not _r6_arc_tex.is_file():
+    _bgn10r6_bad("bgn10r6-texture", "缺归档副本（前置坏了）")
+else:
+    _tb = _r6_tex.read_bytes()
+    if _tb[:8] != b"\x89PNG\r\n\x1a\n":
+        _bgn10r6_bad("bgn10r6-texture", "不是 PNG")
+    else:
+        _w = int.from_bytes(_tb[16:20], "big")
+        _h = int.from_bytes(_tb[20:24], "big")
+        if _w != 64 or _h != 64:
+            _bgn10r6_bad("bgn10r6-texture", "贴图尺寸 %dx%d ≠ 64x64" % (_w, _h))
+    if _tb != _r6_arc_tex.read_bytes():
+        _bgn10r6_bad("bgn10r6-texture",
+                     "src 里的贴图与归档副本**不是逐字节相同**（作者素材原样）")
+
+# ---------- ⑦ 双倍伤害：唯一入口 + 烈燃金挂到了金钱妖 ----------
+_r6_checked += 1
+_bgn10r6_entry_hits = 0
+for _p in JAVA.rglob("*.java"):
+    _src = strip_comments(_p.read_text(encoding="utf-8"))
+    if "public boolean isDoubleDamageTarget(" in _src:
+        _bgn10r6_entry_hits += 1
+if _bgn10r6_entry_hits != 1:
+    _bgn10r6_bad("bgn10r6-double-damage",
+                 "isDoubleDamageTarget 的**定义**出现 %d 处（必须恰好 1 处 = 唯一入口）"
+                 % _bgn10r6_entry_hits)
+_r6_metals = strip_comments((JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("doubleDamageOnDeferredTarget", "烈燃金没有走延迟目标入口"),
+        ("AllEntities.MONEY_GREMLIN", "烈燃金没点名 money_gremlin")):
+    _r6_checked += 1
+    if _needle not in _r6_metals:
+        _bgn10r6_bad("bgn10r6-double-damage", "%s（缺 %s）" % (_why, _needle))
+_r6_checked += 2
+_r6_metal_events = strip_comments((JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8"))
+if "family.isDoubleDamageTarget(target.getType())" not in _r6_metal_events:
+    _bgn10r6_bad("bgn10r6-double-damage", "MetalEvents 没走唯一入口 isDoubleDamageTarget")
+if "contactDamageTargets.contains(target.getType())" in _r6_metal_events:
+    _bgn10r6_bad("bgn10r6-double-damage",
+                 "MetalEvents 里仍留着旧的 contactDamageTargets.contains 判定（两个入口 = 会漂）")
+
+# ---------- ⑧ 语言键：实体名 / 刷怪蛋 / 两条死亡提示 ----------
+for _k in ("entity.bettergold.money_gremlin",
+           "item.bettergold.money_gremlin_spawn_egg",
+           "death.attack.bettergold.money_gremlin_melee",
+           "death.attack.bettergold.chaos_coin"):
+    _r6_checked += 2
+    if _k not in zh:
+        _bgn10r6_bad("bgn10r6-lang", "zh 缺语言键 %s" % _k)
+    if _k not in en:
+        _bgn10r6_bad("bgn10r6-lang", "en 缺语言键 %s" % _k)
+    if _k in zh and _k in en and zh.get(_k) == en.get(_k):
+        _bgn10r6_bad("bgn10r6-lang", "%s 的中英逐字相同（等于没译）" % _k)
+
+# ---------- ⑨ 模型/动画：恰好两套（idle / walk），HierarchicalModel ----------
+_r6_checked += 6
+_r6_model = strip_comments((JAVA / "client" / "MoneyGremlinModel.java").read_text(encoding="utf-8"))
+_r6_anim = strip_comments((JAVA / "client" / "MoneyGremlinAnimations.java").read_text(encoding="utf-8"))
+if "extends HierarchicalModel<MoneyGremlin>" not in _r6_model:
+    _bgn10r6_bad("bgn10r6-model", "模型不是 HierarchicalModel（KeyframeAnimations 播不了）")
+if _r6_anim.count("AnimationDefinition.Builder") != 2:
+    _bgn10r6_bad("bgn10r6-model",
+                 "动画定义 %d 套（裁定 ③b：只许 idle / walk 两套）"
+                 % _r6_anim.count("AnimationDefinition.Builder"))
+for _needle in ("IDLE", "WALK", "animateWalk", "idleAnimationState"):
+    if _needle not in _r6_anim and _needle not in _r6_model:
+        _bgn10r6_bad("bgn10r6-model", "缺 %s（idle/walk 二选一的接法）" % _needle)
+
+print(f"1.7 轮6（金钱妖：实体/弹射物/掉落/烈燃金双倍/米字弹幕）问题: "
+      f"{len(bgn10r6_problems)} {bgn10r6_problems[:4]}（本段判定 {_r6_checked} 条，循环已展开计数）")
+if _r6_checked <= 0:
+    _bgn10r6_bad("bgn10r6-anti-vacuum", "本段一条判定都没跑（反空转）")
+if not bgn10r6_problems:
+    print("[bgn10r6-ok] 金钱妖：实体/弹射物/伤害表/贴图哈希/双倍入口/语言键/两套动画 全部通过")
+
 print(f"1.7 轮4（混沌金盔甲 / 禁果 / 附魔书：盔甲区间 {len(_r4_armor_map)} 件）问题: "
       f"{len(_bgn10r4_problems)} {_bgn10r4_problems[:4]}")
 
@@ -6581,7 +6819,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
-                       _bgn10r4_problems)
+                       _bgn10r4_problems, bgn10r6_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

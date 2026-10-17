@@ -1,0 +1,8 @@
+[13:02:54] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS probe registered
+[13:02:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS INFO setup :: base=(40,75,40) forced=9
+[13:02:58] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS INFO start looting=0 chance=0.1600 killsTarget=300
+[13:03:00] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS PASS r6drops_looting_0 :: kills=300 coinStrings total=300 min=1 max=1 | molds hits=50/300 total=50 min=1 max=1 rate=0.1667 expected=0.1600 z=0.3150
+[13:03:00] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS INFO start looting=3 chance=0.6400 killsTarget=300
+[13:03:02] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS PASS r6drops_looting_3 :: kills=300 coinStrings total=707 min=1 max=4 | molds hits=201/300 total=527 min=1 max=4 rate=0.6700 expected=0.6400 z=1.0825
+[13:03:08] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS INFO forceload_released :: forcedAfter=0
+[13:03:08] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6DROPS SUMMARY pass=2 fail=0

@@ -20,6 +20,12 @@ public final class AllMetals {
             new MetalFamily.Spec("flamegold", "烈燃金")
                     .autoSmelt()
                     .contactFire()
+                    // 1.7 轮6（作者原话「烈燃金对金钱妖双倍」）：把本模组自己的实体加进
+                    // 「器具双倍伤害」的**唯一判定入口** MetalFamily#isDoubleDamageTarget。
+                    // 用 Supplier 是因为实体注册晚于 AllMetals 的静态初始化；靛海金那四个原版
+                    // 生物仍走原来的 contactDamageTargets，行为一个字节都没变。
+                    .doubleDamageOnDeferredTarget(
+                            () -> com.hjmmd_8.bettergold.registry.AllEntities.MONEY_GREMLIN.get())
                     .specialWeaponMetal(true, 2048)
                     .coreItem(() -> MetalSpecialItems.BLAZING_ROD.get()));
 

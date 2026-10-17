@@ -1,0 +1,256 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.entity.MoneyGremlin;
+import com.hjmmd_8.bettergold.registry.AllEntities;
+import com.hjmmd_8.bettergold.registry.AllItems;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * 临时探针（轮6 补充 A 级：**掉落大样本** 300 杀 × 抢夺 0/3）—— 收尾整块删除。
+ *
+ * <p>开关文件 {@code run/bgn10r6d-probe.enabled}；{@code halt(false)} 只调一次。</p>
+ */
+public final class BgN10r6DropsProbe {
+
+    private static final String TAG = "BGN10R6DROPS";
+    private static final int KILLS_PER_LEVEL = 300;
+
+    private static int passes;
+    private static int fails;
+    private static int ticks;
+    private static boolean done;
+    private static final List<int[]> FORCED = new ArrayList<>();
+    private static ServerLevel level;
+    private static ServerPlayer killer;
+    private static int baseX;
+    private static int baseY;
+    private static int baseZ;
+
+    private static int looting;
+    private static int killsLeft;
+    private static int kills;
+    private static int stringTotal;
+    private static int moldTotal;
+    private static int moldHits;
+    private static int stringMin = Integer.MAX_VALUE;
+    private static int stringMax;
+    private static int moldMin = Integer.MAX_VALUE;
+    private static int moldMax;
+
+    private BgN10r6DropsProbe() {
+    }
+
+    private static Path gameDir() {
+        return Path.of(System.getProperty("user.dir"));
+    }
+
+    public static boolean enabled() {
+        return Files.exists(gameDir().resolve("bgn10r6d-probe.enabled"));
+    }
+
+    public static void install() {
+        if (!enabled()) {
+            return;
+        }
+        bettergold.LOGGER.info("{} probe registered", TAG);
+        NeoForge.EVENT_BUS.register(BgN10r6DropsProbe.class);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            passes++;
+            bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+        } else {
+            fails++;
+            bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+        }
+    }
+
+    private static String num(double v) {
+        return String.format(Locale.ROOT, "%.4f", v);
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        level = server.overworld();
+        var ref = level.getSharedSpawnPos();
+        baseX = ref.getX() + 40;
+        baseZ = ref.getZ() + 40;
+        baseY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, baseX, baseZ);
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -8; dz <= 8; dz++) {
+                level.setBlock(new net.minecraft.core.BlockPos(baseX + dx, baseY, baseZ + dz),
+                        Blocks.STONE.defaultBlockState(), 2);
+                for (int dy = 1; dy <= 3; dy++) {
+                    level.setBlock(new net.minecraft.core.BlockPos(baseX + dx, baseY + dy, baseZ + dz),
+                            Blocks.AIR.defaultBlockState(), 2);
+                }
+            }
+        }
+        level.setDayTime(18000L);
+        int cx = baseX >> 4;
+        int cz = baseZ >> 4;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                level.setChunkForced(cx + dx, cz + dz, true);
+                FORCED.add(new int[] { cx + dx, cz + dz });
+            }
+        }
+        killer = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), "bgn10r6drops"),
+                ClientInformation.createDefault());
+        killer.moveTo(baseX + 0.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+        bettergold.LOGGER.info("{} INFO setup :: base=({},{},{}) forced={}", TAG, baseX, baseY, baseZ,
+                level.getForcedChunks().size());
+        startLevel(0);
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        if (!enabled()) {
+            return;
+        }
+        unforceAll(event.getServer());
+    }
+
+    private static void startLevel(int loot) {
+        looting = loot;
+        killsLeft = KILLS_PER_LEVEL;
+        kills = 0;
+        stringTotal = 0;
+        moldTotal = 0;
+        moldHits = 0;
+        stringMin = Integer.MAX_VALUE;
+        stringMax = 0;
+        moldMin = Integer.MAX_VALUE;
+        moldMax = 0;
+        ItemStack sword = new ItemStack(Items.IRON_SWORD);
+        if (loot > 0) {
+            sword.enchant(level.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                    .getHolderOrThrow(Enchantments.LOOTING), loot);
+        }
+        killer.setItemInHand(InteractionHand.MAIN_HAND, sword);
+        bettergold.LOGGER.info("{} INFO start looting={} chance={} killsTarget={}", TAG, loot,
+                num(MoneyGremlin.cowrieMoldChance(loot)), KILLS_PER_LEVEL);
+    }
+
+    private static void runBatch() {
+        int batch = Math.min(10, killsLeft);
+        AABB area = new AABB(baseX - 4, baseY - 2, baseZ - 4, baseX + 5, baseY + 6, baseZ + 5);
+        for (int i = 0; i < batch; i++) {
+            MoneyGremlin victim = new MoneyGremlin(AllEntities.MONEY_GREMLIN.get(), level);
+            victim.moveTo(baseX + 0.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+            victim.setPersistenceRequired();
+            level.addFreshEntity(victim);
+            victim.hurt(level.damageSources().playerAttack(killer), 1000.0F);
+            int strings = 0;
+            int molds = 0;
+            for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, area)) {
+                ItemStack stack = item.getItem();
+                if (stack.is(AllItems.CHAOS_COIN_STRING.get())) {
+                    strings += stack.getCount();
+                } else if (stack.is(AllItems.GOLDEN_COWRIE_MOLD.get())) {
+                    molds += stack.getCount();
+                }
+                item.discard();
+            }
+            for (var orb : level.getEntitiesOfClass(net.minecraft.world.entity.ExperienceOrb.class, area)) {
+                orb.discard();
+            }
+            kills++;
+            stringTotal += strings;
+            moldTotal += molds;
+            stringMin = Math.min(stringMin, strings);
+            stringMax = Math.max(stringMax, strings);
+            if (molds > 0) {
+                moldHits++;
+                moldMin = Math.min(moldMin, molds);
+                moldMax = Math.max(moldMax, molds);
+            }
+        }
+        killsLeft -= batch;
+        if (killsLeft > 0) {
+            return;
+        }
+        double rate = moldHits / (double) kills;
+        double expected = MoneyGremlin.cowrieMoldChance(looting);
+        double sd = Math.sqrt(kills * expected * (1.0 - expected));
+        double z = (moldHits - kills * expected) / sd;
+        check("r6drops_looting_" + looting,
+                stringMin >= 1 && stringMax <= 1 + looting
+                        && (looting != 0 || stringTotal == kills)
+                        && moldMin >= 1 && moldMax <= 1 + looting
+                        && Math.abs(z) < 4.0,
+                "kills=" + kills + " coinStrings total=" + stringTotal
+                        + " min=" + stringMin + " max=" + stringMax
+                        + " | molds hits=" + moldHits + "/" + kills
+                        + " total=" + moldTotal + " min=" + moldMin + " max=" + moldMax
+                        + " rate=" + num(rate) + " expected=" + num(expected)
+                        + " z=" + num(z));
+        if (looting == 0) {
+            startLevel(3);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!enabled() || done) {
+            return;
+        }
+        ticks++;
+        if (ticks >= 20 && killsLeft > 0) {
+            runBatch();
+        }
+        if (ticks == 200) {
+            done = true;
+            unforceAll(event.getServer());
+            bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+            event.getServer().halt(false);
+        }
+    }
+
+    private static void unforceAll(MinecraftServer server) {
+        if (FORCED.isEmpty()) {
+            return;
+        }
+        ServerLevel overworld = server.overworld();
+        for (int[] p : FORCED) {
+            overworld.setChunkForced(p[0], p[1], false);
+        }
+        FORCED.clear();
+        bettergold.LOGGER.info("{} INFO forceload_released :: forcedAfter={}", TAG,
+                overworld.getForcedChunks().size());
+    }
+}

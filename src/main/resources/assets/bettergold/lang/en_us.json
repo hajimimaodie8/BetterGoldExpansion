@@ -781,5 +781,9 @@
   "bettergold.configuration.chaosgoldWeaponBuffChance": "Chaosgold - Weapon/Tool/Shield Buff Chance",
   "bettergold.configuration.chaosgoldArmorBuffChance": "Chaosgold - Armor Buff Chance",
   "bettergold.configuration.chaosalloyWeaponBuffChance": "Chaosalloy - Weapon/Tool/Shield Buff Chance",
-  "bettergold.configuration.chaosalloyArmorBuffChance": "Chaosalloy - Armor Buff Chance"
+  "bettergold.configuration.chaosalloyArmorBuffChance": "Chaosalloy - Armor Buff Chance",
+  "entity.bettergold.money_gremlin": "Money Gremlin",
+  "item.bettergold.money_gremlin_spawn_egg": "Money Gremlin Spawn Egg",
+  "death.attack.bettergold.money_gremlin_melee": "%1$s was struck down by %2$s",
+  "death.attack.bettergold.chaos_coin": "%1$s was hit by a Chaos Coin from %2$s"
 }

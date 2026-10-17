@@ -1,0 +1,16 @@
+轮6 构建与六校验器（判据 = exit + 关键计数两列）
+==============================================================================================================
+
+compileJava                        exit=0  BUILD SUCCESSFUL（仅既有 GiftBoxItem 的 unchecked 提示）
+runData                            exit=0  All providers took: 0 ms + BUILD SUCCESSFUL（Bootstrap/mixin 冒烟）
+processResources jar --rerun-tasks  exit=0  4 actionable tasks: 4 executed + BUILD SUCCESSFUL
+jar 产物                           bettergold-1.6.0.jar（1532921 B）
+
+validate_metal_assets.py     exit=0  [bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0） | [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_metal_data.py       exit=0  1.7 轮6（金钱妖：实体/弹射物/掉落/烈燃金双倍/米字弹幕）问题: 0 []（本段判定 79 条，循环已展开计数） | [bgn10r6-ok] 金钱妖：实体/弹射物/伤害表/贴图哈希/双倍入口/语言键/两套动画 全部通过 | [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_trim_assets.py      exit=0  [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+check_jar_clean.py           exit=0  [jar-clean-ok] 产物 jar 干净（条目 2678；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py       exit=0  [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+validate_advancements.py     exit=0  [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+判读：以上六个 exit 全 0；关键计数行见上。新增的本轮门禁 = validate_metal_data 的 「1.7 轮6（金钱妖…）」段（79 条判定，见 docs/bgn10r6-证据/03-扰动矩阵.txt 的 6 个用例）。

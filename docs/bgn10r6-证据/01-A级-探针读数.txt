@@ -1,0 +1,72 @@
+[12:56:12] [modloading-worker-0/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE probe registered (switch file found) gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[12:56:16] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO world :: name=world spawn=BlockPos{x=0, y=74, z=0} base=(40,74,40)
+[12:56:16] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_forceload_set_25 :: forcedAfter=25
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_entity_registered :: id=bettergold:money_gremlin
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_entity_registered :: id=bettergold:chaos_coin
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_category_monster :: category=MONSTER
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_is_enemy :: implements Enemy
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_spawn_placement_registered :: placement=net.minecraft.world.entity.SpawnPlacementTypes$1@59e916ef heightmap=MOTION_BLOCKING_NO_LEAVES
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_spawn_egg_registered :: item=bettergold:money_gremlin_spawn_egg class=DeferredSpawnEggItem
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_damage_types_loaded :: melee=bettergold.money_gremlin_melee/NEVER coin=bettergold.chaos_coin/NEVER
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_max_health_30 :: max=30.0 hp=30.0
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_follow_range_32 :: followRange=32.0
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_movement_speed_025 :: speed=0.2500（僵尸 0.23）
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_xp_reward_10 :: getExperienceReward=10
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_biome_modifier_applied :: biomesWithSpawner=53 sample=[minecraft:windswept_gravelly_hills, minecraft:bamboo_jungle, minecraft:warm_ocean]
+[12:56:17] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_range_helper :: 3.0格=true 4.0格=false; interval=120 count=8
+[12:56:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_cactus_immune :: gremlin lost=0.0000 hurtOk=false（免疫 ? 伤害被拒收）；僵尸对照 lost=3.0000
+[12:56:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_cactus_control_not_immune :: 僵尸 lost=3.0000
+[12:56:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_fire_lava_x2_on_fire :: source=on_fire raw=4 lost=8.0000 expected=8
+[12:56:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_fire_lava_x2_in_fire :: source=in_fire raw=4 lost=8.0000 expected=8
+[12:56:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_fire_lava_x2_lava :: source=lava raw=4 lost=8.0000 expected=8
+[12:56:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_fire_lava_x2_generic :: source=generic raw=4 lost=4.0000 expected=4
+[12:56:18] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_fire_control_zombie :: 僵尸 lost=4.0000
+[12:56:19] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_melee_table_4_8_12 :: difficulty=HARD rows=EASY[table=4.0000 lost=4.0000 ok=true] NORMAL[table=8.0000 lost=8.0000 ok=true] HARD[table=12.0000 lost=12.0000 ok=true] bad=[]
+[12:56:19] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_melee_ignores_attack_damage_attribute :: ATTACK_DAMAGE=1.0 hard lost=12.0000（若走原版属性换算这里会是 1.5）
+[12:56:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO projectile_setup easy EASY :: coin=(45.5, 75.5, 40.5) target=(46.5, 75.0, 40.5) gravity=0.0
+[12:56:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_damage_easy_EASY :: lost=2.0000 want=2.0000 hit=true hunger=amp=0 dur=720
+[12:56:20] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_damage_easy_hunger_on_hit :: amp=0 dur=720
+[12:56:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO projectile_setup normal NORMAL :: coin=(45.5, 75.5, 40.5) target=(46.5, 75.0, 40.5) gravity=0.0
+[12:56:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_damage_normal_NORMAL :: lost=4.0000 want=4.0000 hit=true hunger=amp=0 dur=720
+[12:56:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_damage_normal_hunger_on_hit :: amp=0 dur=720
+[12:56:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO projectile_setup hard HARD :: coin=(45.5, 75.5, 40.5) target=(46.5, 75.0, 40.5) gravity=0.0
+[12:56:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_damage_hard_HARD :: lost=6.0000 want=6.0000 hit=true hunger=amp=0 dur=720
+[12:56:21] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_damage_hard_hunger_on_hit :: amp=0 dur=720
+[12:56:22] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_hunger_stack_to_12 :: levels=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12] expected=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12]
+[12:56:22] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_hunger_cap_and_duration :: amp=11（= 12 层） dur=720
+[12:56:23] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO drops_start looting=0 chance=0.16 swordLooting=0
+[12:56:25] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO barrage_setup :: mob=(40.5, 75.0, 40.5) target=(42.5, 75.0, 40.5) distance=2.0000
+[12:56:25] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_drops_looting_0 :: kills=50 coinStrings total=50 min=1 max=1 | molds total=10 hits=10/50 min=1 max=1 expectedHits≈8
+[12:56:25] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO drops_chance_formula :: looting0=0.16 looting1=0.32 looting2=0.48 looting3=0.64
+[12:56:25] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO drops_start looting=3 chance=0.64 swordLooting=3
+[12:56:27] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_drops_looting_3 :: kills=50 coinStrings total=129 min=1 max=4 | molds total=52 hits=27/50 min=1 max=4 expectedHits≈32
+[12:56:27] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO drops_chance_formula :: looting0=0.16 looting1=0.32 looting2=0.48 looting3=0.64
+[12:56:31] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO barrage_fire1 tick=300 count=8 angles=[45.0055 90.0000 135.0000 180.0000 225.0000 270.0000 315.0000 360.0000] origin[maxOriginError=0.0000 center=(42.58807460536941, 75.60000002384186, 40.965302324291194)] motion[maxAbsDy=0.0000 gravity=0.0]
+[12:56:31] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_8_directions :: count=8 angles=[45.0055 90.0000 135.0000 180.0000 225.0000 270.0000 315.0000 360.0000] distinct=[45, 90, 135, 180, 225, 270, 315, 360]
+[12:56:31] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_pitch_zero_and_no_gravity :: maxAbsDy=0.0000 gravity=0.0
+[12:56:31] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_from_center :: maxOriginError=0.0000（允许 1 tick 的位移；中心=(42.58807460536941, 75.60000002384186, 40.965302324291194)）
+[12:56:31] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_no_gravity_after_ticks :: 5 tick 后仍竖直速度 0：alive=8 maxAbsDy=0.0000
+[12:56:37] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_interval_120 :: fire1=300 fire2=420 interval=120
+[12:56:37] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_no_gravity_after_ticks :: 5 tick 后仍竖直速度 0：alive=8 maxAbsDy=0.0000
+[12:56:39] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO barrage_negative_start :: tick=460 distance=4.0000 noAi=false coinsAtStart=0
+[12:56:45] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_barrage_needs_3_block_range :: 钉在 4.0 格 + AI 开 + 130 tick：新弹射物=0 distance=4.0000（isWithinBarrageRange(16.0)=false）
+[12:56:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO flee_setup :: fire=(43.5, 75.5, 40.5) fleeMob=(40.5, 75.0, 40.5) startDistance=3.0414
+[12:56:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO flee_start :: canUse=true navDone=false inProgress=true onGround=true mob=(40.20961035251313, 75.0, 41.37120394272488)
+[12:56:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flee_fire_goal_triggers :: 火在 3 格内 ? canUse=true hazard=(43.5, 75.5, 40.5)
+[12:56:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flee_fire_goal_paths_away :: start() 后 navigation.isDone=false onGround=true
+[12:56:46] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flee_fire_goal_negative :: 火在 10.8 格开外 ? canUse=false
+[12:56:52] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flee_fire_moves_away :: 与火距离 3.0414 → 9.7550（Δ=6.7136，100 tick）
+[12:56:52] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO flee_control_drift :: 无火对照 100 tick 位移=0.0000
+[12:56:53] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flamegold_double_flamegold_sword :: 武器=flamegold_sword raw=4 lost=8.0000 expected=8
+[12:56:53] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flamegold_double_flamegold_pickaxe :: 武器=flamegold_pickaxe raw=4 lost=8.0000 expected=8
+[12:56:53] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flamegold_double_sturdygold_sword :: 武器=sturdygold_sword raw=4 lost=4.0000 expected=4
+[12:56:53] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flamegold_double_indigoseagold_sword :: 武器=indigoseagold_sword raw=4 lost=4.0000 expected=4
+[12:56:53] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_indigosea_old_behavior_unchanged :: 靛海金剑打末影人 raw=4 lost=8.0000
+[12:56:53] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flamegold_contact_set_untouched :: flamegold.contactDamageTargets=[]
+[12:56:53] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_flamegold_target_helper :: flamegold→gremlin=true indigosea→gremlin=false
+[12:56:54] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_melee_table_literal :: easy=4 normal=8 hard=12
+[12:56:54] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_projectile_table_literal :: easy=2 normal=4 hard=6
+[12:56:54] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE PASS r6_looting_amount_formula :: looting=3 coinStringCount ∈ [1,4] mean=2.4862（公式 1 + rand(0..3)）
+[12:56:54] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO summary_inputs :: fireTick1=300 fireTick2=420 fire1Coins=8 angles=[45.0055 90.0000 135.0000 180.0000 225.0000 270.0000 315.0000 360.0000] origin[maxOriginError=0.0000 center=(42.58807460536941, 75.60000002384186, 40.965302324291194)] motion[maxAbsDy=0.0000 gravity=0.0] motionAfter[alive=8 maxAbsDy=0.0000] drops0/3 done=true
+[12:56:55] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE INFO forceload_released :: forcedAfter=0
+[12:56:55] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R6PROBE SUMMARY pass=54 fail=0

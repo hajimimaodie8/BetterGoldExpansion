@@ -87,6 +87,9 @@ public class bettergold {
         com.hjmmd_8.bettergold.material.MetalBlanks.bootstrap();
         // 新约 1.4：金属相关的全局事件（巫毒结束结算等）
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.MetalEvents.class);
+        // 1.7（bg-n10 轮6）：金钱妖两条伤害规则 —— 免仙人掌（EntityInvulnerabilityCheckEvent）
+        // + 受到双倍火焰/岩浆伤害（LivingDamageEvent.Pre）；判据集合只在 MoneyGremlin 一处。
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.entity.MoneyGremlinEvents.class);
         // 1.7（bg-n10 轮1 后半）：「区间值」的触发点 —— ①挖掘成功 ②重新手持（作者裁定 ① 原文）
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.ChaosRange.Triggers.class);
         // 1.7（bg-n10 轮3）：「区间值」的**接线层** —— 攻击伤害（属性差值）/ 挖掘速度（BreakSpeed）/
@@ -104,6 +107,17 @@ public class bettergold {
         AllLootModifiers.GLM.register(modEventBus);
         // 新约 1.3：投掷物实体注册
         com.hjmmd_8.bettergold.registry.AllEntities.ENTITY_TYPES.register(modEventBus);
+        // 1.7（bg-n10 轮6）：本仓第一个活体生物「金钱妖」的**属性**与**自然生成规则**
+        //   —— 实体类型本身在 AllEntities，属性只在 EntityAttributeCreationEvent 里创建。
+        modEventBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
+                event.put(com.hjmmd_8.bettergold.registry.AllEntities.MONEY_GREMLIN.get(),
+                        com.hjmmd_8.bettergold.entity.MoneyGremlin.createAttributes().build()));
+        modEventBus.addListener((net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) ->
+                event.register(com.hjmmd_8.bettergold.registry.AllEntities.MONEY_GREMLIN.get(),
+                        net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+                        net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                        net.minecraft.world.entity.monster.Monster::checkMonsterSpawnRules,
+                        net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE));
         // bg-15w：数据附件（掷出的三叉戟的金属 id，需要同步到客户端供实体渲染器取贴图）
         com.hjmmd_8.bettergold.registry.AllAttachments.ATTACHMENT_TYPES.register(modEventBus);
         // 1.7（bg-n10 轮1 后半）：「区间值」的数据组件（作者裁定：值存数据组件）

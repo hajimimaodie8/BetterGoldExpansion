@@ -781,5 +781,9 @@
   "bettergold.configuration.chaosgoldWeaponBuffChance": "混沌金·武器工具盾牌触发Buff概率",
   "bettergold.configuration.chaosgoldArmorBuffChance": "混沌金·盔甲触发buff概率",
   "bettergold.configuration.chaosalloyWeaponBuffChance": "崩乱合金·武器工具盾牌触发Buff概率",
-  "bettergold.configuration.chaosalloyArmorBuffChance": "崩乱合金·盔甲触发buff概率"
+  "bettergold.configuration.chaosalloyArmorBuffChance": "崩乱合金·盔甲触发buff概率",
+  "entity.bettergold.money_gremlin": "金钱妖",
+  "item.bettergold.money_gremlin_spawn_egg": "金钱妖刷怪蛋",
+  "death.attack.bettergold.money_gremlin_melee": "%1$s 被 %2$s 的金币击倒",
+  "death.attack.bettergold.chaos_coin": "%1$s 被 %2$s 的混沌金币击中"
 }

@@ -1,0 +1,10 @@
+轮6 扰动矩阵（判据两列：exit / 命中预期）
+====================================================================================================
+脚本副本：docs/bgn10r6-证据/脚本副本/bgn10r6_perturb.py
+
+01-only-comment                            codes={'validate_metal_assets.py': 0, 'validate_metal_data.py': 0, 'validate_trim_assets.py': 0, 'check_jar_clean.py': 0, 'check_forced_chunks.py': 0, 'validate_advancements.py': 0} expected=0 hit=True restore_sha_ok=True :: 只加一行注释
+02-texture-bit-flip                        codes={'validate_metal_data.py': 1} expected=1 hit=True restore_sha_ok=True :: PNG 末字节翻转
+03-scaling-not-never                       codes={'validate_metal_data.py': 1} expected=1 hit=True restore_sha_ok=True :: scaling=when_caused_by_living_non_player
+04-lang-key-removed                        codes={'validate_metal_data.py': 1} expected=1 hit=True restore_sha_ok=True :: 删 entity.bettergold.money_gremlin（zh）
+05-old-target-check-returns                codes={'validate_metal_data.py': 1} expected=1 hit=True restore_sha_ok=True :: 把唯一入口换回旧判定
+06-barrage-interval-121                    codes={'validate_metal_data.py': 1} expected=1 hit=True restore_sha_ok=True :: 弹幕间隔 120 -> 121

@@ -71,6 +71,14 @@ public class bettergoldClient {
                 com.hjmmd_8.bettergold.registry.AllEntities.THROWN_ANTIQUE.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
 
+        // 1.7（bg-n10 轮6）：本仓第一个活体生物的渲染器 + 它的混沌金币弹射物
+        event.registerEntityRenderer(
+                com.hjmmd_8.bettergold.registry.AllEntities.MONEY_GREMLIN.get(),
+                com.hjmmd_8.bettergold.client.MoneyGremlinRenderer::new);
+        event.registerEntityRenderer(
+                com.hjmmd_8.bettergold.registry.AllEntities.CHAOS_COIN.get(),
+                net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+
         // bg-15w 第 1 项 (b)：掷出的三叉戟必须单独换渲染器。
         // 物品侧（IClientItemExtensions / BlockEntityWithoutLevelRenderer）与实体侧
         // （EntityRenderer）是两条完全不同的路，改好物品侧不代表扔出去是对的
@@ -94,6 +102,20 @@ public class bettergoldClient {
     static void onRegisterClientExtensions(
             net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {
         com.hjmmd_8.bettergold.client.MetalWeaponItemProperties.onRegisterClientExtensions(event);
+    }
+
+    /**
+     * 1.7（bg-n10 轮6）：金钱妖的模型层（64×64，17 个 ModelPart）。
+     *
+     * <p>必须在 {@code RegisterLayerDefinitions} 里烘一次，渲染器才能用
+     * {@code context.bakeLayer(MoneyGremlinModel.LAYER_LOCATION)} 取到；漏了这一步的表现是
+     * 渲染器构造期直接抛「missing layer」。</p>
+     */
+    @SubscribeEvent
+    static void onRegisterLayerDefinitions(
+            net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(com.hjmmd_8.bettergold.client.MoneyGremlinModel.LAYER_LOCATION,
+                com.hjmmd_8.bettergold.client.MoneyGremlinModel::createBodyLayer);
     }
 
     @SubscribeEvent

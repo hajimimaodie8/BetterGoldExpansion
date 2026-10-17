@@ -260,6 +260,21 @@ public class AllItems {
      */
     public static final DeferredItem<Item> CHAOS_COIN = ITEMS.registerSimpleItem("chaos_coin");
 
+    /**
+     * 金钱妖刷怪蛋（1.7 · 轮6，本仓第一个活体生物的蛋）。
+     *
+     * <p>用 NeoForge 的 {@link net.neoforged.neoforge.common.DeferredSpawnEggItem} 而不是原版
+     * {@code SpawnEggItem}：物品注册（{@code AllItems.ITEMS}）<b>早于</b>实体注册
+     * （{@code AllEntities.ENTITY_TYPES}），构造期直接 {@code .get()} 实体类型会撞上「注册表还没绑定」；
+     * 这个子类拿的是 {@code Supplier}，只在真正需要时解析。</p>
+     *
+     * <p>颜色（工作值）：金板主色 {@code 0xD8B23A} + 暗红绳 {@code 0x5A1B1B}，取自 {@code 例图1.jpg}。</p>
+     */
+    public static final DeferredItem<net.neoforged.neoforge.common.DeferredSpawnEggItem> MONEY_GREMLIN_SPAWN_EGG =
+            ITEMS.register("money_gremlin_spawn_egg",
+                    () -> new net.neoforged.neoforge.common.DeferredSpawnEggItem(
+                            AllEntities.MONEY_GREMLIN, 0xD8B23A, 0x5A1B1B, new Item.Properties()));
+
     // ==================== 新约 1.2：金麦体系 ====================
 
     /** 金麦种子：1 小麦种子 + 3 金粒无序合成；种在金染耕地；可烧成金粒 */

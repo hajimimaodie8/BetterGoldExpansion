@@ -1,0 +1,939 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.entity.ChaosCoinProjectile;
+import com.hjmmd_8.bettergold.entity.MoneyGremlin;
+import com.hjmmd_8.bettergold.entity.ModDamageTypes;
+import com.hjmmd_8.bettergold.entity.goal.FleeFireGoal;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.registry.AllEntities;
+import com.hjmmd_8.bettergold.registry.AllItems;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * 临时探针（1.7 bg-n10 <b>轮6</b> A 级：金钱妖）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10r6-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} 只调一次；forceload 双向归零；绝不进生产代码路径。</p>
+ */
+public final class BgN10r6Probe {
+
+    private static final String TAG = "BGN10R6PROBE";
+
+    private static int passes;
+    private static int fails;
+    private static int ticks;
+    private static boolean done;
+
+    private static final List<int[]> FORCED = new ArrayList<>();
+
+    private static int baseX;
+    private static int baseY;
+    private static int baseZ;
+
+    private static ServerLevel level;
+    private static ServerPlayer dummy;
+    private static MoneyGremlin barrageMob;
+
+    // ---- 弹射物命中（跨阶段轮询）----
+    private record PendingHit(String name, Zombie target, int startTick, float beforeHp, Difficulty difficulty) {
+    }
+
+    private static final List<PendingHit> PENDING = new ArrayList<>();
+
+    // ---- 弹幕 ----
+    private static int fireTick1 = -1;
+    private static int fireTick2 = -1;
+    private static int fire1CoinCount;
+    private static String fire1Angles = "-";
+    private static String fire1Origin = "-";
+    private static String fire1Motion = "-";
+    private static int motionYCheckTick = -1;
+    private static String motionYAfter = "-";
+    private static boolean negativeStarted;
+    private static int negativeStartTick;
+    private static int negativeCoinCountAtStart;
+    private static int negativeCoinsSeen;
+
+    // ---- 掉落 ----
+    private static int dropLooting;
+    private static int dropKillsLeft;
+    private static int dropKills;
+    private static int dropStringTotal;
+    private static int dropMoldTotal;
+    private static int dropMoldHits;
+    private static int dropStringMin = Integer.MAX_VALUE;
+    private static int dropStringMax;
+    private static int dropMoldMin = Integer.MAX_VALUE;
+    private static int dropMoldMax;
+
+    // ---- 避火 ----
+    private static MoneyGremlin fleeMob;
+    private static MoneyGremlin controlMob;
+    private static double fleeStartDistance;
+    private static double controlStartX;
+    private static double controlStartZ;
+    private static Vec3 hazardCenter;
+
+    // ---- 其它 ----
+    private static MoneyGremlin mainMob;
+
+    private BgN10r6Probe() {
+    }
+
+    // ==================== 开关 + 注册 ====================
+
+    private static Path gameDir() {
+        return Path.of(System.getProperty("user.dir"));
+    }
+
+    public static boolean enabled() {
+        return Files.exists(gameDir().resolve("bgn10r6-probe.enabled"));
+    }
+
+    public static void install() {
+        if (!enabled()) {
+            return;
+        }
+        bettergold.LOGGER.info("{} probe registered (switch file found) gameDir={}", TAG, gameDir());
+        NeoForge.EVENT_BUS.register(BgN10r6Probe.class);
+    }
+
+    // ==================== 小工具 ====================
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static String num(double v) {
+        return String.format(Locale.ROOT, "%.4f", v);
+    }
+
+    private static ServerPlayer newPlayer(MinecraftServer server, ServerLevel level, String name) {
+        ServerPlayer player = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), name),
+                ClientInformation.createDefault());
+        player.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                player,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "bgn10r6probe"), false));
+        return player;
+    }
+
+    private static MoneyGremlin spawnGremlin(double x, double y, double z) {
+        MoneyGremlin mob = new MoneyGremlin(AllEntities.MONEY_GREMLIN.get(), level);
+        mob.moveTo(x, y, z, 0.0F, 0.0F);
+        mob.setPersistenceRequired();
+        level.addFreshEntity(mob);
+        return mob;
+    }
+
+    private static Zombie spawnZombie(double x, double y, double z) {
+        Zombie zombie = new Zombie(EntityType.ZOMBIE, level);
+        zombie.moveTo(x, y, z, 0.0F, 0.0F);
+        zombie.setNoAi(true);
+        zombie.setPersistenceRequired();
+        // 僵尸自带的 2 点护甲会把伤害削成非整数 ⇒ A 级读数前清零（只影响探针造出来的这只）
+        zombie.getAttribute(Attributes.ARMOR).setBaseValue(0.0D);
+        level.addFreshEntity(zombie);
+        return zombie;
+    }
+
+    private static AABB area(double radius) {
+        return new AABB(baseX - radius, baseY - 4, baseZ - radius,
+                baseX + radius, baseY + 8, baseZ + radius);
+    }
+
+    // ==================== 生命周期 ====================
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        try {
+            stage0(event.getServer());
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION in stage0", TAG, t);
+            fail("stage0_exception", String.valueOf(t));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        if (!enabled()) {
+            return;
+        }
+        unforceAll(event.getServer());
+    }
+
+    private static void stage0(MinecraftServer server) {
+        level = server.overworld();
+        var ref = level.getSharedSpawnPos();
+        baseX = ref.getX() + 40;
+        baseZ = ref.getZ() + 40;
+        baseY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, baseX, baseZ);
+        bettergold.LOGGER.info("{} INFO world :: name={} spawn={} base=({},{},{})",
+                TAG, ((net.minecraft.world.level.storage.ServerLevelData) level.getLevelData()).getLevelName(),
+                ref, baseX, baseY, baseZ);
+        // 平地 + 清空上方 4 格；夜晚（避免僵尸白天着火）
+        for (int dx = -12; dx <= 12; dx++) {
+            for (int dz = -12; dz <= 12; dz++) {
+                level.setBlock(new BlockPos(baseX + dx, baseY, baseZ + dz),
+                        Blocks.STONE.defaultBlockState(), 2);
+                for (int dy = 1; dy <= 4; dy++) {
+                    level.setBlock(new BlockPos(baseX + dx, baseY + dy, baseZ + dz),
+                            Blocks.AIR.defaultBlockState(), 2);
+                }
+            }
+        }
+        level.setDayTime(18000L);
+        int cx = baseX >> 4;
+        int cz = baseZ >> 4;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                level.setChunkForced(cx + dx, cz + dz, true);
+                FORCED.add(new int[] { cx + dx, cz + dz });
+            }
+        }
+        check("r6_forceload_set_25", level.getForcedChunks().size() == 25,
+                "forcedAfter=" + level.getForcedChunks().size());
+        dummy = newPlayer(server, level, "bgn10r6dummy");
+        dummy.moveTo(baseX + 2.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+        dummy.getAbilities().invulnerable = true;
+        dummy.onUpdateAbilities();
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!enabled() || done) {
+            return;
+        }
+        ticks++;
+        try {
+            pollPendingHits();
+            if (ticks == 20) {
+                stageBasics();
+            } else if (ticks == 40) {
+                stageCactusAndFire();
+            } else if (ticks == 60) {
+                stageMelee();
+            } else if (ticks == 80) {
+                stageProjectileHit("easy", Difficulty.EASY);
+            } else if (ticks == 92) {
+                stageProjectileHit("normal", Difficulty.NORMAL);
+            } else if (ticks == 104) {
+                stageProjectileHit("hard", Difficulty.HARD);
+            } else if (ticks == 120) {
+                stageHunger();
+            } else if (ticks == 140) {
+                startDrops(0);
+            } else if (ticks == 180) {
+                startBarrage();
+            } else if (ticks > 180 && ticks < 460) {
+                pollBarrage();
+            } else if (ticks == 460) {
+                startBarrageNegative();
+            } else if (ticks > 460 && ticks < 600) {
+                pollBarrageNegative();
+            } else if (ticks == 600) {
+                stageFleeSetup();
+            } else if (ticks == 610) {
+                stageFleeGoalCheck();
+            } else if (ticks == 720) {
+                stageFleeBehaviorEnd();
+            } else if (ticks == 740) {
+                stageFlamegold();
+            } else if (ticks == 760) {
+                stageStatics();
+            } else if (ticks == 790) {
+                summaryAndHalt(event.getServer());
+            }
+            if (dropKillsLeft > 0 && ticks % 10 == 0) {
+                runDropBatch();
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION at tick {}", TAG, ticks, t);
+            fail("tick_exception", "tick=" + ticks + " " + t);
+        }
+    }
+
+    // ==================== ① 基础读数 ====================
+
+    private static void stageBasics() {
+        EntityType<MoneyGremlin> type = AllEntities.MONEY_GREMLIN.get();
+        check("r6_entity_registered", BuiltInRegistries.ENTITY_TYPE.getKey(type).toString()
+                .equals("bettergold:money_gremlin"), "id=" + BuiltInRegistries.ENTITY_TYPE.getKey(type));
+        check("r6_projectile_entity_registered",
+                BuiltInRegistries.ENTITY_TYPE.getKey(AllEntities.CHAOS_COIN.get()).toString()
+                        .equals("bettergold:chaos_coin"),
+                "id=" + BuiltInRegistries.ENTITY_TYPE.getKey(AllEntities.CHAOS_COIN.get()));
+        check("r6_category_monster", type.getCategory() == MobCategory.MONSTER,
+                "category=" + type.getCategory());
+        check("r6_is_enemy", MoneyGremlin.class != null && net.minecraft.world.entity.monster.Enemy.class
+                .isAssignableFrom(MoneyGremlin.class), "implements Enemy");
+        check("r6_spawn_placement_registered", SpawnPlacements.hasPlacement(type)
+                        && SpawnPlacements.getPlacementType(type) == SpawnPlacementTypes.ON_GROUND
+                        && SpawnPlacements.getHeightmapType(type) == Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                "placement=" + SpawnPlacements.getPlacementType(type)
+                        + " heightmap=" + SpawnPlacements.getHeightmapType(type));
+
+        // 生成蛋
+        var egg = AllItems.MONEY_GREMLIN_SPAWN_EGG.get();
+        check("r6_spawn_egg_registered",
+                egg instanceof SpawnEggItem
+                        && BuiltInRegistries.ITEM.getKey(egg).toString()
+                                .equals("bettergold:money_gremlin_spawn_egg"),
+                "item=" + BuiltInRegistries.ITEM.getKey(egg) + " class=" + egg.getClass().getSimpleName());
+
+        // 伤害类型 JSON 真的加载了，并且 scaling = never
+        var damageRegistry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+        var melee = damageRegistry.getHolder(ModDamageTypes.MONEY_GREMLIN_MELEE);
+        var coin = damageRegistry.getHolder(ModDamageTypes.CHAOS_COIN);
+        check("r6_damage_types_loaded",
+                melee.isPresent() && coin.isPresent()
+                        && melee.get().value().scaling() == net.minecraft.world.damagesource.DamageScaling.NEVER
+                        && coin.get().value().scaling() == net.minecraft.world.damagesource.DamageScaling.NEVER,
+                "melee=" + melee.map(h -> h.value().msgId() + "/" + h.value().scaling()).orElse("MISSING")
+                        + " coin=" + coin.map(h -> h.value().msgId() + "/" + h.value().scaling()).orElse("MISSING"));
+
+        // 生物本体 + 属性
+        MoneyGremlin mob = spawnGremlin(baseX + 0.5D, baseY + 1.0D, baseZ + 0.5D);
+        mob.setNoAi(true);
+        mainMob = mob;
+        check("r6_max_health_30", mob.getMaxHealth() == 30.0F && mob.getHealth() == 30.0F,
+                "max=" + mob.getMaxHealth() + " hp=" + mob.getHealth());
+        check("r6_follow_range_32", mob.getAttributeValue(Attributes.FOLLOW_RANGE) == 32.0D,
+                "followRange=" + mob.getAttributeValue(Attributes.FOLLOW_RANGE));
+        check("r6_movement_speed_025", Math.abs(mob.getAttributeValue(Attributes.MOVEMENT_SPEED) - 0.25D) < 1e-6,
+                "speed=" + num(mob.getAttributeValue(Attributes.MOVEMENT_SPEED)) + "（僵尸 0.23）");
+        // 经验的唯一生产函数（死亡时用的就是它）
+        int xp = mob.getExperienceReward(level, dummy);
+        check("r6_xp_reward_10", xp == 10, "getExperienceReward=" + xp);
+
+        // 自然生成的 biome modifier 真的加载了：主世界有多少个 biome 带上了这个 spawner
+        var biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
+        int biomeHits = 0;
+        List<String> sample = new ArrayList<>();
+        for (var entry : biomeRegistry.entrySet()) {
+            var spawners = entry.getValue().getMobSettings().getMobs(MobCategory.MONSTER);
+            boolean found = spawners.unwrap().stream().anyMatch(w -> w.type == type);
+            if (found) {
+                biomeHits++;
+                if (sample.size() < 3) {
+                    sample.add(entry.getKey().location().toString());
+                }
+            }
+        }
+        check("r6_biome_modifier_applied", biomeHits > 0,
+                "biomesWithSpawner=" + biomeHits + " sample=" + sample);
+
+        // 弹幕判定（工作值口径直接读）
+        check("r6_barrage_range_helper",
+                MoneyGremlin.isWithinBarrageRange(9.0D) && !MoneyGremlin.isWithinBarrageRange(16.0D),
+                "3.0格=true 4.0格=false; interval=" + MoneyGremlin.BARRAGE_INTERVAL_TICKS
+                        + " count=" + MoneyGremlin.BARRAGE_COUNT);
+    }
+
+    // ==================== ② 仙人掌 + 火/岩浆 ×2 ====================
+
+    private static void stageCactusAndFire() {
+        MoneyGremlin mob = spawnGremlin(baseX + 2.5D, baseY + 1.0D, baseZ + 0.5D);
+        Zombie control = spawnZombie(baseX + 4.5D, baseY + 1.0D, baseZ + 0.5D);
+
+        // 仙人掌：金钱妖 0；僵尸对照 > 0
+        mob.invulnerableTime = 0;
+        float before = mob.getHealth();
+        boolean hurtOk = mob.hurt(level.damageSources().cactus(), 3.0F);
+        float lostMob = before - mob.getHealth();
+        control.invulnerableTime = 0;
+        float beforeZ = control.getHealth();
+        control.hurt(level.damageSources().cactus(), 3.0F);
+        float lostZombie = beforeZ - control.getHealth();
+        check("r6_cactus_immune", lostMob == 0.0F && !hurtOk,
+                "gremlin lost=" + num(lostMob) + " hurtOk=" + hurtOk + "（免疫 ⇒ 伤害被拒收）"
+                        + "；僵尸对照 lost=" + num(lostZombie));
+        check("r6_cactus_control_not_immune", lostZombie > 0.0F, "僵尸 lost=" + num(lostZombie));
+
+        // 三类火焰/岩浆 ×2 + 负向（generic 不翻倍）
+        String[] names = { "on_fire", "in_fire", "lava", "generic" };
+        for (String name : names) {
+            mob.setHealth(30.0F);
+            mob.invulnerableTime = 0;
+            mob.setRemainingFireTicks(0);
+            before = mob.getHealth();
+            net.minecraft.world.damagesource.DamageSource source = switch (name) {
+                case "on_fire" -> level.damageSources().onFire();
+                case "in_fire" -> level.damageSources().inFire();
+                case "lava" -> level.damageSources().lava();
+                default -> level.damageSources().generic();
+            };
+            mob.hurt(source, 4.0F);
+            float lost = before - mob.getHealth();
+            boolean doubled = !"generic".equals(name);
+            check("r6_fire_lava_x2_" + name,
+                    doubled ? lost == 8.0F : lost == 4.0F,
+                    "source=" + name + " raw=4 lost=" + num(lost) + " expected=" + (doubled ? "8" : "4"));
+            mob.setRemainingFireTicks(0);
+        }
+        // 僵尸对照：on_fire 4 → 4
+        control.setHealth(20.0F);
+        control.invulnerableTime = 0;
+        beforeZ = control.getHealth();
+        control.hurt(level.damageSources().onFire(), 4.0F);
+        check("r6_fire_control_zombie", (beforeZ - control.getHealth()) == 4.0F,
+                "僵尸 lost=" + num(beforeZ - control.getHealth()));
+        mob.discard();
+        control.discard();
+    }
+
+    // ==================== ③ 近战 4/8/12 ====================
+
+    private static void stageMelee() {
+        MoneyGremlin mob = spawnGremlin(baseX + 0.5D, baseY + 1.0D, baseZ + 4.5D);
+        String[] rows = new String[3];
+        int i = 0;
+        List<String> bad = new ArrayList<>();
+        for (Difficulty d : new Difficulty[] { Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD }) {
+            level.getServer().setDifficulty(d, true);
+            Zombie target = spawnZombie(baseX + 0.5D, baseY + 1.0D, baseZ + 5.5D);
+            target.invulnerableTime = 0;
+            float before = target.getHealth();
+            boolean ok = mob.doHurtTarget(target);
+            float lost = before - target.getHealth();
+            float want = MoneyGremlin.meleeDamageFor(d);
+            rows[i] = d + "[table=" + num(want) + " lost=" + num(lost) + " ok=" + ok + "]";
+            if (!ok || Math.abs(lost - want) > 1e-4F) {
+                bad.add(rows[i]);
+            }
+            i++;
+            target.discard();
+        }
+        check("r6_melee_table_4_8_12", bad.isEmpty(),
+                "difficulty=" + level.getDifficulty() + " rows=" + String.join(" ", rows) + " bad=" + bad);
+
+        // 属性无关性：把 ATTACK_DAMAGE 改成 1，困难档仍打 12 ⇒ 证明表才是真源
+        level.getServer().setDifficulty(Difficulty.HARD, true);
+        mob.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(1.0D);
+        Zombie target = spawnZombie(baseX + 0.5D, baseY + 1.0D, baseZ + 5.5D);
+        target.invulnerableTime = 0;
+        float before = target.getHealth();
+        mob.doHurtTarget(target);
+        float lost = before - target.getHealth();
+        check("r6_melee_ignores_attack_damage_attribute",
+                Math.abs(lost - 12.0F) < 1e-4F,
+                "ATTACK_DAMAGE=1.0 hard lost=" + num(lost) + "（若走原版属性换算这里会是 1.5）");
+        mob.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+        target.discard();
+        level.getServer().setDifficulty(Difficulty.NORMAL, true);
+        mob.discard();
+    }
+
+    // ==================== ④ 弹射物伤害 2/4/6（真命中路径） ====================
+
+    private static void stageProjectileHit(String label, Difficulty difficulty) {
+        level.getServer().setDifficulty(difficulty, true);
+        // 用主怪当 owner；测试点离它 6 格，弹道打不到 owner
+        double zx = baseX + 6.5D;
+        double zz = baseZ + 0.5D;
+        Zombie target = spawnZombie(zx, baseY + 1.0D, zz);
+        target.invulnerableTime = 0;
+        ChaosCoinProjectile coin = new ChaosCoinProjectile(level, mainMob);
+        coin.setPos(zx - 1.0D, baseY + 1.5D, zz);
+        coin.shoot(1.0D, 0.0D, 0.0D, ChaosCoinProjectile.VELOCITY, 0.0F);
+        level.addFreshEntity(coin);
+        PENDING.add(new PendingHit("r6_projectile_damage_" + label, target, ticks,
+                target.getHealth(), difficulty));
+        bettergold.LOGGER.info("{} INFO projectile_setup {} {} :: coin={} target={} gravity={}",
+                TAG, label, difficulty, coin.position(), target.position(), coin.getGravity());
+    }
+
+    private static void pollPendingHits() {
+        for (int i = PENDING.size() - 1; i >= 0; i--) {
+            PendingHit pending = PENDING.get(i);
+            boolean hit = pending.target().getHealth() < pending.beforeHp() || !pending.target().isAlive();
+            if (!hit && ticks - pending.startTick() < 20) {
+                continue;
+            }
+            PENDING.remove(i);
+            float lost = pending.beforeHp() - pending.target().getHealth();
+            float want = ChaosCoinProjectile.damageFor(pending.difficulty());
+            MobEffectInstance hunger = pending.target().getEffect(MobEffects.HUNGER);
+            check(pending.name() + "_" + pending.difficulty(),
+                    hit && Math.abs(lost - want) < 1e-4F,
+                    "lost=" + num(lost) + " want=" + num(want) + " hit=" + hit
+                            + " hunger=" + (hunger == null ? "NONE"
+                                    : ("amp=" + hunger.getAmplifier() + " dur=" + hunger.getDuration())));
+            // 真命中也要挂 36 秒饥饿（此时应是第 1 层、剩 ~716 tick）
+            check(pending.name() + "_hunger_on_hit",
+                    hunger != null && hunger.getAmplifier() == 0
+                            && hunger.getDuration() > 700 && hunger.getDuration() <= 720,
+                    "amp=" + (hunger == null ? "-" : hunger.getAmplifier())
+                            + " dur=" + (hunger == null ? "-" : hunger.getDuration()));
+            pending.target().discard();
+        }
+    }
+
+    // ==================== ⑤ 饥饿叠加 12 层封顶 ====================
+
+    private static void stageHunger() {
+        if (mainMob != null) {
+            mainMob.discard();
+            mainMob = null;
+        }
+        Zombie target = spawnZombie(baseX + 9.5D, baseY + 1.0D, baseZ + 9.5D);
+        target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(200.0D);
+        target.setHealth(200.0F);
+        List<Integer> levels = new ArrayList<>();
+        for (int i = 0; i < 13; i++) {
+            levels.add(ChaosCoinProjectile.applyHunger(target));
+        }
+        MobEffectInstance instance = target.getEffect(MobEffects.HUNGER);
+        List<Integer> expected = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12);
+        check("r6_hunger_stack_to_12", levels.equals(expected),
+                "levels=" + levels + " expected=" + expected);
+        check("r6_hunger_cap_and_duration",
+                instance != null && instance.getAmplifier() == 11 && instance.getDuration() == 720,
+                "amp=" + (instance == null ? "-" : instance.getAmplifier())
+                        + "（= 12 层） dur=" + (instance == null ? "-" : instance.getDuration()));
+        target.discard();
+    }
+
+    // ==================== ⑥ 掉落（抢夺 0 / 3） ====================
+
+    private static void startDrops(int looting) {
+        dropLooting = looting;
+        dropKillsLeft = 50;
+        dropKills = 0;
+        dropStringTotal = 0;
+        dropMoldTotal = 0;
+        dropMoldHits = 0;
+        dropStringMin = Integer.MAX_VALUE;
+        dropStringMax = 0;
+        dropMoldMin = Integer.MAX_VALUE;
+        dropMoldMax = 0;
+        ItemStack sword = new ItemStack(Items.IRON_SWORD);
+        if (looting > 0) {
+            sword.enchant(level.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                    .getHolderOrThrow(Enchantments.LOOTING), looting);
+        }
+        dummy.setItemInHand(InteractionHand.MAIN_HAND, sword);
+        bettergold.LOGGER.info("{} INFO drops_start looting={} chance={} swordLooting={}",
+                TAG, looting, MoneyGremlin.cowrieMoldChance(looting),
+                net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel(
+                        level.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                                .getHolderOrThrow(Enchantments.LOOTING), dummy));
+    }
+
+    private static void runDropBatch() {
+        int batch = Math.min(10, dropKillsLeft);
+        for (int i = 0; i < batch; i++) {
+            MoneyGremlin victim = spawnGremlin(baseX + 0.5D, baseY + 1.0D, baseZ + 8.5D);
+            victim.hurt(level.damageSources().playerAttack(dummy), 1000.0F);
+            int strings = 0;
+            int molds = 0;
+            for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class,
+                    new AABB(baseX - 3, baseY - 2, baseZ + 5, baseX + 4, baseY + 6, baseZ + 12))) {
+                ItemStack stack = item.getItem();
+                if (stack.is(AllItems.CHAOS_COIN_STRING.get())) {
+                    strings += stack.getCount();
+                } else if (stack.is(AllItems.GOLDEN_COWRIE_MOLD.get())) {
+                    molds += stack.getCount();
+                }
+                item.discard();
+            }
+            dropKills++;
+            dropStringTotal += strings;
+            dropMoldTotal += molds;
+            dropStringMin = Math.min(dropStringMin, strings);
+            dropStringMax = Math.max(dropStringMax, strings);
+            if (molds > 0) {
+                dropMoldHits++;
+                dropMoldMin = Math.min(dropMoldMin, molds);
+                dropMoldMax = Math.max(dropMoldMax, molds);
+            }
+        }
+        dropKillsLeft -= batch;
+        if (dropKillsLeft == 0) {
+            int expectedMolds = Math.round(dropKills * MoneyGremlin.cowrieMoldChance(dropLooting));
+            boolean stringsOk = dropStringMin >= 1
+                    && dropStringMax <= 1 + dropLooting
+                    && (dropLooting != 0 || dropStringTotal == dropKills);
+            boolean moldsOk = dropMoldMin >= 1 && dropMoldMax <= 1 + dropLooting;
+            check("r6_drops_looting_" + dropLooting,
+                    stringsOk && moldsOk && dropMoldHits > 0,
+                    "kills=" + dropKills + " coinStrings total=" + dropStringTotal
+                            + " min=" + dropStringMin + " max=" + dropStringMax
+                            + " | molds total=" + dropMoldTotal + " hits=" + dropMoldHits
+                            + "/" + dropKills + " min=" + dropMoldMin + " max=" + dropMoldMax
+                            + " expectedHits≈" + expectedMolds);
+            // 概率公式对照（同一函数；不是抽样替代）
+            bettergold.LOGGER.info("{} INFO drops_chance_formula :: looting0={} looting1={} looting2={} looting3={}",
+                    TAG, MoneyGremlin.cowrieMoldChance(0), MoneyGremlin.cowrieMoldChance(1),
+                    MoneyGremlin.cowrieMoldChance(2), MoneyGremlin.cowrieMoldChance(3));
+            if (dropLooting == 0) {
+                startDrops(3);
+            }
+        }
+    }
+
+    // ==================== ⑦ 米字弹幕（间距 3 + 120 tick） ====================
+
+    private static void startBarrage() {
+        barrageMob = spawnGremlin(baseX + 0.5D, baseY + 1.0D, baseZ + 0.5D);
+        dummy.moveTo(baseX + 2.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+        dummy.setHealth(20.0F);
+        barrageMob.setTarget(dummy);
+        bettergold.LOGGER.info("{} INFO barrage_setup :: mob={} target={} distance={}",
+                TAG, barrageMob.position(), dummy.position(), num(barrageMob.distanceTo(dummy)));
+    }
+
+    private static void pollBarrage() {
+        if (barrageMob == null || !barrageMob.isAlive()) {
+            return;
+        }
+        List<ChaosCoinProjectile> coins = level.getEntitiesOfClass(ChaosCoinProjectile.class,
+                area(12));
+        if (coins.isEmpty()) {
+            return;
+        }
+        if (fireTick1 < 0 && coins.size() >= MoneyGremlin.BARRAGE_COUNT) {
+            fireTick1 = ticks;
+            fire1CoinCount = coins.size();
+            List<Double> angles = new ArrayList<>();
+            double maxOriginError = 0.0D;
+            double maxAbsDy = 0.0D;
+            Vec3 expectedCenter = barrageMob.getBoundingBox().getCenter();
+            for (ChaosCoinProjectile coin : coins) {
+                Vec3 motion = coin.getDeltaMovement();
+                double yaw = Math.toDegrees(Math.atan2(motion.x, motion.z));
+                if (yaw < 0) {
+                    yaw += 360.0D;
+                }
+                angles.add(yaw);
+                maxOriginError = Math.max(maxOriginError, coin.position().distanceTo(expectedCenter));
+                maxAbsDy = Math.max(maxAbsDy, Math.abs(motion.y));
+            }
+            java.util.Collections.sort(angles);
+            StringBuilder sb = new StringBuilder();
+            for (double a : angles) {
+                sb.append(num(a)).append(' ');
+            }
+            fire1Angles = sb.toString().trim();
+            fire1Origin = "maxOriginError=" + num(maxOriginError) + " center=" + expectedCenter;
+            fire1Motion = "maxAbsDy=" + num(maxAbsDy) + " gravity=" + coins.get(0).getGravity();
+            motionYCheckTick = ticks + 5;
+            bettergold.LOGGER.info("{} INFO barrage_fire1 tick={} count={} angles=[{}] origin[{}] motion[{}]",
+                    TAG, ticks, coins.size(), fire1Angles, fire1Origin, fire1Motion);
+
+            boolean multipleOf45 = angles.stream().allMatch(a -> Math.abs(a / 45.0D - Math.round(a / 45.0D)) < 1e-3);
+            Set<Long> distinct = new LinkedHashSet<>();
+            for (double a : angles) {
+                distinct.add(Math.round(a));
+            }
+            check("r6_barrage_8_directions",
+                    coins.size() == 8 && multipleOf45 && distinct.size() == 8,
+                    "count=" + coins.size() + " angles=[" + fire1Angles + "] distinct=" + distinct);
+            check("r6_barrage_pitch_zero_and_no_gravity",
+                    maxAbsDy == 0.0D && coins.get(0).getGravity() == 0.0D,
+                    "maxAbsDy=" + num(maxAbsDy) + " gravity=" + coins.get(0).getGravity());
+            check("r6_barrage_from_center", maxOriginError <= 1.2D,
+                    "maxOriginError=" + num(maxOriginError) + "（允许 1 tick 的位移；中心=" + expectedCenter + "）");
+        } else if (fireTick1 >= 0 && fireTick2 < 0
+                && ticks - fireTick1 >= MoneyGremlin.BARRAGE_INTERVAL_TICKS - 2
+                && coins.size() >= MoneyGremlin.BARRAGE_COUNT) {
+            fireTick2 = ticks;
+            int interval = fireTick2 - fireTick1;
+            check("r6_barrage_interval_120", interval == MoneyGremlin.BARRAGE_INTERVAL_TICKS,
+                    "fire1=" + fireTick1 + " fire2=" + fireTick2 + " interval=" + interval);
+            motionYCheckTick = ticks + 3;
+        }
+        if (motionYCheckTick > 0 && ticks == motionYCheckTick) {
+            double maxAbsDy = 0.0D;
+            int alive = 0;
+            for (ChaosCoinProjectile coin : level.getEntitiesOfClass(ChaosCoinProjectile.class, area(24))) {
+                maxAbsDy = Math.max(maxAbsDy, Math.abs(coin.getDeltaMovement().y));
+                alive++;
+            }
+            motionYAfter = "alive=" + alive + " maxAbsDy=" + num(maxAbsDy);
+            check("r6_barrage_no_gravity_after_ticks", maxAbsDy == 0.0D,
+                    "5 tick 后仍竖直速度 0：" + motionYAfter);
+            motionYCheckTick = -1;
+        }
+    }
+
+    private static void startBarrageNegative() {
+        for (ChaosCoinProjectile coin : level.getEntitiesOfClass(ChaosCoinProjectile.class, area(24))) {
+            coin.discard();
+        }
+        // 把「怪 → 玩家」固定成 4.0 格（> 3）；AI 保持开启（每 tick 在 poll 里钉回原位），
+        // 这样负向对照证明的是「间距门」，不是「把 AI 关掉所以不打」。
+        if (barrageMob != null) {
+            barrageMob.moveTo(baseX - 0.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+            barrageMob.setDeltaMovement(Vec3.ZERO);
+            barrageMob.getNavigation().stop();
+            barrageMob.setTarget(dummy);
+        }
+        dummy.moveTo(baseX + 3.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+        negativeStarted = true;
+        negativeStartTick = ticks;
+        negativeCoinCountAtStart = level.getEntitiesOfClass(ChaosCoinProjectile.class, area(24)).size();
+        negativeCoinsSeen = 0;
+        bettergold.LOGGER.info("{} INFO barrage_negative_start :: tick={} distance={} noAi={} coinsAtStart={}",
+                TAG, ticks, num(barrageMob == null ? -1 : barrageMob.distanceTo(dummy)),
+                barrageMob != null && barrageMob.isNoAi(), negativeCoinCountAtStart);
+    }
+
+    private static void pollBarrageNegative() {
+        // 钉住两端：AI 仍在跑，只是每 tick 被放回「4.0 格」的静止状态
+        if (barrageMob != null) {
+            barrageMob.moveTo(baseX - 0.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+            barrageMob.setDeltaMovement(Vec3.ZERO);
+            barrageMob.getNavigation().stop();
+            barrageMob.setTarget(dummy);
+        }
+        dummy.moveTo(baseX + 3.5D, baseY + 1.0D, baseZ + 0.5D, 0.0F, 0.0F);
+        int now = level.getEntitiesOfClass(ChaosCoinProjectile.class, area(24)).size();
+        negativeCoinsSeen = Math.max(negativeCoinsSeen, now);
+        if (ticks == negativeStartTick + 130) {
+            check("r6_barrage_needs_3_block_range",
+                    negativeCoinsSeen == negativeCoinCountAtStart
+                            && barrageMob != null && Math.abs(barrageMob.distanceTo(dummy) - 4.0D) < 0.05D,
+                    "钉在 4.0 格 + AI 开 + 130 tick：新弹射物="
+                            + (negativeCoinsSeen - negativeCoinCountAtStart)
+                            + " distance=" + num(barrageMob == null ? -1 : barrageMob.distanceTo(dummy))
+                            + "（isWithinBarrageRange(16.0)=" + MoneyGremlin.isWithinBarrageRange(16.0D) + "）");
+            if (barrageMob != null) {
+                barrageMob.discard();
+                barrageMob = null;
+            }
+        }
+    }
+
+    // ==================== ⑧ 避火 / 避岩浆 ====================
+
+    private static void stageFleeSetup() {
+        BlockPos netherrack = new BlockPos(baseX + 3, baseY, baseZ);
+        level.setBlock(netherrack, Blocks.NETHERRACK.defaultBlockState(), 2);
+        level.setBlock(netherrack.above(), Blocks.FIRE.defaultBlockState(), 2);
+        hazardCenter = Vec3.atCenterOf(netherrack.above());
+
+        fleeMob = spawnGremlin(baseX + 0.5D, baseY + 1.0D, baseZ + 0.5D);
+        // 对照怪：**在火 8 格扫描半径之外**（距离 ≈ 11.5 格）、其余条件相同，记 100 tick 的随机漫步位移
+        controlMob = spawnGremlin(baseX - 6.5D, baseY + 1.0D, baseZ + 6.5D);
+        controlStartX = controlMob.getX();
+        controlStartZ = controlMob.getZ();
+        fleeStartDistance = fleeMob.position().distanceTo(hazardCenter);
+        bettergold.LOGGER.info("{} INFO flee_setup :: fire={} fleeMob={} startDistance={}",
+                TAG, hazardCenter, fleeMob.position(), num(fleeStartDistance));
+    }
+
+    /** 隔 10 tick 再测 path：刚 addFreshEntity 的怪 onGround=false，寻路第一帧建不出路径（探针伪影） */
+    private static void stageFleeGoalCheck() {
+        if (fleeMob == null || !fleeMob.isAlive()) {
+            fail("r6_flee_mob_missing", "fleeMob is null/dead");
+            return;
+        }
+        FleeFireGoal goal = new FleeFireGoal(fleeMob);
+        boolean canUse = goal.canUse();
+        goal.start();
+        boolean navigation = !fleeMob.getNavigation().isDone();
+        bettergold.LOGGER.info("{} INFO flee_start :: canUse={} navDone={} inProgress={} onGround={} mob={}",
+                TAG, canUse, fleeMob.getNavigation().isDone(),
+                fleeMob.getNavigation().isInProgress(), fleeMob.onGround(), fleeMob.position());
+        check("r6_flee_fire_goal_triggers", canUse,
+                "火在 3 格内 ⇒ canUse=" + canUse + " hazard=" + hazardCenter);
+        check("r6_flee_fire_goal_paths_away", navigation,
+                "start() 后 navigation.isDone=" + fleeMob.getNavigation().isDone()
+                        + " onGround=" + fleeMob.onGround());
+
+        // 负向：10 格开外的新怪 ⇒ 不触发
+        MoneyGremlin far = spawnGremlin(baseX + 9.5D, baseY + 1.0D, baseZ + 9.5D);
+        check("r6_flee_fire_goal_negative", !new FleeFireGoal(far).canUse(),
+                "火在 10.8 格开外 ⇒ canUse=false");
+        far.discard();
+    }
+
+    private static void stageFleeBehaviorEnd() {
+        if (fleeMob != null && fleeMob.isAlive()) {
+            double end = fleeMob.position().distanceTo(hazardCenter);
+            double moved = end - fleeStartDistance;
+            check("r6_flee_fire_moves_away", moved > 1.0D,
+                    "与火距离 " + num(fleeStartDistance) + " → " + num(end)
+                            + "（Δ=" + num(moved) + "，100 tick）");
+        }
+        if (controlMob != null && controlMob.isAlive()) {
+            double drift = Math.hypot(controlMob.getX() - controlStartX, controlMob.getZ() - controlStartZ);
+            bettergold.LOGGER.info("{} INFO flee_control_drift :: 无火对照 100 tick 位移={}", TAG, num(drift));
+        }
+        level.setBlock(new BlockPos(baseX + 3, baseY + 1, baseZ), Blocks.AIR.defaultBlockState(), 2);
+        level.setBlock(new BlockPos(baseX + 3, baseY, baseZ), Blocks.STONE.defaultBlockState(), 2);
+        if (fleeMob != null) {
+            fleeMob.discard();
+        }
+        if (controlMob != null) {
+            controlMob.discard();
+        }
+    }
+
+    // ==================== ⑨ 烈燃金 ×2（含旧族负向对照） ====================
+
+    private static void stageFlamegold() {
+        String[] swords = { "flamegold_sword", "flamegold_pickaxe", "sturdygold_sword", "indigoseagold_sword" };
+        for (String id : swords) {
+            MoneyGremlin victim = spawnGremlin(baseX + 0.5D, baseY + 1.0D, baseZ + 6.5D);
+            victim.invulnerableTime = 0;
+            dummy.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(
+                    BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("bettergold", id))));
+            float before = victim.getHealth();
+            victim.hurt(level.damageSources().playerAttack(dummy), 4.0F);
+            float lost = before - victim.getHealth();
+            boolean wantDouble = id.startsWith("flamegold_");
+            check("r6_flamegold_double_" + id,
+                    wantDouble ? lost == 8.0F : lost == 4.0F,
+                    "武器=" + id + " raw=4 lost=" + num(lost) + " expected=" + (wantDouble ? "8" : "4"));
+            victim.discard();
+        }
+        // 旧族行为不变：靛海金打末影人仍是 ×2
+        EnderMan enderman = new EnderMan(EntityType.ENDERMAN, level);
+        enderman.moveTo(baseX + 0.5D, baseY + 1.0D, baseZ + 6.5D, 0.0F, 0.0F);
+        level.addFreshEntity(enderman);
+        enderman.invulnerableTime = 0;
+        dummy.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(
+                BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("bettergold", "indigoseagold_sword"))));
+        float before = enderman.getHealth();
+        enderman.hurt(level.damageSources().playerAttack(dummy), 4.0F);
+        check("r6_indigosea_old_behavior_unchanged", (before - enderman.getHealth()) == 8.0F,
+                "靛海金剑打末影人 raw=4 lost=" + num(before - enderman.getHealth()));
+        enderman.discard();
+        // 旧的接触伤害集合没有被污染（烈燃金建材不该突然对金钱妖有接触伤害）
+        check("r6_flamegold_contact_set_untouched",
+                com.hjmmd_8.bettergold.material.AllMetals.FLAMEGOLD.contactDamageTargets.isEmpty(),
+                "flamegold.contactDamageTargets="
+                        + com.hjmmd_8.bettergold.material.AllMetals.FLAMEGOLD.contactDamageTargets);
+        check("r6_flamegold_target_helper",
+                com.hjmmd_8.bettergold.material.AllMetals.FLAMEGOLD
+                        .isDoubleDamageTarget(AllEntities.MONEY_GREMLIN.get())
+                        && !com.hjmmd_8.bettergold.material.AllMetals.INDIGOSEAGOLD
+                                .isDoubleDamageTarget(AllEntities.MONEY_GREMLIN.get()),
+                "flamegold→gremlin=true indigosea→gremlin=false");
+    }
+
+    // ==================== ⑩ 静态读数 / 表格 ====================
+
+    private static void stageStatics() {
+        check("r6_melee_table_literal",
+                MoneyGremlin.meleeDamageFor(Difficulty.EASY) == 4.0F
+                        && MoneyGremlin.meleeDamageFor(Difficulty.NORMAL) == 8.0F
+                        && MoneyGremlin.meleeDamageFor(Difficulty.HARD) == 12.0F,
+                "easy=4 normal=8 hard=12");
+        check("r6_projectile_table_literal",
+                ChaosCoinProjectile.damageFor(Difficulty.EASY) == 2.0F
+                        && ChaosCoinProjectile.damageFor(Difficulty.NORMAL) == 4.0F
+                        && ChaosCoinProjectile.damageFor(Difficulty.HARD) == 6.0F,
+                "easy=2 normal=4 hard=6");
+        // 抢夺数量公式分布（同一生产函数，1 万次）
+        RandomSource random = RandomSource.create(12345L);
+        int min = Integer.MAX_VALUE;
+        int max = 0;
+        int sum = 0;
+        for (int i = 0; i < 10000; i++) {
+            int v = MoneyGremlin.coinStringCount(3, random);
+            min = Math.min(min, v);
+            max = Math.max(max, v);
+            sum += v;
+        }
+        check("r6_looting_amount_formula", min == 1 && max == 4 && Math.abs(sum / 10000.0D - 2.5D) < 0.1D,
+                "looting=3 coinStringCount ∈ [" + min + "," + max + "] mean=" + num(sum / 10000.0D)
+                        + "（公式 1 + rand(0..3)）");
+        bettergold.LOGGER.info("{} INFO summary_inputs :: fireTick1={} fireTick2={} fire1Coins={} "
+                        + "angles=[{}] origin[{}] motion[{}] motionAfter[{}] drops0/3 done={}",
+                TAG, fireTick1, fireTick2, fire1CoinCount, fire1Angles, fire1Origin, fire1Motion,
+                motionYAfter, dropKillsLeft == 0);
+    }
+
+    // ==================== 收尾 ====================
+
+    private static void summaryAndHalt(MinecraftServer server) {
+        done = true;
+        unforceAll(server);
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        server.halt(false);
+    }
+
+    private static void unforceAll(MinecraftServer server) {
+        if (FORCED.isEmpty()) {
+            return;
+        }
+        ServerLevel overworld = server.overworld();
+        for (int[] p : FORCED) {
+            overworld.setChunkForced(p[0], p[1], false);
+        }
+        FORCED.clear();
+        bettergold.LOGGER.info("{} INFO forceload_released :: forcedAfter={}", TAG,
+                overworld.getForcedChunks().size());
+    }
+}

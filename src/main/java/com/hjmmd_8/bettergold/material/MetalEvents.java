@@ -1270,6 +1270,12 @@ public final class MetalEvents {
      *
      * <p>只在<b>主手</b>是该族器具时生效（与 {@link #onLivingDamaged} 的判定一致），
      * 因此「拿靛海金剑打末影人」与「空手打」是两种结果，不会因为身上穿着靛海金盔甲而误触发。</p>
+     *
+     * <p><b>1.7 轮6 泛化（作者原话「烈燃金对金钱妖双倍」）</b>：目标集合的判定从
+     * {@code family.contactDamageTargets.contains(...)} 改成
+     * {@link MetalFamily#isDoubleDamageTarget} —— 那一个入口同时读
+     * ①靛海金的静态集合（<b>行为逐字不变</b>）与 ②本模组自己的实体（延迟 {@code Supplier}，
+     * 烈燃金 → {@code money_gremlin}）。这里<b>没有</b>第二份目标清单。</p>
      */
     @SubscribeEvent
     public static void onDoubleDamagePre(
@@ -1287,7 +1293,11 @@ public final class MetalEvents {
         if (family == null || !family.doubleDamageOnTargets || !family.isWeapon(stack.getItem())) {
             return;
         }
-        if (!family.contactDamageTargets.contains(target.getType())) {
+        // 1.7 轮6：旧判定原文留档（不删；现在改走唯一入口 isDoubleDamageTarget）
+        // if (!family.contactDamageTargets.contains(target.getType())) {
+        //     return;
+        // }
+        if (!family.isDoubleDamageTarget(target.getType())) {
             return;
         }
         event.setNewDamage(event.getNewDamage() * 2.0F);

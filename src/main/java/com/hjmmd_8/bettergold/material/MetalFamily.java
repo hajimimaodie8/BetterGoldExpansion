@@ -368,6 +368,19 @@ public final class MetalFamily {
     public final boolean contactRestoreAxolotlAir;
     /** 器具：对 {@link #contactDamageTargets} 里的生物造成双倍伤害（靛海金，含器具攻击） */
     public final boolean doubleDamageOnTargets;
+    /**
+     * 器具「对特定生物双倍伤害」的<b>延迟目标</b>（1.7 轮6 泛化）。
+     *
+     * <p>为什么必须有这一份：{@link #contactDamageTargets} 是 {@code Set<EntityType<?>>}，
+     * 只能在 {@code AllMetals} 的<b>静态初始化</b>时拿到实体类型；而本模组自己的实体
+     * （{@code money_gremlin}）注册得比 {@code AllMetals} 晚 ⇒ 静态块里 {@code .get()} 会炸。
+     * 这里存 {@code Supplier}，只在真正判定伤害时解析。</p>
+     *
+     * <p>与 {@code contactDamageTargets} <b>不合并</b>：后者兼管「建材接触伤害」（靛海金的 4 点），
+     * 把金钱妖塞进去会顺带给烈燃金建材加上接触伤害 —— 那不是作者要的。
+     * 两条来源统一由 {@link #isDoubleDamageTarget} 读（双倍伤害的唯一入口）。</p>
+     */
+    public final List<java.util.function.Supplier<net.minecraft.world.entity.EntityType<?>>> extraDoubleDamageTargets;
     /** 盔甲：每件提供的游泳速度加成（{@code WATER_MOVEMENT_EFFICIENCY}，靛海金 = 0.25） */
     public final float swimSpeedPerPiece;
     /** 盔甲：每隔这么多 tick 给穿戴者 1 份伤害吸收（0 = 不开启；万坚金 = 320） */
@@ -874,6 +887,35 @@ public final class MetalFamily {
         return weapons().contains(item);
     }
 
+    /**
+     * <b>「器具对特定生物双倍伤害」的唯一判定入口</b>（1.7 轮6 泛化）。
+     *
+     * <p>两条来源：</p>
+     * <ol>
+     *   <li>{@link #contactDamageTargets}（靛海金的四个原版生物，静态集合，行为<b>逐字不变</b>）；</li>
+     *   <li>{@link #extraDoubleDamageTargets}（延迟到运行期解析的 {@code Supplier}，
+     *       本模组自己的实体会走这条）。</li>
+     * </ol>
+     *
+     * <p>这样「谁挨这个族器具的双倍伤害」只有一个入口；老的靛海金只是第 1 条来源的一个使用者，
+     * 新加的烈燃金 → 金钱妖是第 2 条来源。调用点见 {@code MetalEvents#onDoubleDamagePre}。</p>
+     *
+     * <p>⚠ 只允许在<b>实体注册完成之后</b>调用（伤害事件 / 游戏内逻辑），静态初始化期别调 ——
+     * 那时 {@code Supplier.get()} 可能撞上「注册表未绑定」。</p>
+     */
+    public boolean isDoubleDamageTarget(net.minecraft.world.entity.EntityType<?> type) {
+        if (this.contactDamageTargets.contains(type)) {
+            return true;
+        }
+        for (java.util.function.Supplier<net.minecraft.world.entity.EntityType<?>> extra
+                : this.extraDoubleDamageTargets) {
+            if (extra.get() == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** 这个物品是不是本族的盾牌 */
     public boolean isShield(Item item) {
         return this.shield.get() == item;
@@ -953,6 +995,7 @@ public final class MetalFamily {
         this.sootheOnAttackChance = spec.sootheOnAttackChance;
         this.contactRestoreAxolotlAir = spec.contactRestoreAxolotlAir;
         this.doubleDamageOnTargets = spec.doubleDamageOnTargets;
+        this.extraDoubleDamageTargets = List.copyOf(spec.extraDoubleDamageTargets);
         this.swimSpeedPerPiece = spec.swimSpeedPerPiece;
         this.absorptionIntervalTicks = spec.absorptionIntervalTicks;
         this.submergedMiningImmunity = spec.submergedMiningImmunity;
@@ -1448,6 +1491,11 @@ public final class MetalFamily {
         public boolean contactRestoreAxolotlAir = false;
         /** 器具：对 {@code contactDamageTargets} 里的生物双倍伤害（靛海金） */
         public boolean doubleDamageOnTargets = false;
+        /**
+         * 器具：额外的「双倍伤害目标」，存 {@code Supplier} 以便引用<b>晚于本族注册</b>的本模组实体
+         * （1.7 轮6：烈燃金 → 金钱妖）。只在 {@link MetalFamily#isDoubleDamageTarget} 里解析。
+         */
+        public java.util.List<java.util.function.Supplier<net.minecraft.world.entity.EntityType<?>>> extraDoubleDamageTargets = new java.util.ArrayList<>();
         /** 盔甲：每件游泳速度加成（靛海金 = 0.25） */
         public float swimSpeedPerPiece = 0.0F;
         /** 盔甲：每隔多少 tick 给穿戴者 1 份吸收（0 = 不开启；万坚金 = 320） */
@@ -1798,6 +1846,20 @@ public final class MetalFamily {
          * 建材那条是站在方块上每 10 tick 掉固定点数。
          */
         public Spec doubleDamageOnTargets() {
+            this.doubleDamageOnTargets = true;
+            return this;
+        }
+
+        /**
+         * 器具：额外把<b>一个延迟解析的实体类型</b>加进「双倍伤害目标」（1.7 轮6 泛化）。
+         *
+         * <p>与 {@link #doubleDamageOnTargets()} 共用同一个旗标与同一个判定入口
+         * {@link MetalFamily#isDoubleDamageTarget}；区别只是目标在注册完成之后才解析。
+         * 烈燃金用它把 {@code bettergold:money_gremlin} 加进来（作者原话「烈燃金对金钱妖双倍」）。</p>
+         */
+        public Spec doubleDamageOnDeferredTarget(
+                java.util.function.Supplier<net.minecraft.world.entity.EntityType<?>> target) {
+            this.extraDoubleDamageTargets.add(target);
             this.doubleDamageOnTargets = true;
             return this;
         }
