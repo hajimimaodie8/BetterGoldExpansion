@@ -785,5 +785,10 @@
   "entity.bettergold.money_gremlin": "金钱妖",
   "item.bettergold.money_gremlin_spawn_egg": "金钱妖刷怪蛋",
   "death.attack.bettergold.money_gremlin_melee": "%1$s 被 %2$s 的金币击倒",
-  "death.attack.bettergold.chaos_coin": "%1$s 被 %2$s 的混沌金币击中"
+  "death.attack.bettergold.chaos_coin": "%1$s 被 %2$s 的混沌金币击中",
+  "block.bettergold.golden_torchflower": "金火把花",
+  "block.bettergold.golden_torchflower_crop": "金火把花作物",
+  "block.bettergold.potted_golden_torchflower": "盆栽金火把花",
+  "item.bettergold.golden_torchflower_seeds": "金火把花种子",
+  "item.bettergold.refined_alchemic_oil": "高精度炼金油"
 }

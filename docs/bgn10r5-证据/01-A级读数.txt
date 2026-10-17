@@ -1,0 +1,20 @@
+# 轮5 A 级读数（真服务端 + 真 ServerPlayer；runServer exit 0，探针 halt(false) 一次退出，forceload 双向归零）
+
+[13:58:32] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_forceload_set :: forcedAfter=4
+[13:58:32] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE INFO ready base=(1008,120,1008) dummy=bgn10r5dummy
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_seed_on_gold_farmland :: result=CONSUME placed=Golden Torchflower Crop age=0 at=(1008,121,1008)
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE INFO seed_stack_after_place=3 (before=4)
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_seed_rejected_on_vanilla_farmland :: result=FAIL aboveAir=true canSurvive=false
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_seed_rejected_on_gold_infused_dirt :: result=FAIL aboveAir=true canSurvive=false
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_crop_in_crops_tag :: block=Golden Torchflower Crop
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_golden_bone_meal_to_full :: result=SUCCESS block=Golden Torchflower meal=3->2
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_vanilla_bone_meal_one_stage :: result=CONSUME block=Golden Torchflower Crop age=1
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_flower_pot_accepts_flower :: result=CONSUME block=Potted Golden Torchflower inFlowerPotsTag=true
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_seed_recipe_shapeless_7 :: type=crafting ingredients=7
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE INFO r5_double_yield_rule=NOT_IMPLEMENTED reason=no_recipe_screenshot_in_author_zip
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_light_emission_15 :: declared=15 storedBlockLight=15 maxLocalRawBrightness=15 authorAsk=16 delta=1
+[13:58:33] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE INFO r5_light_note=author_wants_16_engine_max_15_stored=15
+[13:58:56] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_brewing_fuel_base_plus_flower :: base=Refined Alchemic Oil x1 ingredient=0 lit=false
+[13:58:56] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE PASS r5_brewing_negative_wrong_ingredient :: negativeStand_base=Alchemic Fuel x1
+[13:58:56] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE INFO forceload_released :: forcedAfter=0
+[13:58:56] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10R5PROBE SUMMARY pass=12 fail=0

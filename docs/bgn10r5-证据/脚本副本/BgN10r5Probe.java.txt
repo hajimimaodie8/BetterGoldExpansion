@@ -1,0 +1,398 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.registry.AllBlocks;
+import com.hjmmd_8.bettergold.registry.AllItems;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * 临时探针（1.7 bg-n10 <b>轮5</b> A 级：金火把花 + 高精度炼金油）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10r5-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>六组读数：① 种子只认金染耕地（含两条负向）② 金骨粉一次催熟到满 ③ 亮度读数
+ * ④ 花盆 ⑤ 真酿造台（燃油基 + 花 ⇒ 油，含负向）⑥ 种子配方（无序 7 项）+ 双倍规则记账。</p>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} 只调一次；forceload 双向归零；绝不进生产代码路径。</p>
+ */
+public final class BgN10r5Probe {
+
+    private static final String TAG = "BGN10R5PROBE";
+
+    /** 布置完等几 tick 再读（光照 / BE 都需要 tick） */
+    private static final int SETUP_TICK = 5;
+    /** 酿造 400 tick + 余量 */
+    private static final int BREW_CHECK_TICK = 470;
+
+    private static int passes;
+    private static int fails;
+    private static int ticks;
+    private static boolean done;
+
+    private static final List<int[]> FORCED = new ArrayList<>();
+
+    private static ServerLevel level;
+    private static ServerPlayer dummy;
+    private static int bx;
+    private static int by;
+    private static int bz;
+
+    private static BlockPos cropPos;
+    private static BlockPos flowerPos;
+    private static BlockPos standA;
+    private static BlockPos standB;
+
+    private static int seedsBefore;
+    private static int boneMealBefore;
+
+    private BgN10r5Probe() {
+    }
+
+    public static void install() {
+        NeoForge.EVENT_BUS.register(BgN10r5Probe.class);
+    }
+
+    private static boolean enabled() {
+        return Files.exists(Path.of("bgn10r5-probe.enabled"));
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static void info(String msg) {
+        bettergold.LOGGER.info("{} INFO {}", TAG, msg);
+    }
+
+    private static String pos(BlockPos p) {
+        return "(" + p.getX() + "," + p.getY() + "," + p.getZ() + ")";
+    }
+
+    private static BlockHitResult hit(BlockPos p) {
+        return new BlockHitResult(Vec3.atCenterOf(p).add(0.0D, 0.5D, 0.0D),
+                net.minecraft.core.Direction.UP, p, false);
+    }
+
+    /** 真 ServerPlayer 的交互路径：与客户端右键发包走到同一处（含 BlockState#useItemOn 与 ItemStack#useOn） */
+    private static InteractionResult use(ItemStack stack, BlockPos clicked) {
+        dummy.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        InteractionResult r = dummy.gameMode.useItemOn(dummy, level, stack, InteractionHand.MAIN_HAND, hit(clicked));
+        return r;
+    }
+
+    // ==================== 生命周期 ====================
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        try {
+            stage0(event.getServer());
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION in stage0", TAG, t);
+            fails++;
+            summaryAndHalt(event.getServer());
+        }
+    }
+
+    private static void stage0(MinecraftServer server) {
+        level = server.overworld();
+        // 高空平台：chunk (63,63) = x/z 1008..1023，y=120 以上必定是空气
+        bx = 1008;
+        bz = 1008;
+        by = 120;
+        for (int dx = -3; dx <= 6; dx++) {
+            for (int dz = -1; dz <= 6; dz++) {
+                level.setBlockAndUpdate(new BlockPos(bx + dx, by - 1, bz + dz), Blocks.STONE.defaultBlockState());
+                for (int dy = 0; dy <= 3; dy++) {
+                    level.setBlockAndUpdate(new BlockPos(bx + dx, by + dy, bz + dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        int cx = bx >> 4;
+        int cz = bz >> 4;
+        for (int dx = 0; dx <= 1; dx++) {
+            for (int dz = 0; dz <= 1; dz++) {
+                level.setChunkForced(cx + dx, cz + dz, true);
+                FORCED.add(new int[] { cx + dx, cz + dz });
+            }
+        }
+        check("r5_forceload_set", level.getForcedChunks().size() >= 4,
+                "forcedAfter=" + level.getForcedChunks().size());
+
+        dummy = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), "bgn10r5dummy"),
+                ClientInformation.createDefault());
+        dummy.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                dummy,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "bgn10r5probe"), false));
+        dummy.moveTo(bx + 2.5D, by, bz + 2.5D, 0.0F, 0.0F);
+        dummy.getAbilities().invulnerable = true;
+        dummy.onUpdateAbilities();
+        info("ready base=" + pos(new BlockPos(bx, by, bz)) + " dummy=" + dummy.getGameProfile().getName());
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!enabled() || done) {
+            return;
+        }
+        ticks++;
+        try {
+            if (ticks == SETUP_TICK) {
+                runSetupChecks(event.getServer());
+            } else if (ticks == SETUP_TICK + 2) {
+                runSettledChecks();
+            } else if (ticks == BREW_CHECK_TICK) {
+                runBrewChecks();
+            } else if (ticks == BREW_CHECK_TICK + 2) {
+                summaryAndHalt(event.getServer());
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION at tick {}", TAG, ticks, t);
+            fails++;
+            summaryAndHalt(event.getServer());
+        }
+    }
+
+    // ==================== ① 种子只认金染耕地（两条负向） ====================
+
+    private static void runSetupChecks(MinecraftServer server) {
+        BlockPos farmland = new BlockPos(bx, by, bz);
+        BlockPos normalFarmland = new BlockPos(bx + 2, by, bz);
+        BlockPos goldDirt = new BlockPos(bx + 4, by, bz);
+        cropPos = farmland.above();
+
+        level.setBlockAndUpdate(farmland, AllBlocks.GOLD_INFUSED_FARMLAND.get().defaultBlockState());
+        level.setBlockAndUpdate(normalFarmland, Blocks.FARMLAND.defaultBlockState());
+        level.setBlockAndUpdate(goldDirt, AllBlocks.GOLD_INFUSED_DIRT.get().defaultBlockState());
+
+        BlockState cropState = AllBlocks.GOLDEN_TORCHFLOWER_CROP.get().defaultBlockState();
+        // ①-a 正向：金染耕地
+        ItemStack seeds = new ItemStack(AllItems.GOLDEN_TORCHFLOWER_SEEDS.get(), 4);
+        seedsBefore = seeds.getCount();
+        InteractionResult r1 = use(seeds, farmland);
+        BlockState placed = level.getBlockState(cropPos);
+        check("r5_seed_on_gold_farmland",
+                placed.is(AllBlocks.GOLDEN_TORCHFLOWER_CROP.get()) && placed.getValue(
+                        com.hjmmd_8.bettergold.block.GoldenTorchflowerCropBlock.AGE) == 0,
+                "result=" + r1 + " placed=" + placed.getBlock().getName().getString()
+                        + " age=" + (placed.is(AllBlocks.GOLDEN_TORCHFLOWER_CROP.get())
+                                ? placed.getValue(com.hjmmd_8.bettergold.block.GoldenTorchflowerCropBlock.AGE) : -1)
+                        + " at=" + pos(cropPos));
+        info("seed_stack_after_place=" + dummy.getItemInHand(InteractionHand.MAIN_HAND).getCount()
+                + " (before=" + seedsBefore + ")");
+
+        // ①-b 负向：普通耕地
+        InteractionResult r2 = use(new ItemStack(AllItems.GOLDEN_TORCHFLOWER_SEEDS.get(), 4), normalFarmland);
+        boolean bEmpty = level.getBlockState(normalFarmland.above()).isAir();
+        boolean bSurvive = cropState.canSurvive(level, normalFarmland.above());
+        check("r5_seed_rejected_on_vanilla_farmland", bEmpty && !bSurvive,
+                "result=" + r2 + " aboveAir=" + bEmpty + " canSurvive=" + bSurvive);
+
+        // ①-c 负向：金染土（必须先生成金染耕地）
+        InteractionResult r3 = use(new ItemStack(AllItems.GOLDEN_TORCHFLOWER_SEEDS.get(), 4), goldDirt);
+        boolean cEmpty = level.getBlockState(goldDirt.above()).isAir();
+        boolean cSurvive = cropState.canSurvive(level, goldDirt.above());
+        check("r5_seed_rejected_on_gold_infused_dirt", cEmpty && !cSurvive,
+                "result=" + r3 + " aboveAir=" + cEmpty + " canSurvive=" + cSurvive);
+
+        // ①-d 标签：作物必须进 #minecraft:crops（对照原版 torchflower_crop）
+        check("r5_crop_in_crops_tag", level.getBlockState(cropPos).is(BlockTags.CROPS),
+                "block=" + level.getBlockState(cropPos).getBlock().getName().getString());
+
+        // ==================== ② 金骨粉一次催熟到满 ====================
+        boneMealBefore = 3;
+        ItemStack meal = new ItemStack(AllItems.GOLDEN_BONE_MEAL.get(), boneMealBefore);
+        InteractionResult r4 = use(meal, cropPos);
+        BlockState grown = level.getBlockState(cropPos);
+        int mealAfter = dummy.getItemInHand(InteractionHand.MAIN_HAND).getCount();
+        check("r5_golden_bone_meal_to_full",
+                grown.is(AllBlocks.GOLDEN_TORCHFLOWER.get()) && mealAfter == boneMealBefore - 1,
+                "result=" + r4 + " block=" + grown.getBlock().getName().getString()
+                        + " meal=" + boneMealBefore + "->" + mealAfter);
+
+        // ②-b 负向：普通骨粉不走"一次到满"（原版 BonemealableBlock 只推一档 ⇒ 仍是作物）
+        BlockPos crop2 = new BlockPos(bx + 6, by, bz);
+        level.setBlockAndUpdate(new BlockPos(bx + 6, by, bz), AllBlocks.GOLD_INFUSED_FARMLAND.get().defaultBlockState());
+        level.setBlockAndUpdate(crop2.above(), cropState);
+        InteractionResult r5 = use(new ItemStack(Items.BONE_MEAL, 3), crop2.above());
+        BlockState afterVanilla = level.getBlockState(crop2.above());
+        check("r5_vanilla_bone_meal_one_stage",
+                afterVanilla.is(AllBlocks.GOLDEN_TORCHFLOWER_CROP.get())
+                        && afterVanilla.getValue(com.hjmmd_8.bettergold.block.GoldenTorchflowerCropBlock.AGE) == 1,
+                "result=" + r5 + " block=" + afterVanilla.getBlock().getName().getString()
+                        + " age=" + afterVanilla.getValue(
+                                com.hjmmd_8.bettergold.block.GoldenTorchflowerCropBlock.AGE));
+
+        // ==================== ③ 亮度（放置 + 下一 tick 读数）====================
+        flowerPos = new BlockPos(bx, by + 1, bz + 2);
+        level.setBlockAndUpdate(flowerPos, AllBlocks.GOLDEN_TORCHFLOWER.get().defaultBlockState());
+
+        // ==================== ④ 花盆 ====================
+        BlockPos potPos = new BlockPos(bx + 2, by + 1, bz + 2);
+        level.setBlockAndUpdate(potPos, Blocks.FLOWER_POT.defaultBlockState());
+        InteractionResult r6 = use(new ItemStack(AllBlocks.GOLDEN_TORCHFLOWER_ITEM.get()), potPos);
+        BlockState potted = level.getBlockState(potPos);
+        check("r5_flower_pot_accepts_flower",
+                potted.is(AllBlocks.POTTED_GOLDEN_TORCHFLOWER.get()) && potted.is(BlockTags.FLOWER_POTS),
+                "result=" + r6 + " block=" + potted.getBlock().getName().getString()
+                        + " inFlowerPotsTag=" + potted.is(BlockTags.FLOWER_POTS));
+
+        // ==================== ⑤ 真酿造台 ====================
+        standA = new BlockPos(bx, by, bz + 4);
+        standB = new BlockPos(bx + 2, by, bz + 4);
+        setupStand(standA, new ItemStack(AllBlocks.GOLDEN_TORCHFLOWER_ITEM.get()));
+        setupStand(standB, new ItemStack(Items.TORCHFLOWER));
+
+        // ==================== ⑥ 种子配方（无序 7 项）====================
+        ResourceLocation seedRecipe = ResourceLocation.fromNamespaceAndPath("bettergold", "golden_torchflower_seeds");
+        var holder = level.getRecipeManager().byKey(seedRecipe);
+        String detail6 = "absent";
+        boolean ok6 = false;
+        if (holder.isPresent()) {
+            RecipeHolder<?> h = holder.get();
+            if (h.value() instanceof ShapelessRecipe sr) {
+                int n = sr.getIngredients().size();
+                ok6 = n == 7;
+                detail6 = "type=" + h.value().getType() + " ingredients=" + n;
+            } else {
+                detail6 = "type=" + h.value().getClass().getSimpleName();
+            }
+        }
+        check("r5_seed_recipe_shapeless_7", ok6, detail6);
+
+        // ⑥-b 双倍贵金原料：无依据 ⇒ 明确记账，不做实现（也不假装通过）
+        info("r5_double_yield_rule=NOT_IMPLEMENTED reason=no_recipe_screenshot_in_author_zip");
+    }
+
+    private static void setupStand(BlockPos pos, ItemStack ingredient) {
+        level.setBlockAndUpdate(pos, Blocks.BREWING_STAND.defaultBlockState());
+        if (level.getBlockEntity(pos) instanceof BrewingStandBlockEntity stand) {
+            stand.setItem(0, new ItemStack(AllItems.ALCHEMIC_FUEL.get()));
+            stand.setItem(3, ingredient);
+            stand.setItem(4, new ItemStack(Items.BLAZE_POWDER, 8));
+            stand.setChanged();
+        }
+    }
+
+    private static void runSettledChecks() {
+        // ③ 亮度三读数
+        BlockState flower = level.getBlockState(flowerPos);
+        int declared = flower.getLightEmission(level, flowerPos);
+        int stored = level.getBrightness(LightLayer.BLOCK, flowerPos);
+        int local = level.getMaxLocalRawBrightness(flowerPos);
+        check("r5_light_emission_15",
+                declared == 15 && stored == 15,
+                "declared=" + declared + " storedBlockLight=" + stored + " maxLocalRawBrightness=" + local
+                        + " authorAsk=" + com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock.AUTHOR_LIGHT
+                        + " delta=" + (com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock.AUTHOR_LIGHT - stored));
+        info("r5_light_note=author_wants_16_engine_max_15_stored=" + stored);
+    }
+
+    private static void runBrewChecks() {
+        BlockState a = level.getBlockState(standA);
+        boolean aLit = a.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT)
+                ? a.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT) : false;
+        ItemStack baseA = standA0(standA);
+        ItemStack ingA = standA3(standA);
+        check("r5_brewing_fuel_base_plus_flower",
+                baseA.is(AllItems.REFINED_ALCHEMIC_OIL.get()) && ingA.isEmpty(),
+                "base=" + baseA.getHoverName().getString() + " x" + baseA.getCount()
+                        + " ingredient=" + ingA.getCount() + " lit=" + aLit);
+
+        ItemStack baseB = standA0(standB);
+        check("r5_brewing_negative_wrong_ingredient",
+                baseB.is(AllItems.ALCHEMIC_FUEL.get()),
+                "negativeStand_base=" + baseB.getHoverName().getString() + " x" + baseB.getCount());
+    }
+
+    private static ItemStack standA0(BlockPos p) {
+        if (level.getBlockEntity(p) instanceof BrewingStandBlockEntity s) {
+            return s.getItem(0);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private static ItemStack standA3(BlockPos p) {
+        if (level.getBlockEntity(p) instanceof BrewingStandBlockEntity s) {
+            return s.getItem(3);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    // ==================== 收尾 ====================
+
+    private static void summaryAndHalt(MinecraftServer server) {
+        if (done) {
+            return;
+        }
+        done = true;
+        unforceAll(server);
+        bettergold.LOGGER.info(String.format(Locale.ROOT, "%s SUMMARY pass=%d fail=%d", TAG, passes, fails));
+        server.halt(false);
+    }
+
+    private static void unforceAll(MinecraftServer server) {
+        if (FORCED.isEmpty()) {
+            return;
+        }
+        ServerLevel overworld = server.overworld();
+        for (int[] p : FORCED) {
+            overworld.setChunkForced(p[0], p[1], false);
+        }
+        FORCED.clear();
+        bettergold.LOGGER.info("{} INFO forceload_released :: forcedAfter={}", TAG,
+                overworld.getForcedChunks().size());
+    }
+}

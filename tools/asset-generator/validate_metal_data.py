@@ -6099,9 +6099,20 @@ else:
 #   两个文件级 SHA 同步换成本轮的值。旧值（轮4）原文留档：
 #     zh B4DE1D53B72B6E67… / en 254C26C00CC7CD70… / 键数 61
 #   本轮的语言键仍是「只加不删」：冻结副本里每一个既有键的值逐字未变（下面 ① 那条会证明）。
-_BGN10_ZH_AFTER_SHA = "B3101EFE3448856648EB085DCC53CF266542EAABCB696AD311C933DEEAEFCACC"
-_BGN10_EN_AFTER_SHA = "E3C9EA8B2DCAF3A6D4080E03F89A16D36419BA9C46A4B3174A627CAD06C5D7DD"
-_BGN10_NEW_LANG_KEYS = 65      # zh/en 各 65 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4
+# ⚠ **1.7 bg-n10r5（轮5 · 金火把花 / 高精度炼金油）第五次改常量**：新增 5 个键
+#   （`block.bettergold.golden_torchflower` / `block.bettergold.golden_torchflower_crop` /
+#    `block.bettergold.potted_golden_torchflower` / `item.bettergold.golden_torchflower_seeds` /
+#    `item.bettergold.refined_alchemic_oil`）⇒ 65 → **70**；两个文件级 SHA 同步换成本轮的值。
+#   旧值（轮6）原文留档（不删）：
+#     zh B3101EFE3448856648EB085DCC53CF26… / en E3C9EA8B2DCAF3A6D4080E03F89A16D3… / 键数 65
+#   本轮仍是「只加不删」：冻结副本里每一个既有键的值逐字未变（下面 ① 那条会证明）。
+_BGN10_ZH_AFTER_SHA = "4A23FF0AC6536BE0DF44E5E713CDD215BE373F254B169608110FC92D9C3BC6AA"
+_BGN10_EN_AFTER_SHA = "D3FE7755F3C8778032619B453635D60386376C870796B61895B1542235CEDE07"
+_BGN10_NEW_LANG_KEYS = 70      # zh/en 各 70 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4 + 轮5 的 5
+# 旧值留档（原文保留，不删）：2026-10-17 轮6 的 65
+# _BGN10_ZH_AFTER_SHA = "B3101EFE3448856648EB085DCC53CF266542EAABCB696AD311C933DEEAEFCACC"
+# _BGN10_EN_AFTER_SHA = "E3C9EA8B2DCAF3A6D4080E03F89A16D36419BA9C46A4B3174A627CAD06C5D7DD"
+# _BGN10_NEW_LANG_KEYS = 65      # zh/en 各 65 条 = 轮3 的 54 + 轮4 的 7 + 轮6 的 4
 # 旧值留档（原文保留，不删）：2026-10-17 轮6 之前的 61
 # _BGN10_ZH_AFTER_SHA = "B4DE1D53B72B6E6763F633D377940CAEA11A0B7322C3933E43A6E09B7245A891"
 # _BGN10_EN_AFTER_SHA = "254C26C00CC7CD709C0003B9F7679255D8958F5AE33FF2659579B7903C003C67"
@@ -6811,6 +6822,239 @@ print(f"1.7 轮4（混沌金盔甲 / 禁果 / 附魔书：盔甲区间 {len(_r4_
 print(f"1.7 两个共用组件（形态子集 {len(MF.FORMS)} 族 / 区间值公式命中 {len(_hits)} 处）问题: "
       f"{len(bgn10_problems)} {bgn10_problems[:4]}")
 
+# ==========================================================================================
+# 1.7 轮5（bg-n10r5，2026-10-17）：金火把花 + 高精度炼金油
+# ==========================================================================================
+# 作者原话（该段）：「金火把花种子，由 1 原版火把花种子搭配 6 金粒无序制成，用于种植金染耕地上
+# 长成金火把花，且可用金骨粉直接催熟到满。金火把花不仅能提供 16 点的亮度（顺带也兼容一下花盆样式）
+# 还能在酿造台上以炼金燃油为基、以金火把花为引即可酿制成高精度炼金油，此精油还可以作为
+# 产出双倍"贵金"原料的材料，详细配方请去看我所给的贴图文件里头」。
+#
+# ⚠ 「双倍贵金原料」那条配方**本轮没有依据**（作者说看贴图，但 zip 的 配方图集/ 只有 4 张、
+#   与本轮无关）⇒ 只落物品本体 + 记账，**不许**在这里假装它已被验证。
+#   关卡对它的要求只有一条：**不许悄悄发明一套翻倍算法**（下面 ⑨ 的负向断言）。
+bgn10r5_problems: list[str] = []
+_bgn10r5_checked = 0
+
+
+def _bgn10r5_bad(tag: str, msg: str) -> None:
+    bgn10r5_problems.append("[%s] %s" % (tag, msg))
+
+
+_R5_ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+_R5_DATA = REPO / "src" / "main" / "resources" / "data"
+_R5_JAVA = JAVA
+
+# ---------- ① 5 张贴图：必须是作者 zip 里的字节原样（SHA256 锚点） ----------
+# 值 = 作者 zip 内文件的 SHA256（本轮 `r5_inspect_sprites.py` 复算；来源只读，未改一字节）
+_R5_TEXTURES = {
+    "textures/item/golden_torchflower_seeds.png":
+        "FBADEB2010876A7293B6377B4703AEBACE0423100437FB0FF4EB6A5AB7638E2D",
+    "textures/block/golden_torchflower_crop_stage0.png":
+        "E7A05F680BDE291F81C0EA40B8746A0DF4AE1E3CE71602051F5C17B2629474E2",
+    "textures/block/golden_torchflower_crop_stage1.png":
+        "72E9694C3C2F839125185CF95D0912574C4B23CAC4A34802C64DEEA5A9543A12",
+    "textures/block/golden_torchflower.png":
+        "E9CB6183753F0C2CE0883A157207424E46AB9D3E52199A27ABCEB3F55D5AFDC0",
+    "textures/item/refined_alchemic_oil.png":
+        "D5858CD06AE5915F4141DABC1A84E34C1996BE4BEA774B22ECC8F860A557E0B9",
+}
+for _rel, _want in _R5_TEXTURES.items():
+    _bgn10r5_checked += 1
+    _p = _R5_ASSETS / _rel
+    if not _p.is_file():
+        _bgn10r5_bad("bgn10r5-textures", "缺贴图 " + _rel)
+        continue
+    _got = hashlib.sha256(_p.read_bytes()).hexdigest().upper()
+    if _got != _want:
+        _bgn10r5_bad("bgn10r5-textures",
+                     _rel + " 的 SHA256 = " + _got[:32] + " ≠ 作者 zip 原件的 " + _want[:32]
+                     + "（贴图白名单：除既有三张授权外不许改、也不许自己画）")
+
+# ---------- ② 方块状态 / 模型 / 战利品 / 配方：文件在 + 引用不悬空 ----------
+_R5_JSON = [
+    "assets/bettergold/blockstates/golden_torchflower.json",
+    "assets/bettergold/blockstates/golden_torchflower_crop.json",
+    "assets/bettergold/blockstates/potted_golden_torchflower.json",
+    "assets/bettergold/models/block/golden_torchflower.json",
+    "assets/bettergold/models/block/golden_torchflower_crop_stage0.json",
+    "assets/bettergold/models/block/golden_torchflower_crop_stage1.json",
+    "assets/bettergold/models/block/potted_golden_torchflower.json",
+    "assets/bettergold/models/item/golden_torchflower.json",
+    "assets/bettergold/models/item/golden_torchflower_seeds.json",
+    "assets/bettergold/models/item/refined_alchemic_oil.json",
+    "data/bettergold/loot_table/blocks/golden_torchflower.json",
+    "data/bettergold/loot_table/blocks/golden_torchflower_crop.json",
+    "data/bettergold/recipe/golden_torchflower_seeds.json",
+]
+for _rel in _R5_JSON:
+    _bgn10r5_checked += 1
+    if not (REPO / "src" / "main" / "resources" / _rel).is_file():
+        _bgn10r5_bad("bgn10r5-assets", "缺资源文件 " + _rel)
+
+# 模型里引用的我方贴图必须真的存在（防紫黑格）
+for _rel, _needles in (
+        ("assets/bettergold/models/block/golden_torchflower.json",
+         ["bettergold:block/golden_torchflower"]),
+        ("assets/bettergold/models/block/golden_torchflower_crop_stage0.json",
+         ["bettergold:block/golden_torchflower_crop_stage0"]),
+        ("assets/bettergold/models/block/golden_torchflower_crop_stage1.json",
+         ["bettergold:block/golden_torchflower_crop_stage1"]),
+        ("assets/bettergold/models/block/potted_golden_torchflower.json",
+         ["bettergold:block/golden_torchflower", "minecraft:block/flower_pot_cross"]),
+        ("assets/bettergold/models/item/golden_torchflower_seeds.json",
+         ["bettergold:item/golden_torchflower_seeds"]),
+        ("assets/bettergold/models/item/refined_alchemic_oil.json",
+         ["bettergold:item/refined_alchemic_oil"])):
+    _bgn10r5_checked += 1
+    _txt = (REPO / "src" / "main" / "resources" / _rel).read_text(encoding="utf-8")
+    for _n in _needles:
+        if _n not in _txt:
+            _bgn10r5_bad("bgn10r5-assets", _rel + " 里缺引用 " + _n)
+
+# 花盆模型必须复用原版花盆几何（不许自己画花盆）——负向：不许出现自绘的 elements 段
+_R5_pot_model = (REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "models"
+                 / "block" / "potted_golden_torchflower.json").read_text(encoding="utf-8")
+_bgn10r5_checked += 1
+if '"elements"' in _R5_pot_model:
+    _bgn10r5_bad("bgn10r5-pot-model",
+                 "花盆模型自带 elements 段（等于自己画花盆）——必须继承 minecraft:block/flower_pot_cross")
+
+# ---------- ③ 标签：照原版火把花的 5 条（block 4 + item 1） ----------
+for _rel, _id in (
+        ("data/minecraft/tags/block/crops.json", "bettergold:golden_torchflower_crop"),
+        ("data/minecraft/tags/block/flower_pots.json", "bettergold:potted_golden_torchflower"),
+        ("data/minecraft/tags/block/small_flowers.json", "bettergold:golden_torchflower"),
+        ("data/minecraft/tags/item/small_flowers.json", "bettergold:golden_torchflower")):
+    _bgn10r5_checked += 1
+    _p = REPO / "src" / "main" / "resources" / _rel
+    if not _p.is_file():
+        _bgn10r5_bad("bgn10r5-tags", "缺标签文件 " + _rel)
+    elif _id not in _p.read_text(encoding="utf-8"):
+        _bgn10r5_bad("bgn10r5-tags", _rel + " 里没有 " + _id)
+# maintains_farmland 要有两条（作物 + 花），逐条查
+_bgn10r5_checked += 2
+_mf_txt = (REPO / "src" / "main" / "resources" / "data" / "minecraft" / "tags" / "block"
+           / "maintains_farmland.json")
+if not _mf_txt.is_file():
+    _bgn10r5_bad("bgn10r5-tags", "缺 maintains_farmland.json")
+else:
+    _mf_body = _mf_txt.read_text(encoding="utf-8")
+    for _need in ("bettergold:golden_torchflower_crop", "bettergold:golden_torchflower"):
+        if _need not in _mf_body:
+            _bgn10r5_bad("bgn10r5-tags", "maintains_farmland 缺 " + _need)
+
+# ---------- ④ 语言键：5 条，中英都必须有且不相同 ----------
+for _k in ("block.bettergold.golden_torchflower",
+           "block.bettergold.golden_torchflower_crop",
+           "block.bettergold.potted_golden_torchflower",
+           "item.bettergold.golden_torchflower_seeds",
+           "item.bettergold.refined_alchemic_oil"):
+    _bgn10r5_checked += 3
+    if _k not in zh:
+        _bgn10r5_bad("bgn10r5-lang", "zh 缺语言键 " + _k)
+    if _k not in en:
+        _bgn10r5_bad("bgn10r5-lang", "en 缺语言键 " + _k)
+    if _k in zh and _k in en and zh.get(_k) == en.get(_k):
+        _bgn10r5_bad("bgn10r5-lang", _k + " 中英逐字相同（等于没译）")
+
+# ---------- ⑤ 亮度：作者 16 / 引擎 15，**16 绝不许进 lightLevel**（否则掩成 0） ----------
+_r5_flower = strip_comments((_R5_JAVA / "block" / "GoldenTorchflowerBlock.java").read_text(encoding="utf-8"))
+_bgn10r5_checked += 4
+if "AUTHOR_LIGHT = 16" not in _r5_flower:
+    _bgn10r5_bad("bgn10r5-light", "作者原数 16 没落成常量 AUTHOR_LIGHT = 16（记账丢了）")
+if "ENGINE_LIGHT = Math.min(15, AUTHOR_LIGHT)" not in _r5_flower:
+    _bgn10r5_bad("bgn10r5-light", "缺 ENGINE_LIGHT = Math.min(15, AUTHOR_LIGHT)（喂引擎的值必须是 15）")
+_r5_blocks = strip_comments((_R5_JAVA / "registry" / "AllBlocks.java").read_text(encoding="utf-8"))
+if "GoldenTorchflowerBlock.ENGINE_LIGHT" not in _r5_blocks:
+    _bgn10r5_bad("bgn10r5-light", "AllBlocks 的 lightLevel 没接 ENGINE_LIGHT")
+if "lightLevel(state -> com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock.AUTHOR_LIGHT" in _r5_blocks:
+    _bgn10r5_bad("bgn10r5-light",
+                 "lightLevel 直接吃了 AUTHOR_LIGHT(16) —— DataLayer 是 4 bit、(16 & 15) = 0，方块会一点都不亮")
+
+# ---------- ⑥ 作物：AGE_1 / maxAge 2 / 成熟变花 / 状态定义必须覆写 ----------
+_r5_crop = strip_comments((_R5_JAVA / "block" / "GoldenTorchflowerCropBlock.java").read_text(encoding="utf-8"))
+_bgn10r5_checked += 6
+if "extends GoldCropBlock" not in _r5_crop:
+    _bgn10r5_bad("bgn10r5-crop",
+                 "作物不是 GoldCropBlock 的子类（金骨粉判据 instanceof GoldCropBlock 会失效）")
+if "BlockStateProperties.AGE_1" not in _r5_crop:
+    _bgn10r5_bad("bgn10r5-crop", "作物阶段不是 AGE_1（原版火把花是 0..1 两阶段）")
+if "return MAX_AGE;" not in _r5_crop or "MAX_AGE = 2" not in _r5_crop:
+    _bgn10r5_bad("bgn10r5-crop", "maxAge 不是 2")
+if "flowerBlock.get().defaultBlockState()" not in _r5_crop:
+    _bgn10r5_bad("bgn10r5-crop", "成熟（age≥2）没有换成花方块本身")
+if "createBlockStateDefinition" not in _r5_crop:
+    _bgn10r5_bad("bgn10r5-crop",
+                 "没覆写 createBlockStateDefinition —— CropBlock 里加的是它自己的 AGE_7 静态常量，"
+                 "换 AGE_1 后 runData 会抛 IllegalArgumentException（本轮实测踩过）")
+if "builder.add(AGE)" not in _r5_crop:
+    _bgn10r5_bad("bgn10r5-crop", "createBlockStateDefinition 里没 add(AGE)")
+# 负向：作物自己不许覆写 mayPlaceOn（只认金染耕地必须来自 GoldCropBlock 那一处唯一实现）
+if "protected boolean mayPlaceOn" in _r5_crop:
+    _bgn10r5_bad("bgn10r5-crop",
+                 "作物自己覆写了 mayPlaceOn —— 种植基质判据必须只有 GoldCropBlock 一处（否则会漂）")
+
+# ---------- ⑦ 酿造：ModBrewing 里那条 addRecipe 的三个端点 ----------
+_r5_brew = strip_comments((_R5_JAVA / "event" / "ModBrewing.java").read_text(encoding="utf-8"))
+_bgn10r5_checked += 3
+for _need in ("Ingredient.of(AllItems.ALCHEMIC_FUEL.get())",
+              "Ingredient.of(AllBlocks.GOLDEN_TORCHFLOWER.get().asItem())",
+              "new ItemStack(AllItems.REFINED_ALCHEMIC_OIL.get())"):
+    if _need not in _r5_brew:
+        _bgn10r5_bad("bgn10r5-brewing", "ModBrewing 缺 " + _need)
+
+# ---------- ⑧ 注册与稳定 ASCII id ----------
+_bgn10r5_checked += 6
+_r5_items = strip_comments((_R5_JAVA / "registry" / "AllItems.java").read_text(encoding="utf-8"))
+for _id in ('"golden_torchflower_seeds"', '"refined_alchemic_oil"'):
+    if _id not in _r5_items:
+        _bgn10r5_bad("bgn10r5-register", "AllItems 没注册 " + _id)
+for _id in ('"golden_torchflower"', '"golden_torchflower_crop"', '"potted_golden_torchflower"'):
+    if _id not in _r5_blocks:
+        _bgn10r5_bad("bgn10r5-register", "AllBlocks 没注册 " + _id)
+if "registerSimpleBlockItem(\"golden_torchflower\"" not in _r5_blocks:
+    _bgn10r5_bad("bgn10r5-register", "金火把花没有 BlockItem（拿不到物品）")
+# 花盆方块必须**没有** BlockItem（原版 potted_* 不可取得）
+if 'registerSimpleBlockItem("potted_golden_torchflower"' in _r5_blocks:
+    _bgn10r5_bad("bgn10r5-register", "花盆方块注册了 BlockItem（原版 potted_* 不可直接取得）")
+
+# ---------- ⑨ 「双倍贵金原料」：无依据 ⇒ 只许记账，不许悄悄发明 ----------
+_bgn10r5_checked += 2
+# ⚠ 这一条**刻意**跑在"含注释"的原文上（与本文件其它正向 needle 的规矩相反）：
+#   要钉的东西**就是注释本身**（"这一轮没做，别当成做了"的记账）。去注释后它当然找不到。
+_r5_items_raw = (_R5_JAVA / "registry" / "AllItems.java").read_text(encoding="utf-8")
+if "双倍" not in _r5_items_raw or "没有实现" not in _r5_items_raw:
+    _bgn10r5_bad("bgn10r5-double-yield",
+                 "AllItems 的 refined_alchemic_oil 注释没记账「双倍贵金原料本轮没有实现」")
+# 负向：生产代码里不许出现"翻倍"实现痕迹（本轮不该有任何翻倍逻辑）
+for _rel in ("material/MetalEvents.java", "event/ModEvents.java", "registry/AllLootModifiers.java",
+             "registry/AllRecipes.java"):
+    _p = _R5_JAVA / _rel
+    if not _p.is_file():
+        continue
+    if "refined_alchemic_oil" in strip_comments(_p.read_text(encoding="utf-8")):
+        _bgn10r5_bad("bgn10r5-double-yield",
+                     _rel + " 里出现了 refined_alchemic_oil —— 本轮没有配方依据，"
+                     "双倍规则必须等作者补，不许先写一套实现")
+
+# ---------- ⑩ 文档侧：本轮口径必须落档 ----------
+for _needle, _why in ((u"bg-n10r5", u"docs/1.7 里没有轮5 这一节"),
+                      (u"金火把花", u"没写金火把花"),
+                      (u"高精度炼金油", u"没写高精度炼金油"),
+                      (u"ENGINE_LIGHT", u"没写亮度 16→15 的处理口径"),
+                      (u"双倍", u"没写「双倍贵金原料」这条缺口")):
+    _bgn10r5_checked += 1
+    if _needle not in _bgfix_spec:
+        _bgn10r5_bad("bgn10r5-doc", _why + "（缺 " + _needle + "）")
+
+print(f"1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: "
+      f"{len(bgn10r5_problems)} {bgn10r5_problems[:4]}（本段判定 {_bgn10r5_checked} 条）")
+if _bgn10r5_checked <= 0:
+    _bgn10r5_bad("bgn10r5-anti-vacuum", "本段一条判定都没跑（反空转）")
+if not bgn10r5_problems:
+    print("[bgn10r5-ok] 金火把花：贴图哈希/模型/标签/语言键/亮度口径/作物阶段/酿造三端点 全部通过")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -6819,7 +7063,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
-                       _bgn10r4_problems, bgn10r6_problems)
+                       _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

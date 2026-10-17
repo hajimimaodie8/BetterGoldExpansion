@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "age=0": { "model": "bettergold:block/golden_torchflower_crop_stage0" },
+    "age=1": { "model": "bettergold:block/golden_torchflower_crop_stage1" }
+  }
+}

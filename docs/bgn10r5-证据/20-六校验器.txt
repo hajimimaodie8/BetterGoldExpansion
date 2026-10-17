@@ -1,0 +1,27 @@
+# 轮5 构建与六校验器（判据 = exit 码 + 关键计数行 两列）
+
+| 关卡 | exit | 关键计数行 |
+|---|---|---|
+| compileJava | **0** | BUILD SUCCESSFUL |
+| runData | **0** | BUILD SUCCESSFUL（首次 FAILED：createBlockStateDefinition 那条真问题，见 1.7 §15.9 第 1 条） |
+| processResources jar --rerun-tasks | **0** | BUILD SUCCESSFUL；bettergold-1.6.0.jar 1,544,975 B / 2703 条目 |
+| validate_metal_assets.py | **0** | [bg-assets-ok] 问题合计 0 条（712 项） |
+| validate_metal_data.py | **0** | [bgn10r5-ok] 金火把花：…全部通过 + [bg-data-ok] 问题合计 0 条（本段判定 72 条） |
+| validate_trim_assets.py | **0** | [bgfinal3-ok] 问题 0 条 / 检查 76 项 |
+| validate_advancements.py | **0** | [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条 |
+| check_jar_clean.py | **0** | [jar-clean-ok] 条目 2703；*Probe* 0 / halt 字节 0 / BG-PROBE 0 |
+| check_forced_chunks.py | **0** | [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload） |
+
+## 复算
+
+`powershell
+.\gradlew.bat compileJava --console=plain
+.\gradlew.bat runData --console=plain
+.\gradlew.bat processResources jar --rerun-tasks --console=plain
+py -3 tools\asset-generator\validate_metal_assets.py
+py -3 tools\asset-generator\validate_metal_data.py
+py -3 tools\asset-generator\validate_trim_assets.py
+py -3 tools\asset-generator\validate_advancements.py
+py -3 tools\asset-generator\check_jar_clean.py
+py -3 tools\asset-generator\check_forced_chunks.py
+`

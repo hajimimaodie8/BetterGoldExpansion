@@ -785,5 +785,10 @@
   "entity.bettergold.money_gremlin": "Money Gremlin",
   "item.bettergold.money_gremlin_spawn_egg": "Money Gremlin Spawn Egg",
   "death.attack.bettergold.money_gremlin_melee": "%1$s was struck down by %2$s",
-  "death.attack.bettergold.chaos_coin": "%1$s was hit by a Chaos Coin from %2$s"
+  "death.attack.bettergold.chaos_coin": "%1$s was hit by a Chaos Coin from %2$s",
+  "block.bettergold.golden_torchflower": "Golden Torchflower",
+  "block.bettergold.golden_torchflower_crop": "Golden Torchflower Crop",
+  "block.bettergold.potted_golden_torchflower": "Potted Golden Torchflower",
+  "item.bettergold.golden_torchflower_seeds": "Golden Torchflower Seeds",
+  "item.bettergold.refined_alchemic_oil": "Refined Alchemic Oil"
 }

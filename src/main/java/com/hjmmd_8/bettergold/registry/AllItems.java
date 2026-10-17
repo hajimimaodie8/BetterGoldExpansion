@@ -107,6 +107,22 @@ public class AllItems {
     /** 炼金燃油 */
     public static final DeferredItem<Item> ALCHEMIC_FUEL = ITEMS.registerSimpleItem("alchemic_fuel");
 
+    /**
+     * 高精度炼金油（1.7 轮5，{@code bg-n10r5}）。
+     *
+     * <p>作者原话：「…还能在<b>酿造台</b>上以<b>炼金燃油为基</b>、以<b>金火把花为引</b>即可酿制成<b>高精度炼金油</b>，
+     * 此精油还可以作为<b>产出双倍"贵金"原料</b>的材料」。</p>
+     *
+     * <p>id 取立档 §2.0 的候选 (A) {@code refined_alchemic_oil}（歧义 ⑩-c，工作值、一行可改）。</p>
+     *
+     * <p>⚠ 「双倍贵金原料」那条配方<b>本轮没有实现</b>：作者说「详细配方请去看我所给的贴图文件里头」，
+     * 但两份 zip 的 {@code 配方图集/} 只有 <b>4</b> 张截图且与本轮无关（见
+     * {@code docs/bgn10r5-证据/11-本轮配方素材缺口.txt}），逐格反解出来的 4 条配方分别是
+     * 万坚金砧 / 崩乱合金升级模板 / 混沌金币充数 / 混沌金附魔书 ⇒ <b>翻倍规则的输入、产物、是否消耗油全无依据</b>。
+     * 按「不许自己发明一套翻倍算法」的口径：这里只落物品本体，规则待作者补（见 1.7 立档 §15.6）。</p>
+     */
+    public static final DeferredItem<Item> REFINED_ALCHEMIC_OIL = ITEMS.registerSimpleItem("refined_alchemic_oil");
+
     /** 金钱贝 */
     public static final DeferredItem<Item> GOLDEN_COWRIE = ITEMS.registerSimpleItem("golden_cowrie");
 
@@ -147,6 +163,17 @@ public class AllItems {
     /** 金钱茄种子：可种植在金染耕地上（绑定金钱茄作物方块） */
     public static final DeferredItem<Item> GOLDEN_EGGPLANT_SEEDS = ITEMS.register("golden_eggplant_seeds",
             () -> new net.minecraft.world.item.ItemNameBlockItem(AllBlocks.GOLDEN_EGGPLANT_CROP.get(),
+                    new Item.Properties()));
+
+    /**
+     * 金火把花种子（1.7 轮5，{@code bg-n10r5}）：作者原话「由 <b>1 原版火把花种子</b> 搭配 <b>6 金粒</b>
+     * <b>无序</b>制成」⇒ 配方见 {@code data/bettergold/recipe/golden_torchflower_seeds.json}（无序 7 项）。
+     *
+     * <p>只能种在<b>金染耕地</b>上 —— 这条不在物品侧，而在作物方块的
+     * {@code GoldCropBlock#mayPlaceOn}（{@code GoldenTorchflowerCropBlock} 原样继承）。</p>
+     */
+    public static final DeferredItem<Item> GOLDEN_TORCHFLOWER_SEEDS = ITEMS.register("golden_torchflower_seeds",
+            () -> new net.minecraft.world.item.ItemNameBlockItem(AllBlocks.GOLDEN_TORCHFLOWER_CROP.get(),
                     new Item.Properties()));
 
     /** 金骨粉（金作物专属骨粉：一点就熟 + 骨粉音效，只催熟金作物） */

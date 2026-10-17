@@ -1,0 +1,16 @@
+# 轮5 扰动矩阵（每个用例：改 -> 跑 -> 复原 -> SHA256 自证）
+
+① ENGINE_LIGHT 改回 AUTHOR_LIGHT(16)               exit=1  want_exit=1  tag_hit=True  restored_sha_ok=True  => HIT
+    └ 1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 1 ['[bgn10r5-light] 缺 ENGINE_LIGHT = Math.min(15, AUTHOR_LIGHT)（喂引擎的值必须是 15）']（本段判定 72 条）
+② createBlockStateDefinition 改回 add(AGE_7)       exit=1  want_exit=1  tag_hit=True  restored_sha_ok=True  => HIT
+    └ 1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 1 ['[bgn10r5-crop] createBlockStateDefinition 里没 add(AGE)']（本段判定 72 条）
+③ 删掉 item/refined_alchemic_oil.png               exit=1  want_exit=1  tag_hit=True  restored_sha_ok=True  => HIT
+    └ 1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 1 ['[bgn10r5-textures] 缺贴图 textures/item/refined_alchemic_oil.png']（本段判定 72 条）
+④ en 值改成与 zh 相同                                  exit=1  want_exit=1  tag_hit=True  restored_sha_ok=True  => HIT
+    └ 1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 1 ['[bgn10r5-lang] item.bettergold.refined_alchemic_oil 中英逐字相同（等于没译）']（本段判定 72 条）
+⑤ MetalEvents 里塞 refined_alchemic_oil            exit=1  want_exit=1  tag_hit=True  restored_sha_ok=True  => HIT
+    └ 1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 1 ['[bgn10r5-double-yield] material/MetalEvents.java 里出现了 refined_alchemic_oil —— 本轮没有配方依据，双倍规则必须等作者补，不许先写一套实现']（本段判定 72 条）
+⑥ 只加注释 / 空白（反向对照，应仍绿）                            exit=0  want_exit=0  tag_hit=-     restored_sha_ok=True  => HIT
+
+合计 6/6 命中（⑥ 是反向对照：期望 exit 0）
+

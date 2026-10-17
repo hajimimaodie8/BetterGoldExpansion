@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "bettergold:block/golden_torchflower_crop_stage1"
+  }
+}

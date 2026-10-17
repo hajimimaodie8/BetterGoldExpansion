@@ -9,6 +9,7 @@ import com.hjmmd_8.bettergold.material.MetalAliases;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.level.block.Block;
@@ -361,6 +362,62 @@ public class AllBlocks {
     public static final DeferredItem<BlockItem> GOLDEN_TOAD_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_toad_figurine", GOLDEN_TOAD_FIGURINE);
     public static final DeferredItem<BlockItem> GOLDEN_ENDERMAN_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_enderman_figurine", GOLDEN_ENDERMAN_FIGURINE);
     public static final DeferredItem<BlockItem> GOLDEN_CREEPER_FIGURINE_ITEM = AllItems.ITEMS.registerSimpleBlockItem("golden_creeper_figurine", GOLDEN_CREEPER_FIGURINE);
+
+    // ==================== 1.7 轮5（bg-n10r5）：金火把花（作物 → 花方块 → 花盆） ====================
+    // 作者原话（该段）：「金火把花种子，由 1 原版火把花种子搭配 6 金粒无序制成，用于种植金染耕地上
+    // 长成金火把花，且可用金骨粉直接催熟到满。金火把花不仅能提供 16 点的亮度（顺带也兼容一下花盆样式）
+    // 还能在酿造台上以炼金燃油为基、以金火把花为引即可酿制成高精度炼金油」。
+    //
+    // 形态照**原版火把花**三件套（`TorchflowerCropBlock` / `TorchflowerBlock` / `PottedTorchflower`）：
+    //   ① 作物 `golden_torchflower_crop`（age 0..1，age 2 ⇒ 变成下面的花方块，见 GoldenTorchflowerCropBlock）
+    //   ② 花方块 `golden_torchflower`（亮度：作者 16 ⇒ 引擎值 15，理由见 GoldenTorchflowerBlock 类注释）
+    //   ③ 花盆方块 `potted_golden_torchflower`（**无 BlockItem**，与原版 potted_* 一致：花盆形态不可直接取得）
+    // ⚠ 注册顺序有意义：② 必须在 ① 之前（① 的 getStateForAge 会取 ②）；③ 必须在 ② 之后。
+
+    /** 金火把花（成熟花方块）：亮度见 {@link com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock} */
+    public static final DeferredBlock<com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock> GOLDEN_TORCHFLOWER =
+            BLOCKS.register("golden_torchflower",
+                    () -> new com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock(BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.PLANT)
+                            .noCollission()
+                            .instabreak()
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .offsetType(BlockBehaviour.OffsetType.XZ)
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)
+                            .lightLevel(state -> com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock.ENGINE_LIGHT)));
+
+    /** 金火把花作物：只认金染耕地，age 0/1 两个阶段，成熟变花方块 */
+    public static final DeferredBlock<com.hjmmd_8.bettergold.block.GoldenTorchflowerCropBlock> GOLDEN_TORCHFLOWER_CROP =
+            BLOCKS.register("golden_torchflower_crop",
+                    () -> new com.hjmmd_8.bettergold.block.GoldenTorchflowerCropBlock(BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.PLANT)
+                            .noCollission()
+                            .randomTicks()
+                            .instabreak()
+                            .sound(net.minecraft.world.level.block.SoundType.CROP)
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY),
+                            () -> AllItems.GOLDEN_TORCHFLOWER_SEEDS.get(),
+                            () -> GOLDEN_TORCHFLOWER.get()));
+
+    /**
+     * 花盆形态（花盆兼容的第 ② 件事）。
+     *
+     * <p>用原版那条「已弃用但仍是 mod 唯一自注册入口」的构造器：它在构造时就会调用
+     * {@code Blocks.FLOWER_POT.addPlant(<花的 id>, () -> this)}，把「金火把花方块 → 本方块」
+     * 写进空盆的 {@code fullPots} 表 —— 也就是 {@code FlowerPotBlock#useItemOn} 真正查的那张表。
+     * （NeoForge 的推荐写法要自己找时机调 {@code addPlant}；这里用构造器等价且无时序问题，
+     * 因为花方块在同一个 {@code DeferredRegister} 里排在前面、注册时已经存在。）</p>
+     */
+    public static final DeferredBlock<FlowerPotBlock> POTTED_GOLDEN_TORCHFLOWER =
+            BLOCKS.register("potted_golden_torchflower",
+                    () -> new FlowerPotBlock(GOLDEN_TORCHFLOWER.get(), BlockBehaviour.Properties.of()
+                            .instabreak()
+                            .noOcclusion()
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)));
+
+    /** 金火把花物品（花方块的 BlockItem）：创造页落在「建筑」分区（方块类物品的既有归属） */
+    public static final DeferredItem<BlockItem> GOLDEN_TORCHFLOWER_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("golden_torchflower", GOLDEN_TORCHFLOWER);
 
     private AllBlocks() {
     }
