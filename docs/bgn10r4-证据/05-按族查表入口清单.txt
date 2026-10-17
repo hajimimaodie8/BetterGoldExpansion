@@ -1,0 +1,24 @@
+1.7 bg-n10r4 轮4 · 「按族查表」的全部入口清单（A 段要求：两族必须逐处覆盖）
+================================================================================================
+
+判据来源：`grep` 全仓 `case "<族id>"` / `new MetalFamily.Spec("` / `Map<String, MetalFamily>` / 生成器的 `METALS`。
+机器化版本 = `validate_metal_data.py` 的 `[bgn10r4-config-every-family]`（从 AllMetals 反解族 id，
+逐个要求两个 switch 都有 case）—— 它正是"总数断言看不见某族缺 case"的补丁。
+
+# | 入口（按族查表） | 位置 | 两族覆盖情况
+--|------------------|------|------------
+1 | 配置 · 武器/工具/盾牌触发概率 | config/Config.java:405 `weaponBuffChance` switch | 10 个 case（chaosgold:415 / chaosalloy:416）✓
+2 | 配置 · 盔甲触发概率 | config/Config.java:437 `armorBuffChance` switch | 10 个 case（chaosgold:447 / chaosalloy:448）✓
+3 | 配置 · 启动自证读数 | config/Config.java:484 `describeEffectChances` 的族数组 | 10 族逐个打印（日志实测有 chaosgold/chaosalloy 两段）✓
+4 | 配置 · 键声明（toml 条目顺序） | config/Config.java:336-393 四段 | 4 条新键，声明顺序 = `METAL_ORDER` 的尾两族 ✓
+5 | 创造页 · 金属出场顺序 | material/CreativeSections.java:35 `METAL_ORDER` | 10 族（chaosgold:47 / chaosalloy:48）✓
+6 | 创造页 · 装备位次（一表两用） | material/CreativeSections.java:148 `GEAR_SLOT` | 16 项（新增 forbidden_fruit:166 / enchanting_book:167）✓
+7 | 语言键 · 物品与提示（中/英） | lang/zh_cn.json + en_us.json（生成器 generate_metal_data.py:31 / generate_weapon_lang.py:31） | 两族 54 键 + 轮4 的 3 键 + 4 条配置界面名 = 各 783 键（`_BGN10_NEW_LANG_KEYS=61`）✓
+8 | 掉落 · 器具/方块战利品表 | tools/asset-generator/generate_weapon_data.py:81 + generate_metal_data.py:31 的 `METALS` | 两族都在清单里（`missing_loot = 0`）✓
+9 | 成就 · 进度树清单 | tools/asset-generator/generate_advancements.py:50 的 `METALS` | 两族都在清单里（本轮不加成就，仍 51 个 / criteria 125）✓
+10 | 效果描述 · `effect.bettergold.*` | 同上语言键段 | 两族**暂无** MobEffect（轮7 的 力量失衡/抗性失衡）⇒ 无键可写；新增键数由 `_BGN10_NEW_LANG_KEYS` 冻结 ✓
+11 | 区间值 · 通道声明 | material/AllMetals.java 的 `spec.chaosRange(...)` | chaosgold：MINING 1 + ATTACK 1 + 逐形态 15 + **ARMOR 4**（轮4 新增）；chaosalloy 尚未声明 ✓
+12 | 形态子集 · Python 侧真源 | tools/asset-generator/metal_forms.py:56/76 | chaosgold 13 形态（去 raw/upgrade_template）/ chaosalloy 3 形态 ✓
+
+结论（B 级 = 源码 + 关卡；A 级 = 上面 ①②两条）：**两族在所有"按族查表"的入口上都已覆盖**，
+唯一"故意不覆盖"的是第 10 项（效果还没实现，属轮7/轮9 的范围），已在此记账。

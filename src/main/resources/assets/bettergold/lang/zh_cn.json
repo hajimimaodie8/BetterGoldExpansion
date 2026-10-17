@@ -774,5 +774,12 @@
   "item.bettergold.chaosalloy_crossbow": "崩乱合金弩",
   "item.bettergold.chaosalloy_trident": "崩乱合金三叉戟",
   "item.bettergold.chaosalloy_shield": "崩乱合金盾牌",
-  "item.bettergold.chaosgold_nugget": "混沌金粒"
+  "item.bettergold.chaosgold_nugget": "混沌金粒",
+  "item.bettergold.chaosgold_forbidden_fruit": "混沌禁果",
+  "item.bettergold.chaosgold_enchanting_book": "混沌金附魔书",
+  "message.bettergold.chaos_enchanting_book.too_low_level": "至少需要 5 级经验才能使用混沌金附魔书",
+  "bettergold.configuration.chaosgoldWeaponBuffChance": "混沌金·武器工具盾牌触发Buff概率",
+  "bettergold.configuration.chaosgoldArmorBuffChance": "混沌金·盔甲触发buff概率",
+  "bettergold.configuration.chaosalloyWeaponBuffChance": "崩乱合金·武器工具盾牌触发Buff概率",
+  "bettergold.configuration.chaosalloyArmorBuffChance": "崩乱合金·盔甲触发buff概率"
 }

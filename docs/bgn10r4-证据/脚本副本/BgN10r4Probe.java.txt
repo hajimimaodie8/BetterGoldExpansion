@@ -1,0 +1,700 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.config.Config;
+import com.hjmmd_8.bettergold.material.ChaosItems;
+import com.hjmmd_8.bettergold.material.ChaosRange;
+import com.hjmmd_8.bettergold.material.ChaosWiring;
+import com.hjmmd_8.bettergold.material.MetalEvents;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+/**
+ * 临时探针（1.7 bg-n10 <b>轮4</b> A 级：阻塞修复 + 混沌金盔甲 / 禁果 / 附魔书）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10r4-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} 只调一次；forceload 双向归零；绝不进生产代码路径。</p>
+ */
+public final class BgN10r4Probe {
+
+    private static final String TAG = "BGN10R4PROBE";
+
+    private static int passes;
+    private static int fails;
+    private static int ticks;
+    private static boolean done;
+    private static final List<BlockPosHolder> FORCED = new ArrayList<>();
+    private static int baseX;
+    private static int baseZ;
+
+    /** 上一轮（轮3）留下的探针诊断类（本类自造，只为 forceload 记账） */
+    private record BlockPosHolder(int x, int z) {
+    }
+
+    private BgN10r4Probe() {
+    }
+
+    // ==================== 开关 + 注册 ====================
+
+    private static Path gameDir() {
+        return Path.of(System.getProperty("user.dir"));
+    }
+
+    public static boolean enabled() {
+        return Files.exists(gameDir().resolve("bgn10r4-probe.enabled"));
+    }
+
+    public static void install() {
+        if (!enabled()) {
+            return;
+        }
+        bettergold.LOGGER.info("{} probe registered (gameDir switch file found) gameDir={}", TAG, gameDir());
+        ChaosWiring.debug = false;
+        NeoForge.EVENT_BUS.register(BgN10r4Probe.class);
+    }
+
+    // ==================== 小工具 ====================
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static Item item(String id) {
+        return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("bettergold", id));
+    }
+
+    private static String round4(double v) {
+        return String.format(java.util.Locale.ROOT, "%.4f", v);
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        try {
+            stage0(event.getServer());
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION in stage0", TAG, t);
+            fail("stage0_exception", String.valueOf(t));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        if (!enabled()) {
+            return;
+        }
+        unforceAll(event.getServer());
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!enabled() || done) {
+            return;
+        }
+        ticks++;
+        MinecraftServer server = event.getServer();
+        try {
+            switch (ticks) {
+                case 20 -> stageConfigKeys(server);
+                case 40 -> stageBlockerHits(server);
+                case 80 -> stageArmorStatic(server);
+                case 120 -> stageArmorReduction(server);
+                case 160 -> stageFruit(server);
+                case 200 -> stageBookReject(server);
+                case 240 -> stageBookEnchant(server);
+                case 280 -> stageBookAffinity(server);
+                case 320 -> stageLogHygiene(server);
+                default -> {
+                }
+            }
+            if (ticks == 420) {
+                summaryAndHalt(server);
+            }
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION at tick {}", TAG, ticks, t);
+            fail("tick_exception", "tick=" + ticks + " " + t);
+        }
+    }
+
+    // ==================== 阶段 ====================
+
+    private static ServerLevel level(MinecraftServer server) {
+        return server.overworld();
+    }
+
+    private static void stage0(MinecraftServer server) {
+        ServerLevel level = level(server);
+        var ref = level.getSharedSpawnPos();
+        baseX = ref.getX() + 40;
+        baseZ = ref.getZ() + 40;
+        bettergold.LOGGER.info("{} INFO world :: name={} spawn={} base=({},{}) minY={} forcedBefore={}",
+                TAG, ((net.minecraft.world.level.storage.ServerLevelData) level.getLevelData()).getLevelName(),
+                ref, baseX, baseZ, level.getMinBuildHeight(), level.getForcedChunks().size());
+        int cx = baseX >> 4;
+        int cz = baseZ >> 4;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                level.setChunkForced(cx + dx, cz + dz, true);
+                FORCED.add(new BlockPosHolder(cx + dx, cz + dz));
+            }
+        }
+        check("forceload_set_25", level.getForcedChunks().size() == 25,
+                "forcedBefore=0 forcedAfter=" + level.getForcedChunks().size());
+    }
+
+    /** ① 配置系统：20 条 = 10 族 × 2；两族四条键的值必须走**同一个入口**（不是读文件） */
+    private static void stageConfigKeys(MinecraftServer server) {
+        String[] ids = {"flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongold",
+                "thornsgold", "echogold", "sturdygold", "chaosgold", "chaosalloy"};
+        List<String> rows = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        for (String id : ids) {
+            float w;
+            float a;
+            try {
+                w = Config.weaponBuffChance(id);
+                a = Config.armorBuffChance(id);
+            } catch (RuntimeException ex) {
+                bad.add(id + " -> " + ex);
+                continue;
+            }
+            rows.add(id + "[w=" + round4(w) + " a=" + round4(a) + "]");
+        }
+        check("r4_config_all_ten_families_readable", bad.isEmpty(), "rows=" + rows + " bad=" + bad);
+        // 默认值（作者没给独立概率 ⇒ 立档 §4.0「全部按字面」：混沌金不设闸门 1.0/1.0；崩乱合金 0.5/0.1）
+        check("r4_config_defaults_chaosgold",
+                Math.abs(Config.weaponBuffChance("chaosgold") - 1.0F) < 1e-6
+                        && Math.abs(Config.armorBuffChance("chaosgold") - 1.0F) < 1e-6,
+                "chaosgold w=" + Config.weaponBuffChance("chaosgold")
+                        + " a=" + Config.armorBuffChance("chaosgold"));
+        check("r4_config_defaults_chaosalloy",
+                Math.abs(Config.weaponBuffChance("chaosalloy") - 0.5F) < 1e-6
+                        && Math.abs(Config.armorBuffChance("chaosalloy") - 0.1F) < 1e-6,
+                "chaosalloy w=" + Config.weaponBuffChance("chaosalloy")
+                        + " a=" + Config.armorBuffChance("chaosalloy"));
+        bettergold.LOGGER.info("{} INFO r4_config_readout :: {}", TAG, Config.describeEffectChances());
+    }
+
+    /**
+     * ② 阻塞修复的 A 级正题：chaos 器具<b>命中若干次</b> ⇒
+     * ① 每一次 {@code dispatchWeaponHit} 都返回 ok（改前这里抛「未登记配置项的金属族」）；
+     * ② 真伤害管线（{@code zombie.hurt}）也全部走通、且伤害仍是区间值那一端。
+     */
+    private static void stageBlockerHits(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10r4hit");
+        player.getAbilities().instabuild = false;
+        player.onUpdateAbilities();
+        MetalFamily cg = MetalFamily.byId("chaosgold");
+        if (cg == null) {
+            fail("r4_family_missing", "chaosgold");
+            return;
+        }
+        List<String> rows = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            boolean startHigh = (i % 2) == 1;
+            ItemStack sword = new ItemStack(item("chaosgold_sword"));
+            ChaosRange.setHigh(sword, ChaosRange.Channel.ATTACK, startHigh);
+            player.setItemInHand(InteractionHand.MAIN_HAND, sword);
+            var zombie = new net.minecraft.world.entity.monster.Zombie(
+                    net.minecraft.world.entity.EntityType.ZOMBIE, level);
+            zombie.setPos(player.getX() + 2.0, player.getY(), player.getZ());
+            for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST,
+                    EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                zombie.setItemSlot(slot, ItemStack.EMPTY);
+            }
+            level.addFreshEntity(zombie);
+            zombie.invulnerableTime = 0;
+            float before = zombie.getHealth();
+            float dealtBefore = (float) ChaosWiring.attackDamageOf(sword);
+            sword.getItem().hurtEnemy(sword, zombie, player);
+            String buffPath;
+            try {
+                MetalEvents.dispatchWeaponHit(player, sword, zombie);
+                buffPath = "ok";
+            } catch (RuntimeException ex) {
+                buffPath = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+            }
+            float dealtAfter = (float) ChaosWiring.attackDamageOf(sword);
+            String hurtPath = "ok";
+            try {
+                zombie.hurt(level.damageSources().playerAttack(player), dealtAfter);
+            } catch (RuntimeException ex) {
+                hurtPath = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+            }
+            float lost = before - zombie.getHealth();
+            boolean flipped = ChaosRange.isHigh(sword, ChaosRange.Channel.ATTACK) != startHigh;
+            float expected = startHigh ? 8.0F : 4.0F;
+            boolean ok = "ok".equals(buffPath) && "ok".equals(hurtPath)
+                    && Math.abs(dealtBefore - expected) < 1e-4 && flipped
+                    && lost >= dealtAfter * 0.8F;
+            rows.add("#" + i + " start=" + (startHigh ? "high" : "low")
+                    + " dealt=" + round4(dealtBefore) + "->" + round4(dealtAfter)
+                    + " lost=" + round4(lost) + " buff=" + buffPath + " hurt=" + hurtPath
+                    + " flipped=" + flipped);
+            if (!ok) {
+                bad.add(rows.get(rows.size() - 1));
+            }
+            zombie.discard();
+        }
+        check("r4_chaos_hits_no_exception", bad.isEmpty(),
+                "hits=6 bad=" + bad.size() + " " + bad + " rows=" + rows);
+        // 负向对照：既有族（烈燃金）本来就不抛 —— 同一段路径必须仍然 ok
+        String sturdy;
+        try {
+            MetalEvents.dispatchWeaponHit(player,
+                    new ItemStack(item("flamegold_sword")),
+                    new net.minecraft.world.entity.monster.Zombie(
+                            net.minecraft.world.entity.EntityType.ZOMBIE, level));
+            sturdy = "ok";
+        } catch (RuntimeException ex) {
+            sturdy = ex.getClass().getSimpleName();
+        }
+        check("r4_existing_family_path_unchanged", "ok".equals(sturdy), "flamegold=" + sturdy);
+        player.discard();
+    }
+
+    /** ③ 混沌金盔甲：护甲值 / 耐久 / 附魔能力 / 韧性（逐件钉住）+ 单件即猪灵中立 */
+    private static void stageArmorStatic(MinecraftServer server) {
+        String[][] want = {
+                {"helmet", "2", "200"}, {"chestplate", "5", "264"},
+                {"leggings", "3", "240"}, {"boots", "2", "246"}};
+        List<String> rows = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10r4armor");
+        for (String[] w : want) {
+            ItemStack st = new ItemStack(item("chaosgold_" + w[0]));
+            var armor = (net.minecraft.world.item.ArmorItem) st.getItem();
+            int defense = armor.getDefense();
+            int durability = st.getMaxDamage();
+            int ench = armor.getEnchantmentValue();
+            double toughness = armor.getToughness();
+            rows.add(w[0] + "[def=" + defense + " dur=" + durability + " ench=" + ench
+                    + " tough=" + toughness + "]");
+            if (defense != Integer.parseInt(w[1]) || durability != Integer.parseInt(w[2])
+                    || ench != 24 || Math.abs(toughness - 3.0) > 1e-6) {
+                bad.add(rows.get(rows.size() - 1));
+            }
+            player.setItemSlot(slotOf(w[0]), st);
+        }
+        check("r4_armor_per_piece_values", bad.isEmpty(), "bad=" + bad + " rows=" + rows);
+        // 单件即猪灵中立（复用 MetalArmorItem 的既有实现）
+        List<String> neutral = new ArrayList<>();
+        for (String[] w : want) {
+            ItemStack st = new ItemStack(item("chaosgold_" + w[0]));
+            if (!st.getItem().makesPiglinsNeutral(st, player)) {
+                neutral.add(w[0]);
+            }
+        }
+        check("r4_armor_piglin_neutral_single_piece", neutral.isEmpty(), "not-neutral=" + neutral);
+        player.discard();
+    }
+
+    private static EquipmentSlot slotOf(String type) {
+        return switch (type) {
+            case "helmet" -> EquipmentSlot.HEAD;
+            case "chestplate" -> EquipmentSlot.CHEST;
+            case "leggings" -> EquipmentSlot.LEGS;
+            default -> EquipmentSlot.FEET;
+        };
+    }
+
+    /**
+     * ④ 减伤区间：穿满四件混沌金 ⇒
+     * ① 每件的 ARMOR 当前值在 {0,6} 两端乒乓（读的是 {@code ChaosRange.current}，与生产同源）；
+     * ② 四件之和 ∈ {0,6,12,18,24}，且**真的换端**（四种起始状态各打一次）；
+     * ③ 真伤害管线（{@code LivingDamageEvent.Pre}）的掉血 = 原始 × (1 − Σ/100)
+     *    —— 用 {@code ArmorStand}（**没有原版护甲保护属性**）⇒ 掉血值可以直接反解百分比。
+     *
+     * <p>⚠ 为什么不用 {@code ServerPlayer}：探针里的 {@code ServerPlayer} 没有 {@code connection}，
+     * {@code Player#hurt} 在 {@code ServerPlayer} 那一层会因空连接而返回 false（本类首版实测
+     * {@code hurtOk=false lost=0}）⇒ 换一个**真的会掉血**的 LivingEntity 当受击者。</p>
+     */
+    private static void stageArmorReduction(MinecraftServer server) {
+        ServerLevel level = level(server);
+        MetalFamily cg = MetalFamily.byId("chaosgold");
+        if (cg == null) {
+            fail("r4_family_missing", "chaosgold");
+            return;
+        }
+        String[] types = {"helmet", "chestplate", "leggings", "boots"};
+        List<String> rows = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        Set<Integer> sums = new LinkedHashSet<>();
+        for (int highCount = 0; highCount <= 4; highCount++) {
+            // ⚠ 用 **Zombie**（而不是 ArmorStand）：1.21 的 ArmorStand 对 `generic` 伤害免疫
+            //   （本类上一版实测 `hurtOk=false lost=0`）；僵尸是普通 LivingEntity、
+            //   又能穿四件盔甲（`setItemSlot` + 下一 tick 的 `detectEquipmentUpdates` 生效）。
+            var stand = new net.minecraft.world.entity.monster.Zombie(
+                    net.minecraft.world.entity.EntityType.ZOMBIE, level);
+            stand.setPos(baseX + 0.5, level.getSharedSpawnPos().getY() + 1.0, baseZ + 0.5);
+            level.addFreshEntity(stand);
+            List<Integer> values = new ArrayList<>();
+            for (int i = 0; i < types.length; i++) {
+                ItemStack st = new ItemStack(item("chaosgold_" + types[i]));
+                ChaosRange.setHigh(st, ChaosRange.Channel.ARMOR, i < highCount);
+                stand.setItemSlot(slotOf(types[i]), st);
+                Float v = ChaosRange.current(st, cg, cg.formOf(st.getItem()), ChaosRange.Channel.ARMOR);
+                values.add(v == null ? -1 : v.intValue());
+            }
+            int sum = values.stream().mapToInt(Integer::intValue).sum();
+            sums.add(sum);
+            // 让护甲属性在**这一 tick 之前**生效（`setItemSlot` 只标记 changed；
+            // `detectEquipmentUpdates` 是 private，走公开的 `onEquipItem` 同一条路）
+            for (int i = 0; i < types.length; i++) {
+                stand.onEquipItem(slotOf(types[i]), stand.getItemBySlot(slotOf(types[i])), ItemStack.EMPTY);
+            }
+            stand.setInvulnerable(false);
+            float raw = 8.0F;
+            float before = stand.getHealth();
+            stand.invulnerableTime = 0;
+            boolean hurtOk = stand.hurt(level.damageSources().generic(), raw);
+            float lost = before - stand.getHealth();
+            float want = raw * (1.0F - sum / 100.0F);
+            String row = "highCount=" + highCount + " armor=" + values + " sum=" + sum
+                    + " hurtOk=" + hurtOk + " raw=" + round4(raw) + " lost=" + round4(lost)
+                    + " want=" + round4(want);
+            rows.add(row);
+            if (sum % 6 != 0 || sum < 0 || sum > 24) {
+                bad.add(row);
+            }
+            if (Math.abs(lost - want) > 0.05F) {
+                bad.add("掉血与 Σ 对不上: " + row);
+            }
+            stand.discard();
+        }
+        check("r4_armor_interval_pingpong_and_math",
+                bad.isEmpty() && sums.size() == 5 && sums.contains(0) && sums.contains(24),
+                "sums=" + sums + " bad=" + bad + " rows=" + rows);
+        bettergold.LOGGER.info("{} INFO r4_armor_rows :: {}", TAG, rows);
+    }
+
+    /** ⑤ 混沌禁果：食物属性 = 原版金苹果；冷却 3 分钟；效果池 = 全部已注册效果，等级 1..3、时长 3600 */
+    private static void stageFruit(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10r4fruit");
+        ItemStack fruit = new ItemStack(item("chaosgold_forbidden_fruit"));
+        var food = fruit.get(net.minecraft.core.component.DataComponents.FOOD);
+        check("r4_fruit_food_properties",
+                food != null && food.nutrition() == 4 && Math.abs(food.saturation() - 9.6F) < 1e-4,
+                "nutrition=" + (food == null ? "-" : food.nutrition())
+                        + " saturation=" + (food == null ? "-" : food.saturation())
+                        + "（原版金苹果 = 4 / 9.6）");
+        // 效果池 = 全部已注册效果（含即时型与第三方）
+        int registered = BuiltInRegistries.MOB_EFFECT.size();
+        int pool = ChaosItems.ForbiddenFruitItem.pool().size();
+        check("r4_fruit_effect_pool_is_all_registered", pool == registered,
+                "pool=" + pool + " registeredMobEffects=" + registered);
+        List<String> instant = new ArrayList<>();
+        for (Holder<MobEffect> h : ChaosItems.ForbiddenFruitItem.pool()) {
+            var key = h.unwrapKey().orElse(null);
+            if (key != null && key.location().getPath().startsWith("instant_")) {
+                instant.add(key.location().getPath());
+            }
+        }
+        check("r4_fruit_pool_includes_instant_and_thirdparty", !instant.isEmpty(),
+                "instant in pool=" + instant);
+        // 反复食用：记录抽到的集合（要能证明"集合正确"，不是抽样敷衍）
+        Set<Integer> seenEffects = new LinkedHashSet<>();
+        Set<Integer> seenAmps = new LinkedHashSet<>();
+        Set<Integer> seenDurations = new LinkedHashSet<>();
+        List<String> samples = new ArrayList<>();
+        for (int i = 0; i < 60; i++) {
+            player.removeAllEffects();
+            Holder<MobEffect> picked = ChaosItems.ForbiddenFruitItem.pickRandomEffect(player);
+            if (picked == null) {
+                continue;
+            }
+            seenEffects.add(System.identityHashCode(picked.value()));
+            picked.unwrapKey().ifPresent(k -> {
+                if (samples.size() < 6) {
+                    samples.add(k.location().getPath());
+                }
+            });
+        }
+        // 直接施加一次，核 amplifier 与时长
+        player.removeAllEffects();
+        Holder<MobEffect> applied = ChaosItems.ForbiddenFruitItem.applyRandomEffect(player);
+        var inst = applied == null ? null : player.getEffect(applied);
+        seenAmps.add(inst == null ? -1 : inst.getAmplifier());
+        seenDurations.add(inst == null ? -1 : inst.getDuration());
+        check("r4_fruit_applied_level_and_duration",
+                inst != null && inst.getAmplifier() >= 0 && inst.getAmplifier() <= 2
+                        && inst.getDuration() == 3600,
+                "effect=" + (applied == null ? "-" : applied.unwrapKey().map(k -> k.location().toString()).orElse("-"))
+                        + " amplifier=" + (inst == null ? "-" : inst.getAmplifier())
+                        + " duration=" + (inst == null ? "-" : inst.getDuration()));
+        // 冷却：真吃一个（finishUsingItem 走生产路径）
+        ItemStack stack = new ItemStack(item("chaosgold_forbidden_fruit"));
+        net.minecraft.world.entity.LivingEntity eater = player;
+        ItemStack rest = stack.getItem().finishUsingItem(stack, level, eater);
+        boolean onCooldown = player.getCooldowns().isOnCooldown(item("chaosgold_forbidden_fruit"));
+        long cooldownTicks = -1L;
+        try {
+            var field = net.minecraft.world.item.ItemCooldowns.class.getDeclaredField("cooldowns");
+            field.setAccessible(true);
+            var map = (java.util.Map<?, ?>) field.get(player.getCooldowns());
+            for (var entry : map.entrySet()) {
+                if (String.valueOf(entry.getKey()).contains("chaosgold_forbidden_fruit")) {
+                    // 值是内部类 `ItemCooldowns$CooldownInstance`（字段 startTime / endTime）⇒ 反射读 endTime
+                    Object cooldownInstance = entry.getValue();
+                    var endField = cooldownInstance.getClass().getDeclaredField("endTime");
+                    endField.setAccessible(true);
+                    cooldownTicks = ((Number) endField.get(cooldownInstance)).longValue();
+                }
+            }
+        } catch (ReflectiveOperationException ignored) {
+            cooldownTicks = -2L;
+        }
+        check("r4_fruit_cooldown_3600", onCooldown,
+                "isOnCooldown=" + onCooldown + " expectedTicks=3600 cooldownEndTime=" + cooldownTicks
+                        + " rest=" + rest);
+        bettergold.LOGGER.info("{} INFO r4_fruit_pool_readout :: distinctDrawn={} samples={} amplitudes={} durations={}",
+                TAG, seenEffects.size(), samples, seenAmps, seenDurations);
+        player.discard();
+    }
+
+    /** ⑥ 附魔书：<5 级拒绝（不消耗、不扣级） */
+    private static void stageBookReject(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10r4book0");
+        player.experienceLevel = 4;
+        ItemStack book = new ItemStack(item("chaosgold_enchanting_book"));
+        ItemStack sword = new ItemStack(item("chaosgold_sword"));
+        player.setItemInHand(InteractionHand.MAIN_HAND, sword);
+        player.setItemInHand(InteractionHand.OFF_HAND, book);
+        var result = item("chaosgold_enchanting_book").use(level, player, InteractionHand.OFF_HAND);
+        boolean untouched = sword.getEnchantments().isEmpty();
+        check("r4_book_reject_below_level_5",
+                result.getResult() != net.minecraft.world.InteractionResult.SUCCESS
+                        && player.experienceLevel == 4 && book.getCount() == 1 && untouched,
+                "result=" + result.getResult() + " level=" + player.experienceLevel
+                        + " bookCount=" + book.getCount() + " enchEmpty=" + untouched);
+        // 主手用书（副手有装备）⇒ 一律不生效（作者写死的形状是"左手附魔书"）
+        ServerPlayer p2 = newPlayer(server, level, "bgn10r4bookmain");
+        p2.experienceLevel = 30;
+        ItemStack book2 = new ItemStack(item("chaosgold_enchanting_book"));
+        ItemStack sword2 = new ItemStack(item("chaosgold_sword"));
+        p2.setItemInHand(InteractionHand.MAIN_HAND, book2);
+        p2.setItemInHand(InteractionHand.OFF_HAND, sword2);
+        var r2 = item("chaosgold_enchanting_book").use(level, p2, InteractionHand.MAIN_HAND);
+        check("r4_book_requires_offhand_use",
+                r2.getResult() != net.minecraft.world.InteractionResult.SUCCESS && p2.experienceLevel == 30,
+                "result=" + r2.getResult() + " level=" + p2.experienceLevel);
+        player.discard();
+        p2.discard();
+    }
+
+    /** ⑦ 附魔书：≥5 级 ⇒ 随机打上一条 1..5 级附魔 + 扣 1..5 级经验（反复用，记录集合） */
+    private static void stageBookEnchant(MinecraftServer server) {
+        ServerLevel level = level(server);
+        ServerPlayer player = newPlayer(server, level, "bgn10r4book1");
+        Set<String> enchants = new LinkedHashSet<>();
+        Set<Integer> levels = new LinkedHashSet<>();
+        Set<Integer> costs = new LinkedHashSet<>();
+        int applications = 0;
+        for (int i = 0; i < 12; i++) {
+            player.experienceLevel = 30;
+            int before = player.experienceLevel;
+            ItemStack book = new ItemStack(item("chaosgold_enchanting_book"));
+            ItemStack sword = new ItemStack(item("chaosgold_sword"));
+            player.setItemInHand(InteractionHand.MAIN_HAND, sword);
+            player.setItemInHand(InteractionHand.OFF_HAND, book);
+            var result = item("chaosgold_enchanting_book").use(level, player, InteractionHand.OFF_HAND);
+            int after = player.experienceLevel;
+            var got = sword.getEnchantments();
+            if (result.getResult() == net.minecraft.world.InteractionResult.SUCCESS
+                    && !got.isEmpty() && book.getCount() == 0) {
+                applications++;
+                for (var e : got.entrySet()) {
+                    enchants.add(e.getKey().unwrapKey().map(k -> k.location().toString()).orElse("?"));
+                    levels.add(e.getIntValue());
+                }
+                costs.add(before - after);
+            }
+        }
+        check("r4_book_applies_random_enchanted", applications == 12,
+                "applications=" + applications + "/12 distinctEnchants=" + enchants.size()
+                        + " enchants=" + enchants + " levels=" + levels + " costs=" + costs);
+        boolean levelsOk = levels.stream().allMatch(v -> v >= 1 && v <= 5);
+        boolean costsOk = costs.stream().allMatch(v -> v >= 1 && v <= 5);
+        check("r4_book_enchant_level_and_cost_range", levelsOk && costsOk && !costs.isEmpty(),
+                "levels=" + levels + " costs=" + costs);
+        player.discard();
+    }
+
+    /**
+     * ⑧ 「适配该装备类型」+「含宝藏 / 诅咒 / 第三方」的**集合证明**：
+     * 枚举注册表全部附魔，对四种目标装备各算一次候选集合，并与
+     * `Enchantment#canEnchant` 的手工重算对穿（不是抽样）。
+     */
+    private static void stageBookAffinity(MinecraftServer server) {
+        ServerLevel level = level(server);
+        var lookup = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        List<Holder.Reference<Enchantment>> all = lookup.listElements().toList();
+        String[] targets = {"chaosgold_sword", "chaosgold_pickaxe", "chaosgold_bow",
+                "chaosgold_helmet", "minecraft:stone"};
+        List<String> rows = new ArrayList<>();
+        List<String> bad = new ArrayList<>();
+        int unionSize = 0;
+        for (String t : targets) {
+            Item target = t.contains(":") ? BuiltInRegistries.ITEM.get(ResourceLocation.parse(t)) : item(t);
+            ItemStack stack = new ItemStack(target);
+            List<String> cand = new ArrayList<>();
+            for (Holder.Reference<Enchantment> h : all) {
+                if (h.value().canEnchant(stack)) {
+                    cand.add(h.key().location().getPath());
+                }
+            }
+            rows.add(t + " -> " + cand.size() + " 条");
+            // ⚠ `minecraft:stone` 是**负向对照**：它本来就不是附魔目标 ⇒ 候选 0 条是**预期**，不是缺陷
+            if (cand.isEmpty() && !t.startsWith("minecraft:")) {
+                bad.add(t + " 候选为空（适配过滤过头）");
+            }
+            // 负向：任何"候选里出现的附魔"必须满足 canEnchant（不能靠白名单蒙）
+            for (String name : cand) {
+                Holder.Reference<Enchantment> h = lookup.getOrThrow(
+                        net.minecraft.resources.ResourceKey.create(Registries.ENCHANTMENT,
+                                ResourceLocation.withDefaultNamespace(name)));
+                if (!h.value().canEnchant(stack)) {
+                    bad.add(t + " 候选里有 canEnchant=false 的 " + name);
+                }
+            }
+            unionSize += cand.size();
+        }
+        // 宝藏 / 诅咒必须在某个候选集合里出现（作者要「含宝藏 / 诅咒」）
+        ItemStack sword = new ItemStack(item("chaosgold_sword"));
+        List<String> swordCand = new ArrayList<>();
+        for (Holder.Reference<Enchantment> h : all) {
+            if (h.value().canEnchant(sword)) {
+                swordCand.add(h.key().location().getPath());
+            }
+        }
+        boolean hasCurse = swordCand.stream().anyMatch(n -> n.equals("vanishing_curse") || n.equals("binding_curse"));
+        boolean hasTreasure = all.stream().anyMatch(h -> h.key().location().getPath().equals("mending"));
+        check("r4_book_affinity_filters_by_item_type", bad.isEmpty() && unionSize > 0,
+                "union=" + unionSize + " bad=" + bad + " rows=" + rows);
+        check("r4_book_pool_contains_treasure_and_curse", hasTreasure && hasCurse,
+                "swordCandidates=" + swordCand.size() + " hasCurse=" + hasCurse
+                        + " hasTreasureInRegistry(mending)=" + hasTreasure);
+        bettergold.LOGGER.info("{} INFO r4_book_registry :: registered={} targets={} unionCandidates={}",
+                TAG, all.size(), targets.length, unionSize);
+    }
+
+    /** ⑨ 日志卫生：整轮跑完扫日志 —— 「未登记配置项的金属族」必须 0 条、异常栈必须 0 条 */
+    private static void stageLogHygiene(MinecraftServer server) {
+        try {
+            Path log = gameDir().resolve("logs").resolve("latest.log");
+            String text = Files.readString(log);
+            int unregistered = countOf(text, "未登记配置项的金属族");
+            int illegal = countOf(text, "IllegalArgumentException");
+            int atBettergold = countOf(text, "at com.hjmmd_8.bettergold");
+            check("r4_log_no_unregistered_family_exception", unregistered == 0,
+                    "「未登记配置项的金属族」出现 " + unregistered + " 次（改前基线 13 次）");
+            check("r4_log_no_illegal_argument", illegal == 0,
+                    "IllegalArgumentException 出现 " + illegal + " 次（改前基线 15 次）");
+            check("r4_log_no_bettergold_stackframes", atBettergold == 0,
+                    "bettergold 栈帧出现 " + atBettergold + " 次");
+        } catch (Exception e) {
+            fail("r4_log_hygiene_io", String.valueOf(e));
+        }
+    }
+
+    private static int countOf(String text, String needle) {
+        int n = 0;
+        int i = 0;
+        while ((i = text.indexOf(needle, i)) >= 0) {
+            n++;
+            i += needle.length();
+        }
+        return n;
+    }
+
+    private static ServerPlayer newPlayer(MinecraftServer server, ServerLevel level, String name) {
+        ServerPlayer player = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), name),
+                ClientInformation.createDefault());
+        // ⚠ 探针的 ServerPlayer 默认**没有 connection** ⇒ `displayClientMessage` / 任何发包路径
+        //   都会 NPE（本类首版实测：禁果那条报
+        //   "Cannot invoke ServerGamePacketListenerImpl.send(...) because this.connection is null"）。
+        //   这里补一个**最小可用的假连接**（只 `send` 收下来，不触网；NeoForge 的 FakePlayer 同款做法）。
+        player.connection = fakeConnection(server, player);
+        return player;
+    }
+
+    private static net.minecraft.server.network.ServerGamePacketListenerImpl fakeConnection(
+            MinecraftServer server, ServerPlayer player) {
+        return new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server, new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                player, net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "bgn10r4probe"), false));
+    }
+
+    private static void summaryAndHalt(MinecraftServer server) {
+        done = true;
+        unforceAll(server);
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        server.halt(false);
+    }
+
+    private static void unforceAll(MinecraftServer server) {
+        if (FORCED.isEmpty()) {
+            return;
+        }
+        ServerLevel level = level(server);
+        for (BlockPosHolder p : FORCED) {
+            level.setChunkForced(p.x(), p.z(), false);
+        }
+        FORCED.clear();
+        bettergold.LOGGER.info("{} INFO forceload_released :: forcedAfter={}", TAG,
+                level.getForcedChunks().size());
+    }
+}

@@ -240,6 +240,23 @@ public final class AllMetals {
         spec.durability = 426;
         spec.enchantmentValue = 24;
         spec.incorrectForDrops = BlockTags.INCORRECT_FOR_IRON_TOOL;   // 作者：挖掘等级「铁」
+        // ---------- 轮4：混沌金盔甲（作者逐件给的数 + 衰减区间）----------
+        // 作者（立档 §2.5 / 父代理派单）：附魔能力 **24**、盔甲韧性 **3**、
+        //   「穿戴单件即可猪灵中立」（由 MetalArmorItem 自动继承，零新增代码）；
+        //   护甲值 / 耐久：头盔 2/200、胸甲 5/264、护腿 3/240、靴子 2/246。
+        // ⚠ 数组顺序是 **靴 / 腿 / 胸 / 头**（与既有 8 族的 armorDefense 同序），别按"头盔在前"填。
+        spec.armorDefense = new int[] { 2, 3, 5, 2 };        // 靴 / 腿 / 胸 / 头
+        spec.armorDurability = new int[] { 246, 240, 264, 200 };   // 靴 / 腿 / 胸 / 头
+        spec.armorEnchantmentValue = 24;
+        spec.armorToughness = 3.0F;
+        // 击退抗性作者没给 ⇒ 走 `Spec` 默认 15%（立档 D8 的"照抄默认"口径，已在规格里记账）。
+        // 减伤：单件 0%..6%（区间值、乒乓、触发点 = 受到伤害），四件之和 = 0%..24%
+        //   —— 通道 `Channel.ARMOR` 在轮3 就预留好了，这里是它的**第一个消费者**（接线在 MetalEvents#onDamagePre）。
+        // ⚠ `chaosRange(...)` 是 **Spec 的 void 方法**（不是 builder 链）⇒ 必须像上面伤害那批一样**独立成句**。
+        spec.chaosRange(MetalFamily.Form.HELMET, ChaosRange.Channel.ARMOR, 0, 6);
+        spec.chaosRange(MetalFamily.Form.CHESTPLATE, ChaosRange.Channel.ARMOR, 0, 6);
+        spec.chaosRange(MetalFamily.Form.LEGGINGS, ChaosRange.Channel.ARMOR, 0, 6);
+        spec.chaosRange(MetalFamily.Form.BOOTS, ChaosRange.Channel.ARMOR, 0, 6);
         // ⚠ 挖掘速度本体只有一个数（Tier 是按族共享的），而作者要的是**区间 2..12** ⇒
         //   注册时取**区间上端**（12.0F）当基准，运行期由 ChaosWiring#onBreakSpeed
         //   补「当前值 − 上端」的差值（按物品栈、每次挖掘读一次）—— 见轮3 §12 的接线说明。

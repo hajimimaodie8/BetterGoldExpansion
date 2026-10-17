@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LIL",
+    "IBI",
+    "SIS"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "I": {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    "B": {
+      "item": "minecraft:book"
+    },
+    "S": {
+      "item": "bettergold:chaos_coin_string"
+    }
+  },
+  "result": {
+    "id": "bettergold:chaosgold_enchanting_book",
+    "count": 1
+  }
+}

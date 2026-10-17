@@ -1763,6 +1763,80 @@ public final class MetalEvents {
             if (applies) {
                 event.setNewDamage(event.getNewDamage() * (1.0F - Math.min(pieces, 4) * 0.25F));
             }
+            // ---------- 1.7 bg-n10r4（轮4）：混沌金盔甲的「区间值减伤」 ----------
+            // 作者（立档 §2.5 / §4.0 ⑦a）：「每一单件可以提供**最低到 0% 和 6%** 的减伤」，
+            //   裁定 = 与挖掘/伤害**同一套**区间机制（两端乒乓）、全套 = **四件之和**（6 × 4 = 24 算术自洽）。
+            // 口径（照字面，不许再解释）：
+            //   · 触发点 = **受到伤害**（`LivingDamageEvent.Pre`；`Channel.ARMOR` 的 `Trigger.ARMOR_HURT`）；
+            //   · **每件独立翻转**（四件是四个物品栈、各有自己的 `bettergold:chaos_range_flip` 位掩码）
+            //     ⇒ 本次生效的减伤 = 四件**当前值之和**（0 / 6 / 12 / 18 / 24 里由各件状态决定）；
+            //     翻转发生在**结算之后**（与"先取当前值、再翻"同构：第一次命中用旧值，下一次换另一端）；
+            //   · 只对**声明了 ARMOR 通道**的族生效 ⇒ 既有 8 族 / 原版盔甲一个字节都不改（第一句就是 continue）。
+            // ⚠ 这里**没有任何区间公式**（只调 `ChaosRange.current`）—— 公式本体仍只在 `ChaosRange.pingPong`，
+            //   关卡 `[bgn10-chaos-wiring]` / `[bgn10r4-armor-wiring]` 钉住这一点。
+            if (armorIntervalFamily(family)) {
+                event.setNewDamage(event.getNewDamage() * (1.0F - chaosArmorReduction(entity, family)));
+                flipChaosArmor(entity, family);
+            }
+        }
+    }
+
+    /**
+     * 这一族有没有「区间值减伤」（= 声明了 {@code Channel.ARMOR} 的任何一档；现行只有混沌金）。
+     *
+     * <p>⚠ 必须查 {@link MetalFamily#allChaosRanges()}（通道级 **+ 按形态细分**）而不是
+     * {@code range(Channel.ARMOR)}：混沌金的减伤是**逐件**声明的
+     * （{@code chaosRange(Form.HELMET/CHESTPLATE/LEGGINGS/BOOTS, ARMOR, 0, 6)}），
+     * 通道级那张表里**没有** ARMOR ⇒ 只查通道级会恒为 false、整条区间减伤静默失效（轮4 实测过这个形状）。</p>
+     */
+    private static boolean armorIntervalFamily(MetalFamily family) {
+        return family.allChaosRanges().keySet().stream()
+                .anyMatch(k -> k.endsWith(":" + ChaosRange.Channel.ARMOR.name()));
+    }
+
+    /**
+     * 混沌金这一套的**本次减伤比例**（0.0 ~ 0.24）：四件盔甲各读一次"当前值"（百分数）之后求和。
+     *
+     * <p>四个部位用 {@link MetalFamily.Form} 的伪形态（{@code HELMET / CHESTPLATE / LEGGINGS / BOOTS}）
+     * 定位到**这一件自己的**区间 —— 所以必须先把 {@code formOf} 补齐（轮4 已补）。</p>
+     *
+     * <p>⚠ 本方法**只读**；翻转由调用方在结算之后做（见 {@link #flipChaosArmor}）。</p>
+     */
+    private static float chaosArmorReduction(net.minecraft.world.entity.LivingEntity entity, MetalFamily family) {
+        float total = 0.0F;
+        for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET }) {
+            net.minecraft.world.item.ItemStack worn = entity.getItemBySlot(slot);
+            if (worn.isEmpty()) {
+                continue;
+            }
+            Float percent = ChaosRange.current(worn, family, family.formOf(worn.getItem()), ChaosRange.Channel.ARMOR);
+            if (percent != null) {
+                total += percent / 100.0F;
+            }
+        }
+        return total;
+    }
+
+    /**
+     * 结算之后把四件盔甲的 {@code Channel.ARMOR} 各翻转一次（乒乓）。
+     *
+     * <p>放在 {@code LivingDamageEvent.Pre} 的**同一次事件末尾**、且**只翻确实声明了该通道的那一件**
+     * （`ChaosRange.current(...) == null` ⇒ 不翻）—— 原版盔甲 / 既有 8 族盔甲一个字节都不写。</p>
+     */
+    private static void flipChaosArmor(net.minecraft.world.entity.LivingEntity entity, MetalFamily family) {
+        for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET }) {
+            net.minecraft.world.item.ItemStack worn = entity.getItemBySlot(slot);
+            if (worn.isEmpty()) {
+                continue;
+            }
+            if (ChaosRange.current(worn, family, family.formOf(worn.getItem()),
+                    ChaosRange.Channel.ARMOR) != null) {
+                ChaosRange.toggle(worn, ChaosRange.Channel.ARMOR);
+            }
         }
     }
 

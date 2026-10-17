@@ -1,0 +1,29 @@
+1.7 bg-n10r4 轮4 扰动矩阵（关卡 = tools/asset-generator/validate_metal_data.py）
+= 契约：0 绿 / 1 有问题 / 2 前置坏；每条用例改 → 跑 → **逐字节复原 + SHA256 自证**
+
+用例                         改动                                             exit  问题合计     红出来的断言 id
+----------------------------------------------------------------------------------------------------------------------------------
+0 基线（不改）                   什么都不改                                          0     0        —
+1 只加一行注释                   Config.java 加一行注释（应仍 0）                        0     0        —
+2 删 chaosgold 的 weapon case 删 case chaosgold（期望 [bgn10r4-config-every-family] + 计数断言红） 1     2        bgn10r4-config-every-family, bgfix-config-case-count
+3 护甲值改错                    头盔护甲值 2 → 3                                    1     1        bgn10r4-chaosgold-armor
+4 减伤区间改一端                  HELMET 的 ARMOR 区间 6 → 5                        1     1        bgn10r4-chaosgold-armor
+5 删 ARMOR 翻转               删 flipChaosArmor 里的 toggle（期望接线断言红）            1     1        bgn10r4-armor-wiring
+6 禁果配方少一锭                  删掉一个混沌金锭 ingredient（期望配方计数断言红）                 1     1        bgn10r4-forbidden-fruit
+7 附魔书摆位改错                  3×3 第一行 LIL → LLL                              1     2        bgn10r4-enchanting-book
+8 删 zh 物品名                 删 zh 的禁果物品名（期望 keyset / 冻结 SHA / 本轮语言键断言红）     1     4        bgfix11-lang-k1s-en, bgfix10-lang-keyset, bgn10r4-items-registered
+9 门槛字面被换                   把 `level < 5` 换成 `level <= 4`（语义等价、字面不同）       1     1        bgn10r4-enchanting-book
+
+复原核对（每个用例结束后重算文件 SHA256，与改前逐字节一致才允许写下一行）:
+  用例 0 的 Config.java SHA256 = 125B6BDFA3BD2D7AA2E4D993CB315B3B9CFDE91E67902141CD558737356FF534
+  全部用例复原成功 = True（脚本内 assert，任一失败即整体 abort）
+
+判读：0 基线 0 条；只加注释仍 0 条（说明没有把注释算成改动）；其余 8 条**各自都红**，
+      且红的正是**对应用例**的断言（例 2 → 配置族/计数；例 6 → 禁果配方；例 8 → 语言键三族）。
+
+★ 本轮扰动抓到一个**关卡自身的缺陷**（不是模组缺陷）：用例 4 第一版跑出的是
+  `TypeError: not enough arguments for format string`（exit 2）而不是一条干净的红 ——
+  原因是 `bgn10r4-chaosgold-armor` 那条消息里写了字面量「0% 最高 6%」，`%` 被当成格式符。
+  **已改成 `str.format`**（见 validate_metal_data.py 该处），复跑后用例 4 = exit 1 + 一条明确的问题消息。
+  教训与 `docs/构建与跑测注意事项.md` §七 / ex/03 §3.19.1 同源：**关卡必须能红得出来**，
+  只要它自己会崩，「改前红」的证据就变成「脚本坏了」。

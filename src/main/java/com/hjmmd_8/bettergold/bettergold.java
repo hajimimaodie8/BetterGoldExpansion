@@ -76,6 +76,10 @@ public class bettergold {
         AllItems.ITEMS.register(modEventBus);
         // 新约 1.4：三套新金属（烈燃金 / 巫毒金 / 结雷金）通过 MetalFamily 一次性注册
         com.hjmmd_8.bettergold.material.AllMetals.bootstrap();
+        // 1.7（bg-n10 轮4）：混沌金专属物品 —— 混沌禁果 + 混沌金附魔书（注册进同一张 AllItems.ITEMS）。
+        // 本调用同时兼当"两件物品注册成功 + 禁果抽取池条数"的自证（bootstrap 里打一行日志）。
+        // ⚠ 不要依赖"谁先引用谁"的类初始化顺序 ⇒ 这里显式触发。
+        com.hjmmd_8.bettergold.material.ChaosItems.bootstrap();
         // 新约 1.4：三套金属的专属材料（高燃烈焰棒 / 巫毒羽毛 / 聚紫能晶尘）
         com.hjmmd_8.bettergold.material.MetalSpecialItems.bootstrap();
         // 新约 1.5：5 件「胚底」（纯合成中间物，作者澄清：没有金制系列工具！

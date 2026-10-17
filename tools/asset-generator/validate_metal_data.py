@@ -312,6 +312,12 @@ bg8_problems = []
 GEAR_SLOT_EXPECTED = ["sword", "mace", "trident", "bow", "crossbow",
                       "axe", "pickaxe", "shovel", "hoe",
                       "shield", "helmet", "chestplate", "leggings", "boots"]
+# ⚠ **1.7 bg-n10r4（2026-10-16）就地标注**：作者给过的这 14 件是**前缀**不变量；
+#   1.7 轮4 在末尾**追加**两件混沌金专属物品（禁果 / 附魔书，位次 14/15）——
+#   它们也要进"装备"分区（连同 `chaosgold_helmet` 等一起出现在金属那一段）。
+#   旧口径原文留档：`if len(gear_pairs) != len(GEAR_SLOT_EXPECTED)` + `by_rank != GEAR_SLOT_EXPECTED`（恰好 14 件）。
+GEAR_SLOT_APPENDED = ["forbidden_fruit", "enchanting_book"]
+GEAR_SLOT_WANT = GEAR_SLOT_EXPECTED + GEAR_SLOT_APPENDED
 # §9.1 里被作者"补回来"的那四件：它们必须**在表里**（一表两用，删了会静默掉出装备分区），
 # 而且位次必须落在 弩(crossbow 4) 与 盾(shield 9) 之间 ⇒ 5..8。
 FOUR_TOOLS = ["axe", "pickaxe", "shovel", "hoe"]
@@ -324,15 +330,15 @@ if g_start < 0 or g_end < 0:
     gear_pairs = []
 else:
     gear_pairs = re.findall(r'Map\.entry\("([a-z_]+)",\s*(\d+)\)', creative[g_start:g_end])
-if len(gear_pairs) != len(GEAR_SLOT_EXPECTED):
-    bg8_problems.append(f"GEAR_SLOT 条目数 {len(gear_pairs)} != {len(GEAR_SLOT_EXPECTED)}（反空转守护 / 表被动过）")
+if len(gear_pairs) != len(GEAR_SLOT_WANT):
+    bg8_problems.append(f"GEAR_SLOT 条目数 {len(gear_pairs)} != {len(GEAR_SLOT_WANT)}（反空转守护 / 表被动过）")
 else:
     gear = {name: int(rank) for name, rank in gear_pairs}
     by_rank = [name for name, _ in sorted(gear.items(), key=lambda kv: kv[1])]
-    if by_rank != GEAR_SLOT_EXPECTED:
-        bg8_problems.append(f"GEAR_SLOT 顺序不是 §9.1 最终顺序：{by_rank}")
-    if sorted(gear.values()) != list(range(len(GEAR_SLOT_EXPECTED))):
-        bg8_problems.append(f"GEAR_SLOT 位次不是 0..{len(GEAR_SLOT_EXPECTED) - 1} 各一次：{sorted(gear.values())}")
+    if by_rank != GEAR_SLOT_WANT:
+        bg8_problems.append(f"GEAR_SLOT 顺序不是 §9.1 最终顺序 + 1.7 轮4 的追加两件：{by_rank}")
+    if sorted(gear.values()) != list(range(len(GEAR_SLOT_WANT))):
+        bg8_problems.append(f"GEAR_SLOT 位次不是 0..{len(GEAR_SLOT_WANT) - 1} 各一次：{sorted(gear.values())}")
     # §9.1 的核心：斧镐锹锄在弩之后、盾之前（位次 5..8），而且不许从表里消失
     for item in FOUR_TOOLS:
         if item not in gear:
@@ -2145,19 +2151,52 @@ if "float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;" not
                "音咆的「伤害 = 等级」公式被动了（本条只许改高燃 / 沉淀）")
 
 # ---------- 第 7 条 · 16 条配置项 = 唯一真源 ----------
+# ⚠ **1.7 bg-n10r4（2026-10-16）就地标注**：本节标题里的「16 条 / 8 族」是 **bg-fix 当时**的计数，
+#   本轮两族进入配置系统（父代理裁定：不等轮7/轮9）⇒ **现行 = 10 族 × 2 = 20 条**、键总数 **25 → 29**。
+#   断言 id `[bgfix-config-16-keys]` 的**名字**保留为历史名（旧名不改、旧期望原文留在下面注释里），
+#   判据本身按 20 条走；另新增 `[bgn10r4-config-every-family]` 钉住"每个已注册族都必须有配置项"
+#   —— 这条正是本阻塞（chaos 器具每次命中抛「未登记配置项的金属族」）的**根因**。
+#   旧期望原文留档：`if len(_cfg_keys) != 25:` + "既有 9 + 新增 16"（8 族 × 2）。
 _BGFIX_FAMILIES = ["flamegold", "voodoogold", "thundergold", "indigoseagold",
                    "illusiongold", "thornsgold", "echogold", "sturdygold"]
-_BGFIX_WEAPON_KEYS = {f: f + "WeaponBuffChance" for f in _BGFIX_FAMILIES}
+_BGN10R4_FAMILIES = _BGFIX_FAMILIES + ["chaosgold", "chaosalloy"]
+_BGFIX_WEAPON_KEYS = {f: f + "WeaponBuffChance" for f in _BGN10R4_FAMILIES}
 _BGFIX_WEAPON_KEYS["sturdygold"] = "sturdygoldWeaponAbilityChance"
-_BGFIX_ARMOR_KEYS = {f: f + "ArmorBuffChance" for f in _BGFIX_FAMILIES if f != "sturdygold"}
+_BGFIX_ARMOR_KEYS = {f: f + "ArmorBuffChance" for f in _BGN10R4_FAMILIES if f != "sturdygold"}
 _BGFIX_MULT_KEY = "sturdygoldArmorAbilityIntervalMultiplier"
 _EXISTING_CONFIG_KEYS = ["logDirtBlock", "magicNumber", "magicNumberIntroduction", "items",
                          "goldLootMode", "goldLootItems", "voodooExtractRatio",
                          "voodooFlatPerLevel", "thunderSoundMode"]
 _cfg_keys = re.findall(r'\.define(?:InRange|ListAllowEmpty)?\(\s*"([^"]+)"', _bgfix_cfg)
-if len(_cfg_keys) != 25:
+if len(_cfg_keys) != 29:
     _bgfix_bad("bgfix-config-16-keys",
-               "Config.java 的键总数不是 25（既有 9 + 新增 16；实际 %d: %s）" % (len(_cfg_keys), _cfg_keys))
+               "Config.java 的键总数不是 29（既有 9 + bg-fix 16 + bg-n10r4 4 = 29；实际 %d: %s）"
+               % (len(_cfg_keys), _cfg_keys))
+# ---------- ★ `[bgn10r4-config-every-family]`：每个**已注册族**都必须有对应配置项 ----------
+# 判据：`AllMetals.java` 里 `new MetalFamily.Spec("id", ...)` 的 id 集合
+#   （**从源码反解**，不是拿另一张期望表自比）必须逐个出现在 `Config.java` 的
+#   `weaponBuffChance` / `armorBuffChance` 两个 switch 的 case 字面里。
+# 为什么要有这条：本轮的硬阻塞就是"加了族、忘了补配置项"，而旧断言只数了**总数** 25 ——
+#   它**看不见**"某个族缺 case"（把 chaosgold 的 case 删掉、总数仍然是 29）⇒ 必须逐个族对穿。
+_r4_am_src = strip_comments((JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"))
+_am_spec_ids = sorted(set(re.findall(r'new MetalFamily\.Spec\("([a-z_]+)"', _r4_am_src)))
+if len(_am_spec_ids) != 10:
+    _bgfix_bad("bgn10r4-config-every-family",
+               "AllMetals.java 里反解到的族 id 不是 10 个（实际 %d: %s）—— 反空转守护"
+               % (len(_am_spec_ids), _am_spec_ids))
+_cfg_w_body = method_body(_bgfix_cfg, "public static float weaponBuffChance(")
+_cfg_a_body = method_body(_bgfix_cfg, "public static float armorBuffChance(")
+for _f in _am_spec_ids:
+    if ('case "%s"' % _f) not in _cfg_w_body:
+        _bgfix_bad("bgn10r4-config-every-family",
+                   "族 %s 没有 weaponBuffChance 的 case ⇒ 它每次命中都会抛「未登记配置项的金属族」"
+                   "（= 本轮那个硬阻塞的形状）" % _f)
+    if 'case "%s"' % _f not in _cfg_a_body:
+        _bgfix_bad("bgn10r4-config-every-family",
+                   "族 %s 没有 armorBuffChance 的 case（盔甲侧反制会抛异常）" % _f)
+for _f in ("chaosgold", "chaosalloy"):
+    if _f not in _BGN10R4_FAMILIES:
+        _bgfix_bad("bgn10r4-config-every-family", "1.7 两族 %s 没进本断言的族清单" % _f)
 for _k in _EXISTING_CONFIG_KEYS:
     if _k not in _cfg_keys:
         _bgfix_bad("bgfix-config-existing-keys",
@@ -2179,6 +2218,9 @@ _BGFIX_DEFAULTS = [
     ("thundergoldArmorBuffChance", 0.25), ("indigoseagoldArmorBuffChance", 0.25),
     ("illusiongoldArmorBuffChance", 0.04), ("thornsgoldArmorBuffChance", 0.25),
     ("echogoldArmorBuffChance", 0.25), ("sturdygoldArmorAbilityIntervalMultiplier", 1.0),
+    # ⚠ 1.7 bg-n10r4：两族的 4 条（默认值依据 = 立档 §4.0「全部按字面」；见 Config.java 那段注释）
+    ("chaosgoldWeaponBuffChance", 1.0), ("chaosgoldArmorBuffChance", 1.0),
+    ("chaosalloyWeaponBuffChance", 0.5), ("chaosalloyArmorBuffChance", 0.1),
 ]
 for _k, _d in _BGFIX_DEFAULTS:
     _m = re.search(r'\.defineInRange\(\s*"%s"\s*,\s*([0-9.]+)D' % re.escape(_k), _bgfix_cfg)
@@ -2220,9 +2262,11 @@ if "abilityChance <= 0.0F" not in _bgfix_mod:
 for _fn, _tag in (("public static float weaponBuffChance(String familyId)", "weaponBuffChance"),
                   ("public static float armorBuffChance(String familyId)", "armorBuffChance")):
     _b = method_body(_bgfix_cfg, _fn)
-    if _b.count('case "') != 8:
+    # ⚠ 1.7 bg-n10r4：旧期望是 8（= bg-fix 当时的 8 族）；两族进配置系统后是 **10**（camelCase 的 case）。
+    #   旧口径原文留档：`if _b.count('case "') != 8:`
+    if _b.count('case "') != 10:
         _bgfix_bad("bgfix-config-case-count",
-                   "%s 的 case 数不是 8（实际 %d）" % (_tag, _b.count('case "')))
+                   "%s 的 case 数不是 10（= 10 族 × 1；实际 %d）" % (_tag, _b.count('case "')))
 for _k in list(_BGFIX_WEAPON_KEYS.values()) + list(_BGFIX_ARMOR_KEYS.values()) + [_BGFIX_MULT_KEY]:
     if not re.fullmatch(r"[a-z][A-Za-z0-9]*", _k):
         _bgfix_bad("bgfix-config-key-ascii", "配置键不是英文 camelCase：%s" % _k)
@@ -2513,8 +2557,9 @@ else:
 _BGAPPEND_CFG_KEYS = sorted(set("bettergold.configuration." + _k for _k in
                                 list(_BGFIX_WEAPON_KEYS.values())
                                 + list(_BGFIX_ARMOR_KEYS.values()) + [_BGFIX_MULT_KEY]))
-if len(_BGAPPEND_CFG_KEYS) != 16:
-    _bgappend_bad("bgappend-config-i18n", "16 条配置键的清单不是 16 条 —— 反空转守护")
+if len(_BGAPPEND_CFG_KEYS) != 20:
+    _bgappend_bad("bgappend-config-i18n",
+                  "配置键清单不是 20 条（1.7 bg-n10r4 起 = 10 族 × 2）—— 反空转守护")
 #   反空转的另一半：这些键**必须真的存在于 Config.java**（否则关卡的"清单"是自己编的）
 _bgappend_cfg_missing = sorted(k.split(".", 2)[2] for k in _BGAPPEND_CFG_KEYS
                                if k.split(".", 2)[2] not in _cfg_keys)
@@ -4849,25 +4894,31 @@ else:
         _bgfix4_bad("bgfix4-metal-order-single-source",
                     "顺序真源不是 %d 个金属（实际 %d）—— 反空转守护"
                     % (8 + len(_FX4_APPENDED), len(_fx4_src_order)))
-    # (a) Config.java：16 个键的**声明顺序**（NeoForge 配置界面 / toml 的条目顺序 = 声明顺序）
+    # (a) Config.java：20 个键的**声明顺序**（NeoForge 配置界面 / toml 的条目顺序 = 声明顺序）
+    # ⚠ 1.7 bg-n10r4：旧口径（原文留档）是在**8 族**上跑这个循环
+    #   ⇒ 旧的 8 族清单**看不见**新加的两族（计数会停在 8、位置也判不出来）。
+    _fx4_cfg_families = _FX4_METALS + _FX4_APPENDED
     _fx4_cfg_order, _fx4_seen = [], set()
     for _k in re.findall(r'\.defineInRange\(\s*"([^"]+)"', _bgfix_cfg):
-        for _m in _FX4_METALS:
+        for _m in _fx4_cfg_families:
             if _k.startswith(_m) and _m not in _fx4_seen:
                 _fx4_seen.add(_m)
                 _fx4_cfg_order.append(_m)
-    if len(_fx4_cfg_order) != 8:
+    # ⚠ **1.7 bg-n10r4（2026-10-16）就地标注**：两族已经进配置系统 ⇒ 期望从"前 8 项"改成
+    #   "**全部 10 项**"（= 真源 `METAL_ORDER` 的前 8 项 + 追加的 2 项）。
+    #   旧口径原文留档（当时配置只有 8 族、歧义 ⑰ 排轮9）：
+    #     `if len(_fx4_cfg_order) != 8:` … `elif _fx4_cfg_order != _FX4_METALS:`
+    #   ⚠ 判据**不放宽**：仍是"逐个族逐字同序"，只是族数从 8 变 10。
+    _fx4_cfg_want = _FX4_METALS + _FX4_APPENDED
+    if len(_fx4_cfg_order) != len(_fx4_cfg_want):
         _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "Config.java 里认出的金属键只有 %d 族（应 8）—— 反空转守护：%s"
-                    % (len(_fx4_cfg_order), _fx4_cfg_order))
-    elif _fx4_cfg_order != _FX4_METALS:
-        # ⚠ 1.7：旧口径是与 `_fx4_src_order`（当时 = 8 族）比较，原文式：
-        #   `elif _fx4_cfg_order != _fx4_src_order:` —— 现在真源多了 2 族，但**配置仍是 8 族**
-        #   （歧义 ⑰ 未裁）⇒ 判据改成"配置必须与真源的**前 8 项**同序"，语义不变、不放宽。
+                    "Config.java 里认出的金属键只有 %d 族（应 %d）—— 反空转守护：%s"
+                    % (len(_fx4_cfg_order), len(_fx4_cfg_want), _fx4_cfg_order))
+    elif _fx4_cfg_order != _fx4_cfg_want:
         _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "Config.java 的 16 键声明顺序 %s ≠ 顺序真源的前 8 项 %s"
-                    "（作者 2026-10-08：「模组设置也要用这种规律排序」；1.7 两族进不进配置属轮9）"
-                    % (_fx4_cfg_order, _FX4_METALS))
+                    "Config.java 的 20 键声明顺序 %s ≠ 顺序真源 %s"
+                    "（作者 2026-10-08：「模组设置也要用这种规律排序」；1.7 两族已进配置系统）"
+                    % (_fx4_cfg_order, _fx4_cfg_want))
     # (b) 两个生成器的 METALS + (c) 成就清单（产物）里的 lists.metals
     _fx4_gen_adv = (REPO / "tools" / "asset-generator" / "generate_advancements.py")
     _fx4_gen_book = _BGDOC_GEN
@@ -5547,9 +5598,13 @@ for _needle8, _why8 in ((u"万坚金【武器工具】触发能力（爆金：�
 #   默认值由既有的 `[bgfix-config-defaults]`（`_BGFIX_DEFAULTS` 那张字面表）守着；
 #   这里补**取值范围**与**§11.4 文档侧那 16 个字面键名**，再加一条"顺序 == METAL_ORDER"。
 _bgfix8_16 = list(_BGFIX_WEAPON_KEYS.values()) + list(_BGFIX_ARMOR_KEYS.values()) + [_BGFIX_MULT_KEY]
-if len(_bgfix8_16) != 16:
+# ⚠ 1.7 bg-n10r4：这清单跟着 `_BGFIX_WEAPON_KEYS`/`_BGFIX_ARMOR_KEYS` 长（16 → 20）。
+#   变量名保留为历史名（旧名不改），旧期望原文留档：`if len(_bgfix8_16) != 16:`
+_bgfix8_want_n = 16 + 4
+if len(_bgfix8_16) != _bgfix8_want_n:
     _bgfix8_bad("bgfix8-config-keys-frozen",
-                "16 条清单不是 16（实际 %d）—— 反空转守护" % len(_bgfix8_16))
+                "%d 条清单不是 %d（实际 %d）—— 反空转守护"
+                % (_bgfix8_want_n, _bgfix8_want_n, len(_bgfix8_16)))
 _bgfix8_range_ok = 0
 for _k8 in _bgfix8_16:
     _m8 = re.search(r'\.defineInRange\(\s*"%s"\s*,\s*[-0-9.]+D\s*,\s*([-0-9.]+)D\s*,\s*([-0-9.]+)D'
@@ -5569,13 +5624,15 @@ for _k8 in _bgfix8_16:
                     "docs/1.6-规格.md §11.4 里找不到键名 %s（唯一真源没落档？）" % _k8)
         continue
     _bgfix8_range_ok += 1
-if _bgfix8_range_ok != 16:
+if _bgfix8_range_ok != _bgfix8_want_n:
     _bgfix8_bad("bgfix8-config-keys-frozen",
-                "逐条核对通过的键只有 %d/16 —— 反空转守护" % _bgfix8_range_ok)
+                "逐条核对通过的键只有 %d/%d —— 反空转守护" % (_bgfix8_range_ok, _bgfix8_want_n))
 # 声明顺序 == 创造页/进度树的金属顺序（`CreativeSections.METAL_ORDER`）
+# ⚠ 1.7 bg-n10r4：族清单从 8 族扩到 `_FX4_METALS + _FX4_APPENDED`（10 族）—— 否则新两族
+#   既不参与顺序判定、也会让 `_bgfix8_order` 少 4 项（旧口径原文：`for _mf8 in _FX4_METALS:`）。
 _bgfix8_order = [k for k in _cfg_keys if k in _bgfix8_16]
 _bgfix8_want_order = []
-for _mf8 in _FX4_METALS:
+for _mf8 in (_FX4_METALS + _FX4_APPENDED):
     _bgfix8_want_order.append(_BGFIX_WEAPON_KEYS[_mf8])
     if _mf8 in _BGFIX_ARMOR_KEYS:
         _bgfix8_want_order.append(_BGFIX_ARMOR_KEYS[_mf8])
@@ -5583,8 +5640,8 @@ for _mf8 in _FX4_METALS:
         _bgfix8_want_order.append(_BGFIX_MULT_KEY)
 if _bgfix8_order != _bgfix8_want_order:
     _bgfix8_bad("bgfix8-config-order-frozen",
-                "16 条的声明顺序 %s ≠ METAL_ORDER 推出的顺序 %s（本轮不许改顺序）"
-                % (_bgfix8_order, _bgfix8_want_order))
+                "%d 条的声明顺序 %s ≠ METAL_ORDER 推出的顺序 %s（不许改既有 16 条的相对顺序）"
+                % (_bgfix8_want_n, _bgfix8_order, _bgfix8_want_order))
 
 # ---------- ② 手册「贵金的知识」第 1 页右页：字幕 + 正文 ----------
 #   作者的"字幕"= `patchouli:spotlight` 的 `title`（没写就退化成物品名，见 ex/04 第 102 条）；
@@ -6031,9 +6088,15 @@ else:
 #   ⚠ 轮3 为什么又变：轮2 的 A 级负向检查抓到 **19 条死语言键**（未注册形态的占位键，
 #     例如 `item.bettergold.raw_chaosgold` / `block.bettergold.chaosalloy_bricks`）⇒
 #     生成器与校验器**同时**改成按形态取，删掉那 19 条 ⇒ 73 - 19 = **54**。
-_BGN10_ZH_AFTER_SHA = "7B9D0B52F5031D34B284035DC84CE89903539F54F67E6C610CD7783EEBD7C4EF"
-_BGN10_EN_AFTER_SHA = "1681514BDBAA69915F19B653B74EA4EE330E1A8174D1BC3CD609EBE795B2793C"
-_BGN10_NEW_LANG_KEYS = 54      # 1.7 两族真实注册物体的键：zh 44（generate_metal_data）+ 10（generate_weapon_lang）
+#   ⚠ **1.7 bg-n10r4（轮4）第三次改常量**：新增 3 个键（禁果 / 附魔书 / 附魔书等级提示）
+#     ⇒ 54 → **57**；两个文件级 SHA 同步换成新值。旧值（轮3）留档：
+#       zh 7B9D0B52F5031D34… / en 1681514BDBAA6991… / 键数 54
+# ⚠ 1.7 bg-n10r4 收尾：zh 的落点按"与 en 逐条镜像"写（chaosgoldArmor 在 chaosgoldWeapon 之后）
+# ⇒ 文件 SHA 与上一轮中断时那次写入不同。旧常量原文留档（当时那次的落点/文案已无法逐字节复现）：
+#   `_BGN10_ZH_AFTER_SHA = "BF9DA6E316C087D68C934790CDEB6FAD36FA3804219AA174DCB289B4DCE7561A"`
+_BGN10_ZH_AFTER_SHA = "B4DE1D53B72B6E6763F633D377940CAEA11A0B7322C3933E43A6E09B7245A891"
+_BGN10_EN_AFTER_SHA = "254C26C00CC7CD709C0003B9F7679255D8958F5AE33FF2659579B7903C003C67"
+_BGN10_NEW_LANG_KEYS = 61      # zh/en 各 61 条 = 轮3 的 54 + 轮4 的 7（3 条物品/提示 + 4 条配置界面名）
 if not _BGFIX11_FROZEN_ZH.is_file():
     _bgfix11_bad("bgfix11-lang-k1s-en",
                  "找不到 zh 冻结副本 %s（反空转守护）" % _BGFIX11_FROZEN_ZH.relative_to(REPO))
@@ -6325,6 +6388,188 @@ if "chargeDuration(stack, shooter)" not in _mx:
 print(f"1.7 轮3 区间值接线（反解到形态区间 {len(_b10w_ranges)} 条 / 攻速 {len(_b10w_speeds)} 条）问题: "
       f"{len(_bgn10w_problems)} {_bgn10w_problems[:4]}")
 
+# ==================== 1.7 bg-n10 轮4：混沌金盔甲 + 混沌禁果 + 混沌金附魔书 ====================
+# 本轮的三个交付物都是"声明了但不接线也全绿"的高危形状 ⇒ 每条都给"能从源码反解的判据"。
+_bgn10r4_problems: list[str] = []
+
+
+def _bgn10r4_bad(tag: str, msg: str) -> None:
+    _bgn10r4_problems.append("[%s] %s" % (tag, msg))
+
+
+# ---------- ① 混沌金盔甲：作者逐件给的数（护甲值 / 耐久）+ 附魔 24 + 韧性 3 ----------
+# 数组顺序是 **靴 / 腿 / 胸 / 头**（与既有 8 族同序）—— 判据也按这个顺序比，防"头盔在前"填错。
+_cg_body = re.search(r"private static MetalFamily registerChaosgold\(\) \{(.*?)\n    \}", _bgn10_am_nc, re.S)
+_cg_txt = _cg_body.group(1) if _cg_body else ""
+if not _cg_txt:
+    _bgn10r4_bad("bgn10r4-chaosgold-armor", "解析不到 AllMetals.registerChaosgold()（反空转守护）")
+else:
+    _r4_need = {
+        "spec.armorDefense = new int[] { 2, 3, 5, 2 }": "护甲值（靴2/腿3/胸5/头2）",
+        "spec.armorDurability = new int[] { 246, 240, 264, 200 }": "耐久（靴246/腿240/胸264/头200）",
+        "spec.armorEnchantmentValue = 24": "盔甲附魔能力 24",
+        "spec.armorToughness = 3.0F": "盔甲韧性 3",
+    }
+    for _lit, _why in _r4_need.items():
+        if _lit not in _cg_txt:
+            _bgn10r4_bad("bgn10r4-chaosgold-armor",
+                         "混沌金盔甲缺 %s（字面 `%s`）" % (_why, _lit))
+    # 区间值减伤：四件各一条 ARMOR 区间声明（0..6）
+    _r4_armor_ranges = re.findall(
+        r"chaosRange\(MetalFamily\.Form\.([A-Z_]+), ChaosRange\.Channel\.ARMOR,\s*([0-9.]+)[fF]?,\s*([0-9.]+)[fF]?\)",
+        _cg_txt)
+    _r4_armor_map = {_f: (_num(_a), _num(_b)) for _f, _a, _b in _r4_armor_ranges}
+    for _f in ("HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"):
+        if _r4_armor_map.get(_f) != (0.0, 6.0):
+            _bgn10r4_bad("bgn10r4-chaosgold-armor",
+                         "{} 的 ARMOR 区间 {} ≠ 作者给的「最低 0% 最高 6%」".format(
+                             _f, _r4_armor_map.get(_f)))
+
+# ---------- ② ARMOR 通道的**接线**（唯一实现 + 落点 + 四个形态 + 只读/翻转的分工）----------
+_mev_r4 = strip_comments((JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ("chaosArmorReduction(", "缺「四件之和」的减伤取值函数（接线没落地）"),
+        ("flipChaosArmor(", "缺结算后的翻转动作（区间值永远是同一端）"),
+        ("ChaosRange.current(", "减伤取值没走唯一入口 ChaosRange.current(...)"),
+        ("ChaosRange.toggle(", "翻转没走唯一入口 ChaosRange.toggle(...)"),
+        ("Channel.ARMOR", "接线里没出现 ARMOR 通道（那就是没接）")):
+    if _needle not in _mev_r4:
+        _bgn10r4_bad("bgn10r4-armor-wiring", "%s（缺 %s）" % (_why, _needle))
+# 接线层**不许**自带乒乓公式（公式只在 ChaosRange.java 一处）
+if _bgn10_formula in _mev_r4:
+    _bgn10r4_bad("bgn10r4-armor-wiring",
+                 "MetalEvents 里出现了乒乓公式本体（%s）—— 公式只许在 ChaosRange.java 一处"
+                 % _bgn10_formula)
+# 四个盔甲伪形态必须在 formOf 里能反查到（否则按件取值永远退回通道级 = 每件同一个值）
+_mf_r4 = strip_comments((JAVA / "material" / "MetalFamily.java").read_text(encoding="utf-8"))
+_formof_body = method_body(_mf_r4, "public @Nullable Form formOf(Item item)")
+for _f in ("Form.HELMET", "Form.CHESTPLATE", "Form.LEGGINGS", "Form.BOOTS"):
+    if ("return %s;" % _f) not in _formof_body:
+        _bgn10r4_bad("bgn10r4-armor-wiring",
+                     "MetalFamily#formOf 里没有 `return %s;` ⇒ 该部位的区间取不到（退回通道级）" % _f)
+
+# ---------- ③ 混沌禁果：配方 / 食物属性 / 冷却 / 效果池 ----------
+_r4_recipe_dir = REPO / "src/main/resources/data/bettergold/recipe"
+_r4_fruit = _r4_recipe_dir / "chaosgold_forbidden_fruit.json"
+if not _r4_fruit.is_file():
+    _bgn10r4_bad("bgn10r4-forbidden-fruit", "缺配方 chaosgold_forbidden_fruit.json")
+else:
+    _r4_fruit_obj = json.loads(_r4_fruit.read_text(encoding="utf-8"))
+    _r4_ings = [i.get("item") for i in _r4_fruit_obj.get("ingredients", [])]
+    if _r4_fruit_obj.get("type") != "minecraft:crafting_shapeless":
+        _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方不是无序合成（作者只给了「1 苹果 + 8 混沌金锭」）")
+    if _r4_ings.count("minecraft:apple") != 1:
+        _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方里苹果不是 1 个：%s" % _r4_ings)
+    if _r4_ings.count("bettergold:chaosgold_ingot") != 8:
+        _bgn10r4_bad("bgn10r4-forbidden-fruit",
+                     "禁果配方里混沌金锭不是 8 个（实际 %d）" % _r4_ings.count("bettergold:chaosgold_ingot"))
+    if _r4_fruit_obj.get("result", {}).get("id") != "bettergold:chaosgold_forbidden_fruit":
+        _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方的产物不是 chaosgold_forbidden_fruit")
+_ci = JAVA / "material" / "ChaosItems.java"
+_ci_txt = strip_comments(_ci.read_text(encoding="utf-8")) if _ci.is_file() else ""
+if not _ci_txt:
+    _bgn10r4_bad("bgn10r4-forbidden-fruit", "缺 material/ChaosItems.java（反空转守护）")
+else:
+    for _needle, _why in (
+            ("GOLDEN_APPLE_NUTRITION = 4", "饥饿不是原版金苹果的 4"),
+            ("GOLDEN_APPLE_SATURATION_MODIFIER = 1.2F",
+             "饱和度系数不是 1.2（= 原版金苹果 9.6 / (4×2)）"),
+            ("FORBIDDEN_FRUIT_EFFECT_TICKS = 3600", "效果时长不是 3 分钟 3600 tick"),
+            ("FORBIDDEN_FRUIT_COOLDOWN_TICKS = 3600", "冷却不是 3 分钟 3600 tick"),
+            ("FORBIDDEN_FRUIT_MAX_LEVEL = 3", "效果等级上限不是 3"),
+            ("addCooldown(this, FORBIDDEN_FRUIT_COOLDOWN_TICKS)", "没有真的挂 ItemCooldowns"),
+            ("BuiltInRegistries.MOB_EFFECT.holders()", "效果抽取池不是「全部已注册效果」（含第三方）")):
+        if _needle not in _ci_txt:
+            _bgn10r4_bad("bgn10r4-forbidden-fruit", "%s（缺 %s）" % (_why, _needle))
+    # 抽取池**不许**被白名单/黑名单收窄（作者裁定「按字面 = 全部已注册」）
+    for _bad in ("isInstantenous", "MobEffectCategory.BENEFICIAL", "HARMFUL.equals",
+                 "exclude", "blacklist"):
+        if _bad in _ci_txt:
+            _bgn10r4_bad("bgn10r4-forbidden-fruit",
+                         "效果抽取池被筛过（出现 `%s`）—— 作者裁定是「全部已注册效果，抽到什么算什么」"
+                         % _bad)
+
+# ---------- ④ 混沌金附魔书：配方 / 零 UI / 门槛 / 适配过滤 / 含宝藏诅咒第三方 ----------
+_r4_book = _r4_recipe_dir / "chaosgold_enchanting_book.json"
+if not _r4_book.is_file():
+    _bgn10r4_bad("bgn10r4-enchanting-book", "缺配方 chaosgold_enchanting_book.json")
+else:
+    _r4_book_obj = json.loads(_r4_book.read_text(encoding="utf-8"))
+    _r4_pat = _r4_book_obj.get("pattern", [])
+    _r4_key = _r4_book_obj.get("key", {})
+    if _r4_book_obj.get("type") != "minecraft:crafting_shaped":
+        _bgn10r4_bad("bgn10r4-enchanting-book", "附魔书配方不是有序合成（截图的 3×3 摆位）")
+    if _r4_pat != ["LIL", "IBI", "SIS"]:
+        _bgn10r4_bad("bgn10r4-enchanting-book",
+                     "附魔书的 3×3 摆位 %s ≠ 截图读出的 LIL/IBI/SIS" % _r4_pat)
+    # 计数：青金石 2 / 混沌金锭 4 / 原版书 1 / 混沌金币串 2
+    _cnt = {}
+    for _ch in "".join(_r4_pat):
+        _ing = _r4_key.get(_ch, {}).get("item")
+        if _ing:
+            _cnt[_ing] = _cnt.get(_ing, 0) + 1
+    _want_cnt = {"minecraft:lapis_lazuli": 2, "bettergold:chaosgold_ingot": 4,
+                 "minecraft:book": 1, "bettergold:chaos_coin_string": 2}
+    if _cnt != _want_cnt:
+        _bgn10r4_bad("bgn10r4-enchanting-book",
+                     "附魔书配方计数 %s ≠ 作者给的 %s（2 青金石 + 4 混沌金锭 + 1 书 + 2 金币串）"
+                     % (_cnt, _want_cnt))
+if _ci_txt:
+    for _needle, _why in (
+            ("ENCHANTING_BOOK_MIN_PLAYER_LEVEL = 5", "「<5 级无法使用」的门槛不是 5"),
+            ("experienceLevel < ENCHANTING_BOOK_MIN_PLAYER_LEVEL", "没有判玩家等级（门槛没落地）"),
+            ("InteractionHand.OFF_HAND", "没判「左手附魔书」（作者写死的交互形状）"),
+            ("canEnchant", "没有按「适配该装备类型」过滤（canEnchant / 物品标签）"),
+            ("updateEnchantments(", "没有真把附魔写进右手装备"),
+            ("giveExperienceLevels(-cost)", "没有消耗经验等级"),
+            ("ENCHANTING_BOOK_MAX_COST = 5", "消耗上限不是 5 级"),
+            ("ENCHANTING_BOOK_MAX_ENCH_LEVEL = 5", "附魔等级上限不是 5")):
+        if _needle not in _ci_txt:
+            _bgn10r4_bad("bgn10r4-enchanting-book", "%s（缺 %s）" % (_why, _needle))
+    # ⚠ **零 UI**（作者裁定 ⑧a：随机抽一条、不做选择界面）⇒ 不许出现任何界面/网络包痕迹
+    for _bad in ("Screen", "AbstractContainerMenu", "MenuType", "Payload", "sendToClient"):
+        if _bad in _ci_txt:
+            _bgn10r4_bad("bgn10r4-enchanting-book",
+                         "附魔书里出现了 `%s` —— 作者裁定是零 UI / 纯服务端" % _bad)
+    # ⚠ **不许**过滤宝藏 / 诅咒（作者要"含宝藏 / 诅咒 / 第三方"）
+    for _bad in ("isTreasureOnly", "isCurse", "EnchantmentTags", "isTradeable", "isDiscoverable"):
+        if _bad in _ci_txt:
+            _bgn10r4_bad("bgn10r4-enchanting-book",
+                         "附魔候选被筛过（出现 `%s`）—— 作者要「含宝藏 / 诅咒 / 第三方」" % _bad)
+
+# ---------- ⑤ 两件物品必须真的注册 + 进创造页（"注册了但静默不进页"是同一种病）----------
+_bgn10r4_boot = strip_comments((JAVA / "bettergold.java").read_text(encoding="utf-8"))
+if "ChaosItems.bootstrap()" not in _bgn10r4_boot:
+    _bgn10r4_bad("bgn10r4-items-registered",
+                 "ChaosItems 没有被显式触发（两件物品可能根本没注册 —— 依赖类初始化顺序是坑）")
+for _needle, _why in (
+        ('"chaosgold_forbidden_fruit"', "禁果没注册（注册名）"),
+        ('"chaosgold_enchanting_book"', "附魔书没注册（注册名）")):
+    if _needle not in _ci_txt:
+        _bgn10r4_bad("bgn10r4-items-registered", "%s（缺 %s）" % (_why, _needle))
+_cs_txt = strip_comments((JAVA / "material" / "CreativeSections.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ('Map.entry("forbidden_fruit"', "禁果没进创造页装备分区（GEAR_SLOT）"),
+        ('Map.entry("enchanting_book"', "附魔书没进创造页装备分区（GEAR_SLOT）")):
+    if _needle not in _cs_txt:
+        _bgn10r4_bad("bgn10r4-items-registered", _why)
+# 语言键：两件物品 + 那句提示，中英都要有且**不许相等**（红线 10 的同族要求）
+_r4_lang = REPO / "src/main/resources/assets/bettergold/lang"
+_zh_r4 = json.loads((_r4_lang / "zh_cn.json").read_text(encoding="utf-8"))
+_en_r4 = json.loads((_r4_lang / "en_us.json").read_text(encoding="utf-8"))
+for _k in ("item.bettergold.chaosgold_forbidden_fruit",
+           "item.bettergold.chaosgold_enchanting_book",
+           "message.bettergold.chaos_enchanting_book.too_low_level"):
+    if _k not in _zh_r4:
+        _bgn10r4_bad("bgn10r4-items-registered", "zh 缺语言键 %s" % _k)
+    if _k not in _en_r4:
+        _bgn10r4_bad("bgn10r4-items-registered", "en 缺语言键 %s" % _k)
+    if _zh_r4.get(_k) == _en_r4.get(_k):
+        _bgn10r4_bad("bgn10r4-items-registered", "%s 的中英逐字相同（等于没译）" % _k)
+
+print(f"1.7 轮4（混沌金盔甲 / 禁果 / 附魔书：盔甲区间 {len(_r4_armor_map)} 件）问题: "
+      f"{len(_bgn10r4_problems)} {_bgn10r4_problems[:4]}")
+
 print(f"1.7 两个共用组件（形态子集 {len(MF.FORMS)} 族 / 区间值公式命中 {len(_hits)} 处）问题: "
       f"{len(bgn10_problems)} {bgn10_problems[:4]}")
 
@@ -6335,7 +6580,8 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfinal3_problems, bgbook9_problems, bgfix3_problems, bgbook10_problems,
                        bgfix4_problems, bgfix5_problems, bgfix7_problems, bgfix8_problems,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
-                       symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems)
+                       symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
+                       _bgn10r4_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

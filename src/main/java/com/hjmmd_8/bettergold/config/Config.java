@@ -122,6 +122,9 @@ public class Config {
             .define("thunderSoundMode", "client_payload");
 
     // ==================== bg-fix 第 7 条（2026-10-05）：8 族 × 2 = 16 条「触发概率 / 能力间隔」 ====================
+    // ⚠ **1.7 bg-n10r4 就地标注**（历史名不改，只标注）：本节标题里的「16 条」是 **bg-fix 当时**的计数；
+    //   1.7 起两族进入配置系统 ⇒ **现行 = 10 族 × 2 = 20 条**（4 条新键在本节末尾追加，
+    //   见下面那一段 `1.7 bg-n10r4`）。旧字面「8 族 × 2 = 16 条」**原文保留、不删**。
     //
     // 作者原话（需求 §3.7）：
     //   「某某金武器工具触发 Buff 概率（然后再次填写概率）／某某金盔甲盾牌触发 buff 的概率（然后在此填写概率）；
@@ -330,6 +333,66 @@ public class Config {
                     "触发的是 Buff：安抚。0 = 永不触发。")
             .defineInRange("illusiongoldArmorBuffChance", 0.04D, 0.0D, 1.0D);
 
+    // ==================== 1.7 bg-n10r4（2026-10-16）：两族各 2 条 ⇒ 16 → 20 条 ====================
+    //
+    // 起因：轮3 的 A 级抓到「chaos 器具每次命中都抛异常」（立档 §12.6 第 3 条 / §12.7 第 1 条）——
+    //   `MetalEvents#onLivingDamaged` → `dispatchWeaponHit` → `Config#weaponBuffChance("chaosgold")`
+    //   ⇒ 两族**没登记**时 switch 落到 `default -> throw IllegalArgumentException`
+    //   （伤害照扣、翻转已被另一条路径救回，但**日志刷栈、「挂 buff」永不生效**）。
+    // 父代理裁定：**现在就补**（不等轮7 / 轮9）⇒ 本类从 16 条变 20 条。
+    //
+    // ★ 默认值的依据（作者没给「挂 buff 概率」的独立数 ⇒ 按立档 §4.0「全部按字面」取）：
+    //   · **混沌金 = 走「区间值」那套（不是配置概率）** ⇒ 两条都填 **1.0**（= 不设概率闸门）。
+    //     理由：混沌金的「能力」是区间值机制（挖掘 2..12 / 伤害 4..8 … / 盔甲 0..6%），
+    //     作者对它的口径只有「最低..最高之间不断转换」，**没有任何「概率」字样**；
+    //     若把这两条填成 0 或 0.4，反而会**凭空发明一个作者没说的概率**。
+    //     ⇒ 1.0 = 必定通过闸门，剩下的行为由区间值机制决定（与既有 `weaponBuffChance` 默认同构）。
+    //   · **崩乱合金 = 50%（器具）/ 单件 10%、全套 40%（盔甲）** —— 立档 §2.10 / §2.12 与
+    //     §4.0 ⑭ 给的三个数**恰是这一档**（`10% × 4 件 = 40%` 算术自洽）。
+    //     ⚠ 它与「崩乱合金盔甲单件 4%..10% 的**减伤**区间」是**两件事**：前者是「挂失衡状态」的概率，
+    //     后者是区间值减伤（轮7 接线）—— 本键只管前者。
+    //
+    // ⚠ 既有 9 条旧键 + 既有 8 族的 16 条**一个都不改名 / 不改默认值**（配置键名是存档红线）。
+    // ⚠ 声明顺序仍然 = `CreativeSections.METAL_ORDER`（作者 2026-10-08「模组设置也要用这种规律排序」）
+    //   = 8 族之后追加 `chaosgold` / `chaosalloy`（与 1.7 两族的追加位次逐项一致）。
+    // ⚠ 关卡：`[bgfix-config-16-keys]` 的**名字就地标注为历史名**（旧名不改、旧期望原文留注释），
+    //   计数断言 25 → **29**；另新增 `[bgn10r4-config-every-family]` 钉住
+    //   「**每个已注册族都必须有对应配置项**」（这条正是本阻塞的根因）。
+
+    /** 混沌金 · 武器工具盾牌触发 Buff 的概率（默认 1.0 = 不设闸门，能力走区间值那套） */
+    public static final ModConfigSpec.DoubleValue CHAOSGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("混沌金·武器工具盾牌触发Buff概率",
+                    "混沌金的能力是「区间值」那套（挖掘 2..12 / 伤害 4..8 …），作者没给独立的概率数",
+                    "⇒ 按立档 §4.0「全部按字面」取默认 1.0 = 不设概率闸门。",
+                    "0 = 永不触发；1 = 必定通过闸门（默认）。")
+            .defineInRange("chaosgoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 混沌金 · 盔甲触发 Buff 的每件概率（默认 1.0 = 不设闸门，减伤走区间值 0..6%） */
+    public static final ModConfigSpec.DoubleValue CHAOSGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("混沌金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "混沌金盔甲的「能力」是区间值减伤（单件 0%..6%、全套 0%..24%），作者没给独立的概率数",
+                    "⇒ 按立档 §4.0「全部按字面」取默认 1.0 = 不设闸门。有效概率 = min(1, 穿戴件数 × 本条)。",
+                    "0 = 永不触发；1 = 必定通过闸门（默认）。")
+            .defineInRange("chaosgoldArmorBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 崩乱合金 · 武器工具盾牌触发失衡的概率（默认 0.5 = 50%，立档 §2.10 作者给的数） */
+    public static final ModConfigSpec.DoubleValue CHAOSALLOY_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("崩乱合金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条。",
+                    "触发的是 Buff：力量失衡 / 抗性失衡（歧义 ⑬-c 未裁前按字面：先 50% 决定挂、再 50/50 决定哪个）。",
+                    "默认 0.50 = 50%（立档 §2.10 作者给的数）；0 = 永不触发；1 = 必定触发。")
+            .defineInRange("chaosalloyWeaponBuffChance", 0.5D, 0.0D, 1.0D);
+
+    /** 崩乱合金 · 盔甲触发失衡的每件概率（默认 0.1 = 每件 10%，穿满 4 件 40%） */
+    public static final ModConfigSpec.DoubleValue CHAOSALLOY_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("崩乱合金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.10 ⇒ 1 件 10%、4 件 40%（立档 §2.12 的 10%/40%）。",
+                    "⚠ 与「崩乱合金盔甲单件 4%..10% 的减伤区间」是两件事：本条只管挂失衡状态的概率。",
+                    "0 = 永不触发。")
+            .defineInRange("chaosalloyArmorBuffChance", 0.1D, 0.0D, 1.0D);
+
     /**
      * 「武器工具触发概率」的**唯一读取入口**（bg-fix 第 7 条）。
      *
@@ -348,8 +411,15 @@ public class Config {
             case "thornsgold" -> read(THORNSGOLD_WEAPON_BUFF_CHANCE, 1.0F);
             case "echogold" -> read(ECHOGOLD_WEAPON_BUFF_CHANCE, 1.0F);
             case "sturdygold" -> read(STURDYGOLD_WEAPON_ABILITY_CHANCE, 1.0F);
+            // 1.7 bg-n10r4：两族进入配置系统（16 → 20 条）；默认值依据见上面那一段注释
+            case "chaosgold" -> read(CHAOSGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "chaosalloy" -> read(CHAOSALLOY_WEAPON_BUFF_CHANCE, 0.5F);
+            // ⚠ 这条 default 是**故意的**（§4 第 21 条）：新增一族若忘了补配置键，要在运行期当场炸出来，
+            //   而不是静默拿一个合法值继续跑。历史文案（8 族 × 2）保留原字面，只是计数已变 10 族 × 2。
             default -> throw new IllegalArgumentException(
-                    "未登记配置项的金属族: " + familyId + "（bg-fix：8 族 × 2 条配置项，新增族必须同时补本类的 case）");
+                    "未登记配置项的金属族: " + familyId
+                            + "（bg-fix 的历史口径是 8 族 × 2 条；1.7 起 10 族 × 2 = 20 条，"
+                            + "新增族必须同时补本类的 case）");
         };
     }
 
@@ -373,8 +443,13 @@ public class Config {
             case "thornsgold" -> read(THORNSGOLD_ARMOR_BUFF_CHANCE, 0.25F);
             case "echogold" -> read(ECHOGOLD_ARMOR_BUFF_CHANCE, 0.25F);
             case "sturdygold" -> 0.0F;
+            // 1.7 bg-n10r4：两族进入配置系统（16 → 20 条）；默认值依据见上面那一段注释
+            case "chaosgold" -> read(CHAOSGOLD_ARMOR_BUFF_CHANCE, 1.0F);
+            case "chaosalloy" -> read(CHAOSALLOY_ARMOR_BUFF_CHANCE, 0.1F);
             default -> throw new IllegalArgumentException(
-                    "未登记配置项的金属族: " + familyId + "（bg-fix：8 族 × 2 条配置项，新增族必须同时补本类的 case）");
+                    "未登记配置项的金属族: " + familyId
+                            + "（bg-fix 的历史口径是 8 族 × 2 条；1.7 起 10 族 × 2 = 20 条，"
+                            + "新增族必须同时补本类的 case）");
         };
     }
 
@@ -404,8 +479,11 @@ public class Config {
      */
     public static String describeEffectChances() {
         StringBuilder sb = new StringBuilder("bgfix16");
+        // ⚠ 1.7 bg-n10r4：这里的族清单 = 10 族（与 `CreativeSections.METAL_ORDER` 同序）——
+        //   少了任何一族，"启动自证那行读数"就会静默漏掉它（与本轮那个阻塞同一类病）。
         for (String id : new String[] {"flamegold", "voodoogold", "thundergold", "indigoseagold",
-                "illusiongold", "thornsgold", "echogold", "sturdygold"}) {
+                "illusiongold", "thornsgold", "echogold", "sturdygold",
+                "chaosgold", "chaosalloy"}) {
             sb.append(' ').append(id)
                     .append("[w=").append(String.format(java.util.Locale.ROOT, "%.3f", weaponBuffChance(id)))
                     .append(" a=").append(String.format(java.util.Locale.ROOT, "%.3f", armorBuffChance(id)))

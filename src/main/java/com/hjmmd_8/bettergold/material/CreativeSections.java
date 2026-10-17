@@ -159,7 +159,12 @@ public final class CreativeSections {
             Map.entry("helmet", 10),
             Map.entry("chestplate", 11),
             Map.entry("leggings", 12),
-            Map.entry("boots", 13));
+            Map.entry("boots", 13),
+            // 1.7（bg-n10 轮4）：混沌金专属物品 —— 禁果与附魔书。
+            // ⚠ `GEAR_SLOT` 一表两用（既定装备顺序、又判"是不是金属装备"）⇒ **只许重排、不许删项**（红线 4）。
+            //   这两条**追加在末尾**：既有 14 项的位次 0..13 一个都没动（作者给过的顺序保持逐字不变）。
+            Map.entry("forbidden_fruit", 14),
+            Map.entry("enchanting_book", 15));
 
     /**
      * 物品是不是「某套建材」的一员：是则返回它的类型位次（{@link #BUILDING_SLOT}），否则返回 {@code -1}。

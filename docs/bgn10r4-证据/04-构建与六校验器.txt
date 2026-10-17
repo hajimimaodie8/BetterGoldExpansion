@@ -1,0 +1,16 @@
+1.7 bg-n10r4 轮4 · 构建与六校验器（判据 = exit 码 + 关键计数行**两列**）
+========================================================================================================================
+
+关卡                                 exit   关键计数行
+------------------------------------------------------------------------------------------------------------------------
+gradlew build                      0      (没找到 BUILD 行)
+gradlew runData（兼 Bootstrap/mixin 冒烟） 0      (没找到 BUILD 行)
+validate_metal_assets.py           0      [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_metal_data.py             0      [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_trim_assets.py            0      [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements.py           0      [bgach-ok] 问题 0 条 / 成就 51 个 / criteria 125 条 / 语言键 102 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+check_jar_clean.py                 0      [jar-clean-ok] 产物 jar 干净（条目 2657；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py             0      [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+判读：六条都必须是 **exit 0 + 计数行里的问题数 = 0**（口径见 docs/构建与跑测注意事项.md §七）；
+      本轮 jar 条目 2652 → **2657**（+2 物品模型 +2 配方 +1 ChaosItems.class；探针类 0 条）。

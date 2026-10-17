@@ -1,0 +1,53 @@
+1.7 bg-n10r4 轮4 · A 段「改后绿」+ B 段（三件交付物）A 级读数
+==============================================================================================================
+源日志：2026-10-17-1.log.gz（`gradlew runServer`，探针开关 run/bgn10r4-probe.enabled）
+判定：改后 = **绿**（SUMMARY pass=23 fail=0；0 例外 0 串栈）
+
+① 探针逐条（PASS/FAIL 原文）:
+[1710月2026 12:30:08.106] [modloading-worker-0/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE probe registered (gameDir switch file found) gameDir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[1710月2026 12:30:08.672] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[1710月2026 12:30:08.673] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] chaosgold[w=1.000 a=1.000] chaosalloy[w=0.500 a=0.100] sturdygoldArmorIntervalMultiplier=1.000
+[1710月2026 12:30:08.695] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP modVersion=1.6.0 thunderSoundMode=client_payload configFile=E:\mc\mcmod\bettergold-template-1.21.1\run\config\bettergold-common.toml fileExists=true thunderSoundModeKeyPresent=true
+[1710月2026 12:30:08.695] [modloading-sync-worker/INFO] [com.hjmmd_8.bettergold.bettergold/]: BETTERGOLD-STARTUP bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] chaosgold[w=1.000 a=1.000] chaosalloy[w=0.500 a=0.100] sturdygoldArmorIntervalMultiplier=1.000
+[1710月2026 12:30:12.093] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE INFO world :: name=bgn10r4world spawn=BlockPos{x=384, y=69, z=-80} base=(424,-40) minY=-64 forcedBefore=0
+[1710月2026 12:30:12.158] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS forceload_set_25 :: forcedBefore=0 forcedAfter=25
+[1710月2026 12:30:13.161] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_config_all_ten_families_readable :: rows=[flamegold[w=1.0000 a=0.2500], voodoogold[w=1.0000 a=0.2500], thundergold[w=1.0000 a=0.2500], indigoseagold[w=1.0000 a=0.2500], illusiongold[w=0.1600 a=0.0400], thornsgold[w=1.0000 a=0.2500], echogold[w=1.0000 a=0.2500], sturdygold[w=1.0000 a=0.0000], chaosgold[w=1.0000 a=1.0000], chaosalloy[w=0.5000 a=0.1000]] bad=[]
+[1710月2026 12:30:13.162] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_config_defaults_chaosgold :: chaosgold w=1.0 a=1.0
+[1710月2026 12:30:13.162] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_config_defaults_chaosalloy :: chaosalloy w=0.5 a=0.1
+[1710月2026 12:30:13.162] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE INFO r4_config_readout :: bgfix16 flamegold[w=1.000 a=0.250] voodoogold[w=1.000 a=0.250] thundergold[w=1.000 a=0.250] indigoseagold[w=1.000 a=0.250] illusiongold[w=0.160 a=0.040] thornsgold[w=1.000 a=0.250] echogold[w=1.000 a=0.250] sturdygold[w=1.000 a=0.000] chaosgold[w=1.000 a=1.000] chaosalloy[w=0.500 a=0.100] sturdygoldArmorIntervalMultiplier=1.000
+[1710月2026 12:30:14.308] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_chaos_hits_no_exception :: hits=6 bad=0 [] rows=[#0 start=low dealt=4.0000->8.0000 lost=7.8720 buff=ok hurt=ok flipped=true, #1 start=high dealt=8.0000->4.0000 lost=3.9360 buff=ok hurt=ok flipped=true, #2 start=low dealt=4.0000->8.0000 lost=7.8720 buff=ok hurt=ok flipped=true, #3 start=high dealt=8.0000->4.0000 lost=3.9360 buff=ok hurt=ok flipped=true, #4 start=low dealt=4.0000->8.0000 lost=7.8720 buff=ok hurt=ok flipped=true, #5 start=high dealt=8.0000->4.0000 lost=3.9360 buff=ok hurt=ok flipped=true]
+[1710月2026 12:30:14.309] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_existing_family_path_unchanged :: flamegold=ok
+[1710月2026 12:30:16.173] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_armor_per_piece_values :: bad=[] rows=[helmet[def=2 dur=200 ench=24 tough=3.0], chestplate[def=5 dur=264 ench=24 tough=3.0], leggings[def=3 dur=240 ench=24 tough=3.0], boots[def=2 dur=246 ench=24 tough=3.0]]
+[1710月2026 12:30:16.173] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_armor_piglin_neutral_single_piece :: not-neutral=[]
+[1710月2026 12:30:18.169] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_armor_interval_pingpong_and_math :: sums=[0, 6, 12, 18, 24] bad=[] rows=[highCount=0 armor=[0, 0, 0, 0] sum=0 hurtOk=true raw=8.0000 lost=8.0000 want=8.0000, highCount=1 armor=[6, 0, 0, 0] sum=6 hurtOk=true raw=8.0000 lost=7.5200 want=7.5200, highCount=2 armor=[6, 6, 0, 0] sum=12 hurtOk=true raw=8.0000 lost=7.0400 want=7.0400, highCount=3 armor=[6, 6, 6, 0] sum=18 hurtOk=true raw=8.0000 lost=6.5600 want=6.5600, highCount=4 armor=[6, 6, 6, 6] sum=24 hurtOk=true raw=8.0000 lost=6.0800 want=6.0800]
+[1710月2026 12:30:18.169] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE INFO r4_armor_rows :: [highCount=0 armor=[0, 0, 0, 0] sum=0 hurtOk=true raw=8.0000 lost=8.0000 want=8.0000, highCount=1 armor=[6, 0, 0, 0] sum=6 hurtOk=true raw=8.0000 lost=7.5200 want=7.5200, highCount=2 armor=[6, 6, 0, 0] sum=12 hurtOk=true raw=8.0000 lost=7.0400 want=7.0400, highCount=3 armor=[6, 6, 6, 0] sum=18 hurtOk=true raw=8.0000 lost=6.5600 want=6.5600, highCount=4 armor=[6, 6, 6, 6] sum=24 hurtOk=true raw=8.0000 lost=6.0800 want=6.0800]
+[1710月2026 12:30:20.167] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_fruit_food_properties :: nutrition=4 saturation=9.6（原版金苹果 = 4 / 9.6）
+[1710月2026 12:30:20.167] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_fruit_effect_pool_is_all_registered :: pool=49 registeredMobEffects=49
+[1710月2026 12:30:20.168] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_fruit_pool_includes_instant_and_thirdparty :: instant in pool=[instant_health, instant_damage]
+[1710月2026 12:30:20.171] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_fruit_applied_level_and_duration :: effect=minecraft:slow_falling amplifier=2 duration=3600
+[1710月2026 12:30:20.178] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_fruit_cooldown_3600 :: isOnCooldown=true expectedTicks=3600 cooldownEndTime=3600 rest=0 minecraft:air
+[1710月2026 12:30:20.179] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE INFO r4_fruit_pool_readout :: distinctDrawn=35 samples=[hero_of_the_village, slow_falling, parasite, instant_damage, echo_roar, sediment] amplitudes=[2] durations=[3600]
+[1710月2026 12:30:22.169] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_book_reject_below_level_5 :: result=FAIL level=4 bookCount=1 enchEmpty=true
+[1710月2026 12:30:22.175] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_book_requires_offhand_use :: result=PASS level=30
+[1710月2026 12:30:24.178] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_book_applies_random_enchanted :: applications=12/12 distinctEnchants=7 enchants=[minecraft:bane_of_arthropods, minecraft:mending, minecraft:knockback, minecraft:sweeping_edge, minecraft:smite, minecraft:fire_aspect, minecraft:looting] levels=[4, 1, 3, 5, 2] costs=[4, 2, 1, 5, 3]
+[1710月2026 12:30:24.178] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_book_enchant_level_and_cost_range :: levels=[4, 1, 3, 5, 2] costs=[4, 2, 1, 5, 3]
+[1710月2026 12:30:26.161] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_book_affinity_filters_by_item_type :: union=34 bad=[] rows=[chaosgold_sword -> 10 条, chaosgold_pickaxe -> 6 条, chaosgold_bow -> 7 条, chaosgold_helmet -> 11 条, minecraft:stone -> 0 条]
+[1710月2026 12:30:26.164] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_book_pool_contains_treasure_and_curse :: swordCandidates=10 hasCurse=true hasTreasureInRegistry(mending)=true
+[1710月2026 12:30:26.164] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE INFO r4_book_registry :: registered=44 targets=5 unionCandidates=34
+[1710月2026 12:30:28.163] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_log_no_unregistered_family_exception :: 「未登记配置项的金属族」出现 0 次（改前基线 13 次）
+[1710月2026 12:30:28.163] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_log_no_illegal_argument :: IllegalArgumentException 出现 0 次（改前基线 15 次）
+[1710月2026 12:30:28.163] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE PASS r4_log_no_bettergold_stackframes :: bettergold 栈帧出现 0 次
+[1710月2026 12:30:33.160] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE INFO forceload_released :: forcedAfter=0
+
+② 小结:
+[1710月2026 12:30:33.160] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10R4PROBE SUMMARY pass=23 fail=0
+
+③ 异常计数（**排除探针自己的 PASS/FAIL 行**后的原文出现次数）:
+   未登记配置项的金属族                               0
+   IllegalArgumentException                 0
+   Exception caught during firing event     0
+   BETTERGOLD-STARTUP 读数失败                  0
+
+④ 判读：改前 = chaosgold 的 weaponBuffChance 抛「未登记配置项的金属族」⇒
+   每次命中都在 LivingDamageEvent.Post 抛异常（伤害照扣、挂 buff 永不生效、日志刷栈）；
+   改后 = 同一条路径 0 异常、0 串栈。

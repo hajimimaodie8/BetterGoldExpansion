@@ -774,5 +774,12 @@
   "item.bettergold.chaosalloy_crossbow": "Chaosalloy Crossbow",
   "item.bettergold.chaosalloy_trident": "Chaosalloy Trident",
   "item.bettergold.chaosalloy_shield": "Chaosalloy Shield",
-  "item.bettergold.chaosgold_nugget": "Chaosgold Nugget"
+  "item.bettergold.chaosgold_nugget": "Chaosgold Nugget",
+  "item.bettergold.chaosgold_forbidden_fruit": "Chaosgold Forbidden Fruit",
+  "item.bettergold.chaosgold_enchanting_book": "Chaosgold Enchanting Book",
+  "message.bettergold.chaos_enchanting_book.too_low_level": "Requires at least 5 experience levels",
+  "bettergold.configuration.chaosgoldWeaponBuffChance": "Chaosgold - Weapon/Tool/Shield Buff Chance",
+  "bettergold.configuration.chaosgoldArmorBuffChance": "Chaosgold - Armor Buff Chance",
+  "bettergold.configuration.chaosalloyWeaponBuffChance": "Chaosalloy - Weapon/Tool/Shield Buff Chance",
+  "bettergold.configuration.chaosalloyArmorBuffChance": "Chaosalloy - Armor Buff Chance"
 }

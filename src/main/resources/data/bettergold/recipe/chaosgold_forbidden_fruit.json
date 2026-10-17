@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:apple"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    {
+      "item": "bettergold:chaosgold_ingot"
+    }
+  ],
+  "result": {
+    "id": "bettergold:chaosgold_forbidden_fruit",
+    "count": 1
+  }
+}

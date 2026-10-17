@@ -744,6 +744,23 @@ public final class MetalFamily {
         if (item == this.shield.get()) {
             return Form.SHIELD;
         }
+        // ⚠ 1.7 bg-n10r4（轮4）补齐：**四件盔甲的伪形态**（`HELMET / CHESTPLATE / LEGGINGS / BOOTS`
+        //   早在轮3 就进了 `Form` 枚举与"伪形态"注释，但这里漏了四条反查）
+        //   ⇒ `family.range(item, Channel.ARMOR)` 恒返回 **通道级** range，永远命中不到"按件"的那一份。
+        //   轮4 的减伤区间（单件 0..6%）与"四件之和 = 0..24%"正是靠 `formOf` 定位到**这一件**的区间，
+        //   所以这里必须补齐（补齐后 `ChaosRange.current(stack, family, form, ARMOR)` 才按件取值）。
+        if (item == this.helmet.get()) {
+            return Form.HELMET;
+        }
+        if (item == this.chestplate.get()) {
+            return Form.CHESTPLATE;
+        }
+        if (item == this.leggings.get()) {
+            return Form.LEGGINGS;
+        }
+        if (item == this.boots.get()) {
+            return Form.BOOTS;
+        }
         // 刀（乐事联动，经 addExtraItem 登记）：本族的额外部件只会是刀
         // （⚠ 反查优先走全局索引，见下面的静态重载；这里用 extraItems 兜底）
         for (Supplier<Item> extra : this.extraItems) {
