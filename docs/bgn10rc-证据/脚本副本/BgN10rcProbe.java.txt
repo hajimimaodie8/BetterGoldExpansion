@@ -1,0 +1,294 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+
+/**
+ * 临时探针（1.7 bg-n10 <b>轮R / bg-n10rc</b>：四类配方的**真合成**）—— <b>收尾时整块删除</b>。
+ *
+ * <p>开关文件：{@code run/bgn10rc-probe.enabled}（不存在则本类什么都不做）。</p>
+ *
+ * <p>真什么：真 {@link ServerPlayer}（{@code new ServerPlayer} + 假连接）+ 真
+ * {@link CraftingMenu}（**真** {@code ContainerLevelAccess}）+ 真 {@code slotsChanged}
+ * （走 {@code CraftingMenu.slotChangedCraftingGrid} → 真 {@code RecipeManager} → 真 assemble）
+ * + **两次真点击**（{@code menu.clicked(0, PICKUP)} 结果格 → 光标、{@code menu.clicked(free, PICKUP)}
+ * 光标 → 背包空槽）；消耗由 {@code ResultSlot#onTake} 真的逐格 −1。</p>
+ *
+ * <p>七组读数：① 混沌金币充数 3 条（4 铜 + 1 币 / 6 铁 + 1 币 / 8 金 + 1 币）
+ * ② 崩乱合金升级锻造模板 ③ 混沌金附魔书（青金石主对角、币串副对角）
+ * ④ 万坚金砧 ⑤⑥⑦ 三条负向（旧对角线的书 / 少一格的砧 / 换掉一格的模板）。
+ * 正例逐条验：结果格产物与数量、**每格 −1**（含"币恰好消耗 1 个"）、产物真落进背包。</p>
+ *
+ * <p>⚠ 探针纪律：{@code halt(false)} 只调一次；不 forceload、不碰存档；玩家是造的假玩家
+ * （与轮5/轮6/轮8/轮9 同一套，不写 playerdata）。</p>
+ */
+@EventBusSubscriber(modid = bettergold.MODID)
+public final class BgN10rcProbe {
+
+    private static final String TAG = "BGN10RCPROBE";
+    private static final String SWITCH = "bgn10rc-probe.enabled";
+
+    private static final String CG = "bettergold:chaosgold_ingot";
+    private static final String COIN = "bettergold:chaos_coin";
+    private static final String STRING = "bettergold:chaos_coin_string";
+
+    private static int passes;
+    private static int fails;
+    private static boolean done;
+
+    private static ServerLevel level;
+    private static ServerPlayer dummy;
+    private static MinecraftServer serverRef;
+
+    private BgN10rcProbe() {
+    }
+
+    /** 开关文件（`user.dir` 在 ModDevGradle 的 runServer 里就是 `run/`） */
+    public static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir"), SWITCH));
+    }
+
+    private static void pass(String name, String detail) {
+        passes++;
+        bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+    }
+
+    private static void fail(String name, String detail) {
+        fails++;
+        bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        if (ok) {
+            pass(name, detail);
+        } else {
+            fail(name, detail);
+        }
+    }
+
+    private static void info(String msg) {
+        bettergold.LOGGER.info("{} INFO {}", TAG, msg);
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!enabled() || done) {
+            return;
+        }
+        done = true;
+        MinecraftServer server = event.getServer();
+        try {
+            run(server);
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            fail("rc_exception", String.valueOf(t));
+        }
+        info("forceload :: forcedNow=" + (level == null ? -1 : level.getForcedChunks().size()));
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={} forcedNow={}", TAG, passes, fails,
+                level == null ? -1 : level.getForcedChunks().size());
+        server.halt(false);
+    }
+
+    private static void run(MinecraftServer server) {
+        serverRef = server;
+        level = server.overworld();
+        dummy = new ServerPlayer(server, level,
+                new GameProfile(UUID.randomUUID(), "bgn10rcdummy"), ClientInformation.createDefault());
+        dummy.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                dummy,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "bgn10rcprobe"), false));
+        dummy.moveTo(1008.5D, 120.0D, 1008.5D, 0.0F, 0.0F);
+        info("ready dummy=" + dummy.getGameProfile().getName() + " level=" + level.dimension().location());
+
+        // ---------- ① 混沌金币充数 3 条（无序） ----------
+        craft("rc_copper", new String[] {copper(), copper(), copper(), copper(), COIN,
+                null, null, null, null}, "minecraft:copper_block", 1, true, 4);
+        craft("rc_iron", new String[] {iron(), iron(), iron(), iron(), iron(), iron(), COIN,
+                null, null}, "minecraft:iron_block", 1, true, 6);
+        craft("rc_gold", new String[] {gold(), gold(), gold(), gold(), gold(), gold(), gold(), gold(), COIN},
+                "minecraft:gold_block", 1, true, 8);
+
+        // ---------- ② 崩乱合金升级锻造模板（9 格） ----------
+        craft("rc_template", new String[] {
+                CG, "minecraft:netherite_upgrade_smithing_template", CG,
+                CG, "bettergold:chaosalloy_ingot", CG,
+                CG, "bettergold:chaosgold_block", CG,
+        }, "bettergold:chaosalloy_upgrade_template", 1, true, -1);
+
+        // ---------- ③ 混沌金附魔书（青金石在主对角、混沌金币串在副对角） ----------
+        craft("rc_book", new String[] {
+                "minecraft:lapis_lazuli", CG, STRING,
+                CG, "minecraft:book", CG,
+                STRING, CG, "minecraft:lapis_lazuli",
+        }, "bettergold:chaosgold_enchanting_book", 1, true, -1);
+
+        // ---------- ④ 万坚金砧（9 格） ----------
+        craft("rc_anvil", new String[] {
+                "minecraft:gold_block", "minecraft:gold_block", "minecraft:gold_block",
+                "minecraft:gold_ingot", "bettergold:sturdygold_upgrade_template", "minecraft:gold_ingot",
+                "minecraft:gold_ingot", "bettergold:sturdygold_ingot", "minecraft:gold_ingot",
+        }, "bettergold:sturdygold_anvil", 1, true, -1);
+
+        // ---------- ⑤ 负向 1：附魔书的**旧口径**（两条对角线写反）不许匹配 ----------
+        craft("rc_neg_book_old_diagonal", new String[] {
+                "minecraft:lapis_lazuli", CG, "minecraft:lapis_lazuli",
+                CG, "minecraft:book", CG,
+                STRING, CG, STRING,
+        }, "bettergold:chaosgold_enchanting_book", 1, false, -1);
+
+        // ---------- ⑥ 负向 2：万坚金砧少一格（中下 = 空）不许匹配 ----------
+        craft("rc_neg_anvil_missing", new String[] {
+                "minecraft:gold_block", "minecraft:gold_block", "minecraft:gold_block",
+                "minecraft:gold_ingot", "bettergold:sturdygold_upgrade_template", "minecraft:gold_ingot",
+                "minecraft:gold_ingot", null, "minecraft:gold_ingot",
+        }, "bettergold:sturdygold_anvil", 1, false, -1);
+
+        // ---------- ⑦ 负向 3：崩乱合金模板换掉一格（中下 混沌金块 → 混沌金锭）不许匹配 ----------
+        craft("rc_neg_template_swap", new String[] {
+                CG, "minecraft:netherite_upgrade_smithing_template", CG,
+                CG, "bettergold:chaosalloy_ingot", CG,
+                CG, CG, CG,
+        }, "bettergold:chaosalloy_upgrade_template", 1, false, -1);
+    }
+
+    private static String copper() {
+        return "minecraft:copper_ingot";
+    }
+
+    private static String iron() {
+        return "minecraft:iron_ingot";
+    }
+
+    private static String gold() {
+        return "minecraft:gold_ingot";
+    }
+
+    private static String desc(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return "<空>";
+        }
+        return stack.getCount() + "x " + BuiltInRegistries.ITEM.getKey(stack.getItem());
+    }
+
+    private static Item item(String id) {
+        Item it = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+        if (it == null || it == net.minecraft.world.item.Items.AIR) {
+            fail("rc_item_missing", "物品注册表里没有 " + id);
+        }
+        return it;
+    }
+
+    /**
+     * 一次真合成：真 CraftingMenu + 真 slotsChanged + 两次真点击。
+     *
+     * @param coinIndex 金币所在格（0..8，-1 = 本条没有金币）；给了就额外断言"币恰好消耗 1 个"
+     * @param expectMatch 正例 = true（必须出产物 + 逐格 −1 + 落进背包）；负向 = false（结果格必须空）
+     */
+    private static void craft(String tag, String[] grid, String wantId, int wantCount,
+                              boolean expectMatch, int coinIndex) {
+        BlockPos pos = new BlockPos(400, 200, 380);
+        level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
+        dummy.getInventory().clearContent();
+
+        CraftingMenu menu = new CraftingMenu(0, dummy.getInventory(),
+                ContainerLevelAccess.create(level, pos));
+        dummy.containerMenu = menu;
+
+        StringBuilder lc = new StringBuilder();
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = grid[i] == null ? ItemStack.EMPTY : new ItemStack(item(grid[i]));
+            menu.getSlot(1 + i).set(stack);
+            lc.append(grid[i] == null ? "-" : grid[i].substring(grid[i].indexOf(':') + 1));
+            lc.append(i % 3 == 2 ? " | " : " ");
+        }
+        info(tag + " :: 摆位 " + lc);
+
+        menu.slotsChanged(menu.getSlot(1).container);
+        ItemStack r1 = menu.getSlot(0).getItem().copy();
+
+        if (!expectMatch) {
+            check(tag + "_no_match", r1.isEmpty(), "负向：结果格=" + desc(r1) + "（期望空）");
+            return;
+        }
+        check(tag + "_result",
+                !r1.isEmpty()
+                        && BuiltInRegistries.ITEM.getKey(r1.getItem()).toString().equals(wantId)
+                        && r1.getCount() == wantCount,
+                "结果格=" + desc(r1) + "（期望 " + wantCount + "x " + wantId + "）；slotsChanged 算出="
+                        + !r1.isEmpty());
+        if (r1.isEmpty()) {
+            return;
+        }
+
+        int[] before = new int[9];
+        for (int i = 0; i < 9; i++) {
+            before[i] = menu.getSlot(1 + i).getItem().getCount();
+        }
+        int free = -1;
+        for (int i = 10; i <= 45; i++) {
+            if (menu.getSlot(i).getItem().isEmpty()) {
+                free = i;
+                break;
+            }
+        }
+        menu.clicked(0, 0, ClickType.PICKUP, dummy);         // 结果格 → 光标（内部 onTake 扣原料）
+        boolean resultCleared = menu.getSlot(0).getItem().isEmpty();
+        menu.clicked(free, 0, ClickType.PICKUP, dummy);      // 光标 → 背包空槽
+
+        List<String> wrong = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            int now = menu.getSlot(1 + i).getItem().getCount();
+            int want = grid[i] == null ? 0 : Math.max(0, before[i] - 1);
+            if (now != want) {
+                wrong.add("格" + i + "(" + (grid[i] == null ? "-" : grid[i]) + ")=" + now + "期望" + want);
+            }
+        }
+        check(tag + "_consumed", wrong.isEmpty(),
+                "逐格 −1 " + (wrong.isEmpty() ? "全部正确" : String.valueOf(wrong))
+                        + "；结果格点击后已空=" + resultCleared);
+
+        if (coinIndex >= 0) {
+            check(tag + "_coin_consumed",
+                    before[coinIndex] == 1 && menu.getSlot(1 + coinIndex).getItem().isEmpty(),
+                    "混沌金币（格" + coinIndex + "）点击前=" + before[coinIndex] + " 点击后="
+                            + menu.getSlot(1 + coinIndex).getItem().getCount());
+        }
+
+        int landed = 0;
+        for (int i = 0; i < dummy.getInventory().getContainerSize(); i++) {
+            ItemStack s = dummy.getInventory().getItem(i);
+            if (!s.isEmpty() && BuiltInRegistries.ITEM.getKey(s.getItem()).toString().equals(wantId)) {
+                landed += s.getCount();
+            }
+        }
+        check(tag + "_landed", landed == wantCount,
+                "两次真点击后落进背包=" + landed + "x（期望 " + wantCount + "）freeSlot=" + free);
+    }
+}

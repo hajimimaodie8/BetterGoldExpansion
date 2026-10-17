@@ -6666,9 +6666,17 @@ else:
     _r4_key = _r4_book_obj.get("key", {})
     if _r4_book_obj.get("type") != "minecraft:crafting_shaped":
         _bgn10r4_bad("bgn10r4-enchanting-book", "附魔书配方不是有序合成（截图的 3×3 摆位）")
-    if _r4_pat != ["LIL", "IBI", "SIS"]:
+    # ⚠ 1.7 bg-n10rc（2026-10-17）**就地更正**：作者口述「右上角和左下角：2 个混沌金币串 /
+    #   左上角和右下角：2 个青晶石」⇒ 青金石在**主对角**、币串在**副对角**。
+    #   旧期望原文留档（不删）：`if _r4_pat != ["LIL", "IBI", "SIS"]:` +
+    #   文案「附魔书的 3×3 摆位 %s ≠ 截图读出的 LIL/IBI/SIS」。
+    #   ⚠ 旧形状把两件平分到左右两条边（青金石在左上/右上、币串在左下/右下）——
+    #   连立档 §2.6 自己写的"100% 读出"都不符；但**计数完全相同** ⇒ 下面那条计数断言
+    #   （`_want_cnt`）本来抓不到它，真正的判据是本轮新增的**逐格**断言 `[bgn10rc-cell]`。
+    if _r4_pat != ["LIS", "IBI", "SIL"]:
         _bgn10r4_bad("bgn10r4-enchanting-book",
-                     "附魔书的 3×3 摆位 %s ≠ 截图读出的 LIL/IBI/SIS" % _r4_pat)
+                     "附魔书的 3×3 摆位 %s ≠ 作者 2026-10-17 口述的 LIS/IBI/SIL"
+                     "（青金石在主对角、混沌金币串在副对角）" % _r4_pat)
     # 计数：青金石 2 / 混沌金锭 4 / 原版书 1 / 混沌金币串 2
     _cnt = {}
     for _ch in "".join(_r4_pat):
@@ -8077,6 +8085,257 @@ if not bgn10r9_problems:
           "两族 8 条成就（parent 链 + challenge 两条 + 清一色 inventory_changed + 刀走标签）/ "
           "METAL_ORDER 含两族且材料前缀仍是 21 件 / 20+16 条中英键全部就位")
 
+# ==========================================================================================
+# 1.7 轮R（bg-n10rc，2026-10-17）：作者用**文字逐格**说清的四类配方 ⇒ 本段**逐格**钉住
+# ==========================================================================================
+# 作者 2026-10-17 原话（逐字进 `docs/1.7-…需求立档.md` §19；这里只摘判据）：
+#   「混沌金币的充数功能…可以参与合成产生铜块、铁块和金块，无需合成：铜块 4 个铜锭加 1 个
+#    混沌金币 / 铁块 6 个铁锭 / 金块 8 个金锭」「崩坏金锭的升级锻造模板…工作台中间是一个崩坏
+#    金锭，下面是一个混沌金块，左面一列和右面一列都是混沌金锭，中上面是一个下界合金锻造模板」
+#   「混沌附魔书…中上、中下、中左、中右 4 个混沌金锭 / 中间一本书 / 右上角和左下角 2 个混沌金币
+#    串 / 左上角和右下角 2 个青晶石」「万间金砧：第一行 3 个金块 / 最中间 1 个万间金升级锻造
+#    模板 / 中左、中右、左下角、右下角 4 个金锭 / 中下角 1 个万间金锭」
+#
+# ★ 核对结论（逐格比对后）：**只有第 3 类（混沌金附魔书）与实现不符** ——
+#   产物把「青金石 / 混沌金币串」**平分在左右两条边上**（旧 `LIL/IBI/SIS`），而作者要的是
+#   **两条对角线**（青金石在左上/右下 = 主对角，币串在右上/左下 = 副对角）⇒ 已改 `LIS/IBI/SIL`。
+#   ⚠ 值得记一笔：立档 §2.6 自己写的"100% 读出"本来就是 LIS/IBI/SIL ⇒ 旧实现**违反了自己的立档**，
+#   而旧关卡（`bgn10r4-enchanting-book`）把错的那一版钉成了契约 ⇒ 这是"关卡钉错了口径"的实例。
+#
+# 本段为什么不用"计数相等"了事：`LIL/IBI/SIS` 与 `LIS/IBI/SIL` 的**计数完全相同**
+#   （2 青金石 / 2 币串 / 4 锭 / 1 书）⇒ 旧关卡那条计数断言**抓不到**这个错。
+#   ⇒ 必须**逐格**（哪一行哪一列是哪个物品），这才是本轮真正缺的维度。
+bgn10rc_problems: list[str] = []
+_bgn10rc_checked = 0
+
+
+def _bgn10rc_bad(tag: str, msg: str) -> None:
+    bgn10rc_problems.append("[%s] %s" % (tag, msg))
+
+
+_RC_DATA = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "recipe"
+_RC_NS = "bettergold"
+_RC_INGOT = _RC_NS + ":chaosgold_ingot"
+_RC_COIN = _RC_NS + ":chaos_coin"
+_RC_STRING = _RC_NS + ":chaos_coin_string"
+
+
+def _rc_recipe(name: str):
+    """读一条配方（稳定 ASCII 文件名；缺文件就记一条问题并返回 None）。"""
+    if not name.isascii() or re.fullmatch(r"[a-z0-9_]+", name) is None:
+        _bgn10rc_bad("bgn10rc-id", "配方文件名不是稳定 ASCII：[a-z0-9_]+ 才允许：" + name)
+        return None
+    path = _RC_DATA / (name + ".json")
+    if not path.is_file():
+        _bgn10rc_bad("bgn10rc-file", "缺配方 data/bettergold/recipe/" + name + ".json")
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _rc_cell(i: int, j: int) -> str:
+    rows = ("第1行", "第2行", "第3行")
+    cols = ("第1列(左)", "第2列(中)", "第3列(右)")
+    return rows[i] + cols[j]
+
+
+def _rc_check_result(name: str, obj, want_id: str) -> None:
+    """产物：id 必须对、**数量必须是 1**（"换数量"这一格也要能单独变红）。"""
+    global _bgn10rc_checked
+    _bgn10rc_checked += 1
+    if obj is None:
+        return
+    res = obj.get("result") or {}
+    if res.get("id") != want_id:
+        _bgn10rc_bad("bgn10rc-result", name + " 的产物不是 " + want_id + "：" + repr(res))
+    if res.get("count") != 1:
+        _bgn10rc_bad("bgn10rc-result", name + " 的产物数量不是 1：" + repr(res))
+
+
+def _rc_want_text(want) -> str:
+    return " / ".join(" ".join(want[i]) for i in range(3))
+
+
+def _rc_check_grid(name: str, obj: dict, want) -> None:
+    """把 shaped 配方展开成 3×3 的**物品 id 网格**，与作者口述的那 9 格逐格比。"""
+    global _bgn10rc_checked
+    _bgn10rc_checked += 1
+    if obj is None:
+        return
+    if obj.get("type") != "minecraft:crafting_shaped":
+        _bgn10rc_bad("bgn10rc-type",
+                     name + " 的 type 不是 minecraft:crafting_shaped（作者给的是 3×3 摆位）："
+                     + str(obj.get("type")))
+        return
+    pat = obj.get("pattern") or []
+    key = obj.get("key") or {}
+    if len(pat) != 3 or any(len(r) != 3 for r in pat):
+        _bgn10rc_bad("bgn10rc-shape", name + " 的 pattern 不是 3 行 × 3 列：" + repr(pat))
+        return
+    for i in range(3):
+        for j in range(3):
+            _bgn10rc_checked += 1
+            ch = pat[i][j]
+            got = (key.get(ch) or {}).get("item")
+            if got != want[i][j]:
+                _bgn10rc_bad("bgn10rc-cell",
+                             name + " 的「" + _rc_cell(i, j) + "」是 " + str(got)
+                             + "，作者口述是 " + str(want[i][j])
+                             + "（整张表： " + _rc_want_text(want) + "）")
+
+
+# ---------- ① 三条「充数」：无序，4 铜锭 / 6 铁锭 / 8 金锭，各 + 1 混沌金币 ----------
+# 作者对铁、金两条只写了锭数（承「它可以参与合成产生铜块、铁块和金块」那一句）⇒
+#   现状三条都带 1 枚币，与「充数」语义一致 ⇒ **按现状**（有序/无序也按现状 = 无序）。
+_RC_FILLERS = (
+    ("copper_block_with_chaos_coin", "minecraft:copper_ingot", 4, "minecraft:copper_block"),
+    ("iron_block_with_chaos_coin", "minecraft:iron_ingot", 6, "minecraft:iron_block"),
+    ("gold_block_with_chaos_coin", "minecraft:gold_ingot", 8, "minecraft:gold_block"),
+)
+for _name, _ing, _n, _out in _RC_FILLERS:
+    _obj = _rc_recipe(_name)
+    _bgn10rc_checked += 4
+    if _obj is None:
+        continue
+    if _obj.get("type") != "minecraft:crafting_shapeless":
+        _bgn10rc_bad("bgn10rc-filler",
+                     _name + " 不是 crafting_shapeless（充数不需要排队列；作者没要求有序）")
+    _ings = [i.get("item") if isinstance(i, dict) else i
+             for i in (_obj.get("ingredients") or [])]
+    if len(_ings) != _n + 1:
+        _bgn10rc_bad("bgn10rc-filler",
+                     _name + " 的材料总数不是 " + str(_n + 1) + "（实际 " + str(len(_ings)) + "）")
+    if _ings.count(_ing) != _n:
+        _bgn10rc_bad("bgn10rc-filler",
+                     _name + " 里 " + _ing + " 不是 " + str(_n) + " 个（实际 "
+                     + str(_ings.count(_ing)) + "）")
+    if _ings.count(_RC_COIN) != 1:
+        _bgn10rc_bad("bgn10rc-filler",
+                     _name + " 里混沌金币不是恰好 1 个（实际 " + str(_ings.count(_RC_COIN))
+                     + "）—— 充数的那枚币必须消耗 1 个")
+    _res = _obj.get("result") or {}
+    if _res.get("id") != _out or _res.get("count") != 1:
+        _bgn10rc_bad("bgn10rc-filler", _name + " 的产物不是 1 个 " + _out + "：" + repr(_res))
+    _extra = sorted(set(i for i in _ings if i not in (_ing, _RC_COIN)))
+    if _extra:
+        _bgn10rc_bad("bgn10rc-filler", _name + " 混进了别的材料：" + repr(_extra))
+
+# ---------- ② 崩乱合金升级锻造模板：9 格逐格 ----------
+_RC_TEMPLATE = (
+    (_RC_INGOT, "minecraft:netherite_upgrade_smithing_template", _RC_INGOT),
+    (_RC_INGOT, _RC_NS + ":chaosalloy_ingot", _RC_INGOT),
+    (_RC_INGOT, _RC_NS + ":chaosgold_block", _RC_INGOT),
+)
+_obj = _rc_recipe("chaosalloy_upgrade_template")
+_rc_check_grid("chaosalloy_upgrade_template", _obj, _RC_TEMPLATE)
+_rc_check_result("chaosalloy_upgrade_template", _obj,
+                 _RC_NS + ":chaosalloy_upgrade_template")
+
+# ---------- ③ 混沌金附魔书：9 格逐格（青金石在主对角、币串在副对角） ----------
+_RC_BOOK = (
+    ("minecraft:lapis_lazuli", _RC_INGOT, _RC_STRING),
+    (_RC_INGOT, "minecraft:book", _RC_INGOT),
+    (_RC_STRING, _RC_INGOT, "minecraft:lapis_lazuli"),
+)
+_obj = _rc_recipe("chaosgold_enchanting_book")
+_rc_check_grid("chaosgold_enchanting_book", _obj, _RC_BOOK)
+_rc_check_result("chaosgold_enchanting_book", _obj,
+                 _RC_NS + ":chaosgold_enchanting_book")
+if _obj is not None:
+    _bgn10rc_checked += 2
+    # 负向 ①：「青晶石」= 原版青金石（不许是自造物品，也不许缺 minecraft 命名空间）
+    _rc_items = [(v or {}).get("item") for v in (_obj.get("key") or {}).values()]
+    if "minecraft:lapis_lazuli" not in _rc_items:
+        _bgn10rc_bad("bgn10rc-book-lapis",
+                     "附魔书里没有 minecraft:lapis_lazuli（作者写的「青晶石」= 青金石）")
+    # 负向 ②：两枚「混沌金币**串**」是本物品，不许写成「混沌金币」(chaos_coin)
+    if _RC_COIN in _rc_items:
+        _bgn10rc_bad("bgn10rc-book-coin",
+                     "附魔书里出现了 bettergold:chaos_coin —— 作者要的是 2 个「混沌金币串」"
+                     "（bettergold:chaos_coin_string），两者是不同物品")
+
+# ---------- ④ 万坚金砧：9 格逐格 ----------
+_RC_ANVIL = (
+    ("minecraft:gold_block", "minecraft:gold_block", "minecraft:gold_block"),
+    ("minecraft:gold_ingot", _RC_NS + ":sturdygold_upgrade_template", "minecraft:gold_ingot"),
+    ("minecraft:gold_ingot", _RC_NS + ":sturdygold_ingot", "minecraft:gold_ingot"),
+)
+_obj = _rc_recipe("sturdygold_anvil")
+_rc_check_grid("sturdygold_anvil", _obj, _RC_ANVIL)
+_rc_check_result("sturdygold_anvil", _obj, _RC_NS + ":sturdygold_anvil")
+
+# ---------- ⑤ 生成器侧：模板那条的**唯一真源**必须自我一致 + 产物与真源逐字节一致 ----------
+# ⚠ 这里不查"文件里有没有某个字符串"（注释里也能有同一串），而是：
+#   (a) 把生成器当模块加载，用**它自己的** check() 跑一遍它自己的 targets()；
+#   (b) 再把它生成的 20 份 JSON 与 `data/bettergold/recipe/` 里的**当前字节**逐一比 ——
+#       这是"真源 ↔ 产物"的同一份判据，手改产物会立刻红。
+_bgn10rc_checked += 3
+_rc_gen = REPO / "tools" / "asset-generator" / "generate_chaosalloy_recipes.py"
+if not _rc_gen.is_file():
+    _bgn10rc_bad("bgn10rc-generator", "缺 generate_chaosalloy_recipes.py（崩乱合金 20 条的唯一真源）")
+else:
+    try:
+        import importlib.util
+        # ⚠ 加载**别人家的生成器**会写 `__pycache__/*.pyc`（本轮实测在 tools/asset-generator/ 里冒出来）
+        #   ⇒ 这里临时关掉字节码缓存，加载完在 finally 复原（跑测不许在工作树留垃圾）。
+        _dwb = sys.dont_write_bytecode
+        sys.dont_write_bytecode = True
+        try:
+            _spec = importlib.util.spec_from_file_location("_bgn10rc_gen", _rc_gen)
+            _mod = importlib.util.module_from_spec(_spec)
+            _spec.loader.exec_module(_mod)      # 模块名不是 __main__ ⇒ 不会写盘
+        finally:
+            sys.dont_write_bytecode = _dwb
+        if list(_mod.TEMPLATE_PATTERN) != ["GIG", "GAG", "GCG"]:
+            _bgn10rc_bad("bgn10rc-generator",
+                         "生成器的模板排布不是 GIG/GAG/GCG：" + repr(_mod.TEMPLATE_PATTERN))
+        _gen_bad = _mod.check(_mod.targets())
+        if _gen_bad:
+            _bgn10rc_bad("bgn10rc-generator", "生成器自检不通过：" + repr(_gen_bad[:4]))
+        _gen_files = _mod.targets()
+        _gen_diff = []
+        for _gname, _gobj in _gen_files:
+            _gwant = json.dumps(_gobj, ensure_ascii=False, indent=2) + "\n"
+            _gpath = _RC_DATA / _gname
+            _bgn10rc_checked += 1
+            if not _gpath.is_file():
+                _gen_diff.append(_gname + "(缺文件)")
+            elif _gpath.read_text(encoding="utf-8") != _gwant:
+                _gen_diff.append(_gname)
+        if _gen_diff:
+            _bgn10rc_bad("bgn10rc-generator",
+                         "产物与生成器（唯一真源）不逐字节一致：" + repr(_gen_diff[:6])
+                         + "（共 " + str(len(_gen_diff)) + " 个）")
+    except SystemExit:
+        _bgn10rc_bad("bgn10rc-generator", "加载生成器时它自己 exit 了（自检失败）")
+    except Exception as _e:                     # noqa: BLE001 —— 任何异常都不许变绿
+        _bgn10rc_bad("bgn10rc-generator", "加载生成器失败：" + repr(_e))
+
+# ---------- ⑥ 文档侧：作者这次的原话必须**逐字**落档（新 §19） ----------
+_bgn10rc_checked += 5
+_rc_doc = REPO / "docs" / "1.7-\u6df7\u6c8c\u91d1\u4e0e\u5d29\u4e71\u5408\u91d1-\u9700\u6c42\u7acb\u6863.md"
+if not _rc_doc.is_file():
+    _bgn10rc_bad("bgn10rc-doc", "缺 docs/1.7-…需求立档.md")
+else:
+    _rc_doc_txt = _rc_doc.read_text(encoding="utf-8")
+    for _needle, _why in (
+            (u"bg-n10rc", u"docs/1.7 里没有本轮（bg-n10rc）这一节"),
+            (u"4 个铜锭加上 1 个混沌金币", u"没有逐字收录「4 个铜锭加上 1 个混沌金币」"),
+            (u"左面一列和右面一列都是混沌金锭", u"没有逐字收录模板配方的左右两列"),
+            (u"右上角和左下角", u"没有逐字收录附魔书的副对角（右上 + 左下）"),
+            (u"第一行：3 个金块", u"没有逐字收录万坚金砧的第一行")):
+        if _needle not in _rc_doc_txt:
+            _bgn10rc_bad("bgn10rc-doc", _why + "（缺「" + _needle + "」）")
+
+_bgn10rc_checked += 1
+if _bgn10rc_checked < 40:
+    _bgn10rc_bad("bgn10rc-anti-vacuum", "本段只跑了 %d 条判定（反空转）" % _bgn10rc_checked)
+print("1.7 轮R（bg-n10rc 四类配方逐格）问题: "
+      + str(len(bgn10rc_problems)) + " " + str(bgn10rc_problems[:4])
+      + "（本段判定 " + str(_bgn10rc_checked) + " 条）")
+if not bgn10rc_problems:
+    print("[bgn10rc-ok] 四类配方逐格一致：充数 3 条（4/6/8 + 1 币 → 块）/ 崩乱合金模板 9 格 / "
+          "混沌金附魔书 9 格（青金石主对角、币串副对角）/ 万坚金砧 9 格；生成器自检 0 条")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -8086,7 +8345,8 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgfix9_problems, bgfix10_problems, bgfix11_problems,
                        symmetric_problems, beacon_problems, bgn10_problems, _bgn10w_problems,
                        _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems,
-                       bgn10r8_problems, bgn10r9_problems)
+                       bgn10r8_problems, bgn10r9_problems,
+                       bgn10rc_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

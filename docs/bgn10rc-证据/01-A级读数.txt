@@ -1,0 +1,59 @@
+bg-n10rc A 级读数（真服务端 `gradlew runServer` + 真 `ServerPlayer` + 真 `CraftingMenu` + 两次真点击）
+==============================================================================================================
+来源：run/logs/latest.log（UTF-8）。探针源码：脚本副本/BgN10rcProbe.java.txt。
+世界：run/world（服务器 level-name=world，**不是**作者的 run/saves/新的世界）。
+
+【总结】SUMMARY pass=24 fail=0 forcedNow=0
+  PASS 行数 = 24 / FAIL 行数 = 0
+
+—— 逐条读数 ——
+INFO ready dummy=bgn10rcdummy level=minecraft:overworld
+INFO rc_copper :: 摆位 copper_ingot copper_ingot copper_ingot | copper_ingot chaos_coin - | - - - | 
+PASS rc_copper_result :: 结果格=1x minecraft:copper_block（期望 1x minecraft:copper_block）；slotsChanged 算出=true
+PASS rc_copper_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+PASS rc_copper_coin_consumed :: 混沌金币（格4）点击前=1 点击后=0
+PASS rc_copper_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+INFO rc_iron :: 摆位 iron_ingot iron_ingot iron_ingot | iron_ingot iron_ingot iron_ingot | chaos_coin - - | 
+PASS rc_iron_result :: 结果格=1x minecraft:iron_block（期望 1x minecraft:iron_block）；slotsChanged 算出=true
+PASS rc_iron_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+PASS rc_iron_coin_consumed :: 混沌金币（格6）点击前=1 点击后=0
+PASS rc_iron_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+INFO rc_gold :: 摆位 gold_ingot gold_ingot gold_ingot | gold_ingot gold_ingot gold_ingot | gold_ingot gold_ingot chaos_coin | 
+PASS rc_gold_result :: 结果格=1x minecraft:gold_block（期望 1x minecraft:gold_block）；slotsChanged 算出=true
+PASS rc_gold_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+PASS rc_gold_coin_consumed :: 混沌金币（格8）点击前=1 点击后=0
+PASS rc_gold_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+INFO rc_template :: 摆位 chaosgold_ingot netherite_upgrade_smithing_template chaosgold_ingot | chaosgold_ingot chaosalloy_ingot chaosgold_ingot | chaosgold_ingot chaosgold_block chaosgold_ingot | 
+PASS rc_template_result :: 结果格=1x bettergold:chaosalloy_upgrade_template（期望 1x bettergold:chaosalloy_upgrade_template）；slotsChanged 算出=true
+PASS rc_template_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+PASS rc_template_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+INFO rc_book :: 摆位 lapis_lazuli chaosgold_ingot chaos_coin_string | chaosgold_ingot book chaosgold_ingot | chaos_coin_string chaosgold_ingot lapis_lazuli | 
+PASS rc_book_result :: 结果格=1x bettergold:chaosgold_enchanting_book（期望 1x bettergold:chaosgold_enchanting_book）；slotsChanged 算出=true
+PASS rc_book_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+PASS rc_book_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+INFO rc_anvil :: 摆位 gold_block gold_block gold_block | gold_ingot sturdygold_upgrade_template gold_ingot | gold_ingot sturdygold_ingot gold_ingot | 
+PASS rc_anvil_result :: 结果格=1x bettergold:sturdygold_anvil（期望 1x bettergold:sturdygold_anvil）；slotsChanged 算出=true
+PASS rc_anvil_consumed :: 逐格 −1 全部正确；结果格点击后已空=true
+PASS rc_anvil_landed :: 两次真点击后落进背包=1x（期望 1）freeSlot=10
+INFO rc_neg_book_old_diagonal :: 摆位 lapis_lazuli chaosgold_ingot lapis_lazuli | chaosgold_ingot book chaosgold_ingot | chaos_coin_string chaosgold_ingot chaos_coin_string | 
+PASS rc_neg_book_old_diagonal_no_match :: 负向：结果格=<空>（期望空）
+INFO rc_neg_anvil_missing :: 摆位 gold_block gold_block gold_block | gold_ingot sturdygold_upgrade_template gold_ingot | gold_ingot - gold_ingot | 
+PASS rc_neg_anvil_missing_no_match :: 负向：结果格=<空>（期望空）
+INFO rc_neg_template_swap :: 摆位 chaosgold_ingot netherite_upgrade_smithing_template chaosgold_ingot | chaosgold_ingot chaosalloy_ingot chaosgold_ingot | chaosgold_ingot chaosgold_ingot chaosgold_ingot | 
+PASS rc_neg_template_swap_no_match :: 负向：结果格=<空>（期望空）
+INFO forceload :: forcedNow=0
+SUMMARY pass=24 fail=0 forcedNow=0
+
+—— 四类正例的「产出 / 消耗 / 落袋」对照 ——
+  ① 铜块：4 copper_ingot + 1 chaos_coin ⇒ 1 copper_block；币（格4）1→0；逐格 −1；落袋 1
+  ① 铁块：6 iron_ingot  + 1 chaos_coin ⇒ 1 iron_block；币（格6）1→0；逐格 −1；落袋 1
+  ① 金块：8 gold_ingot  + 1 chaos_coin ⇒ 1 gold_block；币（格8）1→0；逐格 −1；落袋 1
+  ② 模板：6 混沌金锭 + 原版模板 + 崩乱合金锭 + 混沌金块 ⇒ 1 chaosalloy_upgrade_template；逐格 −1；落袋 1
+  ③ 附魔书：LIS/IBI/SIL ⇒ 1 chaosgold_enchanting_book；逐格 −1；落袋 1
+  ④ 万坚金砧：BBB/ITI/ISI ⇒ 1 sturdygold_anvil；逐格 −1；落袋 1
+  负向 1：附魔书**旧口径** LIL/IBI/SIS ⇒ 结果格空（说明「按作者改过」这件事在运行期真的生效）
+  负向 2：万坚金砧中下留空 ⇒ 结果格空
+  负向 3：崩乱合金模板中下换成混沌金锭 ⇒ 结果格空
+
+—— forceload 双向 ——
+  SUMMARY pass=24 fail=0 forcedNow=0

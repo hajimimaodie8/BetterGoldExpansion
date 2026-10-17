@@ -1,0 +1,18 @@
+bg-n10rc 收尾核对（跑前留档 = 04-跑前留档.json）
+==============================================================================================================
+
+① run/server.properties : sha256=a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4 ↔ 跑前 .bak=a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4 ⇒ 逐字节复原成功（runServer 启动时把 server.properties 重写过：a2229937… → 4f36394a…，收尾已用跑前 .bak 字节复制复原）
+   与 prep 里记的跑前值相同：是
+② run/saves : 跑前 files=29 max_mtime=1791542894.0081248 bytes=18862026 ／ 跑后 files=29 max_mtime=1791542894.0081248 bytes=18862026
+   ⇒ 作者存档（新的世界）一个字节都没动 ✓
+② run/world : 跑前 files=61 max_mtime=1792238483.8460639 bytes=48313470 ／ 跑后 files=63 max_mtime=1792240327.4070568 bytes=50078844
+   ⇒ 探针服端世界（level-name=world），本轮 runServer 会写它：属预期
+   run/saves 名单：['新的世界']
+③ run/ 下临时开关文件：无 ⇒ 干净
+④ 探针：src 命中 0 个（必须 0）[]；留档副本 docs/bgn10rc-证据/脚本副本/BgN10rcProbe.java.txt（sha256=674ecf3097e5304bdbd1fe4009235e8f46abf2a9e86519ee8618fc6a37177312，13316 B）
+⑤ 本轮工作树改动（3 个 tracked 文件）的最终 SHA256：
+   src/main/resources/data/bettergold/recipe/chaosgold_enchanting_book.json 7726bd7e739f56b74d840ce896df35a054ebbc5b2c6d918caea1fb04c7b7eae8  445 B
+   tools/asset-generator/validate_metal_data.py                           0f17e3d83d5c7087b7cfeef543deae5471455210c652d06d74e66f9acc1cb3ee  551109 B
+   docs/1.7-混沌金与崩乱合金-需求立档.md                                              7b3b7012d699e2b380ca209ab927e89f6e79a1600d9ae449c2ab0024cf59b2a8  223697 B
+
+【总判】全部符合预期

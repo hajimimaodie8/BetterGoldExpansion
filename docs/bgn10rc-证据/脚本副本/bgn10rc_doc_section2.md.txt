@@ -1,0 +1,77 @@
+
+### 19.5 扰动实测（8 用例；`docs/bgn10rc-证据/03-扰动矩阵.txt`）
+
+判据 = **真扰动必须 exit 1 且点名对应 tag**、**只改注释必须仍 exit 0**、**每例逐字节复原 + SHA256 自证**。
+
+| 用例 | 改什么 | exit | 命中的 tag | 复原 |
+|---|---|---|---|---|
+| `book-diag-swap` | 附魔书两条对角线换回旧口径（`LIS/SIL → LIL/SIS`） | **1** | `bgn10r4-enchanting-book` + `bgn10rc-cell`×2 | 逐字节 ✓ |
+| `book-count-2` | 附魔书产物数量 `1 → 2` | **1** | `bgn10rc-result` | 逐字节 ✓ |
+| `book-coin` | 附魔书 `chaos_coin_string → chaos_coin` | **1** | `bgn10rc-cell`×2 + `bgn10rc-book-coin` | 逐字节 ✓ |
+| `template-cell` | 崩乱合金模板中上 `GIG → GIC`（锭换块） | **1** | `bgn10rc-cell` | 逐字节 ✓ |
+| `anvil-cell` | 万坚金砧 `ISI → ISS`（右下 金锭 → 万坚金锭） | **1** | `bgn10rc-cell` | 逐字节 ✓ |
+| `filler-count` | 铜块 4 铜锭 → 3 铜锭 | **1** | `bgn10rc-filler` | 逐字节 ✓ |
+| `generator-pattern` | 真源 `TEMPLATE_PATTERN` 的 `GCG → GIG` | **1** | `bgn10rc-generator`（产物与真源不再逐字节一致） | 逐字节 ✓ |
+| **`comment-only`** | 只在关卡里加一条注释（注释里逐字写 `LIL/IBI/SIS`、`GIG/GAG/GIG`） | **0** | —（仍绿） | 逐字节 ✓ |
+
+> 收尾再跑一次基线：**exit 0**（复原后回到绿）。
+
+### 19.6 构建与六校验器（判据 = exit + 关键计数行 两列；`docs/bgn10rc-证据/20-六校验器.txt`）
+
+| 命令 / 脚本 | exit | 关键计数行 |
+|---|---|---|
+| `gradlew compileJava` | **0** | `BUILD SUCCESSFUL in 929ms` |
+| `gradlew runData` | **0** | `BUILD SUCCESSFUL in 14s` |
+| `gradlew processResources jar --rerun-tasks` | **0** | `BUILD SUCCESSFUL in 8s`（产物 `build/libs/bettergold-1.6.0.jar`） |
+| `validate_metal_assets.py` | **0** | `胚底贴图/模型问题: 0 []`（其余四段 0 条） |
+| `validate_metal_data.py` | **0** | `问题合计 0 条`；`1.7 轮R（bg-n10rc 四类配方逐格）问题: 0 []（本段判定 76 条）`；`[bgn10rc-ok] …` |
+| `validate_trim_assets.py` | **0** | `唯一值个数=11 / 11`；`实际检查了 76 项` |
+| `validate_advancements.py` | **0** | `[bgach] 59 个成就 / 142 条 criteria / 语言键 118 条` |
+| `check_jar_clean.py` | **0** | `[jar-clean-ok] 条目 2763；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0` |
+| `check_forced_chunks.py` | **0** | `data.Forced = []`；`[chunks-forced-ok]` |
+
+> ⚠ `build/libs` 里另有历史产物 `bettergold-1.5.0.jar`（旧版本），`check_jar_clean` 只核对本次的 1.6.0。
+
+### 19.7 A 级读数（真服务端 + 真 `ServerPlayer` + 真 `CraftingMenu` + **两次真点击**）
+
+证据：`docs/bgn10rc-证据/01-A级读数.txt`（`run/logs/latest.log` 的 UTF-8 原文摘录）、
+`00-探针原始行.txt`、探针源码留档 `脚本副本/BgN10rcProbe.java.txt`。
+**`SUMMARY pass=24 fail=0 forcedNow=0`**；服务器世界 = `run/world`（`level-name=world`），
+**没有打开作者的 `run/saves/新的世界`**（跑前/跑后 29 个文件、18,862,026 B、最大 mtime 全等）。
+
+| 组 | 用例 | 读数 |
+|---|---|---|
+| ① 铜块 | `rc_copper_result` / `_consumed` / `_coin_consumed` / `_landed` | 结果格 `1x minecraft:copper_block`；4 铜锭各 −1；**混沌金币（格4）1→0**；产物落进背包 1 个 |
+| ① 铁块 | `rc_iron_*` | 结果格 `1x minecraft:iron_block`；6 铁锭各 −1；**币（格6）1→0**；落袋 1 |
+| ① 金块 | `rc_gold_*` | 结果格 `1x minecraft:gold_block`；8 金锭各 −1；**币（格8）1→0**；落袋 1 |
+| ② 模板 | `rc_template_*` | 结果格 `1x bettergold:chaosalloy_upgrade_template`；9 格各 −1（模板 / 崩乱合金锭 / 混沌金块 / 6 锭 各消耗 1）；落袋 1 |
+| ③ 附魔书 | `rc_book_*` | 结果格 `1x bettergold:chaosgold_enchanting_book`；`LIS/IBI/SIL` 9 格各 −1；落袋 1 |
+| ④ 万坚金砧 | `rc_anvil_*` | 结果格 `1x bettergold:sturdygold_anvil`；`BBB/ITI/ISI` 9 格各 −1；落袋 1 |
+| 负向 1 | `rc_neg_book_old_diagonal_no_match` | 旧口径摆位（`LIL/IBI/SIS`）⇒ **结果格空**（证明改动在运行期真的生效） |
+| 负向 2 | `rc_neg_anvil_missing_no_match` | 万坚金砧中下留空 ⇒ 结果格空 |
+| 负向 3 | `rc_neg_template_swap_no_match` | 崩乱合金模板中下换成混沌金锭 ⇒ 结果格空 |
+
+> "真"在哪：`CraftingMenu` 用**真** `ContainerLevelAccess.create(level, pos)`（否则 `slotsChanged` 里的
+> `access.execute(...)` 是空操作、结果格永远空）；`slotsChanged` 走的是原版
+> `CraftingMenu#slotChangedCraftingGrid` → 真 `RecipeManager#getRecipeFor` → 真 `assemble`；
+> 两次 `menu.clicked(0/free, PICKUP)` 是真玩家那条路径，消耗由 `ResultSlot#onTake` 逐格 −1。
+
+### 19.8 共享文件与 `run\` 执行情况（`docs/bgn10rc-证据/09-收尾核对.txt`）
+
+* **`run\` 独占**：开工前查过进程（只有 Gradle daemon，无 `java` 的 runServer/runClient），整轮 `runServer` 只跑 1 次、跑完确认进程退出。
+* **`run/server.properties`**：服务器启动时**自己重写过**（`a2229937…` → `4f36394a…`）⇒ 收尾用**跑前的 `.bak` 字节复制**复原，回到 `a2229937…`（逐字节相同，两列 SHA 见证据）。
+* **作者的存档** `run/saves/新的世界`：跑前/跑后 **文件数 29 / 18,862,026 B / 最大 mtime 全等** ⇒ 一个字节没动。
+* **`run/world`**（探针服端世界，`level-name=world`）：61 → 63 文件（属预期，服务器正常存盘）。
+* **探针**：`probe/bgn10rc/` 隔离；**删之前先把源码复制到 `docs/bgn10rc-证据/脚本副本/BgN10rcProbe.java.txt`**（sha256 `674ecf30…`，13,316 B）；之后删 `src` 副本 + `run/bgn10rc-probe.enabled`，`src` 里 `PROBE|BgN10rc` 命中 **0**。
+* **工作树只动 3 个 tracked 文件**（附魔书 JSON / `validate_metal_data.py` / 本立档）；`git status` 里其余是 `docs/bgn10rc-证据/` 与本轮之前就在的 `docs/1.7贴图更新包-素材清单/`。
+* **未 commit、未 push**；**原始 zip 与归档素材本轮一个字节都没碰**（本轮没有任何贴图/素材动作）。
+* 收尾清掉了跑测副产物 `tools/asset-generator/__pycache__/`（校验器 import 生成器 / `metal_forms` 会留 `.pyc`；本轮已在关卡里用 `sys.dont_write_bytecode` 关掉"加载生成器"那一份）。
+
+### 19.9 人眼 / 未验证项（诚实清单）
+
+1. **手册里的附魔书配方页**：Patchouli 的 crafting 页是按**配方 id 现取**渲染的 ⇒ 改 JSON 后页面自动跟着变，
+   但**本轮没有截图比对**（人眼项）。
+2. **JEI 里的四类配方显示**（尤其附魔书两条对角线）没有截图；A 级证的是"服务端匹配 + 产出 + 消耗"。
+3. **"无需合成"的真实含义**仍待作者一句话确认（§19.3-a）：若他要的是"币不参与、只有锭"或"1 币换 1 块"，
+   改的是三条 JSON + 关卡一格（本轮按他的三行原文）。
+4. **铁/金两条各带 1 枚币**是按"充数"语义推的（他没复述）；若他要求只有铜块带币，删两行 JSON 即可。

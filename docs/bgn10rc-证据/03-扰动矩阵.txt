@@ -1,0 +1,80 @@
+bg-n10rc 扰动矩阵（判据：真扰动 exit 1 + 点名 tag；只改注释 exit 0；每例逐字节复原）
+==============================================================================================================
+
+【基线】validate_metal_data.py exit=0 【绿】
+### book-diag-swap（把两条对角线换回去 = 旧口径）
+  文件      : src/main/resources/data/bettergold/recipe/chaosgold_enchanting_book.json
+  改后      : sha256=c13099266809060f2b9c0193fc8f546e28759eca45ea1bd5707e20051ee587c3（445 B）
+  exit      : 1（期望 1）PASS
+  命中 tag  : ['bgn10r4-enchanting-book', 'bgn10rc-cell']（期望 ['bgn10r4-enchanting-book', 'bgn10rc-cell']）PASS
+  复原      : sha256=7726bd7e739f56b74d840ce896df35a054ebbc5b2c6d918caea1fb04c7b7eae8 ↔ 改前 7726bd7e739f56b74d840ce896df35a054ebbc5b2c6d918caea1fb04c7b7eae8 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : 1.7 轮4（混沌金盔甲 / 禁果 / 附魔书：盔甲区间 4 件）问题: 1 ["[bgn10r4-enchanting-book] 附魔书的 3×3 摆位 ['LIL', 'IBI', 'SIS'] ≠ 作者 2026-10-17 口述的 LIS/IBI/SIL（青金石在主对角、混沌金币串在副对角）"]
+  → 点名    : 1.7 轮R（bg-n10rc 四类配方逐格）问题: 2 ['[bgn10rc-cell] chaosgold_enchanting_book 的「第1行第3列(右)」是 minecraft:lapis_lazuli，作者口述是 bettergold:chaos_coin_string（整张表： minecraft:lapis_lazuli bettergold:chaosgold_ingot b
+
+### book-count-2（产物数量 1 → 2）
+  文件      : src/main/resources/data/bettergold/recipe/chaosgold_enchanting_book.json
+  改后      : sha256=6fe7184f0fe863d259b1daa21c2e0a771c3b603e3f748c4e66a26a9ce5425247（445 B）
+  exit      : 1（期望 1）PASS
+  命中 tag  : ['bgn10rc-result']（期望 ['bgn10rc-result']）PASS
+  复原      : sha256=7726bd7e739f56b74d840ce896df35a054ebbc5b2c6d918caea1fb04c7b7eae8 ↔ 改前 7726bd7e739f56b74d840ce896df35a054ebbc5b2c6d918caea1fb04c7b7eae8 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : 1.7 轮R（bg-n10rc 四类配方逐格）问题: 1 ["[bgn10rc-result] chaosgold_enchanting_book 的产物数量不是 1：{'id': 'bettergold:chaosgold_enchanting_book', 'count': 2}"]（本段判定 76 条）
+
+### book-coin（混沌金币串 → 混沌金币）
+  文件      : src/main/resources/data/bettergold/recipe/chaosgold_enchanting_book.json
+  改后      : sha256=a4e968b9e36963c9ca31c848bfb86d6e7fff56f2cd722dd7a428c855f5aa56de（438 B）
+  exit      : 1（期望 1）PASS
+  命中 tag  : ['bgn10rc-cell', 'bgn10rc-book-coin']（期望 ['bgn10rc-cell', 'bgn10rc-book-coin']）PASS
+  复原      : sha256=7726bd7e739f56b74d840ce896df35a054ebbc5b2c6d918caea1fb04c7b7eae8 ↔ 改前 7726bd7e739f56b74d840ce896df35a054ebbc5b2c6d918caea1fb04c7b7eae8 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : 1.7 轮4（混沌金盔甲 / 禁果 / 附魔书：盔甲区间 4 件）问题: 1 ["[bgn10r4-enchanting-book] 附魔书配方计数 {'minecraft:lapis_lazuli': 2, 'bettergold:chaosgold_ingot': 4, 'bettergold:chaos_coin': 2, 'minecraft:book': 1} ≠ 作者给的 {'mine
+  → 点名    : 1.7 轮R（bg-n10rc 四类配方逐格）问题: 3 ['[bgn10rc-cell] chaosgold_enchanting_book 的「第1行第3列(右)」是 bettergold:chaos_coin，作者口述是 bettergold:chaos_coin_string（整张表： minecraft:lapis_lazuli bettergold:chaosgold_ingot be
+
+### template-cell（中上 混沌金锭 → 混沌金块）
+  文件      : src/main/resources/data/bettergold/recipe/chaosalloy_upgrade_template.json
+  改后      : sha256=23cb90f22dc725ca04aabb5fed689e813565a1df7ef511572befb786219a0f09（459 B）
+  exit      : 1（期望 1）PASS
+  命中 tag  : ['bgn10rc-cell']（期望 ['bgn10rc-cell']）PASS
+  复原      : sha256=5ca1abe7084a88e73967f49f3dbf4a1b8edfe2a84ef9ea2100fcaed73669f695 ↔ 改前 5ca1abe7084a88e73967f49f3dbf4a1b8edfe2a84ef9ea2100fcaed73669f695 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : 1.7 轮R（bg-n10rc 四类配方逐格）问题: 2 ['[bgn10rc-cell] chaosalloy_upgrade_template 的「第1行第3列(右)」是 bettergold:chaosgold_block，作者口述是 bettergold:chaosgold_ingot（整张表： bettergold:chaosgold_ingot minecraft:netherite_
+
+### anvil-cell（右下 金锭 → 万坚金锭）
+  文件      : src/main/resources/data/bettergold/recipe/sturdygold_anvil.json
+  改后      : sha256=ec5d3e28f499ffa74b2429285f819a461713f278080575e45037d8869e3cce7e（429 B）
+  exit      : 1（期望 1）PASS
+  命中 tag  : ['bgn10rc-cell']（期望 ['bgn10rc-cell']）PASS
+  复原      : sha256=c3aae70be35bf4e02f815239a3767f57dcf61946ffd2907a85f4a626ae4770ec ↔ 改前 c3aae70be35bf4e02f815239a3767f57dcf61946ffd2907a85f4a626ae4770ec 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : 1.7 轮R（bg-n10rc 四类配方逐格）问题: 1 ['[bgn10rc-cell] sturdygold_anvil 的「第3行第3列(右)」是 bettergold:sturdygold_ingot，作者口述是 minecraft:gold_ingot（整张表： minecraft:gold_block minecraft:gold_block minecraft:gold_block 
+
+### filler-count（铜 4 → 3）
+  文件      : src/main/resources/data/bettergold/recipe/copper_block_with_chaos_coin.json
+  改后      : sha256=fd3b3a8e0b946c756a49d5491957fdea12d1f4d0a3fe0209f3345d95788b57df（321 B）
+  exit      : 1（期望 1）PASS
+  命中 tag  : ['bgn10rc-filler']（期望 ['bgn10rc-filler']）PASS
+  复原      : sha256=4e33a55db45cadccd57b9a5b45437d424c62b4118b58bede8d86436fbf3f80fc ↔ 改前 4e33a55db45cadccd57b9a5b45437d424c62b4118b58bede8d86436fbf3f80fc 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : 1.7 轮R（bg-n10rc 四类配方逐格）问题: 2 ['[bgn10rc-filler] copper_block_with_chaos_coin 的材料总数不是 5（实际 4）', '[bgn10rc-filler] copper_block_with_chaos_coin 里 minecraft:copper_ingot 不是 4 个（实际 3）']（本段判定 76 条）
+
+### generator-pattern（真源模板排布 GCG → GIG）
+  文件      : tools/asset-generator/generate_chaosalloy_recipes.py
+  改后      : sha256=0ff15e79a1de7445d1d97b66262d8bb64934206bebe73f04953a672792ff1257（11877 B）
+  exit      : 1（期望 1）PASS
+  命中 tag  : ['bgn10rc-generator']（期望 ['bgn10rc-generator']）PASS
+  复原      : sha256=df6cf0ab114438d2d245cd29926988167b03d4cd50c5d5de6059bf3fa5f02a0d ↔ 改前 df6cf0ab114438d2d245cd29926988167b03d4cd50c5d5de6059bf3fa5f02a0d 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : 1.7 轮R（bg-n10rc 四类配方逐格）问题: 2 ["[bgn10rc-generator] 生成器的模板排布不是 GIG/GAG/GCG：['GIG', 'GAG', 'GIG']", "[bgn10rc-generator] 产物与生成器（唯一真源）不逐字节一致：['chaosalloy_upgrade_template.json']（共 1 个）"]（本段判定 76 条）
+
+### comment-only（只在关卡里加一条注释，注释里逐字含错的排布）
+  文件      : tools/asset-generator/validate_metal_data.py
+  改后      : sha256=082df826bb377257ecfe624b283979572826f0485032fc9bac6824b90ec5fb31（551208 B）
+  exit      : 0（期望 0）PASS
+  命中 tag  : []（期望 []）PASS
+  复原      : sha256=0f17e3d83d5c7087b7cfeef543deae5471455210c652d06d74e66f9acc1cb3ee ↔ 改前 0f17e3d83d5c7087b7cfeef543deae5471455210c652d06d74e66f9acc1cb3ee 一致
+  ★ 读数    : bg-15w §八 追加轮② 问题合计: 0 []
+  → 点名    : [bgn10rc-ok] 四类配方逐格一致：充数 3 条（4/6/8 + 1 币 → 块）/ 崩乱合金模板 9 格 / 混沌金附魔书 9 格（青金石主对角、币串副对角）/ 万坚金砧 9 格；生成器自检 0 条
+
+【收尾】复原后 validate_metal_data.py exit=0 【绿】
+【总判】全部符合预期

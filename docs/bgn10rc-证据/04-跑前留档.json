@@ -1,0 +1,59 @@
+{
+  "git_head": "f9e60eba4c25456f1277e12c8cd30f5dccb9cf50",
+  "targets": {
+    "src/main/resources/data/bettergold/recipe/chaosgold_enchanting_book.json": {
+      "sha256": "c13099266809060f2b9c0193fc8f546e28759eca45ea1bd5707e20051ee587c3",
+      "bytes": 445
+    },
+    "src/main/resources/data/bettergold/recipe/chaosalloy_upgrade_template.json": {
+      "sha256": "5ca1abe7084a88e73967f49f3dbf4a1b8edfe2a84ef9ea2100fcaed73669f695",
+      "bytes": 459
+    },
+    "src/main/resources/data/bettergold/recipe/sturdygold_anvil.json": {
+      "sha256": "c3aae70be35bf4e02f815239a3767f57dcf61946ffd2907a85f4a626ae4770ec",
+      "bytes": 429
+    },
+    "src/main/resources/data/bettergold/recipe/copper_block_with_chaos_coin.json": {
+      "sha256": "4e33a55db45cadccd57b9a5b45437d424c62b4118b58bede8d86436fbf3f80fc",
+      "bytes": 363
+    },
+    "src/main/resources/data/bettergold/recipe/iron_block_with_chaos_coin.json": {
+      "sha256": "a9b3cc2a0d7096c976a0a7426871e4d6e1bf84d8753f7d2775411f8d82b01d24",
+      "bytes": 433
+    },
+    "src/main/resources/data/bettergold/recipe/gold_block_with_chaos_coin.json": {
+      "sha256": "265bcbd3a59c6ac67b7fb92d71958912fdf8b15af9a6e063b820a38c28a07233",
+      "bytes": 513
+    },
+    "tools/asset-generator/validate_metal_data.py": {
+      "sha256": "2308f653d05afa28198ef16eb269c8be47e83c3dd50e3131af8c38bd29075b79",
+      "bytes": 536240
+    },
+    "tools/asset-generator/generate_chaosalloy_recipes.py": {
+      "sha256": "df6cf0ab114438d2d245cd29926988167b03d4cd50c5d5de6059bf3fa5f02a0d",
+      "bytes": 11877
+    }
+  },
+  "run": {
+    "saves": {
+      "exists": true,
+      "files": 29,
+      "max_mtime": 1791542894.0081248,
+      "bytes": 18862026
+    },
+    "world": {
+      "exists": true,
+      "files": 61,
+      "max_mtime": 1792238483.8460639,
+      "bytes": 48313470
+    },
+    "saves_names": [
+      "新的世界"
+    ]
+  },
+  "server_properties": {
+    "sha256": "a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4",
+    "bak": "a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4",
+    "bytes": 1440
+  }
+}
