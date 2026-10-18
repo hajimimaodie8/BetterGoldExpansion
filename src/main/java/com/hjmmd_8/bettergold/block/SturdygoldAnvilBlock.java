@@ -76,8 +76,15 @@ public class SturdygoldAnvilBlock extends AnvilBlock {
      */
     public static final MapCodec<AnvilBlock> CODEC = simpleCodec(SturdygoldAnvilBlock::new);
 
-    /** 容器标题（与原版砧一样是 {@code container.repair} 的那个键？不 —— 自己的键，见 lang） */
-    private static final Component CONTAINER_TITLE = Component.translatable("container.bettergold.sturdygold_anvil");
+    /**
+     * 容器标题 = <b>原版砧那个键</b>（{@code container.repair}，原版 {@code AnvilBlock.java:44} 逐字相同）。
+     *
+     * <p>⚠ 旧口径（bg-n10 轮8，原文留档）：原先用本模组自己的键
+     * {@code container.bettergold.sturdygold_anvil}（"万坚金砧"）。作者 2026-10-18 要求
+     * 「所有 GUI 标识换成和普通铁砧完全一致」⇒ 标题也换成原版那句「修理和命名」。
+     * 旧语言键仍保留在 zh/en 里（不删），只是界面不再用它。</p>
+     */
+    private static final Component CONTAINER_TITLE = Component.translatable("container.repair");
 
     /**
      * 方块属性：<b>照原版砧全量复制，只把硬度 / 抗爆换成"不可破坏"</b>。

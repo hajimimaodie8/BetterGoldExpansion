@@ -1,0 +1,17 @@
+﻿# bg-n10anvil 改动清单（文件 : 关键行）
+
+| 文件 | 改动 |
+|---|---|
+| src/main/resources/assets/bettergold/models/block/sturdygold_anvil.json | 重写：4 个 element 几何不变；21 个面按作者 5 张独立视图重算 uv/rotation（表见 §25.4 / 05-面槽uv表.json） |
+| src/main/java/com/hjmmd_8/bettergold/client/SturdygoldAnvilScreen.java | 整类重写：extends ItemCombinerScreen；删 COST_BAR/右上/左下/幽灵；加标题/物品栏/花费/EditBox/text_field/error/slotChanged |
+| src/main/java/com/hjmmd_8/bettergold/menu/SturdygoldAnvilMenu.java | 删 syncNameFromInput；加 requestedName + setItemName 覆写；金币串路径按原版名字语义 + renameCost |
+| src/main/java/com/hjmmd_8/bettergold/block/SturdygoldAnvilBlock.java | CONTAINER_TITLE -> Component.translatable("container.repair") |
+| tools/asset-generator/validate_metal_data.py | r8 界面段改新口径（旧期望留档）+ 新增 [bgn10anvil-*] 85 条判定 + 几何检查改 JSON 数值比较 |
+| docs/1.7-混沌金与崩乱合金-需求立档.md | 追加 §25（228 行）；§17.2/§17.9 就地加旧口径标注；表格后加一行指针 |
+| docs/1.6-规格.md | §35 标题后加一行旧口径指针（2 行） |
+| E:\mc\mcmod\mod_experience\ex\06-贴图模型素材.md | 追加规则 13 / 14 |
+| E:\mc\mcmod\mod_experience\ex\02-静默失效.md | 追加 §2.11 |
+| E:\mc\mcmod\mod_experience\mcmod_experience.md | 附录 D 追加 1 行 |
+
+未改：5 张 block PNG + GUI PNG（字节原样，SHA 见 05-源PNG-SHA256.txt）；原始 zip；blockstate；item 模型；掉落表；配方；语言文件。
+未 commit / 未 push。

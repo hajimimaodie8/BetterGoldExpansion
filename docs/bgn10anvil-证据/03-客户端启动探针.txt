@@ -1,0 +1,16 @@
+﻿[20:52:56] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.probe.BgN10anvilClientProbe for @SubscribeEvent-annotated methods
+[20:52:56] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/probe/BgN10anvilClientProbe; to the game event bus
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS client_title_screen :: screen=net.minecraft.client.gui.screens.TitleScreen
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS screen_factory_present :: MenuScreens.getScreenFactory(bettergold:sturdygold_anvil) present
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_not_missing :: baked model class=net.minecraft.client.resources.model.SimpleBakedModel
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_quads_21 :: quads=21��4 �� element �� 21 ���棩
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_no_missing_sprite :: sprites=[bettergold:block/sturdygold_anvil_ew, bettergold:block/sturdygold_anvil_base_bottom, bettergold:block/sturdygold_anvil_top, bettergold:block/sturdygold_anvil_base_top, bettergold:block/sturdygold_anvil_ns] missing=false
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_sprite_sturdygold_anvil_top :: want=bettergold:block/sturdygold_anvil_top
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_sprite_sturdygold_anvil_ns :: want=bettergold:block/sturdygold_anvil_ns
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_sprite_sturdygold_anvil_ew :: want=bettergold:block/sturdygold_anvil_ew
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_sprite_sturdygold_anvil_base_top :: want=bettergold:block/sturdygold_anvil_base_top
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS model_sprite_sturdygold_anvil_base_bottom :: want=bettergold:block/sturdygold_anvil_base_bottom
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS gui_resource_present :: resource=bettergold:textures/gui/container/sturdygold_anvil.png
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS gui_png_256x256 :: size=256x256
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT PASS gui_texture_loaded :: texture class=net.minecraft.client.renderer.texture.SimpleTexture��!= missing ���ˣ�
+[20:53:01] [Render thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILCLIENT SUMMARY pass=13 fail=0 (û�н�����)

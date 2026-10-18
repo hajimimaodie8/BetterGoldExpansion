@@ -1,0 +1,22 @@
+﻿[20:52:22] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.hjmmd_8.bettergold.probe.BgN10anvilServerProbe for @SubscribeEvent-annotated methods
+[20:52:22] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/hjmmd_8/bettergold/probe/BgN10anvilServerProbe; to the game event bus
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS block_state :: state=Block{bettergold:sturdygold_anvil}[facing=north] pos=BlockPos{x=1010, y=120, z=1008}
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS provider_present :: provider=net.minecraft.world.SimpleMenuProvider@ebf5f6c
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS menu_class :: containerMenu=com.hjmmd_8.bettergold.menu.SturdygoldAnvilMenu
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS menu_type :: type=bettergold:sturdygold_anvil
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS menu_slots_39 :: slots=39��2 ���� + 1 ��� + 36 ��ң�
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS menu_title_container_repair :: title=translation{key='container.repair', args=[]}
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS menu_still_valid :: near=true
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS repair_result_damage :: out=1 minecraft:diamond_sword damage=0
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS repair_cost_3 :: cost=3
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS repair_coin_path :: coinRepair=true used=3
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS repair_may_pickup :: levels=30 cost=3
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS repair_take_levels :: levels 30 -> 27
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS repair_take_coins :: coinsLeft=2
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS repair_take_input0_empty :: input0=0 minecraft:air
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS rename_changed :: setItemName returned true
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS rename_applied :: resultName=BGN Anvil Probe
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS rename_cost_plus_1 :: cost=4������ 3 + ���� 1��
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS empty_cost_zero :: cost=0 out=0 minecraft:air
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER PASS forceload_none :: forcedNow=0
+[20:52:29] [Server thread/INFO] [co.hj.be.bettergold/]: BGN10ANVILSERVER SUMMARY pass=19 fail=0 forcedNow=0

@@ -1,0 +1,13 @@
+# 5 张作者 block PNG：src 与归档原件逐字节相等（SHA256）
+
+sturdygold_anvil_top.png             f254af49fb67217f6281751d72586ea03c435f0a661f8baea0d04155319546bd  ==  万坚金砧 上.png                   f254af49fb67217f6281751d72586ea03c435f0a661f8baea0d04155319546bd  OK
+
+sturdygold_anvil_ns.png              41f47eb97584f5eff49c2d5fae85b54618cdb6774178ce1af188c724a653873c  ==  万坚金砧 前后.png                  41f47eb97584f5eff49c2d5fae85b54618cdb6774178ce1af188c724a653873c  OK
+
+sturdygold_anvil_ew.png              782e3db8cf04397d4ecc173b1128139ba4f1718c7b87aadf80ff2ed12f5a98c2  ==  万坚金砧 左右.png                  782e3db8cf04397d4ecc173b1128139ba4f1718c7b87aadf80ff2ed12f5a98c2  OK
+
+sturdygold_anvil_base_top.png        dff345dd69e120fdcfb65ba643811644f191760300dcca10ec3692cbb46e92b5  ==  万坚金砧 底盘上部.png                dff345dd69e120fdcfb65ba643811644f191760300dcca10ec3692cbb46e92b5  OK
+
+sturdygold_anvil_base_bottom.png     5badbfb56bfa84e545369571110131db86fa58072b79e5fdc9ff8ef5d2d61e0b  ==  万坚金砧 底盘下部.png                5badbfb56bfa84e545369571110131db86fa58072b79e5fdc9ff8ef5d2d61e0b  OK
+
+GUI sturdygold_anvil.png 24a277b99da860b9c012a1a68d3994648fca5466407be4eb61e70e6ba0e5625c (256x256, 3487 B)

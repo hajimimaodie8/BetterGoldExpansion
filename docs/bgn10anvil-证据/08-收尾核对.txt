@@ -1,0 +1,23 @@
+﻿# bg-n10anvil 收尾核对
+
+src 内探针 grep 命中 = 0 （期望 0）
+run 下 bgn10anvil 开关文件 = 0 （期望 0）
+probe/bgn10anvil 已删除（源码副本在 脚本副本/）
+作者存档 run/saves/新的世界 = 29 个文件，maxMtime = 2026-10-09T10:48:14.0081249Z
+run/server.properties SHA256 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  期望 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+jar = bettergold-1.7.0.jar 1610851 B（2795 条目，*Probe* 0）
+build/moddev/clientRunProgramArgs.txt = 394 B sha=A365A5EDF7ABC44C（与上一轮记录一致）
+run/world = dev 服务端世界（探针放了 1 个万坚金砧 @ 1010,120,1008；不是作者存档）
+forceload: 服务端探针 forcedNow=0；check_forced_chunks exit 0
+halt(false): 服务端探针每次 JVM 只调一次
+
+git status --porcelain:
+M "docs/1.6-\350\247\204\346\240\274.md"
+ M "docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+ M src/main/java/com/hjmmd_8/bettergold/block/SturdygoldAnvilBlock.java
+ M src/main/java/com/hjmmd_8/bettergold/client/SturdygoldAnvilScreen.java
+ M src/main/java/com/hjmmd_8/bettergold/menu/SturdygoldAnvilMenu.java
+ M src/main/resources/assets/bettergold/models/block/sturdygold_anvil.json
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bgn10anvil-\350\257\201\346\215\256/"

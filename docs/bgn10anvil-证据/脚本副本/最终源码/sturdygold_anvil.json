@@ -1,0 +1,284 @@
+{
+  "__comment": "万坚金砧（1.7 bg-n10 轮8；bg-n10anvil 轮按作者 2026-10-18 原话「看看原版的铁砧是怎么覆盖贴图的，就这么设置」重做）。几何 = 原版 assets/minecraft/models/block/template_anvil.json 的 4 个 element 逐字复制（from/to 一字未改）。贴图槽仍 5 个（作者 5 张各不同，SHA256 见关卡），但每个面的 uv/rotation 按『作者为该面画的那张图』重算：作者 5 张不是原版 16x16 图集碎片，而是 5 张【按正视/侧视/俯视正交投影画的独立视图】。alpha 实测：ew 的 alpha == 正视投影轮廓（IoU 1.0000），ns 的 alpha == 侧视投影轮廓（IoU 1.0000）——所以 ew 才是『前后』、ns 才是『左右』（作者文件名与内容相反，按像素判，不按名字猜）。每个面的 uv 取该 element 在对应视图里的投影矩形；facing 左右成对镜像（与原版 east/west uv 反序同构）。",
+  "parent": "block/block",
+  "textures": {
+    "particle": "bettergold:block/sturdygold_anvil_ns",
+    "ns": "bettergold:block/sturdygold_anvil_ns",
+    "ew": "bettergold:block/sturdygold_anvil_ew",
+    "top": "bettergold:block/sturdygold_anvil_top",
+    "base_top": "bettergold:block/sturdygold_anvil_base_top",
+    "base_bottom": "bettergold:block/sturdygold_anvil_base_bottom"
+  },
+  "display": {
+    "fixed": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        4,
+        14
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#base_bottom",
+          "rotation": 180,
+          "cullface": "down"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#base_top",
+          "rotation": 0
+        },
+        "north": {
+          "uv": [
+            14,
+            12,
+            2,
+            16
+          ],
+          "texture": "#ew"
+        },
+        "south": {
+          "uv": [
+            2,
+            12,
+            14,
+            16
+          ],
+          "texture": "#ew"
+        },
+        "west": {
+          "uv": [
+            2,
+            12,
+            14,
+            16
+          ],
+          "texture": "#ns"
+        },
+        "east": {
+          "uv": [
+            14,
+            12,
+            2,
+            16
+          ],
+          "texture": "#ns"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        4,
+        3
+      ],
+      "to": [
+        12,
+        5,
+        13
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            4,
+            3,
+            12,
+            13
+          ],
+          "texture": "#base_top",
+          "rotation": 0
+        },
+        "north": {
+          "uv": [
+            12,
+            11,
+            4,
+            12
+          ],
+          "texture": "#ew"
+        },
+        "south": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#ew"
+        },
+        "west": {
+          "uv": [
+            3,
+            11,
+            13,
+            12
+          ],
+          "texture": "#ns"
+        },
+        "east": {
+          "uv": [
+            13,
+            11,
+            3,
+            12
+          ],
+          "texture": "#ns"
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        5,
+        4
+      ],
+      "to": [
+        10,
+        10,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            6,
+            6,
+            11
+          ],
+          "texture": "#ew"
+        },
+        "south": {
+          "uv": [
+            6,
+            6,
+            10,
+            11
+          ],
+          "texture": "#ew"
+        },
+        "west": {
+          "uv": [
+            4,
+            6,
+            12,
+            11
+          ],
+          "texture": "#ns"
+        },
+        "east": {
+          "uv": [
+            12,
+            6,
+            4,
+            11
+          ],
+          "texture": "#ns"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        10,
+        0
+      ],
+      "to": [
+        13,
+        16,
+        16
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ],
+          "texture": "#top",
+          "rotation": 180
+        },
+        "up": {
+          "uv": [
+            3,
+            0,
+            13,
+            16
+          ],
+          "texture": "#top",
+          "rotation": 0
+        },
+        "north": {
+          "uv": [
+            13,
+            0,
+            3,
+            6
+          ],
+          "texture": "#ew"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            13,
+            6
+          ],
+          "texture": "#ew"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            6
+          ],
+          "texture": "#ns"
+        },
+        "east": {
+          "uv": [
+            16,
+            0,
+            0,
+            6
+          ],
+          "texture": "#ns"
+        }
+      }
+    }
+  ]
+}

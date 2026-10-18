@@ -3,122 +3,220 @@ package com.hjmmd_8.bettergold.client;
 import com.hjmmd_8.bettergold.bettergold;
 import com.hjmmd_8.bettergold.menu.SturdygoldAnvilMenu;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 /**
- * <b>万坚金砧的界面</b>（1.7 {@code bg-n10} 轮8 —— 本仓<b>第一个</b> {@code AbstractContainerScreen}）。
+ * <b>万坚金砧的界面</b>（1.7 {@code bg-n10} 轮8 创建；{@code bg-n10anvil} 轮按作者 2026-10-18 试玩反馈
+ * 「贴图严重匹配错误」「把 GUI 换成和普通铁砧完全一致」<b>整类重写</b>）。
  *
- * <h2>技术路线判定：<b>自建 {@code AbstractContainerScreen}</b>（不裁切、不裁成 176×166 单张贴图）</h2>
- * <p>依据是<b>贴图的实测像素</b>（不是看感觉）：作者给的 {@code 万坚金砧 gui.png} 是 256×256，
- * 但<b>画出来的内容</b>分三块（逐行 alpha 扫描，见 {@code docs/1.7-...md} §17.2）：</p>
- * <pre>  主面板      x 0..175,   y 0..165     ← 恰好等于原版砧的 176×166，且 9 个槽/背包/快捷栏的
- *                                           格子坐标与 {@code AnvilMenu} 写死的 27/76/134 @47、
- *                                           8/84、8/142 **逐像素重合**
- *     右上装饰    x 176..203, y 0..20      ← 主面板右侧探出的一小块（28×21）
- *     左下两条    x 0..109,   y 166..197   ← 主面板下方两块灰条（110×32）</pre>
- * <p>⇒ <b>不需要裁切</b>：主面板本来就和原版砧同尺寸、同槽位；那两块装饰用两次额外 {@code blit}
- * 贴在面板外侧即可。<b>imageWidth = 176 / imageHeight = 166</b> 保持原版砧的居中与文本基线，
- * 于是 {@code renderLabels} 里"物品栏"三个字仍在 (8,72) —— 与原版砧一致。</p>
+ * <h2>现在走的就是原版砧那条路：{@code ItemCombinerScreen}</h2>
+ * <p>原版 {@code AnvilScreen extends ItemCombinerScreen<AnvilMenu>}；本类照抄同一层
+ * （{@code ItemCombinerScreen<SturdygoldAnvilMenu>}），于是下面这些<b>全部由父类原样提供</b>，
+ * 我们一行都不再自己写：</p>
+ * <ul>
+ *   <li>{@code renderBg} = {@code blit(texture, leftPos, topPos, 0, 0, 176, 166)} + {@code renderErrorIcon}；</li>
+ *   <li>{@code render()} 的顺序 = 背景 → 槽位 → 文字 → {@code renderFg} → tooltip；</li>
+ *   <li>{@code init()} = {@code subInit()} + 注册 {@code ContainerListener}（改名输入框靠它初始化）；</li>
+ *   <li>槽位坐标来自 {@code AnvilMenu} 的 {@code 27 / 76 / 134 @ 47} + 背包 {@code 8,84/102/120} + 快捷栏 {@code 142}。</li>
+ * </ul>
  *
- * <h2>⚠ 不许用 {@code blitSprite}（本仓踩过）</h2>
- * <p>1.21.1 的 GUI 图集只扫 {@code assets/<ns>/textures/gui/sprites/}；放在 {@code gui/container/}
- * 的贴图用 {@code blitSprite} 会静默退化成 missing sprite（紫黑格、不报错）——见
- * {@code docs/构建与跑测注意事项.md} §五。这里全部走 {@link GuiGraphics#blit(ResourceLocation,...)}。</p>
+ * <h2>逐项照原版 {@code AnvilScreen} 抄全的元素（坐标/颜色/字面全部原版）</h2>
+ * <pre>标题            drawString(font, title, 60, 6, 4210752, false)        ← 原版 titleLabelX = 60
+ * 物品栏标题      drawString(font, playerInventoryTitle, 8, 72, 4210752, false)  ← imageHeight 166 - 94
+ * 等级花费        k = 176 - 8 - font.width - 2；fill(k-2, 67, 168, 79, 0x4F000000)；
+ *                drawString(font, component, k, 69, j)（默认带阴影）
+ *                j = 8453920（够级，绿）；16736352（不够级 / ≥40「过于昂贵」，红）
+ *                i >= 40 且非创造 ⇒ container.repair.expensive；花费为 0 ⇒ 什么都不画
+ * 名字输入框      EditBox(left+62, top+24, 103, 12)，无边框、白字、maxLength 50，
+ *                responder -> 原版 setItemName + ServerboundRenameItemPacket
+ * 输入框底图      blitSprite(container/anvil/text_field[_disabled], left+59, top+20, 110, 16)
+ * 错误图标        blitSprite(container/anvil/error, x+99, y+45, 28, 21)</pre>
  *
- * <h2>空槽幽灵图标</h2>
- * <p>作者素材里的 {@code 空槽中的混沌金币串图标.png}（16×16 灰色三连币）画在<b>输入 2 槽</b>里、
- * 半透明（35%）：提示"这里放混沌金币串"。只在"输入 1 已放可修装备且输入 2 还是空的"时画
- * （判据 {@link SturdygoldAnvilMenu#isCoinRepairCandidate()}），否则满屏提示反而干扰。</p>
+ * <h2>★ 截图里那条「红条」到底是什么（实测，不是猜）</h2>
+ * <p>作者那张金色 GUI <b>本身就是原版 {@code anvil.png} 的 1:1 换色</b>（176×166 主面板亮度相关 0.7186；
+ * 槽位/背包/快捷栏逐像素同位置）。原版 {@code anvil.png} 在 {@code (59,20)-(168,35)} 有一块
+ * <b>纯红 (255,0,0) 占位方块</b>（实测 1760 像素），它由原版那块 {@code text_field} 精灵盖住；
+ * 作者换色时把这块占位也一起涂成了红条（金色图里同样是 {@code (59,20)-(168,35)} 110×16 的纯红）。
+ * 旧版界面没有画 {@code text_field} 精灵、也没画输入框 ⇒ 红条直接露出来，就是截图里那条红条。</p>
+ * <p>⇒ 修法 = <b>照原版画 {@code text_field} 精灵 + EditBox</b>，红条被同一位置、同一尺寸的精灵盖住。
+ * <b>没有改任何 PNG 像素</b>（作者素材，SHA256 由关卡钉住）。</p>
  *
- * <h2>花费文字画在哪（★ 与 {@code AnvilScreen} 的差异，记账）</h2>
- * <p>原版 {@code AnvilScreen} 把"花费 X 级 / 过于昂贵"画在 {@code y = 69} 右对齐，因为原版砧贴图那一行是空的。
- * 作者这张贴图<b>在 y 20..35、x 60..170 画了一条 110×16 的红条</b>（原版同一位置是名字输入框），
- * 而 y 69 那一行是金色装饰 —— 所以本界面把花费文字画进<b>红条</b>里（白字居中），
- * 原版那个位置不画。⚠ 观感属"人眼未验证"项（本轮没有跑客户端截屏）。</p>
+ * <h2>⚠ 旧口径（{@code bg-n10} 轮8）原文留档，已作废</h2>
+ * <p>旧版是自建 {@code AbstractContainerScreen}：{@code renderBg} 里三次 {@code blit}
+ * （主面板 + 右上装饰 + 左下两条灰条）、{@code renderLabels} 里把花费文字画进
+ * {@code x60 y20 110×16} 的「红条」并居中、外加一个 35% 半透明的空槽幽灵金币。
+ * 作者 2026-10-18 明确要求「所有 GUI 标识换成和普通铁砧完全一致」⇒ 这些自加元素<b>全部删除</b>：
+ * 右上装饰 / 左下两条是金色图里 176×166 主面板之外的装饰，不属于原版砧 GUI，不再 blit；
+ * 幽灵金币不再画（贴图文件保留，作者素材不删）。旧文档 §17.2 / §17.9 的相关口径已在
+ * {@code docs/1.7-...md} §25 就地标注。</p>
  */
-public class SturdygoldAnvilScreen extends AbstractContainerScreen<SturdygoldAnvilMenu> {
+public class SturdygoldAnvilScreen extends ItemCombinerScreen<SturdygoldAnvilMenu> {
 
-    /** 主面板贴图：贴图坐标 (0,0) 起 176×166 */
+    /** 金色主面板：贴图 (0,0) 起 176×166（与原版砧同一块区域、同尺寸） */
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "textures/gui/container/sturdygold_anvil.png");
 
-    /** 空槽幽灵图标（作者素材「空槽中的混沌金币串图标.png」的字节原样） */
-    private static final ResourceLocation GHOST_COIN =
-            ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "textures/gui/container/sturdygold_anvil_coin_ghost.png");
+    /** 原版砧的三个 GUI 精灵（在 {@code minecraft:gui/sprites} 图集里，blitSprite 用它们是对的） */
+    private static final ResourceLocation TEXT_FIELD_SPRITE =
+            ResourceLocation.withDefaultNamespace("container/anvil/text_field");
+    private static final ResourceLocation TEXT_FIELD_DISABLED_SPRITE =
+            ResourceLocation.withDefaultNamespace("container/anvil/text_field_disabled");
+    private static final ResourceLocation ERROR_SPRITE =
+            ResourceLocation.withDefaultNamespace("container/anvil/error");
 
-    /** 主面板尺寸 = 原版砧（槽位坐标才对得上） */
+    private static final Component TOO_EXPENSIVE_TEXT = Component.translatable("container.repair.expensive");
+
+    /** 与原版砧相同（{@code AbstractContainerScreen} 的默认值也是 176×166，这里显式写出来给关卡钉） */
     public static final int PANEL_WIDTH = 176;
     public static final int PANEL_HEIGHT = 166;
-    /** 右上装饰（贴图 u=176,v=0，28×21） */
-    private static final int TAB_U = 176;
-    private static final int TAB_V = 0;
-    private static final int TAB_W = 28;
-    private static final int TAB_H = 21;
-    /** 左下两条灰条（贴图 u=0,v=166，110×32） */
-    private static final int PLATES_U = 0;
-    private static final int PLATES_V = 166;
-    private static final int PLATES_W = 110;
-    private static final int PLATES_H = 32;
-    /** 贴图整张大小（blit 的 textureWidth/Height 必须给 256，否则 uv 会按贴图实际大小归一化错） */
-    private static final int TEX_W = 256;
-    private static final int TEX_H = 256;
 
-    /** 红条（花费文字的背景）：贴图坐标 x 60..169、y 20..35 */
-    private static final int COST_BAR_X = 60;
-    private static final int COST_BAR_Y = 20;
-    private static final int COST_BAR_W = 110;
-    private static final int COST_BAR_H = 16;
-
-    /** 输入 2 槽的贴图坐标（{@code AnvilMenu} 写死 76,47） */
-    private static final int ADDITIONAL_SLOT_X = 76;
-    private static final int ADDITIONAL_SLOT_Y = 47;
+    private EditBox name;
+    private final Player player;
 
     public SturdygoldAnvilScreen(SturdygoldAnvilMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+        super(menu, playerInventory, title, TEXTURE);
         this.imageWidth = PANEL_WIDTH;
         this.imageHeight = PANEL_HEIGHT;
-        // 与原版 AnvilScreen 一致（标题在 x=60），物品栏标签仍落在 (8, 72)
         this.titleLabelX = 60;
+        this.player = playerInventory.player;
     }
 
+    /** 逐字照原版 {@code AnvilScreen#subInit}：位置、尺寸、最大长度、无边框、白字、responder 全部一致 */
+    @Override
+    protected void subInit() {
+        int i = (this.width - this.imageWidth) / 2;
+        int j = (this.height - this.imageHeight) / 2;
+        this.name = new EditBox(this.font, i + 62, j + 24, 103, 12, Component.translatable("container.repair"));
+        this.name.setCanLoseFocus(false);
+        this.name.setTextColor(-1);
+        this.name.setTextColorUneditable(-1);
+        this.name.setBordered(false);
+        this.name.setMaxLength(50);
+        this.name.setResponder(this::onNameChanged);
+        this.name.setValue("");
+        this.addWidget(this.name);
+        this.name.setEditable(this.menu.getSlot(0).hasItem());
+    }
+
+    @Override
+    protected void setInitialFocus() {
+        this.setInitialFocus(this.name);
+    }
+
+    @Override
+    public void resize(Minecraft minecraft, int width, int height) {
+        String s = this.name.getValue();
+        this.init(minecraft, width, height);
+        this.name.setValue(s);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == 256) {
+            this.minecraft.player.closeContainer();
+        }
+
+        return !this.name.keyPressed(keyCode, scanCode, modifiers) && !this.name.canConsumeInput()
+                ? super.keyPressed(keyCode, scanCode, modifiers)
+                : true;
+    }
+
+    /** 逐字照原版：只有名字真的变了才发 {@code ServerboundRenameItemPacket} */
+    private void onNameChanged(String name) {
+        Slot slot = this.menu.getSlot(0);
+        if (slot.hasItem()) {
+            String s = name;
+            if (!slot.getItem().has(DataComponents.CUSTOM_NAME)
+                    && name.equals(slot.getItem().getHoverName().getString())) {
+                s = "";
+            }
+
+            if (this.menu.setItemName(s)) {
+                this.minecraft.player.connection.send(new ServerboundRenameItemPacket(s));
+            }
+        }
+    }
+
+    /**
+     * 背景 = 原版 {@code ItemCombinerScreen#renderBg}（176×166 主面板 + 错误图标）+ 原版输入框底图。
+     *
+     * <p>输入框底图必须画：它盖住金色图里 {@code (59,20)-(168,35)} 那块和原版一模一样的红色占位。</p>
+     */
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        int left = this.leftPos;
-        int top = this.topPos;
-        // ① 主面板 176×166（贴图 (0,0) 起）
-        guiGraphics.blit(TEXTURE, left, top, 0.0F, 0.0F, PANEL_WIDTH, PANEL_HEIGHT, TEX_W, TEX_H);
-        // ② 右上装饰（贴在面板右侧）
-        guiGraphics.blit(TEXTURE, left + PANEL_WIDTH, top, (float) TAB_U, (float) TAB_V, TAB_W, TAB_H, TEX_W, TEX_H);
-        // ③ 左下两条灰条（贴在面板下方）
-        guiGraphics.blit(TEXTURE, left, top + PANEL_HEIGHT, (float) PLATES_U, (float) PLATES_V, PLATES_W, PLATES_H, TEX_W, TEX_H);
-        // ④ 空槽幽灵图标（半透明，35%）
-        if (!this.menu.getSlot(SturdygoldAnvilMenu.ADDITIONAL_SLOT).hasItem()
-                && this.menu.isCoinRepairCandidate()) {
-            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.35F);
-            guiGraphics.blit(GHOST_COIN, left + ADDITIONAL_SLOT_X + 1, top + ADDITIONAL_SLOT_Y + 1,
-                    0.0F, 0.0F, 16, 16, 16, 16);
-            // ⚠ setColor 是 RenderSystem.setShaderColor 的直通，必须显式还原
-            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        super.renderBg(guiGraphics, partialTick, mouseX, mouseY);
+        guiGraphics.blitSprite(this.menu.getSlot(0).hasItem() ? TEXT_FIELD_SPRITE : TEXT_FIELD_DISABLED_SPRITE,
+                this.leftPos + 59, this.topPos + 20, 110, 16);
+    }
+
+    /**
+     * 三处文字 + 花费，逐字照原版 {@code AnvilScreen#renderLabels}（坐标/颜色/阈值一个数没改）。
+     *
+     * <p>标题与物品栏标题这里显式画（而不是调 {@code super.renderLabels}），是为了让
+     * 「原版三处 drawString 的坐标字面」在本类源码里可被关卡逐项钉住；数值与父类实现完全相同：
+     * 标题 {@code (titleLabelX=60, titleLabelY=6)}、物品栏 {@code (8, 166-94=72)}、颜色 {@code 4210752}、无阴影。</p>
+     */
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.drawString(this.font, this.title, 60, 6, 4210752, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, 8, 72, 4210752, false);
+        int i = this.menu.getCost();
+        if (i > 0) {
+            int j = 8453920;
+            Component component;
+            if (i >= 40 && !this.minecraft.player.getAbilities().instabuild) {
+                component = TOO_EXPENSIVE_TEXT;
+                j = 16736352;
+            } else if (!this.menu.getSlot(2).hasItem()) {
+                component = null;
+            } else {
+                component = Component.translatable("container.repair.cost", i);
+                if (!this.menu.getSlot(2).mayPickup(this.player)) {
+                    j = 16736352;
+                }
+            }
+
+            if (component != null) {
+                int k = this.imageWidth - 8 - this.font.width(component) - 2;
+                int l = 69;
+                guiGraphics.fill(k - 2, 67, this.imageWidth - 8, 79, 1325400064);
+                guiGraphics.drawString(this.font, component, k, 69, j);
+            }
         }
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        // 标题 + "物品栏"：沿用父类（标题 x=60 / 物品栏 (8,72)，与原版砧一致）
-        super.renderLabels(guiGraphics, mouseX, mouseY);
-        int cost = this.menu.getCost();
-        if (cost <= 0) {
-            return;
+    public void renderFg(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.name.render(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    /** 逐字照原版：两个输入槽任一有东西、输出为空 ⇒ 画原版那个错误图标 */
+    @Override
+    protected void renderErrorIcon(GuiGraphics guiGraphics, int x, int y) {
+        if ((this.menu.getSlot(0).hasItem() || this.menu.getSlot(1).hasItem())
+                && !this.menu.getSlot(this.menu.getResultSlot()).hasItem()) {
+            guiGraphics.blitSprite(ERROR_SPRITE, x + 99, y + 45, 28, 21);
         }
-        Component text = Component.translatable("container.repair.cost", cost);
-        int width = this.font.width(text);
-        int x = COST_BAR_X + (COST_BAR_W - width) / 2;
-        int y = COST_BAR_Y + (COST_BAR_H - 8) / 2;
-        // 红条上是白字（贴图自带背景，这里不再画半透明底）
-        guiGraphics.drawString(this.font, text, x, y, 0xFFFFFF, false);
+    }
+
+    /** 逐字照原版：输入 1 变了就把名字框同步成它的显示名（并抢焦点） */
+    @Override
+    public void slotChanged(net.minecraft.world.inventory.AbstractContainerMenu containerToSend, int slotInd, ItemStack stack) {
+        if (slotInd == 0) {
+            this.name.setValue(stack.isEmpty() ? "" : stack.getHoverName().getString());
+            this.name.setEditable(!stack.isEmpty());
+            this.setFocused(this.name);
+        }
     }
 }
