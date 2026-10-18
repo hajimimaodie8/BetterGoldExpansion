@@ -529,6 +529,9 @@ SYMMETRIC_TAGS: dict[str, list[str]] = {
     "minecraft/tags/item/beacon_payment_items.json": ["{m}_ingot"],
     "minecraft/tags/block/mineable/pickaxe.json": [f"{{m}}_{b}" for b in _METAL_BLOCKS],
     "minecraft/tags/block/needs_diamond_tool.json": [f"{{m}}_{b}" for b in _METAL_BLOCKS],
+    # 1.7 `bg-n10fix` ⑤（作者 2026-10-18）：混沌金建材 = **铁级** ⇒ 它进 needs_iron_tool、
+    #   且**不在** needs_diamond_tool（下表的 ONLY / EXCEPT 两张集合表达这一对）。
+    "minecraft/tags/block/needs_iron_tool.json": [f"{{m}}_{b}" for b in _METAL_BLOCKS],
     "minecraft/tags/block/walls.json": ["{m}_bricks_wall"],
     BEACON_TAG_REL: [f"{{m}}_{s}" for s in BEACON_SUFFIXES],
     "minecraft/tags/item/swords.json": ["{m}_sword"],
@@ -553,6 +556,11 @@ SYMMETRIC_TAGS: dict[str, list[str]] = {
 }
 
 symmetric_problems: list[str] = []
+# 1.7 `bg-n10fix` ⑤：这两条标签**按族分流**（其余 SYMMETRIC_TAGS 仍是"每套金属都要有"）。
+#   ONLY   = 这张标签里只**该**出现这些族（其余族出现 = 多写，红）；
+#   EXCEPT = 这张标签里**不该**出现这些族（出现 = 没搬走，红）。
+_TAG_ONLY = {"minecraft/tags/block/needs_iron_tool.json": {"chaosgold"}}
+_TAG_EXCEPT = {"minecraft/tags/block/needs_diamond_tool.json": {"chaosgold"}}
 # 「某个 id 模板要求哪个形态」——形态子集外的模板**不期望**（1.7 bg-n10 轮1 后半）。
 # 表里没有的模板（锭 / 器具 / 武器 / 盔甲 / 刀 / 纹饰）恒期望（它们不参与形态子集）。
 _TEMPLATE_FORM: dict[str, str] = {"{m}_nugget": "nugget", "raw_{m}": "raw"}
@@ -575,7 +583,25 @@ for _rel, _templates in SYMMETRIC_TAGS.items():
         continue
     # ① 每套金属逐个对照（按形态子集过滤后的期望）
     per_metal = {}
+    _only = _TAG_ONLY.get(_rel)
+    _except = _TAG_EXCEPT.get(_rel, set())
     for _m in ALL_METALS:
+        if _only is not None and _m not in _only:
+            # 这张标签**不期望**这一族：只做负向断言（出现了就红）
+            _extra = sorted(f"bettergold:{t.format(m=_m)}" for t in _templates
+                            if _template_ok(t, _m)) if _m in _except else []
+            _extra = [e for e in _extra if e in _members]
+            if _extra:
+                symmetric_problems.append(f"{_rel} <- {_m} 不该在（作者 2026-10-18：挖级已改），实际有 {_extra[:3]}")
+            per_metal[_m] = 0
+            continue
+        if _m in _except:
+            _extra = sorted(t.format(m=_m) for t in _templates if _template_ok(t, _m))
+            _bad = [f"bettergold:{e}" for e in _extra if f"bettergold:{e}" in _members]
+            if _bad:
+                symmetric_problems.append(f"{_rel} <- {_m} 应当已被移出（`bg-n10fix` ⑤），实际还在 {_bad[:3]}")
+            per_metal[_m] = 0
+            continue
         _want = {f"bettergold:{t.format(m=_m)}" for t in _templates if _template_ok(t, _m)}
         _miss = sorted(_want - _members)
         per_metal[_m] = len(_miss)
@@ -5173,14 +5199,16 @@ _fx5_children = sorted(_fx5_children)
 # ★ 1.7 收口轮：白名单父节点的孩子 9 → **11**
 #   （8 个核心材料 + any_raw_metal + **混沌金币** + **崩乱合金锭**）。
 #   ⚠ 旧期望原文保留：`if len(_fx5_children) != 9: ... 不是 9 个`。
+# ★ **1.7 `bg-n10fix` ⑨（2026-10-18）又把 11 收回 9**：作者「两族不在贵金范畴」⇒ 两族链首改挂
+#   `root`（11 条的期望原文保留、已被取代）。⇒ 白名单父节点只剩 **8 核心材料 + any_raw_metal = 9**。
 _BGN10R9_EXTRA_BRANCHES = ["bettergold:treasure/chaos_coin", "bettergold:metal/chaosalloy/ingot"]
 _fx5_extra = [c for c in _fx5_children if c not in _fx5_line_parent.values()
               and c != "bettergold:treasure/any_raw_metal"
               and c not in _BGN10R9_EXTRA_BRANCHES]
-if len(_fx5_children) != 11:
+if len(_fx5_children) != 9:
     _bgfix5_bad("bgfix5-tree-order-single-source",
-                "白名单父节点的孩子不是 11 个（8 核心材料 + any_raw_metal + 两族链首；"
-                "旧期望 9 已被 1.7 收口轮取代，实际 %d）：%s"
+                "白名单父节点的孩子不是 9 个（8 核心材料 + any_raw_metal；两族链首已改挂 root），"
+                "实际 %d：%s"
                 % (len(_fx5_children), _fx5_children))
 if _fx5_extra:
     _bgfix5_bad("bgfix5-tree-order-single-source",
@@ -6335,8 +6363,13 @@ if len(MF.FORMS) != 2 or len(MF.forms_of("chaosgold")) != 13 or len(MF.forms_of(
                "metal_forms.FORMS 的声明不是 {chaosgold: 13, chaosalloy: 3}（实际 %s）"
                % {k: len(v) for k, v in MF.FORMS.items()})
 
-# ---------- ② 区间值：公式**只许一处** + 两个触发点 + 两族声明的两端值 ----------
-_bgn10_formula = "current == range.min ? range.max : range.min"
+# ---------- ② 区间值：公式**只许一处** + 三个触发点 + 两族声明的两端值 ----------
+# ⛔ **旧口径（原文留档，作者 2026-10-18 已推翻）**：
+#   `_bgn10_formula = "current == range.min ? range.max : range.min"`（两端乒乓）
+#   `("toggle(stack, channel)", ...)` / 只有两个触发点（挖掘成功 + 重新手持）。
+# ★ 现行（`bg-n10fix` ⑩）：**区间内均匀随机**（`min + random × (max − min)`，含两端），
+#   三个触发点 = 挖掘成功 / **每次攻击命中** / 重新手持。
+_bgn10_formula = "range.min() + range.span() * (f / (float) FRACTION_SCALE)"
 _hits = []
 for _jf in JAVA.rglob("*.java"):
     _t = strip_comments(_jf.read_text(encoding="utf-8"))
@@ -6344,7 +6377,7 @@ for _jf in JAVA.rglob("*.java"):
         _hits.append(_jf.name)
 if _hits != ["ChaosRange.java"]:
     _bgn10_bad("bgn10-chaos-range",
-               "乒乓公式（%s）出现在 %s —— 必须**只有** ChaosRange.java 一处"
+               "随机取值公式（%s）出现在 %s —— 必须**只有** ChaosRange.java 一处"
                "（四处区间各写一套 = 三份不一致）" % (_bgn10_formula, _hits))
 _cr = JAVA / "material" / "ChaosRange.java"
 _cr_txt = strip_comments(_cr.read_text(encoding="utf-8")) if _cr.is_file() else ""
@@ -6358,9 +6391,17 @@ else:
             ("DATA_COMPONENT_TYPE", "区间值不是数据组件（作者裁定：值存数据组件）"),
             ("Register<DataComponentType<?>> COMPONENT_TYPES",
              "没有数据组件的 DeferredRegister"),
-            ("toggle(stack, channel)", "toggle 没走唯一入口（公式与状态会各写一套）")):
+            ("reroll(stack, channel, random)", "reroll 没走唯一入口（公式与状态会各写一套）"),
+            ("valueOfFraction", "缺「比例 → 具体数值」的唯一映射"),
+            ("ATTACK_HIT", "缺攻击命中这个触发点（作者 2026-10-18：「进行一次攻击转换」）")):
         if _needle not in _cr_txt:
             _bgn10_bad("bgn10-chaos-range", "%s（缺 %s）" % (_why, _needle))
+    # ⚠ 随机源必须钉在 **roll() 本体**里（不是"文件里出现过"）：`fractionTicks()` 也写了一次
+    #   `nextInt(FRACTION_SCALE + 1)` ⇒ 只查全文件的话，把 roll 改成别的分布仍然绿（扰动实测过）。
+    _bgn10fix_roll_body = method_body(_cr_txt, "public static float roll(RandomSource random)")
+    if "random.nextInt(FRACTION_SCALE + 1)" not in _bgn10fix_roll_body:
+        _bgn10_bad("bgn10-chaos-range",
+                   "roll() 的随机源不是「区间内均匀、含两端」（缺 random.nextInt(FRACTION_SCALE + 1)）")
 _bgn10_boot = strip_comments((JAVA / "bettergold.java").read_text(encoding="utf-8"))
 for _needle, _why in (
         ("ChaosRange.COMPONENT_TYPES.register(modEventBus)", "数据组件没在 mod 总线上注册（静默不生效）"),
@@ -6610,13 +6651,15 @@ else:
                          "{} 的 ARMOR 区间 {} ≠ 作者给的「最低 0% 最高 6%」".format(
                              _f, _r4_armor_map.get(_f)))
 
-# ---------- ② ARMOR 通道的**接线**（唯一实现 + 落点 + 四个形态 + 只读/翻转的分工）----------
+# ---------- ② ARMOR 通道的**接线**（唯一实现 + 落点 + 四个形态 + 只读/重掷的分工）----------
+# ⛔ 旧口径（原文留档）：`("ChaosRange.toggle(", "翻转没走唯一入口 ChaosRange.toggle(...)")`
+#    —— 作者 2026-10-18 把"翻转"改成"重掷"（`bg-n10fix` ⑩），现行 needle = `ChaosRange.reroll(`。
 _mev_r4 = strip_comments((JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8"))
 for _needle, _why in (
         ("chaosArmorReduction(", "缺「四件之和」的减伤取值函数（接线没落地）"),
-        ("flipChaosArmor(", "缺结算后的翻转动作（区间值永远是同一端）"),
+        ("flipChaosArmor(", "缺结算后的重掷动作（区间值永远是同一个数）"),
         ("ChaosRange.current(", "减伤取值没走唯一入口 ChaosRange.current(...)"),
-        ("ChaosRange.toggle(", "翻转没走唯一入口 ChaosRange.toggle(...)"),
+        ("ChaosRange.reroll(", "重掷没走唯一入口 ChaosRange.reroll(...)"),
         ("Channel.ARMOR", "接线里没出现 ARMOR 通道（那就是没接）")):
     if _needle not in _mev_r4:
         _bgn10r4_bad("bgn10r4-armor-wiring", "%s（缺 %s）" % (_why, _needle))
@@ -6721,7 +6764,16 @@ if _ci_txt:
     for _needle, _why in (
             ("ENCHANTING_BOOK_MIN_PLAYER_LEVEL = 5", "「<5 级无法使用」的门槛不是 5"),
             ("experienceLevel < ENCHANTING_BOOK_MIN_PLAYER_LEVEL", "没有判玩家等级（门槛没落地）"),
-            ("InteractionHand.OFF_HAND", "没判「左手附魔书」（作者写死的交互形状）"),
+            # ⚠ 旧期望（`InteractionHand.OFF_HAND` + 「副手书 / 右手装备」）原文留档在这里、不删：
+            #   ("InteractionHand.OFF_HAND", "没判「左手附魔书」（作者写死的交互形状）"),
+            # 作者 2026-10-18 亲口推翻（`bg-n10fix` ④-2）：「**副手拿装备、主手拿书**」——
+            # 盔甲右键穿戴与"右手装备 + 左手书"冲突 ⇒ 现行期望 = MAIN_HAND。
+            ("InteractionHand.MAIN_HAND", "没判「主手附魔书」（作者 2026-10-18 的新交互形状）"),
+            ("player.getOffhandItem()", "没有把**副手**当作被附魔的装备（作者 2026-10-18 的新形状）"),
+            # ④-3 成功时播附魔台音效；④-4 创造模式跳过门槛与扣级；④-1 堆叠 16
+            ("SoundEvents.ENCHANTMENT_TABLE_USE", "成功时没播附魔台音效（作者点名）"),
+            ("player.isCreative()", "创造模式没有单独分支（作者要「不耗经验、直接可用」）"),
+            ("stacksTo(16)", "附魔书的最大堆叠不是 16（作者 2026-10-18 点名）"),
             ("canEnchant", "没有按「适配该装备类型」过滤（canEnchant / 物品标签）"),
             ("updateEnchantments(", "没有真把附魔写进右手装备"),
             ("giveExperienceLevels(-cost)", "没有消耗经验等级"),
@@ -6812,7 +6864,11 @@ for _needle, _why in (
         ("CHASE_RANGE = 32.0D", "追击/丢失范围不是 32"),
         ("TARGET_RANGE = 32.0D", "目标选择范围不是 32（作者要求两个数分开写）"),
         ("BARRAGE_INTERVAL_TICKS = 120", "弹幕间隔不是 120 tick"),
-        ("BARRAGE_RANGE = 3.0D", "弹幕间距不是 3 格"),
+        # ⛔ 旧口径（原文留档）：("BARRAGE_RANGE = 3.0D", "弹幕间距不是 3 格")
+        #   作者 2026-10-18 更正：「只会对自身**三格外**的玩家才会施展发射金币，而不是三格内」
+        #   ⇒ 现行 = BARRAGE_MIN_RANGE + isBeyondBarrageRange（严格大于 3 格）。
+        ("BARRAGE_MIN_RANGE = 3.0D", "弹幕最小间距不是 3 格（`bg-n10fix` ⑧）"),
+        ("isBeyondBarrageRange", "没有「三格之外才打」的判据（`bg-n10fix` ⑧）"),
         ("BARRAGE_COUNT = 8", "弹幕枚数不是 8"),
         ("case EASY -> 4.0F", "近战简单难度不是 4"),
         ("case NORMAL -> 8.0F", "近战普通难度不是 8"),
@@ -6838,7 +6894,7 @@ if "getAttributeValue(Attributes.ATTACK_DAMAGE)" in _r6_hurttarget:
     _bgn10r6_bad("bgn10r6-mob", "doHurtTarget 读了 ATTACK_DAMAGE 属性（作者要求显式查表）")
 # 弹幕节流 / 只在有目标时：customServerAiStep 里必须同时出现 target / cooldown / 距离三件事
 _r6_ai = method_body(_r6_mob, "protected void customServerAiStep()")
-for _needle in ("getTarget()", "barrageCooldown", "isWithinBarrageRange"):
+for _needle in ("getTarget()", "barrageCooldown", "isBeyondBarrageRange"):
     _r6_checked += 1
     if _needle not in _r6_ai:
         _bgn10r6_bad("bgn10r6-barrage", "customServerAiStep 缺 %s（有目标 / 节流 / 间距 三件事）" % _needle)
@@ -8014,12 +8070,14 @@ for _k in _r9_lang_keys:
         _bgn10r9_bad("bgn10r9-lang", "英文与中文逐字相同（没翻译）：%s" % _k)
 
 # ---------- ③ 成就：两族 8 条 ----------
+# ⛔ 旧口径（原文留档）：两条链首的 parent 都写 `bettergold:treasure/any_core_material`；
+#   作者 2026-10-18「两族不在贵金范畴」⇒ 现行 = `bettergold:root`（`bg-n10fix` ⑨）。
 _R9_ADV = {
-    "treasure/chaos_coin": ("bettergold:treasure/any_core_material", "task"),
+    "treasure/chaos_coin": ("bettergold:root", "task"),
     "metal/chaosgold/ingot": ("bettergold:treasure/chaos_coin", "task"),
     "metal/chaosgold/weapon": ("bettergold:metal/chaosgold/ingot", "task"),
     "metal/chaosgold/armor": ("bettergold:metal/chaosgold/weapon", "challenge"),
-    "metal/chaosalloy/ingot": ("bettergold:treasure/any_core_material", "task"),
+    "metal/chaosalloy/ingot": ("bettergold:root", "task"),
     "metal/chaosalloy/supply": ("bettergold:metal/chaosalloy/ingot", "task"),
     "metal/chaosalloy/weapon": ("bettergold:metal/chaosalloy/supply", "task"),
     "metal/chaosalloy/armor": ("bettergold:metal/chaosalloy/weapon", "challenge"),
@@ -9331,6 +9389,10 @@ if not bgn10rc2_problems:
 #   * 币串**只被**这 3 条消耗（附魔书 / 下界合金锭 / 本轮这条），没有第四条；
 #   * 币**只有**本轮这一条产线；粒只有「烧炼」与「锭 → 粒」两条产线；
 #   * 币 / 粒**没有**高炉 / 烟熏 / 营火（作者只说了"烧炼" ⇒ 只做 smelting 一条）。
+#   ★ **旧口径，已被作者 2026-10-18 推翻（`bg-n10fix` ①）**：上一行原文保留、不删。
+#     作者本轮亲口要「混沌金币要用**高炉**也能烧成粒」⇒ 现行口径 = **smelting + blasting 两条**，
+#     blasting 的 xp 同为 1.0、时间 100（= 熔炉的一半）、category 同为 misc，
+#     与既有 8 条 `raw_*_blasting` 逐项同档；**烟熏 / 营火仍然不许**（作者只点名了高炉）。
 bgn10up_problems: list[str] = []
 _bgn10up_checked = 0
 
@@ -9345,13 +9407,14 @@ _UP_NUGGET = "bettergold:chaosgold_nugget"
 _UP_INGOT = "bettergold:chaosgold_ingot"
 _UP_F1 = "chaos_coin_from_string.json"
 _UP_F2 = "chaos_coin_smelting.json"
+_UP_F2B = "chaos_coin_blasting.json"
 _UP_F3 = "chaosgold_ingot_from_nugget.json"
 _UP_F3R = "chaosgold_nugget_from_ingot.json"
 _UP_STRING_CONSUMERS = {"chaosgold_enchanting_book.json",
                         "netherite_ingot_with_chaos_coin_string.json",
                         _UP_F1}
 _UP_INGOT_PRODUCERS = {"chaosgold_ingot_from_block.json", _UP_F3}
-_UP_NUGGET_PRODUCERS = {_UP_F3R, _UP_F2}
+_UP_NUGGET_PRODUCERS = {_UP_F3R, _UP_F2, _UP_F2B}
 
 
 def _up_load(name: str):
@@ -9412,6 +9475,7 @@ def _up_strip_py_comments(text: str) -> str:
 
 _up_f1 = _up_load(_UP_F1)
 _up_f2 = _up_load(_UP_F2)
+_up_f2b = _up_load(_UP_F2B)
 _up_f3 = _up_load(_UP_F3)
 _up_f3r = _up_load(_UP_F3R)
 
@@ -9449,7 +9513,7 @@ if _up_f2 is not None:
     _bgn10up_checked += 8
     if _up_f2.get("type") != "minecraft:smelting":
         _bgn10up_bad("bgn10up-smelt",
-                     "币 → 粒的 type 不是 minecraft:smelting（本轮只做熔炉一条）：" + repr(_up_f2.get("type")))
+                     "币 → 粒的 type 不是 minecraft:smelting（熔炉那一条）：" + repr(_up_f2.get("type")))
     if set(_up_f2) != {"type", "category", "ingredient", "result", "experience", "cookingtime"}:
         _bgn10up_bad("bgn10up-smelt",
                      "币 → 粒的顶层键不是恰好 6 个（多一个键 = 多一条口径）：" + repr(sorted(_up_f2)))
@@ -9484,6 +9548,54 @@ if _up_f2 is not None:
     _bgn10up_checked += 1
     if _up_off_tier:
         _bgn10up_bad("bgn10up-smelt", "这些 raw_*_smelting 与本条不同档：" + repr(_up_off_tier))
+
+# ---------- ②-b 币 →（**高炉**）→ 粒（`bg-n10fix` ①，作者 2026-10-18 亲口要）----------
+# 判据 = 与**既有 8 条 `raw_*_blasting`** 逐项同档（xp 1.0 / 100 tick / misc），
+# 并显式钉"高炉时间 = 熔炉的一半、xp 相同"这条作者口径（不是凭印象写的常量）。
+if _up_f2b is not None:
+    _bgn10up_checked += 9
+    if _up_f2b.get("type") != "minecraft:blasting":
+        _bgn10up_bad("bgn10up-blast",
+                     "币 → 粒的高炉 type 不是 minecraft:blasting：" + repr(_up_f2b.get("type")))
+    if set(_up_f2b) != {"type", "category", "ingredient", "result", "experience", "cookingtime"}:
+        _bgn10up_bad("bgn10up-blast",
+                     "高炉那条的顶层键不是恰好 6 个：" + repr(sorted(_up_f2b)))
+    if _up_f2b.get("ingredient") != {"item": _UP_COIN}:
+        _bgn10up_bad("bgn10up-blast", "高炉输入不是恰好 1 个 " + _UP_COIN + "：" + repr(_up_f2b.get("ingredient")))
+    if _up_f2b.get("result") != {"id": _UP_NUGGET}:
+        _bgn10up_bad("bgn10up-blast", "高炉产物不是 " + _UP_NUGGET + " ×1：" + repr(_up_f2b.get("result")))
+    _up_blast_anchor_path = _RC_DATA / "raw_sturdygold_blasting.json"
+    if not _up_blast_anchor_path.is_file():
+        _bgn10up_bad("bgn10up-blast", "缺同档锚点 raw_sturdygold_blasting.json")
+        _up_blast_anchor = {}
+    else:
+        _up_blast_anchor = json.loads(_up_blast_anchor_path.read_text(encoding="utf-8"))
+    _up_blast_tier = [_up_blast_anchor.get("category"), _up_blast_anchor.get("experience"),
+                      _up_blast_anchor.get("cookingtime")]
+    _up_blast_mine = [_up_f2b.get("category"), _up_f2b.get("experience"), _up_f2b.get("cookingtime")]
+    if _up_blast_tier != _up_blast_mine:
+        _bgn10up_bad("bgn10up-blast",
+                     "高炉的 category/experience/cookingtime 与既有同档不同："
+                     + repr(_up_blast_mine) + " != " + repr(_up_blast_tier))
+    _up_raw_blasts = sorted(_RC_DATA.glob("raw_*_blasting.json"))
+    _bgn10up_checked += 1
+    if len(_up_raw_blasts) != 8:
+        _bgn10up_bad("bgn10up-blast",
+                     "raw_*_blasting 不是 8 条（反空转：同档比对会假绿）：" + str(len(_up_raw_blasts)))
+    _up_blast_off = []
+    for _rp in _up_raw_blasts:
+        _ro = json.loads(_rp.read_text(encoding="utf-8"))
+        if [_ro.get("category"), _ro.get("experience"), _ro.get("cookingtime")] != _up_blast_mine:
+            _up_blast_off.append(_rp.name)
+    if _up_blast_off:
+        _bgn10up_bad("bgn10up-blast", "这些 raw_*_blasting 与高炉这条不同档：" + repr(_up_blast_off))
+    # 作者口径：高炉 = 熔炉的**一半时间**、xp 相同（两条都在本文件里，直接对穿，不另写常量）
+    if (_up_f2b.get("cookingtime"), _up_f2b.get("experience")) != (
+            (_up_f2.get("cookingtime") or 0) // 2, _up_f2.get("experience")):
+        _bgn10up_bad("bgn10up-blast",
+                     "高炉不是「熔炉一半时间 + xp 相同」：blast="
+                     + repr((_up_f2b.get("cookingtime"), _up_f2b.get("experience")))
+                     + " smelt=" + repr((_up_f2.get("cookingtime"), _up_f2.get("experience"))))
 
 # ---------- ③ 9 粒 → 1 锭：**逐格**钉住（计数相等抓不到位置错）----------
 if _up_f3 is not None:
@@ -9540,10 +9652,15 @@ _up_prod_nug = sorted(n for n, o in _up_all.items() if _UP_NUGGET in _up_outputs
 _up_prod_ing = sorted(n for n, o in _up_all.items() if _UP_INGOT in _up_outputs(o))
 _up_hot_forbidden = sorted(
     n for n, o in _up_all.items()
-    if o.get("type") in ("minecraft:blasting", "minecraft:smoking", "minecraft:campfire_cooking")
+    if o.get("type") in ("minecraft:smoking", "minecraft:campfire_cooking")
     and (_UP_COIN in _up_inputs(o) or _UP_COIN in _up_outputs(o)
          or _UP_NUGGET in _up_outputs(o) or _UP_NUGGET in _up_inputs(o)))
-_bgn10up_checked += 5
+_up_hot_blast = sorted(
+    n for n, o in _up_all.items()
+    if o.get("type") == "minecraft:blasting"
+    and (_UP_COIN in _up_inputs(o) or _UP_COIN in _up_outputs(o)
+         or _UP_NUGGET in _up_outputs(o) or _UP_NUGGET in _up_inputs(o)))
+_bgn10up_checked += 6
 if _up_prod_cs:
     _bgn10up_bad("bgn10up-reverse", "全仓有产出混沌金币串的配方（作者没说币串怎么来）：" + repr(_up_prod_cs))
 if set(_up_use_cs) != _UP_STRING_CONSUMERS:
@@ -9553,12 +9670,15 @@ if set(_up_prod_coin) != {_UP_F1}:
     _bgn10up_bad("bgn10up-reverse", "产出混沌金币的配方不是恰好 1 条：" + repr(_up_prod_coin))
 if set(_up_prod_nug) != _UP_NUGGET_PRODUCERS:
     _bgn10up_bad("bgn10up-reverse",
-                 "产出混沌金粒的配方不是恰好「烧炼 + 锭 → 粒」两条：" + repr(_up_prod_nug))
+                 "产出混沌金粒的配方不是恰好「熔炉 + 高炉 + 锭 → 粒」三条：" + repr(_up_prod_nug))
 if set(_up_prod_ing) != _UP_INGOT_PRODUCERS:
     _bgn10up_bad("bgn10up-reverse", "产出混沌金锭的配方不是恰好「9 → 1 + 块 → 锭」两条：" + repr(_up_prod_ing))
 if _up_hot_forbidden:
     _bgn10up_bad("bgn10up-reverse",
-                 "出现了金币 / 金粒的高炉、烟熏、营火配方（本轮只做 smelting 一条）：" + repr(_up_hot_forbidden))
+                 "出现了金币 / 金粒的烟熏、营火配方（作者只点名了熔炉与高炉）：" + repr(_up_hot_forbidden))
+if _up_hot_blast != [_UP_F2B]:
+    _bgn10up_bad("bgn10up-reverse",
+                 "金币 / 金粒的高炉配方不是恰好那一条（`bg-n10fix` ①）：" + repr(_up_hot_blast))
 
 # ---------- 生成器 = 唯一真源：自检 + 产物逐字节 + 去注释源码 needle ----------
 _bgn10up_checked += 6
@@ -9575,8 +9695,9 @@ try:
         sys.dont_write_bytecode = _up_dwb
     _up_targets = _up_gen.upstream_targets()
     _bgn10up_checked += 1
-    if len(_up_targets) != 2 or [n for n, _ in _up_targets] != [_UP_F1, _UP_F2]:
-        _bgn10up_bad("bgn10up-generator", "生成器的上游 recipe 表不是恰好这两条：" + repr([n for n, _ in _up_targets]))
+    if len(_up_targets) != 3 or [n for n, _ in _up_targets] != [_UP_F1, _UP_F2, _UP_F2B]:
+        _bgn10up_bad("bgn10up-generator",
+                     "生成器的上游 recipe 表不是恰好这三条：" + repr([n for n, _ in _up_targets]))
     _up_self = list(_up_gen.check_upstream(_up_targets))
     _bgn10up_checked += 1
     if _up_self:
@@ -9596,12 +9717,16 @@ try:
                           ("def check_upstream", "生成器里没有上游自检函数"),
                           ('":chaos_coin_string"', "生成器里没有币串的 id"),
                           ('"minecraft:crafting_shapeless"', "生成器里没有无序合成（币串 → 3 币）"),
-                          ('"minecraft:smelting"', "生成器里没有熔炉（币 → 粒）")):
+                          ('"minecraft:smelting"', "生成器里没有熔炉（币 → 粒）"),
+                          ('"minecraft:blasting"', "生成器里没有高炉（币 → 粒，`bg-n10fix` ①）"),
+                          ("_raw_blasting_anchor", "生成器里没有高炉同档锚点（会退化成手写常量）")):
         if _needle not in _up_src:
             _bgn10up_bad("bgn10up-generator", _why + "：缺 " + _needle + "（去注释源码里）")
-    for _needle in ('"minecraft:blasting"', '"minecraft:smoking"', '"minecraft:campfire_cooking"'):
+    # ⚠ 旧口径（「作者只说了烧炼 ⇒ 只做 smelting 一条」）已被 2026-10-18 推翻：blasting 从**禁止项**
+    #    移进上面的**正向 needle**；烟熏 / 营火仍然禁止。
+    for _needle in ('"minecraft:smoking"', '"minecraft:campfire_cooking"'):
         if _needle in _up_src:
-            _bgn10up_bad("bgn10up-generator", "生成器里出现了 " + _needle + "（作者只说了烧炼，只做 smelting 一条）")
+            _bgn10up_bad("bgn10up-generator", "生成器里出现了 " + _needle + "（作者只点名了熔炉与高炉）")
 except Exception as _e:                                   # noqa: BLE001
     _bgn10up_bad("bgn10up-generator", "生成器加载失败：" + repr(_e))
 
@@ -9703,13 +9828,294 @@ else:
 if _bgn10up_checked < 55:
     _bgn10up_bad("bgn10up-anti-vacuum",
                  "本段只检查了 " + str(_bgn10up_checked) + " 项（反空转守护：应远大于 55）")
-print("1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（烧炼）→ 粒 / 9 粒 → 1 锭）问题: "
+print("1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（熔炉 + 高炉）→ 粒 / 9 粒 → 1 锭）问题: "
       + str(len(bgn10up_problems)) + " " + str(bgn10up_problems[:4])
       + "（本段判定 " + str(_bgn10up_checked) + " 项）")
 if not bgn10up_problems:
     print("[bgn10up-ok] 币串 → 3 币（shapeless，消耗 1 个）/ 币 →（smelting，与 8 条 raw_*_smelting 同档 "
-          "1.0 xp 200 tick misc）→ 粒 / 9 粒 → 1 锭逐格（NNN 满格）与它的逆 1 锭 → 9 粒都原样 / "
-          "反向：无币串产线、无第二种金币来源、无高炉烟熏 / 手册 18 页（两条各 1 页）无死链")
+          "1.0 xp 200 tick misc）+（blasting，与 8 条 raw_*_blasting 同档 1.0 xp 100 tick misc；"
+          "`bg-n10fix` ① 作者 2026-10-18 推翻旧口径）→ 粒 / 9 粒 → 1 锭逐格（NNN 满格）与它的逆 "
+          "1 锭 → 9 粒都原样 / 反向：无币串产线、无第二种金币来源、无烟熏营火（高炉恰好 1 条）/ "
+          "手册 18 页（两条各 1 页）无死链")
+
+# ==================== 1.7 `bg-n10fix`（2026-10-18）：作者进游戏试玩报的 10 条 ====================
+# 判据口径（照 `docs/构建与跑测注意事项.md` §六/§七）：
+#   * 正向 needle **一律跑在去注释源码上**（注释里写一句 needle 不许算数）；
+#   * 失败文案里**不出现裸 `%`**（用 str.format / 拼接，别用 % 运算）；
+#   * 反空转：本段必须真的检查了 N 项（N 远大于 60），否则 exit 2。
+bgn10fix_problems: list[str] = []
+_bgn10fix_checked = 0
+
+
+def _bgfix_bad(tag: str, msg: str) -> None:
+    bgn10fix_problems.append("[" + tag + "] " + msg)
+
+
+def _bgfix_src(name: str) -> str:
+    p = JAVA / name
+    return strip_comments(p.read_text(encoding="utf-8")) if p.is_file() else ""
+
+
+# ---------- ① 混沌金币：熔炉 + **高炉**（旧口径「只做 smelting」已被推翻）----------
+_bgn10fix_checked = 0
+_bgfix_blast = _RC_DATA / "chaos_coin_blasting.json"
+_bgn10fix_checked += 1
+if not _bgfix_blast.is_file():
+    _bgfix_bad("bgn10fix-blast", "缺 chaos_coin_blasting.json（作者要「高炉也能烧成粒」）")
+else:
+    _bg = json.loads(_bgfix_blast.read_text(encoding="utf-8"))
+    if _bg.get("type") != "minecraft:blasting":
+        _bgfix_bad("bgn10fix-blast", "type 不是 minecraft:blasting：" + repr(_bg.get("type")))
+    if _bg.get("result") != {"id": "bettergold:chaosgold_nugget"}:
+        _bgfix_bad("bgn10fix-blast", "产物不是 chaosgold_nugget：" + repr(_bg.get("result")))
+    if _bg.get("cookingtime") != 100 or _bg.get("experience") != 1.0:
+        _bgfix_bad("bgn10fix-blast",
+                   "高炉档不是「100 tick / 1.0 xp」：" + repr((_bg.get("cookingtime"), _bg.get("experience"))))
+_bgn10fix_checked += 1
+if not (_RC_DATA / "chaos_coin_smelting.json").is_file():
+    _bgfix_bad("bgn10fix-blast", "熔炉那条被删了（作者只说「也能」，不是「改成」）")
+
+# ---------- ② 金火把花：blockstate → model → texture 三层链 + cutout 渲染层 ----------
+_bgn10fix_checked += 1
+try:
+    from PIL import Image as _BgfixImage
+except Exception:                                          # noqa: BLE001
+    _BgfixImage = None
+_BGFIX_MODELS = {
+    "golden_torchflower": ("cross", "bettergold:block/golden_torchflower"),
+    "golden_torchflower_crop_stage0": ("cross", "bettergold:block/golden_torchflower_crop_stage0"),
+    "golden_torchflower_crop_stage1": ("cross", "bettergold:block/golden_torchflower_crop_stage1"),
+    "potted_golden_torchflower": ("minecraft:block/flower_pot_cross", "bettergold:block/golden_torchflower"),
+}
+for _m, (_parent, _tex) in _BGFIX_MODELS.items():
+    _bgn10fix_checked += 4
+    _mp = _RES / "assets" / "bettergold" / "models" / "block" / (_m + ".json")
+    if not _mp.is_file():
+        _bgfix_bad("bgn10fix-torchflower", "缺模型 " + _m)
+        continue
+    _mo = json.loads(_mp.read_text(encoding="utf-8"))
+    _want_parent = _parent if _parent.startswith("minecraft:") else "minecraft:block/" + _parent
+    if _mo.get("parent") != _want_parent:
+        _bgfix_bad("bgn10fix-torchflower", _m + " 的 parent 不是 " + _want_parent + "：" + repr(_mo.get("parent")))
+    # ★ 根因：NeoForge 对**没有 render_type 的模组方块**走 `RenderType.solid()`
+    #   （`ItemBlockRenderTypes.BLOCK_RENDER_TYPES.defaultReturnValue(SOLID)`）⇒ 透明像素被当黑色画出。
+    if _mo.get("render_type") != "minecraft:cutout":
+        _bgfix_bad("bgn10fix-torchflower",
+                   _m + " 没有 render_type=minecraft:cutout（透明背景会被 SOLID 画成黑块）")
+    _tkey = "plant" if _m.startswith("potted_") else "cross"
+    if (_mo.get("textures") or {}).get(_tkey) != _tex:
+        _bgfix_bad("bgn10fix-torchflower",
+                   _m + " 的 textures." + _tkey + " 不是 " + _tex + "：" + repr(_mo.get("textures")))
+    _tex_rel = _RES / "assets" / "bettergold" / "textures" / (_tex.split(":", 1)[1] + ".png")
+    if not _tex_rel.is_file():
+        _bgfix_bad("bgn10fix-torchflower", _m + " 引用的贴图不存在：" + str(_tex_rel))
+    elif _BgfixImage is not None:
+        _im = _BgfixImage.open(_tex_rel).convert("RGBA")
+        _px = list(_im.getdata())
+        _transparent = sum(1 for _r, _g, _b, _a in _px if _a == 0)
+        _opaque_black = sum(1 for _r, _g, _b, _a in _px if _a > 0 and _r < 20 and _g < 20 and _b < 20)
+        if _transparent == 0:
+            _bgfix_bad("bgn10fix-torchflower", _m + " 的贴图没有透明像素（那就不可能靠 cutout 修好）")
+        if _opaque_black > 0:
+            _bgfix_bad("bgn10fix-torchflower",
+                       _m + " 的贴图有 " + str(_opaque_black) + " 个不透明近黑像素（先报作者，别改像素）")
+        _im.close()
+
+# ---------- ③ 迷之炖菜：伤害吸收 III / 320 tick ----------
+_bgn10fix_checked += 6
+_gf = _bgfix_src("block/GoldenTorchflowerBlock.java")
+for _needle, _why in (
+        ("STEW_TICKS = 16 * 20", "炖菜时长不是 16 秒 = 320 tick"),
+        ("MobEffects.ABSORPTION", "花方块没有声明 absorption（JEI / 炖菜配方不会跟随）"),
+        ("STEW_TICKS / 20.0F", "花方块没有把 320 tick 交给 FlowerBlock 的 seconds 参数")):
+    if _needle not in _gf:
+        _bgfix_bad("bgn10fix-stew", _why + "（缺 " + _needle + "）")
+_mev_all = _bgfix_src("event/ModEvents.java")
+for _needle, _why in (
+        ("onGoldenTorchflowerStew", "缺「喝下炖菜后补 III 级」的处理器"),
+        ("Items.SUSPICIOUS_STEW", "处理器没有限定原版迷之炖菜"),
+        ("new MobEffectInstance(MobEffects.ABSORPTION", "处理器没有施加 absorption"),
+        (", false, true, true", "施加参数被改（应为 ambient=false / visible / showIcon）")):
+    if _needle not in _mev_all:
+        _bgfix_bad("bgn10fix-stew", _why + "（缺 " + _needle + "）")
+if "GoldenTorchflowerBlock.STEW_TICKS, 2" not in _mev_all:
+    _bgfix_bad("bgn10fix-stew", "处理器没有把等级写成 2（= III 级）且时长引用 STEW_TICKS")
+
+# ---------- ④ 附魔书四改 ----------
+_bgn10fix_checked += 8
+_ci = _bgfix_src("material/ChaosItems.java")
+for _needle, _why in (
+        ("stacksTo(16)", "最大堆叠不是 16"),
+        ("InteractionHand.MAIN_HAND", "不是「主手书」的新交互形状"),
+        ("player.getOffhandItem()", "被附魔的装备不是取自副手"),
+        ("SoundEvents.ENCHANTMENT_TABLE_USE", "成功时没播附魔台音效"),
+        ("player.isCreative()", "创造模式没有单独分支"),
+        ("int cost = creative ? 0", "创造模式仍会算经验消耗")):
+    if _needle not in _ci:
+        _bgfix_bad("bgn10fix-book", _why + "（缺 " + _needle + "）")
+if _ci.count("alwaysEdible()") != 2:
+    _bgfix_bad("bgn10fix-fruit", "两个禁果不是都加了 alwaysEdible()（实际 " + str(_ci.count("alwaysEdible()")) + " 处）")
+
+# ---------- ⑤ 混沌金建材：硬度 ×2/3 + 铁级 ----------
+_bgn10fix_checked += 6
+_am = _bgfix_src("material/AllMetals.java")
+for _needle, _why in (
+        ("spec.blockStrength = 55.0F * 2.0F / 3.0F;", "块的硬度不是「贵金基准 55 × 2/3」"),
+        ("spec.detailStrength = 8.0F * 2.0F / 3.0F;", "细节件硬度不是「基准 8 × 2/3」"),
+        ("spec.incorrectForDrops = BlockTags.INCORRECT_FOR_IRON_TOOL;", "挖掘等级不是铁")):
+    if _needle not in _am:
+        _bgfix_bad("bgn10fix-blockstrength", _why + "（缺 " + _needle + "）")
+# ⚠ 崩乱合金的块属性一个字节都不许动（作者只提「混沌金系列」）
+if "spec.blockStrength = 150.0F;" not in _am:
+    _bgfix_bad("bgn10fix-blockstrength", "崩乱合金块的硬度 150.0F 被改了（作者只让改混沌金）")
+_bgfix_iron = tag_members("minecraft/tags/block/needs_iron_tool.json")
+_bgfix_diamond = tag_members("minecraft/tags/block/needs_diamond_tool.json")
+_bgfix_forms = MF.building_of("chaosgold")
+_bgn10fix_checked += 3
+_missing_iron = [b for b in _bgfix_forms if ("bettergold:chaosgold_" + b) not in _bgfix_iron]
+_still_diamond = [b for b in _bgfix_forms if ("bettergold:chaosgold_" + b) in _bgfix_diamond]
+if _missing_iron:
+    _bgfix_bad("bgn10fix-blockstrength", "这些混沌金建材不在 #minecraft:needs_iron_tool：" + repr(_missing_iron))
+if _still_diamond:
+    _bgfix_bad("bgn10fix-blockstrength", "这些混沌金建材还在 #minecraft:needs_diamond_tool：" + repr(_still_diamond))
+if len(_bgfix_forms) != 11:
+    _bgfix_bad("bgn10fix-blockstrength", "混沌金建材形态不是 11 种（反空转）：" + str(len(_bgfix_forms)))
+
+# ---------- ⑦ 金钱妖：悬浮 + 待机硬币旋转 ----------
+_bgn10fix_checked += 8
+_mg = _bgfix_src("entity/MoneyGremlin.java")
+for _needle, _why in (
+        ("HOVER_OFFSET = 0.4D", "没有烈焰人同档的悬浮偏移 0.4 格"),
+        ("idleAnimationState.animateWhen(!moving, this.tickCount)", "待机动画状态没有被推进（永远停在 0 帧）")):
+    if _needle not in _mg:
+        _bgfix_bad("bgn10fix-gremlin", _why + "（缺 " + _needle + "）")
+if "setNoGravity(true)" in _mg:
+    _bgfix_bad("bgn10fix-gremlin", "金钱妖被改成了不受重力的飞行怪（作者明确不要）")
+_mgr = _bgfix_src("client/MoneyGremlinRenderer.java")
+if "getRenderOffset" not in _mgr or "MoneyGremlin.HOVER_OFFSET" not in _mgr:
+    _bgfix_bad("bgn10fix-gremlin", "渲染器没有把模型整体上抬 HOVER_OFFSET")
+_anim = (REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "client"
+         / "MoneyGremlinAnimations.java").read_text(encoding="utf-8")
+_idle = _anim.split("public static final AnimationDefinition WALK")[0]
+if _idle.count("360.0F") < 8:
+    _bgfix_bad("bgn10fix-gremlin",
+               "IDLE 里硬币骨骼的旋转通道不足 8 条（每枚硬币 0→360°；实际 " + str(_idle.count("360.0F")) + "）")
+for _bn in ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"):
+    if ('addAnimation("' + _bn + '", new AnimationChannel(AnimationChannel.Targets.ROTATION') not in _idle:
+        _bgfix_bad("bgn10fix-gremlin", "IDLE 缺 " + _bn + " 的 rotation 通道")
+
+# ---------- ⑧ 弹幕：三格**外**才打 ----------
+_bgn10fix_checked += 4
+if "isBeyondBarrageRange" not in _mg:
+    _bgfix_bad("bgn10fix-barrage", "没有 isBeyondBarrageRange（三格外才打）")
+if "isWithinBarrageRange" in _mg:
+    _bgfix_bad("bgn10fix-barrage", "旧的「三格内」判据还在")
+if "return distanceSqr > BARRAGE_MIN_RANGE * BARRAGE_MIN_RANGE;" not in _mg:
+    _bgfix_bad("bgn10fix-barrage", "判据不是「严格大于 9.0」")
+if "isBeyondBarrageRange(this.distanceToSqr(target))" not in _mg:
+    _bgfix_bad("bgn10fix-barrage", "customServerAiStep 没有改用新判据")
+
+# ---------- ⑨ 混沌金币可投掷 + 不进「寻途」----------
+_bgn10fix_checked += 12
+_co = _bgfix_src("item/ChaosCoinItem.java")
+for _needle, _why in (
+        ("PLAYER_DAMAGE = 3.0F", "玩家投掷伤害不是 3 点"),
+        ("PLAYER_HUNGER_TICKS = 16 * 20", "玩家投掷饥饿不是 16 秒"),
+        ("COOLDOWN_TICKS = 10", "投掷冷却不是 10 tick"),
+        ("new ChaosCoinProjectile(level, player)", "没有生成共用的弹射物"),
+        ("stack.shrink(1)", "投掷没有消耗 1 个")):
+    if _needle not in _co:
+        _bgfix_bad("bgn10fix-coin", _why + "（缺 " + _needle + "）")
+_cp = _bgfix_src("entity/ChaosCoinProjectile.java")
+for _needle, _why in (
+        ("isPlayerThrown()", "弹射物没有区分「玩家投掷」"),
+        ("effectiveDamage()", "伤害没有按来源分档"),
+        ("effectiveHungerTicks()", "饥饿时长没有按来源分档"),
+        ("applyHunger(LivingEntity target, int ticks)", "叠层函数没有共用一份（有两个实现？）")):
+    if _needle not in _cp:
+        _bgfix_bad("bgn10fix-coin", _why + "（缺 " + _needle + "）")
+_ai = _bgfix_src("registry/AllItems.java")
+if "new com.hjmmd_8.bettergold.item.ChaosCoinItem(" not in _ai:
+    _bgfix_bad("bgn10fix-coin", "chaos_coin 还是普通 Item（不能投掷）")
+# 成就：CORE_MATERIALS 回到 8 项且不含 chaos_coin（导入生成器 = 读唯一真源，不是复述）
+_bgn10fix_checked += 3
+try:
+    import importlib.util as _bgfix_ilu
+    _bgfix_dwb = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        _bgfix_spec = _bgfix_ilu.spec_from_file_location(
+            "_bgn10fix_advgen", REPO / "tools" / "asset-generator" / "generate_advancements.py")
+        _bgfix_adv = _bgfix_ilu.module_from_spec(_bgfix_spec)
+        _bgfix_spec.loader.exec_module(_bgfix_adv)
+    finally:
+        sys.dont_write_bytecode = _bgfix_dwb
+    if "bettergold:chaos_coin" in _bgfix_adv.CORE_MATERIALS:
+        _bgfix_bad("bgn10fix-adv", "chaos_coin 还在「寻途千里的珍宝」的判据集合里")
+    if len(_bgfix_adv.CORE_MATERIALS) != 8:
+        _bgfix_bad("bgn10fix-adv",
+                   "核心材料不是 8 项（实际 " + str(len(_bgfix_adv.CORE_MATERIALS)) + "）")
+except Exception as _e:                                    # noqa: BLE001
+    _bgfix_bad("bgn10fix-adv", "成就生成器加载失败：" + repr(_e))
+for _adv_name in ("treasure/chaos_coin", "metal/chaosalloy/ingot"):
+    _bgn10fix_checked += 1
+    _adv_path = _ADV / (_adv_name + ".json")
+    if not _adv_path.is_file():
+        _bgfix_bad("bgn10fix-adv", "缺成就 " + _adv_name)
+        continue
+    _adv_obj = json.loads(_adv_path.read_text(encoding="utf-8"))
+    if _adv_obj.get("parent") != "bettergold:root":
+        _bgfix_bad("bgn10fix-adv",
+                   _adv_name + " 的 parent 不是 bettergold:root：" + repr(_adv_obj.get("parent")))
+
+# ---------- ⑩ 区间值：区间随机 + 三个触发点 ----------
+_bgn10fix_checked += 8
+_cr_src = _bgfix_src("material/ChaosRange.java")
+for _needle, _why in (
+        ("random.nextInt(FRACTION_SCALE + 1)", "随机源不是区间内均匀（含两端）"),
+        ("valueOfFraction", "缺「比例 → 数值」的唯一映射"),
+        ("onMiningSuccess", "缺「挖掘成功」触发点"),
+        ("onHeldChange", "缺「重新手持」触发点")):
+    if _needle not in _cr_src:
+        _bgfix_bad("bgn10fix-range", _why + "（缺 " + _needle + "）")
+if "current == range.min ? range.max : range.min" in _cr_src:
+    _bgfix_bad("bgn10fix-range", "两端乒乓公式还在（作者 2026-10-18 已推翻）")
+# 三个触发点里"攻击命中"的落点是近战 hurtEnemy + 远程命中，两处都必须走 reroll
+for _f, _why in (("material/MetalWeapons.java", "近战命中没有重掷 ATTACK"),
+                 ("material/ChaosWiring.java", "远程命中没有重掷 ATTACK")):
+    _bgn10fix_checked += 1
+    if "ChaosRange.reroll(" not in _bgfix_src(_f):
+        _bgfix_bad("bgn10fix-range", _why + "（" + _f + " 里缺 ChaosRange.reroll(）")
+if "ChaosRange.reroll(worn, ChaosRange.Channel.ARMOR" not in _bgfix_src("material/MetalEvents.java"):
+    _bgfix_bad("bgn10fix-range", "盔甲减伤没有重掷（还是翻转？）")
+# 复算：2000 次采样必须落在 [4,8]、均值 ≈ 6、且出现 5/6/7 三个中间档
+_bgn10fix_checked += 1
+try:
+    import random as _bgfix_random
+    _rng = _bgfix_random.Random(20261018)
+    _samples = [round(4 + 4 * (_rng.randint(0, 1000) / 1000.0)) for _ in range(2000)]
+    _mean = sum(_samples) / len(_samples)
+    if min(_samples) < 4 or max(_samples) > 8:
+        _bgfix_bad("bgn10fix-range", "采样越界（应全部落在 4..8）：" + repr((min(_samples), max(_samples))))
+    if not all(_v in _samples for _v in (5, 6, 7)):
+        _bgfix_bad("bgn10fix-range", "采样没有覆盖 5/6/7（不是区间随机）")
+    if abs(_mean - 6.0) > 0.1:
+        _bgfix_bad("bgn10fix-range", "采样均值不是 ≈ 6：" + repr(round(_mean, 4)))
+except Exception as _e:                                    # noqa: BLE001
+    _bgfix_bad("bgn10fix-range", "采样复算失败：" + repr(_e))
+
+if _bgn10fix_checked < 60:
+    _bgfix_bad("bgn10fix-anti-vacuum",
+               "本段只检查了 " + str(_bgn10fix_checked) + " 项（反空转守护：应远大于 60）")
+print("1.7 bg-n10fix（作者试玩 10 条：高炉 / 火把花黑底 / 炖菜 / 附魔书 / 建材硬度 / 禁果 / 金钱妖 / 弹幕 / 金币投掷 / 区间随机）问题: "
+      + str(len(bgn10fix_problems)) + " " + str(bgn10fix_problems[:4])
+      + "（本段判定 " + str(_bgn10fix_checked) + " 项）")
+if not bgn10fix_problems:
+    print("[bgn10fix-ok] ① 熔炉 + 高炉（高炉 100 tick / xp 1.0）/ ② 4 个模型 cutout + 三层链 + 贴图透明 / "
+          "③ 炖菜 absorption III 320 tick / ④ 书 16 堆叠 + 主手书副手装备 + 附魔台音效 + 创造免经验 / "
+          "⑤ 建材 55×2/3 与 8×2/3 + needs_iron_tool 且不在 diamond / ⑥ 两个禁果 alwaysEdible / "
+          "⑦ 悬浮 0.4 + IDLE 八枚硬币 0→360° / ⑧ 三格外才打 / ⑨ 金币可投掷（3 点 / 320 tick / 冷却 10）+ 不进寻途 / "
+          "⑩ 区间随机含两端 + 三个触发点（2000 次采样 4..8 均值 6）")
 
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
@@ -9722,7 +10128,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems,
                        bgn10r8_problems, bgn10r9_problems,
                        bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems,
-                       bgn10up_problems)
+                       bgn10up_problems, bgn10fix_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

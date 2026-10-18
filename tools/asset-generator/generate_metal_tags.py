@@ -42,6 +42,11 @@ METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongo
 # 但凡口径是"六套金属一致"的标签，都必须显式把万坚金算进来 —— 见下面的 BEACON_SUFFIXES。
 STURDYGOLD = "sturdygold"
 ALL_METALS = [STURDYGOLD, *METALS]
+# 1.7 `bg-n10fix` ⑤（作者 2026-10-18）：「混沌金的建材**挖掘等级 = 铁**」。
+# ⇒ 这一族的建材进 `#minecraft:needs_iron_tool`，**不进** `needs_diamond_tool`；
+# 其余族（含崩乱合金的块）**一个字节不动**。同一条口径在 Java 侧 = `Spec.incorrectForDrops`
+# = `BlockTags.INCORRECT_FOR_IRON_TOOL`（AllMetals#registerChaosgold）。
+IRON_TIER_METALS = {"chaosgold"}
 BLOCKS = ["block", "bricks", "bricks_slab", "bricks_stairs", "bricks_wall",
           "pillar", "door", "trapdoor", "bars", "chain", "lantern"]
 # #minecraft:beacon_base_blocks 的成员口径（1.4 既有口径，commit b5f68d3 手写进 JSON）：
@@ -143,8 +148,18 @@ def build_plan() -> dict[Path, list[str]]:
         building_forms = MF.building_of(m)
         add(DATA / "minecraft" / "tags" / "block" / "mineable" / "pickaxe.json",
             [f"bettergold:{m}_{b}" for b in building_forms])
-        add(DATA / "minecraft" / "tags" / "block" / "needs_diamond_tool.json",
-            [f"bettergold:{m}_{b}" for b in building_forms])
+        # 1.7 `bg-n10fix` ⑤（作者 2026-10-18）：「混沌金建材的**挖掘等级 = 铁**」⇒ 它进
+        # `#minecraft:needs_iron_tool`，**不进** needs_diamond_tool。
+        # ⚠ 旧口径（无条件下 needs_diamond_tool，原文留档在下面一行）已被作者本轮推翻：
+        #   old: add(.../needs_diamond_tool.json, [f"bettergold:{m}_{b}" for b in building_forms])
+        # ⚠⚠ `merge()` **只增不删** ⇒ 那 11 条历史条目必须由**本脚本的 REMOVALS** 显式移出
+        #   （见 `build_plan` 末尾），否则"老文件里还在 = 仍然钻石级"，而生成器自己看不见。
+        if m in IRON_TIER_METALS:
+            add(DATA / "minecraft" / "tags" / "block" / "needs_iron_tool.json",
+                [f"bettergold:{m}_{b}" for b in building_forms])
+        else:
+            add(DATA / "minecraft" / "tags" / "block" / "needs_diamond_tool.json",
+                [f"bettergold:{m}_{b}" for b in building_forms])
         if "bricks_wall" in building_forms:
             add(DATA / "minecraft" / "tags" / "block" / "walls.json", [f"bettergold:{m}_bricks_wall"])
 
@@ -162,6 +177,35 @@ def build_plan() -> dict[Path, list[str]]:
     for tag in SEED_FOOD_TAGS:
         add(DATA / "minecraft" / "tags" / "item" / f"{tag}.json", [SEED_ITEM])
     return plan
+
+
+def removals_plan() -> dict[Path, list[str]]:
+    """必须从既有标签里**移出**的条目。
+
+    ⚠ 为什么需要它：`merge()` 是**只增不删**（AGENTS.md 红线 2 的"看不见的既成事实"）——
+    旧口径把混沌金 11 件建材写进了 `needs_diamond_tool`，改口径后如果只改生成器，
+    产物 JSON 里那 11 条**仍然在**（= 仍然是钻石级），而生成器自己永远看不见。
+    1.7 `bg-n10fix` ⑤：混沌金建材归 `#minecraft:needs_iron_tool` ⇒ 从 diamond 里移出。
+    """
+    return {
+        DATA / "minecraft" / "tags" / "block" / "needs_diamond_tool.json":
+            [f"bettergold:chaosgold_{b}" for b in MF.building_of("chaosgold")],
+    }
+
+
+def remove_entries(path: Path, values: list[str], apply: bool) -> int:
+    """从标签文件里删掉点名条目（只动 `values`，`replace` 与其余顺序原样）。返回删除条数。"""
+    if not path.is_file():
+        return 0
+    obj = json.loads(path.read_text(encoding="utf-8"))
+    current = list(obj.get("values", []))
+    kept = [v for v in current if v not in values]
+    removed = len(current) - len(kept)
+    if removed and apply:
+        obj["values"] = kept
+        path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n",
+                        encoding="utf-8", newline="\n")
+    return removed
 
 
 def merge(path: Path, values: list[str], apply: bool) -> tuple[int, int]:
@@ -211,6 +255,12 @@ def main() -> None:
     args = ap.parse_args()
 
     plan = build_plan()
+    # 1.7 `bg-n10fix` ⑤：先把旧口径留下的"钻石级"条目移出，再按新口径并入 iron 级
+    for path, values in sorted(removals_plan().items(), key=lambda kv: str(kv[0])):
+        removed = remove_entries(path, values, args.apply)
+        rel = path.relative_to(DATA)
+        print(f"{'移除 ' + str(rel):<58} -{removed:<3}"
+              f"{'' if removed else '  (已是最新)'}")
     total_added = 0
     for path, values in sorted(plan.items(), key=lambda kv: str(kv[0])):
         added, size = merge(path, values, args.apply)

@@ -39,29 +39,42 @@ public final class MoneyGremlinAnimations {
 			new Keyframe(1.1667F, KeyframeAnimations.posVec(0.0F, 1.5F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
 			new Keyframe(2.5F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
 		))
+		// 1.7 `bg-n10fix` ⑦-2（作者 2026-10-18）：「待机动作（只待机下也会旋转它的硬币）也没有」。
+		// ⚠ 旧口径（原文留档）：B1..B8 **各自只有一个 0.0F 关键帧**（= 静态倾角，`offsetRotation` 永远不会变）
+		//   ⇒ 即使 IDLE 在播，硬币也只是挂着不动。现行 = 每枚硬币在 2.5 s 里绕自身 Y 轴 **0 → 360°**
+		//   LINEAR 转一圈（`AnimationChannel.Targets.ROTATION` 走 `ModelPart#offsetRotation` 是**叠加**，
+		//   所以 45°/90° 那些摆放朝向原样保留），循环点 360°≡0° ⇒ 无缝。
 		.addAnimation("B1", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-19.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-19.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(-19.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.addAnimation("B2", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-15.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-15.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(-15.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.addAnimation("B3", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(17.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(17.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(17.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.addAnimation("B4", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(18.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(18.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(18.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.addAnimation("B5", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(16.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(16.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(16.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.addAnimation("B6", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-17.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-17.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(-17.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.addAnimation("B7", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(15.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(15.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(15.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.addAnimation("B8", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
-			new Keyframe(0.0F, KeyframeAnimations.degreeVec(20.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
+			new Keyframe(0.0F, KeyframeAnimations.degreeVec(20.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
+			new Keyframe(2.5F, KeyframeAnimations.degreeVec(20.0F, 360.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
 		.build();
 

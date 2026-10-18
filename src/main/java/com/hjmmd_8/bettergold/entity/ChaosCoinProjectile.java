@@ -16,10 +16,21 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 /**
- * 混沌金币（弹射物）—— 金钱妖「米」字弹幕用的那一枚。
+ * 混沌金币（弹射物）—— <b>金钱妖「米」字弹幕</b>与<b>玩家手持投掷</b>共用的唯一实现。
  *
  * <p>作者原话（立档 §10.1）：以自身中心、<b>笔直</b>射出 8 个摆成「米」字的混沌金币；
  * 弹射物伤害 <b>简单 2 / 普通 4 / 困难 6</b>；命中挂 <b>36 秒饥饿</b>，<b>最高叠至 12 层</b>。</p>
+ *
+ * <p>1.7 {@code bg-n10fix} ⑨（作者 2026-10-18）：<b>玩家也能投掷同一枚金币</b> ——「造成
+ * 3 点伤害并造成 16 秒的饥饿效果，最大可堆叠 12 层」。作者要求与金钱妖弹幕**共用同一套实现**
+ * ⇒ 本类同时承载两种来源，差别只有「伤害 / 饥饿时长」两个数，由 {@link #isPlayerThrown()}
+ * （= 主人是不是玩家，{@link #getOwner()}）在<b>命中那一刻</b>决定：
+ * <ul>
+ *   <li>玩家投掷：{@value com.hjmmd_8.bettergold.item.ChaosCoinItem#PLAYER_DAMAGE} 点 /
+ *       {@value com.hjmmd_8.bettergold.item.ChaosCoinItem#PLAYER_HUNGER_TICKS} tick；</li>
+ *   <li>金钱妖弹幕：{@link #damageFor}（2/4/6）/ {@link #HUNGER_DURATION_TICKS}（720 tick）。</li>
+ * </ul>
+ * 两条来源的**叠层公式完全共用**（{@link #applyHunger(LivingEntity, int)}，每次 +1 级、上限 12）。</p>
  *
  * <ul>
  *   <li><b>重力 0</b>（「笔直」⇒ {@link #getDefaultGravity()} 返回 0.0，1.21.1 的
@@ -27,7 +38,7 @@ import net.minecraft.world.phys.EntityHitResult;
  *   <li><b>伤害显式查表</b>（{@link #damageFor}）：不走原版「怪物打玩家按难度再乘」那一层 ——
  *       伤害类型 {@code bettergold:chaos_coin} 的 JSON 写的是 {@code "scaling": "never"}；</li>
  *   <li><b>饥饿叠加</b>：第 1 次命中 = I 级（amplifier 0），之后每次 <b>等级 +1、上限 12 级</b>
- *       （amplifier 11），时长每次刷新为 36 秒（720 tick）。公式见 {@link #applyHunger}。</li>
+ *       （amplifier 11），时长每次刷新（玩家 320 tick / 金钱妖 720 tick）。</li>
  * </ul>
  *
  * <p>工作值（立档 §7 未点名，按「最接近的既有范式」取，已记账）：初速 {@value #VELOCITY} 格/tick、
@@ -90,6 +101,30 @@ public class ChaosCoinProjectile extends ThrowableItemProjectile {
         };
     }
 
+    /**
+     * 这一枚是不是<b>玩家投掷</b>的（⇒ 伤害 3 / 饥饿 16 秒）。
+     *
+     * <p>判据 = {@code getOwner() instanceof Player}：玩家投掷时主人就是玩家；
+     * 金钱妖弹幕的主人恒是那个 {@code MoneyGremlin}。⚠ 不用额外的布尔字段 ⇒ 存档 / 重载后依然正确。</p>
+     */
+    public boolean isPlayerThrown() {
+        return this.getOwner() instanceof net.minecraft.world.entity.player.Player;
+    }
+
+    /** 本次命中的伤害（玩家投掷 = 3；金钱妖弹幕 = 难度表 2/4/6） */
+    public float effectiveDamage() {
+        return isPlayerThrown()
+                ? com.hjmmd_8.bettergold.item.ChaosCoinItem.PLAYER_DAMAGE
+                : damageFor(this.level().getDifficulty());
+    }
+
+    /** 本次命中的饥饿时长（玩家投掷 = 16 秒；金钱妖弹幕 = 36 秒） */
+    public int effectiveHungerTicks() {
+        return isPlayerThrown()
+                ? com.hjmmd_8.bettergold.item.ChaosCoinItem.PLAYER_HUNGER_TICKS
+                : HUNGER_DURATION_TICKS;
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
@@ -99,8 +134,8 @@ public class ChaosCoinProjectile extends ThrowableItemProjectile {
         Entity target = result.getEntity();
         if (target instanceof LivingEntity living) {
             living.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.CHAOS_COIN, this, this.getOwner()),
-                    damageFor(this.level().getDifficulty()));
-            applyHunger(living);
+                    effectiveDamage());
+            applyHunger(living, effectiveHungerTicks());
         }
         this.discard();
     }
@@ -114,28 +149,35 @@ public class ChaosCoinProjectile extends ThrowableItemProjectile {
     }
 
     /**
-     * 命中效果：36 秒饥饿，<b>每命中一次等级 +1、上限 12 级</b>（作者原话「最高叠至 12 层」）。
+     * 命中效果：饥饿，<b>每命中一次等级 +1、上限 12 级</b>（作者原话「最高叠至 12 层」）。
      *
-     * <p>完整公式（唯一实现，探针也调这一个入口）：</p>
+     * <p>完整公式（唯一实现，两个来源都调它；探针也调这一个入口）：</p>
      * <pre>
      * 现有等级 L（无该效果时 L = 0，amplifier = 等级 − 1）
      * 本次等级 L' = min(L + 1, 12)
-     * 施加：{@code MobEffectInstance(HUNGER, 720, L' - 1, ambient=false, visible=true)}
+     * 施加：{@code MobEffectInstance(HUNGER, ticks, L' - 1, ambient=false, visible=true)}
      * </pre>
+     *
+     * <p>⏱ {@code ticks}：玩家投掷 = <b>320</b>（16 秒，作者 2026-10-18 原话）；
+     * 金钱妖弹幕 = <b>720</b>（36 秒，立档 §10.1 原话）。<b>层数规则两边完全相同</b>。</p>
      *
      * <p>为什么先 {@code removeEffect} 再 {@code addEffect}：原版 {@code MobEffectInstance#update}
      * 在「新 amplifier 不大于旧 amplifier」时只续时长、不改等级，且遇到 hiddenEffect 时会走另一条支路；
-     * 这里要的是「每次都是重新挂一个干净的 720 tick 实例」，所以先移除再添加（饥饿没有移除副作用）。</p>
+     * 这里要的是「每次都是重新挂一个干净的实例」，所以先移除再添加（饥饿没有移除副作用）。</p>
      *
      * @return 本次施加后的<b>等级</b>（1..12），供 A 级读数
      */
-    public static int applyHunger(LivingEntity target) {
+    public static int applyHunger(LivingEntity target, int ticks) {
         MobEffectInstance current = target.getEffect(MobEffects.HUNGER);
         int currentLevel = current == null ? 0 : current.getAmplifier() + 1;
         int nextLevel = Math.min(currentLevel + 1, HUNGER_MAX_LEVEL);
         target.removeEffect(MobEffects.HUNGER);
-        target.addEffect(new MobEffectInstance(MobEffects.HUNGER, HUNGER_DURATION_TICKS,
-                nextLevel - 1, false, true));
+        target.addEffect(new MobEffectInstance(MobEffects.HUNGER, ticks, nextLevel - 1, false, true));
         return nextLevel;
+    }
+
+    /** 旧签名（金钱妖弹幕的 36 秒档）—— 保留，调用方一个字节不变 */
+    public static int applyHunger(LivingEntity target) {
+        return applyHunger(target, HUNGER_DURATION_TICKS);
     }
 }

@@ -48,9 +48,21 @@ public class GoldenTorchflowerBlock extends FlowerBlock {
     /** 真正喂给光照引擎的值 = {@code min(15, AUTHOR_LIGHT)} = 15 */
     public static final int ENGINE_LIGHT = Math.min(15, AUTHOR_LIGHT);
 
+    /**
+     * 迷之炖菜的**伤害吸收**时长：作者 2026-10-18 原话「**16 秒的伤害吸收三**」⇒ 16 × 20 = <b>320 tick</b>。
+     *
+     * <p>⚠ 1.21.1 的 {@code SuspiciousStewEffects.Entry} 只有 {@code (effect, duration)}、<b>没有 amplifier</b>
+     * （读 `neoforge-21.1.228-sources` 确认），所以这里能声明的是「absorption / 320 tick」，
+     * III 级（amplifier 2）由 {@code ModEvents#onGoldenTorchflowerStew} 在喝下那一刻补上；
+     * 这个常量是两处**唯一共用**的时长真源（关卡钉住两边都引用它、不各写一份 320）。</p>
+     */
+    public static final int STEW_TICKS = 16 * 20;
+
     public GoldenTorchflowerBlock(BlockBehaviour.Properties properties) {
-        // 作者没提"可疑的炖菜"效果 ⇒ 用 EMPTY（零效果），不发明炖菜 buff
-        super(SuspiciousStewEffects.EMPTY, properties);
+        // 1.7 `bg-n10fix` ③（作者 2026-10-18）：「金火把花可以作为迷之炖菜用 ⇒ 16 秒的伤害吸收三」
+        // ⚠ 旧口径（原文保留）：「作者没提"可疑的炖菜"效果 ⇒ 用 EMPTY（零效果），不发明炖菜 buff」
+        //   —— 已被作者本轮推翻；现行 = absorption / 16 秒（III 级在饮用时补齐，见 STEW_TICKS 注释）。
+        super(net.minecraft.world.effect.MobEffects.ABSORPTION, STEW_TICKS / 20.0F, properties);
     }
 
     /** 原版 {@code BushBlock} 的判据 ∪ 金染耕地（理由见类注释末段） */

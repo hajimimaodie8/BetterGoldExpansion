@@ -42,7 +42,9 @@ import net.minecraft.world.phys.Vec3;
  *   <li>最大生命值 <b>30</b>；免仙人掌伤害；<b>受到双倍火焰与岩浆伤害</b>（⇒ 也会躲火）；</li>
  *   <li>追击范围 <b>32 格</b>（目标选择与跟随都 32，见 {@link #TARGET_RANGE} / {@link #CHASE_RANGE}）；</li>
  *   <li>近战伤害 <b>简单 4 / 普通 8 / 困难 12</b>（显式查表，<b>不</b>交给原版难度换算）；</li>
- *   <li>与目标间距 <b>3 格</b>时，每 <b>120 tick</b> 以自身中心「米」字射出 <b>8 枚</b>混沌金币；</li>
+ *   <li>与目标间距 <b>3 格</b>时，每 <b>120 tick</b> 以自身中心「米」字射出 <b>8 枚</b>混沌金币；
+ *       ⚠ 2026-10-18 作者更正：「只会对自身<b>三格外</b>的玩家才会施展发射金币，而不是三格内」⇒
+ *       现行 = {@code > 3 格且 <= 32 格}（见 {@link #BARRAGE_MIN_RANGE} / {@link #isBeyondBarrageRange}）；</li>
  *   <li>掉落：<b>10 点经验</b> + 100% 一个混沌金币串（抢夺提升数量）+ 16% 金钱贝模具（抢夺提升概率与数量）。</li>
  * </ul>
  *
@@ -69,8 +71,15 @@ public class MoneyGremlin extends Monster {
     public static final double MOVEMENT_SPEED = 0.25D;
     /** 米字弹幕的间隔（作者原话 120 tick = 6 秒） */
     public static final int BARRAGE_INTERVAL_TICKS = 120;
-    /** 进入弹幕判定的间距（作者原话 3 格） */
-    public static final double BARRAGE_RANGE = 3.0D;
+    /**
+     * 弹幕判定的**最小**间距（作者 2026-10-18 原话：「人家只会对它自身<b>三格外</b>的玩家才会施展发射金币，
+     * 而不是三格内」）。
+     *
+     * <p>⚠ 旧口径（原文留档，已被推翻）：「进入弹幕判定的间距（作者原话 3 格）」+ `isWithinBarrageRange`
+     * ⇒ 当时是「三格**内**才打」。现行 = **严格大于 3 格**才打（{@link #isBeyondBarrageRange}），
+     * 上限仍由 {@link #CHASE_RANGE} 的 32 格兜住。</p>
+     */
+    public static final double BARRAGE_MIN_RANGE = 3.0D;
     /** 一次射出的枚数（作者原话 8 枚，水平 45°×8） */
     public static final int BARRAGE_COUNT = 8;
     /** 掉落：100% 一个混沌金币串的基础数量 */
@@ -157,9 +166,41 @@ public class MoneyGremlin extends Monster {
 
     // ==================== 米字弹幕 ====================
 
-    /** 间距判定（<b>唯一真源</b>）：3 格以内才射（作者原话） */
-    public static boolean isWithinBarrageRange(double distanceSqr) {
-        return distanceSqr <= BARRAGE_RANGE * BARRAGE_RANGE;
+    /**
+     * 间距判定（<b>唯一真源</b>）：**严格大于 3 格**才射（作者 2026-10-18 原话「只会对自身三格外」）。
+     *
+     * <p>⚠ 旧口径（原文留档，已被推翻）：{@code isWithinBarrageRange} + {@code distanceSqr <= 9.0}
+     * = 三格**内**才打。现行 = {@code distanceSqr > 9.0}；上限由 {@link #CHASE_RANGE}（32 格）在
+     * {@link #customServerAiStep()} 里先行裁掉 ⇒ 有效区间 = {@code (3, 32]}。</p>
+     */
+    public static boolean isBeyondBarrageRange(double distanceSqr) {
+        return distanceSqr > BARRAGE_MIN_RANGE * BARRAGE_MIN_RANGE;
+    }
+
+    /**
+     * 客户端「纯悬浮姿态」：模型整体上抬 <b>0.4 格</b>（烈焰人同档，作者 2026-10-18 原话
+     * 「让它像烈焰人那样悬浮起来」）。
+     *
+     * <p>⚠ 只抬**渲染**（{@code MoneyGremlinRenderer#getRenderOffset}），<b>不</b>改碰撞箱 / 不 {@code setNoGravity}
+     * ⇒ 它仍然是一个站在地上、受重力、会寻路的怪（作者要求「别把它变成会飞的怪」）。
+     * 烈焰人本身也是「模型画在碰撞箱上部、碰撞箱仍贴地」（读 `Blaze` / `BlazeModel` 确认：
+     * 它没有 `setNoGravity`，只有下落减速 + 朝目标上浮；视觉上的悬浮来自模型几何）。</p>
+     */
+    public static final double HOVER_OFFSET = 0.4D;
+
+    @Override
+    public void tick() {
+        super.tick();
+        // 1.7 `bg-n10fix` ⑦-2（作者 2026-10-18）：「待机动作（只待机下也会旋转它的硬币）也没有」。
+        // ⚠ 根因：`idleAnimationState` **从来没被 start 过**（全仓 grep 只有声明与 `animate(...)` 两处）
+        //   ⇒ `AnimationState.accumulatedTime` 恒 0 ⇒ `KeyframeAnimations.animate` 永远停在 0 帧，
+        //   作者当然看不到任何待机动作。修法 = 客户端每 tick 按「是否在动」推进状态（原版 `Warden` 同款）：
+        //   静止 / 未追击 ⇒ `startIfStopped`（持续累积），移动 ⇒ `stop()`（切到 walk）。
+        if (this.level().isClientSide()) {
+            boolean moving = this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-4
+                    || this.walkAnimation.speed() > 0.05F;
+            this.idleAnimationState.animateWhen(!moving, this.tickCount);
+        }
     }
 
     @Override
@@ -174,7 +215,7 @@ public class MoneyGremlin extends Monster {
         if (this.barrageCooldown > 0) {
             this.barrageCooldown--;
         }
-        if (target != null && this.barrageCooldown <= 0 && isWithinBarrageRange(this.distanceToSqr(target))) {
+        if (target != null && this.barrageCooldown <= 0 && isBeyondBarrageRange(this.distanceToSqr(target))) {
             this.fireBarrage();
             this.barrageCooldown = BARRAGE_INTERVAL_TICKS;
         }

@@ -27,4 +27,15 @@ public class MoneyGremlinRenderer extends MobRenderer<MoneyGremlin, MoneyGremlin
     public ResourceLocation getTextureLocation(MoneyGremlin entity) {
         return TEXTURE;
     }
+
+    /**
+     * 1.7 `bg-n10fix` ⑦-1（作者 2026-10-18）：「金钱妖是纯悬浮的姿态……让它像烈焰人那样悬浮起来」。
+     *
+     * <p>只抬**渲染**（+0.4 格，烈焰人同档，常量在 {@link MoneyGremlin#HOVER_OFFSET}）：
+     * 碰撞箱 / 寻路 / 重力一个都没动 ⇒ 它仍然是站在地上的怪（作者要求「别把它变成会飞的怪」）。</p>
+     */
+    @Override
+    public net.minecraft.world.phys.Vec3 getRenderOffset(MoneyGremlin entity, float partialTicks) {
+        return new net.minecraft.world.phys.Vec3(0.0D, MoneyGremlin.HOVER_OFFSET, 0.0D);
+    }
 }

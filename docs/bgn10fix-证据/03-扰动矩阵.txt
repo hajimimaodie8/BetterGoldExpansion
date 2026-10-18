@@ -1,0 +1,13 @@
+01-blast | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+02-cutout | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+03-stew-ticks | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+03-stew-level | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+04-book-stack | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+05-hardness | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+06-always-edible | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+07-hover | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+08-barrage | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+09-coin-damage | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+10-random | 期望 exit=1 实际 exit=1 | hit=True | 复原=OK
+11-comment-only | 期望 exit=0 实际 exit=0 | hit=True | 复原=OK
+用例 12 个 / 未命中或复原失败 0 个

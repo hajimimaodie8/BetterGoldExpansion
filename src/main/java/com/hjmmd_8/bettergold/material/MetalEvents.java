@@ -1412,10 +1412,11 @@ public final class MetalEvents {
         float throwDamage = OUR_THROWN_TRIDENT_DAMAGE;
         ChaosRange.Range throwRange = family.tridentThrowRange;
         if (throwRange != null) {
-            // 投掷那一档是**独立的**区间（混沌金 9..13），与近战的 7..11 共用同一个翻转位
-            //   （作者：「伤害随攻击与切手转换」⇒ 投掷与近战在同一个"当前端"上）
-            throwDamage = ChaosRange.isHigh(stack, ChaosRange.Channel.ATTACK)
-                    ? throwRange.max() : throwRange.min();
+            // 投掷那一档是**独立的**区间（混沌金 9..13），与近战的 7..11 共用同一个**比例**
+            //   （作者：「伤害随攻击与切手转换」⇒ 投掷与近战在同一个"当前值"上）
+            // ⚠ 1.7 `bg-n10fix` ⑩：取值改成区间内均匀随机 ⇒ 这里用同一个比例映射到投掷区间
+            //   （旧口径 `isHigh(stack, ATTACK) ? max : min` 已是历史，原文留档在本行上方）。
+            throwDamage = ChaosRange.current(stack, ChaosRange.Channel.ATTACK, throwRange);
         }
         event.setNewDamage(event.getNewDamage() * (throwDamage / VANILLA_THROWN_TRIDENT_DAMAGE));
     }
@@ -1837,10 +1838,12 @@ public final class MetalEvents {
     }
 
     /**
-     * 结算之后把四件盔甲的 {@code Channel.ARMOR} 各翻转一次（乒乓）。
+     * 结算之后把四件盔甲的 {@code Channel.ARMOR} 各<b>重掷</b>一次（区间内均匀随机）。
      *
-     * <p>放在 {@code LivingDamageEvent.Pre} 的**同一次事件末尾**、且**只翻确实声明了该通道的那一件**
-     * （`ChaosRange.current(...) == null` ⇒ 不翻）—— 原版盔甲 / 既有 8 族盔甲一个字节都不写。</p>
+     * <p>⚠ 1.7 {@code bg-n10fix} ⑩（作者 2026-10-18）：旧口径是"乒乓"（{@code ChaosRange.toggle}），
+     * 现行是随机重掷。放在 {@code LivingDamageEvent.Pre} 的**同一次事件末尾**、且**只重掷确实声明了
+     * 该通道的那一件**（`ChaosRange.current(...) == null` ⇒ 不掷）—— 原版盔甲 / 既有 8 族盔甲
+     * 一个字节都不写。</p>
      */
     private static void flipChaosArmor(net.minecraft.world.entity.LivingEntity entity, MetalFamily family) {
         for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {
@@ -1852,7 +1855,7 @@ public final class MetalEvents {
             }
             if (ChaosRange.current(worn, family, family.formOf(worn.getItem()),
                     ChaosRange.Channel.ARMOR) != null) {
-                ChaosRange.toggle(worn, ChaosRange.Channel.ARMOR);
+                ChaosRange.reroll(worn, ChaosRange.Channel.ARMOR, entity.getRandom());
             }
         }
     }

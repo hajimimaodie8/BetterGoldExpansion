@@ -459,17 +459,20 @@ public final class MetalWeapons {
     // ==================== 轮3：带「区间值」的近战武器 ====================
 
     /**
-     * <b>命中成功 ⇒ ATTACK 区间乒乓一次</b>（三个近战子类共用的<b>唯一一份</b>动作）。
+     * <b>命中成功 ⇒ ATTACK 区间<b>重掷</b>一次</b>（三个近战子类共用的<b>唯一一份</b>动作）。
      *
      * <p>判据是"这一件物品确实声明了 ATTACK 区间"（{@code family.range(item, ATTACK)}）——
      * 没有区间的物品（既有 8 族的全部武器、本模组之外的物品）<b>一个字节都不写</b>。</p>
+     *
+     * <p>⚠ 1.7 {@code bg-n10fix} ⑩（作者 2026-10-18）：旧口径是"两端乒乓"（{@code ChaosRange.toggle}），
+     * 现行是<b>区间内均匀随机重掷</b>（{@code ChaosRange.reroll}）。</p>
      */
-    static void flipAttackOnHit(ItemStack stack) {
+    static void flipAttackOnHit(ItemStack stack, net.minecraft.util.RandomSource random) {
         MetalFamily family = MetalFamily.of(stack);
         if (family == null || family.range(stack.getItem(), ChaosRange.Channel.ATTACK) == null) {
             return;
         }
-        ChaosRange.toggle(stack, ChaosRange.Channel.ATTACK);
+        ChaosRange.reroll(stack, ChaosRange.Channel.ATTACK, random);
     }
 
     /**
@@ -496,7 +499,7 @@ public final class MetalWeapons {
         @Override
         public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
             super.hurtEnemy(stack, target, attacker);
-            flipAttackOnHit(stack);
+            flipAttackOnHit(stack, attacker.getRandom());
             return true;
         }
     }
@@ -511,7 +514,7 @@ public final class MetalWeapons {
         @Override
         public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
             super.hurtEnemy(stack, target, attacker);
-            flipAttackOnHit(stack);
+            flipAttackOnHit(stack, attacker.getRandom());
             return true;
         }
     }
@@ -526,7 +529,7 @@ public final class MetalWeapons {
         @Override
         public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
             super.hurtEnemy(stack, target, attacker);
-            flipAttackOnHit(stack);
+            flipAttackOnHit(stack, attacker.getRandom());
             return true;
         }
     }
@@ -541,7 +544,7 @@ public final class MetalWeapons {
         @Override
         public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
             super.hurtEnemy(stack, target, attacker);
-            flipAttackOnHit(stack);
+            flipAttackOnHit(stack, attacker.getRandom());
             return true;
         }
     }
@@ -556,7 +559,7 @@ public final class MetalWeapons {
         @Override
         public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
             super.hurtEnemy(stack, target, attacker);
-            flipAttackOnHit(stack);
+            flipAttackOnHit(stack, attacker.getRandom());
             return true;
         }
     }
@@ -571,7 +574,7 @@ public final class MetalWeapons {
         @Override
         public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
             super.hurtEnemy(stack, target, attacker);
-            flipAttackOnHit(stack);
+            flipAttackOnHit(stack, attacker.getRandom());
             return true;
         }
     }
@@ -586,7 +589,7 @@ public final class MetalWeapons {
         @Override
         public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
             super.hurtEnemy(stack, target, attacker);
-            flipAttackOnHit(stack);
+            flipAttackOnHit(stack, attacker.getRandom());
             return true;
         }
     }

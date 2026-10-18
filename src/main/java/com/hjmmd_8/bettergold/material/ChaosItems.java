@@ -9,6 +9,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffect;
@@ -188,8 +190,16 @@ public final class ChaosItems {
      *
      * <p>落地口径（全部按字面）：</p>
      * <ul>
-     *   <li><b>必须</b>由副手（{@code OFF_HAND}）使用、右手（{@code MAIN_HAND}）拿着要被附魔的装备
-     *       —— 这是作者写死的交互形状；主手用它（哪怕副手有装备）一律不做；</li>
+     *   <li><b>【旧口径，原文保留不删】必须</b>由副手（{@code OFF_HAND}）使用、右手（{@code MAIN_HAND}）
+     *       拿着要被附魔的装备 —— 这是作者写死的交互形状；主手用它（哪怕副手有装备）一律不做；</li>
+     * </ul>
+     *
+     * <p>⚠⚠ <b>上面那条「副手书 + 右手装备」已被作者 2026-10-18 推翻</b>（原文保留）：
+     * 作者本轮原话要「<b>副手拿装备、主手拿书</b>」—— 理由是<b>盔甲的右键穿戴</b>与"右手装备 + 左手书"
+     * 冲突（右手拿着要附魔的盔甲右键，游戏先把盔甲穿上了）。现行口径 = <b>主手书、副手装备</b>；
+     * 主手之外用书（含副手书）一律不生效。落点见 {@code bg-n10fix} ④、{@code docs/1.7-...md} §24.4。</p>
+     *
+     * <ul>
      *   <li>门槛 = {@code player.experienceLevel >= 5}（至少 5 级；扣完可能掉到 4 级，符合 ⑧b 的 (A)）；</li>
      *   <li>候选 = 全部已注册 {@link Enchantment} 里 {@code canEnchant(右手装备)} 为真的那些
      *       —— <b>不做任何白名单 / 不过滤宝藏与诅咒</b>（这就是"含宝藏 / 诅咒 / 第三方"的落地），
@@ -213,12 +223,15 @@ public final class ChaosItems {
         @Override
         public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
             ItemStack book = player.getItemInHand(hand);
-            if (hand != InteractionHand.OFF_HAND) {
-                // 作者形状是「左手附魔书」⇒ 主手用它不生效（不消耗、不扣级）
+            // 1.7 `bg-n10fix` ④（2026-10-18）：现行口径 = **主手书 + 副手装备**。
+            // ⚠ 旧口径（副手书 + 右手装备）已被推翻，原文留档在类注释里（不删）。
+            if (hand != InteractionHand.MAIN_HAND) {
                 return InteractionResultHolder.pass(book);
             }
-            ItemStack target = player.getMainHandItem();
-            if (player.experienceLevel < ENCHANTING_BOOK_MIN_PLAYER_LEVEL) {
+            ItemStack target = player.getOffhandItem();
+            // ④-4 创造模式：不耗经验、直接可用（作者原话「创造模式下不耗经验、直接可用」）
+            boolean creative = player.isCreative();
+            if (!creative && player.experienceLevel < ENCHANTING_BOOK_MIN_PLAYER_LEVEL) {
                 if (!level.isClientSide) {
                     player.displayClientMessage(Component.translatable(
                             "message.bettergold.chaos_enchanting_book.too_low_level"), true);
@@ -233,12 +246,13 @@ public final class ChaosItems {
                     .toList();
             long registered = registry.listElementIds().count();
             lastPoolStory = "target=" + target.getItem() + " level=" + player.experienceLevel
-                    + " registered=" + registered + " candidates=" + candidates.size();
+                    + " creative=" + creative + " registered=" + registered
+                    + " candidates=" + candidates.size();
             if (!level.isClientSide) {
                 bettergold.LOGGER.info("[bgn10r4-book] {}", lastPoolStory);
             }
             if (target.isEmpty() || candidates.isEmpty()) {
-                // 右手没有可附魔的装备 ⇒ 不消耗、不扣级（作者只说了"能打上"的那条路径）
+                // 副手没有可附魔的装备 ⇒ 不消耗、不扣级（作者只说了"能打上"的那条路径）
                 return InteractionResultHolder.fail(book);
             }
             if (!level.isClientSide) {
@@ -254,11 +268,17 @@ public final class ChaosItems {
                         mutable.set(chosen, enchantLevel);
                     }
                 });
-                int cost = ENCHANTING_BOOK_MIN_COST + player.getRandom().nextInt(
-                        ENCHANTING_BOOK_MAX_COST - ENCHANTING_BOOK_MIN_COST + 1);
-                player.giveExperienceLevels(-cost);
-                bettergold.LOGGER.info("[bgn10r4-book] applied {} level {} cost {} to {}",
-                        chosen.key().location(), enchantLevel, cost, target.getItem());
+                int cost = creative ? 0
+                        : ENCHANTING_BOOK_MIN_COST + player.getRandom().nextInt(
+                                ENCHANTING_BOOK_MAX_COST - ENCHANTING_BOOK_MIN_COST + 1);
+                if (cost > 0) {
+                    player.giveExperienceLevels(-cost);
+                }
+                // ④-3 成功时播**附魔台**音效（作者点名；`SoundEvents.ENCHANTMENT_TABLE_USE`）
+                level.playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE,
+                        SoundSource.PLAYERS, 1.0F, 1.0F);
+                bettergold.LOGGER.info("[bgn10r4-book] applied {} level {} cost {} creative {} to {}",
+                        chosen.key().location(), enchantLevel, cost, creative, target.getItem());
                 book.shrink(1);
             }
             return InteractionResultHolder.success(book);
@@ -272,12 +292,15 @@ public final class ChaosItems {
                     new FoodProperties.Builder()
                             .nutrition(ForbiddenFruitItem.GOLDEN_APPLE_NUTRITION)
                             .saturationModifier(ForbiddenFruitItem.GOLDEN_APPLE_SATURATION_MODIFIER)
+                            // 1.7 `bg-n10fix` ⑥（作者 2026-10-18）：「饥饿值满格也能吃」
+                            .alwaysEdible()
                             .build())));
 
     /** 混沌金附魔书（`chaosgold_enchanting_book`）：普通物品，右键时的行为全在上面那个类里 */
     public static final DeferredItem<Item> CHAOSGOLD_ENCHANTING_BOOK = AllItems.ITEMS.register(
             "chaosgold_enchanting_book",
-            () -> new ChaosEnchantingBookItem(new Item.Properties().stacksTo(1)));
+            // 1.7 `bg-n10fix` ④-1（作者 2026-10-18）：「最大堆叠 16」（旧口径 `stacksTo(1)` 已被推翻）
+            () -> new ChaosEnchantingBookItem(new Item.Properties().stacksTo(16)));
 
     /**
      * <b>崩乱禁果</b>（{@code chaosalloy_forbidden_fruit}，1.7 bg-n10r7 轮7）。
@@ -297,6 +320,8 @@ public final class ChaosItems {
                     new FoodProperties.Builder()
                             .nutrition(ForbiddenFruitItem.GOLDEN_APPLE_NUTRITION)
                             .saturationModifier(CHAOSALLOY_FRUIT_SATURATION_MODIFIER)
+                            // 1.7 `bg-n10fix` ⑥（作者 2026-10-18）：「饥饿值满格也能吃」
+                            .alwaysEdible()
                             .build()),
                     CHAOSALLOY_FRUIT_EFFECT_TICKS, CHAOSALLOY_FRUIT_COOLDOWN_TICKS,
                     CHAOSALLOY_FRUIT_MIN_LEVEL, CHAOSALLOY_FRUIT_MAX_LEVEL));

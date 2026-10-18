@@ -890,4 +890,50 @@ public class ModEvents {
             event.setCanceled(true);
         }
     }
+
+    // ==================== 1.7 `bg-n10fix` ③：金火把花 · 迷之炖菜 = 伤害吸收 III / 16 秒 ====================
+    //
+    // 作者原话（2026-10-18）：「我看 jei 里还显示金火把花可以作为迷之炖菜用，请你给这个迷之炖菜
+    // 提供一下 **16 秒的伤害吸收三** 效果」。
+    //
+    // ⚠ **为什么需要这段代码（1.21.1 的硬限制，读源码确认）**：
+    //   `SuspiciousStewEffects.Entry` 只有 `(Holder<MobEffect> effect, int duration)` **两个字段**
+    //   （`build/moddev/artifacts/neoforge-21.1.228-sources.jar` 的
+    //   `net/minecraft/world/item/component/SuspiciousStewEffects.java`：`record Entry(Holder<MobEffect>, int)`），
+    //   而 `Entry#createEffectInstance()` 是 `new MobEffectInstance(effect, duration)` —— **amplifier 写死 0**
+    //   ⇒ 花方块那一条 `FlowerBlock(makeEffectList(effect, seconds), props)` 在 1.21.1 **表达不了 III 级**。
+    //   所以：花方块仍然按原版形状声明「absorption / 16 秒 = 320 tick」（JEI 与炖菜配方自动跟随），
+    //   到「喝下那碗汤」这一刻再由本处理器把**同一条 absorption** 提升到 amplifier 2（= III 级）。
+    //
+    // 判据（本模组之外**一个字节都不改**）：① 物品是原版 `minecraft:suspicious_stew`；
+    // ② 那碗汤的效果表里**恰好有**「absorption + 320 tick」这一条（= 金火把花的签名；
+    //   原版没有任何花给 absorption，`duration` 也由花方块唯一决定）。
+    @SubscribeEvent
+    public static void onGoldenTorchflowerStew(LivingEntityUseItemEvent.Finish event) {
+        LivingEntity entity = event.getEntity();
+        if (entity.level().isClientSide) {
+            return;
+        }
+        ItemStack stack = event.getItem();
+        if (!stack.is(Items.SUSPICIOUS_STEW)) {
+            return;
+        }
+        net.minecraft.world.item.component.SuspiciousStewEffects effects = stack.getOrDefault(
+                net.minecraft.core.component.DataComponents.SUSPICIOUS_STEW_EFFECTS,
+                net.minecraft.world.item.component.SuspiciousStewEffects.EMPTY);
+        boolean ours = effects.effects().stream().anyMatch(e ->
+                e.effect().value() == MobEffects.ABSORPTION.value()
+                        && e.duration() == com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock.STEW_TICKS);
+        if (!ours) {
+            return;
+        }
+        // 花方块那一份已经按 amplifier 0 / 320 tick 上过了；这里换成 III 级（amplifier 2）、同样 320 tick。
+        entity.removeEffect(MobEffects.ABSORPTION);
+        entity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION,
+                com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock.STEW_TICKS, 2, false, true, true));
+        com.hjmmd_8.bettergold.bettergold.LOGGER.info(
+                "[bgn10fix-stew] absorption III / {} tick applied to {}", 
+                com.hjmmd_8.bettergold.block.GoldenTorchflowerBlock.STEW_TICKS,
+                entity.getName().getString());
+    }
 }

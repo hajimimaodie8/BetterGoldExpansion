@@ -576,7 +576,7 @@
       "id": "bettergold:treasure/chaos_coin",
       "path": "treasure/chaos_coin",
       "key": "chaos_coin",
-      "parent": "bettergold:treasure/any_core_material",
+      "parent": "bettergold:root",
       "icon": "bettergold:chaos_coin",
       "frame": "task",
       "fd": false,
@@ -636,7 +636,7 @@
       "id": "bettergold:metal/chaosalloy/ingot",
       "path": "metal/chaosalloy/ingot",
       "key": "chaosalloy_ingot",
-      "parent": "bettergold:treasure/any_core_material",
+      "parent": "bettergold:root",
       "icon": "bettergold:chaosalloy_ingot",
       "frame": "task",
       "fd": false,
@@ -898,8 +898,7 @@
       "bettergold:indigo_ocean_heart",
       "bettergold:voodoo_feather",
       "bettergold:amethyst_energy_dust",
-      "bettergold:chorus_cherry_branch",
-      "bettergold:chaos_coin"
+      "bettergold:chorus_cherry_branch"
     ],
     "raw_materials": [
       "bettergold:raw_flamegold",

@@ -113,10 +113,15 @@ def armor(metal: str) -> list[str]:
 #   ⇒ 「寻途千里的珍宝」这条既有的成就**判据集合**因此从 8 件变 9 件（标题 / 简介一个字没动）。
 #   ⚠ 记账：这会让"拿到一枚混沌金币"也能解锁寻途 —— 与"核心材料 = 该族 coreItem"的既有口径一致；
 #     作者一句话可撤回（把这一行删掉即可）。
+#   ⛔ **旧口径，已被作者 2026-10-18 推翻**（`bg-n10fix` ⑨；上面三行原文保留、不删）：
+#     作者原话「混沌金与崩乱合金**不在贵金范畴**」⇒ `chaos_coin` **从判据集合里拿掉**（回到 8 项），
+#     并且混沌金 / 崩乱合金两条链**改挂 `bettergold:root`**（不再挂在「寻途千里的珍宝」下面）。
+#     ⇒ 拿一枚混沌金币**不再**解锁「寻途千里的珍宝」（A 级负向断言守着）。
 CORE_MATERIALS = [
     f"{NS}:blazing_rod", f"{NS}:golden_cowrie", f"{NS}:glittering_vine",
     f"{NS}:bundled_echo_shard", f"{NS}:indigo_ocean_heart", f"{NS}:voodoo_feather",
-    f"{NS}:amethyst_energy_dust", f"{NS}:chorus_cherry_branch", f"{NS}:chaos_coin",
+    f"{NS}:amethyst_energy_dust", f"{NS}:chorus_cherry_branch",
+    # old: f"{NS}:chaos_coin",
 ]
 # 8 个原料（MetalFamily:662 `raw_` + id）—— 同时就是它们的配方 id
 RAW_MATERIALS = [f"{NS}:raw_{m}" for m in
@@ -463,8 +468,10 @@ def build() -> list[dict]:
         base = f"metal/{metal}"
         if metal == "chaosgold":
             # ① 混沌金：金币（链首）→ 锭 → 武器 → 盔甲
+            # ⛔ 旧口径（原文保留）：链首挂在「寻途千里的珍宝」`treasure/any_core_material` 下。
+            #    作者 2026-10-18 推翻（`bg-n10fix` ⑨：「混沌金与崩乱合金**不在贵金范畴**」）⇒ 改挂 `root`。
             add("treasure/chaos_coin", "chaos_coin", head_title, head_desc,
-                f"{NS}:chaos_coin", "treasure/any_core_material",
+                f"{NS}:chaos_coin", "root",
                 {"have": c_inv([f"{NS}:chaos_coin"])}, [["have"]])
             add(f"{base}/ingot", "chaosgold_ingot", "混沌金，到手", "获得一个混沌金锭",
                 f"{NS}:chaosgold_ingot", "treasure/chaos_coin",
@@ -472,8 +479,9 @@ def build() -> list[dict]:
             weapon_parent = f"{base}/ingot"
         else:
             # ② 崩乱合金：锭（链首）→（块 或 模板）→ 武器 → 盔甲
+            # ⛔ 旧口径（原文保留）：链首挂在「寻途千里的珍宝」下；作者 2026-10-18 推翻 ⇒ 改挂 `root`。
             add(f"{base}/ingot", "chaosalloy_ingot", head_title, head_desc,
-                f"{NS}:chaosalloy_ingot", "treasure/any_core_material",
+                f"{NS}:chaosalloy_ingot", "root",
                 {"have": c_inv([f"{NS}:chaosalloy_ingot"])}, [["have"]])
             add(f"{base}/supply", "chaosalloy_supply", "崩乱的结构",
                 "获得崩乱合金块或崩乱合金升级锻造模板", f"{NS}:chaosalloy_upgrade_template",

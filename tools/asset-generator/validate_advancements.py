@@ -343,11 +343,15 @@ def main() -> int:
     #       agriculture/gold_infused_dirt, agriculture/alchemical_meat}`。
     want_root_kids = sorted([f"{NS}:alchemy/mixed_crystal_pile",
                              f"{NS}:agriculture/gold_infused_dirt",
-                             f"{NS}:agriculture/alchemical_meat"])
+                             f"{NS}:agriculture/alchemical_meat",
+                             # 1.7 `bg-n10fix` ⑨（作者 2026-10-18）：「混沌金与崩乱合金**不在贵金范畴**」
+                             # ⇒ 两族链首改挂 root（旧口径：挂在「寻途千里的珍宝」下，原文留档在上面）。
+                             f"{NS}:treasure/chaos_coin",
+                             f"{NS}:metal/chaosalloy/ingot"])
     if root_kids != want_root_kids:
         bad("bgach-shape-root-children",
-            f"根的孩子不是「炼制I + 两条农业成就」这 3 条（bg-fix3 §五 链式；旧口径 5 条并列已作废）："
-            f"{root_kids}")
+            f"根的孩子不是「炼制I + 两条农业成就 + 两族链首」这 5 条（1.7 `bg-n10fix` ⑨ 起；"
+            f"旧口径 3 条 / 更早 5 条并列均已作废）：{root_kids}")
     # bg-fix3 §五：根链逐节咬合 root -> 炼制I -> 炼制II -> 寻途（作者 2026-10-07 重述的链）
     for _child, _parent in (("alchemy/mixed_crystal_pile", "root"),
                             ("alchemy/alchemic_fuel", "alchemy/mixed_crystal_pile"),
@@ -359,10 +363,13 @@ def main() -> int:
     tr_kids = sorted(children.get(f"{NS}:treasure/any_core_material", []))
     # ★ 1.7 收口轮：9 → **11**（8 个核心材料 + any_raw_metal + 混沌金币 + 崩乱合金锭）。
     #   ⚠ **旧期望原文保留（未删）**：`if len(tr_kids) != 9: ... 应为 9 条`。
-    if len(tr_kids) != 11:
+    # ★ **1.7 `bg-n10fix` ⑨（2026-10-18）又把 11 收回 9**：作者「两族不在贵金范畴」⇒
+    #   两族链首改挂 root、`chaos_coin` 也从「寻途」判据集合里拿掉
+    #   ⇒ 寻途的孩子 = **8 个核心材料 + any_raw_metal = 9 条**（上面的 11 条期望原文保留、已被取代）。
+    if len(tr_kids) != 9:
         bad("bgach-shape-treasure-children",
-            f"「寻途千里的珍宝」的孩子应为 11 条（8 核心材料 + any_raw_metal + 两族链首；"
-            f"旧期望 9 条已被 1.7 收口轮取代），实际 {len(tr_kids)}")
+            f"「寻途千里的珍宝」的孩子应为 9 条（8 核心材料 + any_raw_metal；两族链首已改挂 root），"
+            f"实际 {len(tr_kids)}")
     gold_kids = sorted(children.get(f"{NS}:metal/sturdygold/weapon", []))
     want_gold_kids = sorted([f"{NS}:metal/sturdygold/skeleton", f"{NS}:metal/sturdygold/armor",
                              f"{NS}:merchant/gold_ticket"])
@@ -398,11 +405,13 @@ def main() -> int:
     #   崩乱合金：metal/chaosalloy/ingot → metal/chaosalloy/supply → weapon → armor
     #     （`supply` = 「块 **或** 升级锻造模板」，两件同属材料链第二段 ⇒ 同一条 requirement 组）
     _chaos_chain = {
-        "treasure/chaos_coin": f"{NS}:treasure/any_core_material",
+        # ⚠ 旧口径（原文留档）：两条链首都写 `f"{NS}:treasure/any_core_material"`；
+        #   作者 2026-10-18 推翻（`bg-n10fix` ⑨）⇒ 改挂 `bettergold:root`。
+        "treasure/chaos_coin": f"{NS}:root",
         "metal/chaosgold/ingot": f"{NS}:treasure/chaos_coin",
         "metal/chaosgold/weapon": f"{NS}:metal/chaosgold/ingot",
         "metal/chaosgold/armor": f"{NS}:metal/chaosgold/weapon",
-        "metal/chaosalloy/ingot": f"{NS}:treasure/any_core_material",
+        "metal/chaosalloy/ingot": f"{NS}:root",
         "metal/chaosalloy/supply": f"{NS}:metal/chaosalloy/ingot",
         "metal/chaosalloy/weapon": f"{NS}:metal/chaosalloy/supply",
         "metal/chaosalloy/armor": f"{NS}:metal/chaosalloy/weapon",

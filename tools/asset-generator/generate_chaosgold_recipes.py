@@ -202,6 +202,10 @@ EXCLUDED: dict[str, str] = {}
 #      `1.0 / 200 / misc`）；这三项在这里是**常量**，`check_upstream()` 会拿它们与那 8 条
 #      **逐项比对**，不是凭印象填的数字（依据与记账见 `docs/1.7-...md` §23）。
 #      ⚠ 「也应该能高炉 / 烟熏吧」= **不自己加**（作者只说了"烧炼"）⇒ 进"待作者确认"。
+#      ⚠⚠ **旧口径，已被作者 2026-10-18 推翻**：原文保留（上一行不删）。作者本轮亲口要求
+#         「混沌金币要用**高炉**也能烧成粒」⇒ 现在**两条都做**：`minecraft:smelting`（保留，200 tick）
+#         + `minecraft:blasting`（**新增**，100 tick = 熔炉的一半，xp 同为 1.0、category 同为 misc，
+#         与既有 8 条 `raw_*_blasting` 逐项同档）。落点见 `bg-n10fix` ①、`docs/1.7-...md` §24.1。
 #   ③ 9 × `chaosgold_nugget` → 1 × `chaosgold_ingot`：**既有**（`bg-n10` 起就有
 #      `chaosgold_ingot_from_nugget.json`，`generate_metal_recipes.py` 从万坚金模板产出，
 #      `NNN / NNN / NNN`）⇒ **本脚本不重复生成**（再来一条同形配方 = 两条同产物打架），
@@ -212,17 +216,23 @@ COIN = NS + ":chaos_coin"
 NUGGET = NS + ":chaosgold_nugget"
 STRING_TO_COIN_FILE = "chaos_coin_from_string.json"
 COIN_SMELT_FILE = "chaos_coin_smelting.json"
+# 1.7 `bg-n10fix` ①（2026-10-18 作者亲口要"高炉"）：第二条加热配方 = `minecraft:blasting`
+COIN_BLAST_FILE = "chaos_coin_blasting.json"
 # 「同档」锚点：既有 8 条 `raw_*_smelting` 的实测值（自检里逐项比对，改一处就红）
 SMELT_EXPERIENCE = 1.0
 SMELT_TIME = 200
 SMELT_CATEGORY = "misc"
+# 「同档」锚点：高炉 = 熔炉的**一半时间**、xp 相同（既有 8 条 `raw_*_blasting` 实测 1.0 / 100 / misc）
+BLAST_EXPERIENCE = 1.0
+BLAST_TIME = 100
+BLAST_CATEGORY = "misc"
 # ③ 既有那两条（本脚本**不写**它们，只核对）
 INGOT_FROM_NUGGET_FILE = "chaosgold_ingot_from_nugget.json"
 NUGGET_FROM_INGOT_FILE = "chaosgold_nugget_from_ingot.json"
 
 
 def upstream_recipes() -> dict[str, dict]:
-    """上游两条（**只有这两条**）。dict 保持插入顺序 = 写盘顺序 = 手册页顺序。"""
+    """上游三条（**只有这三条**）。dict 保持插入顺序 = 写盘顺序 = 手册页顺序。"""
     return {
         STRING_TO_COIN_FILE: {
             "type": "minecraft:crafting_shapeless",
@@ -237,6 +247,14 @@ def upstream_recipes() -> dict[str, dict]:
             "experience": SMELT_EXPERIENCE,
             "cookingtime": SMELT_TIME,
         },
+        COIN_BLAST_FILE: {
+            "type": "minecraft:blasting",
+            "category": BLAST_CATEGORY,
+            "ingredient": {"item": COIN},
+            "result": {"id": NUGGET},
+            "experience": BLAST_EXPERIENCE,
+            "cookingtime": BLAST_TIME,
+        },
     }
 
 
@@ -249,12 +267,17 @@ def _raw_smelting_anchor() -> dict:
     return json.loads((RECIPES / "raw_sturdygold_smelting.json").read_text(encoding="utf-8"))
 
 
+def _raw_blasting_anchor() -> dict:
+    """既有「原料 → 锭」的**高炉**那一档（同上：读真实文件，不另写一份）。"""
+    return json.loads((RECIPES / "raw_sturdygold_blasting.json").read_text(encoding="utf-8"))
+
+
 def check_upstream(files: list[tuple[str, dict]]) -> list[str]:
     """上游两条 + 第 3 条（既有的 9 → 1）的**逐项 / 逐格**自检。"""
     bad: list[str] = []
     names = [name for name, _ in files]
-    if names != [STRING_TO_COIN_FILE, COIN_SMELT_FILE]:
-        bad.append(f"上游配方不是恰好这两条（顺序也要稳定）：{names}")
+    if names != [STRING_TO_COIN_FILE, COIN_SMELT_FILE, COIN_BLAST_FILE]:
+        bad.append(f"上游配方不是恰好这三条（顺序也要稳定）：{names}")
     got = dict(files)
 
     # ① 币串 → 3 币：无序、恰好消耗 1 个币串、产物恰好 3 个
@@ -290,6 +313,31 @@ def check_upstream(files: list[tuple[str, dict]]) -> list[str]:
                        f"{anchor.get(field)!r} 不一致")
     if (smelt.get("experience"), smelt.get("cookingtime")) != (SMELT_EXPERIENCE, SMELT_TIME):
         bad.append("常量 SMELT_EXPERIENCE / SMELT_TIME 与产物不一致（改了产物没改常量？）")
+
+    # ②-b 币 →（**高炉**）→ 粒：作者 2026-10-18 亲口要；xp / time / category 与既有同档**逐项**一致
+    blast = got.get(COIN_BLAST_FILE) or {}
+    if blast.get("type") != "minecraft:blasting":
+        bad.append(f"{COIN_BLAST_FILE} 的 type 不是 minecraft:blasting（作者本轮点名要高炉）")
+    if blast.get("ingredient") != {"item": COIN}:
+        bad.append(f"{COIN_BLAST_FILE} 的输入不是 {COIN}：{blast.get('ingredient')!r}")
+    if blast.get("result") != {"id": NUGGET}:
+        bad.append(f"{COIN_BLAST_FILE} 的产物不是 {NUGGET} ×1：{blast.get('result')!r}")
+    try:
+        blast_anchor = _raw_blasting_anchor()
+    except Exception as exc:                              # noqa: BLE001
+        bad.append(f"读不到同档锚点 raw_sturdygold_blasting.json：{exc!r}")
+        blast_anchor = {}
+    for field, mine in (("category", blast.get("category")),
+                        ("experience", blast.get("experience")),
+                        ("cookingtime", blast.get("cookingtime"))):
+        if mine != blast_anchor.get(field):
+            bad.append(f"{COIN_BLAST_FILE} 的 {field}={mine!r} 与既有同档 raw_sturdygold_blasting 的 "
+                       f"{blast_anchor.get(field)!r} 不一致")
+    # 高炉 = 熔炉的**一半时间**、xp 相同（作者口径；与 8 条 raw_* 的两档关系一致）
+    if (blast.get("experience"), blast.get("cookingtime")) != (BLAST_EXPERIENCE, BLAST_TIME):
+        bad.append("常量 BLAST_EXPERIENCE / BLAST_TIME 与产物不一致（改了产物没改常量？）")
+    if (BLAST_TIME, BLAST_EXPERIENCE) != (SMELT_TIME // 2, SMELT_EXPERIENCE):
+        bad.append("高炉档与熔炉档不是「一半时间 / xp 相同」")
 
     # ③ 第 3 条 = **既有**的 9 粒 → 1 锭：本脚本不生成它，但必须逐格核对它没被本轮撞坏
     if INGOT_FROM_NUGGET_FILE in got:

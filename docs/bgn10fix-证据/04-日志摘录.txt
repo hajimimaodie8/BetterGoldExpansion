@@ -1,0 +1,6 @@
+﻿[1810月2026 19:59:59.039] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bgn10fix-stew] absorption III / 320 tick applied to bgn10fix
+[1810月2026 19:59:59.041] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bgn10r4-book] target=minecraft:diamond_sword level=30 creative=false registered=44 candidates=10
+[1810月2026 19:59:59.046] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bgn10r4-book] applied minecraft:sharpness level 2 cost 4 creative false to minecraft:diamond_sword
+[1810月2026 19:59:59.049] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bgn10r4-book] target=minecraft:air level=26 creative=false registered=44 candidates=0
+[1810月2026 19:59:59.062] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bgn10r4-book] target=minecraft:diamond_sword level=0 creative=true registered=44 candidates=10
+[1810月2026 19:59:59.062] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: [bgn10r4-book] applied minecraft:knockback level 2 cost 0 creative true to minecraft:diamond_sword

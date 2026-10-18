@@ -1,0 +1,32 @@
+bg-n10fix 收尾核对（2026-10-18）
+=================================
+
+1. 探针
+   - 源码留档：docs\bgn10fix-证据\02-探针源码\Bgn10fixProbe.java（删前复制）
+   - 已整块删除：src\main\java\com\hjmmd_8\bettergold\entity\Bgn10fixProbe.java
+   - 已删除注册行：bettergold.java 的 "BG-PROBE" 两行
+   - grep 残留：`Bgn10fix|BG-PROBE` = 0 命中
+   - jar：check_jar_clean.py -> [jar-clean-ok] 条目 2795；*Probe* 0 / 'halt' 0 / 'BG-PROBE' 0
+   - 开关文件 run\bgn10fix-probe.enabled 与结果文件 run\bgn10fix-probe-result.txt：已删除
+
+2. forceload
+   - 探针内 setChunkForced(62,62,true) -> finally 里 setChunkForced(...,false)
+   - 读数 forcedNow=0；check_forced_chunks.py -> [chunks-forced-ok]
+
+3. run\server.properties
+   - 跑前字节复制：run\server.properties.bgn10fix.bak（SHA256 a2229937ba8ab742…）
+   - 三次 runServer 后原文件被服务端改写（SHA256 7aa0a2dea65b2ff1…）
+   - 已按 .bak 逐字节复原，复原后 SHA256 = a2229937ba8ab742…（与 .bak 相同）
+   - 本轮没有改任何 server.properties 键（.bak 与 HEAD 的内容差异是服务端历次跑测自己写的）
+
+4. run\ 独占
+   - 跑前查 java 进程：只有 Gradle daemon（非 run\ 占用）
+   - 三次 runServer 串行；每次 runServer 的 gradle 进程退出后才起下一次
+
+5. 世界
+   - 只用了 dev 服务端世界 run\world（probe-start 打印 "world"）
+   - 没有打开 run\saves\新的世界（作者存档）；本轮没有启动客户端
+
+6. 贴图
+   - 本轮没有改任何 PNG（git status 里 assets/**/*.png 计数 = 0）
+   - 原始 zip 一个字节未动

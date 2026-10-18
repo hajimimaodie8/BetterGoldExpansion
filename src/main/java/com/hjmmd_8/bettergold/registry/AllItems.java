@@ -314,8 +314,14 @@ public class AllItems {
      *
      * <p>⚠ id 是<b>工作值</b>：立档 §4.0 的"仍未被点名的 3 条"之一（歧义 ⑱b 与既有
      * {@code chaos_coin_string} 的关系未裁）⇒ 作者一句话即可改名，改名 = 一条脚本 + 语言键。</p>
+     *
+     * <p>⚠ 1.7 {@code bg-n10fix} ⑨（2026-10-18）：<b>旧口径「最普通的 Item」已被作者推翻</b> ——
+     * 作者原话「混沌金币在玩家手中没法发射」⇒ 现行 = {@link com.hjmmd_8.bettergold.item.ChaosCoinItem}
+     * （右键投掷同一个 {@code ChaosCoinProjectile}：3 点伤害 / 16 秒饥饿 / 冷却 10 tick / 消耗 1 个）。
+     * 它仍然**不进**任何 {@code #minecraft:enchantable/*}、无属性 / 无耐久。</p>
      */
-    public static final DeferredItem<Item> CHAOS_COIN = ITEMS.registerSimpleItem("chaos_coin");
+    public static final DeferredItem<Item> CHAOS_COIN = ITEMS.register("chaos_coin",
+            () -> new com.hjmmd_8.bettergold.item.ChaosCoinItem(new Item.Properties()));
 
     /**
      * 金钱妖刷怪蛋（1.7 · 轮6，本仓第一个活体生物的蛋）。

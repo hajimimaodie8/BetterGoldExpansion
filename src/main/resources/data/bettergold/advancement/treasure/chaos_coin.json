@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:treasure/any_core_material",
+  "parent": "bettergold:root",
   "display": {
     "icon": {
       "id": "bettergold:chaos_coin",

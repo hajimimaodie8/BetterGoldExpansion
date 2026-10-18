@@ -1,0 +1,14 @@
+build | BUILD SUCCESSFUL in 1s
+build | 4 actionable tasks: 1 from cache, 3 up-to-date
+build | Configuration cache entry reused.
+build | EXIT=0
+runData | 7 actionable tasks: 1 executed, 6 up-to-date
+runData | Configuration cache entry reused.
+runData | EXIT=0
+validate_metal_assets.py | exit=0 | [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_metal_data.py | exit=0 | [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_trim_assets.py | exit=0 | [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements.py | exit=0 | [bgach-ok] 问题 0 条 / 成就 59 个 / criteria 142 条 / 语言键 118 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_bg17_textures.py | exit=0 | [bg17tex-ok] all invariants hold
+check_jar_clean.py | exit=0 | [jar-clean-ok] 产物 jar 干净（条目 2795；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks.py | exit=0 | [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）

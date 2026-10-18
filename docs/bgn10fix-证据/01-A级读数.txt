@@ -1,0 +1,28 @@
+probe-start world
+cleanup-stale=33
+PASS 03-stew-recipe-matches | matched=true
+PASS 03-stew-flower-effect | stewEffects=[minecraft:absorption/320] duration=320
+PASS 03-stew-absorption-III | effect=2 amp / 320 tick
+PASS 04-book-stack-16 | maxStack=16
+PASS 04-book-main-hand-enchants | result=SUCCESS enchanted=true level=30->26 count=15
+PASS 04-book-xp-cost | experienceLevel 30 -> 26
+PASS 04-book-empty-offhand-noop | result=FAIL count 2->2
+PASS 04-book-creative-free | creative=true result=SUCCESS enchanted=true level=0 xp=0
+PASS 06-fruit-always-edible | chaosgold_fruit=CONSUME
+PASS 06-plain-food-negative | cooked_beef=FAIL
+PASS 05-hardness-two-thirds | destroyTime=36.666668 expect=36.666668
+PASS 05-iron-tool-tag | needs_iron=true needs_diamond=false
+PASS 05-wood-cannot-iron-can | wood=false iron=true
+PASS 10-range-4..8 | min=4 max=8 mean=5.9895
+PASS 10-range-intermediate | distinct=[4, 5, 6, 7, 8]
+PASS 10-six-attacks | six=[8, 7, 6, 6, 5, 5]
+PASS 10-held-change-rerolls | miningFraction 640 -> 285
+PASS 08-barrage-2.5m-silent | shots=0
+PASS 08-barrage-5m-fires | shots=16
+PASS 09-coin-throws-projectile | result=SUCCESS projectiles=1
+PASS 09-coin-consumes-one | count=1
+PASS 09-coin-3-damage | health 20.0 -> 17.0 playerThrown=true
+PASS 09-coin-hunger-16s | hunger=0 amp / 320 tick
+PASS 07-hover-offset | HOVER_OFFSET=0.4
+forcedNow=0
+SUMMARY pass=24 fail=0

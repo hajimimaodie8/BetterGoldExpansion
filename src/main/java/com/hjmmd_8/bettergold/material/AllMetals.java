@@ -246,6 +246,16 @@ public final class AllMetals {
         spec.durability = 426;
         spec.enchantmentValue = 24;
         spec.incorrectForDrops = BlockTags.INCORRECT_FOR_IRON_TOOL;   // 作者：挖掘等级「铁」
+        // ---------- 1.7 `bg-n10fix` ⑤（作者 2026-10-18）：建材硬度 = 「贵金」基准 × 2/3 ----------
+        // 基准 = `Spec` 的默认档（`blockStrength = 55.0F` / `detailStrength = 8.0F`；万坚金也是
+        // 在 `registerSturdygold()` 里**显式**写同一对数字 ⇒ 这就是"贵金建材"的基准，不是本处另取的值）。
+        // 块 / 砖 / 柱 = blockStrength；栏杆 / 门 / 活板门 / 灯笼 / 链 = detailStrength；
+        // 楼梯 / 台阶 / 墙用 `ofFullCopy(bricks)` ⇒ 自动继承 2/3。
+        // ⚠ **只改混沌金**：崩乱合金的块（150.0F / 3600.0F）一个字节不动 —— 作者只提"混沌金系列"。
+        // 挖掘等级 = 铁：`incorrectForDrops` 上一行已经是铁级；真正决定"木/石镐挖不动"的
+        // `#minecraft:needs_iron_tool` 硬标签由 `generate_metal_tags.py` 产出（`IRON_TIER_METALS`）。
+        spec.blockStrength = 55.0F * 2.0F / 3.0F;    // 36.666668F（= 55 × 2/3，可复算）
+        spec.detailStrength = 8.0F * 2.0F / 3.0F;    // 5.3333335F（= 8 × 2/3，可复算）
         // ---------- 轮4：混沌金盔甲（作者逐件给的数 + 衰减区间）----------
         // 作者（立档 §2.5 / 父代理派单）：附魔能力 **24**、盔甲韧性 **3**、
         //   「穿戴单件即可猪灵中立」（由 MetalArmorItem 自动继承，零新增代码）；

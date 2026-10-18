@@ -218,10 +218,11 @@ public final class ChaosWiring {
         //   就是手上那一栈），所以只有"远程翻转"需要这一步"找到真正那一栈"。
         ItemStack live = liveStackOf(source.getEntity(), weapon.getItem());
         ItemStack flipTarget = live == null ? weapon : live;
-        ChaosRange.toggle(flipTarget, ChaosRange.Channel.ATTACK);
+        // ⚠ 1.7 `bg-n10fix` ⑩（作者 2026-10-18）：命中后**重掷**（区间内均匀随机），不再是两端乒乓。
+        ChaosRange.reroll(flipTarget, ChaosRange.Channel.ATTACK, target.getRandom());
         if (debug) {
-            bettergold.LOGGER.info("[bgn10v-wire] ranged hit flip weapon={} liveStackFound={} flipAfter={}",
-                    flipTarget.getItem(), live != null, flipTarget.get(ChaosRange.FLIP.get()));
+            bettergold.LOGGER.info("[bgn10v-wire] ranged hit reroll weapon={} liveStackFound={} fractionAfter={}",
+                    flipTarget.getItem(), live != null, ChaosRange.fractionOf(flipTarget, ChaosRange.Channel.ATTACK));
         }
     }
 
@@ -324,6 +325,6 @@ public final class ChaosWiring {
                 + " miningCurrent=" + mv
                 + " attackRange=" + (attack == null ? "-" : attack.min() + ".." + attack.max())
                 + " attackCurrent=" + av
-                + " flipMask=" + stack.get(ChaosRange.FLIP.get());
+                + " fractionMask=" + stack.get(ChaosRange.VALUE.get());
     }
 }
