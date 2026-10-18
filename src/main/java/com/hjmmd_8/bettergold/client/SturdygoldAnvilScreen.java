@@ -41,7 +41,8 @@ import net.minecraft.world.item.ItemStack;
  * 名字输入框      EditBox(left+62, top+24, 103, 12)，无边框、白字、maxLength 50，
  *                responder -> 原版 setItemName + ServerboundRenameItemPacket
  * 输入框底图      blitSprite(container/anvil/text_field[_disabled], left+59, top+20, 110, 16)
- * 错误图标        blitSprite(container/anvil/error, x+99, y+45, 28, 21)</pre>
+ * 错误图标        blitSprite(container/anvil/error, x+99, y+45, 28, 21)   ← 旧口径（bg-n10anvil）
+ *                 bg-n10err 起改成 blitSprite(bettergold:container/sturdygold_anvil/error, x+99, y+45, 28, 21)</pre>
  *
  * <h2>★ 截图里那条「红条」到底是什么（实测，不是猜）</h2>
  * <p>作者那张金色 GUI <b>本身就是原版 {@code anvil.png} 的 1:1 换色</b>（176×166 主面板亮度相关 0.7186；
@@ -51,6 +52,30 @@ import net.minecraft.world.item.ItemStack;
  * 旧版界面没有画 {@code text_field} 精灵、也没画输入框 ⇒ 红条直接露出来，就是截图里那条红条。</p>
  * <p>⇒ 修法 = <b>照原版画 {@code text_field} 精灵 + EditBox</b>，红条被同一位置、同一尺寸的精灵盖住。
  * <b>没有改任何 PNG 像素</b>（作者素材，SHA256 由关卡钉住）。</p>
+ *
+ * <h2>★ 无法锻造时的「灰色矩形」（{@code bg-n10err}，2026-10-18）</h2>
+ * <p>作者原话：「如果『万坚金铁砧』<b>无法锻造</b>时，<b>叉号显示的那一个部分会有一块灰色的矩形区域</b>。
+ * 通常来说这是正常的，但是无法锻造时出现这个问题，看着很别扭」。</p>
+ * <p><b>灰是谁画的（逐像素判定）</b>：是<b>原版精灵自带的</b>，不是作者的图、也不是我们的代码。
+ * 原版 {@code minecraft:container/anvil/error} 是 <b>28×21、alpha 全 255</b> 的一张不透明图，
+ * 只有 4 个颜色：灰底 {@code #C6C6C6} <b>428 px</b> + 灰箭头 {@code #8B8B8B} <b>79 px</b>
+ * + 红叉 {@code #962300} 56 px / {@code #BA370F} 25 px。原版 {@code anvil.png} 同一块是
+ * {@code #C6C6C6} 482 + {@code #8B8B8B} 106 —— 灰底与面板<b>同色</b>，所以在原版里这块矩形
+ * <b>与面板融为一体、看不出来</b>（= 作者说的「通常来说这是正常的」）；换成作者的金色面板后，
+ * 灰底就直接裸露成一个 28×21 的灰色方块，还盖掉了作者画在那一格的深棕色「→」箭头。</p>
+ * <p>作者贴图 {@code (99,45)-(126,65)} 这个 28×21 区域里 <b>R==G==B 的像素 = 0</b>（8 个颜色全是金色系），
+ * 所以<b>不是</b>「作者的灰 + 精灵的灰」叠加。</p>
+ * <p><b>修法（零新美术）</b>：新增精灵 {@code bettergold:container/sturdygold_anvil/error}
+ * （{@code assets/bettergold/textures/gui/sprites/container/sturdygold_anvil/error.png}，28×21，414 B）：
+ * 背景 = 作者 256×256 里 {@code (99,45)-(126,65)} 这 28×21 个像素<b>原样搬运</b>
+ * （含作者自己画的深棕箭头），再把原版那 <b>81 个红叉像素</b>（{@code #962300}/{@code #BA370F}）
+ * 按坐标盖上去。原版的灰底 {@code #C6C6C6} 与灰箭头 {@code #8B8B8B} <b>一个都不搬</b>。
+ * ⇒ 新图 588 个像素里 <b>507 个来自作者贴图、81 个来自原版精灵，没有一个是新颜色</b>；
+ * 作者那张 PNG <b>一个像素都没改</b>（SHA256 由关卡钉住）。位置/尺寸仍与原版一致
+ * （{@code x+99, y+45, 28, 21}），所以只在「无法锻造」时出现的那块灰消失了、<b>叉号照旧</b>。</p>
+ * <p>⚠ 不选「把原版精灵的灰底改成透明」那条路：精灵是灰底/灰箭头/红叉<b>一体</b>的一张不透明图，
+ * 只去掉灰底会把红叉直接压在作者的深棕箭头上、中间那截红色（{@code #962300}）与 {@code #741F00}
+ * 亮度差只有 7，A 级像素比对里 81 个红叉像素中有 30 个亮度差 &lt; 25 ⇒ 反而更难认。</p>
  *
  * <h2>⚠ 旧口径（{@code bg-n10} 轮8）原文留档，已作废</h2>
  * <p>旧版是自建 {@code AbstractContainerScreen}：{@code renderBg} 里三次 {@code blit}
@@ -67,13 +92,24 @@ public class SturdygoldAnvilScreen extends ItemCombinerScreen<SturdygoldAnvilMen
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "textures/gui/container/sturdygold_anvil.png");
 
-    /** 原版砧的三个 GUI 精灵（在 {@code minecraft:gui/sprites} 图集里，blitSprite 用它们是对的） */
+    /** 原版砧的<b>输入框</b>两个精灵（在 {@code minecraft:gui/sprites} 图集里，blitSprite 用它们是对的） */
     private static final ResourceLocation TEXT_FIELD_SPRITE =
             ResourceLocation.withDefaultNamespace("container/anvil/text_field");
     private static final ResourceLocation TEXT_FIELD_DISABLED_SPRITE =
             ResourceLocation.withDefaultNamespace("container/anvil/text_field_disabled");
+    /**
+     * <b>错误图标 = 本模组的变体</b>（{@code bg-n10err}，2026-10-18）。
+     *
+     * <p>旧口径（bg-n10anvil）用 {@code ResourceLocation.withDefaultNamespace("container/anvil/error")}：
+     * 原版那张图 28×21 <b>全不透明</b>（灰底 {@code #C6C6C6} 428 px + 灰箭头 {@code #8B8B8B} 79 px
+     * + 红叉 81 px），盖在作者的金色面板上就是一块<b>灰矩形</b> —— 作者 2026-10-18 报的那条。</p>
+     *
+     * <p>现行口径：本模组自己的精灵，28×21，= 作者 256×256 里 {@code (99,45)-(126,65)} 那 28×21 个像素
+     * <b>原样搬运</b>（含作者画的深棕「→」）+ 只盖原版那 <b>81 个红叉像素</b>；
+     * 原版灰底与灰箭头<b>一个都不搬</b>。588 = 507（作者）+ 81（原版），<b>零新颜色</b>。</p>
+     */
     private static final ResourceLocation ERROR_SPRITE =
-            ResourceLocation.withDefaultNamespace("container/anvil/error");
+            ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "container/sturdygold_anvil/error");
 
     private static final Component TOO_EXPENSIVE_TEXT = Component.translatable("container.repair.expensive");
 

@@ -1,0 +1,24 @@
+BGN10ERRSERVER —— 从 run/logs 轮转日志抽出的原始行（只读抽取，未改日志）
+来源日志: 2026-10-18-2.log.gz
+匹配行数: 18
+
+（一次跑到 SUMMARY pass=17 fail=0；forcedNow=0）
+
+[1810月2026 21:45:49.111] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS block_state :: state=Block{bettergold:sturdygold_anvil}[facing=north] pos=BlockPos{x=1010, y=120, z=1008}
+[1810月2026 21:45:49.114] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS provider_present :: provider=net.minecraft.world.SimpleMenuProvider@1595dc5d
+[1810月2026 21:45:49.150] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS menu_class :: containerMenu=com.hjmmd_8.bettergold.menu.SturdygoldAnvilMenu
+[1810月2026 21:45:49.150] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS menu_type :: type=bettergold:sturdygold_anvil
+[1810月2026 21:45:49.151] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS menu_slots_39 :: slots=39（2 输入 + 1 输出 + 36 玩家）
+[1810月2026 21:45:49.151] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS menu_title_container_repair :: title=translation{key='container.repair', args=[]}
+[1810月2026 21:45:49.151] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS menu_still_valid :: near=true
+[1810月2026 21:45:49.159] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS cannot_forge_result_empty :: out=0 minecraft:air
+[1810月2026 21:45:49.159] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS cannot_forge_input_present :: input0=1 minecraft:diamond_sword
+[1810月2026 21:45:49.159] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS cannot_forge_error_icon_condition :: errorIconCondition=true（客户端据此画叉号）
+[1810月2026 21:45:49.159] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS cannot_forge_cost_zero :: cost=0
+[1810月2026 21:45:49.159] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS cannot_forge_may_not_pickup :: mayPickup=false
+[1810月2026 21:45:49.159] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS cannot_forge_menu_type_ok :: type=bettergold:sturdygold_anvil slots=39
+[1810月2026 21:45:49.160] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS repair_result_damage :: out=1 minecraft:diamond_sword damage=0
+[1810月2026 21:45:49.161] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS repair_cost_3 :: cost=3
+[1810月2026 21:45:49.161] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS empty_cost_zero :: cost=0 out=0 minecraft:air
+[1810月2026 21:45:49.164] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER PASS forceload_none :: forcedNow=0
+[1810月2026 21:45:49.164] [Server thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRSERVER SUMMARY pass=17 fail=0 forcedNow=0

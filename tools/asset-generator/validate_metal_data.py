@@ -8075,7 +8075,13 @@ _SC_NEEDLES = (
     ("extends ItemCombinerScreen<SturdygoldAnvilMenu>", "没有走原版 AnvilScreen 的同一层"),
     ("ResourceLocation.withDefaultNamespace(\"container/anvil/text_field\")", "没有原版输入框底图精灵"),
     ("ResourceLocation.withDefaultNamespace(\"container/anvil/text_field_disabled\")", "没有原版禁用态输入框精灵"),
-    ("ResourceLocation.withDefaultNamespace(\"container/anvil/error\")", "没有原版错误图标精灵"),
+    # ⚠ 旧口径（bg-n10anvil）原文留档：错误图标用的是**原版**那一张
+    #   ("ResourceLocation.withDefaultNamespace(\"container/anvil/error\")", "没有原版错误图标精灵")
+    #   bg-n10err 起（作者 2026-10-18 报「无法锻造时有一块灰矩形」）改成**本模组**的变体精灵：
+    #   原版那张 28x21 全不透明、自带 #C6C6C6 灰底，盖在金色面板上就是那块灰 ⇒ 逐项理由见下面的
+    #   [bgn10err-*] 段（精灵 SHA256 / 逐像素来源 / 灰一个都不许搬）。
+    ("ResourceLocation.fromNamespaceAndPath(bettergold.MODID, \"container/sturdygold_anvil/error\")",
+     "没有本模组的错误图标精灵变体（bettergold:container/sturdygold_anvil/error）"),
     ("new EditBox(this.font, i + 62, j + 24, 103, 12, Component.translatable(\"container.repair\"))",
      "名字输入框不是原版的 (62,24,103,12)"),
     ("this.name.setMaxLength(50)", "名字最大长度不是原版 50"),
@@ -8145,6 +8151,266 @@ if not bgn10anvil_problems:
     print("[bgn10anvil-ok] 模型 21 个面 → 槽/uv/rotation 逐项 == 投影表（ew=前后 / ns=左右，"
           "按 alpha IoU 1.0000 判）/ 5 张源 PNG SHA256 未改 / Screen 三处文字 == 原版 + "
           "输入框与三个精灵全抄 / 红条·装饰·幽灵图标反向断言 0 命中")
+
+# ==================== 1.7 万坚金砧「无法锻造时的灰矩形」（bg-n10err，2026-10-18）====================
+#
+# 作者原话：「如果『万坚金铁砧』**无法锻造**时，**叉号显示的那一个部分会有一块灰色的矩形区域**。
+#            通常来说这是正常的，但是无法锻造时出现这个问题，看着很别扭」。
+#
+# ---------- 诊断（逐像素；`docs/bgn10err-证据/01-像素分析/01-像素分析.txt`）----------
+#   原版 `minecraft:container/anvil/error` = **28x21、alpha 全 255** 的**不透明**图，只有 4 个颜色：
+#       灰底 #C6C6C6 **428 px** + 灰箭头 #8B8B8B **79 px** + 红叉 #962300 56 px / #BA370F 25 px
+#   原版 `anvil.png` 同一块 = #C6C6C6 **482** + #8B8B8B **106** ⇒ 灰底与面板**同色**，
+#     所以在原版里这块矩形与面板融为一体、看不出来（= 作者说的「通常来说这是正常的」）。
+#   作者金色面板同一块 = 8 个颜色、**R==G==B 的像素 0 个**（全是金色系，还画着深棕色「→」箭头）
+#     ⇒ 灰**不是**作者画的（排除 A）；Screen 的 renderBg 只有父类 blit + text_field，
+#     全仓 `fill(` 只有花费底色一处（y=67..79，不覆盖 45..66）⇒ 也**不是**我们代码画的（排除 C）
+#   ⇒ 判定 = **B（原版 error 精灵自带）**，不是 A / C / D。
+#
+# ---------- 修法（零新美术，只搬运像素）----------
+#   新增精灵 `bettergold:container/sturdygold_anvil/error`（28x21，414 B）：
+#     背景 = 作者 256x256 里 `(99,45)-(126,65)` 那 28x21 个像素**原样搬运**（含作者画的深棕箭头）；
+#     只把原版那 **81 个红叉像素**按坐标盖上去；原版灰底 #C6C6C6 与灰箭头 #8B8B8B **一个都不搬**。
+#   ⇒ 588 = 507（作者）+ 81（原版），**没有一个新颜色**；作者那张 PNG 一个像素都没改。
+#
+# ---------- 本段关卡 ----------
+#   ① 作者 GUI PNG 的 SHA256 未变（= 一像素未改）；
+#   ② 新精灵：路径在 `gui/sprites/` 下（§五：blitSprite 只认这个目录）、28x21、8 位 RGBA、SHA256 钉死；
+#   ③ 逐像素复算：每个像素要么 == 作者同坐标像素、要么是原版那两个红值；红像素恰好 81 个、形状逐行相等；
+#   ④ 反向：新精灵里 #C6C6C6 / #8B8B8B 各 **0 个**（灰底与灰箭头确实没搬）；
+#   ⑤ Screen：ERROR_SPRITE 指向本模组变体、位置仍是 (x+99, y+45, 28, 21)；
+#      反向：`container/anvil/error` **0 处**、`fill(` **恰好 1 处**（花费底色，不盖错误图标）。
+bgn10err_problems: list[str] = []
+_bgn10err_checked = 0
+
+
+def _bgn10err_bad(tag: str, msg: str) -> None:
+    bgn10err_problems.append("[%s] %s" % (tag, msg))
+
+
+def _png_rgba8(p: Path):
+    """解 8 位 RGBA / 非隔行 PNG → (w, h, [(r,g,b,a), ...] 行优先)。
+
+    只支持本关卡要读的那一种（我们写精灵时就用这一种）；别的格式直接报错，不静默返回空。
+    """
+    import struct
+    import zlib
+
+    raw = p.read_bytes()
+    if raw[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("不是 PNG: " + str(p))
+    pos = 8
+    w = h = bd = ct = inter = -1
+    idat = b""
+    while pos + 8 <= len(raw):
+        ln = struct.unpack(">I", raw[pos:pos + 4])[0]
+        typ = raw[pos + 4:pos + 8]
+        body = raw[pos + 8:pos + 8 + ln]
+        if typ == b"IHDR":
+            w, h = struct.unpack(">II", body[:8])
+            bd, ct, inter = body[8], body[9], body[12]
+        elif typ == b"IDAT":
+            idat += body
+        elif typ == b"IEND":
+            break
+        pos += 12 + ln
+    if (bd, ct, inter) != (8, 6, 0):
+        raise ValueError("不是 8 位 RGBA 非隔行（bitdepth=%d colortype=%d interlace=%d）"
+                         % (bd, ct, inter))
+    data = zlib.decompress(idat)
+    stride = w * 4
+    px: list[tuple[int, int, int, int]] = []
+    prev = bytearray(stride)
+    i = 0
+    for _y in range(h):
+        ft = data[i]
+        i += 1
+        line = bytearray(data[i:i + stride])
+        i += stride
+        if ft == 1:                     # Sub
+            for x in range(4, stride):
+                line[x] = (line[x] + line[x - 4]) & 0xFF
+        elif ft == 2:                   # Up
+            for x in range(stride):
+                line[x] = (line[x] + prev[x]) & 0xFF
+        elif ft == 3:                   # Average
+            for x in range(stride):
+                a = line[x - 4] if x >= 4 else 0
+                line[x] = (line[x] + ((a + prev[x]) >> 1)) & 0xFF
+        elif ft == 4:                   # Paeth
+            for x in range(stride):
+                a = line[x - 4] if x >= 4 else 0
+                c = prev[x - 4] if x >= 4 else 0
+                b = prev[x]
+                pp = a + b - c
+                pa, pb, pc = abs(pp - a), abs(pp - b), abs(pp - c)
+                pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                line[x] = (line[x] + pr) & 0xFF
+        elif ft != 0:
+            raise ValueError("未知 PNG filter type %d（第 %d 行）" % (ft, _y))
+        prev = line
+        for x in range(w):
+            px.append((line[x * 4], line[x * 4 + 1], line[x * 4 + 2], line[x * 4 + 3]))
+    return w, h, px
+
+
+_ANVIL_GUI_PNG = (REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+                  / "textures" / "gui" / "container" / "sturdygold_anvil.png")
+_ANVIL_ERR_PNG = (REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+                  / "textures" / "gui" / "sprites" / "container" / "sturdygold_anvil" / "error.png")
+# 作者 GUI 贴图（256x256，作者原件，一像素不许改）+ 本轮新增的变体精灵（值 = 2026-10-18 实测）
+_ANVIL_GUI_SHA = "24a277b99da860b9c012a1a68d3994648fca5466407be4eb61e70e6ba0e5625c"
+_ANVIL_ERR_SHA = "dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989"
+_ANVIL_ERR_BYTES = 414
+_ANVIL_ERR_SRC_XY = (99, 45)        # 作者 256x256 里被"搬运"的那个矩形的左上角
+_ANVIL_RED = {(0x96, 0x23, 0x00, 0xFF), (0xBA, 0x37, 0x0F, 0xFF)}   # 原版精灵里红叉的两个红
+_ANVIL_GREY = {(0xC6, 0xC6, 0xC6, 0xFF), (0x8B, 0x8B, 0x8B, 0xFF)}   # 原版灰底 + 灰箭头（不许搬）
+# 原版 error 精灵的红叉掩码（21 行 x 28 列，R = 红叉）—— 形状逐行钉死
+_ANVIL_X_ROWS = (
+    "............................",
+    "............................",
+    "............................",
+    "......RR...........RR.......",
+    "......RRR.........RRR.......",
+    ".......RRR.......RRR........",
+    "........RRR.....RRR.........",
+    ".........RRR...RRR..........",
+    "..........RRR.RRR...........",
+    "...........RRRRR............",
+    "............RRR.............",
+    "...........RRRRR............",
+    "..........RRR.RRR...........",
+    ".........RRR...RRR..........",
+    "........RRR.....RRR.........",
+    ".......RRR.......RRR........",
+    "......RRR.........RRR.......",
+    "......RR...........RR.......",
+    "............................",
+    "............................",
+    "............................",
+)
+
+# ① 作者那张 GUI 贴图：一个像素都不许改
+_bgn10err_checked += 2
+if not _ANVIL_GUI_PNG.is_file():
+    _bgn10err_bad("bgn10err-author-tex", "缺作者 GUI 贴图 textures/gui/container/sturdygold_anvil.png")
+elif _r8_sha256(_ANVIL_GUI_PNG) != _ANVIL_GUI_SHA:
+    _bgn10err_bad("bgn10err-author-tex", "作者 GUI 贴图被改过（作者素材一个像素都不许动）")
+
+# ② 新精灵：目录 / 尺寸 / 格式 / SHA256
+_bgn10err_checked += 4
+if not _ANVIL_ERR_PNG.is_file():
+    _bgn10err_bad("bgn10err-sprite", "缺新精灵 textures/gui/sprites/container/sturdygold_anvil/error.png")
+else:
+    _rel = _ANVIL_ERR_PNG.relative_to(REPO).as_posix()
+    if "/textures/gui/sprites/" not in "/" + _rel:
+        _bgn10err_bad("bgn10err-sprite",
+                      "精灵不在 gui/sprites/ 下（§五：blitSprite 只扫这个目录，放别处会静默变紫黑格）: " + _rel)
+    if _r8_sha256(_ANVIL_ERR_PNG) != _ANVIL_ERR_SHA:
+        _bgn10err_bad("bgn10err-sprite", "新精灵被改过（SHA256 不是本轮钉住的值）: " + _rel)
+    if _ANVIL_ERR_PNG.stat().st_size != _ANVIL_ERR_BYTES:
+        _bgn10err_bad("bgn10err-sprite", "新精灵字节数不是 %d（实际 %d）"
+                      % (_ANVIL_ERR_BYTES, _ANVIL_ERR_PNG.stat().st_size))
+    _ihdr = _png_ihdr(_ANVIL_ERR_PNG.read_bytes())
+    if _ihdr != (28, 21, 8, 6):
+        _bgn10err_bad("bgn10err-sprite", "新精灵 IHDR 不是 28x21 / 8 位 / RGBA（实际 %r）" % (_ihdr,))
+
+# ③ 逐像素复算 + ④ 反向（灰一个都没搬）
+_bgn10err_checked += 4
+try:
+    _ew, _eh, _epx = _png_rgba8(_ANVIL_ERR_PNG)
+    _gw, _gh, _gpx = _png_rgba8(_ANVIL_GUI_PNG)
+except Exception as _e:                                            # noqa: BLE001
+    _bgn10err_bad("bgn10err-pixels", "PNG 解不开（前置坏，本段像素复算跳过）: " + repr(_e))
+    _ew = _eh = _gw = _gh = 0
+    _epx = []
+    _gpx = []
+else:
+    if (_ew, _eh) != (28, 21):
+        _bgn10err_bad("bgn10err-pixels", "新精灵解码尺寸不是 28x21（实际 %dx%d）" % (_ew, _eh))
+    if (_gw, _gh) != (256, 256):
+        _bgn10err_bad("bgn10err-pixels", "作者 GUI 贴图解码尺寸不是 256x256（实际 %dx%d）" % (_gw, _gh))
+    _sx, _sy = _ANVIL_ERR_SRC_XY
+    _from_author = 0
+    _from_red = 0
+    _grey_hits = 0
+    _red_rows = []
+    _alpha_bad = 0
+    if _ew == 28 and _eh == 21:
+        for _y in range(21):
+            _row = ""
+            for _x in range(28):
+                _p = _epx[_y * 28 + _x]
+                _base = _gpx[(_sy + _y) * _gw + (_sx + _x)]
+                if _p[3] != 255:
+                    _alpha_bad += 1
+                if _p in _ANVIL_RED:
+                    _from_red += 1
+                    _row += "R"
+                else:
+                    _row += "."
+                    if _p == _base:
+                        _from_author += 1
+                    else:
+                        _bgn10err_bad("bgn10err-pixels",
+                                      "像素 (%d,%d) 既不是作者同坐标像素、也不是原版红叉（rgb=%r）"
+                                      % (_x, _y, _p[:3]))
+                if _p in _ANVIL_GREY:
+                    _grey_hits += 1
+            _red_rows.append(_row)
+    _bgn10err_checked += 4
+    if _alpha_bad:
+        _bgn10err_bad("bgn10err-pixels", "新精灵有 %d 个像素 alpha != 255（原版这张是全不透明的）" % _alpha_bad)
+    if _from_red != 81:
+        _bgn10err_bad("bgn10err-pixels", "红叉像素不是 81 个（实际 %d）" % _from_red)
+    if _from_author != 507:
+        _bgn10err_bad("bgn10err-pixels", "来自作者贴图的像素不是 507 个（实际 %d；507 + 81 = 588）"
+                      % _from_author)
+    if tuple(_red_rows) != _ANVIL_X_ROWS:
+        _diff = [i for i in range(min(len(_red_rows), 21)) if _red_rows[i] != _ANVIL_X_ROWS[i]]
+        _bgn10err_bad("bgn10err-pixels", "红叉形状与钉住的掩码不一致（不同的行: %r）" % (_diff,))
+    if _grey_hits:
+        _bgn10err_bad("bgn10err-pixels", "新精灵里还有 %d 个原版灰像素（#C6C6C6/#8B8B8B 一个都不许搬）"
+                      % _grey_hits)
+
+# ⑤ Screen：指向新精灵 + 位置不变 + 反向（不许指回原版 / 不许有第二个 fill(）
+_bgn10err_checked += 4
+if ('ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "container/sturdygold_anvil/error")'
+        not in _sc):
+    _bgn10err_bad("bgn10err-screen",
+                  "ERROR_SPRITE 没指向本模组变体 bettergold:container/sturdygold_anvil/error")
+if "container/anvil/error" in _sc:
+    _bgn10err_bad("bgn10err-screen", "ERROR_SPRITE 又指回原版那张灰底精灵了（灰矩形会回来）")
+if "guiGraphics.blitSprite(ERROR_SPRITE, x + 99, y + 45, 28, 21)" not in _sc:
+    _bgn10err_bad("bgn10err-screen", "错误图标的位置/尺寸不是原版的 (x+99, y+45, 28, 21)")
+if (_sc.count("fill(") != 1
+        or "guiGraphics.fill(k - 2, 67, this.imageWidth - 8, 79, 1325400064)" not in _sc):
+    _bgn10err_bad("bgn10err-screen",
+                  "`fill(` 不是恰好 1 处花费底色（y=67..79）—— 不许有别的 fill 盖住错误图标区域 (99,45)-(126,65)")
+
+# ⑤b renderErrorIcon 方法体本身：只许有那一个 blitSprite，不许 fill / 不许再画别的东西
+_bgn10err_checked += 3
+_rei_body = method_body(_sc, "protected void renderErrorIcon(")
+if not _rei_body:
+    _bgn10err_bad("bgn10err-screen", "找不到 renderErrorIcon 方法体（反空转守护）")
+else:
+    if "fill(" in _rei_body:
+        _bgn10err_bad("bgn10err-screen", "renderErrorIcon 里又出现 fill(（那就是 C 类：我们自己的半透明矩形）")
+    if _rei_body.count("blitSprite(") != 1:
+        _bgn10err_bad("bgn10err-screen", "renderErrorIcon 里 blitSprite 不是恰好 1 处（实际 %d）"
+                      % _rei_body.count("blitSprite("))
+
+_bgn10err_checked += 1
+if _bgn10err_checked < 20:
+    _bgn10err_bad("bgn10err-anti-vacuum", "本段判定数 < 20（反空转）")
+
+print("1.7 万坚金砧「无法锻造时的灰矩形」（bg-n10err）问题: "
+      + str(len(bgn10err_problems)) + " " + str(bgn10err_problems[:4])
+      + "（本段判定 " + str(_bgn10err_checked) + " 条）")
+if not bgn10err_problems:
+    print("[bgn10err-ok] 灰 = 原版 error 精灵自带（#C6C6C6 428 / #8B8B8B 79 / 红叉 81，alpha 全 255）；"
+          "新精灵 = 作者 (99,45)-(126,65) 28x21 原样搬运 + 原版 81 个红叉像素（507+81=588，零新颜色）；"
+          "作者 PNG SHA 未变；Screen 指向新精灵，fill( 仅花费底色一处")
 
 # ==================== 1.7 轮9 收口（bg-n10r9，2026-10-17）====================
 #
@@ -10337,7 +10603,8 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        _bgn10r4_problems, bgn10r6_problems, bgn10r5_problems, bgn10r7_problems,
                        bgn10r8_problems, bgn10r9_problems,
                        bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems,
-                       bgn10up_problems, bgn10fix_problems, bgn10anvil_problems)
+                       bgn10up_problems, bgn10fix_problems, bgn10anvil_problems,
+                       bgn10err_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

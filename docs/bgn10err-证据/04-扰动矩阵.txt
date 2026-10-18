@@ -1,0 +1,11 @@
+bgn10err 扰动矩阵（脚本 probe/bgn10err/perturb.py）
+baseline SHA：Screen = ffc19716f5a5217779a3fe3efce3a59a40f17dd3ee275c725ad2cdd916868595 / error.png = dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989
+
+baseline  不改                                                   exit=0（期望 0）；复原逐字节 = 是
+P1        ERROR_SPRITE 指回原版 minecraft:container/anvil/error    exit=1（期望 1）/ 命中 [bgn10err-screen] = True；复原逐字节 = 是
+P2        删掉新精灵 error.png                                      exit=1（期望 1）/ 命中 [bgn10err-sprite] = True；复原逐字节 = 是
+P3        只在 Screen 末尾加一行注释                                    exit=0（期望 0）；复原逐字节 = 是
+P4        新精灵 (0,0) 改成原版灰 #C6C6C6                              exit=1（期望 1）/ 命中 [bgn10err-pixels] = True；复原逐字节 = 是
+P5        新精灵 (13,10) 红叉像素改回作者像素（红叉 80 个）                      exit=1（期望 1）/ 命中 [bgn10err-pixels] = True；复原逐字节 = 是
+
+SUMMARY 全部用例符合期望 = True；Screen 复原 SHA = ffc19716f5a5217779a3fe3efce3a59a40f17dd3ee275c725ad2cdd916868595（baseline ffc19716f5a5217779a3fe3efce3a59a40f17dd3ee275c725ad2cdd916868595）；error.png 复原 SHA = dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989（baseline dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989）

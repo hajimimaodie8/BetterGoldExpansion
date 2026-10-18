@@ -1,0 +1,36 @@
+BGN10ERRCLIENT —— 从 run/logs 轮转日志抽出的原始行（只读抽取，未改日志）
+来源日志: 2026-10-18-1.log.gz, latest.log
+匹配行数: 28
+
+⚠ 这个 tag 有两轮：21:46:21 那轮 3 条 FAIL 是**探针自己的期望值写错了**（NativeImage#getPixelRGBA
+   的原生字节序是 ABGR 打包进 int，我把 #D89106 写成了 ffd89106、实际读出 ff0691d8；像素本身是对的），
+   改成 ABGR 之后 21:46:50 那轮 13 PASS / 0 FAIL。以 SUMMARY pass=13 fail=0 那行为准。
+
+[1810月2026 21:46:21.171] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS client_title_screen :: screen=net.minecraft.client.gui.screens.TitleScreen
+[1810月2026 21:46:21.171] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_present :: sprite=bettergold:container/sturdygold_anvil/error
+[1810月2026 21:46:21.172] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_not_missing :: missing=false（missing 必须 = 0）
+[1810月2026 21:46:21.172] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_28x21 :: size=28x21
+[1810月2026 21:46:21.172] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS vanilla_control_present :: vanilla=minecraft:container/anvil/error size=28x21
+[1810月2026 21:46:21.172] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS gui_atlas_texture_loaded :: texture=net.minecraft.client.renderer.texture.TextureAtlas
+[1810月2026 21:46:21.172] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS png_resource_present :: resource=bettergold:textures/gui/sprites/container/sturdygold_anvil/error.png
+[1810月2026 21:46:21.173] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS png_28x21 :: size=28x21
+[1810月2026 21:46:21.173] [Render thread/ERROR] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT FAIL pixel_00_from_author :: pixel(0,0)=ff0691d8（期望 ffd89106 = 作者贴图 (99,45)）
+[1810月2026 21:46:21.173] [Render thread/ERROR] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT FAIL pixel_13_10_is_red :: pixel(13,10)=ff0f37ba（期望 ffba370f = 原版红叉）
+[1810月2026 21:46:21.174] [Render thread/ERROR] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT FAIL pixel_27_20_from_author :: pixel(27,20)=ff40dbfc（期望 fffcdb40 = 作者贴图 (126,65)）
+[1810月2026 21:46:21.174] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS vanilla_28x21 :: vanilla size=28x21
+[1810月2026 21:46:21.174] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_id_contains_path :: name=bettergold:container/sturdygold_anvil/error
+[1810月2026 21:46:21.174] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT SUMMARY pass=10 fail=3 (没有进世界)
+[1810月2026 21:46:50.288] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS client_title_screen :: screen=net.minecraft.client.gui.screens.TitleScreen
+[1810月2026 21:46:50.288] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_present :: sprite=bettergold:container/sturdygold_anvil/error
+[1810月2026 21:46:50.288] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_not_missing :: missing=false（missing 必须 = 0）
+[1810月2026 21:46:50.288] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_28x21 :: size=28x21
+[1810月2026 21:46:50.288] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS vanilla_control_present :: vanilla=minecraft:container/anvil/error size=28x21
+[1810月2026 21:46:50.288] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS gui_atlas_texture_loaded :: texture=net.minecraft.client.renderer.texture.TextureAtlas
+[1810月2026 21:46:50.288] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS png_resource_present :: resource=bettergold:textures/gui/sprites/container/sturdygold_anvil/error.png
+[1810月2026 21:46:50.290] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS png_28x21 :: size=28x21
+[1810月2026 21:46:50.290] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS pixel_00_from_author :: pixel(0,0)=ff0691d8（ABGR；期望 ff0691d8 = 作者贴图 (99,45) #D89106）
+[1810月2026 21:46:50.290] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS pixel_13_10_is_red :: pixel(13,10)=ff0f37ba（ABGR；期望 ff0f37ba = 原版红叉 #BA370F）
+[1810月2026 21:46:50.290] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS pixel_27_20_from_author :: pixel(27,20)=ff40dbfc（ABGR；期望 ff40dbfc = 作者贴图 (126,65) #FCDB40）
+[1810月2026 21:46:50.290] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS vanilla_28x21 :: vanilla size=28x21
+[1810月2026 21:46:50.290] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT PASS sprite_id_contains_path :: name=bettergold:container/sturdygold_anvil/error
+[1810月2026 21:46:50.290] [Render thread/INFO] [com.hjmmd_8.bettergold.bettergold/]: BGN10ERRCLIENT SUMMARY pass=13 fail=0 (没有进世界)

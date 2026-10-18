@@ -1,0 +1,39 @@
+bgn10err 收尾核对
+==================
+
+【1】探针（临时代码）已整块删除
+  src 里 `BgN10err|BGN10ERR|bgn10err` grep = 0 命中
+  src/main/java/com/hjmmd_8/bettergold/probe/ 已不存在
+  删前已把两份源码复制到 docs/bgn10err-证据/脚本副本/（BgN10errClientProbe.java / BgN10errServerProbe.java）
+  开关文件 run/bgn10err-probe.enabled、run/bgn10err-client.enabled 均已删除（run/*.enabled = 0 个）
+  jar 内 *Probe* = 0 / 含 'halt' 字节的 class = 0 / 'BG-PROBE' = 0（check_jar_clean.py exit 0，条目 2799）
+  server.halt(false) 只调一次（服务端探针里就一处）；forceload 双向 0（探针读 forcedNow=0 + check_forced_chunks 绿）
+
+【2】作者存档（绝对红线）
+  run/saves/新的世界：跑前 / 跑后都是 29 个文件，最新 mtime 仍是 2026-10-18T21:36:40（**早于本会话开工 21:37**）
+  ⇒ 一字节未动、也从未被打开（本轮 runClient 停在标题界面，没进任何世界）
+
+【3】run\ 独占 + 共享文件
+  跑前查进程：只有 1 个 Gradle daemon（PID 11036，19:42 起）；runServer → runClient 串行，每条都确认进程退出后才起下一条
+  run/server.properties：跑前字节备份 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+                         runServer 后变成 AA6ABC37…（服务端自己写的）⇒ 收尾**逐字节复原**回 A2229937…（已核）
+  run/world：本仓自带 dev 服务端世界（不是作者存档），runServer 会在里面存盘 + 放 1 个万坚金砧方块 @ (1010,120,1008)
+  build/moddev/clientRunProgramArgs.txt：**没有手改**（本轮不需要 quickPlay —— 探针只读标题界面）
+
+【4】原始素材
+  作者 zip / docs 归档：只读，一字节未动
+  作者 PNG textures/gui/container/sturdygold_anvil.png：SHA256 24a277b9… 跑前跑后一致（关卡也钉住）
+  新精灵是本轮**新增文件**（git status 里是 ??，不是 M）
+
+【5】产物
+  build/libs/bettergold-1.7.0.jar：1612049 B，jar 内文件总数 2799
+   jar 内 SturdygoldAnvilScreen.class 含 `container/sturdygold_anvil/error`（True）、不含 `container/anvil/error`（False）
+   jar 内 error.png 与 src 逐字节相同（SHA256 dcbac590…）
+
+【6】本轮新增 / 修改的文件（git status）
+   M  src/main/java/com/hjmmd_8/bettergold/client/SturdygoldAnvilScreen.java
+   M  tools/asset-generator/validate_metal_data.py
+   ?? src/main/resources/assets/bettergold/textures/gui/sprites/（新精灵 1 张）
+   ?? docs/bgn10err-证据/（证据目录）
+   ?? probe/bgn10err/（本轮脚本工作区；脚本副本已归档到 docs/bgn10err-证据/脚本副本/）
+   M 计数 = 2（既有文件改动）；既有贴图 M = 0

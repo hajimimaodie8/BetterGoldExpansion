@@ -1,0 +1,109 @@
+﻿七关卡（py -3；判据 = exit + 关键计数两列）
+时间: 2026-10-18T21:47:12.8687540+08:00
+说明: 探针代码已整块删除、重新 build 之后再跑一遍（这是最终态）
+
+===== validate_metal_assets.py exit=0
+    [bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+    [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_metal_data.py exit=0
+    bg-15w §八 追加轮② 问题合计: 0 []
+    bg-15w §九 追加轮③ 问题合计: 0 []
+    [bgfix8-anti-vacuum] 前置文件存在性：冻结快照=True / Config.java=True / 手册 golden_knowledge.json(zh,en)=True,True（缺 0 个，必须 = 0）
+    [bg-data-anti-vacuum] 实际检查了 310 项（语言键）+ 1907 个 JSON 产物（扫描根缺失 0 个；两项都必须 > 0）
+    [bgfix7-anti-vacuum] 本轮期望值快照：基线 bgfix7-creative-material-baseline.txt=True / 作者序 bgfix7-creative-material-prefix-order.txt=True（缺失 0 个，必须 = 0）
+    bgfix11（en 补真英文：knowledge_1_summary 由中文 → 真英文）问题: 0 []（该键 en 294 字 / zh 104 字 / 未变动子集 715 键 / 子集 SHA256 68a5441020cb829d / en 7A7156E8 → 07AA2FA0）
+    1.7 轮6（金钱妖：实体/弹射物/掉落/烈燃金双倍/米字弹幕）问题: 0 []（本段判定 80 条，循环已展开计数）
+    [bgn10r6-ok] 金钱妖：实体/弹射物/伤害表/贴图哈希/双倍入口/语言键/两套动画 全部通过
+    1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 0 []（本段判定 72 条）
+    [bgn10r5-ok] 金火把花：贴图哈希/模型/标签/语言键/亮度口径/作物阶段/酿造三端点 全部通过
+    1.7 轮7（崩乱合金：锭/块/模板/15 件器具/4 件盔甲/禁果/两个状态）问题: 0 []（本段判定 162 条）
+    [bgn10r7-ok] 崩乱合金：20 条配方 / 块 ×3 + 信标 + §9.7 / 两个状态公式与无等级 / 50% 三条派发 / 盔甲四件 / 禁果 11.6 全部通过
+    1.7 轮8（万坚金砧：不可破坏 + 自建 GUI + 金币串修复不累积惩罚 + 下落 16%）问题: 0 []（本段判定 96 条）
+    [bgn10r8-ok] 万坚金砧：配方 9 格 / 硬度 -1 与抗爆 3600000 / 不进 #minecraft:anvil / 四向 blockstate + 几何逐字原版 / MenuType+Screen 双端注册 / 每币 maxDamage/4 / 全仓 0 处修复惩罚与互斥重写 / min(16%,1%×格数)×当前血量 全部通过
+    1.7 万坚金砧贴图/GUI 重做（bg-n10anvil）问题: 0 []（本段判定 85 条）
+    [bgn10anvil-ok] 模型 21 个面 → 槽/uv/rotation 逐项 == 投影表（ew=前后 / ns=左右，按 alpha IoU 1.0000 判）/ 5 张源 PNG SHA256 未改 / Screen 三处文字 == 原版 + 输入框与三个精灵全抄 / 红条·装饰·幽灵图标反向断言 0 命中
+    1.7 万坚金砧「无法锻造时的灰矩形」（bg-n10err）问题: 0 []（本段判定 22 条）
+    [bgn10err-ok] 灰 = 原版 error 精灵自带（#C6C6C6 428 / #8B8B8B 79 / 红叉 81，alpha 全 255）；新精灵 = 作者 (99,45)-(126,65) 28x21 原样搬运 + 原版 81 个红叉像素（507+81=588，零新颜色）；作者 PNG SHA 未变；Screen 指向新精灵，fill( 仅花费底色一处
+    1.7 轮9（两族进手册 38 页 / 两族进成就 8 条 / 创造页 / 中英语言键）问题: 0 []（本段判定 170 条）
+    [bgn10r9-ok] 两族 4 条目 38 页（页型序列 / 39 条配方引用 / 33 件图标模型全部存在）/ 两族 8 条成就（parent 链 + challenge 两条 + 清一色 inventory_changed + 刀走标签）/ METAL_ORDER 含两族且材料前缀仍是 21 件 / 20+16 条中英键全部就位
+    1.7 轮R（bg-n10rc 四类配方逐格）问题: 0 []（本段判定 76 条）
+    [bgn10rc-ok] 四类配方逐格一致：充数 3 条（4/6/8 + 1 币 → 块）/ 崩乱合金模板 9 格 / 混沌金附魔书 9 格（青金石主对角、币串副对角）/ 万坚金砧 9 格；生成器自检 0 条
+    1.7 bg-n10rg（混沌金工作台配方 + 双倍贵金原料）问题: 0 []（本段判定 290 项）
+    [bgn10rg-ok] 混沌金 15 件工作台配方逐格照原版（前 11 件金属格 = 混沌金锭；后 4 件见 [bgn10rc2-*]）/ 9 条双倍贵金原料（催化剂 = 高阶炼金油、数量 2、与基础版逐字段同形且基础版未被改）/ 返还玻璃瓶按催化剂那一格判（去注释源码 2 处）/ 手册 gear_chaosgold 15 页 15 条配方无死链
+    1.7 bg-n10d（#13 金火把花种子 4 条原版标签）问题: 0 []（本段判定 23 条）
+    [bgn10d-seed-tags-ok] 4 张原版种子标签各含金火把花种子、replace 不是 true、没有别的本模组物品混入、种子也没有出现在这 4 张之外
+    1.7 bg-n10rc2（4 件补齐 + 返瓶扩到物品级）问题: 0 []（本段判定 149 项）
+    [bgn10rc2-ok] 弓/重锤/三叉戟/乐事刀 4 条配方逐格钉住（三叉戟 = 原创形状待确认 + 乐事刀挂 mod_loaded(farmersdelight)）/ 其余 14 条无条件 / 高阶炼金油的物品级 remainder 恰好 1 处且与配方层按配方互斥（GLASS_BOTTLE 合计 2 处 = 不双返）/ 手册 15 页 15 条引用
+    1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（熔炉 + 高炉）→ 粒 / 9 粒 → 1 锭）问题: 0 []（本段判定 127 项）
+    [bgn10up-ok] 币串 → 3 币（shapeless，消耗 1 个）/ 币 →（smelting，与 8 条 raw_*_smelting 同档 1.0 xp 200 tick misc）+（blasting，与 8 条 raw_*_blasting 同档 1.0 xp 100 tick misc；`bg-n10fix` ① 作者 2026-10-18 推翻旧口径）→ 粒 / 9 粒 → 1 锭逐格（NNN 满格）与它的逆 1 锭 → 9 粒都原样 / 反向：无币串产线、无第二种金币来源、无烟熏营火（高炉恰好 1 条）/ 手册 18 页（两条各 1 页）无死链
+    1.7 bg-n10fix（作者试玩 10 条：高炉 / 火把花黑底 / 炖菜 / 附魔书 / 建材硬度 / 禁果 / 金钱妖 / 弹幕 / 金币投掷 / 区间随机）问题: 0 []（本段判定 82 项）
+    [bgn10fix-ok] ① 熔炉 + 高炉（高炉 100 tick / xp 1.0）/ ② 4 个模型 cutout + 三层链 + 贴图透明 / ③ 炖菜 absorption III 320 tick / ④ 书 16 堆叠 + 主手书副手装备 + 附魔台音效 + 创造免经验 / ⑤ 建材 55×2/3 与 8×2/3 + needs_iron_tool 且不在 diamond / ⑥ 两个禁果 alwaysEdible / ⑦ 悬浮 0.4 + IDLE 八枚硬币 0→360° / ⑧ 三格外才打 / ⑨ 金币可投掷（3 点 / 320 tick / 冷却 10）+ 不进寻途 / ⑩ 区间随机含两端 + 三个触发点（2000 次采样 4..8 均值 6）
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_trim_assets.py exit=0
+    [bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0）
+    [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_advancements.py exit=0
+    [bgach-ok] 问题 0 条 / 成就 59 个 / criteria 142 条 / 语言键 118 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_bg17_textures.py exit=0
+    [bg17tex-summary] checked=630 authorized=72 untouched=553 modelrefs=64 problems=0
+    [bg17tex-ok] all invariants hold
+===== check_jar_clean.py exit=0
+    jar 内文件总数 = 2799
+    [jar-clean-anti-vacuum] 实际检查了 2799 项（jar 内条目数；必须 > 0）
+    [jar-clean-ok] 产物 jar 干净（条目 2799；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+===== check_forced_chunks.py exit=0
+    chunks.dat data keys      = ['Forced']
+    data.Forced               = []
+    data.Forced length        = 0
+    [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+
+== 最终复跑（文档/经验回流写完之后；只改文档，代码未变） ==
+
+===== validate_metal_assets.py exit=0
+    [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_metal_data.py exit=0
+    bg-15w §八 追加轮② 问题合计: 0 []
+    bg-15w §九 追加轮③ 问题合计: 0 []
+    bgfix11（en 补真英文：knowledge_1_summary 由中文 → 真英文）问题: 0 []（该键 en 294 字 / zh 104 字 / 未变动子集 715 键 / 子集 SHA256 68a5441020cb829d / en 7A7156E8 → 07AA2FA0）
+    1.7 轮6（金钱妖：实体/弹射物/掉落/烈燃金双倍/米字弹幕）问题: 0 []（本段判定 80 条，循环已展开计数）
+    [bgn10r6-ok] 金钱妖：实体/弹射物/伤害表/贴图哈希/双倍入口/语言键/两套动画 全部通过
+    1.7 轮5（金火把花 / 高精度炼金油 / 亮度 16→15 / 花盆 / 酿造）问题: 0 []（本段判定 72 条）
+    [bgn10r5-ok] 金火把花：贴图哈希/模型/标签/语言键/亮度口径/作物阶段/酿造三端点 全部通过
+    1.7 轮7（崩乱合金：锭/块/模板/15 件器具/4 件盔甲/禁果/两个状态）问题: 0 []（本段判定 162 条）
+    [bgn10r7-ok] 崩乱合金：20 条配方 / 块 ×3 + 信标 + §9.7 / 两个状态公式与无等级 / 50% 三条派发 / 盔甲四件 / 禁果 11.6 全部通过
+    1.7 轮8（万坚金砧：不可破坏 + 自建 GUI + 金币串修复不累积惩罚 + 下落 16%）问题: 0 []（本段判定 96 条）
+    [bgn10r8-ok] 万坚金砧：配方 9 格 / 硬度 -1 与抗爆 3600000 / 不进 #minecraft:anvil / 四向 blockstate + 几何逐字原版 / MenuType+Screen 双端注册 / 每币 maxDamage/4 / 全仓 0 处修复惩罚与互斥重写 / min(16%,1%×格数)×当前血量 全部通过
+    1.7 万坚金砧贴图/GUI 重做（bg-n10anvil）问题: 0 []（本段判定 85 条）
+    [bgn10anvil-ok] 模型 21 个面 → 槽/uv/rotation 逐项 == 投影表（ew=前后 / ns=左右，按 alpha IoU 1.0000 判）/ 5 张源 PNG SHA256 未改 / Screen 三处文字 == 原版 + 输入框与三个精灵全抄 / 红条·装饰·幽灵图标反向断言 0 命中
+    1.7 万坚金砧「无法锻造时的灰矩形」（bg-n10err）问题: 0 []（本段判定 22 条）
+    [bgn10err-ok] 灰 = 原版 error 精灵自带（#C6C6C6 428 / #8B8B8B 79 / 红叉 81，alpha 全 255）；新精灵 = 作者 (99,45)-(126,65) 28x21 原样搬运 + 原版 81 个红叉像素（507+81=588，零新颜色）；作者 PNG SHA 未变；Screen 指向新精灵，fill( 仅花费底色一处
+    1.7 轮9（两族进手册 38 页 / 两族进成就 8 条 / 创造页 / 中英语言键）问题: 0 []（本段判定 170 条）
+    [bgn10r9-ok] 两族 4 条目 38 页（页型序列 / 39 条配方引用 / 33 件图标模型全部存在）/ 两族 8 条成就（parent 链 + challenge 两条 + 清一色 inventory_changed + 刀走标签）/ METAL_ORDER 含两族且材料前缀仍是 21 件 / 20+16 条中英键全部就位
+    1.7 轮R（bg-n10rc 四类配方逐格）问题: 0 []（本段判定 76 条）
+    [bgn10rc-ok] 四类配方逐格一致：充数 3 条（4/6/8 + 1 币 → 块）/ 崩乱合金模板 9 格 / 混沌金附魔书 9 格（青金石主对角、币串副对角）/ 万坚金砧 9 格；生成器自检 0 条
+    1.7 bg-n10rg（混沌金工作台配方 + 双倍贵金原料）问题: 0 []（本段判定 290 项）
+    [bgn10rg-ok] 混沌金 15 件工作台配方逐格照原版（前 11 件金属格 = 混沌金锭；后 4 件见 [bgn10rc2-*]）/ 9 条双倍贵金原料（催化剂 = 高阶炼金油、数量 2、与基础版逐字段同形且基础版未被改）/ 返还玻璃瓶按催化剂那一格判（去注释源码 2 处）/ 手册 gear_chaosgold 15 页 15 条配方无死链
+    1.7 bg-n10d（#13 金火把花种子 4 条原版标签）问题: 0 []（本段判定 23 条）
+    [bgn10d-seed-tags-ok] 4 张原版种子标签各含金火把花种子、replace 不是 true、没有别的本模组物品混入、种子也没有出现在这 4 张之外
+    1.7 bg-n10rc2（4 件补齐 + 返瓶扩到物品级）问题: 0 []（本段判定 149 项）
+    [bgn10rc2-ok] 弓/重锤/三叉戟/乐事刀 4 条配方逐格钉住（三叉戟 = 原创形状待确认 + 乐事刀挂 mod_loaded(farmersdelight)）/ 其余 14 条无条件 / 高阶炼金油的物品级 remainder 恰好 1 处且与配方层按配方互斥（GLASS_BOTTLE 合计 2 处 = 不双返）/ 手册 15 页 15 条引用
+    1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（熔炉 + 高炉）→ 粒 / 9 粒 → 1 锭）问题: 0 []（本段判定 127 项）
+    [bgn10up-ok] 币串 → 3 币（shapeless，消耗 1 个）/ 币 →（smelting，与 8 条 raw_*_smelting 同档 1.0 xp 200 tick misc）+（blasting，与 8 条 raw_*_blasting 同档 1.0 xp 100 tick misc；`bg-n10fix` ① 作者 2026-10-18 推翻旧口径）→ 粒 / 9 粒 → 1 锭逐格（NNN 满格）与它的逆 1 锭 → 9 粒都原样 / 反向：无币串产线、无第二种金币来源、无烟熏营火（高炉恰好 1 条）/ 手册 18 页（两条各 1 页）无死链
+    1.7 bg-n10fix（作者试玩 10 条：高炉 / 火把花黑底 / 炖菜 / 附魔书 / 建材硬度 / 禁果 / 金钱妖 / 弹幕 / 金币投掷 / 区间随机）问题: 0 []（本段判定 82 项）
+    [bgn10fix-ok] ① 熔炉 + 高炉（高炉 100 tick / xp 1.0）/ ② 4 个模型 cutout + 三层链 + 贴图透明 / ③ 炖菜 absorption III 320 tick / ④ 书 16 堆叠 + 主手书副手装备 + 附魔台音效 + 创造免经验 / ⑤ 建材 55×2/3 与 8×2/3 + needs_iron_tool 且不在 diamond / ⑥ 两个禁果 alwaysEdible / ⑦ 悬浮 0.4 + IDLE 八枚硬币 0→360° / ⑧ 三格外才打 / ⑨ 金币可投掷（3 点 / 320 tick / 冷却 10）+ 不进寻途 / ⑩ 区间随机含两端 + 三个触发点（2000 次采样 4..8 均值 6）
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_trim_assets.py exit=0
+    [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_advancements.py exit=0
+    [bgach-ok] 问题 0 条 / 成就 59 个 / criteria 142 条 / 语言键 118 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+===== validate_bg17_textures.py exit=0
+    [bg17tex-summary] checked=630 authorized=72 untouched=553 modelrefs=64 problems=0
+    [bg17tex-ok] all invariants hold
+===== check_jar_clean.py exit=0
+    jar 内文件总数 = 2799
+    [jar-clean-ok] 产物 jar 干净（条目 2799；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+===== check_forced_chunks.py exit=0
+    data.Forced length        = 0
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）

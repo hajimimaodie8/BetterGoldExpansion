@@ -1,0 +1,40 @@
+bgn10err 改动清单（文件 : 行）
+===============================
+
+【新增文件 1】精灵（本轮唯一的新资源；不是"画新美术"，是从作者贴图搬运 + 原版红叉）
+  src/main/resources/assets/bettergold/textures/gui/sprites/container/sturdygold_anvil/error.png
+    - 28 x 21 / RGBA / 414 B / SHA256 dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989
+    - 生成者：probe/bgn10err/make_error_sprite.py（--check 可幂等复核）
+    - 详细来源见 05-新精灵-SHA256与来源.txt
+
+【修改 1】client/SturdygoldAnvilScreen.java（改前 SHA256 441ef26d…11801 B → 改后 ffc19716…15491 B）
+  :44-45  类 javadoc 的「错误图标」清单行 —— **旧口径原文保留**，同一行后面追加 bg-n10err 的新写法
+  :56-78  类 javadoc 新增一节「★ 无法锻造时的「灰色矩形」（bg-n10err，2026-10-18）」
+          （作者原话 / 逐像素判定 / 修法 / 为什么不走"把灰底改透明"那条路）
+  :95     常量组注释由「原版砧的三个 GUI 精灵」改成「原版砧的**输入框**两个精灵」
+  :100-112 ERROR_SPRITE：
+            旧：ResourceLocation.withDefaultNamespace("container/anvil/error")   ← 原文留在 javadoc 里
+            新：ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "container/sturdygold_anvil/error")
+  （renderBg / renderErrorIcon / renderLabels 三处实现**一个字都没动**；
+    renderErrorIcon 仍是 `blitSprite(ERROR_SPRITE, x + 99, y + 45, 28, 21)`，位置/尺寸/条件全不变）
+
+【修改 2】tools/asset-generator/validate_metal_data.py
+  :8078-8085  [bgn10anvil-screen] 里那条 needle 换成本模组变体精灵
+              （旧口径 = 原版 container/anvil/error 的原文，留在注释里没删）
+  :8155-8413  新增 [bgn10err-*] 段（本段判定 22 条）
+              ① 作者 GUI PNG SHA256 未变（= 一像素没改）
+              ② 新精灵：在 gui/sprites/ 下 / SHA256 / 414 B / IHDR 28x21 8 位 RGBA
+              ③ 逐像素复算（自带 40 行纯 Python PNG 解码器）：每像素 == 作者同坐标像素 或 == 原版红值；
+                 红叉恰好 81 个、507 + 81 = 588、alpha 全 255、红叉掩码 21 行逐行相等
+              ④ 反向：新精灵里 #C6C6C6 / #8B8B8B **0 个**
+              ⑤ Screen：指向新精灵 / 位置不变 / 反向 `container/anvil/error` 0 处 /
+                 `fill(` 恰好 1 处（花费底色 y=67..79）/ renderErrorIcon 方法体里没有 fill(、blitSprite 恰好 1 处
+              ⑥ 反空转：判定数 < 20 直接红
+  :10607      bgn10err_problems 并入 _EXIT_PROBLEM_LISTS（否则它 exit 永远是 0 = 假绿）
+
+【没有改的东西（逐条自证）】
+  - 作者 PNG：textures/gui/container/sturdygold_anvil.png —— SHA256 24a277b9… 跑前跑后一致
+  - 原版精灵：只在 docs/bgn10err-证据/01-像素分析/ 里有一份**只读拷贝**，没碰 jar / 没碰游戏资源
+  - 原始 zip / docs 归档素材：一字节未动（本轮只读）
+  - bettergoldClient.java / AllMenus / SturdygoldAnvilMenu / 方块 / 模型 / blockstate：一个字未改
+  - 其它 6 个校验器：未改（重跑全绿，见 07-七关卡.txt）

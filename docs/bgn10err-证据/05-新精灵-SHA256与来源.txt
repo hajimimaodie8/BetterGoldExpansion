@@ -1,0 +1,45 @@
+bgn10err 新精灵：SHA256 + 来源矩形（可复算）
+=============================================
+
+【1】新精灵本体
+  路径   : src/main/resources/assets/bettergold/textures/gui/sprites/container/sturdygold_anvil/error.png
+  精灵 id: bettergold:container/sturdygold_anvil/error（blitSprite 用的就是这个）
+  尺寸   : 28 x 21（= 原版 container/anvil/error 的同一尺寸、同一落点）
+  格式   : PNG 8 位 RGBA / 非隔行 / alpha 全 255（与原版那张一样是"不透明"精灵）
+  字节数 : 414 B
+  SHA256 : dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989
+  生成脚本: probe/bgn10err/make_error_sprite.py（副本在 docs/bgn10err-证据/脚本副本/）
+
+【2】像素来源（588 = 507 + 81，一个"新颜色"都没有）
+  来源 A（507 个像素）: 作者 256x256 贴图
+          src/main/resources/assets/bettergold/textures/gui/container/sturdygold_anvil.png
+          SHA256 = 24a277b99da860b9c012a1a68d3994648fca5466407be4eb61e70e6ba0e5625c（一个像素都没改）
+          取的矩形 = (99,45) 起 28x21，即 x ∈ [99,126]、y ∈ [45,65]（左闭右闭）
+                     = GUI 坐标里 leftPos+99 / topPos+45 那一块，按 1:1 原样搬运
+          这一块里作者自己画着深棕色「→」箭头（#741F00 / #8D3B02 / #A65803 / #BF7405）
+  来源 B（81 个像素）: 原版 minecraft:container/anvil/error 精灵里的两个红
+          #962300（深红，56 个）+ #BA370F（亮红，25 个），按原坐标逐个盖上
+          原版灰底 #C6C6C6（428 个）与灰箭头 #8B8B8B（79 个）**一个都没搬**
+
+【3】原版精灵的真源（自证"灰是谁画的"）
+  路径  : 从 build/moddev/artifacts/neoforge-21.1.228-client-extra-aka-minecraft-resources.jar
+          抽出 assets/minecraft/textures/gui/sprites/container/anvil/error.png
+  字节数: 158 B / 28x21 / RGBA / alpha 全 255（**没有任何透明像素**）
+  SHA256: 3B6E01A20B2EDDB4412BAA1752EB06130ECBB33CEB55739C0015BDF8953671CB
+  颜色  : 4 个 —— #C6C6C6 (198,198,198) 428 px 板
+                   #8B8B8B (139,139,139) 79 px 箭头（原版砧那个「→」）
+                   #962300 (150,35,0)     56 px 红叉
+                   #BA370F (186,55,15)    25 px 红叉高光
+  ⇒ 灰底 = 507/588 = 86.2%（其中"矩形板"就占 428 个）
+
+【4】为什么原版看不出来（作者说「通常来说这是正常的」）
+  原版 assets/minecraft/textures/gui/container/anvil.png 同一块 (99,45) 28x21：
+     #C6C6C6 482 + #8B8B8B 106 —— 面板本身就是这个灰，精灵的灰底**与面板同色** ⇒ 严丝合缝、看不见边。
+  （而且原版面板那一块里已经预烘焙着同一个灰箭头 #8B8B8B 的掩码，精灵的 #8B8B8B 与它 79/79 重合。）
+  作者的金色面板是原版 anvil.png 的 1:1 换色 ⇒ 同一块变成了金色系 8 色（R==G==B 的像素 **0 个**），
+  灰底于是裸露成一块 28x21 的灰矩形，还把作者的深棕箭头一起盖住。
+
+【5】复算命令
+  py -3 probe/bgn10err/pixel_analysis.py      # 原版精灵 + 作者贴图 + 原版面板 逐像素/直方图
+  py -3 probe/bgn10err/make_error_sprite.py --check   # 只比对不写盘：现有精灵是否仍 = 搬运结果
+  py -3 probe/bgn10err/histogram.py           # 改前/改后那块区域的颜色直方图
