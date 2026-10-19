@@ -125,13 +125,32 @@ public class ChaosCoinProjectile extends ThrowableItemProjectile {
                 : HUNGER_DURATION_TICKS;
     }
 
+    /**
+     * 命中实体：<b>金钱妖直接穿过</b>（1.7 {@code bg-n10fix2} ①，作者 2026-10-19 原话
+     * 「金钱妖发射的金币是不会伤害到自己的同类的，且会直接穿过」）。
+     *
+     * <p>⚠ <b>旧口径（原文留档，已被推翻）</b>：命中任何 {@link LivingEntity} 都结算伤害 + 饥饿，
+     * 然后 {@code discard()}。现在多一条最早的守卫。</p>
+     *
+     * <p><b>口径选择（依据）</b>：作者说的是「金钱妖发射的金币」不会伤同类，但本类里两种来源
+     * （金钱妖弹幕 / 玩家投掷）共用同一条命中路径，且「同类不打同类」在语义上对 player-thrown 也成立
+     * ⇒ 本轮按<b>全体 chaos 金币弹射物都不伤 {@link MoneyGremlin}</b> 落地（不区分主人），
+     * 这样规则只有一处、也不会出现"玩家投掷的金币能打金钱妖、怪物金币不能"的割裂。记账见规格 §27.1。</p>
+     *
+     * <p>「直接穿过」= 三件事都不做：<b>不造成伤害 / 不挂饥饿 / 不 {@code discard()}</b>。
+     * 守卫必须在 {@code isClientSide} 早退<b>之前</b> —— 客户端也要按同一规则继续飞（否则客户端会提前消失）。
+     * {@code super.onHitEntity} 在 1.21.1 的 {@code Projectile} 上是空实现，跳过它不影响飞行。</p>
+     */
     @Override
     protected void onHitEntity(EntityHitResult result) {
+        Entity target = result.getEntity();
+        if (target instanceof MoneyGremlin) {
+            return;          // 同类：直接穿过（不伤害 / 不饥饿 / 不 discard）
+        }
         super.onHitEntity(result);
         if (this.level().isClientSide) {
             return;
         }
-        Entity target = result.getEntity();
         if (target instanceof LivingEntity living) {
             living.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.CHAOS_COIN, this, this.getOwner()),
                     effectiveDamage());

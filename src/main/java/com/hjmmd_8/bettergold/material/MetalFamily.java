@@ -581,9 +581,11 @@ public final class MetalFamily {
     public final float crossbowArrowPower;
     /** 弩：蓄力秒数（0 = 用旧常量 1.0） */
     public final float crossbowChargeSeconds;
-    /** 乐事联动小刀：伤害 / 攻速修正 */
+    /** 乐事联动小刀：伤害 / 攻速修正（⚠ {@link #knifeValuesAreFinal} 为 true 时它们是最终值） */
     public final float knifeDamage;
     public final float knifeSpeed;
+    /** 乐事联动小刀：上面两个数是不是<b>最终值</b>（1.7 bg-n10fix2 ④；既有 8 族 = false） */
+    public final boolean knifeValuesAreFinal;
     /** 器具的最终攻速（键 = Form 名；空 = 全走既有常量） */
     public final java.util.Map<String, Float> gearAttackSpeeds;
 
@@ -983,6 +985,7 @@ public final class MetalFamily {
         this.crossbowChargeSeconds = spec.crossbowChargeSeconds;
         this.knifeDamage = spec.knifeDamage;
         this.knifeSpeed = spec.knifeSpeed;
+        this.knifeValuesAreFinal = spec.knifeValuesAreFinal;
         this.fireResistant = spec.fireResistant;
         this.autoSmelt = spec.autoSmelt;
         this.thunderStrike = spec.thunderStrike;
@@ -1622,6 +1625,13 @@ public final class MetalFamily {
         public float knifeDamage = KNIFE_DMG;
         /** 乐事联动小刀：{@code createAttributes} 的攻速修正（既有 8 族 = {@link MetalFamily#KNIFE_SPD}） */
         public float knifeSpeed = KNIFE_SPD;
+        /**
+         * 乐事联动小刀：{@link #knifeDamage} / {@link #knifeSpeed} 是不是<b>最终值</b>。
+         *
+         * <p>默认 {@code false} = 旧口径（数值直接交给 {@code createAttributes}，tier 的 +4.5 会叠上去）
+         * ⇒ 既有 8 族的刀保持原样。只有 {@link #knifeAttributesFinal(float, float)} 会置 true。</p>
+         */
+        public boolean knifeValuesAreFinal = false;
 
         /**
          * 器具的<b>攻击速度</b>（作者逐件给的固定值；键 = Form 名）。
@@ -1694,6 +1704,26 @@ public final class MetalFamily {
         public Spec knifeAttributes(float damage, float speed) {
             this.knifeDamage = damage;
             this.knifeSpeed = speed;
+            return this;
+        }
+
+        /**
+         * 乐事联动小刀：把两个数声明成<b>最终值</b>（含 tier 攻击加成与玩家 4.0 攻速基值）。
+         *
+         * <p>1.7 {@code bg-n10fix2} ④（作者 2026-10-19）：两把<b>新刀</b>的实机伤害比声明高 4.5
+         * —— 根因是 FD 的 {@code KnifeItem} 走 {@code DiggerItem.createAttributes(tier, damage, speed)}，
+         * 它会再加一次 {@code tier.getAttackDamageBonus()}（本仓 {@code Spec} 默认 <b>4.5</b>），
+         * 而攻速参数是 {@code ADD_VALUE} 到玩家基值 <b>4.0</b> 上的修正。
+         * ⇒ 声明「最终值」时由 {@code FdItems} 在注册前减掉这两段，实机值 = 声明值。</p>
+         *
+         * <p>⚠ 既有 8 族的刀<b>不动</b>：它们的 {@code 2.0 / -1.8} 是「修正」而不是最终值，
+         * 叠上 +4.5 正好是规格里的 <b>7.5 / 2.2</b>（{@link #KNIFE_DMG} 的注释）——
+         * 那是<b>故意</b>的偏移，不是 bug。按族分别处理，见规格 §27.4。</p>
+         */
+        public Spec knifeAttributesFinal(float damage, float speed) {
+            this.knifeDamage = damage;
+            this.knifeSpeed = speed;
+            this.knifeValuesAreFinal = true;
             return this;
         }
 

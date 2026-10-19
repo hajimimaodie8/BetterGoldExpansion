@@ -6505,7 +6505,7 @@ _b10w_speeds = _b10w_parse_speeds(_b10w_body_cg)
 _b10w_ranges_ca = _b10w_parse_ranges(_b10w_body_ca)
 _b10w_speeds_ca = _b10w_parse_speeds(_b10w_body_ca)
 # 作者原话（立档 §2.4 / 任务口径）：剑 4..8 / 重锤 3..7 / 三叉戟 7..11 / 斧 7..10 / 镐 2..6 /
-#   锹 2.5..6.5 / 锄 1..5 / 刀 1.5..5.5（乐事）/ 弓 2.0..3.5 / 弩 3.5..4.5；投掷 9..13
+#   锹 2.5..6.5 / 锄 1..5 / 刀 2.5..6.5（2026-10-19 更正；旧 1.5..5.5 留档）/ 弓 2.0..3.5 / 弩 3.5..4.5；投掷 9..13
 _B10W_WANT_RANGES = {
     ("SWORD", "ATTACK"): (4.0, 8.0),
     ("MACE", "ATTACK"): (3.0, 7.0),
@@ -6514,7 +6514,8 @@ _B10W_WANT_RANGES = {
     ("PICKAXE", "ATTACK"): (2.0, 6.0),
     ("SHOVEL", "ATTACK"): (2.5, 6.5),
     ("HOE", "ATTACK"): (1.0, 5.0),
-    ("KNIFE", "ATTACK"): (1.5, 5.5),
+    # ⚠ 2026-10-19 bg-n10fix2 ④：作者更正刀为 2.5..6.5（旧期望原文留档：(1.5, 5.5)）
+    ("KNIFE", "ATTACK"): (2.5, 6.5),
     ("BOW", "ATTACK"): (2.0, 3.5),
     ("CROSSBOW", "ATTACK"): (3.5, 4.5),
 }
@@ -6529,7 +6530,7 @@ for _k, _want in _B10W_WANT_RANGES.items():
                     "AllMetals（混沌金）的 %s+%s 声明的两端值 %s ≠ 作者给的 %s" % (_k[0], _k[1], _got, _want))
 # ---------- 崩乱合金（1.7 bg-n10r7 轮7）：作者逐件给的数 ----------
 # 剑 8..16 / 重锤 7..14 / 三叉戟 11..22 / 斧 10..20 / 镐 6..12 / 锹 6.5..13 / 锄 5..10 /
-#   刀 5.5..11（乐事）/ 弓 3.5..4.5 / 弩 4.5..5；投掷 9..13（⚠ 与混沌金一字不差 ⇒ 疑似笔误，待作者裁）
+#   刀 6.5..13（2026-10-19 更正；旧 5.5..11 留档，乐事）/ 弓 3.5..4.5 / 弩 4.5..5；投掷 9..13（⚠ 与混沌金一字不差 ⇒ 疑似笔误，待作者裁）
 _B10W_WANT_RANGES_CA = {
     ("SWORD", "ATTACK"): (8.0, 16.0),
     ("MACE", "ATTACK"): (7.0, 14.0),
@@ -6538,7 +6539,8 @@ _B10W_WANT_RANGES_CA = {
     ("PICKAXE", "ATTACK"): (6.0, 12.0),
     ("SHOVEL", "ATTACK"): (6.5, 13.0),
     ("HOE", "ATTACK"): (5.0, 10.0),
-    ("KNIFE", "ATTACK"): (5.5, 11.0),
+    # ⚠ 2026-10-19 bg-n10fix2 ④：作者更正刀为 6.5..13（旧期望原文留档：(5.5, 11.0)）
+    ("KNIFE", "ATTACK"): (6.5, 13.0),
     ("BOW", "ATTACK"): (3.5, 4.5),
     ("CROSSBOW", "ATTACK"): (4.5, 5.0),
 }
@@ -6585,7 +6587,9 @@ for _lit, _why in (
         ("maceFinalDamageMultiplier(1.0F)", "缺重锤「最终伤 ×1.0」"),
         ("bowFullDraw(20, 0.0F)", "缺弓「拉弓 20 tick」"),
         ("crossbowCharge(1.2F)", "缺弩「蓄力 1.2 秒 = 24 tick」"),
-        ("knifeAttributes(1.5F, 2.0F)", "缺乐事刀「伤害 1.5 下端 / 攻速 2」")):
+        # ⚠ 2026-10-19 bg-n10fix2 ④：刀改成“最终值”并更正为 2.5..6.5。
+        #   旧期望原文留档：("knifeAttributes(1.5F, 2.0F)", "缺乐事刀「伤害 1.5 下端 / 攻速 2」")
+        ("knifeAttributesFinal(2.5F, 2.0F)", "缺乐事刀「最终伤害 2.5..6.5 / 攻速 2」")):
     if _lit not in _bgn10_am_nc:
         _bgn10w_bad("bgn10-chaos-wiring", "AllMetals 里%s（字面 `%s`）" % (_why, _lit))
 # 崩乱合金的区间外固定值：**逐条按作者原话**（与混沌金同名的三条 + 重锤 1.4 + 刀 5.5）
@@ -6595,7 +6599,9 @@ for _lit, _why in (
         ("maceFinalDamageMultiplier(1.4F)", "崩乱合金缺重锤「最终伤 ×1.4 固定」"),
         ("bowFullDraw(20, 0.0F)", "崩乱合金缺弓「最大拉弓 20」"),
         ("crossbowCharge(1.2F)", "崩乱合金缺弩「蓄力 1.2 秒」"),
-        ("knifeAttributes(5.5F, 2.0F)", "崩乱合金缺乐事刀「伤害 5.5 下端 / 攻速 2」"),
+        # ⚠ 2026-10-19 bg-n10fix2 ④：刀改成“最终值”并更正为 6.5..13。
+        #   旧期望原文留档：("knifeAttributes(5.5F, 2.0F)", "崩乱合金缺乐事刀「伤害 5.5 下端 / 攻速 2」")
+        ("knifeAttributesFinal(6.5F, 2.0F)", "崩乱合金缺乐事刀「最终伤害 6.5..13 / 攻速 2」"),
         ("imbalanceOnAttack()", "崩乱合金器具缺「命中挂失衡」"),
         ("imbalanceReflect()", "崩乱合金盔甲缺「被击反挂失衡」"),
         ("specialWeaponMetal(true, 2048)", "崩乱合金盾牌缺「格挡反 buff / 免疫破盾」那一档")):
@@ -7438,6 +7444,11 @@ if not _r7_imb_path.is_file():
     _r7_imb = ""
 else:
     _r7_imb = strip_comments(_r7_imb_path.read_text(encoding="utf-8"))
+# ⚠ 2026-10-19 `bg-n10fix2` ③：抗性失衡的公式改成「D × (1 + r)，r 每次重取」⇒
+#   调用点多了 target 参数。**旧期望原文留档**（未删）：
+#     ("event.setNewDamage(resistanceImbalanceDamage(event.getNewDamage()))",
+#      "抗性失衡没有改写受害者的伤害"),
+#   新口径的公式本体由本文件末尾 `[bgn10fix2-imbalance]` 逐项守着。
 for _needle, _why in (
         ("TICKS = 16 * 20", "失衡时长不是 16 秒 = 320 tick"),
         ("POWER_FLOOR = 1.0F", "力量失衡的下端不是 1 点"),
@@ -7448,8 +7459,8 @@ for _needle, _why in (
          "50/50 二选一没有真的在两个效果之间选"),
         ("event.setNewDamage(powerImbalanceDamage(attacker, event.getNewDamage()))",
          "力量失衡没有改写攻击者的伤害"),
-        ("event.setNewDamage(resistanceImbalanceDamage(event.getNewDamage()))",
-         "抗性失衡没有改写受害者的伤害"),
+        ("event.setNewDamage(resistanceImbalanceDamage(target, event.getNewDamage()))",
+         "抗性失衡没有改写受害者的伤害（新口径：带 target，每次重取 r）"),
         ("attacker.hasEffect(AllEffects.POWER_IMBALANCE)",
          "力量失衡判的是受害者而不是攻击者（方向反了）"),
         ("target.hasEffect(AllEffects.RESISTANCE_IMBALANCE)",
@@ -10592,6 +10603,157 @@ if not bgn10fix_problems:
           "⑦ 悬浮 0.4 + IDLE 八枚硬币 0→360° / ⑧ 三格外才打 / ⑨ 金币可投掷（3 点 / 320 tick / 冷却 10）+ 不进寻途 / "
           "⑩ 区间随机含两端 + 三个触发点（2000 次采样 4..8 均值 6）")
 
+# ==================== 1.7 `bg-n10fix2`（2026-10-19）：作者试玩又报的 4 条 ====================
+# 判据口径同 `bg-n10fix`：正向 needle 跑在**去注释源码**上；失败文案不出现裸 `%`；反空转。
+bgn10fix2_problems: list[str] = []
+_bgn10fix2_checked = 0
+
+
+def _bgfix2_bad(tag: str, msg: str) -> None:
+    bgn10fix2_problems.append("[" + tag + "] " + msg)
+
+
+def _bgfix2_src(name: str) -> str:
+    p = JAVA / name
+    return strip_comments(p.read_text(encoding="utf-8")) if p.is_file() else ""
+
+
+# ---------- ① 混沌金币：命中金钱妖 = 直接穿过（不伤害 / 不饥饿 / 不 discard）----------
+_bgn10fix2_checked += 1
+_cc = _bgfix2_src("entity/ChaosCoinProjectile.java")
+_cc_hit = method_body(_cc, "protected void onHitEntity(EntityHitResult result)")
+if not _cc_hit:
+    _bgfix2_bad("bgn10fix2-coin-pass", "找不到 onHitEntity 方法体（反空转守护）")
+else:
+    _bgn10fix2_checked += 5
+    if "target instanceof MoneyGremlin" not in _cc_hit:
+        _bgfix2_bad("bgn10fix2-coin-pass", "onHitEntity 没有「目标是 MoneyGremlin」的守卫")
+    _guard = _cc_hit.find("target instanceof MoneyGremlin")
+    _hurt = _cc_hit.find("living.hurt(")
+    if _hurt < 0:
+        _bgfix2_bad("bgn10fix2-coin-pass", "onHitEntity 里找不到 living.hurt（伤害路径被删？）")
+    elif _guard > _hurt:
+        _bgfix2_bad("bgn10fix2-coin-pass", "守卫写在伤害之后（穿不过去）")
+    if _cc_hit.find("discard()") < 0:
+        _bgfix2_bad("bgn10fix2-coin-pass", "命中实体后不再 discard（非金钱妖目标会被重复命中）")
+    if _guard >= 0 and _hurt > _guard and "discard()" in _cc_hit[_guard:_hurt]:
+        _bgfix2_bad("bgn10fix2-coin-pass", "守卫与伤害之间出现 discard（穿过时会消失）")
+    _guard_block = _cc_hit[_guard:_guard + 200] if _guard >= 0 else ""
+    if "isPlayerThrown" in _guard_block:
+        _bgfix2_bad("bgn10fix2-coin-pass", "守卫按「主人是不是玩家」分流了（本轮口径 = 全体同类穿透）")
+
+# ---------- ② 金钱贝模具：抢夺只提升掉率，数量恒 1 ----------
+_bgn10fix2_checked += 1
+_mg = _bgfix2_src("entity/MoneyGremlin.java")
+_mold_count = method_body(_mg, "public static int cowrieMoldCount(int looting, RandomSource random)")
+if not _mold_count:
+    _bgfix2_bad("bgn10fix2-mold-count", "找不到 cowrieMoldCount 方法体（反空转守护）")
+else:
+    _bgn10fix2_checked += 3
+    if "return 1;" not in _mold_count:
+        _bgfix2_bad("bgn10fix2-mold-count", "模具数量不是恒为 1（缺 return 1;）")
+    if "nextInt" in _mold_count:
+        _bgfix2_bad("bgn10fix2-mold-count", "模具数量里还有随机（旧公式没删干净）")
+    if "looting" in _mold_count.replace("int looting", ""):
+        _bgfix2_bad("bgn10fix2-mold-count", "模具数量仍依赖 looting（抢夺不该提升数量）")
+_bgn10fix2_checked += 2
+_mold_chance = method_body(_mg, "public static float cowrieMoldChance(int looting)")
+if "COWRIE_MOLD_BASE_CHANCE * (1 + Math.max(0, looting))" not in _mold_chance:
+    _bgfix2_bad("bgn10fix2-mold-chance", "掉率公式被改（应是 16% × (1 + 抢夺)）")
+if "Math.min(1.0F" not in _mold_chance:
+    _bgfix2_bad("bgn10fix2-mold-chance", "掉率没有封顶 1.0（高抢夺会超过 100%）")
+_bgn10fix2_checked += 2
+_coin_count = method_body(_mg, "public static int coinStringCount(int looting, RandomSource random)")
+if "COIN_STRING_BASE + random.nextInt(Math.max(0, looting) + 1)" not in _coin_count:
+    _bgfix2_bad("bgn10fix2-coin-string-untouched",
+                "混沌金币串的数量公式被动过（作者上一轮明确 = 抢夺提升数量）")
+_mold_drop = method_body(_mg, "protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit)")
+if "cowrieMoldCount(looting, this.random)" not in _mold_drop or "cowrieMoldChance(looting)" not in _mold_drop:
+    _bgfix2_bad("bgn10fix2-mold-drop", "掉落路径没有同时走「概率查询 + 数量 1」这两个入口")
+
+# ---------- ③ 力量 / 抗性失衡：1%~50%（含两端）、每次重取、无等级 ----------
+_bgn10fix2_checked += 1
+_im = _bgfix2_src("material/ImbalanceEffects.java")
+_pow = method_body(_im, "public static float powerImbalanceDamage(LivingEntity attacker, float originalDamage)")
+_res = method_body(_im, "public static float resistanceImbalanceDamage(LivingEntity target, float incomingDamage)")
+if not _pow or not _res:
+    _bgfix2_bad("bgn10fix2-imbalance", "找不到两个公式的方法体（反空转守护）")
+else:
+    _bgn10fix2_checked += 5
+    if "rollPercent" not in _pow or "1.0F - percent / RATE_SCALE" not in _pow:
+        _bgfix2_bad("bgn10fix2-imbalance", "力量失衡不是「D × (1 − r)」（削弱 1..50%）")
+    if "rollPercent" not in _res or "1.0F + percent / RATE_SCALE" not in _res:
+        _bgfix2_bad("bgn10fix2-imbalance", "抗性失衡不是「D × (1 + r)」（增伤 1..50%）")
+    if "POWER_FLOOR" in _pow or "isPowerHigh" in _pow or "setPowerHigh" in _pow:
+        _bgfix2_bad("bgn10fix2-imbalance", "旧的力量两端乒乓还留在公式里")
+    if "RESISTANCE_MULTIPLIER" in _res:
+        _bgfix2_bad("bgn10fix2-imbalance", "旧的抗性固定 ×2 还留在公式里")
+    if "originalDamage *" not in _pow or "incomingDamage *" not in _res:
+        _bgfix2_bad("bgn10fix2-imbalance", "公式没有按倍率缩放（可能又变成加减常数）")
+_bgn10fix2_checked += 4
+_im_roll = method_body(_im, "public static int rollPercent(LivingEntity entity)")
+if "nextInt(RATE_MAX_PERCENT) + RATE_MIN_PERCENT" not in _im_roll:
+    _bgfix2_bad("bgn10fix2-imbalance", "随机源不是 nextInt(50) + 1 的等价式")
+if "RATE_MIN_PERCENT = 1;" not in _im:
+    _bgfix2_bad("bgn10fix2-imbalance", "百分比下界不是 1（1% 取不到）")
+if "RATE_MAX_PERCENT = 50;" not in _im:
+    _bgfix2_bad("bgn10fix2-imbalance", "百分比上界不是 50（50% 取不到）")
+_im_apply = method_body(_im, "public static void apply(LivingEntity target, Holder<MobEffect> effect)")
+if "new MobEffectInstance(effect, TICKS, 0," not in _im_apply:
+    _bgfix2_bad("bgn10fix2-imbalance", "施加时 amplifier 不是 0（「无等级」被破坏）")
+
+# ---------- ④ 两把新刀：实际值 = 声明区间，攻速 2.0；既有 8 族不动 ----------
+_bgn10fix2_checked += 1
+_am = _bgfix2_src("material/AllMetals.java")
+if ".knifeAttributes(" in _am:
+    _bgfix2_bad("bgn10fix2-knife", "还有旧口径的 knifeAttributes(...) 调用（两把新刀必须走 Final）")
+_bgn10fix2_checked += 5
+for _needle, _why in (
+        ("Form.KNIFE, ChaosRange.Channel.ATTACK, 2.5F, 6.5F", "混沌金刀区间不是 2.5..6.5"),
+        ("Form.KNIFE, ChaosRange.Channel.ATTACK, 6.5F, 13", "崩乱合金刀区间不是 6.5..13"),
+        ("knifeAttributesFinal(2.5F, 2.0F)", "混沌金刀没有按「最终值 2.5 / 攻速 2」声明"),
+        ("knifeAttributesFinal(6.5F, 2.0F)", "崩乱合金刀没有按「最终值 6.5 / 攻速 2」声明")):
+    if _needle not in _am:
+        _bgfix2_bad("bgn10fix2-knife", _why + "（缺 " + _needle + "）")
+if _am.count("knifeAttributesFinal(") != 2:
+    _bgfix2_bad("bgn10fix2-knife",
+                "knifeAttributesFinal 不是恰好 2 处（实际 " + str(_am.count("knifeAttributesFinal(")) + "）")
+_bgn10fix2_checked += 1
+_mf = _bgfix2_src("material/MetalFamily.java")
+for _needle, _why in (
+        ("public boolean knifeValuesAreFinal = false;", "缺 knifeValuesAreFinal 的默认值（既有 8 族必须 false）"),
+        ("this.knifeValuesAreFinal = spec.knifeValuesAreFinal;", "Spec → 家族的拷贝丢了"),
+        ("public Spec knifeAttributesFinal(float damage, float speed)", "缺 knifeAttributesFinal 入口"),
+        ("KNIFE_DMG = 2.0F", "既有 8 族刀的伤害修正被动了（应是 2.0）"),
+        ("KNIFE_SPD = -1.8F", "既有 8 族刀的攻速修正被动了（应是 -1.8）")):
+    _bgn10fix2_checked += 1
+    if _needle not in _mf:
+        _bgfix2_bad("bgn10fix2-knife", _why + "（缺 " + _needle + "）")
+_bgn10fix2_checked += 1
+_fd = _bgfix2_src("fd/FdItems.java")
+for _needle, _why in (
+        ("knifeDamageModifier(family)", "注册时没有走伤害换算"),
+        ("knifeSpeedModifier(family)", "注册时没有走攻速换算"),
+        ("family.tier.getAttackDamageBonus()", "没有减掉 tier 的 +4.5（实机仍会偏高）"),
+        ("family.knifeSpeed - 4.0F", "没有把最终攻速换算成相对 4.0 的修正"),
+        ("family.knifeValuesAreFinal", "换算没有按「最终值」开关分流（会连既有 8 族一起改）"),
+        ("DiggerItem.createAttributes(tier, damage, speed)", "FD 的 createAttributes 入口不在了")):
+    _bgn10fix2_checked += 1
+    if _needle not in _fd:
+        _bgfix2_bad("bgn10fix2-knife", _why + "（缺 " + _needle + "）")
+
+if _bgn10fix2_checked < 35:
+    _bgfix2_bad("bgn10fix2-anti-vacuum",
+                "本段只检查了 " + str(_bgn10fix2_checked) + " 项（反空转守护：应远大于 35）")
+print("1.7 bg-n10fix2（作者又报 4 条：金币穿同类 / 模具数量 / 两个失衡 / 两把新刀）问题: "
+      + str(len(bgn10fix2_problems)) + " " + str(bgn10fix2_problems[:4])
+      + "（本段判定 " + str(_bgn10fix2_checked) + " 项）")
+if not bgn10fix2_problems:
+    print("[bgn10fix2-ok] ① 金币对 MoneyGremlin 直接穿过（不伤害 / 不饥饿 / 不 discard）/ "
+          "② 模具掉率 16%×(1+抢夺)、数量恒 1（金币串不动）/ "
+          "③ 力量 ×(1−r) 与抗性 ×(1+r)，r = nextInt(50)+1 每次重取、无等级 / "
+          "④ 两把新刀最终值 2.5..6.5 与 6.5..13、攻速 2.0，既有 8 族刀 2.0/-1.8 不动")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -10604,7 +10766,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgn10r8_problems, bgn10r9_problems,
                        bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems,
                        bgn10up_problems, bgn10fix_problems, bgn10anvil_problems,
-                       bgn10err_problems)
+                       bgn10err_problems, bgn10fix2_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

@@ -1,0 +1,37 @@
+probe-start world
+cleanup-stale=16
+PASS 01-pass-8-alive | alive=8/8
+PASS 01-pass-no-damage | hp=30.0
+PASS 01-pass-no-hunger | hunger=null
+PASS 01-pass-player-coin | removed=false hp=30.0 playerThrown=true
+PASS 01-flythrough | alive=3/3 hp=30.0
+PASS 01-zombie-damage | hp 20.0 -> 18.0 difficulty=EASY
+PASS 01-zombie-hunger | hunger=0 amp / 720
+PASS 01-zombie-discard | removed=true
+PASS 02-mold-chance-16 | chance(0)=0.16
+PASS 02-mold-chance-64 | chance(3)=0.64
+PASS 02-mold-rate-l0 | observed=0.15333333333333332 n=300
+PASS 02-mold-rate-l3 | observed=0.6233333333333333 n=300
+PASS 02-mold-count-1 | l0 non-1 stacks=0 l3 non-1 stacks=0
+PASS 02-coinstring-l0 | distinct=[1]
+PASS 02-coinstring-l3 | distinct=[1, 2, 3, 4] mean=2.46
+PASS 03-power-range | min=0.5 max=0.9899998 expected=[0.5,0.99]
+PASS 03-power-distinct | distinct=50/2000
+PASS 03-power-mean | mean=0.7435749979019165 expected~0.745
+PASS 03-resistance-range | min=1.0100002 max=1.5 expected=[1.01,1.5]
+PASS 03-resistance-distinct | distinct=50/2000
+PASS 03-resistance-mean | mean=1.254564986228943 expected~1.255
+PASS 03-power-six | six=[0.72999954, 0.59000015, 0.5100002, 0.5799999, 0.6100006, 0.8899994]
+PASS 03-resistance-six | six=[1.0100002, 1.2199993, 1.4799995, 1.4099998, 1.1800003, 1.1299992]
+PASS 03-amplifier-zero | amplifier=0
+PASS 04-final-flag | chaosgold=true chaosalloy=true
+PASS 04-chaosgold-damage | damage min=2.5 max=6.5 mean=4.486241999983788 distinct=395
+PASS 04-chaosalloy-damage | damage min=6.5 max=13.0 mean=9.80527275633812 distinct=595
+PASS 04-chaosgold-speed | modifier=-2.0 final=2.0
+PASS 04-chaosalloy-speed | modifier=-2.0 final=2.0
+PASS 04-no-10-15 | chaosalloy min/max=6.5/13.0（旧口径 10.0..15.5 已不再出现）
+PASS 04-cg-no-10 | chaosgold max=6.5（旧口径最高 10.0 已不再出现）
+PASS 04-eight-knives-unchanged | eight=[flamegold=6.5/2.200000047683716, voodoogold=6.5/2.200000047683716, thundergold=6.5/2.200000047683716, indigoseagold=6.5/2.200000047683716, illusiongold=6.5/2.200000047683716, thornsgold=6.5/2.200000047683716, echogold=6.5/2.200000047683716, sturdygold=6.5/2.200000047683716]
+PASS 04-sword-higher | chaosgold sword max=8.0 vs knife=6.5; chaosalloy sword max=16.0 vs knife=13.0
+forcedNow=0
+SUMMARY pass=33 fail=0

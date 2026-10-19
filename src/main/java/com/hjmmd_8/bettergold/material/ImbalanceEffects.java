@@ -22,13 +22,19 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
  *   <li>两个都<b>无等级</b>（转述口径；本轮按"施加时恒 amplifier = 0"落地）。</li>
  * </ul>
  *
+ * <p>⚠ <b>上面这段是旧口径（原文留档，已被作者 2026-10-19 推翻）</b>。现行原话：
+ * 「力量失衡和抗性失衡也是一样的 <b>1 到 50% 的削弱伤害和增伤</b>，而不只是单纯的只造成 1 点或什么什么的」
+ * ⇒ 力量失衡 = 攻击者造成的伤害 <b>× (1 − r)</b>、抗性失衡 = 受击者受到的伤害 <b>× (1 + r)</b>，
+ * {@code r} 每次<b>整数百分比 1..50</b> 重取（两端都取得到）。旧公式的实现已就地留档、不再被调用；
+ * 新口径记录在 {@code docs/1.7-混沌金与崩乱合金-需求立档.md} §27.3。</p>
+ *
  * <h2>为什么单独一个类（而不是塞进 2200 行的 {@code MetalEvents}）</h2>
  * <p>这两个效果的<b>全部内容就是两条公式</b>（外加"怎么施加"）。放在一个只有一百多行的类里，
  * 才能让「公式只有一处」这件事被审读、被关卡断言钉住 —— 与 {@link ChaosRange} 的做法同构
  * （规则本体一处、调用点多处）。{@code MetalEvents} 里只调 {@link #applyRandom}（施加），
  * <b>不再写第二份公式</b>。</p>
  *
- * <h2>力量失衡的完整公式（⭐ 本轮唯一需要记账的读法）</h2>
+ * <h2>力量失衡的完整公式（⚠ 下面这段是<b>旧口径</b>，原文留档；现行见 §27.3）</h2>
  * <pre>设 D = 本次攻击在 {@code LivingDamageEvent.Pre} 阶段本来会造成的最终伤害
  *     clamp 读法（立档 §4 ⑬-a 的另一种）：final = clamp(D, 1, D)  —— **恒等于 D**，永远看不出效果 ✗
  *     本轮读法（按字面「最低 1 / 最高原本」，与裁定 ① 的"两端乒乓"同一套）：</pre>
@@ -48,11 +54,20 @@ public final class ImbalanceEffects {
     /** 两个失衡的时长：16 秒 = 320 tick（作者原话「16 秒」） */
     public static final int TICKS = 16 * 20;
 
-    /** 力量失衡的下端：最低伤害 1 点（作者原话「最低伤害为 1」） */
+    /** 力量失衡的下端：最低伤害 1 点（旧口径，原文留档；2026-10-19 起不再被公式读取） */
+    @Deprecated
     public static final float POWER_FLOOR = 1.0F;
 
-    /** 抗性失衡的倍率：固定 ×2（立档 §4.0 ⑬b 裁定；**不做** 1.0..2.0 浮动） */
+    /** 抗性失衡的倍率：固定 ×2（旧口径，原文留档；2026-10-19 起不再被公式读取） */
+    @Deprecated
     public static final float RESISTANCE_MULTIPLIER = 2.0F;
+
+    /** 新口径：每次的削弱 / 增伤百分比下界（含）= 1% */
+    public static final int RATE_MIN_PERCENT = 1;
+    /** 新口径：每次的削弱 / 增伤百分比上界（含）= 50% */
+    public static final int RATE_MAX_PERCENT = 50;
+    /** 百分比 → 倍率的分母 */
+    public static final float RATE_SCALE = 100.0F;
 
     /** 力量失衡「上一次用的是上端」的持久数据键（boolean：1 = 上端 = 原本伤害） */
     public static final String POWER_FLIP_KEY = "bettergold_power_imbalance_high";
@@ -109,30 +124,58 @@ public final class ImbalanceEffects {
     // ==================== 公式（唯一实现） ====================
 
     /**
-     * <b>力量失衡</b>：把「攻击者本次本来会造成的伤害」换成两端之一（1 或原本），并翻转状态。
+     * 本掷的<b>整数百分比</b> {@code 1..50}（两端都含）—— 新口径的唯一随机源。
      *
-     * <p>本方法是这条公式的<b>唯一实现</b>（关卡 {@code [bgn10r7-imbalance]} 钉住"全仓只此一处"）。</p>
+     * <p>用整数百分比而不是浮点：作者说的是「1 到 50%」，整数档能保证 1% 与 50% 都<b>取得到</b>，
+     * 也便于 A 级逐值统计。{@code nextInt(RATE_MAX_PERCENT) + RATE_MIN_PERCENT}
+     * 在 {@code min=1 / max=50} 时恒等于 {@code nextInt(50) + 1}。</p>
+     */
+    public static int rollPercent(LivingEntity entity) {
+        return entity.getRandom().nextInt(RATE_MAX_PERCENT) + RATE_MIN_PERCENT;
+    }
+
+    /**
+     * <b>力量失衡</b>（挂在<b>攻击者</b>身上）：它造成的伤害<b>削弱 1%~50%</b> ⇒ {@code D × (1 − r)}。
+     *
+     * <p>每次造成伤害都<b>重新取</b> {@code r}（不存翻转位、不乒乓）。</p>
+     *
+     * <p>⚠ <b>旧口径（原文留档，已被 2026-10-19 推翻）</b>：</p>
+     * <pre>
+     * boolean high = !isPowerHigh(attacker);       // 每次造成伤害翻转一次（两端乒乓）
+     * setPowerHigh(attacker, high);
+     * float low = Math.min(POWER_FLOOR, originalDamage);
+     * float highValue = Math.max(low, originalDamage);
+     * return high ? highValue : low;               // 只有 {1, D} 两个取值
+     * </pre>
+     *
+     * <p>本方法仍是这条公式的<b>唯一实现</b>（关卡 {@code [bgn10fix2-imbalance]} 钉住"全仓只此一处"）。</p>
      */
     public static float powerImbalanceDamage(LivingEntity attacker, float originalDamage) {
-        boolean high = !isPowerHigh(attacker);       // 每次造成伤害翻转一次（两端乒乓）
-        setPowerHigh(attacker, high);
-        float low = Math.min(POWER_FLOOR, originalDamage);   // D < 1 时不加伤
-        float highValue = Math.max(low, originalDamage);
-        return high ? highValue : low;
+        int percent = rollPercent(attacker);
+        return originalDamage * (1.0F - percent / RATE_SCALE);
     }
 
-    /** <b>抗性失衡</b>：受到伤害固定 ×2（立档 §4.0 ⑬b） */
-    public static float resistanceImbalanceDamage(float incomingDamage) {
-        return incomingDamage * RESISTANCE_MULTIPLIER;
+    /**
+     * <b>抗性失衡</b>（挂在<b>受击者</b>身上）：它受到的伤害<b>增加 1%~50%</b> ⇒ {@code D × (1 + r)}。
+     * 每次受击都<b>重新取</b> {@code r}。
+     *
+     * <p>⚠ <b>旧口径（原文留档，已被 2026-10-19 推翻）</b>：{@code return incomingDamage * RESISTANCE_MULTIPLIER;}
+     * （固定 ×2、不做浮动）。</p>
+     */
+    public static float resistanceImbalanceDamage(LivingEntity target, float incomingDamage) {
+        int percent = rollPercent(target);
+        return incomingDamage * (1.0F + percent / RATE_SCALE);
     }
 
-    /** 该实体此刻的翻转状态（探针 / 关卡读数用） */
+    /** 该实体此刻的翻转状态（<b>旧口径</b>的探针 / 关卡读数口；新公式不再读写它） */
+    @Deprecated
     public static boolean isPowerHigh(LivingEntity entity) {
         var data = entity.getPersistentData();
         return data.contains(POWER_FLIP_KEY) && data.getBoolean(POWER_FLIP_KEY);
     }
 
-    /** 写翻转状态（正常路径只由 {@link #powerImbalanceDamage} 调） */
+    /** 写翻转状态（<b>旧口径</b>；新公式不再调用，保留以兼容旧存档里的键） */
+    @Deprecated
     public static void setPowerHigh(LivingEntity entity, boolean high) {
         entity.getPersistentData().putBoolean(POWER_FLIP_KEY, high);
     }
@@ -142,9 +185,10 @@ public final class ImbalanceEffects {
     /**
      * 伤害结算前的两个改写（都在 {@code LivingDamageEvent.Pre}）：
      * <ol>
-     *   <li><b>力量失衡</b>：<b>攻击者</b>身上有效果 ⇒ 把本次伤害换成「1 或原本」两端之一；</li>
-     *   <li><b>抗性失衡</b>：<b>受害者</b>身上有效果 ⇒ 本次伤害 ×2。</li>
+     *   <li><b>力量失衡</b>：<b>攻击者</b>身上有效果 ⇒ 本次伤害 ×(1 − r)，{@code r = 1..50%}；</li>
+     *   <li><b>抗性失衡</b>：<b>受害者</b>身上有效果 ⇒ 本次伤害 ×(1 + r)，{@code r = 1..50%}。</li>
      * </ol>
+     * <p>⚠ 两条都是<b>每次重新掷</b>（{@link #rollPercent}），没有任何跨事件的状态。</p>
      *
      * <p>放在 {@code Pre} 与既有的重锤 ×1.2 / 三叉戟投掷 / 靛海金 ×2 同一层：
      * 这里拿到的 {@code getNewDamage()} 是"护甲 / 抗性 / 附魔保护都算完之后真正要扣血的数字"，
@@ -166,14 +210,14 @@ public final class ImbalanceEffects {
         }
         // ② 抗性失衡：受害者
         if (target.hasEffect(AllEffects.RESISTANCE_IMBALANCE)) {
-            event.setNewDamage(resistanceImbalanceDamage(event.getNewDamage()));
+            event.setNewDamage(resistanceImbalanceDamage(target, event.getNewDamage()));
         }
     }
 
     /** 触发静态初始化 + 自证一行日志（在 mod 构造器里调用） */
     public static void bootstrap() {
-        bettergold.LOGGER.info("失衡状态已注册: {} / {}（{} tick，无等级；力量下端 {} / 抗性倍率 ×{}）",
+        bettergold.LOGGER.info("失衡状态已注册: {} / {}（{} tick，无等级；力量 −{}..{}% / 抗性 +{}..{}%，每次重取）",
                 AllEffects.POWER_IMBALANCE.getId(), AllEffects.RESISTANCE_IMBALANCE.getId(),
-                TICKS, POWER_FLOOR, RESISTANCE_MULTIPLIER);
+                TICKS, RATE_MIN_PERCENT, RATE_MAX_PERCENT, RATE_MIN_PERCENT, RATE_MAX_PERCENT);
     }
 }

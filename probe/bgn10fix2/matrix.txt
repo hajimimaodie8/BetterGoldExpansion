@@ -1,0 +1,8 @@
+P01-guard-disabled | src/main/java/com/hjmmd_8/bettergold/entity/ChaosCoinProjectile.java | exit=1 | hit=True | restored=True | sha=8b89d80ad431cec4 | tag=bgn10fix2-coin-pass
+P02-mold-count-2 | src/main/java/com/hjmmd_8/bettergold/entity/MoneyGremlin.java | exit=1 | hit=True | restored=True | sha=2b7bfca34a95ff13 | tag=bgn10fix2-mold-count
+P03-power-plus | src/main/java/com/hjmmd_8/bettergold/material/ImbalanceEffects.java | exit=1 | hit=True | restored=True | sha=9ac49b89ee4c7520 | tag=bgn10fix2-imbalance
+P04-roll-min-2 | src/main/java/com/hjmmd_8/bettergold/material/ImbalanceEffects.java | exit=1 | hit=True | restored=True | sha=9ac49b89ee4c7520 | tag=bgn10fix2-imbalance
+P05-knife-range | src/main/java/com/hjmmd_8/bettergold/material/AllMetals.java | exit=1 | hit=True | restored=True | sha=01c8f53e18986f8c | tag=bgn10fix2-knife
+P06-knife-offset-back | src/main/java/com/hjmmd_8/bettergold/fd/FdItems.java | exit=1 | hit=True | restored=True | sha=62bf7796ec9eac81 | tag=bgn10fix2-knife
+P07-comment-only | src/main/java/com/hjmmd_8/bettergold/entity/ChaosCoinProjectile.java | exit=0 | hit=True | restored=True | sha=8b89d80ad431cec4 | 
+SUMMARY cases=7 all_ok=True

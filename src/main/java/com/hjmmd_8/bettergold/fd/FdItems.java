@@ -209,12 +209,31 @@ public class FdItems {
                 continue;
             }
             var holder = ITEMS.register(family.id + "_knife",
-                    () -> createKnife(family.tier, family.knifeDamage,
-                            family.knifeSpeed, family.fireResistant));
+                    () -> createKnife(family.tier, knifeDamageModifier(family),
+                            knifeSpeedModifier(family), family.fireResistant));
             family.addExtraItem(holder::get);
             list.add(holder);
         }
         return java.util.List.copyOf(list);
+    }
+
+    /**
+     * 伤害修正：<b>最终值</b>族的刀先减掉 {@code tier.getAttackDamageBonus()}（{@code createAttributes}
+     * 会再加一次；1.7 {@code bg-n10fix2} ④ 的 +4.5 偏移就是这一段）。
+     *
+     * <p>既有 8 族（{@code knifeValuesAreFinal = false}）原样返回 —— 它们的 2.0 叠上 4.5 = 规格里的 7.5。</p>
+     */
+    private static float knifeDamageModifier(com.hjmmd_8.bettergold.material.MetalFamily family) {
+        return family.knifeValuesAreFinal
+                ? family.knifeDamage - family.tier.getAttackDamageBonus()
+                : family.knifeDamage;
+    }
+
+    /** 攻速修正：{@code createAttributes} 的参数是相对玩家基值 4.0 的修正 ⇒ 最终值要减 4.0 */
+    private static float knifeSpeedModifier(com.hjmmd_8.bettergold.material.MetalFamily family) {
+        return family.knifeValuesAreFinal
+                ? family.knifeSpeed - 4.0F
+                : family.knifeSpeed;
     }
 
     /** 通用：反射创建指定材质的 FD 小刀（damage/speed 为 createAttributes 参数） */

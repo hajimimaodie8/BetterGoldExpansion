@@ -45,7 +45,9 @@ import net.minecraft.world.phys.Vec3;
  *   <li>与目标间距 <b>3 格</b>时，每 <b>120 tick</b> 以自身中心「米」字射出 <b>8 枚</b>混沌金币；
  *       ⚠ 2026-10-18 作者更正：「只会对自身<b>三格外</b>的玩家才会施展发射金币，而不是三格内」⇒
  *       现行 = {@code > 3 格且 <= 32 格}（见 {@link #BARRAGE_MIN_RANGE} / {@link #isBeyondBarrageRange}）；</li>
- *   <li>掉落：<b>10 点经验</b> + 100% 一个混沌金币串（抢夺提升数量）+ 16% 金钱贝模具（抢夺提升概率与数量）。</li>
+ *   <li>掉落：<b>10 点经验</b> + 100% 一个混沌金币串（抢夺提升数量）+ 16% 金钱贝模具（抢夺提升概率与数量）。
+ *       ⚠ <b>模具这一半是旧口径</b>（2026-10-19 作者更正）：抢夺<b>只提升掉率</b>、<b>数量恒为 1</b>；
+ *       金币串那一半不变（仍是抢夺提升数量）。见 {@link #cowrieMoldCount(int, RandomSource)} 与规格 §27.2。</li>
  * </ul>
  *
  * <h2>作者没给、由本类取的工作值（全部已记账，见 {@code docs/1.7-...md} §14）</h2>
@@ -266,9 +268,19 @@ public class MoneyGremlin extends Monster {
         return Math.min(1.0F, COWRIE_MOLD_BASE_CHANCE * (1 + Math.max(0, looting)));
     }
 
-    /** 金钱贝模具数量：{@code 1 + rand(0..looting)}（抢夺提升<b>数量</b>，作者原话） */
+    /**
+     * 金钱贝模具数量：<b>恒为 1</b>（1.7 {@code bg-n10fix2} ②，作者 2026-10-19 原话
+     * 「我所指的是依赖抢夺提升掉落率，而不是掉落数量」）。
+     *
+     * <p>⚠ <b>旧口径（原文留档，已被推翻）</b>：{@code 1 + rand(0..looting)}（抢夺同时提升数量）。
+     * 现在抢夺只经由 {@link #cowrieMoldChance(int)} 提升<b>掉率</b>，数量这一维被钉死成 1。</p>
+     *
+     * <p>⚠ <b>混沌金币串那条不在本条范围</b>：{@link #coinStringCount(int, RandomSource)} 仍是
+     * {@code 1 + rand(0..looting)}（作者上一轮明确「受抢夺提升掉落量」= 只提数量），一个字节没动。</p>
+     */
     public static int cowrieMoldCount(int looting, RandomSource random) {
-        return 1 + random.nextInt(Math.max(0, looting) + 1);
+        // 旧口径（原文留档）：return 1 + random.nextInt(Math.max(0, looting) + 1);
+        return 1;
     }
 
     @Override

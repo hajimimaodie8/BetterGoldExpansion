@@ -224,7 +224,8 @@ public final class AllMetals {
                 .chaosRange(MetalFamily.Form.PICKAXE, ChaosRange.Channel.ATTACK, 2, 6)
                 .chaosRange(MetalFamily.Form.SHOVEL, ChaosRange.Channel.ATTACK, 2.5F, 6.5F)
                 .chaosRange(MetalFamily.Form.HOE, ChaosRange.Channel.ATTACK, 1, 5)
-                .chaosRange(MetalFamily.Form.KNIFE, ChaosRange.Channel.ATTACK, 1.5F, 5.5F)
+                // 刀：作者 2026-10-19 更正为 2.5..6.5（旧口径 1.5..5.5 原文留档：.chaosRange(...KNIFE, 1.5F, 5.5F)）
+                .chaosRange(MetalFamily.Form.KNIFE, ChaosRange.Channel.ATTACK, 2.5F, 6.5F)
                 .chaosRange(MetalFamily.Form.BOW, ChaosRange.Channel.ATTACK, 2.0F, 3.5F)
                 .chaosRange(MetalFamily.Form.CROSSBOW, ChaosRange.Channel.ATTACK, 3.5F, 4.5F)
                 // ---- 攻速（作者给的**最终值**，换算成属性修正的减法只在 gearSpeed 一处做）----
@@ -241,7 +242,9 @@ public final class AllMetals {
                 .maceFinalDamageMultiplier(1.0F)                        // 作者：「最终伤 ×1.0」（不额外乘算）
                 .bowFullDraw(20, 0.0F)                                  // 作者：拉弓 20 tick（弹伤由 ATTACK 区间 2.0..3.5 给）
                 .crossbowCharge(1.2F)                                   // 作者：1.2 秒 = 24 tick
-                .knifeAttributes(1.5F, 2.0F)                            // 乐事刀：伤害区间下端 1.5 / 攻速 2.0
+                // 乐事刀：最终值 2.5..6.5 / 攻速 2.0（作者 2026-10-19；旧口径 1.5 / 2.0 原文留档：
+                //   .knifeAttributes(1.5F, 2.0F)  —— 旧口径没减 tier 的 +4.5，实机 6.0..10.0）
+                .knifeAttributesFinal(2.5F, 2.0F)
                 .coreItem(() -> AllItems.CHAOS_COIN.get());
         spec.durability = 426;
         spec.enchantmentValue = 24;
@@ -298,7 +301,8 @@ public final class AllMetals {
                 .chaosRange(MetalFamily.Form.PICKAXE, ChaosRange.Channel.ATTACK, 6, 12)
                 .chaosRange(MetalFamily.Form.SHOVEL, ChaosRange.Channel.ATTACK, 6.5F, 13)
                 .chaosRange(MetalFamily.Form.HOE, ChaosRange.Channel.ATTACK, 5, 10)
-                .chaosRange(MetalFamily.Form.KNIFE, ChaosRange.Channel.ATTACK, 5.5F, 11)
+                // 刀：作者 2026-10-19 更正为 6.5..13（旧口径 5.5..11 原文留档：...KNIFE, 5.5F, 11）
+                .chaosRange(MetalFamily.Form.KNIFE, ChaosRange.Channel.ATTACK, 6.5F, 13)
                 .chaosRange(MetalFamily.Form.BOW, ChaosRange.Channel.ATTACK, 3.5F, 4.5F)
                 .chaosRange(MetalFamily.Form.CROSSBOW, ChaosRange.Channel.ATTACK, 4.5F, 5)
                 // ---- 攻速（作者给的是**最终攻速**；换算成属性修正的减法只在 gearSpeed 一处做）----
@@ -324,8 +328,10 @@ public final class AllMetals {
                 .bowFullDraw(20, 0.0F)
                 // 弩：作者「蓄力 1.2 秒」= 24 tick，弹速由 ATTACK 区间 4.5..5 给
                 .crossbowCharge(1.2F)
-                // 乐事刀：伤害区间下端 5.5 / 攻速 2.0（与混沌金同一套口径）
-                .knifeAttributes(5.5F, 2.0F)
+                // 旧口径（原文留档）：伤害区间下端 5.5 / 攻速 2.0（与混沌金同一套口径）
+                // 乐事刀：最终值 6.5..13 / 攻速 2.0（作者 2026-10-19；旧口径 5.5 / 2.0 原文留档：
+                //   .knifeAttributes(5.5F, 2.0F)  —— 旧口径没减 tier 的 +4.5，实机 10.0..15.5）
+                .knifeAttributesFinal(6.5F, 2.0F)
                 // 器具 / 武器 / 盾牌命中 ⇒ 按配置概率（0.5）随机挂 16 秒「力量 / 抗性失衡」；
                 //   盾牌同时拿到「格挡反 buff」（specialWeaponMetal 的另一半用途）与默认的免疫破盾。
                 .imbalanceOnAttack()
