@@ -1,0 +1,1810 @@
+[
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -52,
+  "y": -61,
+  "z": -100,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 31,
+  "showboundingbox": 1,
+  "__chunk__": [
+   28,
+   25
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 649,
+  "keepPacked": 0,
+  "x": -49,
+  "y": -58,
+  "z": -90,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   28,
+   26
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -50,
+  "y": -59,
+  "Items": [],
+  "z": -94,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   28,
+   26
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 190,
+  "keepPacked": 0,
+  "x": -81,
+  "y": -59,
+  "z": -76,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   27
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 455,
+  "keepPacked": 0,
+  "x": -90,
+  "y": -59,
+  "z": -67,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   27
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 37,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -92,
+  "y": -61,
+  "z": -78,
+  "id": "minecraft:structure_block",
+  "sizeY": 8,
+  "sizeZ": 37,
+  "showboundingbox": 1,
+  "__chunk__": [
+   26,
+   27
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 306,
+  "keepPacked": 0,
+  "x": -65,
+  "y": -59,
+  "z": -76,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   27
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -52,
+  "y": -61,
+  "z": -66,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 31,
+  "showboundingbox": 1,
+  "__chunk__": [
+   28,
+   27
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 441,
+  "keepPacked": 0,
+  "x": -56,
+  "y": -59,
+  "z": -67,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   28,
+   27
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -34,
+  "y": -61,
+  "z": -70,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 21,
+  "showboundingbox": 1,
+  "__chunk__": [
+   29,
+   27
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 350,
+  "keepPacked": 0,
+  "x": -90,
+  "y": -59,
+  "z": -51,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   28
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 27,
+  "keepPacked": 0,
+  "x": -56,
+  "y": -59,
+  "z": -51,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   28,
+   28
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -38,
+  "y": -59,
+  "Items": [],
+  "z": -50,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   29,
+   28
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 582,
+  "keepPacked": 0,
+  "x": -38,
+  "y": -59,
+  "z": -51,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   29,
+   28
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 281,
+  "keepPacked": 0,
+  "x": -20,
+  "y": -59,
+  "z": -63,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   30,
+   28
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -20,
+  "y": -59,
+  "Items": [],
+  "z": -64,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   30,
+   28
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 37,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -92,
+  "y": -61,
+  "z": -38,
+  "id": "minecraft:structure_block",
+  "sizeY": 8,
+  "sizeZ": 37,
+  "showboundingbox": 1,
+  "__chunk__": [
+   26,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 359,
+  "keepPacked": 0,
+  "x": -81,
+  "y": -59,
+  "z": -36,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 175,
+  "keepPacked": 0,
+  "x": -81,
+  "y": -59,
+  "z": -42,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 422,
+  "keepPacked": 0,
+  "x": -65,
+  "y": -59,
+  "z": -36,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 74,
+  "keepPacked": 0,
+  "x": -65,
+  "y": -59,
+  "z": -42,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -34,
+  "y": -61,
+  "z": -46,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 21,
+  "showboundingbox": 1,
+  "__chunk__": [
+   29,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -14,
+  "y": -59,
+  "Items": [],
+  "z": -34,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   31,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -13,
+  "y": -58,
+  "z": -37,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   31,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -16,
+  "y": -61,
+  "z": -40,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 11,
+  "showboundingbox": 1,
+  "__chunk__": [
+   31,
+   29
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -114,
+  "y": -58,
+  "z": -17,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   24,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 21,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -116,
+  "y": -61,
+  "z": -22,
+  "id": "minecraft:structure_block",
+  "sizeY": 9,
+  "sizeZ": 21,
+  "showboundingbox": 1,
+  "__chunk__": [
+   24,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -106,
+  "y": -58,
+  "Items": [],
+  "z": -17,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   25,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -111,
+  "y": -55,
+  "z": -17,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -99,
+  "y": -55,
+  "z": -17,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -96,
+  "y": -58,
+  "z": -17,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 574,
+  "keepPacked": 0,
+  "x": -90,
+  "y": -59,
+  "z": -27,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -72,
+  "y": -58,
+  "Items": [],
+  "z": -19,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   27,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -73,
+  "y": -58,
+  "Items": [],
+  "z": -20,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   27,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -74,
+  "y": -58,
+  "Items": [],
+  "z": -19,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   27,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 324,
+  "keepPacked": 0,
+  "x": -73,
+  "y": -58,
+  "z": -22,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 391,
+  "keepPacked": 0,
+  "x": -76,
+  "y": -58,
+  "z": -19,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 336,
+  "keepPacked": 0,
+  "x": -70,
+  "y": -58,
+  "z": -19,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -73,
+  "y": -58,
+  "Items": [],
+  "z": -17,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   27,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -52,
+  "y": -61,
+  "z": -32,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 31,
+  "showboundingbox": 1,
+  "__chunk__": [
+   28,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 151,
+  "keepPacked": 0,
+  "x": -56,
+  "y": -59,
+  "z": -27,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   28,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -34,
+  "y": -61,
+  "z": -22,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 21,
+  "showboundingbox": 1,
+  "__chunk__": [
+   29,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -32,
+  "y": -59,
+  "Items": [],
+  "z": -30,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   30,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 453,
+  "keepPacked": 0,
+  "x": -31,
+  "y": -58,
+  "z": -27,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   30,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -2,
+  "y": -59,
+  "Items": [],
+  "z": -20,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   31,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -16,
+  "y": -61,
+  "z": -26,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 11,
+  "showboundingbox": 1,
+  "__chunk__": [
+   31,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -3,
+  "y": -59,
+  "z": -23,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   31,
+   30
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 181,
+  "keepPacked": 0,
+  "x": -114,
+  "y": -58,
+  "z": -5,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   24,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -99,
+  "y": -55,
+  "z": -5,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -109,
+  "y": -54,
+  "z": -15,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -101,
+  "y": -54,
+  "z": -7,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -101,
+  "y": -57,
+  "Items": [],
+  "z": -13,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -109,
+  "y": -58,
+  "Items": [],
+  "z": -7,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -111,
+  "y": -55,
+  "z": -5,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -109,
+  "y": -54,
+  "z": -7,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -101,
+  "y": -54,
+  "z": -15,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   25,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 20,
+  "keepPacked": 0,
+  "x": -81,
+  "y": -59,
+  "z": -2,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 176,
+  "keepPacked": 0,
+  "x": -90,
+  "y": -59,
+  "z": -11,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -96,
+  "y": -58,
+  "z": -5,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   26,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 532,
+  "keepPacked": 0,
+  "x": -65,
+  "y": -59,
+  "z": -2,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 155,
+  "keepPacked": 0,
+  "x": -73,
+  "y": -58,
+  "z": -16,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   27,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 69,
+  "keepPacked": 0,
+  "x": -56,
+  "y": -59,
+  "z": -11,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   28,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "keepPacked": 0,
+  "x": -50,
+  "y": -59,
+  "Items": [],
+  "z": -6,
+  "id": "minecraft:chest",
+  "__chunk__": [
+   28,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "MaxNearbyEntities": 6,
+  "RequiredPlayerRange": 16,
+  "SpawnCount": 4,
+  "SpawnData": {
+   "entity": {
+    "id": "bettergold:money_gremlin"
+   }
+  },
+  "MaxSpawnDelay": 800,
+  "Delay": 0,
+  "keepPacked": 0,
+  "x": -49,
+  "y": -59,
+  "z": -9,
+  "id": "minecraft:mob_spawner",
+  "SpawnRange": 4,
+  "MinSpawnDelay": 200,
+  "SpawnPotentials": [],
+  "__chunk__": [
+   28,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 15,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": -16,
+  "y": -61,
+  "z": -12,
+  "id": "minecraft:structure_block",
+  "sizeY": 6,
+  "sizeZ": 11,
+  "showboundingbox": 1,
+  "__chunk__": [
+   31,
+   31
+  ],
+  "__region__": "r.-1.-1.mca"
+ },
+ {
+  "back_text": {
+   "has_glowing_text": 0,
+   "color": "black",
+   "messages": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "keepPacked": 0,
+  "is_waxed": 0,
+  "x": -95,
+  "y": -60,
+  "z": 0,
+  "id": "minecraft:sign",
+  "front_text": {
+   "has_glowing_text": 1,
+   "color": "black",
+   "messages": [
+    "\"整座结构\"",
+    "\"只会生成一个的\"",
+    "\"宝藏房\"",
+    "\"\""
+   ]
+  },
+  "__chunk__": [
+   26,
+   0
+  ],
+  "__region__": "r.-1.0.mca"
+ },
+ {
+  "back_text": {
+   "has_glowing_text": 0,
+   "color": "black",
+   "messages": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "keepPacked": 0,
+  "is_waxed": 0,
+  "x": -55,
+  "y": -60,
+  "z": 0,
+  "id": "minecraft:sign",
+  "front_text": {
+   "has_glowing_text": 1,
+   "color": "black",
+   "messages": [
+    "\"二种不同种类的\"",
+    "\"四面过道房\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "__chunk__": [
+   28,
+   0
+  ],
+  "__region__": "r.-1.0.mca"
+ },
+ {
+  "back_text": {
+   "has_glowing_text": 0,
+   "color": "black",
+   "messages": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "keepPacked": 0,
+  "is_waxed": 0,
+  "x": -37,
+  "y": -60,
+  "z": 0,
+  "id": "minecraft:sign",
+  "front_text": {
+   "has_glowing_text": 1,
+   "color": "black",
+   "messages": [
+    "\"三种不同种类的\"",
+    "\"3号牢房\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "__chunk__": [
+   29,
+   0
+  ],
+  "__region__": "r.-1.0.mca"
+ },
+ {
+  "back_text": {
+   "has_glowing_text": 0,
+   "color": "black",
+   "messages": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "keepPacked": 0,
+  "is_waxed": 0,
+  "x": -19,
+  "y": -60,
+  "z": 0,
+  "id": "minecraft:sign",
+  "front_text": {
+   "has_glowing_text": 1,
+   "color": "black",
+   "messages": [
+    "\"三种不同种类的\"",
+    "\"2号牢房\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "__chunk__": [
+   30,
+   0
+  ],
+  "__region__": "r.-1.0.mca"
+ },
+ {
+  "back_text": {
+   "has_glowing_text": 0,
+   "color": "black",
+   "messages": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "keepPacked": 0,
+  "is_waxed": 0,
+  "x": -1,
+  "y": -60,
+  "z": 0,
+  "id": "minecraft:sign",
+  "front_text": {
+   "has_glowing_text": 1,
+   "color": "black",
+   "messages": [
+    "\"三种不同种类的\"",
+    "\"1号牢房\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "__chunk__": [
+   31,
+   0
+  ],
+  "__region__": "r.-1.0.mca"
+ },
+ {
+  "back_text": {
+   "has_glowing_text": 0,
+   "color": "black",
+   "messages": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "keepPacked": 0,
+  "is_waxed": 0,
+  "x": 7,
+  "y": -60,
+  "z": -8,
+  "id": "minecraft:sign",
+  "front_text": {
+   "has_glowing_text": 1,
+   "color": "black",
+   "messages": [
+    "\"间隔过道\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "__chunk__": [
+   0,
+   31
+  ],
+  "__region__": "r.0.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 5,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": 2,
+  "y": -61,
+  "z": -6,
+  "id": "minecraft:structure_block",
+  "sizeY": 8,
+  "sizeZ": 5,
+  "showboundingbox": 1,
+  "__chunk__": [
+   0,
+   31
+  ],
+  "__region__": "r.0.-1.mca"
+ },
+ {
+  "metadata": "",
+  "mirror": "NONE",
+  "ignoreEntities": 1,
+  "powered": 0,
+  "seed": 0,
+  "author": "yoyeiyei",
+  "rotation": "NONE",
+  "posX": 1,
+  "mode": "SAVE",
+  "posY": 1,
+  "sizeX": 5,
+  "posZ": 1,
+  "integrity": 1.0,
+  "showair": 0,
+  "keepPacked": 0,
+  "name": "",
+  "x": 2,
+  "y": -61,
+  "z": -12,
+  "id": "minecraft:structure_block",
+  "sizeY": 5,
+  "sizeZ": 3,
+  "showboundingbox": 1,
+  "__chunk__": [
+   0,
+   31
+  ],
+  "__region__": "r.0.-1.mca"
+ },
+ {
+  "back_text": {
+   "has_glowing_text": 0,
+   "color": "black",
+   "messages": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "keepPacked": 0,
+  "is_waxed": 0,
+  "x": 7,
+  "y": -60,
+  "z": 0,
+  "id": "minecraft:sign",
+  "front_text": {
+   "has_glowing_text": 1,
+   "color": "black",
+   "messages": [
+    "\"出入口\"",
+    "\"\"",
+    "\"\"",
+    "\"\""
+   ]
+  },
+  "__chunk__": [
+   0,
+   0
+  ],
+  "__region__": "r.0.0.mca"
+ }
+]

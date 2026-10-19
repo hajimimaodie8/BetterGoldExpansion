@@ -1,0 +1,350 @@
+{
+ "P01": {
+  "north": {
+   "span": null,
+   "n": 0
+  },
+  "south": {
+   "span": null,
+   "n": 0
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P02": {
+  "north": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  },
+  "east": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  }
+ },
+ "P03": {
+  "north": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  },
+  "east": {
+   "span": [
+    17,
+    19
+   ],
+   "n": 3
+  }
+ },
+ "P04": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P05": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P06": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P07": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P08": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P09": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P10": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P11": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P12": {
+  "north": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    6,
+    8
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ },
+ "P13": {
+  "north": {
+   "span": [
+    1,
+    3
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    0,
+    4
+   ],
+   "n": 5
+  },
+  "west": {
+   "span": [
+    3,
+    4
+   ],
+   "n": 2
+  },
+  "east": {
+   "span": [
+    3,
+    4
+   ],
+   "n": 2
+  }
+ },
+ "P14": {
+  "north": {
+   "span": [
+    1,
+    3
+   ],
+   "n": 3
+  },
+  "south": {
+   "span": [
+    1,
+    3
+   ],
+   "n": 3
+  },
+  "west": {
+   "span": null,
+   "n": 0
+  },
+  "east": {
+   "span": null,
+   "n": 0
+  }
+ }
+}
