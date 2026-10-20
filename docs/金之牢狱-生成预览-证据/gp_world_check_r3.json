@@ -1,0 +1,1004 @@
+{
+ "tag": "第三轮：唯一性收口 + 生成率=要塞（种子 20261020）",
+ "world": "gp_preview_gpe",
+ "seed": 20261020,
+ "structurePos": [
+  624,
+  0,
+  592
+ ],
+ "pieces": 18,
+ "templates": [
+  "cell_large_c",
+  "cell_medium_a",
+  "cell_medium_b",
+  "cell_small_a",
+  "cell_small_b",
+  "cell_small_mirror",
+  "cross_a",
+  "exit",
+  "lane",
+  "treasure"
+ ],
+ "templateCount": 10,
+ "treasureCount": 1,
+ "exitCount": 2,
+ "startY": 34,
+ "walkY": 37,
+ "depths": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7
+ ],
+ "bboxOverlaps": 0,
+ "ports": 35,
+ "portsPaired": 34,
+ "pieceUnionBBox": [
+  553,
+  34,
+  592,
+  701,
+  43,
+  695
+ ],
+ "chests": 10,
+ "spawners": 27,
+ "toads": 10,
+ "mouths": [
+  {
+   "piece": 0,
+   "dir": "south",
+   "pos": [
+    634,
+    37,
+    612
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 1,
+   "dir": "south",
+   "pos": [
+    634,
+    37,
+    615
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 1,
+   "dir": "north",
+   "pos": [
+    634,
+    37,
+    613
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "north",
+   "pos": [
+    634,
+    37,
+    616
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "east",
+   "pos": [
+    652,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "west",
+   "pos": [
+    616,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "south",
+   "pos": [
+    634,
+    37,
+    652
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 3,
+   "dir": "east",
+   "pos": [
+    655,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 3,
+   "dir": "west",
+   "pos": [
+    653,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 4,
+   "dir": "west",
+   "pos": [
+    613,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 4,
+   "dir": "east",
+   "pos": [
+    615,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 5,
+   "dir": "south",
+   "pos": [
+    634,
+    37,
+    655
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 5,
+   "dir": "north",
+   "pos": [
+    634,
+    37,
+    653
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 6,
+   "dir": "east",
+   "pos": [
+    676,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 6,
+   "dir": "west",
+   "pos": [
+    656,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 7,
+   "dir": "west",
+   "pos": [
+    592,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 7,
+   "dir": "east",
+   "pos": [
+    612,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 8,
+   "dir": "south",
+   "pos": [
+    634,
+    37,
+    666
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 8,
+   "dir": "north",
+   "pos": [
+    634,
+    37,
+    656
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 9,
+   "dir": "west",
+   "pos": [
+    677,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 9,
+   "dir": "east",
+   "pos": [
+    679,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 10,
+   "dir": "west",
+   "pos": [
+    589,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 10,
+   "dir": "east",
+   "pos": [
+    591,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 11,
+   "dir": "south",
+   "pos": [
+    634,
+    37,
+    669
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 11,
+   "dir": "north",
+   "pos": [
+    634,
+    37,
+    667
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 12,
+   "dir": "east",
+   "pos": [
+    690,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 12,
+   "dir": "west",
+   "pos": [
+    680,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 13,
+   "dir": "west",
+   "pos": [
+    558,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 13,
+   "dir": "east",
+   "pos": [
+    588,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 14,
+   "dir": "north",
+   "pos": [
+    634,
+    37,
+    670
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 14,
+   "dir": "south",
+   "pos": [
+    634,
+    37,
+    690
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 15,
+   "dir": "east",
+   "pos": [
+    701,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 15,
+   "dir": "west",
+   "pos": [
+    691,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 16,
+   "dir": "east",
+   "pos": [
+    557,
+    37,
+    634
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 17,
+   "dir": "north",
+   "pos": [
+    634,
+    37,
+    691
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  }
+ ],
+ "mouthsAll9": 35,
+ "flood": {
+  "standSeeds": 345,
+  "reached": 2141,
+  "passSeeds": 1774,
+  "passReached": 10739
+ },
+ "exitsReached": [
+  {
+   "piece": 16,
+   "ports": 1,
+   "reached": 1,
+   "cells": [
+    [
+     556,
+     37,
+     634
+    ]
+   ]
+  },
+  {
+   "piece": 17,
+   "ports": 1,
+   "reached": 1,
+   "cells": [
+    [
+     634,
+     37,
+     692
+    ]
+   ]
+  }
+ ],
+ "chestReached": 10,
+ "chestAdjReached": 10,
+ "chestRows": [
+  {
+   "piece": 0,
+   "pos": [
+    630,
+    36,
+    606
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     630,
+     37,
+     606
+    ]
+   ],
+   "adj": [
+    [
+     630,
+     37,
+     606
+    ]
+   ]
+  },
+  {
+   "piece": 0,
+   "pos": [
+    633,
+    36,
+    596
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     633,
+     36,
+     595
+    ]
+   ],
+   "adj": [
+    [
+     633,
+     36,
+     595
+    ]
+   ]
+  },
+  {
+   "piece": 0,
+   "pos": [
+    638,
+    37,
+    600
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     638,
+     38,
+     600
+    ]
+   ],
+   "adj": [
+    [
+     638,
+     38,
+     600
+    ]
+   ]
+  },
+  {
+   "piece": 6,
+   "pos": [
+    671,
+    37,
+    640
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     671,
+     37,
+     639
+    ]
+   ],
+   "adj": [
+    [
+     671,
+     37,
+     639
+    ]
+   ]
+  },
+  {
+   "piece": 7,
+   "pos": [
+    607,
+    37,
+    640
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     607,
+     37,
+     639
+    ]
+   ],
+   "adj": [
+    [
+     608,
+     37,
+     640
+    ]
+   ]
+  },
+  {
+   "piece": 8,
+   "pos": [
+    628,
+    37,
+    661
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     629,
+     37,
+     661
+    ]
+   ],
+   "adj": [
+    [
+     629,
+     37,
+     661
+    ]
+   ]
+  },
+  {
+   "piece": 12,
+   "pos": [
+    685,
+    37,
+    628
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     685,
+     37,
+     629
+    ]
+   ],
+   "adj": [
+    [
+     685,
+     37,
+     629
+    ]
+   ]
+  },
+  {
+   "piece": 13,
+   "pos": [
+    583,
+    37,
+    640
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     583,
+     37,
+     639
+    ]
+   ],
+   "adj": [
+    [
+     583,
+     37,
+     639
+    ]
+   ]
+  },
+  {
+   "piece": 14,
+   "pos": [
+    640,
+    37,
+    675
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     639,
+     37,
+     675
+    ]
+   ],
+   "adj": [
+    [
+     639,
+     37,
+     675
+    ]
+   ]
+  },
+  {
+   "piece": 15,
+   "pos": [
+    696,
+    37,
+    640
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     696,
+     37,
+     639
+    ]
+   ],
+   "adj": [
+    [
+     696,
+     37,
+     639
+    ]
+   ]
+  }
+ ],
+ "airInside": {
+  "cells": 27276,
+  "air": 10783,
+  "airPct": 39.53,
+  "passable": 12315,
+  "passablePct": 45.15,
+  "walkCells": 3870,
+  "walkAir": 2135,
+  "walkAirPct": 55.17
+ },
+ "pieceAir": [
+  {
+   "index": 0,
+   "template": "treasure",
+   "cells": 3969,
+   "air": 1774,
+   "airPct": 44.7,
+   "passable": 1774,
+   "passablePct": 44.7,
+   "walkAir": 278,
+   "walkCells": 441
+  },
+  {
+   "index": 1,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 2,
+   "template": "cross_a",
+   "cells": 10952,
+   "air": 4669,
+   "airPct": 42.63,
+   "passable": 6149,
+   "passablePct": 56.14,
+   "walkAir": 814,
+   "walkCells": 1369
+  },
+  {
+   "index": 3,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 4,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 5,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 6,
+   "template": "cell_medium_a",
+   "cells": 1890,
+   "air": 678,
+   "airPct": 35.87,
+   "passable": 678,
+   "passablePct": 35.87,
+   "walkAir": 160,
+   "walkCells": 315
+  },
+  {
+   "index": 7,
+   "template": "cell_medium_b",
+   "cells": 1890,
+   "air": 690,
+   "airPct": 36.51,
+   "passable": 690,
+   "passablePct": 36.51,
+   "walkAir": 165,
+   "walkCells": 315
+  },
+  {
+   "index": 8,
+   "template": "cell_small_b",
+   "cells": 990,
+   "air": 327,
+   "airPct": 33.03,
+   "passable": 327,
+   "passablePct": 33.03,
+   "walkAir": 76,
+   "walkCells": 165
+  },
+  {
+   "index": 9,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 10,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 11,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 12,
+   "template": "cell_small_a",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 13,
+   "template": "cell_large_c",
+   "cells": 2790,
+   "air": 1048,
+   "airPct": 37.56,
+   "passable": 1048,
+   "passablePct": 37.56,
+   "walkAir": 249,
+   "walkCells": 465
+  },
+  {
+   "index": 14,
+   "template": "cell_medium_a",
+   "cells": 1890,
+   "air": 678,
+   "airPct": 35.87,
+   "passable": 678,
+   "passablePct": 35.87,
+   "walkAir": 160,
+   "walkCells": 315
+  },
+  {
+   "index": 15,
+   "template": "cell_small_mirror",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 16,
+   "template": "exit",
+   "cells": 200,
+   "air": 45,
+   "airPct": 22.5,
+   "passable": 71,
+   "passablePct": 35.5,
+   "walkAir": 12,
+   "walkCells": 25
+  },
+  {
+   "index": 17,
+   "template": "exit",
+   "cells": 200,
+   "air": 45,
+   "airPct": 22.5,
+   "passable": 71,
+   "passablePct": 35.5,
+   "walkAir": 12,
+   "walkCells": 25
+  }
+ ],
+ "probeAirStats": {
+  "cells": 27276,
+  "air": 10783,
+  "airPct": 39.5,
+  "walkCells": 3870,
+  "walkAir": 2135,
+  "walkAirPct": 55.2
+ }
+}

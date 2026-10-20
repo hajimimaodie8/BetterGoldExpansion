@@ -22,6 +22,11 @@ LOOT = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'loo
                     'golden_prison.json')
 POOL = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'worldgen', 'template_pool',
                     'golden_prison', 'room.json')
+POOL_DIR = os.path.dirname(POOL)
+LANE = os.path.join(POOL_DIR, 'lane.json')
+START = os.path.join(POOL_DIR, 'start.json')
+SSET = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'worldgen', 'structure_set',
+                    'golden_prison.json')
 
 
 # ---------------------------------------------------------------- NBT 读写（独立实现）
@@ -282,6 +287,53 @@ def only_whitespace(text):
     return '\n\n' + text.replace('{', '{\n', 1) + '\n\n'
 
 
+def _treasure_element(weight=1):
+    return {
+        'weight': weight,
+        'element': {
+            'element_type': 'minecraft:single_pool_element',
+            'location': 'bettergold:golden_prison/treasure',
+            'processors': 'minecraft:empty',
+            'projection': 'rigid',
+        },
+    }
+
+
+def lane_add_treasure(text):
+    """P10：把 treasure 加进 lane.json 的 elements ⇒ 必须红在 [bgp-treasure-unique-noref]。"""
+    d = json.loads(text)
+    d['elements'].append(_treasure_element())
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def lane_fallback_start(text):
+    """P11：给 lane.json 加 fallback=start ⇒ 必须红在 [bgp-treasure-unique-fallback]。"""
+    d = json.loads(text)
+    d['fallback'] = 'bettergold:golden_prison/start'
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def start_add_treasure(text):
+    """P12：把 start.json 再塞一份 treasure ⇒ 必须红在 [bgp-treasure-unique-start]。"""
+    d = json.loads(text)
+    d['elements'].append(_treasure_element(weight=2))
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def sset_spacing_32(text):
+    """P13：把 spacing 改回旧值 32 ⇒ 必须红在 [bgp-rate-fortress]。"""
+    d = json.loads(text)
+    d['placement']['spacing'] = 32
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def sset_spread_triangular(text):
+    """P14：把 spread_type 改成 triangular ⇒ 必须红在 [bgp-rate-fortress]。"""
+    d = json.loads(text)
+    d['placement']['spread_type'] = 'triangular'
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
 def run_val():
     r = subprocess.run([sys.executable, VAL], capture_output=True, text=True, encoding='utf-8',
                        errors='replace')
@@ -315,6 +367,13 @@ nbt_case('P7-strip-all-air (= P0)', 'cell_small_a.nbt', strip_air, 'bgp-air')
 nbt_case('P8-plug-one-mouth-cell', 'cell_small_a.nbt', plug_mouth_cell, '口平面 3x3x1')
 text_case('P9-lane-fallback-empty', POOL.replace('room.json', 'lane.json'),
           pool_fallback_empty, 'bgp-connect')
+# ---- 第三轮新增：宝藏房「结构唯一性」断言必须能红（P10/P11/P12 各打一条）
+text_case('P10-treasure-second-pool', LANE, lane_add_treasure, 'bgp-treasure-unique-noref')
+text_case('P11-lane-fallback-start', LANE, lane_fallback_start, 'bgp-treasure-unique-fallback')
+text_case('P12-start-second-treasure', START, start_add_treasure, 'bgp-treasure-unique-start')
+# ---- 第三轮追加：生成率 == 下界要塞（P13/P14 打 [bgp-rate-fortress]）
+text_case('P13-spacing-back-to-32', SSET, sset_spacing_32, 'bgp-rate-fortress')
+text_case('P14-spread-type-triangular', SSET, sset_spread_triangular, 'bgp-rate-fortress')
 
 
 def main():

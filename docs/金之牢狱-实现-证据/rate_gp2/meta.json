@@ -1,0 +1,86 @@
+{
+  "worldName": "gp_rate_gp2",
+  "seed": 20261020,
+  "dimension": "minecraft:the_nether",
+  "radiusBlocks": 512,
+  "chunkRadius": 32,
+  "searchRadiusChunks": 32,
+  "complete": true,
+  "structures": [
+    {
+      "id": "bettergold:golden_prison",
+      "count": 5,
+      "calls": 4225,
+      "nullResults": 0,
+      "elapsedMs": 280,
+      "complete": true,
+      "positions": [
+        [
+          -208,
+          0,
+          -400
+        ],
+        [
+          -320,
+          0,
+          256
+        ],
+        [
+          208,
+          0,
+          -416
+        ],
+        [
+          320,
+          0,
+          80
+        ],
+        [
+          272,
+          0,
+          432
+        ]
+      ]
+    },
+    {
+      "id": "minecraft:fortress",
+      "count": 3,
+      "calls": 4225,
+      "nullResults": 0,
+      "elapsedMs": 410,
+      "complete": true,
+      "positions": [
+        [
+          -384,
+          0,
+          -208
+        ],
+        [
+          -304,
+          0,
+          336
+        ],
+        [
+          288,
+          0,
+          -272
+        ]
+      ]
+    },
+    {
+      "id": "minecraft:bastion_remnant",
+      "count": 1,
+      "calls": 4225,
+      "nullResults": 0,
+      "elapsedMs": 228,
+      "complete": true,
+      "positions": [
+        [
+          176,
+          0,
+          176
+        ]
+      ]
+    }
+  ]
+}

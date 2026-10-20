@@ -18,6 +18,7 @@ import json
 import os
 import struct
 import sys
+import zipfile
 
 try:
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -33,6 +34,8 @@ TAGS = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'tag
 LANG = os.path.join(ROOT, 'src', 'main', 'resources', 'assets', 'bettergold', 'lang', 'zh_cn.json')
 BP = os.path.join(ROOT, 'docs', '金之牢狱-蓝图')
 POOL = 'bettergold:golden_prison/'
+POOL_DIR = os.path.join(WG, 'template_pool', 'golden_prison')
+TREASURE_LOC = POOL + 'treasure'
 LOOT_ID = 'bettergold:chests/golden_prison'
 
 # 冻结快照：20 个模板的尺寸（第 1 步的产出，不许被悄悄改）
@@ -117,6 +120,30 @@ EXPECT_LOOT_IDS = [
 ]
 # 「算不出来」被删掉的两行（不许悄悄回来，也不许悄悄换 id）
 FORBIDDEN_LOOT = ['bettergold:chaosgold_enchantment']
+
+# ---- 生成率 = 下界要塞（作者 2026-10-20 第三轮追加原话：「结构生成率的话跟下界要塞相同吧」）
+# 真源逐字抄自原版 jar（**不凭印象**）：
+#   jar  = build\moddev\artifacts\neoforge-21.1.228-client-extra-aka-minecraft-resources.jar
+#   file = data/minecraft/worldgen/structure_set/nether_complexes.json
+#     "placement": { "type": "minecraft:random_spread", "salt": 30084232,
+#                    "separation": 4, "spacing": 27 }
+#   ⇒ **原版没有 spread_type 字段**；RandomSpreadStructurePlacement.java:23 的 codec
+#     `.optionalFieldOf("spread_type", RandomSpreadType.LINEAR)` ⇒ 缺省 = linear。
+#   file = data/minecraft/worldgen/structure/fortress.json
+#     type=minecraft:fortress / step=underground_decoration / biomes 标签 / spawn_overrides；
+#     **没有 start_height、没有 project_start_to_heightmap**（高度由 FortressStructure 自己算）
+#     ⇒ 「生成率」只由 structure_set 的 placement 决定（spacing/separation/spread_type）。
+# ⚠ salt 故意不照抄要塞：RandomSpreadStructurePlacement#getPotentialStructureChunk 用
+#   `setLargeFeatureWithSalt(seed, regionX, regionZ, salt)` 抽候选区块 ⇒ salt 相同 + 同种子
+#   ⇒ 候选区块逐个重合，牢狱会永远压在下界要塞/堡垒的同一格上。salt 只改分布偏移、不改密度。
+FORTRESS_PLACEMENT = {
+    'type': 'minecraft:random_spread',
+    'spacing': 27,
+    'separation': 4,
+    'spread_type': 'linear',   # 原版缺省字段 = linear（见上面的 codec 默认值）
+}
+FORTRESS_SALT = 30084232
+OUR_SALT = 19710101
 
 problems = []
 checked = [0]
@@ -1029,8 +1056,11 @@ def check_worldgen():
         ng('bgp-worldgen', 'structure_set.placement.type=%r' % pl.get('type'))
     if not (1 <= pl.get('spacing', 0) and pl.get('separation', 0) < pl.get('spacing', 0)):
         ng('bgp-worldgen', 'spacing/separation 不合理：%r/%r' % (pl.get('spacing'), pl.get('separation')))
-    if pl.get('spacing') != 32 or pl.get('separation') != 16:
-        ng('bgp-worldgen', 'spacing/separation 不是记账值 32/16')
+    if pl.get('spacing') != 27 or pl.get('separation') != 4:
+        # ⚠ 旧期望原文留档（第一/二轮）：`spacing/separation 不是记账值 32/16`。
+        #    第三轮按作者「生成率跟下界要塞相同」改成 27/4（原版 nether_complexes 的值），
+        #    逐字段核对见 [bgp-rate-fortress]；这里保留一条粗粒度回归。
+        ng('bgp-worldgen', 'spacing/separation 不是记账值 27/4（= 下界要塞）')
     ok(4)
     if not ss.get('structures') or ss['structures'][0].get('structure') != 'bettergold:golden_prison':
         ng('bgp-worldgen', 'structure_set.structures 没指向 bettergold:golden_prison')
@@ -1076,6 +1106,250 @@ def check_worldgen():
             if fbname not in EXPECT_POOLS:
                 ng('bgp-pool', '池 %s 的 fallback 指向不存在的池 %s' % (name, fb))
             ok()
+
+
+def walk_strings(node):
+    """递归取出 JSON 里的所有**字符串值**（字典键不算：池元素只认值）。"""
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for v in node.values():
+            for s in walk_strings(v):
+                yield s
+    elif isinstance(node, list):
+        for v in node:
+            for s in walk_strings(v):
+                yield s
+
+
+def is_treasure_loc(loc):
+    """模板引用的「是宝藏房」判定：按**整串相等**，不做 substring 命中。"""
+    return isinstance(loc, str) and (loc == TREASURE_LOC or loc.endswith('/treasure'))
+
+
+def check_rate():
+    """[bgp-rate-fortress] / [bgp-rate-salt]：生成率 == 下界要塞（作者 2026-10-20 第三轮追加）。
+
+    真源（逐字抄原版 jar，不凭印象；常量与注释见文件头）：
+      data/minecraft/worldgen/structure_set/nether_complexes.json
+        placement = {type: random_spread, salt: 30084232, separation: 4, spacing: 27}
+        **没有 spread_type 字段** ⇒ RandomSpreadStructurePlacement.java:23 的 codec 默认 linear。
+      data/minecraft/worldgen/structure/fortress.json
+        只有 type/step/biomes/spawn_overrides，**没有 start_height / project_start_to_heightmap**
+        ⇒ 「生成率」只由 placement 的 spacing/separation/spread_type 决定。
+    ⚠ salt 不照抄（见文件头注释）：相同 salt + 同种子 ⇒ 候选区块逐个重合。
+    ⚠ 单件最大 37x37 远大于要塞，按作者要求**默认照抄**、不私自加大 spacing；
+      「实际体验更密」写进 docs\\金之牢狱-实现记录.md §10。
+    """
+    ssp = os.path.join(WG, 'structure_set', 'golden_prison.json')
+    if not os.path.exists(ssp):
+        ng('bgp-rate-fortress', '缺 structure_set/golden_prison.json')
+        return
+    try:
+        ss = json.load(open(ssp, encoding='utf-8'))
+    except Exception as e:
+        ng('bgp-rate-fortress', 'structure_set 解析失败：%s' % e)
+        return
+    pl = ss.get('placement') or {}
+    for k in ('type', 'spacing', 'separation', 'spread_type'):
+        want = FORTRESS_PLACEMENT[k]
+        if pl.get(k) != want:
+            ng('bgp-rate-fortress',
+               'placement.%s=%r != 下界要塞的 %r（来源：原版 nether_complexes.json）' % (k, pl.get(k), want))
+        ok()
+    if 'spread_type' not in pl:
+        ng('bgp-rate-fortress',
+           'placement 缺 spread_type（原版要塞是缺省 linear；必须显式写出才可复算）')
+    ok()
+    if pl.get('frequency_reduction_method', 'default') != 'default':
+        ng('bgp-rate-fortress',
+           'frequency_reduction_method=%r 会改变实际生成率（要塞没有这一项）'
+           % pl.get('frequency_reduction_method'))
+    ok()
+    # salt：仍是我们自己的值，且不许被抄成要塞的
+    if pl.get('salt') != OUR_SALT:
+        ng('bgp-rate-salt', 'placement.salt=%r 不是我们记账的 %d' % (pl.get('salt'), OUR_SALT))
+    ok()
+    if pl.get('salt') == FORTRESS_SALT:
+        ng('bgp-rate-salt',
+           'placement.salt 抄成了下界要塞的 %d（同 salt + 同种子 ⇒ 候选区块与要塞重合）' % FORTRESS_SALT)
+    ok()
+    # 原版 jar 在就逐字段对穿（防冻结常量过期）；不在就只按冻结常量核（构建产物不入库）
+    jar = os.path.join(ROOT, 'build', 'moddev', 'artifacts',
+                       'neoforge-21.1.228-client-extra-aka-minecraft-resources.jar')
+    if os.path.exists(jar):
+        try:
+            with zipfile.ZipFile(jar) as z:
+                v = json.loads(z.read('data/minecraft/worldgen/structure_set/nether_complexes.json')
+                               .decode('utf-8'))
+            vpl = v.get('placement') or {}
+            got = {'type': vpl.get('type'), 'spacing': vpl.get('spacing'),
+                   'separation': vpl.get('separation'),
+                   'spread_type': vpl.get('spread_type', 'linear')}
+            if got != FORTRESS_PLACEMENT:
+                ng('bgp-rate-fortress',
+                   '冻结常量与原版 jar 不一致：jar=%r vs 常量=%r' % (got, FORTRESS_PLACEMENT))
+            if vpl.get('salt') != FORTRESS_SALT:
+                ng('bgp-rate-fortress', '原版要塞 salt 变了：%r != %r' % (vpl.get('salt'), FORTRESS_SALT))
+            ok(2)
+            print('[bgp-rate] 原版 jar 对穿：nether_complexes placement=%r（spread_type 缺省=linear）' % (vpl,))
+        except Exception as e:
+            ng('bgp-rate-fortress', '读原版 jar 失败：%s' % e)
+    else:
+        print('[bgp-rate] 原版 jar 不在（%s），只按冻结常量核对' % os.path.basename(jar))
+    print('[bgp-rate] 我们的 placement=%r salt=%r（要塞 salt=%d，故意不同）'
+          % (pl, pl.get('salt'), FORTRESS_SALT))
+
+
+def check_treasure_unique():
+    """[bgp-treasure-unique-*] 宝藏房一所结构内只有一个 —— 从「抽样」升级成「结构上不可能违反」。
+
+    作者的规矩（2026-10-20 第三轮原话）：「不过要记住的是**宝藏房一所结构内只有一个**。」
+    ⚠ 旧口径（原文保留、不放宽）：唯一性只靠两条**机制** —— `start_pool` 指向 start 池
+    且 `JigsawPlacement#addPieces` 只取一次起点；再加 A 级**抽样**（种子 20261020 / 20261021
+    各生成 1 座，宝藏房都是 1）。**抽样不能证明「不可能」**：把 treasure 塞进别的池
+    （例如 lane.json 的 elements，或某个 fallback 指向 start），抽样仍可能偶然还是 1 座。
+    本段把它钉成 4 组断言（15 个池**逐文件读** = 1 条 start + 14 条 noref，不是 substring 命中）：
+
+      1) `[bgp-treasure-unique-start]`：start.json 的 elements **恰好 1 项**且指向 treasure；
+         structure/golden_prison.json 的 `start_pool` **恰好**是这个 start 池；
+      2) `[bgp-treasure-unique-noref]`：**除 start.json 外**其余 14 个池里一个都不许引用
+         treasure（**双向**：start 必须引用、别人都不许引用）；
+      3) `[bgp-treasure-unique-fallback]`：**没有任何池的 fallback 链**落到含 treasure 的池
+         （fallback 是在 `depth+1 > size` 时放的那一步，它一样能造出第二座）；
+      4) `[bgp-treasure-unique-nbt]`：`treasure.nbt` 在整棵 worldgen JSON 树里**只在
+         start.json 被引用一次** —— 用 os.walk 逐文件读 + 逐文件计数，不是搜一遍字符串。
+
+    四条都能红：扰动矩阵 P10（treasure 塞进 lane 的 elements）/ P11（lane 的 fallback=start）/
+    P12（start.json 再塞一份 treasure）逐一证明（docs\\金之牢狱-实现-证据\\gp_perturb.py）。
+    """
+    if not os.path.isdir(POOL_DIR):
+        ng('bgp-treasure-unique-start', '缺池目录 %s' % POOL_DIR)
+        return
+    pools = {}
+    for f in sorted(os.listdir(POOL_DIR)):
+        if not f.endswith('.json'):
+            continue
+        name = f[:-5]
+        try:
+            pools[name] = json.load(open(os.path.join(POOL_DIR, f), encoding='utf-8'))
+        except Exception as e:
+            ng('bgp-treasure-unique-start', '池 %s 解析失败：%s' % (name, e))
+    ok(len(pools))
+    if 'start' not in pools:
+        ng('bgp-treasure-unique-start', '缺 start.json（唯一性的起点没了）')
+        return
+    sp = os.path.join(WG, 'structure', 'golden_prison.json')
+    if not os.path.exists(sp):
+        ng('bgp-treasure-unique-start', '缺 structure/golden_prison.json')
+        return
+
+    def el_locs(d):
+        return [((e.get('element') or {}).get('location') or '') for e in (d.get('elements') or [])]
+
+    # ---- 1) start 池恰好 1 项 + 指向 treasure；structure.start_pool 恰好指向 start
+    s_els = el_locs(pools['start'])
+    if len(s_els) != 1:
+        ng('bgp-treasure-unique-start',
+           'start.json 的 elements 有 %d 项（必须恰好 1 项：起点只许取一次宝藏房）' % len(s_els))
+    ok()
+    if s_els[:1] != [TREASURE_LOC]:
+        ng('bgp-treasure-unique-start',
+           'start.json 唯一的元素指向 %r != %r' % (s_els[0] if s_els else None, TREASURE_LOC))
+    ok()
+    try:
+        st = json.load(open(sp, encoding='utf-8'))
+    except Exception as e:
+        ng('bgp-treasure-unique-start', 'structure JSON 解析失败：%s' % e)
+        return
+    spv = st.get('start_pool')
+    if spv != POOL + 'start':
+        ng('bgp-treasure-unique-start',
+           'structure.start_pool=%r 必须恰好是 %r（换池就可能从别处长大）' % (spv, POOL + 'start'))
+    ok()
+
+    # ---- 2) 除 start.json 外，其余池里一个都不许引用 treasure（双向）
+    bad = []
+    for n in sorted(pools):
+        if n == 'start':
+            continue
+        hits = [s for s in walk_strings(pools[n]) if is_treasure_loc(s)]
+        if hits:
+            bad.append((n, hits[:2]))
+    if bad:
+        ng('bgp-treasure-unique-noref',
+           '除 start.json 外还有 %d 个池引用了 treasure（能长出第二座）：%s' % (len(bad), bad[:4]))
+    ok(max(0, len(pools) - 1))
+    if not any(is_treasure_loc(s) for s in walk_strings(pools['start'])):
+        ng('bgp-treasure-unique-noref', 'start.json 里找不到 treasure 的引用（这条断言空转）')
+    ok()
+
+    # ---- 3) fallback 链：任何池的 fallback 链都不许落到含 treasure 的池
+    def has_treasure(n):
+        return any(is_treasure_loc(x) for x in el_locs(pools[n]))
+
+    bad_fb, chains = [], 0
+    for n in sorted(pools):
+        cur = pools[n].get('fallback')
+        chain, seen = [], set()
+        while isinstance(cur, str) and cur != 'minecraft:empty':
+            tgt = pool_name(cur)
+            if tgt is None:
+                break
+            chain.append(tgt)
+            if tgt in seen:
+                break
+            seen.add(tgt)
+            if tgt not in pools:
+                break
+            if has_treasure(tgt):
+                bad_fb.append((n, chain[:]))
+                break
+            cur = pools[tgt].get('fallback')
+        if chain:
+            chains += 1
+    if bad_fb:
+        ng('bgp-treasure-unique-fallback',
+           '有 %d 个池的 fallback 链会落到含 treasure 的池（fallback 会造出第二座）：%s'
+           % (len(bad_fb), bad_fb[:4]))
+    if chains == 0:
+        ng('bgp-treasure-unique-fallback',
+           '没有任何非 empty 的 fallback 链（断言空转：lane / cell_small_1..3 本该有）')
+    ok(chains)
+
+    # ---- 4) treasure.nbt 只在 start.json 被引用一次（逐文件扫描 + 逐文件计数）
+    wg_json = []
+    for dirpath, _dirs, fs in os.walk(WG):
+        for f in fs:
+            if f.endswith('.json'):
+                wg_json.append(os.path.join(dirpath, f))
+    if not wg_json:
+        ng('bgp-treasure-unique-nbt', 'worldgen 下一个 JSON 都没有（空转）')
+    counts = {}
+    for p in sorted(wg_json):
+        try:
+            d = json.load(open(p, encoding='utf-8'))
+        except Exception as e:
+            ng('bgp-treasure-unique-nbt', '%s 解析失败：%s' % (os.path.basename(p), e))
+            continue
+        c = sum(1 for s in walk_strings(d) if is_treasure_loc(s))
+        if c:
+            counts[os.path.relpath(p, WG).replace('\\', '/')] = c
+        ok()
+    total = sum(counts.values())
+    if counts != {'template_pool/golden_prison/start.json': 1}:
+        ng('bgp-treasure-unique-nbt',
+           'treasure.nbt 的逐文件引用表不是「只有 start.json 一次」：%r' % counts)
+    ok()
+    if not os.path.exists(os.path.join(STRUCT, 'treasure.nbt')):
+        ng('bgp-treasure-unique-nbt', '缺 treasure.nbt（引用表为空也可能是空转）')
+    ok()
+
+    print('[bgp-treasure-unique] %d 池：start.elements=%d 指向 treasure；非 start 引用=%d；'
+          'fallback 链 %d 条无一落到 treasure；worldgen JSON %d 个文件、treasure 引用共 %d 次（只 start.json）'
+          % (len(pools), len(s_els), sum(1 for n in pools if n != 'start'
+                                        and any(is_treasure_loc(s) for s in walk_strings(pools[n]))),
+             chains, len(wg_json), total))
 
 
 def check_loot():
@@ -1204,6 +1478,8 @@ def main():
         check_gate(pieces)
         check_cycle(pieces)
         check_worldgen()
+        check_rate()
+        check_treasure_unique()
         check_loot()
         check_forbid_vacuous()
         if problems:

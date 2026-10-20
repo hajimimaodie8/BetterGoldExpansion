@@ -1,0 +1,185 @@
+package com.hjmmd_8.bettergold.probe;
+
+/**
+ * 【临时探针 · 收尾整块删除】金之牢狱「生成率 = 下界要塞」A 级对照（runServer）。
+ *
+ * 只做一件事，全部只读：
+ *   在同一片下界区域（固定种子、以 (0,0) 为中心、半径 512 格的圆）里，
+ *   对 bettergold:golden_prison 与 minecraft:fortress 分别「按 chunk 扫」：
+ *   每个区块中心调一次 ChunkGenerator#findNearestMapStructure（5 参、HolderSet 版），
+ *   把返回的结构起点去重（按 x,z）后统计「能找到的独立结构数」。
+ *
+ * 判读：两边数量同量级 / 分布相当 = 达标。扫描未跑完（超时）时 complete=false，
+ * Python 侧必须报「未完成」，不许当绿。
+ *
+ * 开关：run/probe/gpxr/RATE_ON.flag 存在才跑；只调一次 server.halt(false)。
+ * 不调 setChunkForced（findNearestMapStructure 自己按需生成 STRUCTURE_STARTS），
+ * 收尾 data.Forced 保持为空。世界名恒 gp_rate_gp*（绝不碰作者存档）。
+ */
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
+import java.io.BufferedWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import org.slf4j.Logger;
+
+@EventBusSubscriber(modid = "bettergold")
+public final class GpRateProbe {
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final Path OUT = Path.of("probe", "gpxr");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    /** 固定区域：以 (0,0) 为中心、半径 512 格的圆（作者口径） */
+    private static final int RADIUS_BLOCKS = 512;
+    private static final int CHUNK_RADIUS = RADIUS_BLOCKS / 16;   // 32 chunk
+    /** findNearestMapStructure 的 searchRadius 单位是 chunk 环数；取 32 = 512 格 */
+    private static final int SEARCH_RADIUS_CHUNKS = 32;
+    /** 超时上限：跑不完就写 complete=false（Python 侧报「未完成」，不许假绿） */
+    private static final long TIME_LIMIT_MS = 900_000L;
+
+    private GpRateProbe() {}
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        MinecraftServer server = event.getServer();
+        if (!server.isDedicatedServer()) {
+            LOG.info("[gpxr] not a dedicated server -> skip (client integrated server)");
+            return;
+        }
+        Path flag = OUT.resolve("RATE_ON.flag");
+        if (!Files.exists(flag)) {
+            LOG.info("[gpxr] probe OFF (no probe/gpxr/RATE_ON.flag)");
+            return;
+        }
+        int rc = 0;
+        try {
+            run(server);
+        } catch (Throwable t) {
+            rc = 1;
+            LOG.error("[gpxr] EXCEPTION", t);
+        }
+        LOG.info("[gpxr] DONE rc={}", rc);
+        server.halt(false);
+    }
+
+    private static void run(MinecraftServer server) throws Exception {
+        Files.createDirectories(OUT);
+        ServerLevel level = server.getLevel(Level.NETHER);
+        if (level == null) {
+            LOG.error("[gpxr] nether level is null");
+            return;
+        }
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("worldName", server.getWorldData().getLevelName());
+        meta.put("seed", level.getSeed());
+        meta.put("dimension", level.dimension().location().toString());
+        meta.put("radiusBlocks", RADIUS_BLOCKS);
+        meta.put("chunkRadius", CHUNK_RADIUS);
+        meta.put("searchRadiusChunks", SEARCH_RADIUS_CHUNKS);
+        LOG.info("[gpxr] worldName={} seed={} dim={} radius={} chunkRadius={}",
+                server.getWorldData().getLevelName(), level.getSeed(),
+                level.dimension().location(), RADIUS_BLOCKS, CHUNK_RADIUS);
+
+        Registry<Structure> reg = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        ChunkGenerator gen = level.getChunkSource().getGenerator();
+        List<Object> rows = new ArrayList<>();
+        boolean complete = true;
+
+        for (String id : new String[]{"bettergold:golden_prison", "minecraft:fortress",
+                                      "minecraft:bastion_remnant"}) {
+            ResourceLocation rl = ResourceLocation.parse(id);
+            Holder<Structure> holder = reg.getHolder(ResourceKey.create(Registries.STRUCTURE, rl)).orElse(null);
+            if (holder == null) {
+                LOG.error("[gpxr] structure not registered: {}", id);
+                meta.put("missingStructure", id);
+                complete = false;
+                break;
+            }
+            HolderSet<Structure> set = HolderSet.direct(holder);
+            Set<Long> found = new LinkedHashSet<>();
+            List<int[]> positions = new ArrayList<>();
+            long t0 = System.currentTimeMillis();
+            int calls = 0;
+            int nulls = 0;
+            boolean thisComplete = true;
+
+            scan:
+            for (int cx = -CHUNK_RADIUS; cx <= CHUNK_RADIUS; cx++) {
+                for (int cz = -CHUNK_RADIUS; cz <= CHUNK_RADIUS; cz++) {
+                    if (System.currentTimeMillis() - t0 > TIME_LIMIT_MS) {
+                        thisComplete = false;
+                        LOG.warn("[gpxr] {}: TIME LIMIT hit after {} calls", id, calls);
+                        break scan;
+                    }
+                    BlockPos origin = new BlockPos(cx * 16 + 8, 64, cz * 16 + 8);
+                    Pair<BlockPos, Holder<Structure>> res =
+                            gen.findNearestMapStructure(level, set, origin, SEARCH_RADIUS_CHUNKS, false);
+                    calls++;
+                    if (res == null) {
+                        nulls++;
+                        continue;
+                    }
+                    BlockPos p = res.getFirst();
+                    long dx = p.getX();
+                    long dz = p.getZ();
+                    if (dx * dx + dz * dz > (long) RADIUS_BLOCKS * RADIUS_BLOCKS) {
+                        continue;
+                    }
+                    long key = (p.getX() << 32) ^ (p.getZ() & 0xffffffffL);
+                    if (found.add(key)) {
+                        positions.add(new int[]{p.getX(), p.getY(), p.getZ()});
+                    }
+                }
+            }
+            long ms = System.currentTimeMillis() - t0;
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("id", id);
+            row.put("count", positions.size());
+            row.put("calls", calls);
+            row.put("nullResults", nulls);
+            row.put("elapsedMs", ms);
+            row.put("complete", thisComplete);
+            row.put("positions", positions);
+            rows.add(row);
+            complete &= thisComplete;
+            LOG.info("[gpxr] {}: count={} calls={} nulls={} elapsed={}ms complete={}",
+                    id, positions.size(), calls, nulls, ms, thisComplete);
+
+            Path tsv = OUT.resolve("positions_" + id.replace(':', '_') + ".tsv");
+            try (BufferedWriter w = Files.newBufferedWriter(tsv, StandardCharsets.UTF_8)) {
+                w.write("# structure\tx\ty\tz\n");
+                for (int[] p : positions) {
+                    w.write(id + "\t" + p[0] + "\t" + p[1] + "\t" + p[2] + "\n");
+                }
+            }
+        }
+
+        meta.put("complete", complete);
+        meta.put("structures", rows);
+        Files.writeString(OUT.resolve("meta.json"), GSON.toJson(meta), StandardCharsets.UTF_8);
+        LOG.info("[gpxr] wrote meta.json complete={}", complete);
+    }
+}

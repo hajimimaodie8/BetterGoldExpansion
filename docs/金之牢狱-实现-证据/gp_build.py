@@ -804,9 +804,13 @@ STRUCTURE_SET = {
     'structures': [{'structure': 'bettergold:golden_prison', 'weight': 1}],
     'placement': {
         'type': 'minecraft:random_spread',
-        'spacing': 32,
-        'separation': 16,
+        # 第三轮（2026-10-20）：作者「结构生成率的话跟下界要塞相同吧」⇒ 照抄原版
+        # nether_complexes 的 spacing/separation（27/4）。旧值 32/16 是第 1~2 轮的记账值（留档）。
+        'spacing': 27,
+        'separation': 4,
+        # salt 故意保持我们自己的：同 salt + 同种子 ⇒ 候选区块与下界要塞/堡垒重合
         'salt': 19710101,
+        # 原版 nether_complexes 省略该字段 ⇒ codec 默认 linear（别按印象填 triangular）
         'spread_type': 'linear',
     },
 }
@@ -830,7 +834,8 @@ def stage4():
     write_json(os.path.join(WG, 'structure', 'golden_prison.json'), STRUCTURE)
     write_json(os.path.join(WG, 'structure_set', 'golden_prison.json'), STRUCTURE_SET)
     print('== stage4: worldgen JSON ==')
-    print('  structure_set: spacing=32 separation=16 salt=19710101 weight=1')
+    print('  structure_set: spacing=27 separation=4 salt=19710101 weight=1'
+          '（= 下界要塞的 spacing/separation；旧 32/16 已按作者第三轮要求改掉）')
     print('  structure    : size=%d start_height=31..41 biomes=#minecraft:is_nether step=underground_structures'
           ' terrain_adaptation=%s max_distance_from_center=%d'
           % (STRUCTURE['size'], STRUCTURE['terrain_adaptation'], STRUCTURE['max_distance_from_center']))
