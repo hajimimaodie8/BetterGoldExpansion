@@ -1,0 +1,359 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 5,
+        "max": 10
+      },
+      "bonus_rolls": 1.0,
+      "entries": [
+        {
+          "weight": 7,
+          "type": "minecraft:item",
+          "name": "minecraft:gold_nugget",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 6,
+                "max": 15
+              }
+            }
+          ]
+        },
+        {
+          "weight": 5,
+          "type": "minecraft:item",
+          "name": "minecraft:gold_ingot",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 15
+              }
+            }
+          ]
+        },
+        {
+          "weight": 5,
+          "type": "minecraft:item",
+          "name": "minecraft:raw_gold",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 15
+              }
+            }
+          ]
+        },
+        {
+          "weight": 5,
+          "type": "minecraft:item",
+          "name": "bettergold:golden_cowrie",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 5,
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": "#bettergold:golden_prison/any_enchantment"
+            }
+          ]
+        },
+        {
+          "weight": 4,
+          "type": "minecraft:item",
+          "name": "bettergold:gift_gold_ticket",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 4,
+          "type": "minecraft:item",
+          "name": "bettergold:small_netherite_scrap",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "minecraft:golden_apple",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 5
+              }
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "minecraft:golden_carrot",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "bettergold:golden_egg",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 5
+              }
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly",
+              "options": "bettergold:take_gold_food"
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "bettergold:golden_wheat_seeds",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "bettergold:golden_wheat",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 4
+              }
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "bettergold:chaos_coin",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 15
+              }
+            }
+          ]
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "bettergold:chaos_coin_string",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "bettergold:golden_eggplant_seeds",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 5
+              }
+            }
+          ]
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "bettergold:golden_eggplant",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:tag",
+          "name": "bettergold:golden_prison/golden_equipment",
+          "expand": false,
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly"
+            }
+          ]
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "bettergold:golden_cowrie_mold"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "bettergold:chaosgold_nugget",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 5
+              }
+            }
+          ]
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_scrap",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "minecraft:golden_horse_armor"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "bettergold:idol_gift_box"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "bettergold:gourmet_box",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_golden_apple",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_ingot"
+        },
+        {
+          "weight": 1,
+          "type": "minecraft:item",
+          "name": "bettergold:chaosgold_ingot"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "bettergold:chests/golden_prison"
+}

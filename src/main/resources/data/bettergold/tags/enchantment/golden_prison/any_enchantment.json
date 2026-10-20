@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:non_treasure",
+    "#minecraft:treasure"
+  ]
+}

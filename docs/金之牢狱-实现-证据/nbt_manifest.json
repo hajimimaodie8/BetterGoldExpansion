@@ -1,0 +1,342 @@
+{
+ "cell_large_a": {
+  "blocks": 1757,
+  "file": "cell_large_a.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,30"
+  ],
+  "loot_chests": [
+   "1,1,5"
+  ],
+  "sha256": "be2bae2001861a57faebe7d970c04fcb2ae3492962b46304f97c7d899788a846",
+  "size": [
+   15,
+   6,
+   31
+  ]
+ },
+ "cell_large_b": {
+  "blocks": 1754,
+  "file": "cell_large_b.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,30"
+  ],
+  "loot_chests": [
+   "13,1,15"
+  ],
+  "sha256": "4974c70476023ef9e2e95cc8dc65aa4874911492c9add8afabb4d04cfff8bfc7",
+  "size": [
+   15,
+   6,
+   31
+  ]
+ },
+ "cell_large_c": {
+  "blocks": 1744,
+  "file": "cell_large_c.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,30"
+  ],
+  "loot_chests": [
+   "1,1,25"
+  ],
+  "sha256": "3b9e1234183d37440b6126816c8bd00e114e32491f1cc23411c8cc67758ff90d",
+  "size": [
+   15,
+   6,
+   31
+  ]
+ },
+ "cell_large_fertile": {
+  "blocks": 1766,
+  "file": "cell_large_fertile.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,30"
+  ],
+  "loot_chests": [
+   "1,1,23",
+   "1,1,5"
+  ],
+  "sha256": "ad24d96c5a0111d562bc5d12858721ed8a0f8dec4eb8662a8f00104232cd3e41",
+  "size": [
+   15,
+   6,
+   31
+  ]
+ },
+ "cell_large_mirror": {
+  "blocks": 1757,
+  "file": "cell_large_mirror.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,30"
+  ],
+  "loot_chests": [
+   "13,1,5"
+  ],
+  "sha256": "d83787d6731b5a1b4f66c4154df9d2da45acf9e9cd1b3fc5089ec30d5c643d8f",
+  "size": [
+   15,
+   6,
+   31
+  ]
+ },
+ "cell_medium_a": {
+  "blocks": 1214,
+  "file": "cell_medium_a.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,20"
+  ],
+  "loot_chests": [
+   "13,1,5"
+  ],
+  "sha256": "7a82807c372814ea1bd94b5652af0f005285a332c68fa6dd16115867c293f264",
+  "size": [
+   15,
+   6,
+   21
+  ]
+ },
+ "cell_medium_b": {
+  "blocks": 1202,
+  "file": "cell_medium_b.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,20"
+  ],
+  "loot_chests": [
+   "1,1,15"
+  ],
+  "sha256": "bdda0af404c3750b4106790b6847ab4250d6690b989c54a6e5c5c8a16c9ef540",
+  "size": [
+   15,
+   6,
+   21
+  ]
+ },
+ "cell_medium_c": {
+  "blocks": 1186,
+  "file": "cell_medium_c.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,20"
+  ],
+  "loot_chests": [],
+  "sha256": "2de60df030dc627076c672f3b4ab0f75f8a715906b8600cbe6958a8e28349951",
+  "size": [
+   15,
+   6,
+   21
+  ]
+ },
+ "cell_medium_fertile": {
+  "blocks": 1223,
+  "file": "cell_medium_fertile.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,20"
+  ],
+  "loot_chests": [
+   "1,1,3",
+   "13,1,5"
+  ],
+  "sha256": "8faeccebb8f04b0d4594b97387c0a6edb67841ebb2cb2b2bdd55fca0a76c9365",
+  "size": [
+   15,
+   6,
+   21
+  ]
+ },
+ "cell_medium_mirror": {
+  "blocks": 1214,
+  "file": "cell_medium_mirror.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,20"
+  ],
+  "loot_chests": [
+   "1,1,5"
+  ],
+  "sha256": "a7f29c3fb524c904cce41d468a8cd89fbe49a80eafeb8bde046f491f493915a7",
+  "size": [
+   15,
+   6,
+   21
+  ]
+ },
+ "cell_small_a": {
+  "blocks": 672,
+  "file": "cell_small_a.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,10"
+  ],
+  "loot_chests": [
+   "1,1,5"
+  ],
+  "sha256": "80fcaf5b8651efce92168cd371a2b827f8a7b2e4650a06bff37fb20658847f83",
+  "size": [
+   15,
+   6,
+   11
+  ]
+ },
+ "cell_small_b": {
+  "blocks": 665,
+  "file": "cell_small_b.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,10"
+  ],
+  "loot_chests": [
+   "13,1,5"
+  ],
+  "sha256": "2123e39d1169066d8f4e77b312e30103dda877d60693998167052667ade0e6cb",
+  "size": [
+   15,
+   6,
+   11
+  ]
+ },
+ "cell_small_c": {
+  "blocks": 646,
+  "file": "cell_small_c.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,10"
+  ],
+  "loot_chests": [],
+  "sha256": "aff4d3f961829e02fe4af735116fdb135d9f02085f543250ac81ed29e3648cb0",
+  "size": [
+   15,
+   6,
+   11
+  ]
+ },
+ "cell_small_fertile": {
+  "blocks": 678,
+  "file": "cell_small_fertile.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,10"
+  ],
+  "loot_chests": [
+   "1,1,5",
+   "2,1,4"
+  ],
+  "sha256": "c72cacf8e8765a3f50596074627e5003fb202b15ab24095a7b65cb974b9a8c25",
+  "size": [
+   15,
+   6,
+   11
+  ]
+ },
+ "cell_small_mirror": {
+  "blocks": 672,
+  "file": "cell_small_mirror.nbt",
+  "jigsaw": [
+   "7,1,0",
+   "7,1,10"
+  ],
+  "loot_chests": [
+   "13,1,5"
+  ],
+  "sha256": "0665b72b01b61afc177f39b9b26452f0b1eb744e0c19646f4025fc4f6588966f",
+  "size": [
+   15,
+   6,
+   11
+  ]
+ },
+ "cross_a": {
+  "blocks": 6284,
+  "file": "cross_a.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [],
+  "sha256": "287ed8f6d41abdd782b719f1312b32aaf01a48bb53f22c838bf30e633aac3465",
+  "size": [
+   37,
+   8,
+   37
+  ]
+ },
+ "cross_b": {
+  "blocks": 6281,
+  "file": "cross_b.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [
+   "17,2,18",
+   "18,2,17",
+   "18,2,20",
+   "19,2,18"
+  ],
+  "sha256": "d0886e1016b24e61b790b903d6bfc35f0c00ca2d6c0bbe4a80269a0361d4a23e",
+  "size": [
+   37,
+   8,
+   37
+  ]
+ },
+ "exit": {
+  "blocks": 156,
+  "file": "exit.nbt",
+  "jigsaw": [
+   "2,1,0"
+  ],
+  "loot_chests": [],
+  "sha256": "c833510e1a4d13bee8ff248728c608f51dd3f2904cec90e7a62b6a0c41ff1604",
+  "size": [
+   5,
+   8,
+   5
+  ]
+ },
+ "lane": {
+  "blocks": 50,
+  "file": "lane.nbt",
+  "jigsaw": [
+   "2,1,0",
+   "2,1,2"
+  ],
+  "loot_chests": [],
+  "sha256": "d174b300c6df2c57a93deac532e9b5977709ace10dc015d7bd8a0f4e85a2dd58",
+  "size": [
+   5,
+   5,
+   3
+  ]
+ },
+ "treasure": {
+  "blocks": 2196,
+  "file": "treasure.nbt",
+  "jigsaw": [
+   "10,3,20"
+  ],
+  "loot_chests": [
+   "14,3,8",
+   "6,2,14",
+   "9,2,4"
+  ],
+  "sha256": "0057274ca17204b383a7fafc460978cd3fa300bc6f3afede58de348fdabe9639",
+  "size": [
+   21,
+   9,
+   21
+  ]
+ }
+}

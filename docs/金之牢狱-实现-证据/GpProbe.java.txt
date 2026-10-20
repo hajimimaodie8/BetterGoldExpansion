@@ -1,0 +1,366 @@
+package com.hjmmd_8.bettergold.probe;
+
+/**
+ * 【临时探针 · 收尾整块删除】金之牢狱 A 级验证（runServer）。
+ *
+ * 开关：run/probe/gp/PROBE_ON.flag 存在才跑；只调一次 server.halt(false)。
+ * 读的是**真实生成**的结构（/locate 找到 → structureManager 取 StructureStart → 逐件 + 逐格），
+ * 不是手工摆的。
+ */
+import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.JigsawBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import org.slf4j.Logger;
+
+@EventBusSubscriber(modid = "bettergold")
+public final class GpProbe {
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final ResourceLocation RL = ResourceLocation.fromNamespaceAndPath("bettergold", "golden_prison");
+    private static final String[] KNOWN = {
+        "treasure", "cross_a", "cross_b", "lane", "exit",
+        "cell_small_a", "cell_small_b", "cell_small_c", "cell_small_mirror", "cell_small_fertile",
+        "cell_medium_a", "cell_medium_b", "cell_medium_c", "cell_medium_mirror", "cell_medium_fertile",
+        "cell_large_a", "cell_large_b", "cell_large_c", "cell_large_mirror", "cell_large_fertile"
+    };
+    private static final Pattern TPL = Pattern.compile("(bettergold:golden_prison/[a-z_]+)");
+    private static int fails = 0;
+
+    private GpProbe() {}
+
+    private static void check(String what, boolean ok, String detail) {
+        if (!ok) {
+            fails++;
+        }
+        LOG.info("[gp-A] {} {} :: {}", ok ? "PASS" : "FAIL", what, detail);
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        Path flag = Path.of("probe", "gp", "PROBE_ON.flag");
+        if (!Files.exists(flag)) {
+            LOG.info("[gp-A] probe OFF (no probe/gp/PROBE_ON.flag)");
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        try {
+            run(server);
+        } catch (Throwable t) {
+            LOG.error("[gp-A] EXCEPTION", t);
+            fails++;
+        }
+        LOG.info("[gp-A] SUMMARY fails={} -> {}", fails, fails == 0 ? "A-PASS" : "A-FAIL");
+        server.halt(false);
+    }
+
+    private static void run(MinecraftServer server) {
+        ServerLevel level = server.getLevel(Level.NETHER);
+        if (level == null) {
+            check("nether level", false, "null");
+            return;
+        }
+        Registry<Structure> reg = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        ResourceKey<Structure> key = ResourceKey.create(Registries.STRUCTURE, RL);
+        Holder<Structure> holder = reg.getHolder(key).orElse(null);
+        check("structure registered", holder != null, "bettergold:golden_prison");
+        if (holder == null) {
+            return;
+        }
+        ChunkGenerator gen = level.getChunkSource().getGenerator();
+        HolderSet<Structure> set = HolderSet.direct(holder);
+        // 在 2 个不同下界群系各 locate 一次
+        Map<String, Pair<BlockPos, Holder<Structure>>> found = new LinkedHashMap<>();
+        int[][] probes = {{0, 0}, {512, 512}, {-1024, 768}, {2048, -2048}, {-3072, -1024}, {4096, 3072}};
+        for (int[] p : probes) {
+            BlockPos pos = new BlockPos(p[0], 64, p[1]);
+            String biome = level.getBiome(pos).unwrapKey().map(k -> k.location().toString()).orElse("?");
+            if (found.containsKey(biome)) {
+                continue;
+            }
+            Pair<BlockPos, Holder<Structure>> r = gen.findNearestMapStructure(level, set, pos, 64, false);
+            LOG.info("[gp-A] locate from {} biome={} -> {}", pos, biome, r == null ? "NOT_FOUND" : r.getFirst());
+            if (r != null) {
+                found.put(biome, r);
+            }
+            if (found.size() >= 2) {
+                break;
+            }
+        }
+        check("locate in >=2 nether biomes", found.size() >= 2, "biomes=" + found.keySet());
+        for (Map.Entry<String, Pair<BlockPos, Holder<Structure>>> e : found.entrySet()) {
+            check("locate biome is nether", e.getKey().startsWith("minecraft:") &&
+                (e.getKey().contains("nether") || e.getKey().contains("crimson") || e.getKey().contains("warped")
+                    || e.getKey().contains("basalt") || e.getKey().contains("soul")), e.getKey());
+        }
+        if (found.isEmpty()) {
+            return;
+        }
+        BlockPos sp = found.values().iterator().next().getFirst();
+        // 强制加载结构范围内的区块，让 StructureStart 落地
+        for (int cx = (sp.getX() >> 4) - 5; cx <= (sp.getX() >> 4) + 5; cx++) {
+            for (int cz = (sp.getZ() >> 4) - 5; cz <= (sp.getZ() >> 4) + 5; cz++) {
+                level.getChunk(cx, cz, ChunkStatus.FULL, true);
+            }
+        }
+        StructureStart start = StructureStart.INVALID_START;
+        for (int y = 0; y <= 80 && !start.isValid(); y++) {
+            StructureStart s2 = level.structureManager().getStructureAt(new BlockPos(sp.getX(), y, sp.getZ()),
+                holder.value());
+            if (s2.isValid()) {
+                start = s2;
+            }
+        }
+        check("structure start found at located pos", start.isValid(), sp + " valid=" + start.isValid());
+        if (!start.isValid()) {
+            return;
+        }
+        LOG.info("[gp-A] bounding box = {}", start.getBoundingBox());
+        // Y 区间：start 件的 y（= structure start_height）
+        List<PoolElementStructurePiece> pieces = new ArrayList<>();
+        for (StructurePiece p : start.getPieces()) {
+            if (p instanceof PoolElementStructurePiece pep) {
+                pieces.add(pep);
+            }
+        }
+        check("piece count >= 2", pieces.size() >= 2, "pieces=" + pieces.size());
+        int treasure = 0;
+        int exits = 0;
+        Set<String> seen = new LinkedHashSet<>();
+        Set<Integer> minYs = new LinkedHashSet<>();
+        int treasureY = Integer.MIN_VALUE;
+        List<Integer> ys = new ArrayList<>();
+        for (PoolElementStructurePiece pep : pieces) {
+            String s = pep.getElement().toString();
+            Matcher m = TPL.matcher(s);
+            String tpl = m.find() ? m.group(1).substring("bettergold:golden_prison/".length()) : s;
+            seen.add(tpl);
+            if (!Set.of(KNOWN).contains(tpl)) {
+                check("all pieces are known templates", false, "unknown " + tpl);
+            }
+            if (tpl.equals("treasure")) {
+                treasure++;
+                treasureY = pep.getPosition().getY();
+            }
+            if (tpl.equals("exit")) {
+                exits++;
+            }
+            minYs.add(pep.getBoundingBox().minY());
+            ys.add(pep.getPosition().getY());
+        }
+        check("treasure room exactly 1", treasure == 1, "treasure=" + treasure);
+        check("exit count >= 1", exits >= 1, "exits=" + exits);
+        LOG.info("[gp-A] templates used = {} of {}", seen.size(), KNOWN.length);
+        // Y：结构起点（宝藏房）必须在 31..41；其余件按公式 +2（宝藏房接口 dy3 vs 别人 dy1）
+        check("structure start Y in 31..41", treasureY >= 31 && treasureY <= 41, "startY=" + treasureY);
+        // 行走面连续 / 无台阶：所有非宝藏件的 minY 相同，宝藏件比它低 2
+        int otherMin = Integer.MIN_VALUE;
+        for (PoolElementStructurePiece pep : pieces) {
+            String s = pep.getElement().toString();
+            if (!s.contains("/treasure")) {
+                int y = pep.getBoundingBox().minY();
+                if (otherMin == Integer.MIN_VALUE) {
+                    otherMin = y;
+                } else if (otherMin != y) {
+                    check("walk surface level", false, "piece minY " + y + " vs " + otherMin);
+                }
+            }
+        }
+        int tMin = Integer.MIN_VALUE;
+        for (PoolElementStructurePiece pep : pieces) {
+            if (pep.getElement().toString().contains("/treasure")) {
+                tMin = pep.getBoundingBox().minY();
+            }
+        }
+        if (otherMin != Integer.MIN_VALUE && tMin != Integer.MIN_VALUE) {
+            check("treasure sinks exactly 2", tMin == otherMin - 2, "treasure minY=" + tMin + " others=" + otherMin);
+        }
+        // 无重叠
+        int overlaps = 0;
+        for (int i = 0; i < pieces.size(); i++) {
+            for (int j = i + 1; j < pieces.size(); j++) {
+                if (pieces.get(i).getBoundingBox().intersects(pieces.get(j).getBoundingBox())) {
+                    overlaps++;
+                }
+            }
+        }
+        check("no overlapping pieces", overlaps == 0, "overlaps=" + overlaps);
+        // 口位配对：每个件的 jigsaw 口必须与另一件的口一对一贴上（或为终端）
+        List<Object[]> ports = new ArrayList<>();   // {BlockPos, Direction, pieceIndex}
+        for (int i = 0; i < pieces.size(); i++) {
+            PoolElementStructurePiece pep = pieces.get(i);
+            String s = pep.getElement().toString();
+            Matcher m = TPL.matcher(s);
+            if (!m.find()) {
+                continue;
+            }
+            ResourceLocation trl = ResourceLocation.parse(m.group(1));
+            Optional<StructureTemplate> tpl = server.getStructureManager().get(trl);
+            if (tpl.isEmpty()) {
+                check("template loadable", false, trl.toString());
+                continue;
+            }
+            StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(pep.getRotation());
+            for (StructureTemplate.StructureBlockInfo info :
+                tpl.get().filterBlocks(pep.getPosition(), settings, Blocks.JIGSAW, true)) {
+                ports.add(new Object[]{info.pos(), JigsawBlock.getFrontFacing(info.state()), i});
+            }
+        }
+        Set<String> portKeys = new HashSet<>();
+        for (Object[] p : ports) {
+            portKeys.add(p[0] + "|" + p[1]);
+        }
+        int paired = 0;
+        int unpaired = 0;
+        for (Object[] p : ports) {
+            BlockPos pos = (BlockPos) p[0];
+            Direction d = (Direction) p[1];
+            if (portKeys.contains(pos.relative(d) + "|" + d.getOpposite())) {
+                paired++;
+            } else {
+                unpaired++;
+                LOG.info("[gp-A] unpaired port at {} facing {} (terminal / open)", pos, d);
+            }
+        }
+        check("ports paired > 0", paired > 0, "paired=" + paired + " unpaired(terminal)=" + unpaired);
+        // 逐格：成对口两侧的洞必须通（jigsaw 已被替换成空气），洞底下一格实心，行走面同高
+        int junctionBad = 0;
+        int junctionOk = 0;
+        for (Object[] p : ports) {
+            BlockPos pos = (BlockPos) p[0];
+            Direction d = (Direction) p[1];
+            BlockPos other = pos.relative(d);
+            if (!portKeys.contains(other + "|" + d.getOpposite())) {
+                continue;
+            }
+            BlockState a = level.getBlockState(pos);
+            BlockState b = level.getBlockState(other);
+            if (!a.isAir() || !b.isAir()) {
+                junctionBad++;
+                LOG.info("[gp-A] junction blocked {} {} -> {} {}", pos, a, other, b);
+                continue;
+            }
+            BlockPos fa = pos.below();
+            BlockPos fb = other.below();
+            if (!level.getBlockState(fa).isSolid() || !level.getBlockState(fb).isSolid()) {
+                junctionBad++;
+                LOG.info("[gp-A] junction floor missing {} / {}", fa, fb);
+                continue;
+            }
+            junctionOk++;
+        }
+        check("junctions passable & same walk level", junctionBad == 0,
+            "ok=" + junctionOk + " bad=" + junctionBad);
+        // 箱子：全部有 LootTable；开一个箱验证非空
+        int chests = 0;
+        int chestsWithLoot = 0;
+        BlockPos firstChest = null;
+        BoundingBox bb = start.getBoundingBox();
+        for (int x = bb.minX(); x <= bb.maxX(); x++) {
+            for (int z = bb.minZ(); z <= bb.maxZ(); z++) {
+                for (int y = bb.minY(); y <= bb.maxY(); y++) {
+                    BlockPos q = new BlockPos(x, y, z);
+                    BlockState st = level.getBlockState(q);
+                    if (st.is(Blocks.CHEST)) {
+                        chests++;
+                        BlockEntity be = level.getBlockEntity(q);
+                        if (be instanceof net.minecraft.world.RandomizableContainer rc && rc.getLootTable() != null) {
+                            chestsWithLoot++;
+                            if (firstChest == null) {
+                                firstChest = q;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        check("generated chests found", chests > 0, "chests=" + chests);
+        check("all generated chests carry our loot table", chests == chestsWithLoot,
+            chestsWithLoot + "/" + chests);
+        // 开箱非空
+        if (firstChest != null) {
+            BlockEntity be = level.getBlockEntity(firstChest);
+            if (be instanceof net.minecraft.world.RandomizableContainer rc) {
+                rc.unpackLootTable(null);
+            }
+            Container c = (Container) be;
+            int nonEmpty = 0;
+            for (int i = 0; i < c.getContainerSize(); i++) {
+                if (!c.getItem(i).isEmpty()) {
+                    nonEmpty++;
+                }
+            }
+            check("chest opens non-empty", nonEmpty >= 5, "slots=" + nonEmpty + " at " + firstChest);
+        }
+        // 幸运：luck 0 vs luck 3，各 100 箱
+        LootTable lt = server.reloadableRegistries()
+            .getLootTable(ResourceKey.create(Registries.LOOT_TABLE,
+                ResourceLocation.fromNamespaceAndPath("bettergold", "chests/golden_prison")));
+        double[] avg = new double[2];
+        for (int k = 0; k < 2; k++) {
+            float luck = k == 0 ? 0.0F : 3.0F;
+            LootParams params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(sp))
+                .withLuck(luck)
+                .create(LootContextParamSets.CHEST);
+            long total = 0;
+            RandomSource rnd = level.getRandom();
+            for (int i = 0; i < 100; i++) {
+                for (var stack : lt.getRandomItems(params)) {
+                    total += stack.getCount();
+                }
+            }
+            avg[k] = total / 100.0;
+        }
+        check("luck raises item count", avg[1] > avg[0], String.format("luck0=%.2f luck3=%.2f", avg[0], avg[1]));
+        check("loot never empty", avg[0] >= 5.0, String.format("luck0 avg=%.2f (>=5 ok)", avg[0]));
+        check("no forced chunks", level.getForcedChunks().isEmpty(),
+            "forced=" + level.getForcedChunks().size());
+    }
+}

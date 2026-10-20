@@ -1,0 +1,14 @@
+{
+  "fallback": "bettergold:golden_prison/exit",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "bettergold:golden_prison/lane",
+        "processors": "minecraft:empty",
+        "projection": "rigid"
+      }
+    }
+  ]
+}
