@@ -1,0 +1,1061 @@
+{
+ "tag": "修后 · 新种子 20261021",
+ "world": "gp_preview_gpc",
+ "seed": 20261021,
+ "structurePos": [
+  -512,
+  0,
+  208
+ ],
+ "pieces": 17,
+ "templates": [
+  "cell_large_c",
+  "cell_small_a",
+  "cell_small_fertile",
+  "cell_small_mirror",
+  "cross_b",
+  "exit",
+  "lane",
+  "treasure"
+ ],
+ "templateCount": 8,
+ "treasureCount": 1,
+ "exitCount": 2,
+ "startY": 36,
+ "walkY": 39,
+ "depths": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7
+ ],
+ "bboxOverlaps": 0,
+ "ports": 33,
+ "portsPaired": 32,
+ "pieceUnionBBox": [
+  -512,
+  36,
+  139,
+  -404,
+  45,
+  257
+ ],
+ "chests": 17,
+ "spawners": 32,
+ "toads": 12,
+ "mouths": [
+  {
+   "piece": 0,
+   "dir": "east",
+   "pos": [
+    -492,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 1,
+   "dir": "east",
+   "pos": [
+    -489,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 1,
+   "dir": "west",
+   "pos": [
+    -491,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "east",
+   "pos": [
+    -452,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    216
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    180
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "west",
+   "pos": [
+    -488,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 3,
+   "dir": "east",
+   "pos": [
+    -449,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 3,
+   "dir": "west",
+   "pos": [
+    -451,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 4,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    179
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 4,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    177
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 5,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    217
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 5,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    219
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 6,
+   "dir": "east",
+   "pos": [
+    -418,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 6,
+   "dir": "west",
+   "pos": [
+    -448,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 7,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    166
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 7,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    176
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 8,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    230
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 8,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    220
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 9,
+   "dir": "west",
+   "pos": [
+    -417,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 9,
+   "dir": "east",
+   "pos": [
+    -415,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 10,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    155
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 10,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    165
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 11,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    241
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 11,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    231
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 12,
+   "dir": "east",
+   "pos": [
+    -404,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 12,
+   "dir": "west",
+   "pos": [
+    -414,
+    39,
+    198
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 13,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    154
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 13,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    144
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 14,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    242
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 14,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    252
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 15,
+   "dir": "south",
+   "pos": [
+    -470,
+    39,
+    143
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 16,
+   "dir": "north",
+   "pos": [
+    -470,
+    39,
+    253
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  }
+ ],
+ "mouthsAll9": 33,
+ "flood": {
+  "standSeeds": 345,
+  "reached": 1921,
+  "passSeeds": 1774,
+  "passReached": 9900
+ },
+ "exitsReached": [
+  {
+   "piece": 15,
+   "ports": 1,
+   "reached": 1,
+   "cells": [
+    [
+     -470,
+     39,
+     142
+    ]
+   ]
+  },
+  {
+   "piece": 16,
+   "ports": 1,
+   "reached": 1,
+   "cells": [
+    [
+     -470,
+     39,
+     254
+    ]
+   ]
+  }
+ ],
+ "chestReached": 9,
+ "chestAdjReached": 13,
+ "chestRows": [
+  {
+   "piece": 0,
+   "pos": [
+    -508,
+    38,
+    199
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -509,
+     38,
+     199
+    ]
+   ],
+   "adj": [
+    [
+     -509,
+     38,
+     199
+    ]
+   ]
+  },
+  {
+   "piece": 0,
+   "pos": [
+    -504,
+    39,
+    194
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -504,
+     40,
+     194
+    ]
+   ],
+   "adj": [
+    [
+     -504,
+     40,
+     194
+    ]
+   ]
+  },
+  {
+   "piece": 0,
+   "pos": [
+    -498,
+    38,
+    202
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -498,
+     39,
+     202
+    ]
+   ],
+   "adj": [
+    [
+     -498,
+     39,
+     202
+    ]
+   ]
+  },
+  {
+   "piece": 2,
+   "pos": [
+    -471,
+    40,
+    198
+   ],
+   "reached": false,
+   "reachableAdj": false,
+   "stand": [],
+   "adj": []
+  },
+  {
+   "piece": 2,
+   "pos": [
+    -470,
+    40,
+    196
+   ],
+   "reached": false,
+   "reachableAdj": false,
+   "stand": [],
+   "adj": []
+  },
+  {
+   "piece": 2,
+   "pos": [
+    -470,
+    40,
+    199
+   ],
+   "reached": false,
+   "reachableAdj": false,
+   "stand": [],
+   "adj": []
+  },
+  {
+   "piece": 2,
+   "pos": [
+    -469,
+    40,
+    198
+   ],
+   "reached": false,
+   "reachableAdj": false,
+   "stand": [],
+   "adj": []
+  },
+  {
+   "piece": 6,
+   "pos": [
+    -443,
+    39,
+    192
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -443,
+     39,
+     193
+    ]
+   ],
+   "adj": [
+    [
+     -443,
+     39,
+     193
+    ]
+   ]
+  },
+  {
+   "piece": 7,
+   "pos": [
+    -476,
+    39,
+    171
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -475,
+     39,
+     171
+    ]
+   ],
+   "adj": [
+    [
+     -475,
+     39,
+     171
+    ]
+   ]
+  },
+  {
+   "piece": 8,
+   "pos": [
+    -464,
+    39,
+    225
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -465,
+     39,
+     225
+    ]
+   ],
+   "adj": [
+    [
+     -465,
+     39,
+     225
+    ]
+   ]
+  },
+  {
+   "piece": 10,
+   "pos": [
+    -464,
+    39,
+    160
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -465,
+     39,
+     160
+    ]
+   ],
+   "adj": [
+    [
+     -465,
+     39,
+     160
+    ]
+   ]
+  },
+  {
+   "piece": 11,
+   "pos": [
+    -476,
+    39,
+    236
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -475,
+     39,
+     236
+    ]
+   ],
+   "adj": [
+    [
+     -475,
+     39,
+     236
+    ]
+   ]
+  },
+  {
+   "piece": 12,
+   "pos": [
+    -409,
+    39,
+    192
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     -409,
+     39,
+     193
+    ]
+   ],
+   "adj": [
+    [
+     -409,
+     39,
+     193
+    ]
+   ]
+  },
+  {
+   "piece": 13,
+   "pos": [
+    -465,
+    39,
+    150
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     -465,
+     40,
+     150
+    ]
+   ]
+  },
+  {
+   "piece": 13,
+   "pos": [
+    -464,
+    39,
+    149
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     -464,
+     40,
+     149
+    ]
+   ]
+  },
+  {
+   "piece": 14,
+   "pos": [
+    -476,
+    39,
+    247
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     -476,
+     40,
+     247
+    ]
+   ]
+  },
+  {
+   "piece": 14,
+   "pos": [
+    -475,
+    39,
+    246
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     -475,
+     40,
+     246
+    ]
+   ]
+  }
+ ],
+ "airInside": {
+  "cells": 25416,
+  "air": 9950,
+  "airPct": 39.15,
+  "passable": 11482,
+  "passablePct": 45.18,
+  "walkCells": 3555,
+  "walkAir": 1904,
+  "walkAirPct": 53.56
+ },
+ "pieceAir": [
+  {
+   "index": 0,
+   "template": "treasure",
+   "cells": 3969,
+   "air": 1774,
+   "airPct": 44.7,
+   "passable": 1774,
+   "passablePct": 44.7,
+   "walkAir": 278,
+   "walkCells": 441
+  },
+  {
+   "index": 1,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 2,
+   "template": "cross_b",
+   "cells": 10952,
+   "air": 4675,
+   "airPct": 42.69,
+   "passable": 6155,
+   "passablePct": 56.2,
+   "walkAir": 809,
+   "walkCells": 1369
+  },
+  {
+   "index": 3,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 4,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 5,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 6,
+   "template": "cell_large_c",
+   "cells": 2790,
+   "air": 1048,
+   "airPct": 37.56,
+   "passable": 1048,
+   "passablePct": 37.56,
+   "walkAir": 249,
+   "walkCells": 465
+  },
+  {
+   "index": 7,
+   "template": "cell_small_a",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 8,
+   "template": "cell_small_a",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 9,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 10,
+   "template": "cell_small_mirror",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 11,
+   "template": "cell_small_mirror",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 12,
+   "template": "cell_small_a",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 13,
+   "template": "cell_small_fertile",
+   "cells": 990,
+   "air": 314,
+   "airPct": 31.72,
+   "passable": 314,
+   "passablePct": 31.72,
+   "walkAir": 67,
+   "walkCells": 165
+  },
+  {
+   "index": 14,
+   "template": "cell_small_fertile",
+   "cells": 990,
+   "air": 314,
+   "airPct": 31.72,
+   "passable": 314,
+   "passablePct": 31.72,
+   "walkAir": 67,
+   "walkCells": 165
+  },
+  {
+   "index": 15,
+   "template": "exit",
+   "cells": 200,
+   "air": 45,
+   "airPct": 22.5,
+   "passable": 71,
+   "passablePct": 35.5,
+   "walkAir": 12,
+   "walkCells": 25
+  },
+  {
+   "index": 16,
+   "template": "exit",
+   "cells": 200,
+   "air": 45,
+   "airPct": 22.5,
+   "passable": 71,
+   "passablePct": 35.5,
+   "walkAir": 12,
+   "walkCells": 25
+  }
+ ],
+ "probeAirStats": {
+  "cells": 25416,
+  "air": 9950,
+  "airPct": 39.1,
+  "walkCells": 3555,
+  "walkAir": 1904,
+  "walkAirPct": 53.6
+ }
+}

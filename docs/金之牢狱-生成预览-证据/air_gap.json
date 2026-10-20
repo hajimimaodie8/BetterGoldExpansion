@@ -1,0 +1,433 @@
+{
+  "note": "真实生成的一座（种子 20261020 / gp_preview_gpx / 结构 592,38,688）件包围盒内逐格空气读数 + 20 个 NBT 的空气条目数",
+  "nbt": [
+    {
+      "file": "cell_large_a.nbt",
+      "size": [
+        15,
+        6,
+        31
+      ],
+      "blocks": 1757,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_large_b.nbt",
+      "size": [
+        15,
+        6,
+        31
+      ],
+      "blocks": 1754,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_large_c.nbt",
+      "size": [
+        15,
+        6,
+        31
+      ],
+      "blocks": 1744,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_large_fertile.nbt",
+      "size": [
+        15,
+        6,
+        31
+      ],
+      "blocks": 1766,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_large_mirror.nbt",
+      "size": [
+        15,
+        6,
+        31
+      ],
+      "blocks": 1757,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_medium_a.nbt",
+      "size": [
+        15,
+        6,
+        21
+      ],
+      "blocks": 1214,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_medium_b.nbt",
+      "size": [
+        15,
+        6,
+        21
+      ],
+      "blocks": 1202,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_medium_c.nbt",
+      "size": [
+        15,
+        6,
+        21
+      ],
+      "blocks": 1186,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_medium_fertile.nbt",
+      "size": [
+        15,
+        6,
+        21
+      ],
+      "blocks": 1223,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_medium_mirror.nbt",
+      "size": [
+        15,
+        6,
+        21
+      ],
+      "blocks": 1214,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_small_a.nbt",
+      "size": [
+        15,
+        6,
+        11
+      ],
+      "blocks": 672,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_small_b.nbt",
+      "size": [
+        15,
+        6,
+        11
+      ],
+      "blocks": 665,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_small_c.nbt",
+      "size": [
+        15,
+        6,
+        11
+      ],
+      "blocks": 646,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_small_fertile.nbt",
+      "size": [
+        15,
+        6,
+        11
+      ],
+      "blocks": 678,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cell_small_mirror.nbt",
+      "size": [
+        15,
+        6,
+        11
+      ],
+      "blocks": 672,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cross_a.nbt",
+      "size": [
+        37,
+        8,
+        37
+      ],
+      "blocks": 6284,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "cross_b.nbt",
+      "size": [
+        37,
+        8,
+        37
+      ],
+      "blocks": 6281,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "exit.nbt",
+      "size": [
+        5,
+        8,
+        5
+      ],
+      "blocks": 156,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "lane.nbt",
+      "size": [
+        5,
+        5,
+        3
+      ],
+      "blocks": 50,
+      "airPalette": 0,
+      "airEntries": 0
+    },
+    {
+      "file": "treasure.nbt",
+      "size": [
+        21,
+        9,
+        21
+      ],
+      "blocks": 2196,
+      "airPalette": 0,
+      "airEntries": 0
+    }
+  ],
+  "nbtAirEntriesTotal": 0,
+  "world": {
+    "cells": 25616,
+    "air": 1050,
+    "airPct": 4.1,
+    "walkAir": 205,
+    "walkCells": 3580
+  },
+  "pieces": [
+    {
+      "index": 0,
+      "template": "treasure",
+      "cells": 3969,
+      "air": 409,
+      "airPct": 10.3,
+      "walkY": 41,
+      "walkCells": 441,
+      "walkAir": 71,
+      "walkAirPct": 16.1
+    },
+    {
+      "index": 1,
+      "template": "lane",
+      "cells": 75,
+      "air": 2,
+      "airPct": 2.67,
+      "walkY": 41,
+      "walkCells": 15,
+      "walkAir": 2,
+      "walkAirPct": 13.33
+    },
+    {
+      "index": 2,
+      "template": "cross_a",
+      "cells": 10952,
+      "air": 452,
+      "airPct": 4.13,
+      "walkY": 41,
+      "walkCells": 1369,
+      "walkAir": 71,
+      "walkAirPct": 5.19
+    },
+    {
+      "index": 3,
+      "template": "lane",
+      "cells": 75,
+      "air": 2,
+      "airPct": 2.67,
+      "walkY": 41,
+      "walkCells": 15,
+      "walkAir": 2,
+      "walkAirPct": 13.33
+    },
+    {
+      "index": 4,
+      "template": "lane",
+      "cells": 75,
+      "air": 2,
+      "airPct": 2.67,
+      "walkY": 41,
+      "walkCells": 15,
+      "walkAir": 2,
+      "walkAirPct": 13.33
+    },
+    {
+      "index": 5,
+      "template": "lane",
+      "cells": 75,
+      "air": 2,
+      "airPct": 2.67,
+      "walkY": 41,
+      "walkCells": 15,
+      "walkAir": 2,
+      "walkAirPct": 13.33
+    },
+    {
+      "index": 6,
+      "template": "cell_small_a",
+      "cells": 990,
+      "air": 2,
+      "airPct": 0.2,
+      "walkY": 41,
+      "walkCells": 165,
+      "walkAir": 2,
+      "walkAirPct": 1.21
+    },
+    {
+      "index": 7,
+      "template": "cell_small_b",
+      "cells": 990,
+      "air": 2,
+      "airPct": 0.2,
+      "walkY": 41,
+      "walkCells": 165,
+      "walkAir": 2,
+      "walkAirPct": 1.21
+    },
+    {
+      "index": 8,
+      "template": "cell_small_a",
+      "cells": 990,
+      "air": 29,
+      "airPct": 2.93,
+      "walkY": 41,
+      "walkCells": 165,
+      "walkAir": 11,
+      "walkAirPct": 6.67
+    },
+    {
+      "index": 9,
+      "template": "cell_small_mirror",
+      "cells": 990,
+      "air": 2,
+      "airPct": 0.2,
+      "walkY": 41,
+      "walkCells": 165,
+      "walkAir": 2,
+      "walkAirPct": 1.21
+    },
+    {
+      "index": 10,
+      "template": "lane",
+      "cells": 75,
+      "air": 2,
+      "airPct": 2.67,
+      "walkY": 41,
+      "walkCells": 15,
+      "walkAir": 2,
+      "walkAirPct": 13.33
+    },
+    {
+      "index": 11,
+      "template": "cell_small_mirror",
+      "cells": 990,
+      "air": 39,
+      "airPct": 3.94,
+      "walkY": 41,
+      "walkCells": 165,
+      "walkAir": 11,
+      "walkAirPct": 6.67
+    },
+    {
+      "index": 12,
+      "template": "cell_small_fertile",
+      "cells": 990,
+      "air": 2,
+      "airPct": 0.2,
+      "walkY": 41,
+      "walkCells": 165,
+      "walkAir": 2,
+      "walkAirPct": 1.21
+    },
+    {
+      "index": 13,
+      "template": "cell_large_mirror",
+      "cells": 2790,
+      "air": 52,
+      "airPct": 1.86,
+      "walkY": 41,
+      "walkCells": 465,
+      "walkAir": 15,
+      "walkAirPct": 3.23
+    },
+    {
+      "index": 14,
+      "template": "cell_small_fertile",
+      "cells": 990,
+      "air": 45,
+      "airPct": 4.55,
+      "walkY": 41,
+      "walkCells": 165,
+      "walkAir": 5,
+      "walkAirPct": 3.03
+    },
+    {
+      "index": 15,
+      "template": "exit",
+      "cells": 200,
+      "air": 1,
+      "airPct": 0.5,
+      "walkY": 41,
+      "walkCells": 25,
+      "walkAir": 1,
+      "walkAirPct": 4.0
+    },
+    {
+      "index": 16,
+      "template": "exit",
+      "cells": 200,
+      "air": 4,
+      "airPct": 2.0,
+      "walkY": 41,
+      "walkCells": 25,
+      "walkAir": 1,
+      "walkAirPct": 4.0
+    },
+    {
+      "index": 17,
+      "template": "exit",
+      "cells": 200,
+      "air": 1,
+      "airPct": 0.5,
+      "walkY": 41,
+      "walkCells": 25,
+      "walkAir": 1,
+      "walkAirPct": 4.0
+    }
+  ]
+}

@@ -246,6 +246,38 @@ def pool_missing(text):
     return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
 
 
+def pool_fallback_empty(text):
+    """把 lane 的 fallback 改成 empty ⇒ 深度 7 不再长出出入口（[bgp-connect] 必须红）。"""
+    d = json.loads(text)
+    d['fallback'] = 'minecraft:empty'
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def strip_air(root):
+    """P7 = P0 复现：把这个件里的空气条目全删掉（修前那种「模板不含空气」的样子）。"""
+    n0 = len(root['blocks'])
+    root['blocks'] = [b for b in root['blocks']
+                      if root['palette'][b['state']]['Name'] != 'minecraft:air']
+    return n0 - len(root['blocks'])
+
+
+def plug_mouth_cell(root):
+    """P8：把口平面 3x3 的中间一格填成实心（门洞从 3x3 退化成 1~2 格）。"""
+    idx = None
+    for i, e in enumerate(root['palette']):
+        if e['Name'] not in ('minecraft:air', 'minecraft:jigsaw', 'minecraft:chest',
+                             'minecraft:structure_void'):
+            idx = i
+            break
+    if idx is None:
+        return 0
+    for b in root['blocks']:
+        if b['pos'] == [7, 2, 0]:
+            b['state'] = idx
+            return 1
+    return 0
+
+
 def only_whitespace(text):
     return '\n\n' + text.replace('{', '{\n', 1) + '\n\n'
 
@@ -278,6 +310,11 @@ text_case('C2-validator-comment-only', VAL,
           lambda t: t.replace('# -*- coding: utf-8 -*-',
                               '# -*- coding: utf-8 -*-\n# (perturb: comment only, must stay green)', 1),
           '')
+# ---- 阶段 B 新增：空气档必须「能红」（P0 的真值 + 3x3 门洞 + 拼接连通）
+nbt_case('P7-strip-all-air (= P0)', 'cell_small_a.nbt', strip_air, 'bgp-air')
+nbt_case('P8-plug-one-mouth-cell', 'cell_small_a.nbt', plug_mouth_cell, '口平面 3x3x1')
+text_case('P9-lane-fallback-empty', POOL.replace('room.json', 'lane.json'),
+          pool_fallback_empty, 'bgp-connect')
 
 
 def main():

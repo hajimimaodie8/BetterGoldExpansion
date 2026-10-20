@@ -578,31 +578,38 @@ def build_nbt(piece):
     sx, sy, sz = piece['size']
     pal = []
     pal_idx = {}
-    keys = sorted(piece['blocks'], key=lambda s: tuple(reversed(s2k(s))))
     blocks_tag = []
-    for key in keys:
-        v = piece['blocks'][key]
-        nm, pr = v[0], v[1]
-        sig = (nm, tuple(sorted(pr.items())))
-        if sig not in pal_idx:
-            pal_idx[sig] = len(pal)
-            entry = {'Name': (8, nm)}
-            if pr:
-                entry['Properties'] = (10, {k: (8, str(x)) for k, x in sorted(pr.items())})
-            pal.append(entry)
-        b = {'pos': (9, (3, list(s2k(key)))), 'state': (3, pal_idx[sig])}
-        if len(v) > 2 and v[2]:
-            be = {'id': (8, 'minecraft:jigsaw')}
-            for k, x in v[2].items():
-                if isinstance(x, int):
-                    be[k] = (3, x)
+    # 逐格写满：件自己的 bbox 内，没有显式方块的格子就是 minecraft:air。
+    # 模板空气 = 放置时把地形挖成房间/门洞；只写本件 bbox，件外世界空气一律不带。
+    for y in range(sy):
+        for z in range(sz):
+            for x in range(sx):
+                key = k2s((x, y, z))
+                v = piece['blocks'].get(key)
+                if v is None:
+                    nm, pr = 'minecraft:air', {}
                 else:
-                    be[k] = (8, str(x))
-            b['nbt'] = (10, be)
-        elif nm == 'minecraft:chest':
-            # 逐箱写 LootTable（导出阶段落地，见第 5 步）
-            b['nbt'] = (10, {'id': (8, 'minecraft:chest'), 'LootTable': (8, LOOT)})
-        blocks_tag.append(b)
+                    nm, pr = v[0], v[1]
+                sig = (nm, tuple(sorted(pr.items())))
+                if sig not in pal_idx:
+                    pal_idx[sig] = len(pal)
+                    entry = {'Name': (8, nm)}
+                    if pr:
+                        entry['Properties'] = (10, {k: (8, str(x)) for k, x in sorted(pr.items())})
+                    pal.append(entry)
+                b = {'pos': (9, (3, [x, y, z])), 'state': (3, pal_idx[sig])}
+                if v is not None and len(v) > 2 and v[2]:
+                    be = {'id': (8, 'minecraft:jigsaw')}
+                    for k, x2 in v[2].items():
+                        if isinstance(x2, int):
+                            be[k] = (3, x2)
+                        else:
+                            be[k] = (8, str(x2))
+                    b['nbt'] = (10, be)
+                elif nm == 'minecraft:chest':
+                    # 逐箱写 LootTable（导出阶段落地，见第 5 步）
+                    b['nbt'] = (10, {'id': (8, 'minecraft:chest'), 'LootTable': (8, LOOT)})
+                blocks_tag.append(b)
     root = collections.OrderedDict()
     root['DataVersion'] = (3, DATAVERSION)
     root['size'] = (9, (3, [sx, sy, sz]))
@@ -626,7 +633,7 @@ def stage3():
         path = os.path.join(RES, name + '.nbt')
         with open(path, 'wb') as f:
             f.write(gz)
-        # 逐格自检：重新解析，方块集必须与 stage2 完全一致
+        # 逐格自检：① 非空气必须与 stage2 完全一致；② bbox 每格都要有（空气写满）。
         _, back = nbt.parse_auto(open(path, 'rb').read())
         got = {}
         pal = back['palette']
@@ -636,21 +643,30 @@ def stage3():
             pr = dict(pal[b['state']].get('Properties') or {})
             got[k2s((x, y, z))] = [nm, pr]
         want = {k: [v[0], v[1]] for k, v in pieces[name]['blocks'].items()}
-        if got != want:
-            diff = set(got) ^ set(want)
+        got_nonair = {k: v for k, v in got.items() if v[0] != 'minecraft:air'}
+        if got_nonair != want:
+            diff = set(got_nonair) ^ set(want)
             raise SystemExit('[gp-build] %s 逐格自检失败：差异 %d 格 %s' %
                              (name, len(diff), sorted(diff)[:5]))
+        sx, sy, sz = pieces[name]['size']
+        vol = sx * sy * sz
+        if len(got) != vol:
+            raise SystemExit('[gp-build] %s 只写了 %d/%d 格（空气没写满）' % (name, len(got), vol))
+        air = sum(1 for v in got.values() if v[0] == 'minecraft:air')
+        if air != vol - len(want):
+            raise SystemExit('[gp-build] %s 空气 %d != 体积-非空气 %d' %
+                             (name, air, vol - len(want)))
         if list(back['size']) != pieces[name]['size']:
             raise SystemExit('[gp-build] %s size 不一致' % name)
         manifest[name] = {'file': name + '.nbt', 'size': pieces[name]['size'],
-                          'blocks': len(want),
+                          'blocks': len(want), 'volume': vol, 'air': air,
                           'sha256': hashlib.sha256(gz).hexdigest(),
                           'loot_chests': sorted(k for k, v in pieces[name]['blocks'].items()
                                                 if v[0] == 'minecraft:chest'),
                           'jigsaw': sorted(k for k, v in pieces[name]['blocks'].items()
                                            if v[0] == 'minecraft:jigsaw')}
-        print('  nbt %-20s %5d blocks  %6d B  %s' % (name, len(want), len(gz),
-                                                     manifest[name]['sha256'][:16]))
+        print('  nbt %-20s %5d solid + %5d air = %5d cells  %6d B  %s' %
+              (name, len(want), air, vol, len(gz), manifest[name]['sha256'][:16]))
     with open(os.path.join(EVID, 'nbt_manifest.json'), 'w', encoding='utf-8') as f:
         json.dump(manifest, f, ensure_ascii=False, indent=1, sort_keys=True)
     # 蓝图

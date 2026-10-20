@@ -1,0 +1,609 @@
+package com.hjmmd_8.bettergold.probe;
+
+/**
+ * 【临时探针 · 收尾整块删除】金之牢狱「生成预览」数据导出（runServer）。
+ *
+ * 只做两件事，全部只读：
+ *   1) 用 ChunkGenerator#findNearestMapStructure 找到一座真实生成的金之牢狱；
+ *   2) 把 StructureStart#getPieces 的件表 / 口位 / 连接关系 + 逐格方块 dump 到 probe/gpx/。
+ *
+ * 开关：run/probe/gpx/PROBE_ON.flag 存在才跑；只调一次 server.halt(false)。
+ * 不调 setChunkForced（用 getChunk FULL 同步生成），收尾 data.Forced 保持为空。
+ */
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
+import java.io.BufferedWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.JigsawBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import org.slf4j.Logger;
+
+@EventBusSubscriber(modid = "bettergold")
+public final class GpPreviewProbe {
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final ResourceLocation RL =
+            ResourceLocation.fromNamespaceAndPath("bettergold", "golden_prison");
+    private static final Pattern TPL = Pattern.compile("(bettergold:golden_prison/[a-z_]+)");
+    private static final String PREFIX = "bettergold:golden_prison/";
+    private static final ResourceLocation TOAD =
+            ResourceLocation.fromNamespaceAndPath("bettergold", "golden_toad_figurine");
+    private static final Path OUT = Path.of("probe", "gpx");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private GpPreviewProbe() {}
+
+    /** 件口（模板里的 jigsaw 口，按旋转后的绝对坐标） */
+    private static final class Port {
+        int idx;
+        int piece;
+        BlockPos pos;
+        Direction dir;
+        String name = "";
+        String target = "";
+        String pool = "";
+        String joint = "";
+        String finalState = "";
+        int other = -1;
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        Path flag = OUT.resolve("PROBE_ON.flag");
+        if (!Files.exists(flag)) {
+            LOG.info("[gpx] probe OFF (no probe/gpx/PROBE_ON.flag)");
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        int rc = 0;
+        try {
+            run(server);
+        } catch (Throwable t) {
+            rc = 1;
+            LOG.error("[gpx] EXCEPTION", t);
+        }
+        LOG.info("[gpx] DONE rc={}", rc);
+        server.halt(false);
+    }
+
+    private static void run(MinecraftServer server) throws Exception {
+        Files.createDirectories(OUT);
+        ServerLevel level = server.getLevel(Level.NETHER);
+        if (level == null) {
+            LOG.error("[gpx] nether level is null");
+            return;
+        }
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("worldName", server.getWorldData().getLevelName());
+        meta.put("seed", level.getSeed());
+        meta.put("dimension", level.dimension().location().toString());
+        meta.put("generator", level.getChunkSource().getGenerator().toString());
+        LOG.info("[gpx] worldName={} seed={} dim={}", server.getWorldData().getLevelName(),
+                level.getSeed(), level.dimension().location());
+
+        Registry<Structure> reg = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        ResourceKey<Structure> key = ResourceKey.create(Registries.STRUCTURE, RL);
+        Holder<Structure> holder = reg.getHolder(key).orElse(null);
+        if (holder == null) {
+            LOG.error("[gpx] structure not registered: {}", RL);
+            return;
+        }
+        ChunkGenerator gen = level.getChunkSource().getGenerator();
+        HolderSet<Structure> set = HolderSet.direct(holder);
+        // 先在附近多找几座：结构每 32 chunk 一座，单座常常是「一条小牢房链」，
+        // 想给作者看分叉/四面道，就挑件数最多、带 cross、出入口最多的一座 dump。
+        BlockPos[] origins = {
+            new BlockPos(0, 64, 0), new BlockPos(0, 64, 512), new BlockPos(512, 64, 0),
+            new BlockPos(0, 64, -512), new BlockPos(-512, 64, 0), new BlockPos(512, 64, 512),
+            new BlockPos(-512, 64, -512), new BlockPos(1024, 64, 1024)
+        };
+        Set<Long> seen = new LinkedHashSet<>();
+        List<Map<String, Object>> candList = new ArrayList<>();
+        BlockPos primaryLocate = null;
+        String primaryBiome = "?";
+        StructureStart bestStart = null;
+        BlockPos bestPos = null;
+        BlockPos bestFrom = null;
+        int bestScore = Integer.MIN_VALUE;
+        for (BlockPos from : origins) {
+            Pair<BlockPos, Holder<Structure>> found =
+                    gen.findNearestMapStructure(level, set, from, 100, false);
+            String biome = level.getBiome(from).unwrapKey().map(k -> k.location().toString()).orElse("?");
+            LOG.info("[gpx] locate from {} biome={} -> {}", from, biome,
+                    found == null ? "NOT_FOUND" : found.getFirst());
+            if (found == null) {
+                continue;
+            }
+            BlockPos p = found.getFirst();
+            if (primaryLocate == null) {
+                primaryLocate = p;
+                primaryBiome = biome;
+            }
+            long chunkKey = (((long) (p.getX() >> 4)) << 32) ^ ((p.getZ() >> 4) & 0xffffffffL);
+            if (!seen.add(chunkKey)) {
+                continue;
+            }
+            loadChunks(level, p.getX() >> 4, p.getZ() >> 4, 1);
+            StructureStart st = findStart(level, holder, p);
+            if (st == null || !st.isValid()) {
+                LOG.warn("[gpx] candidate at {} has no valid start", p);
+                continue;
+            }
+            int nPieces = 0;
+            int nExits = 0;
+            int nCross = 0;
+            Set<String> tpls = new LinkedHashSet<>();
+            for (StructurePiece sp2 : st.getPieces()) {
+                if (sp2 instanceof PoolElementStructurePiece pep) {
+                    nPieces++;
+                    String s = pep.getElement().toString();
+                    Matcher m = TPL.matcher(s);
+                    String tpl = m.find() ? m.group(1).substring(PREFIX.length()) : "UNKNOWN";
+                    tpls.add(tpl);
+                    if (tpl.equals("exit")) {
+                        nExits++;
+                    }
+                    if (tpl.startsWith("cross_")) {
+                        nCross++;
+                    }
+                }
+            }
+            int score = nPieces + 3 * nCross + nExits;
+            Map<String, Object> cj = new LinkedHashMap<>();
+            cj.put("from", new int[]{from.getX(), from.getY(), from.getZ()});
+            cj.put("biome", biome);
+            cj.put("pos", new int[]{p.getX(), p.getY(), p.getZ()});
+            cj.put("pieces", nPieces);
+            cj.put("exits", nExits);
+            cj.put("crossPieces", nCross);
+            cj.put("templates", tpls.size());
+            cj.put("score", score);
+            candList.add(cj);
+            LOG.info("[gpx] candidate pos={} pieces={} templates={} exits={} cross={} score={}", p,
+                    nPieces, tpls.size(), nExits, nCross, score);
+            if (score > bestScore) {
+                bestScore = score;
+                bestStart = st;
+                bestPos = p;
+                bestFrom = from;
+            }
+        }
+        meta.put("candidates", candList);
+        if (bestStart == null) {
+            LOG.error("[gpx] no candidate structure found within 100 chunks of any probe origin");
+            writeMeta(meta);
+            return;
+        }
+        BlockPos sp = bestPos;
+        StructureStart start = bestStart;
+        LOG.info("[gpx] CHOSEN pos={} from={} locate(0,0)={} biome={} score={}", sp, bestFrom,
+                primaryLocate, primaryBiome, bestScore);
+        meta.put("locate", Map.of("from", new int[]{bestFrom.getX(), bestFrom.getY(),
+                bestFrom.getZ()}, "radiusChunks", 100,
+                "result", new int[]{sp.getX(), sp.getY(), sp.getZ()},
+                "chunk", new int[]{sp.getX() >> 4, sp.getZ() >> 4}, "biome",
+                level.getBiome(sp).unwrapKey().map(k -> k.location().toString()).orElse("?")));
+        meta.put("locateFromOrigin", Map.of("from", new int[]{0, 64, 0}, "result",
+                primaryLocate == null ? "NOT_FOUND" : new int[]{primaryLocate.getX(),
+                        primaryLocate.getY(), primaryLocate.getZ()}, "biome", primaryBiome));
+        LOG.info("[gpx] StructureStart bbox = {}", start.getBoundingBox());
+        meta.put("startBBox", bbox(start.getBoundingBox()));
+
+        List<PoolElementStructurePiece> pieces = new ArrayList<>();
+        for (StructurePiece p : start.getPieces()) {
+            if (p instanceof PoolElementStructurePiece pep) {
+                pieces.add(pep);
+            }
+        }
+        // 结构可能横跨十几格，把件覆盖到的区块也全部生成。
+        // ⚠ 不要拿 getBoundingBox() 当累加器：BoundingBox#encapsulate 是原地修改，
+        // 会把这个件的盒子改大（上一版就踩过：宝藏房把整座结构的盒子吞了）。
+        int uMinX = Integer.MAX_VALUE;
+        int uMinY = Integer.MAX_VALUE;
+        int uMinZ = Integer.MAX_VALUE;
+        int uMaxX = Integer.MIN_VALUE;
+        int uMaxY = Integer.MIN_VALUE;
+        int uMaxZ = Integer.MIN_VALUE;
+        for (PoolElementStructurePiece pep : pieces) {
+            BoundingBox b = pep.getBoundingBox();
+            uMinX = Math.min(uMinX, b.minX());
+            uMinY = Math.min(uMinY, b.minY());
+            uMinZ = Math.min(uMinZ, b.minZ());
+            uMaxX = Math.max(uMaxX, b.maxX());
+            uMaxY = Math.max(uMaxY, b.maxY());
+            uMaxZ = Math.max(uMaxZ, b.maxZ());
+        }
+        BoundingBox union = new BoundingBox(uMinX, uMinY, uMinZ, uMaxX, uMaxY, uMaxZ);
+        LOG.info("[gpx] piece union bbox = {} (pieces={})", union, pieces.size());
+        meta.put("pieceUnionBBox", bbox(union));
+        for (int cx = (union.minX() >> 4) - 1; cx <= (union.maxX() >> 4) + 1; cx++) {
+            for (int cz = (union.minZ() >> 4) - 1; cz <= (union.maxZ() >> 4) + 1; cz++) {
+                level.getChunk(cx, cz, ChunkStatus.FULL, true);
+            }
+        }
+
+        // ---- 2) 件表 + 口位 ----
+        List<Map<String, Object>> pieceList = new ArrayList<>();
+        List<Port> ports = new ArrayList<>();
+        Map<String, Integer> poolHits = new LinkedHashMap<>();
+        Set<String> templates = new LinkedHashSet<>();
+        int[] chestCount = new int[pieces.size()];
+        int[] spawnerCount = new int[pieces.size()];
+        int[] toadCount = new int[pieces.size()];
+        List<BoundingBox> pieceBoxes = new ArrayList<>();
+        List<List<int[]>> chestPos = new ArrayList<>();
+        for (int i = 0; i < pieces.size(); i++) {
+            chestPos.add(new ArrayList<>());
+        }
+        for (int i = 0; i < pieces.size(); i++) {
+            PoolElementStructurePiece pep = pieces.get(i);
+            String s = pep.getElement().toString();
+            Matcher m = TPL.matcher(s);
+            String tpl = m.find() ? m.group(1).substring(PREFIX.length()) : "UNKNOWN";
+            templates.add(tpl);
+            Map<String, Object> pm = new LinkedHashMap<>();
+            pm.put("index", i);
+            pm.put("template", tpl);
+            pm.put("element", s);
+            pm.put("rotation", pep.getRotation().getSerializedName());
+            BlockPos origin = pep.getPosition();
+            pm.put("origin", new int[]{origin.getX(), origin.getY(), origin.getZ()});
+
+            // 口位：从模板读 jigsaw（世界里的已被替换成空气）
+            Optional<StructureTemplate> tplOpt =
+                    server.getStructureManager().get(ResourceLocation.parse(PREFIX + tpl));
+            if (tplOpt.isEmpty()) {
+                LOG.error("[gpx] template missing: {}", tpl);
+                continue;
+            }
+            // bbox 用引擎给的（旋转后 min 角不在 origin！），只用模板尺寸核对形状
+            Vec3i tsize = tplOpt.get().getSize(pep.getRotation());
+            BoundingBox own = pep.getBoundingBox();
+            pieceBoxes.add(own);
+            boolean sizeMatch = (own.maxX() - own.minX() + 1) == tsize.getX()
+                    && (own.maxY() - own.minY() + 1) == tsize.getY()
+                    && (own.maxZ() - own.minZ() + 1) == tsize.getZ();
+            pm.put("size", new int[]{tsize.getX(), tsize.getY(), tsize.getZ()});
+            pm.put("bbox", bbox(own));
+            pm.put("sizeMatch", sizeMatch);
+            pm.put("groundLevelDelta", pep.getGroundLevelDelta());
+            pieceList.add(pm);
+            poolHits.merge(poolOf(tpl), 1, Integer::sum);
+            LOG.info("[gpx] piece #{} tpl={} rot={} origin={} size={} bbox={} sizeMatch={}", i,
+                    tpl, pep.getRotation().getSerializedName(), origin, tsize, own, sizeMatch);
+
+            StructurePlaceSettings settings =
+                    new StructurePlaceSettings().setRotation(pep.getRotation());
+            List<Object> portJson = new ArrayList<>();
+            for (StructureTemplate.StructureBlockInfo info :
+                    tplOpt.get().filterBlocks(pep.getPosition(), settings, Blocks.JIGSAW, true)) {
+                Port p = new Port();
+                p.idx = ports.size();
+                p.piece = i;
+                p.pos = info.pos();
+                p.dir = JigsawBlock.getFrontFacing(info.state());
+                if (info.nbt() != null) {
+                    p.name = info.nbt().getString("name");
+                    p.target = info.nbt().getString("target");
+                    p.pool = info.nbt().getString("pool");
+                    p.joint = info.nbt().getString("joint");
+                    p.finalState = info.nbt().getString("final_state");
+                }
+                ports.add(p);
+                portJson.add(Map.of("pos", new int[]{p.pos.getX(), p.pos.getY(), p.pos.getZ()},
+                        "dir", p.dir.getName(), "name", p.name, "target", p.target, "pool", p.pool));
+            }
+            pm.put("ports", portJson);
+        }
+        meta.put("pieces", pieceList);
+        LOG.info("[gpx] templates used = {} / pieces={}", templates, pieces.size());
+
+        // ---- 3) 口位配对 + 连接树（BFS，从 #0 宝藏房开始） ----
+        Map<String, Integer> portAt = new LinkedHashMap<>();
+        for (Port p : ports) {
+            portAt.put(p.pos.getX() + "," + p.pos.getY() + "," + p.pos.getZ() + "|" + p.dir.getName(),
+                    p.idx);
+        }
+        for (Port p : ports) {
+            BlockPos nb = p.pos.relative(p.dir);
+            Integer j = portAt.get(nb.getX() + "," + nb.getY() + "," + nb.getZ() + "|"
+                    + p.dir.getOpposite().getName());
+            if (j != null) {
+                p.other = j;
+                ports.get(j).other = p.idx;
+            }
+        }
+        int paired = 0;
+        for (Port p : ports) {
+            if (p.other >= 0) {
+                paired++;
+            }
+        }
+        LOG.info("[gpx] ports={} paired={} unpaired={}", ports.size(), paired,
+                ports.size() - paired);
+        meta.put("portStats", Map.of("total", ports.size(), "paired", paired,
+                "unpaired", ports.size() - paired));
+
+        // 件图
+        Map<Integer, List<int[]>> adj = new LinkedHashMap<>(); // piece -> {otherPiece, myPort, otherPort}
+        for (int i = 0; i < pieces.size(); i++) {
+            adj.put(i, new ArrayList<>());
+        }
+        for (Port p : ports) {
+            if (p.other > p.idx) {
+                Port q = ports.get(p.other);
+                adj.get(p.piece).add(new int[]{q.piece, p.idx, q.idx});
+                adj.get(q.piece).add(new int[]{p.piece, q.idx, p.idx});
+            }
+        }
+        int[] depth = new int[pieces.size()];
+        int[] parent = new int[pieces.size()];
+        int[] parentPort = new int[pieces.size()];
+        java.util.Arrays.fill(depth, -1);
+        java.util.Arrays.fill(parent, -1);
+        java.util.Arrays.fill(parentPort, -1);
+        java.util.ArrayDeque<Integer> queue = new java.util.ArrayDeque<>();
+        depth[0] = 0;
+        queue.add(0);
+        List<Map<String, Object>> conns = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            int a = queue.poll();
+            for (int[] e : adj.get(a)) {
+                int b = e[0];
+                if (depth[b] >= 0) {
+                    continue;
+                }
+                depth[b] = depth[a] + 1;
+                parent[b] = a;
+                parentPort[b] = e[1];
+                queue.add(b);
+                Port pp = ports.get(e[1]);
+                Port cp = ports.get(e[2]);
+                Map<String, Object> cm = new LinkedHashMap<>();
+                cm.put("parent", a);
+                cm.put("child", b);
+                cm.put("parentPort", new int[]{pp.pos.getX(), pp.pos.getY(), pp.pos.getZ()});
+                cm.put("parentDir", pp.dir.getName());
+                cm.put("parentName", pp.name);
+                cm.put("parentTarget", pp.target);
+                cm.put("parentPool", pp.pool);
+                cm.put("childPort", new int[]{cp.pos.getX(), cp.pos.getY(), cp.pos.getZ()});
+                cm.put("childDir", cp.dir.getName());
+                cm.put("childName", cp.name);
+                cm.put("childTarget", cp.target);
+                cm.put("childPool", cp.pool);
+                cm.put("depth", depth[b]);
+                conns.add(cm);
+            }
+        }
+        meta.put("connections", conns);
+        for (Map<String, Object> pm : pieceList) {
+            int i = (Integer) pm.get("index");
+            pm.put("depth", depth[i]);
+            pm.put("parent", parent[i]);
+            List<Object> childs = new ArrayList<>();
+            for (int[] e : adj.get(i)) {
+                if (parent[e[0]] == i) {
+                    childs.add(e[0]);
+                }
+            }
+            pm.put("children", childs);
+        }
+        int unreached = 0;
+        for (int i = 0; i < pieces.size(); i++) {
+            if (depth[i] < 0) {
+                unreached++;
+            }
+        }
+        LOG.info("[gpx] BFS depths = {}", java.util.Arrays.toString(depth));
+        meta.put("unreachedPieces", unreached);
+
+        // ---- 4) 逐格 dump（件 union ±3，全部非空气；同时按件计数箱子/刷笼/金蟾） ----
+        BoundingBox dumpBox = new BoundingBox(union.minX() - 3, Math.max(level.getMinBuildHeight(), union.minY() - 3),
+                union.minZ() - 3, union.maxX() + 3, Math.min(level.getMaxBuildHeight() - 1, union.maxY() + 3),
+                union.maxZ() + 3);
+        meta.put("dumpBBox", bbox(dumpBox));
+        int width = dumpBox.maxX() - dumpBox.minX() + 1;
+        int depthZ = dumpBox.maxZ() - dumpBox.minZ() + 1;
+        int[] xPlane = new int[width];
+        int[] zPlane = new int[depthZ];
+        int blocks = 0;
+        try (BufferedWriter w = Files.newBufferedWriter(OUT.resolve("blocks.tsv"),
+                StandardCharsets.UTF_8)) {
+            for (int x = dumpBox.minX(); x <= dumpBox.maxX(); x++) {
+                for (int z = dumpBox.minZ(); z <= dumpBox.maxZ(); z++) {
+                    for (int y = dumpBox.minY(); y <= dumpBox.maxY(); y++) {
+                        BlockState st = level.getBlockState(new BlockPos(x, y, z));
+                        if (st.isAir()) {
+                            continue;
+                        }
+                        String id = BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString();
+                        w.write(x + "," + y + "," + z + "," + id);
+                        w.newLine();
+                        blocks++;
+                        int pi = pieceAt(pieceBoxes, x, y, z);
+                        if (pi >= 0) {
+                            xPlane[x - dumpBox.minX()]++;
+                            zPlane[z - dumpBox.minZ()]++;
+                            if (id.equals("minecraft:chest")) {
+                                chestCount[pi]++;
+                                chestPos.get(pi).add(new int[]{x, y, z});
+                            } else if (id.equals("minecraft:spawner")) {
+                                spawnerCount[pi]++;
+                            } else if (id.equals(TOAD.toString())) {
+                                toadCount[pi]++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        LOG.info("[gpx] dumped non-air blocks = {} into blocks.tsv", blocks);
+        meta.put("dumpedBlocks", blocks);
+
+        for (int i = 0; i < pieces.size(); i++) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> pm = (Map<String, Object>) pieceList.get(i);
+            pm.put("chests", chestCount[i]);
+            pm.put("chestPos", chestPos.get(i));
+            pm.put("spawners", spawnerCount[i]);
+            pm.put("toads", toadCount[i]);
+        }
+        int totalChests = 0;
+        int totalSpawners = 0;
+        int totalToads = 0;
+        for (int i = 0; i < pieces.size(); i++) {
+            totalChests += chestCount[i];
+            totalSpawners += spawnerCount[i];
+            totalToads += toadCount[i];
+        }
+        meta.put("stats", Map.of("pieces", pieces.size(), "templates", templates.size(),
+                "chests", totalChests, "spawners", totalSpawners, "toads", totalToads,
+                "poolHits", poolHits, "templatesUsed", templates));
+
+        // ---- 5) 两条剖面：挑「穿过结构方块最多」的 x / z 平面 ----
+        int bestX = dumpBox.minX();
+        int bestZ = dumpBox.minZ();
+        for (int i = 0; i < width; i++) {
+            if (xPlane[i] > xPlane[bestX - dumpBox.minX()]) {
+                bestX = dumpBox.minX() + i;
+            }
+        }
+        for (int i = 0; i < depthZ; i++) {
+            if (zPlane[i] > zPlane[bestZ - dumpBox.minZ()]) {
+                bestZ = dumpBox.minZ() + i;
+            }
+        }
+        meta.put("sectionX", bestX);
+        meta.put("sectionZ", bestZ);
+        meta.put("sectionXBlocks", xPlane[bestX - dumpBox.minX()]);
+        meta.put("sectionZBlocks", zPlane[bestZ - dumpBox.minZ()]);
+        LOG.info("[gpx] section planes: x={} ({} blocks) z={} ({} blocks)", bestX,
+                xPlane[bestX - dumpBox.minX()], bestZ, zPlane[bestZ - dumpBox.minZ()]);
+
+        try (BufferedWriter w = Files.newBufferedWriter(OUT.resolve("section_x.tsv"),
+                StandardCharsets.UTF_8)) {
+            for (int z = dumpBox.minZ() - 2; z <= dumpBox.maxZ() + 2; z++) {
+                for (int y = 0; y < level.getMaxBuildHeight(); y++) {
+                    BlockState st = level.getBlockState(new BlockPos(bestX, y, z));
+                    if (st.isAir()) {
+                        continue;
+                    }
+                    w.write(bestX + "," + y + "," + z + ","
+                            + BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString());
+                    w.newLine();
+                }
+            }
+        }
+        try (BufferedWriter w = Files.newBufferedWriter(OUT.resolve("section_z.tsv"),
+                StandardCharsets.UTF_8)) {
+            for (int x = dumpBox.minX() - 2; x <= dumpBox.maxX() + 2; x++) {
+                for (int y = 0; y < level.getMaxBuildHeight(); y++) {
+                    BlockState st = level.getBlockState(new BlockPos(x, y, bestZ));
+                    if (st.isAir()) {
+                        continue;
+                    }
+                    w.write(x + "," + y + "," + bestZ + ","
+                            + BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString());
+                    w.newLine();
+                }
+            }
+        }
+
+        // 反空转：forced chunks 必须为空 + halt 只一次
+        meta.put("forcedChunks", level.getForcedChunks().size());
+        LOG.info("[gpx] forced chunks = {}", level.getForcedChunks().size());
+        writeMeta(meta);
+        LOG.info("[gpx] SUMMARY pieces={} templates={} chests={} spawners={} toads={}", pieces.size(),
+                templates.size(), totalChests, totalSpawners, totalToads);
+    }
+
+    private static int pieceAt(List<BoundingBox> boxes, int x, int y, int z) {
+        for (int i = 0; i < boxes.size(); i++) {
+            BoundingBox b = boxes.get(i);
+            if (x >= b.minX() && x <= b.maxX() && y >= b.minY() && y <= b.maxY()
+                    && z >= b.minZ() && z <= b.maxZ()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static String poolOf(String tpl) {
+        return switch (tpl) {
+            case "treasure" -> "start";
+            case "lane" -> "lane";
+            case "exit" -> "exit";
+            case "cell_small_a" -> "cell_small_1";
+            case "cell_small_mirror" -> "cell_small_2";
+            case "cell_small_fertile" -> "cell_small_3";
+            default -> "room";
+        };
+    }
+
+    private static void loadChunks(ServerLevel level, int ccx, int ccz, int r) {
+        for (int cx = ccx - r; cx <= ccx + r; cx++) {
+            for (int cz = ccz - r; cz <= ccz + r; cz++) {
+                level.getChunk(cx, cz, ChunkStatus.FULL, true);
+            }
+        }
+    }
+
+    private static StructureStart findStart(ServerLevel level, Holder<Structure> holder, BlockPos sp) {
+        for (int y = 0; y <= 127; y++) {
+            StructureStart s = level.structureManager().getStructureAt(
+                    new BlockPos(sp.getX(), y, sp.getZ()), holder.value());
+            if (s.isValid()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    private static List<Integer> bbox(BoundingBox b) {
+        return List.of(b.minX(), b.minY(), b.minZ(), b.maxX(), b.maxY(), b.maxZ());
+    }
+
+    private static void writeMeta(Map<String, Object> meta) throws Exception {
+        Files.writeString(OUT.resolve("meta.json"), GSON.toJson(meta), StandardCharsets.UTF_8);
+        LOG.info("[gpx] wrote {}", OUT.resolve("meta.json").toAbsolutePath());
+    }
+}

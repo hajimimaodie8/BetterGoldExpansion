@@ -1,0 +1,7526 @@
+{
+ "note": "阶段 B-1 静态核：20 个 NBT 的 air / 逐口 3x3 / 行走层 / 与 HEAD 旧版逐格 diff",
+ "templates": 20,
+ "rows": [
+  {
+   "file": "cell_large_a.nbt",
+   "size": [
+    15,
+    6,
+    31
+   ],
+   "volume": 2790,
+   "entries": 2790,
+   "palette_has_air": true,
+   "air": 1033,
+   "air_pct": 37.03,
+   "solid": 1757,
+   "walk_y": 1,
+   "walk_cells": 465,
+   "walk_air": 244,
+   "walk_air_pct": 52.47,
+   "walk_inner_cells": 377,
+   "walk_inner_air": 240,
+   "walk_inner_pct": 63.66,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      30
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       30
+      ],
+      [
+       6,
+       2,
+       30
+      ],
+      [
+       6,
+       3,
+       30
+      ],
+      [
+       7,
+       1,
+       30
+      ],
+      [
+       7,
+       2,
+       30
+      ],
+      [
+       7,
+       3,
+       30
+      ],
+      [
+       8,
+       1,
+       30
+      ],
+      [
+       8,
+       2,
+       30
+      ],
+      [
+       8,
+       3,
+       30
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       29
+      ],
+      [
+       6,
+       2,
+       29
+      ],
+      [
+       6,
+       3,
+       29
+      ],
+      [
+       7,
+       1,
+       29
+      ],
+      [
+       7,
+       2,
+       29
+      ],
+      [
+       7,
+       3,
+       29
+      ],
+      [
+       8,
+       1,
+       29
+      ],
+      [
+       8,
+       2,
+       29
+      ],
+      [
+       8,
+       3,
+       29
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    31
+   ],
+   "old_entries": 1757,
+   "old_solid": 1757,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 1033,
+    "added_sample": [
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      1,
+      23
+     ],
+     [
+      1,
+      1,
+      24
+     ],
+     [
+      1,
+      1,
+      25
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      11
+     ],
+     [
+      1,
+      2,
+      14
+     ],
+     [
+      1,
+      2,
+      15
+     ],
+     [
+      1,
+      2,
+      16
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 1033
+   }
+  },
+  {
+   "file": "cell_large_b.nbt",
+   "size": [
+    15,
+    6,
+    31
+   ],
+   "volume": 2790,
+   "entries": 2790,
+   "palette_has_air": true,
+   "air": 1036,
+   "air_pct": 37.13,
+   "solid": 1754,
+   "walk_y": 1,
+   "walk_cells": 465,
+   "walk_air": 237,
+   "walk_air_pct": 50.97,
+   "walk_inner_cells": 377,
+   "walk_inner_air": 233,
+   "walk_inner_pct": 61.8,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      30
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       30
+      ],
+      [
+       6,
+       2,
+       30
+      ],
+      [
+       6,
+       3,
+       30
+      ],
+      [
+       7,
+       1,
+       30
+      ],
+      [
+       7,
+       2,
+       30
+      ],
+      [
+       7,
+       3,
+       30
+      ],
+      [
+       8,
+       1,
+       30
+      ],
+      [
+       8,
+       2,
+       30
+      ],
+      [
+       8,
+       3,
+       30
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       29
+      ],
+      [
+       6,
+       2,
+       29
+      ],
+      [
+       6,
+       3,
+       29
+      ],
+      [
+       7,
+       1,
+       29
+      ],
+      [
+       7,
+       2,
+       29
+      ],
+      [
+       7,
+       3,
+       29
+      ],
+      [
+       8,
+       1,
+       29
+      ],
+      [
+       8,
+       2,
+       29
+      ],
+      [
+       8,
+       3,
+       29
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    31
+   ],
+   "old_entries": 1754,
+   "old_solid": 1754,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 1036,
+    "added_sample": [
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      13
+     ],
+     [
+      1,
+      1,
+      14
+     ],
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      1,
+      17
+     ],
+     [
+      1,
+      1,
+      25
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      6
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 1036
+   }
+  },
+  {
+   "file": "cell_large_c.nbt",
+   "size": [
+    15,
+    6,
+    31
+   ],
+   "volume": 2790,
+   "entries": 2790,
+   "palette_has_air": true,
+   "air": 1046,
+   "air_pct": 37.49,
+   "solid": 1744,
+   "walk_y": 1,
+   "walk_cells": 465,
+   "walk_air": 247,
+   "walk_air_pct": 53.12,
+   "walk_inner_cells": 377,
+   "walk_inner_air": 243,
+   "walk_inner_pct": 64.46,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      30
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       30
+      ],
+      [
+       6,
+       2,
+       30
+      ],
+      [
+       6,
+       3,
+       30
+      ],
+      [
+       7,
+       1,
+       30
+      ],
+      [
+       7,
+       2,
+       30
+      ],
+      [
+       7,
+       3,
+       30
+      ],
+      [
+       8,
+       1,
+       30
+      ],
+      [
+       8,
+       2,
+       30
+      ],
+      [
+       8,
+       3,
+       30
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       29
+      ],
+      [
+       6,
+       2,
+       29
+      ],
+      [
+       6,
+       3,
+       29
+      ],
+      [
+       7,
+       1,
+       29
+      ],
+      [
+       7,
+       2,
+       29
+      ],
+      [
+       7,
+       3,
+       29
+      ],
+      [
+       8,
+       1,
+       29
+      ],
+      [
+       8,
+       2,
+       29
+      ],
+      [
+       8,
+       3,
+       29
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    31
+   ],
+   "old_entries": 1744,
+   "old_solid": 1744,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 1046,
+    "added_sample": [
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      7
+     ],
+     [
+      1,
+      1,
+      14
+     ],
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      7
+     ],
+     [
+      1,
+      2,
+      8
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 1046
+   }
+  },
+  {
+   "file": "cell_large_fertile.nbt",
+   "size": [
+    15,
+    6,
+    31
+   ],
+   "volume": 2790,
+   "entries": 2790,
+   "palette_has_air": true,
+   "air": 1024,
+   "air_pct": 36.7,
+   "solid": 1766,
+   "walk_y": 1,
+   "walk_cells": 465,
+   "walk_air": 235,
+   "walk_air_pct": 50.54,
+   "walk_inner_cells": 377,
+   "walk_inner_air": 231,
+   "walk_inner_pct": 61.27,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      30
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       30
+      ],
+      [
+       6,
+       2,
+       30
+      ],
+      [
+       6,
+       3,
+       30
+      ],
+      [
+       7,
+       1,
+       30
+      ],
+      [
+       7,
+       2,
+       30
+      ],
+      [
+       7,
+       3,
+       30
+      ],
+      [
+       8,
+       1,
+       30
+      ],
+      [
+       8,
+       2,
+       30
+      ],
+      [
+       8,
+       3,
+       30
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       29
+      ],
+      [
+       6,
+       2,
+       29
+      ],
+      [
+       6,
+       3,
+       29
+      ],
+      [
+       7,
+       1,
+       29
+      ],
+      [
+       7,
+       2,
+       29
+      ],
+      [
+       7,
+       3,
+       29
+      ],
+      [
+       8,
+       1,
+       29
+      ],
+      [
+       8,
+       2,
+       29
+      ],
+      [
+       8,
+       3,
+       29
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    31
+   ],
+   "old_entries": 1766,
+   "old_solid": 1766,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 1024,
+    "added_sample": [
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      11
+     ],
+     [
+      1,
+      2,
+      14
+     ],
+     [
+      1,
+      2,
+      15
+     ],
+     [
+      1,
+      2,
+      16
+     ],
+     [
+      1,
+      2,
+      17
+     ],
+     [
+      1,
+      2,
+      18
+     ],
+     [
+      1,
+      2,
+      23
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 1024
+   }
+  },
+  {
+   "file": "cell_large_mirror.nbt",
+   "size": [
+    15,
+    6,
+    31
+   ],
+   "volume": 2790,
+   "entries": 2790,
+   "palette_has_air": true,
+   "air": 1033,
+   "air_pct": 37.03,
+   "solid": 1757,
+   "walk_y": 1,
+   "walk_cells": 465,
+   "walk_air": 244,
+   "walk_air_pct": 52.47,
+   "walk_inner_cells": 377,
+   "walk_inner_air": 240,
+   "walk_inner_pct": 63.66,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      30
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       30
+      ],
+      [
+       6,
+       2,
+       30
+      ],
+      [
+       6,
+       3,
+       30
+      ],
+      [
+       7,
+       1,
+       30
+      ],
+      [
+       7,
+       2,
+       30
+      ],
+      [
+       7,
+       3,
+       30
+      ],
+      [
+       8,
+       1,
+       30
+      ],
+      [
+       8,
+       2,
+       30
+      ],
+      [
+       8,
+       3,
+       30
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       29
+      ],
+      [
+       6,
+       2,
+       29
+      ],
+      [
+       6,
+       3,
+       29
+      ],
+      [
+       7,
+       1,
+       29
+      ],
+      [
+       7,
+       2,
+       29
+      ],
+      [
+       7,
+       3,
+       29
+      ],
+      [
+       8,
+       1,
+       29
+      ],
+      [
+       8,
+       2,
+       29
+      ],
+      [
+       8,
+       3,
+       29
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    31
+   ],
+   "old_entries": 1757,
+   "old_solid": 1757,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 1033,
+    "added_sample": [
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      7
+     ],
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      1,
+      17
+     ],
+     [
+      1,
+      1,
+      25
+     ],
+     [
+      1,
+      1,
+      26
+     ],
+     [
+      1,
+      1,
+      27
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 1033
+   }
+  },
+  {
+   "file": "cell_medium_a.nbt",
+   "size": [
+    15,
+    6,
+    21
+   ],
+   "volume": 1890,
+   "entries": 1890,
+   "palette_has_air": true,
+   "air": 676,
+   "air_pct": 35.77,
+   "solid": 1214,
+   "walk_y": 1,
+   "walk_cells": 315,
+   "walk_air": 158,
+   "walk_air_pct": 50.16,
+   "walk_inner_cells": 247,
+   "walk_inner_air": 154,
+   "walk_inner_pct": 62.35,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      20
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       20
+      ],
+      [
+       6,
+       2,
+       20
+      ],
+      [
+       6,
+       3,
+       20
+      ],
+      [
+       7,
+       1,
+       20
+      ],
+      [
+       7,
+       2,
+       20
+      ],
+      [
+       7,
+       3,
+       20
+      ],
+      [
+       8,
+       1,
+       20
+      ],
+      [
+       8,
+       2,
+       20
+      ],
+      [
+       8,
+       3,
+       20
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       19
+      ],
+      [
+       6,
+       2,
+       19
+      ],
+      [
+       6,
+       3,
+       19
+      ],
+      [
+       7,
+       1,
+       19
+      ],
+      [
+       7,
+       2,
+       19
+      ],
+      [
+       7,
+       3,
+       19
+      ],
+      [
+       8,
+       1,
+       19
+      ],
+      [
+       8,
+       2,
+       19
+      ],
+      [
+       8,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    21
+   ],
+   "old_entries": 1214,
+   "old_solid": 1214,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 676,
+    "added_sample": [
+     [
+      1,
+      1,
+      3
+     ],
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      1,
+      17
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 676
+   }
+  },
+  {
+   "file": "cell_medium_b.nbt",
+   "size": [
+    15,
+    6,
+    21
+   ],
+   "volume": 1890,
+   "entries": 1890,
+   "palette_has_air": true,
+   "air": 688,
+   "air_pct": 36.4,
+   "solid": 1202,
+   "walk_y": 1,
+   "walk_cells": 315,
+   "walk_air": 163,
+   "walk_air_pct": 51.75,
+   "walk_inner_cells": 247,
+   "walk_inner_air": 159,
+   "walk_inner_pct": 64.37,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      20
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       20
+      ],
+      [
+       6,
+       2,
+       20
+      ],
+      [
+       6,
+       3,
+       20
+      ],
+      [
+       7,
+       1,
+       20
+      ],
+      [
+       7,
+       2,
+       20
+      ],
+      [
+       7,
+       3,
+       20
+      ],
+      [
+       8,
+       1,
+       20
+      ],
+      [
+       8,
+       2,
+       20
+      ],
+      [
+       8,
+       3,
+       20
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       19
+      ],
+      [
+       6,
+       2,
+       19
+      ],
+      [
+       6,
+       3,
+       19
+      ],
+      [
+       7,
+       1,
+       19
+      ],
+      [
+       7,
+       2,
+       19
+      ],
+      [
+       7,
+       3,
+       19
+      ],
+      [
+       8,
+       1,
+       19
+      ],
+      [
+       8,
+       2,
+       19
+      ],
+      [
+       8,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    21
+   ],
+   "old_entries": 1202,
+   "old_solid": 1202,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 688,
+    "added_sample": [
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      7
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      8
+     ],
+     [
+      1,
+      2,
+      14
+     ],
+     [
+      1,
+      2,
+      15
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 688
+   }
+  },
+  {
+   "file": "cell_medium_c.nbt",
+   "size": [
+    15,
+    6,
+    21
+   ],
+   "volume": 1890,
+   "entries": 1890,
+   "palette_has_air": true,
+   "air": 704,
+   "air_pct": 37.25,
+   "solid": 1186,
+   "walk_y": 1,
+   "walk_cells": 315,
+   "walk_air": 165,
+   "walk_air_pct": 52.38,
+   "walk_inner_cells": 247,
+   "walk_inner_air": 161,
+   "walk_inner_pct": 65.18,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      20
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       20
+      ],
+      [
+       6,
+       2,
+       20
+      ],
+      [
+       6,
+       3,
+       20
+      ],
+      [
+       7,
+       1,
+       20
+      ],
+      [
+       7,
+       2,
+       20
+      ],
+      [
+       7,
+       3,
+       20
+      ],
+      [
+       8,
+       1,
+       20
+      ],
+      [
+       8,
+       2,
+       20
+      ],
+      [
+       8,
+       3,
+       20
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       19
+      ],
+      [
+       6,
+       2,
+       19
+      ],
+      [
+       6,
+       3,
+       19
+      ],
+      [
+       7,
+       1,
+       19
+      ],
+      [
+       7,
+       2,
+       19
+      ],
+      [
+       7,
+       3,
+       19
+      ],
+      [
+       8,
+       1,
+       19
+      ],
+      [
+       8,
+       2,
+       19
+      ],
+      [
+       8,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    21
+   ],
+   "old_entries": 1186,
+   "old_solid": 1186,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 704,
+    "added_sample": [
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      7
+     ],
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      7
+     ],
+     [
+      1,
+      2,
+      13
+     ],
+     [
+      1,
+      2,
+      15
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 704
+   }
+  },
+  {
+   "file": "cell_medium_fertile.nbt",
+   "size": [
+    15,
+    6,
+    21
+   ],
+   "volume": 1890,
+   "entries": 1890,
+   "palette_has_air": true,
+   "air": 667,
+   "air_pct": 35.29,
+   "solid": 1223,
+   "walk_y": 1,
+   "walk_cells": 315,
+   "walk_air": 149,
+   "walk_air_pct": 47.3,
+   "walk_inner_cells": 247,
+   "walk_inner_air": 145,
+   "walk_inner_pct": 58.7,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      20
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       20
+      ],
+      [
+       6,
+       2,
+       20
+      ],
+      [
+       6,
+       3,
+       20
+      ],
+      [
+       7,
+       1,
+       20
+      ],
+      [
+       7,
+       2,
+       20
+      ],
+      [
+       7,
+       3,
+       20
+      ],
+      [
+       8,
+       1,
+       20
+      ],
+      [
+       8,
+       2,
+       20
+      ],
+      [
+       8,
+       3,
+       20
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       19
+      ],
+      [
+       6,
+       2,
+       19
+      ],
+      [
+       6,
+       3,
+       19
+      ],
+      [
+       7,
+       1,
+       19
+      ],
+      [
+       7,
+       2,
+       19
+      ],
+      [
+       7,
+       3,
+       19
+      ],
+      [
+       8,
+       1,
+       19
+      ],
+      [
+       8,
+       2,
+       19
+      ],
+      [
+       8,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    21
+   ],
+   "old_entries": 1223,
+   "old_solid": 1223,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 667,
+    "added_sample": [
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      1,
+      16
+     ],
+     [
+      1,
+      1,
+      17
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      7
+     ],
+     [
+      1,
+      2,
+      8
+     ],
+     [
+      1,
+      2,
+      11
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 667
+   }
+  },
+  {
+   "file": "cell_medium_mirror.nbt",
+   "size": [
+    15,
+    6,
+    21
+   ],
+   "volume": 1890,
+   "entries": 1890,
+   "palette_has_air": true,
+   "air": 676,
+   "air_pct": 35.77,
+   "solid": 1214,
+   "walk_y": 1,
+   "walk_cells": 315,
+   "walk_air": 158,
+   "walk_air_pct": 50.16,
+   "walk_inner_cells": 247,
+   "walk_inner_air": 154,
+   "walk_inner_pct": 62.35,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      20
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       20
+      ],
+      [
+       6,
+       2,
+       20
+      ],
+      [
+       6,
+       3,
+       20
+      ],
+      [
+       7,
+       1,
+       20
+      ],
+      [
+       7,
+       2,
+       20
+      ],
+      [
+       7,
+       3,
+       20
+      ],
+      [
+       8,
+       1,
+       20
+      ],
+      [
+       8,
+       2,
+       20
+      ],
+      [
+       8,
+       3,
+       20
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       19
+      ],
+      [
+       6,
+       2,
+       19
+      ],
+      [
+       6,
+       3,
+       19
+      ],
+      [
+       7,
+       1,
+       19
+      ],
+      [
+       7,
+       2,
+       19
+      ],
+      [
+       7,
+       3,
+       19
+      ],
+      [
+       8,
+       1,
+       19
+      ],
+      [
+       8,
+       2,
+       19
+      ],
+      [
+       8,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    21
+   ],
+   "old_entries": 1214,
+   "old_solid": 1214,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 676,
+    "added_sample": [
+     [
+      1,
+      1,
+      14
+     ],
+     [
+      1,
+      1,
+      15
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      14
+     ],
+     [
+      1,
+      2,
+      15
+     ],
+     [
+      1,
+      2,
+      16
+     ],
+     [
+      1,
+      2,
+      17
+     ],
+     [
+      1,
+      3,
+      3
+     ],
+     [
+      1,
+      3,
+      5
+     ],
+     [
+      1,
+      3,
+      6
+     ],
+     [
+      1,
+      3,
+      7
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 676
+   }
+  },
+  {
+   "file": "cell_small_a.nbt",
+   "size": [
+    15,
+    6,
+    11
+   ],
+   "volume": 990,
+   "entries": 990,
+   "palette_has_air": true,
+   "air": 318,
+   "air_pct": 32.12,
+   "solid": 672,
+   "walk_y": 1,
+   "walk_cells": 165,
+   "walk_air": 71,
+   "walk_air_pct": 43.03,
+   "walk_inner_cells": 117,
+   "walk_inner_air": 67,
+   "walk_inner_pct": 57.26,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "cell_small_1",
+     "target": "cell_small_2",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      10
+     ],
+     "name": "cell_small_1",
+     "target": "cell_small_2",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       10
+      ],
+      [
+       6,
+       2,
+       10
+      ],
+      [
+       6,
+       3,
+       10
+      ],
+      [
+       7,
+       1,
+       10
+      ],
+      [
+       7,
+       2,
+       10
+      ],
+      [
+       7,
+       3,
+       10
+      ],
+      [
+       8,
+       1,
+       10
+      ],
+      [
+       8,
+       2,
+       10
+      ],
+      [
+       8,
+       3,
+       10
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       9
+      ],
+      [
+       6,
+       2,
+       9
+      ],
+      [
+       6,
+       3,
+       9
+      ],
+      [
+       7,
+       1,
+       9
+      ],
+      [
+       7,
+       2,
+       9
+      ],
+      [
+       7,
+       3,
+       9
+      ],
+      [
+       8,
+       1,
+       9
+      ],
+      [
+       8,
+       2,
+       9
+      ],
+      [
+       8,
+       3,
+       9
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    11
+   ],
+   "old_entries": 672,
+   "old_solid": 672,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 318,
+    "added_sample": [
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      3,
+      1
+     ],
+     [
+      1,
+      3,
+      4
+     ],
+     [
+      1,
+      3,
+      6
+     ],
+     [
+      1,
+      3,
+      7
+     ],
+     [
+      1,
+      3,
+      8
+     ],
+     [
+      1,
+      4,
+      2
+     ],
+     [
+      1,
+      4,
+      4
+     ],
+     [
+      1,
+      4,
+      6
+     ],
+     [
+      1,
+      4,
+      8
+     ],
+     [
+      1,
+      4,
+      9
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 318
+   }
+  },
+  {
+   "file": "cell_small_b.nbt",
+   "size": [
+    15,
+    6,
+    11
+   ],
+   "volume": 990,
+   "entries": 990,
+   "palette_has_air": true,
+   "air": 325,
+   "air_pct": 32.83,
+   "solid": 665,
+   "walk_y": 1,
+   "walk_cells": 165,
+   "walk_air": 74,
+   "walk_air_pct": 44.85,
+   "walk_inner_cells": 117,
+   "walk_inner_air": 70,
+   "walk_inner_pct": 59.83,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      10
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       10
+      ],
+      [
+       6,
+       2,
+       10
+      ],
+      [
+       6,
+       3,
+       10
+      ],
+      [
+       7,
+       1,
+       10
+      ],
+      [
+       7,
+       2,
+       10
+      ],
+      [
+       7,
+       3,
+       10
+      ],
+      [
+       8,
+       1,
+       10
+      ],
+      [
+       8,
+       2,
+       10
+      ],
+      [
+       8,
+       3,
+       10
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       9
+      ],
+      [
+       6,
+       2,
+       9
+      ],
+      [
+       6,
+       3,
+       9
+      ],
+      [
+       7,
+       1,
+       9
+      ],
+      [
+       7,
+       2,
+       9
+      ],
+      [
+       7,
+       3,
+       9
+      ],
+      [
+       8,
+       1,
+       9
+      ],
+      [
+       8,
+       2,
+       9
+      ],
+      [
+       8,
+       3,
+       9
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    11
+   ],
+   "old_entries": 665,
+   "old_solid": 665,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 325,
+    "added_sample": [
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      2,
+      1
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      3,
+      2
+     ],
+     [
+      1,
+      3,
+      3
+     ],
+     [
+      1,
+      3,
+      4
+     ],
+     [
+      1,
+      3,
+      5
+     ],
+     [
+      1,
+      3,
+      8
+     ],
+     [
+      1,
+      4,
+      2
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 325
+   }
+  },
+  {
+   "file": "cell_small_c.nbt",
+   "size": [
+    15,
+    6,
+    11
+   ],
+   "volume": 990,
+   "entries": 990,
+   "palette_has_air": true,
+   "air": 344,
+   "air_pct": 34.75,
+   "solid": 646,
+   "walk_y": 1,
+   "walk_cells": 165,
+   "walk_air": 79,
+   "walk_air_pct": 47.88,
+   "walk_inner_cells": 117,
+   "walk_inner_air": 75,
+   "walk_inner_pct": 64.1,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      10
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       10
+      ],
+      [
+       6,
+       2,
+       10
+      ],
+      [
+       6,
+       3,
+       10
+      ],
+      [
+       7,
+       1,
+       10
+      ],
+      [
+       7,
+       2,
+       10
+      ],
+      [
+       7,
+       3,
+       10
+      ],
+      [
+       8,
+       1,
+       10
+      ],
+      [
+       8,
+       2,
+       10
+      ],
+      [
+       8,
+       3,
+       10
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       9
+      ],
+      [
+       6,
+       2,
+       9
+      ],
+      [
+       6,
+       3,
+       9
+      ],
+      [
+       7,
+       1,
+       9
+      ],
+      [
+       7,
+       2,
+       9
+      ],
+      [
+       7,
+       3,
+       9
+      ],
+      [
+       8,
+       1,
+       9
+      ],
+      [
+       8,
+       2,
+       9
+      ],
+      [
+       8,
+       3,
+       9
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    11
+   ],
+   "old_entries": 646,
+   "old_solid": 646,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 344,
+    "added_sample": [
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      2,
+      7
+     ],
+     [
+      1,
+      2,
+      8
+     ],
+     [
+      1,
+      3,
+      1
+     ],
+     [
+      1,
+      3,
+      2
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 344
+   }
+  },
+  {
+   "file": "cell_small_fertile.nbt",
+   "size": [
+    15,
+    6,
+    11
+   ],
+   "volume": 990,
+   "entries": 990,
+   "palette_has_air": true,
+   "air": 312,
+   "air_pct": 31.52,
+   "solid": 678,
+   "walk_y": 1,
+   "walk_cells": 165,
+   "walk_air": 65,
+   "walk_air_pct": 39.39,
+   "walk_inner_cells": 117,
+   "walk_inner_air": 61,
+   "walk_inner_pct": 52.14,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "cell_small_3",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      10
+     ],
+     "name": "cell_small_3",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       10
+      ],
+      [
+       6,
+       2,
+       10
+      ],
+      [
+       6,
+       3,
+       10
+      ],
+      [
+       7,
+       1,
+       10
+      ],
+      [
+       7,
+       2,
+       10
+      ],
+      [
+       7,
+       3,
+       10
+      ],
+      [
+       8,
+       1,
+       10
+      ],
+      [
+       8,
+       2,
+       10
+      ],
+      [
+       8,
+       3,
+       10
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       9
+      ],
+      [
+       6,
+       2,
+       9
+      ],
+      [
+       6,
+       3,
+       9
+      ],
+      [
+       7,
+       1,
+       9
+      ],
+      [
+       7,
+       2,
+       9
+      ],
+      [
+       7,
+       3,
+       9
+      ],
+      [
+       8,
+       1,
+       9
+      ],
+      [
+       8,
+       2,
+       9
+      ],
+      [
+       8,
+       3,
+       9
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    11
+   ],
+   "old_entries": 678,
+   "old_solid": 678,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 312,
+    "added_sample": [
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      6
+     ],
+     [
+      1,
+      3,
+      1
+     ],
+     [
+      1,
+      3,
+      4
+     ],
+     [
+      1,
+      3,
+      6
+     ],
+     [
+      1,
+      3,
+      7
+     ],
+     [
+      1,
+      3,
+      8
+     ],
+     [
+      1,
+      4,
+      2
+     ],
+     [
+      1,
+      4,
+      4
+     ],
+     [
+      1,
+      4,
+      6
+     ],
+     [
+      1,
+      4,
+      8
+     ],
+     [
+      1,
+      4,
+      9
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 312
+   }
+  },
+  {
+   "file": "cell_small_mirror.nbt",
+   "size": [
+    15,
+    6,
+    11
+   ],
+   "volume": 990,
+   "entries": 990,
+   "palette_has_air": true,
+   "air": 318,
+   "air_pct": 32.12,
+   "solid": 672,
+   "walk_y": 1,
+   "walk_cells": 165,
+   "walk_air": 71,
+   "walk_air_pct": 43.03,
+   "walk_inner_cells": 117,
+   "walk_inner_air": 67,
+   "walk_inner_pct": 57.26,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      7,
+      1,
+      0
+     ],
+     "name": "cell_small_2",
+     "target": "cell_small_3",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       0
+      ],
+      [
+       6,
+       2,
+       0
+      ],
+      [
+       6,
+       3,
+       0
+      ],
+      [
+       7,
+       1,
+       0
+      ],
+      [
+       7,
+       2,
+       0
+      ],
+      [
+       7,
+       3,
+       0
+      ],
+      [
+       8,
+       1,
+       0
+      ],
+      [
+       8,
+       2,
+       0
+      ],
+      [
+       8,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       1
+      ],
+      [
+       6,
+       2,
+       1
+      ],
+      [
+       6,
+       3,
+       1
+      ],
+      [
+       7,
+       1,
+       1
+      ],
+      [
+       7,
+       2,
+       1
+      ],
+      [
+       7,
+       3,
+       1
+      ],
+      [
+       8,
+       1,
+       1
+      ],
+      [
+       8,
+       2,
+       1
+      ],
+      [
+       8,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      7,
+      1,
+      10
+     ],
+     "name": "cell_small_2",
+     "target": "cell_small_3",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       6,
+       1,
+       10
+      ],
+      [
+       6,
+       2,
+       10
+      ],
+      [
+       6,
+       3,
+       10
+      ],
+      [
+       7,
+       1,
+       10
+      ],
+      [
+       7,
+       2,
+       10
+      ],
+      [
+       7,
+       3,
+       10
+      ],
+      [
+       8,
+       1,
+       10
+      ],
+      [
+       8,
+       2,
+       10
+      ],
+      [
+       8,
+       3,
+       10
+      ]
+     ],
+     "inner_cells": [
+      [
+       6,
+       1,
+       9
+      ],
+      [
+       6,
+       2,
+       9
+      ],
+      [
+       6,
+       3,
+       9
+      ],
+      [
+       7,
+       1,
+       9
+      ],
+      [
+       7,
+       2,
+       9
+      ],
+      [
+       7,
+       3,
+       9
+      ],
+      [
+       8,
+       1,
+       9
+      ],
+      [
+       8,
+       2,
+       9
+      ],
+      [
+       8,
+       3,
+       9
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    15,
+    6,
+    11
+   ],
+   "old_entries": 672,
+   "old_solid": 672,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 318,
+    "added_sample": [
+     [
+      1,
+      1,
+      5
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      4
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      7
+     ],
+     [
+      1,
+      2,
+      8
+     ],
+     [
+      1,
+      3,
+      2
+     ],
+     [
+      1,
+      3,
+      3
+     ],
+     [
+      1,
+      3,
+      4
+     ],
+     [
+      1,
+      3,
+      5
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 318
+   }
+  },
+  {
+   "file": "cross_a.nbt",
+   "size": [
+    37,
+    8,
+    37
+   ],
+   "volume": 10952,
+   "entries": 10952,
+   "palette_has_air": true,
+   "air": 4668,
+   "air_pct": 42.62,
+   "solid": 6284,
+   "walk_y": 1,
+   "walk_cells": 1369,
+   "walk_air": 811,
+   "walk_air_pct": 59.24,
+   "walk_inner_cells": 1225,
+   "walk_inner_air": 803,
+   "walk_inner_pct": 65.55,
+   "mouths": [
+    {
+     "side": "west",
+     "pos": [
+      0,
+      1,
+      18
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       0,
+       1,
+       17
+      ],
+      [
+       0,
+       2,
+       17
+      ],
+      [
+       0,
+       3,
+       17
+      ],
+      [
+       0,
+       1,
+       18
+      ],
+      [
+       0,
+       2,
+       18
+      ],
+      [
+       0,
+       3,
+       18
+      ],
+      [
+       0,
+       1,
+       19
+      ],
+      [
+       0,
+       2,
+       19
+      ],
+      [
+       0,
+       3,
+       19
+      ]
+     ],
+     "inner_cells": [
+      [
+       1,
+       1,
+       17
+      ],
+      [
+       1,
+       2,
+       17
+      ],
+      [
+       1,
+       3,
+       17
+      ],
+      [
+       1,
+       1,
+       18
+      ],
+      [
+       1,
+       2,
+       18
+      ],
+      [
+       1,
+       3,
+       18
+      ],
+      [
+       1,
+       1,
+       19
+      ],
+      [
+       1,
+       2,
+       19
+      ],
+      [
+       1,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "north",
+     "pos": [
+      18,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       17,
+       1,
+       0
+      ],
+      [
+       17,
+       2,
+       0
+      ],
+      [
+       17,
+       3,
+       0
+      ],
+      [
+       18,
+       1,
+       0
+      ],
+      [
+       18,
+       2,
+       0
+      ],
+      [
+       18,
+       3,
+       0
+      ],
+      [
+       19,
+       1,
+       0
+      ],
+      [
+       19,
+       2,
+       0
+      ],
+      [
+       19,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       17,
+       1,
+       1
+      ],
+      [
+       17,
+       2,
+       1
+      ],
+      [
+       17,
+       3,
+       1
+      ],
+      [
+       18,
+       1,
+       1
+      ],
+      [
+       18,
+       2,
+       1
+      ],
+      [
+       18,
+       3,
+       1
+      ],
+      [
+       19,
+       1,
+       1
+      ],
+      [
+       19,
+       2,
+       1
+      ],
+      [
+       19,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      18,
+      1,
+      36
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       17,
+       1,
+       36
+      ],
+      [
+       17,
+       2,
+       36
+      ],
+      [
+       17,
+       3,
+       36
+      ],
+      [
+       18,
+       1,
+       36
+      ],
+      [
+       18,
+       2,
+       36
+      ],
+      [
+       18,
+       3,
+       36
+      ],
+      [
+       19,
+       1,
+       36
+      ],
+      [
+       19,
+       2,
+       36
+      ],
+      [
+       19,
+       3,
+       36
+      ]
+     ],
+     "inner_cells": [
+      [
+       17,
+       1,
+       35
+      ],
+      [
+       17,
+       2,
+       35
+      ],
+      [
+       17,
+       3,
+       35
+      ],
+      [
+       18,
+       1,
+       35
+      ],
+      [
+       18,
+       2,
+       35
+      ],
+      [
+       18,
+       3,
+       35
+      ],
+      [
+       19,
+       1,
+       35
+      ],
+      [
+       19,
+       2,
+       35
+      ],
+      [
+       19,
+       3,
+       35
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "east",
+     "pos": [
+      36,
+      1,
+      18
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       36,
+       1,
+       17
+      ],
+      [
+       36,
+       2,
+       17
+      ],
+      [
+       36,
+       3,
+       17
+      ],
+      [
+       36,
+       1,
+       18
+      ],
+      [
+       36,
+       2,
+       18
+      ],
+      [
+       36,
+       3,
+       18
+      ],
+      [
+       36,
+       1,
+       19
+      ],
+      [
+       36,
+       2,
+       19
+      ],
+      [
+       36,
+       3,
+       19
+      ]
+     ],
+     "inner_cells": [
+      [
+       35,
+       1,
+       17
+      ],
+      [
+       35,
+       2,
+       17
+      ],
+      [
+       35,
+       3,
+       17
+      ],
+      [
+       35,
+       1,
+       18
+      ],
+      [
+       35,
+       2,
+       18
+      ],
+      [
+       35,
+       3,
+       18
+      ],
+      [
+       35,
+       1,
+       19
+      ],
+      [
+       35,
+       2,
+       19
+      ],
+      [
+       35,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    37,
+    8,
+    37
+   ],
+   "old_entries": 6284,
+   "old_solid": 6284,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 4668,
+    "added_sample": [
+     [
+      0,
+      1,
+      17
+     ],
+     [
+      0,
+      1,
+      19
+     ],
+     [
+      0,
+      2,
+      17
+     ],
+     [
+      0,
+      2,
+      18
+     ],
+     [
+      0,
+      2,
+      19
+     ],
+     [
+      0,
+      3,
+      17
+     ],
+     [
+      0,
+      3,
+      18
+     ],
+     [
+      0,
+      3,
+      19
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      7
+     ],
+     [
+      1,
+      1,
+      8
+     ],
+     [
+      1,
+      1,
+      17
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 4668
+   }
+  },
+  {
+   "file": "cross_b.nbt",
+   "size": [
+    37,
+    8,
+    37
+   ],
+   "volume": 10952,
+   "entries": 10952,
+   "palette_has_air": true,
+   "air": 4671,
+   "air_pct": 42.65,
+   "solid": 6281,
+   "walk_y": 1,
+   "walk_cells": 1369,
+   "walk_air": 805,
+   "walk_air_pct": 58.8,
+   "walk_inner_cells": 1225,
+   "walk_inner_air": 797,
+   "walk_inner_pct": 65.06,
+   "mouths": [
+    {
+     "side": "west",
+     "pos": [
+      0,
+      1,
+      18
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       0,
+       1,
+       17
+      ],
+      [
+       0,
+       2,
+       17
+      ],
+      [
+       0,
+       3,
+       17
+      ],
+      [
+       0,
+       1,
+       18
+      ],
+      [
+       0,
+       2,
+       18
+      ],
+      [
+       0,
+       3,
+       18
+      ],
+      [
+       0,
+       1,
+       19
+      ],
+      [
+       0,
+       2,
+       19
+      ],
+      [
+       0,
+       3,
+       19
+      ]
+     ],
+     "inner_cells": [
+      [
+       1,
+       1,
+       17
+      ],
+      [
+       1,
+       2,
+       17
+      ],
+      [
+       1,
+       3,
+       17
+      ],
+      [
+       1,
+       1,
+       18
+      ],
+      [
+       1,
+       2,
+       18
+      ],
+      [
+       1,
+       3,
+       18
+      ],
+      [
+       1,
+       1,
+       19
+      ],
+      [
+       1,
+       2,
+       19
+      ],
+      [
+       1,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "north",
+     "pos": [
+      18,
+      1,
+      0
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       17,
+       1,
+       0
+      ],
+      [
+       17,
+       2,
+       0
+      ],
+      [
+       17,
+       3,
+       0
+      ],
+      [
+       18,
+       1,
+       0
+      ],
+      [
+       18,
+       2,
+       0
+      ],
+      [
+       18,
+       3,
+       0
+      ],
+      [
+       19,
+       1,
+       0
+      ],
+      [
+       19,
+       2,
+       0
+      ],
+      [
+       19,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       17,
+       1,
+       1
+      ],
+      [
+       17,
+       2,
+       1
+      ],
+      [
+       17,
+       3,
+       1
+      ],
+      [
+       18,
+       1,
+       1
+      ],
+      [
+       18,
+       2,
+       1
+      ],
+      [
+       18,
+       3,
+       1
+      ],
+      [
+       19,
+       1,
+       1
+      ],
+      [
+       19,
+       2,
+       1
+      ],
+      [
+       19,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      18,
+      1,
+      36
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       17,
+       1,
+       36
+      ],
+      [
+       17,
+       2,
+       36
+      ],
+      [
+       17,
+       3,
+       36
+      ],
+      [
+       18,
+       1,
+       36
+      ],
+      [
+       18,
+       2,
+       36
+      ],
+      [
+       18,
+       3,
+       36
+      ],
+      [
+       19,
+       1,
+       36
+      ],
+      [
+       19,
+       2,
+       36
+      ],
+      [
+       19,
+       3,
+       36
+      ]
+     ],
+     "inner_cells": [
+      [
+       17,
+       1,
+       35
+      ],
+      [
+       17,
+       2,
+       35
+      ],
+      [
+       17,
+       3,
+       35
+      ],
+      [
+       18,
+       1,
+       35
+      ],
+      [
+       18,
+       2,
+       35
+      ],
+      [
+       18,
+       3,
+       35
+      ],
+      [
+       19,
+       1,
+       35
+      ],
+      [
+       19,
+       2,
+       35
+      ],
+      [
+       19,
+       3,
+       35
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "east",
+     "pos": [
+      36,
+      1,
+      18
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       36,
+       1,
+       17
+      ],
+      [
+       36,
+       2,
+       17
+      ],
+      [
+       36,
+       3,
+       17
+      ],
+      [
+       36,
+       1,
+       18
+      ],
+      [
+       36,
+       2,
+       18
+      ],
+      [
+       36,
+       3,
+       18
+      ],
+      [
+       36,
+       1,
+       19
+      ],
+      [
+       36,
+       2,
+       19
+      ],
+      [
+       36,
+       3,
+       19
+      ]
+     ],
+     "inner_cells": [
+      [
+       35,
+       1,
+       17
+      ],
+      [
+       35,
+       2,
+       17
+      ],
+      [
+       35,
+       3,
+       17
+      ],
+      [
+       35,
+       1,
+       18
+      ],
+      [
+       35,
+       2,
+       18
+      ],
+      [
+       35,
+       3,
+       18
+      ],
+      [
+       35,
+       1,
+       19
+      ],
+      [
+       35,
+       2,
+       19
+      ],
+      [
+       35,
+       3,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    37,
+    8,
+    37
+   ],
+   "old_entries": 6281,
+   "old_solid": 6281,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 4671,
+    "added_sample": [
+     [
+      0,
+      1,
+      17
+     ],
+     [
+      0,
+      1,
+      19
+     ],
+     [
+      0,
+      2,
+      17
+     ],
+     [
+      0,
+      2,
+      18
+     ],
+     [
+      0,
+      2,
+      19
+     ],
+     [
+      0,
+      3,
+      17
+     ],
+     [
+      0,
+      3,
+      18
+     ],
+     [
+      0,
+      3,
+      19
+     ],
+     [
+      1,
+      1,
+      6
+     ],
+     [
+      1,
+      1,
+      7
+     ],
+     [
+      1,
+      1,
+      17
+     ],
+     [
+      1,
+      1,
+      18
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 4671
+   }
+  },
+  {
+   "file": "exit.nbt",
+   "size": [
+    5,
+    8,
+    5
+   ],
+   "volume": 200,
+   "entries": 200,
+   "palette_has_air": true,
+   "air": 44,
+   "air_pct": 22.0,
+   "solid": 156,
+   "walk_y": 1,
+   "walk_cells": 25,
+   "walk_air": 11,
+   "walk_air_pct": 44.0,
+   "walk_inner_cells": 9,
+   "walk_inner_air": 9,
+   "walk_inner_pct": 100.0,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      2,
+      1,
+      0
+     ],
+     "name": "lane",
+     "target": "room",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       1,
+       1,
+       0
+      ],
+      [
+       1,
+       2,
+       0
+      ],
+      [
+       1,
+       3,
+       0
+      ],
+      [
+       2,
+       1,
+       0
+      ],
+      [
+       2,
+       2,
+       0
+      ],
+      [
+       2,
+       3,
+       0
+      ],
+      [
+       3,
+       1,
+       0
+      ],
+      [
+       3,
+       2,
+       0
+      ],
+      [
+       3,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       1,
+       2,
+       1
+      ],
+      [
+       1,
+       3,
+       1
+      ],
+      [
+       2,
+       1,
+       1
+      ],
+      [
+       2,
+       2,
+       1
+      ],
+      [
+       2,
+       3,
+       1
+      ],
+      [
+       3,
+       1,
+       1
+      ],
+      [
+       3,
+       2,
+       1
+      ],
+      [
+       3,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    5,
+    8,
+    5
+   ],
+   "old_entries": 156,
+   "old_solid": 156,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 44,
+    "added_sample": [
+     [
+      0,
+      6,
+      4
+     ],
+     [
+      0,
+      7,
+      3
+     ],
+     [
+      0,
+      7,
+      4
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      1
+     ],
+     [
+      1,
+      1,
+      2
+     ],
+     [
+      1,
+      1,
+      3
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      1,
+      2,
+      1
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      3,
+      0
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 44
+   }
+  },
+  {
+   "file": "lane.nbt",
+   "size": [
+    5,
+    5,
+    3
+   ],
+   "volume": 75,
+   "entries": 75,
+   "palette_has_air": true,
+   "air": 25,
+   "air_pct": 33.33,
+   "solid": 50,
+   "walk_y": 1,
+   "walk_cells": 15,
+   "walk_air": 7,
+   "walk_air_pct": 46.67,
+   "walk_inner_cells": 3,
+   "walk_inner_air": 3,
+   "walk_inner_pct": 100.0,
+   "mouths": [
+    {
+     "side": "north",
+     "pos": [
+      2,
+      1,
+      0
+     ],
+     "name": "lane",
+     "target": "room",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       1,
+       1,
+       0
+      ],
+      [
+       1,
+       2,
+       0
+      ],
+      [
+       1,
+       3,
+       0
+      ],
+      [
+       2,
+       1,
+       0
+      ],
+      [
+       2,
+       2,
+       0
+      ],
+      [
+       2,
+       3,
+       0
+      ],
+      [
+       3,
+       1,
+       0
+      ],
+      [
+       3,
+       2,
+       0
+      ],
+      [
+       3,
+       3,
+       0
+      ]
+     ],
+     "inner_cells": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       1,
+       2,
+       1
+      ],
+      [
+       1,
+       3,
+       1
+      ],
+      [
+       2,
+       1,
+       1
+      ],
+      [
+       2,
+       2,
+       1
+      ],
+      [
+       2,
+       3,
+       1
+      ],
+      [
+       3,
+       1,
+       1
+      ],
+      [
+       3,
+       2,
+       1
+      ],
+      [
+       3,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    },
+    {
+     "side": "south",
+     "pos": [
+      2,
+      1,
+      2
+     ],
+     "name": "lane",
+     "target": "cell_small_1",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       1,
+       1,
+       2
+      ],
+      [
+       1,
+       2,
+       2
+      ],
+      [
+       1,
+       3,
+       2
+      ],
+      [
+       2,
+       1,
+       2
+      ],
+      [
+       2,
+       2,
+       2
+      ],
+      [
+       2,
+       3,
+       2
+      ],
+      [
+       3,
+       1,
+       2
+      ],
+      [
+       3,
+       2,
+       2
+      ],
+      [
+       3,
+       3,
+       2
+      ]
+     ],
+     "inner_cells": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       1,
+       2,
+       1
+      ],
+      [
+       1,
+       3,
+       1
+      ],
+      [
+       2,
+       1,
+       1
+      ],
+      [
+       2,
+       2,
+       1
+      ],
+      [
+       2,
+       3,
+       1
+      ],
+      [
+       3,
+       1,
+       1
+      ],
+      [
+       3,
+       2,
+       1
+      ],
+      [
+       3,
+       3,
+       1
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    5,
+    5,
+    3
+   ],
+   "old_entries": 50,
+   "old_solid": 50,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 25,
+    "added_sample": [
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      1
+     ],
+     [
+      1,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      1,
+      2,
+      1
+     ],
+     [
+      1,
+      2,
+      2
+     ],
+     [
+      1,
+      3,
+      0
+     ],
+     [
+      1,
+      3,
+      1
+     ],
+     [
+      1,
+      3,
+      2
+     ],
+     [
+      2,
+      1,
+      1
+     ],
+     [
+      2,
+      2,
+      0
+     ],
+     [
+      2,
+      2,
+      1
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 25
+   }
+  },
+  {
+   "file": "treasure.nbt",
+   "size": [
+    21,
+    9,
+    21
+   ],
+   "volume": 3969,
+   "entries": 3969,
+   "palette_has_air": true,
+   "air": 1773,
+   "air_pct": 44.67,
+   "solid": 2196,
+   "walk_y": 3,
+   "walk_cells": 441,
+   "walk_air": 277,
+   "walk_air_pct": 62.81,
+   "walk_inner_cells": 361,
+   "walk_inner_air": 275,
+   "walk_inner_pct": 76.18,
+   "mouths": [
+    {
+     "side": "south",
+     "pos": [
+      10,
+      3,
+      20
+     ],
+     "name": "room",
+     "target": "lane",
+     "plane": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:jigsaw",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "plane_air": 9,
+     "inner": [
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air",
+      "minecraft:air"
+     ],
+     "inner_air": 9,
+     "plane_cells": [
+      [
+       9,
+       3,
+       20
+      ],
+      [
+       9,
+       4,
+       20
+      ],
+      [
+       9,
+       5,
+       20
+      ],
+      [
+       10,
+       3,
+       20
+      ],
+      [
+       10,
+       4,
+       20
+      ],
+      [
+       10,
+       5,
+       20
+      ],
+      [
+       11,
+       3,
+       20
+      ],
+      [
+       11,
+       4,
+       20
+      ],
+      [
+       11,
+       5,
+       20
+      ]
+     ],
+     "inner_cells": [
+      [
+       9,
+       3,
+       19
+      ],
+      [
+       9,
+       4,
+       19
+      ],
+      [
+       9,
+       5,
+       19
+      ],
+      [
+       10,
+       3,
+       19
+      ],
+      [
+       10,
+       4,
+       19
+      ],
+      [
+       10,
+       5,
+       19
+      ],
+      [
+       11,
+       3,
+       19
+      ],
+      [
+       11,
+       4,
+       19
+      ],
+      [
+       11,
+       5,
+       19
+      ]
+     ],
+     "plane_ok": true,
+     "inner_ok": true
+    }
+   ],
+   "old_size": [
+    21,
+    9,
+    21
+   ],
+   "old_entries": 2196,
+   "old_solid": 2196,
+   "old_air": 0,
+   "diff": {
+    "same_size": true,
+    "removed": [],
+    "changed": [],
+    "added_count": 1773,
+    "added_sample": [
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      5
+     ],
+     [
+      1,
+      2,
+      9
+     ],
+     [
+      1,
+      2,
+      11
+     ],
+     [
+      1,
+      2,
+      15
+     ],
+     [
+      1,
+      2,
+      17
+     ],
+     [
+      1,
+      3,
+      2
+     ],
+     [
+      1,
+      3,
+      3
+     ],
+     [
+      1,
+      3,
+      5
+     ],
+     [
+      1,
+      3,
+      6
+     ],
+     [
+      1,
+      3,
+      8
+     ],
+     [
+      1,
+      3,
+      9
+     ]
+    ],
+    "added_nonair": [],
+    "jigsaw_same": true,
+    "only_air_added": true,
+    "added_air": 1773
+   }
+  }
+ ]
+}

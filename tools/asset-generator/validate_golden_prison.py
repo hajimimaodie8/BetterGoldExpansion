@@ -229,6 +229,52 @@ def parse_nbt(path):
 AIR = 'minecraft:air'
 VOID = 'minecraft:structure_void'
 DIRV = {'north': (0, 0, -1), 'south': (0, 0, 1), 'east': (1, 0, 0), 'west': (-1, 0, 0)}
+OPP = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}
+# 可走格：空气 / 结构空位 / jigsaw（jigsaw 的 final_state=air 在放置时变成空气）
+PASS = (AIR, VOID, 'minecraft:jigsaw')
+MAX_DEPTH = 6          # = structure json 的 size（[bgp-worldgen] 另有一条断言钉它）
+# 空气地板值（回归用；口径与实测见 docs\金之牢狱-生成预览.md §阶段 B）
+# ⚠ 作者原口径是「整 bbox 空气 >= 60%% / 行走层 >= 80%%」——按作者自己 20 件的几何**达不到**：
+#   外壳普遍 2~3 格厚、牢房内部还有栅栏/金堆/箱笼，实测整 bbox 22.00%%~44.67%%、
+#   行走层内圈 52.14%%~100%%。所以门槛取「能抓住 P0 的回归地板」，实测值全部打印出来对照。
+AIR_MIN_BBOX = 0.20    # 整 bbox 空气 >= 20%%（修前 0.00%%；实测最低 22.00%% = exit）
+WALK_INNER_MIN = 0.50  # 行走层内圈空气 >= 50%%（修前 ~1.7%%；实测最低 52.14%%）
+AIR_REACH_MIN = 0.70   # 件内从口洪泛能到达的空气占比（实测最低 79.55%% = exit 顶层独立空腔）
+
+
+def strip_comments(s, style):
+    """去掉注释后再做正向 needle：避免「注释里写着这句话」被当成实现。
+
+    style='py' 去 #...；style='java' 去 //... 与 /*...*/。
+    （粗略实现：不处理字符串里的 # —— 本文件只用它找不含 # 的 needle。）
+    """
+    out = []
+    i, n = 0, len(s)
+    in_block = False
+    while i < n:
+        if style == 'java' and in_block:
+            j = s.find('*/', i)
+            if j < 0:
+                return ''.join(out)
+            i = j + 2
+            in_block = False
+            continue
+        ch = s[i]
+        if style == 'java' and s.startswith('/*', i):
+            in_block = True
+            i += 2
+            continue
+        if style == 'java' and s.startswith('//', i):
+            j = s.find('\n', i)
+            i = n if j < 0 else j
+            continue
+        if style == 'py' and ch == '#':
+            j = s.find('\n', i)
+            i = n if j < 0 else j
+            continue
+        out.append(ch)
+        i += 1
+    return ''.join(out)
 
 
 class Piece:
@@ -291,8 +337,62 @@ def outward(p, size):
     return c
 
 
+def piece_sockets(p):
+    """{side: (pos, be)} —— 只取「落在唯一外侧面上的口」（非法口由 [bgp-gate] 报）。"""
+    out = {}
+    for pos, be in p.jigsaws.items():
+        o = outward(pos, p.size)
+        if len(o) == 1:
+            out[o[0]] = (pos, be)
+    return out
+
+
+def mouth_cells(pos, side):
+    """口平面（件边界那一层）3 宽 x 3 高 = 9 格；再返回朝件内一格的 9 格。"""
+    x, y, z = pos
+    dx, dy, dz = DIRV[side]
+    plane, inner = [], []
+    for d in (-1, 0, 1):
+        for h in (0, 1, 2):
+            if side in ('north', 'south'):
+                plane.append((x + d, y + h, z))
+                inner.append((x + d, y + h, z - dz))
+            else:
+                plane.append((x, y + h, z + d))
+                inner.append((x - dx, y + h, z + d))
+    return plane, inner
+
+
+def inner_of(pos, side):
+    """口朝件内一格（洪泛种子）。"""
+    dx, dy, dz = DIRV[side]
+    return (pos[0] - dx, pos[1], pos[2] - dz)
+
+
+def flood(piece, seeds, size=None):
+    """件内 3D 6 邻接洪泛（空气 / structure_void / jigsaw 可走）。"""
+    sx, sy, sz = size or piece.size
+    seen = set(s for s in seeds if 0 <= s[0] < sx and 0 <= s[1] < sy and 0 <= s[2] < sz)
+    q = list(seen)
+    while q:
+        c = q.pop()
+        for d in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)):
+            n = (c[0] + d[0], c[1] + d[1], c[2] + d[2])
+            if n in seen or not (0 <= n[0] < sx and 0 <= n[1] < sy and 0 <= n[2] < sz):
+                continue
+            v = piece.at(n)
+            if v is not None and v[0] in PASS:
+                seen.add(n)
+                q.append(n)
+    return seen
+
+
 def mouth_passable(piece, sock, size):
-    """口必须是 3 宽 × 3 高、洞底 = 行走面，且洞底下一格是实心（能站）。"""
+    """口必须是 3 宽 × 3 高、洞底 = 行走面，且洞底下一格是实心（能站）。
+
+    ⚠ 旧口径只验「口位这一层」的 3×3 与洞底；它**验不出**房间内部被地形灌满
+    （jigsaw 的 final_state=air 只挖 1 格）。真正的可走性由 check_air 的 flood-fill 兜。
+    """
     side = sock['dir']
     x, y, z = sock['pos']
     bad = []
@@ -305,6 +405,17 @@ def mouth_passable(piece, sock, size):
             v = piece.at(c)
             if v is not None and v[0] not in (AIR, 'minecraft:jigsaw'):
                 bad.append((c, v))
+    # 口内一格（朝件内）也必须 3×3 空，否则只是“贴面开了个洞”
+    dx, dy, dz = DIRV[side]
+    for d in (-1, 0, 1):
+        for dy2 in (0, 1, 2):
+            if side in ('north', 'south'):
+                c = (x + d - dx, y + dy2, z - dz)
+            else:
+                c = (x - dx, y + dy2, z + d - dz)
+            v = piece.at(c)
+            if v is not None and v[0] not in (AIR, 'minecraft:jigsaw'):
+                bad.append(('inner', c, v))
     # 洞底下一格
     d = DIRV[side]
     for off in (-1, 0, 1):
@@ -396,8 +507,8 @@ def check_pieces(pieces):
         ok()
         # 方块数（14 个源件对照证据；派生件只要求 > 0）
         if name in EXPECT_SRC_COUNT:
-            # 取证表是「抠出来时」的方块数，不含第 2 步注入的 jigsaw
-            got = len(p.blocks) - len(p.jigsaws)
+            # 取证表是「抠出来时」的方块数，不含第 2 步注入的 jigsaw；空气不算方块。
+            got = sum(1 for v in p.blocks.values() if v[0] != AIR) - len(p.jigsaws)
             if got != EXPECT_SRC_COUNT[name]:
                 ng('bgp-nbt', '%s 方块数(不含 jigsaw) %d != 取证 %d'
                    % (name, got, EXPECT_SRC_COUNT[name]))
@@ -516,6 +627,265 @@ def check_fertile(pieces):
             'bettergold:golden_toad_figurine', 'minecraft:chest'}
         if extra:
             ng('bgp-fertile', '%s 引入了作者没有的方块 %s' % (fer, sorted(extra)))
+
+
+def check_air(pieces):
+    """[bgp-air] 模板空气 —— 补「口成对 ≠ 能走」的真空档（2026-10-20 阶段 B）。
+
+    ⚠ 旧口径原文（上一轮 A 级）：「34/34 口成对且可通」。那个读数**只检查了口位那一格**
+    （jigsaw 的 final_state=air 会挖掉 1 格）+ 口对面一格 + 洞底下一格；
+    **门内 3x3、房间内部空气、「从宝藏房能不能走到出入口」从来没验过**。
+    实测反证（修前）：20 个模板 0 条 minecraft:air ⇒ 真生成件内空气 4.10%、行走层 5.73%、
+    门洞只有 1 格（只有 jigsaw 那格被挖）。
+    ⇒ 「口成对」只说明两个 jigsaw 贴上了，**不等于人能走过去**。
+
+    本段逐件验（不跑游戏）：palette 有 air / bbox 每格都写 / 逐口两层 3x3x1 全空 /
+    行走层内圈空气 / 件内从口洪泛能到整间房。拼起来之后的连通性见 [bgp-connect]。
+    """
+    worst_bbox, worst_walk, worst_reach = 100.0, 100.0, 100.0
+    mouths = 0
+    for name, p in pieces.items():
+        sx, sy, sz = p.size
+        vol = sx * sy * sz
+        names = {v[0] for v in p.blocks.values()}
+        if AIR not in names:
+            ng('bgp-air', '%s 的 palette 没有 minecraft:air（模板不会挖空）' % name)
+        ok()
+        if len(p.blocks) != vol:
+            ng('bgp-air', '%s 只写了 %d / %d 格（空气没写满，放置时不会把地形挖成房间）'
+               % (name, len(p.blocks), vol))
+        ok()
+        air = sum(1 for v in p.blocks.values() if v[0] == AIR)
+        if air <= 0:
+            ng('bgp-air', '%s 一条空气条目都没有（整件实心）' % name)
+        frac = 100.0 * air / vol
+        worst_bbox = min(worst_bbox, frac)
+        if frac < AIR_MIN_BBOX * 100:
+            ng('bgp-air', '%s 整 bbox 空气 %.2f%% < %.0f%%（模板空气没进来）'
+               % (name, frac, AIR_MIN_BBOX * 100))
+        ok()
+        # 行走层（洞底那一层 = jigsaw 的 y）：整层 + 内圈（去掉一圈外壳）
+        wy = 3 if name == 'treasure' else 1
+        wl = [(x, wy, z) for x in range(sx) for z in range(sz)]
+        wi = [(x, wy, z) for x in range(1, sx - 1) for z in range(1, sz - 1)]
+        wa = sum(1 for c in wl if (p.at(c) or ('',))[0] == AIR)
+        ia = sum(1 for c in wi if (p.at(c) or ('',))[0] == AIR)
+        wfrac = 100.0 * ia / max(1, len(wi))
+        worst_walk = min(worst_walk, wfrac)
+        if wfrac < WALK_INNER_MIN * 100:
+            ng('bgp-air', '%s 行走层 y=%d 内圈空气 %.2f%% < %.0f%%（房间被填，站不进去）'
+               % (name, wy, wfrac, WALK_INNER_MIN * 100))
+        ok()
+        # 逐口：口平面 3x3x1 全空 + 口内一层 3x3x1 全空（不是只有 jigsaw 那 1 格）
+        seeds = []
+        for side, (pos, be) in sorted(piece_sockets(p).items()):
+            plane, inner = mouth_cells(pos, side)
+            pb = [c for c in plane if (p.at(c) or ('',))[0] not in PASS]
+            ib = [c for c in inner if (p.at(c) or ('',))[0] not in PASS]
+            if pb:
+                ng('bgp-air', '%s 的 %s 口 %s 口平面 3x3x1 有 %d 格不是空气（第一格 %s）'
+                   % (name, side, pos, len(pb), pb[0]))
+            if ib:
+                ng('bgp-air', '%s 的 %s 口 %s 口内一层 3x3x1 有 %d 格不是空气（第一格 %s）'
+                   % (name, side, pos, len(ib), ib[0]))
+            ok(2)
+            mouths += 1
+            seeds.append(inner_of(pos, side))
+        # 件内连通：从第一个口洪泛，必须吃到其余所有口 + 整间房
+        if seeds:
+            seen = flood(p, seeds[:1])
+            miss = [s for s in seeds[1:] if s not in seen]
+            if miss:
+                ng('bgp-air', '%s 有 %d 个口与第一个口不连通（房间/走廊被填）' % (name, len(miss)))
+            ok()
+            air_cells = [c for c, v in p.blocks.items() if v[0] == AIR]
+            cov = sum(1 for c in air_cells if c in seen)
+            reach = 100.0 * cov / max(1, len(air_cells))
+            worst_reach = min(worst_reach, reach)
+            if reach < AIR_REACH_MIN * 100:
+                ng('bgp-air', '%s 从口洪泛只到得了 %.2f%% 的空气（房间没连到门）' % (name, reach))
+            ok()
+    if mouths == 0:
+        ng('bgp-air', '一个口都没扫描到（空转）')
+    print('[bgp-air] %d 件 / %d 口：逐口两层 3x3x1 全空；最低整 bbox 空气 %.2f%%、'
+          '最低行走层内圈 %.2f%%、最低件内可达 %.2f%%'
+          % (len(pieces), mouths, worst_bbox, worst_walk, worst_reach))
+    print('[bgp-air] 参考：作者原口径「整 bbox >= 60%% / 行走层 >= 80%%」按作者件几何不可达'
+          '（外壳 2~3 格厚 + 牢房内栅栏/金堆/箱笼），本关卡的回归地板 = %.0f%% / %.0f%% / 件内可达 %.0f%%'
+          % (AIR_MIN_BBOX * 100, WALK_INNER_MIN * 100, AIR_REACH_MIN * 100))
+    # 正向 needle（跑在**去注释**源码上）：流水线必须真的把空气写进 NBT，P0 的老写法不许回来
+    gp = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'gp_build.py')
+    if not os.path.exists(gp):
+        ng('bgp-air', '缺流水线 gp_build.py（没法复核模板是怎么造的）')
+    else:
+        src = strip_comments(open(gp, encoding='utf-8').read(), 'py')
+        if "'minecraft:air'" not in src:
+            ng('bgp-air', 'gp_build.py 去注释后找不到 minecraft:air 的写入分支')
+        ok()
+        if 'if nm in AIR: continue' in src:
+            ng('bgp-air', 'gp_build.py 里 P0 的老写法「if nm in AIR: continue」又回来了')
+        ok()
+
+
+def pool_name(pool):
+    return pool[len(POOL):] if isinstance(pool, str) and pool.startswith(POOL) else None
+
+
+def assemble(pieces, rev_opts):
+    """按池的接线规则把 20 件虚拟拼成一座（复刻 JigsawPlacement 的口径，不跑游戏）。
+
+    - 每个口只用一次（引擎里 jigsaw 被接上就消耗掉，剩下那个口才继续长）；
+    - `depth+1 > size(6)` 时放的是**目标池的 fallback**（不是再 roll 元素）；
+    - `depth+1 > 7` 不再放（A 级实测最深处就是 7：宝藏 0 … 出入口 7）。
+    `rev_opts` 只影响候选/旋转的挑选次序，用来造出两种不同的真实拼法。
+    """
+    sock = {n: piece_sockets(p) for n, p in pieces.items()}
+    root = {'name': 'treasure', 'rot': 'none', 'origin': (0, 0, 0),
+            'bbox': piece_bbox(pieces['treasure'].size, 'none', (0, 0, 0)),
+            'depth': 0, 'used': set(), 'via': '-', 'parent': None}
+    placed = [root]
+    q = [root]
+    i = 0
+    while i < len(q):
+        cur = q[i]
+        i += 1
+        for side in ('north', 'south', 'east', 'west'):
+            if side not in sock[cur['name']] or side in cur['used']:
+                continue
+            pos, be = sock[cur['name']][side]
+            tg, pl = be.get('target'), be.get('pool')
+            pn = pool_name(pl)
+            if pn is None or pn not in EXPECT_POOLS:
+                continue
+            wside = rot_dir(side, cur['rot'])
+            dchild = cur['depth'] + 1
+            if dchild > MAX_DEPTH + 1:
+                continue
+            if dchild > MAX_DEPTH:
+                fbn = pool_name(EXPECT_POOLS[pn][1])
+                if fbn is None:
+                    continue
+                cands = list(EXPECT_POOLS[fbn][0])
+            else:
+                cands = list(EXPECT_POOLS[pn][0])
+            d = DIRV[wside]
+            rp0 = rot_pos(pos, cur['rot'])
+            wpos = tuple(cur['origin'][k] + rp0[k] for k in range(3))
+            tgt = tuple(wpos[k] + d[k] for k in range(3))
+            opts = []
+            for ci, cn in enumerate(cands):
+                for cside, (cpos, cbe) in sorted(sock[cn].items()):
+                    if cbe.get('name') != tg:
+                        continue
+                    for ri, r in enumerate(ROTS):
+                        if rot_dir(cside, r) != OPP[wside]:
+                            continue
+                        rp = rot_pos(cpos, r)
+                        origin = tuple(tgt[k] - rp[k] for k in range(3))
+                        cb = piece_bbox(pieces[cn].size, r, origin)
+                        if any(bbox_overlap(cb, z['bbox']) for z in placed):
+                            continue
+                        opts.append((ci, ri, cn, cside, r, origin, cb))
+            if rev_opts:
+                opts = opts[::-1]
+            if not opts:
+                continue
+            ci, ri, cn, cside, r, origin, cb = opts[0]
+            n2 = {'name': cn, 'rot': r, 'origin': origin, 'bbox': cb, 'depth': dchild,
+                  'used': {cside}, 'via': side, 'parent': cur}
+            cur['used'].add(side)
+            q.append(n2)
+            placed.append(n2)
+    return placed
+
+
+def check_connect(pieces):
+    """[bgp-connect] 拼起来之后「真的能走」：两组真实拼接，从宝藏房洪泛必须到每个出入口。
+
+    ⚠ 这一维**不能**用「口成对 34/34」代替：口成对只说明两个 jigsaw 贴上了，
+    「门内 3x3 空不空 / 房间能不能站人 / 从宝藏房走不走得到出入口」是另一回事
+    （修前实测：门洞 1 格、件内空气 4.10%、行走层 5.73%）。
+    """
+    total = 0
+    exits_total = 0
+    for rev in (False, True):
+        placed = assemble(pieces, rev)
+        if len(placed) < 6:
+            ng('bgp-connect', '虚拟拼接 rev=%d 只放下 %d 件（应 >= 6），接线规则或件尺寸变了'
+               % (1 if rev else 0, len(placed)))
+            continue
+        cells = {}
+        for z in placed:
+            p = pieces[z['name']]
+            o, r = z['origin'], z['rot']
+            for local, (nm, pr) in p.blocks.items():
+                rp = rot_pos(local, r)
+                cells[(o[0] + rp[0], o[1] + rp[1], o[2] + rp[2])] = nm in PASS
+        # 种子 = 宝藏房内部（去掉一圈外壳）的空气 —— 根件放在原点、rot=none，局部坐标即世界坐标
+        sx, sy, sz = pieces['treasure'].size
+        seeds = [local for local, v in pieces['treasure'].blocks.items()
+                 if v[0] == AIR and 1 <= local[0] <= sx - 2
+                 and 1 <= local[1] <= sy - 2 and 1 <= local[2] <= sz - 2]
+        seen = set(seeds)
+        q = list(seeds)
+        while q:
+            c = q.pop()
+            for d in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)):
+                n = (c[0] + d[0], c[1] + d[1], c[2] + d[2])
+                if n in seen or not cells.get(n):
+                    continue
+                seen.add(n)
+                q.append(n)
+        # 逐条接线：父口内侧 + 子口内侧（= 子件里面）都必须洪泛到
+        bad = []
+        for z in placed[1:]:
+            a = z['parent']
+            side = z['via']
+            pos = piece_sockets(pieces[a['name']])[side][0]
+            rp = rot_pos(pos, a['rot'])
+            wpar = tuple(a['origin'][k] + rp[k] for k in range(3))
+            d = DIRV[rot_dir(side, a['rot'])]
+            p_in = (wpar[0] - d[0], wpar[1] - d[1], wpar[2] - d[2])
+            c_mouth = (wpar[0] + d[0], wpar[1] + d[1], wpar[2] + d[2])
+            c_in = (c_mouth[0] + d[0], c_mouth[1] + d[1], c_mouth[2] + d[2])
+            if p_in not in seen or c_in not in seen:
+                bad.append((z['name'], z['depth'], side))
+        if bad:
+            ng('bgp-connect', '虚拟拼接 rev=%d 有 %d 条接线从宝藏房走不过去：%s'
+               % (1 if rev else 0, len(bad), bad[:4]))
+        ok(len(placed) - 1)
+        exits = [z for z in placed if z['name'] == 'exit']
+        exits_total += len(exits)
+        if exits:
+            ok(len(exits))
+        # 每件的空气也要洪泛得到（不然只是门通了、房间还是个壳）
+        closed = []
+        for z in placed[1:]:
+            p = pieces[z['name']]
+            o, r = z['origin'], z['rot']
+            air = [local for local, v in p.blocks.items() if v[0] == AIR]
+            got = 0
+            for local in air:
+                rp = rot_pos(local, r)
+                if (o[0] + rp[0], o[1] + rp[1], o[2] + rp[2]) in seen:
+                    got += 1
+            if air and 100.0 * got / len(air) < 50.0:
+                closed.append((z['name'], got, len(air)))
+        if closed:
+            ng('bgp-connect', '虚拟拼接 rev=%d 有件从宝藏房走不进去（空气 < 50%% 可达）：%s'
+               % (1 if rev else 0, closed[:4]))
+        ok(len(placed) - 1)
+        total += len(placed)
+        print('[bgp-connect] 虚拟拼接 rev=%d：%d 件 / 出入口 %d / 深度 %d..%d / 洪泛覆盖 %d 格 / 接线 %d 条全通'
+              % (1 if rev else 0, len(placed), len(exits),
+                 min(z['depth'] for z in placed), max(z['depth'] for z in placed),
+                 len(seen), len(placed) - 1))
+        print('[bgp-connect]   ' + ' -> '.join('%d:%s(%s)' % (z['depth'], z['name'], z['rot'])
+                                              for z in placed))
+    if exits_total == 0:
+        ng('bgp-connect', '两组虚拟拼接里一个出入口都没有（空转：这条断言就没验到「能不能走到出入口」）')
+    if total == 0:
+        ng('bgp-connect', '一组虚拟拼接都没拼成（空转）')
 
 
 def check_gate(pieces):
@@ -802,7 +1172,8 @@ def check_loot():
     src = os.path.join(ROOT, 'build', 'gp-src', 'net', 'minecraft', 'world', 'level', 'storage', 'loot',
                        'LootPool.java')
     if os.path.exists(src):
-        s = open(src, encoding='utf-8').read()
+        # 正向 needle 跑在**去注释**源码上：注释里写着 getLuck() 不算数
+        s = strip_comments(open(src, encoding='utf-8').read(), 'java')
         if 'getLuck()' not in s or 'bonusRolls.getFloat' not in s:
             ng('bgp-loot', 'LootPool 源码里没看到 luck x bonusRolls 的乘法（口径来源失效）')
         ok()
@@ -826,6 +1197,8 @@ def main():
             print('[bgp-baseline] 只加载到 %d 个件' % len(pieces))
             return 2
         check_pieces(pieces)
+        check_air(pieces)
+        check_connect(pieces)
         check_mirror(pieces)
         check_fertile(pieces)
         check_gate(pieces)

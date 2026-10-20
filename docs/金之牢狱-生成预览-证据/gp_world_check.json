@@ -1,0 +1,1050 @@
+{
+ "tag": "修后（新 NBT / 种子 20261020）",
+ "world": "gp_preview_gpb",
+ "seed": 20261020,
+ "structurePos": [
+  592,
+  0,
+  688
+ ],
+ "pieces": 18,
+ "templates": [
+  "cell_large_mirror",
+  "cell_small_a",
+  "cell_small_b",
+  "cell_small_fertile",
+  "cell_small_mirror",
+  "cross_a",
+  "exit",
+  "lane",
+  "treasure"
+ ],
+ "templateCount": 9,
+ "treasureCount": 1,
+ "exitCount": 3,
+ "startY": 38,
+ "walkY": 41,
+ "depths": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7
+ ],
+ "bboxOverlaps": 0,
+ "ports": 34,
+ "portsPaired": 34,
+ "pieceUnionBBox": [
+  531,
+  38,
+  688,
+  661,
+  47,
+  789
+ ],
+ "chests": 13,
+ "spawners": 28,
+ "toads": 12,
+ "mouths": [
+  {
+   "piece": 0,
+   "dir": "south",
+   "pos": [
+    602,
+    41,
+    708
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 1,
+   "dir": "south",
+   "pos": [
+    602,
+    41,
+    711
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 1,
+   "dir": "north",
+   "pos": [
+    602,
+    41,
+    709
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "north",
+   "pos": [
+    602,
+    41,
+    712
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "east",
+   "pos": [
+    620,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "west",
+   "pos": [
+    584,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 2,
+   "dir": "south",
+   "pos": [
+    602,
+    41,
+    748
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 3,
+   "dir": "north",
+   "pos": [
+    602,
+    41,
+    749
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 3,
+   "dir": "south",
+   "pos": [
+    602,
+    41,
+    751
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 4,
+   "dir": "west",
+   "pos": [
+    581,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 4,
+   "dir": "east",
+   "pos": [
+    583,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 5,
+   "dir": "west",
+   "pos": [
+    621,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 5,
+   "dir": "east",
+   "pos": [
+    623,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 6,
+   "dir": "north",
+   "pos": [
+    602,
+    41,
+    752
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 6,
+   "dir": "south",
+   "pos": [
+    602,
+    41,
+    762
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 7,
+   "dir": "east",
+   "pos": [
+    580,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 7,
+   "dir": "west",
+   "pos": [
+    570,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 8,
+   "dir": "east",
+   "pos": [
+    634,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 8,
+   "dir": "west",
+   "pos": [
+    624,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 9,
+   "dir": "south",
+   "pos": [
+    602,
+    41,
+    773
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 9,
+   "dir": "north",
+   "pos": [
+    602,
+    41,
+    763
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 10,
+   "dir": "west",
+   "pos": [
+    567,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 10,
+   "dir": "east",
+   "pos": [
+    569,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 11,
+   "dir": "east",
+   "pos": [
+    645,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 11,
+   "dir": "west",
+   "pos": [
+    635,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 12,
+   "dir": "south",
+   "pos": [
+    602,
+    41,
+    784
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 12,
+   "dir": "north",
+   "pos": [
+    602,
+    41,
+    774
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 13,
+   "dir": "east",
+   "pos": [
+    566,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 13,
+   "dir": "west",
+   "pos": [
+    536,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 14,
+   "dir": "east",
+   "pos": [
+    656,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 14,
+   "dir": "west",
+   "pos": [
+    646,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 15,
+   "dir": "north",
+   "pos": [
+    602,
+    41,
+    785
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 16,
+   "dir": "east",
+   "pos": [
+    535,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  },
+  {
+   "piece": 17,
+   "dir": "west",
+   "pos": [
+    657,
+    41,
+    730
+   ],
+   "plane_air": 9,
+   "inner_air": 9,
+   "plane_bad": [],
+   "inner_bad": []
+  }
+ ],
+ "mouthsAll9": 34,
+ "flood": {
+  "standSeeds": 345,
+  "reached": 1925,
+  "passSeeds": 1774,
+  "passReached": 9929
+ },
+ "exitsReached": [
+  {
+   "piece": 15,
+   "ports": 1,
+   "reached": 1,
+   "cells": [
+    [
+     602,
+     41,
+     786
+    ]
+   ]
+  },
+  {
+   "piece": 16,
+   "ports": 1,
+   "reached": 1,
+   "cells": [
+    [
+     534,
+     41,
+     730
+    ]
+   ]
+  },
+  {
+   "piece": 17,
+   "ports": 1,
+   "reached": 1,
+   "cells": [
+    [
+     658,
+     41,
+     730
+    ]
+   ]
+  }
+ ],
+ "chestReached": 9,
+ "chestAdjReached": 13,
+ "chestRows": [
+  {
+   "piece": 0,
+   "pos": [
+    598,
+    40,
+    702
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     598,
+     41,
+     702
+    ]
+   ],
+   "adj": [
+    [
+     598,
+     41,
+     702
+    ]
+   ]
+  },
+  {
+   "piece": 0,
+   "pos": [
+    601,
+    40,
+    692
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     601,
+     40,
+     691
+    ]
+   ],
+   "adj": [
+    [
+     601,
+     40,
+     691
+    ]
+   ]
+  },
+  {
+   "piece": 0,
+   "pos": [
+    606,
+    41,
+    696
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     606,
+     42,
+     696
+    ]
+   ],
+   "adj": [
+    [
+     606,
+     42,
+     696
+    ]
+   ]
+  },
+  {
+   "piece": 6,
+   "pos": [
+    596,
+    41,
+    757
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     597,
+     41,
+     757
+    ]
+   ],
+   "adj": [
+    [
+     597,
+     41,
+     757
+    ]
+   ]
+  },
+  {
+   "piece": 7,
+   "pos": [
+    575,
+    41,
+    736
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     575,
+     41,
+     735
+    ]
+   ],
+   "adj": [
+    [
+     575,
+     41,
+     735
+    ]
+   ]
+  },
+  {
+   "piece": 8,
+   "pos": [
+    629,
+    41,
+    724
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     629,
+     41,
+     725
+    ]
+   ],
+   "adj": [
+    [
+     629,
+     41,
+     725
+    ]
+   ]
+  },
+  {
+   "piece": 9,
+   "pos": [
+    596,
+    41,
+    768
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     597,
+     41,
+     768
+    ]
+   ],
+   "adj": [
+    [
+     597,
+     41,
+     768
+    ]
+   ]
+  },
+  {
+   "piece": 11,
+   "pos": [
+    640,
+    41,
+    736
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     640,
+     41,
+     735
+    ]
+   ],
+   "adj": [
+    [
+     640,
+     41,
+     735
+    ]
+   ]
+  },
+  {
+   "piece": 12,
+   "pos": [
+    607,
+    41,
+    780
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     607,
+     42,
+     780
+    ]
+   ]
+  },
+  {
+   "piece": 12,
+   "pos": [
+    608,
+    41,
+    779
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     608,
+     42,
+     779
+    ]
+   ]
+  },
+  {
+   "piece": 13,
+   "pos": [
+    561,
+    41,
+    736
+   ],
+   "reached": true,
+   "reachableAdj": true,
+   "stand": [
+    [
+     561,
+     41,
+     735
+    ]
+   ],
+   "adj": [
+    [
+     561,
+     41,
+     735
+    ]
+   ]
+  },
+  {
+   "piece": 14,
+   "pos": [
+    651,
+    41,
+    724
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     651,
+     42,
+     724
+    ]
+   ]
+  },
+  {
+   "piece": 14,
+   "pos": [
+    652,
+    41,
+    725
+   ],
+   "reached": false,
+   "reachableAdj": true,
+   "stand": [],
+   "adj": [
+    [
+     652,
+     42,
+     725
+    ]
+   ]
+  }
+ ],
+ "airInside": {
+  "cells": 25616,
+  "air": 9984,
+  "airPct": 38.98,
+  "passable": 11542,
+  "passablePct": 45.06,
+  "walkCells": 3580,
+  "walkAir": 1920,
+  "walkAirPct": 53.63
+ },
+ "pieceAir": [
+  {
+   "index": 0,
+   "template": "treasure",
+   "cells": 3969,
+   "air": 1774,
+   "airPct": 44.7,
+   "passable": 1774,
+   "passablePct": 44.7,
+   "walkAir": 278,
+   "walkCells": 441
+  },
+  {
+   "index": 1,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 2,
+   "template": "cross_a",
+   "cells": 10952,
+   "air": 4670,
+   "airPct": 42.64,
+   "passable": 6150,
+   "passablePct": 56.15,
+   "walkAir": 813,
+   "walkCells": 1369
+  },
+  {
+   "index": 3,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 4,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 5,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 6,
+   "template": "cell_small_a",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 7,
+   "template": "cell_small_b",
+   "cells": 990,
+   "air": 327,
+   "airPct": 33.03,
+   "passable": 327,
+   "passablePct": 33.03,
+   "walkAir": 76,
+   "walkCells": 165
+  },
+  {
+   "index": 8,
+   "template": "cell_small_a",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 9,
+   "template": "cell_small_mirror",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 10,
+   "template": "lane",
+   "cells": 75,
+   "air": 27,
+   "airPct": 36.0,
+   "passable": 27,
+   "passablePct": 36.0,
+   "walkAir": 9,
+   "walkCells": 15
+  },
+  {
+   "index": 11,
+   "template": "cell_small_mirror",
+   "cells": 990,
+   "air": 320,
+   "airPct": 32.32,
+   "passable": 320,
+   "passablePct": 32.32,
+   "walkAir": 73,
+   "walkCells": 165
+  },
+  {
+   "index": 12,
+   "template": "cell_small_fertile",
+   "cells": 990,
+   "air": 314,
+   "airPct": 31.72,
+   "passable": 314,
+   "passablePct": 31.72,
+   "walkAir": 67,
+   "walkCells": 165
+  },
+  {
+   "index": 13,
+   "template": "cell_large_mirror",
+   "cells": 2790,
+   "air": 1035,
+   "airPct": 37.1,
+   "passable": 1035,
+   "passablePct": 37.1,
+   "walkAir": 246,
+   "walkCells": 465
+  },
+  {
+   "index": 14,
+   "template": "cell_small_fertile",
+   "cells": 990,
+   "air": 314,
+   "airPct": 31.72,
+   "passable": 314,
+   "passablePct": 31.72,
+   "walkAir": 67,
+   "walkCells": 165
+  },
+  {
+   "index": 15,
+   "template": "exit",
+   "cells": 200,
+   "air": 45,
+   "airPct": 22.5,
+   "passable": 71,
+   "passablePct": 35.5,
+   "walkAir": 12,
+   "walkCells": 25
+  },
+  {
+   "index": 16,
+   "template": "exit",
+   "cells": 200,
+   "air": 45,
+   "airPct": 22.5,
+   "passable": 71,
+   "passablePct": 35.5,
+   "walkAir": 12,
+   "walkCells": 25
+  },
+  {
+   "index": 17,
+   "template": "exit",
+   "cells": 200,
+   "air": 45,
+   "airPct": 22.5,
+   "passable": 71,
+   "passablePct": 35.5,
+   "walkAir": 12,
+   "walkCells": 25
+  }
+ ],
+ "probeAirStats": {
+  "cells": 25616,
+  "air": 9984,
+  "airPct": 39.0,
+  "walkCells": 3580,
+  "walkAir": 1920,
+  "walkAirPct": 53.6
+ }
+}

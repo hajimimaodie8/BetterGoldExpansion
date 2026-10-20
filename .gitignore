@@ -38,3 +38,11 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+### 金之牢狱 生成预览（原始逐格 dump，数十 MB，不入库；重跑 gpx_probe.py 可复算）
+docs/金之牢狱-生成预览/_raw/
+docs/金之牢狱-生成预览/_raw_before/
+docs/金之牢狱-生成预览/_raw_seed2/
+
+### Python 缓存（证据脚本会 import 邻居脚本，跑一次就生成）
+__pycache__/
