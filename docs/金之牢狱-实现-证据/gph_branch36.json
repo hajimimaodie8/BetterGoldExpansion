@@ -1,0 +1,2109 @@
+{
+ "tag": "branch-H36",
+ "dir": "docs\\金之牢狱-实现-证据\\gph_branch36",
+ "world": {
+  "worldName": "gp_final_gph3",
+  "seed": 20261020
+ },
+ "seeds_main": {
+  "label": "golden_prison（主结构，非玄武岩群系）",
+  "runs": 9,
+  "distinctFingerprints": 9,
+  "pieceRange": [
+   8,
+   18
+  ],
+  "templateKindRange": [
+   5,
+   8
+  ],
+  "orphans": 0,
+  "treasurePieces": 9,
+  "treasurePerRun": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "poolHits": {
+   "start": 9,
+   "lane": 33,
+   "room": 33,
+   "exit": 19
+  },
+  "fertileRuns": 7,
+  "fertilePieces": 11,
+  "roomPieces": 33,
+  "fertilePieceRatio": 0.3333333333333333,
+  "fingerprints": [
+   "treasure>lane>cell_medium_a>lane>cross_a>lane>lane>lane>cell_medium_fertile>cell_medium_mirror>cell_medium_fertile>exit>exit>exit",
+   "treasure>lane>cell_medium_mirror>lane>cell_medium_mirror>lane>cell_medium_fertile>exit",
+   "treasure>lane>cross_b>lane>lane>lane>cell_small_a>cell_medium_a>cell_small_a>lane>lane>lane>cell_medium_fertile>cell_small_fertile>cell_small_fertile>exit>exit>exit",
+   "treasure>lane>cell_small_a>lane>cell_small_c>lane>cell_medium_b>exit",
+   "treasure>lane>cell_medium_b>lane>cell_large_c>lane>cell_medium_mirror>exit",
+   "treasure>lane>cell_medium_b>lane>cell_large_fertile>lane>cross_a>exit>exit>exit",
+   "treasure>lane>cell_large_fertile>lane>cell_medium_fertile>lane>cross_a>exit>exit>exit",
+   "treasure>lane>cell_medium_c>lane>cell_small_fertile>lane>cross_b>exit>exit>exit",
+   "treasure>lane>cell_medium_fertile>lane>cell_medium_c>lane>cell_small_c>exit"
+  ]
+ },
+ "seeds_runs_golden_prison_basalt": {
+  "label": "golden_prison_basalt",
+  "runs": 1,
+  "distinctFingerprints": 1,
+  "pieceRange": [
+   31,
+   31
+  ],
+  "templateKindRange": [
+   12,
+   12
+  ],
+  "orphans": 1,
+  "treasurePieces": 1,
+  "treasurePerRun": [
+   1
+  ],
+  "poolHits": {
+   "start": 1,
+   "lane": 11,
+   "room": 11,
+   "exit": 8
+  },
+  "fertileRuns": 1,
+  "fertilePieces": 3,
+  "roomPieces": 11,
+  "fertilePieceRatio": 0.2727272727272727,
+  "fingerprints": [
+   "treasure>lane>cross_a>lane>lane>lane>cell_small_fertile>cross_b>cross_a>lane>lane>lane>lane>lane>lane>lane>cell_medium_mirror>cell_small_a>cell_large_fertile>cross_b>cell_medium_fertile>cell_large_c>cell_small_c>exit>exit>exit>exit>exit>exit>exit>exit"
+  ]
+ },
+ "structureNames": [
+  "runs",
+  "runs_golden_prison_basalt"
+ ],
+ "real": [
+  {
+   "structure": "golden_prison",
+   "biome": "soul_sand_valley",
+   "pieces": 8,
+   "treasurePieces": 1,
+   "foreign": 10,
+   "foreignNatural": 10,
+   "foreignTop": {
+    "minecraft:brown_mushroom": 7,
+    "minecraft:red_mushroom": 3
+   },
+   "spawner": [
+    13,
+    13
+   ],
+   "chest": [
+    5,
+    5
+   ],
+   "frames": 4,
+   "framesCoin": 4,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -1037,
+      37,
+      -1096,
+      -1033,
+      80,
+      -1092
+     ],
+     "topY": 80,
+     "sourceGroundY": 37,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "firstAirRunY": 81,
+     "firstAirRunDelta": 1,
+     "scanTo": 122,
+     "deltaNeededFromTop": 43,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1036,
+       "z": -1095,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         40
+        ],
+        [
+         45,
+         80
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1036,
+       "z": -1094,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         40
+        ],
+        [
+         45,
+         80
+        ],
+        [
+         104,
+         104
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1036,
+       "z": -1093,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         40
+        ],
+        [
+         45,
+         80
+        ],
+        [
+         104,
+         104
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1035,
+       "z": -1095,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         81
+        ],
+        [
+         103,
+         104
+        ]
+       ],
+       "firstGapFromRimY": 81,
+       "aboveRim3": [
+        "air",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1035,
+       "z": -1094,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         81
+        ],
+        [
+         104,
+         104
+        ]
+       ],
+       "firstGapFromRimY": 81,
+       "aboveRim3": [
+        "air",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1035,
+       "z": -1093,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         81
+        ],
+        [
+         104,
+         104
+        ]
+       ],
+       "firstGapFromRimY": 81,
+       "aboveRim3": [
+        "air",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1034,
+       "z": -1095,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         83
+        ],
+        [
+         102,
+         104
+        ]
+       ],
+       "firstGapFromRimY": 81,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1034,
+       "z": -1094,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         83
+        ],
+        [
+         103,
+         104
+        ]
+       ],
+       "firstGapFromRimY": 81,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1034,
+       "z": -1093,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         38,
+         83
+        ],
+        [
+         102,
+         104
+        ]
+       ],
+       "firstGapFromRimY": 81,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "structure": "golden_prison",
+   "biome": "crimson_forest",
+   "pieces": 21,
+   "treasurePieces": 1,
+   "foreign": 14,
+   "foreignNatural": 11,
+   "foreignTop": {
+    "minecraft:nether_wart_block": 9,
+    "minecraft:bone_block": 2,
+    "minecraft:shroomlight": 1,
+    "minecraft:weeping_vines": 1,
+    "minecraft:weeping_vines_plant": 1
+   },
+   "spawner": [
+    52,
+    52
+   ],
+   "chest": [
+    22,
+    22
+   ],
+   "frames": 20,
+   "framesCoin": 20,
+   "exits": [
+    {
+     "pieceIndex": 15,
+     "bbox": [
+      -1569,
+      42,
+      -252,
+      -1565,
+      85,
+      -248
+     ],
+     "topY": 85,
+     "sourceGroundY": 42,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "firstAirRunY": 86,
+     "firstAirRunDelta": 1,
+     "scanTo": 122,
+     "deltaNeededFromTop": 38,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1568,
+       "z": -251,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         90
+        ],
+        [
+         102,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1568,
+       "z": -250,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         60
+        ],
+        [
+         62,
+         90
+        ],
+        [
+         104,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1568,
+       "z": -249,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         60
+        ],
+        [
+         62,
+         89
+        ],
+        [
+         103,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1567,
+       "z": -251,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         90
+        ],
+        [
+         102,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1567,
+       "z": -250,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         60
+        ],
+        [
+         62,
+         89
+        ],
+        [
+         103,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1567,
+       "z": -249,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         59
+        ],
+        [
+         63,
+         89
+        ],
+        [
+         104,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1566,
+       "z": -251,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         90
+        ],
+        [
+         102,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1566,
+       "z": -250,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         58
+        ],
+        [
+         60,
+         60
+        ],
+        [
+         62,
+         89
+        ],
+        [
+         103,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1566,
+       "z": -249,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         57
+        ],
+        [
+         61,
+         61
+        ],
+        [
+         63,
+         89
+        ],
+        [
+         103,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 86,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      }
+     ]
+    },
+    {
+     "pieceIndex": 16,
+     "bbox": [
+      -1405,
+      42,
+      -252,
+      -1401,
+      85,
+      -248
+     ],
+     "topY": 85,
+     "sourceGroundY": 42,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "firstAirRunY": 102,
+     "firstAirRunDelta": 17,
+     "scanTo": 122,
+     "deltaNeededFromTop": 38,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1404,
+       "z": -251,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         102,
+         105
+        ]
+       ],
+       "firstGapFromRimY": 102,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1404,
+       "z": -250,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         101,
+         105
+        ],
+        [
+         115,
+         120
+        ]
+       ],
+       "firstGapFromRimY": 101,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1404,
+       "z": -249,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         101,
+         106
+        ],
+        [
+         113,
+         120
+        ]
+       ],
+       "firstGapFromRimY": 101,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1403,
+       "z": -251,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         102,
+         105
+        ]
+       ],
+       "firstGapFromRimY": 102,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1403,
+       "z": -250,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         101,
+         105
+        ],
+        [
+         113,
+         120
+        ]
+       ],
+       "firstGapFromRimY": 101,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1403,
+       "z": -249,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         101,
+         106
+        ],
+        [
+         113,
+         120
+        ]
+       ],
+       "firstGapFromRimY": 101,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1402,
+       "z": -251,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         102,
+         105
+        ]
+       ],
+       "firstGapFromRimY": 102,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1402,
+       "z": -250,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         101,
+         105
+        ],
+        [
+         114,
+         120
+        ]
+       ],
+       "firstGapFromRimY": 101,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1402,
+       "z": -249,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         101,
+         105
+        ],
+        [
+         113,
+         120
+        ]
+       ],
+       "firstGapFromRimY": 101,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      }
+     ]
+    },
+    {
+     "pieceIndex": 17,
+     "bbox": [
+      -1426,
+      42,
+      -273,
+      -1422,
+      85,
+      -269
+     ],
+     "topY": 85,
+     "sourceGroundY": 42,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 38,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1425,
+       "z": -272,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1425,
+       "z": -271,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1425,
+       "z": -270,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1424,
+       "z": -272,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1424,
+       "z": -271,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1424,
+       "z": -270,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1423,
+       "z": -272,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1423,
+       "z": -271,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1423,
+       "z": -270,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      }
+     ]
+    },
+    {
+     "pieceIndex": 18,
+     "bbox": [
+      -1426,
+      42,
+      -231,
+      -1422,
+      85,
+      -227
+     ],
+     "topY": 85,
+     "sourceGroundY": 42,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "firstAirRunY": 98,
+     "firstAirRunDelta": 13,
+     "scanTo": 122,
+     "deltaNeededFromTop": 38,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1425,
+       "z": -230,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         98,
+         100
+        ]
+       ],
+       "firstGapFromRimY": 98,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1425,
+       "z": -229,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1425,
+       "z": -228,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1424,
+       "z": -230,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         99,
+         100
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1424,
+       "z": -229,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ]
+       ],
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1424,
+       "z": -228,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         88,
+         90
+        ]
+       ],
+       "firstGapFromRimY": 88,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "air"
+       ]
+      },
+      {
+       "x": -1423,
+       "z": -230,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         87,
+         89
+        ]
+       ],
+       "firstGapFromRimY": 87,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1423,
+       "z": -229,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         87,
+         90
+        ]
+       ],
+       "firstGapFromRimY": 87,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -1423,
+       "z": -228,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         88,
+         90
+        ]
+       ],
+       "firstGapFromRimY": 88,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "air"
+       ]
+      }
+     ]
+    },
+    {
+     "pieceIndex": 19,
+     "bbox": [
+      -1479,
+      42,
+      -316,
+      -1475,
+      85,
+      -312
+     ],
+     "topY": 85,
+     "sourceGroundY": 42,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "firstAirRunY": 98,
+     "firstAirRunDelta": 13,
+     "scanTo": 122,
+     "deltaNeededFromTop": 38,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1478,
+       "z": -315,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         94,
+         97
+        ],
+        [
+         100,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 94,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1478,
+       "z": -314,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         93,
+         96
+        ],
+        [
+         98,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 93,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1478,
+       "z": -313,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         94,
+         107
+        ]
+       ],
+       "firstGapFromRimY": 94,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1477,
+       "z": -315,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         95,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 95,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1477,
+       "z": -314,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         98,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 98,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1477,
+       "z": -313,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         93,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 93,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1476,
+       "z": -315,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         94,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 94,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1476,
+       "z": -314,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         94,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 94,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1476,
+       "z": -313,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         95,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 95,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      }
+     ]
+    },
+    {
+     "pieceIndex": 20,
+     "bbox": [
+      -1521,
+      42,
+      -316,
+      -1517,
+      85,
+      -312
+     ],
+     "topY": 85,
+     "sourceGroundY": 42,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "firstAirRunY": 94,
+     "firstAirRunDelta": 9,
+     "scanTo": 122,
+     "deltaNeededFromTop": 38,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1520,
+       "z": -315,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         92,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 92,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1520,
+       "z": -314,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         93,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 93,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1520,
+       "z": -313,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         45
+        ],
+        [
+         50,
+         85
+        ],
+        [
+         94,
+         104
+        ],
+        [
+         106,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 94,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1519,
+       "z": -315,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         91,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 91,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1519,
+       "z": -314,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         92,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 92,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1519,
+       "z": -313,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         93,
+         104
+        ],
+        [
+         106,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 93,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1518,
+       "z": -315,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         90,
+         92
+        ],
+        [
+         95,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 90,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1518,
+       "z": -314,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         91,
+         92
+        ],
+        [
+         94,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 94,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      },
+      {
+       "x": -1518,
+       "z": -313,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false,
+       "runsAboveRim": [
+        [
+         43,
+         85
+        ],
+        [
+         92,
+         94
+        ],
+        [
+         104,
+         104
+        ],
+        [
+         106,
+         106
+        ]
+       ],
+       "firstGapFromRimY": 92,
+       "aboveRim3": [
+        "minecraft:netherrack",
+        "minecraft:netherrack",
+        "minecraft:netherrack"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "structure": "golden_prison_basalt",
+   "biome": "basalt_deltas",
+   "pieces": 8,
+   "treasurePieces": 1,
+   "foreign": 40,
+   "foreignNatural": 40,
+   "foreignTop": {
+    "minecraft:basalt": 35,
+    "minecraft:red_mushroom": 5
+   },
+   "spawner": [
+    15,
+    15
+   ],
+   "chest": [
+    7,
+    8
+   ],
+   "frames": 4,
+   "framesCoin": 4,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -524,
+      40,
+      -1559,
+      -520,
+      83,
+      -1555
+     ],
+     "topY": 83,
+     "sourceGroundY": 40,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "firstAirRunY": 84,
+     "firstAirRunDelta": 1,
+     "scanTo": 122,
+     "deltaNeededFromTop": 40,
+     "outcrop": false,
+     "columnsClearAboveRim8": 9,
+     "cols": [
+      {
+       "x": -523,
+       "z": -1558,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         43
+        ],
+        [
+         48,
+         107
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -523,
+       "z": -1557,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         107
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -523,
+       "z": -1556,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         108
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -522,
+       "z": -1558,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         43
+        ],
+        [
+         48,
+         107
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -522,
+       "z": -1557,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         107
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -522,
+       "z": -1556,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         108
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -521,
+       "z": -1558,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         43
+        ],
+        [
+         48,
+         107
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -521,
+       "z": -1557,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         107
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      },
+      {
+       "x": -521,
+       "z": -1556,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true,
+       "runsAboveRim": [
+        [
+         41,
+         108
+        ]
+       ],
+       "firstGapFromRimY": 84,
+       "aboveRim3": [
+        "air",
+        "air",
+        "air"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

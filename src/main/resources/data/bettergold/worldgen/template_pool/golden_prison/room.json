@@ -38,7 +38,7 @@
       }
     },
     {
-      "weight": 6,
+      "weight": 10,
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "bettergold:golden_prison/cell_small_fertile",
@@ -83,7 +83,7 @@
       }
     },
     {
-      "weight": 6,
+      "weight": 10,
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "bettergold:golden_prison/cell_medium_fertile",
@@ -128,7 +128,7 @@
       }
     },
     {
-      "weight": 6,
+      "weight": 10,
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "bettergold:golden_prison/cell_large_fertile",

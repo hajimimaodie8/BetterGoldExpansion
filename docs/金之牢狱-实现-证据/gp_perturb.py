@@ -27,6 +27,14 @@ LANE = os.path.join(POOL_DIR, 'lane.json')
 START = os.path.join(POOL_DIR, 'start.json')
 SSET = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'worldgen', 'structure_set',
                     'golden_prison.json')
+# ---- 第六轮新增的扰动目标
+WG = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'worldgen')
+STRUCT_MAIN = os.path.join(WG, 'structure', 'golden_prison.json')
+STRUCT_BASALT = os.path.join(WG, 'structure', 'golden_prison_basalt.json')
+SSET_BASALT = os.path.join(WG, 'structure_set', 'golden_prison_basalt.json')
+BIOME_TAG = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'tags',
+                         'worldgen', 'biome', 'golden_prison', 'no_basalt.json')
+GP_BUILD = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'gp_build.py')
 
 
 # ---------------------------------------------------------------- NBT 读写（独立实现）
@@ -386,6 +394,65 @@ def exit_target_room(root):
     return 0
 
 
+# ---------------------------------------------------------------- 第六轮新增（按群系分支 + 权重 + 井筒校准）
+def struct_main_biomes_all_nether(text):
+    """P21：主结构的 biomes 改回 #minecraft:is_nether ⇒ [bgp-worldgen] 必须红。"""
+    d = json.loads(text)
+    d['biomes'] = '#minecraft:is_nether'
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def struct_basalt_bury(text):
+    """P22：玄武岩结构 terrain_adaptation none → bury ⇒ [bgp-worldgen-basalt] 必须红
+    （128+12>128 ⇒ verifyRange 会拒绝加载）。"""
+    d = json.loads(text)
+    d['terrain_adaptation'] = 'bury'
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def sset_basalt_same_salt(text):
+    """P23：两套 structure_set 用同一个 salt ⇒ [bgp-worldgen-salt] 必须红。"""
+    d = json.loads(text)
+    d['placement']['salt'] = 19710101
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def tag_replace_true(text):
+    """P24：群系标签 replace 改 true ⇒ [bgp-biome-tag] 必须红（会静默清空原版条目）。"""
+    d = json.loads(text)
+    d['replace'] = True
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def tag_add_basalt(text):
+    """P25：把 basalt_deltas 加回标签 ⇒ [bgp-biome-tag] 必须红。"""
+    d = json.loads(text)
+    d['values'].append('minecraft:basalt_deltas')
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def struct_basalt_start_pool_room(text):
+    """P26：玄武岩结构的 start_pool 改成 room 池 ⇒ [bgp-treasure-unique-start] 必须红。"""
+    d = json.loads(text)
+    d['start_pool'] = 'bettergold:golden_prison/room'
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def room_fertile_weight_6(text):
+    """P27：丰饶权重改回 6（第五轮口径）⇒ [bgp-pool-reach] 的权重记账必须红。"""
+    d = json.loads(text)
+    for e in d['elements']:
+        if (e['element']['location'] or '').endswith('_fertile'):
+            e['weight'] = 6
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def shaft_h_76(text):
+    """P28：把 EXIT_SHAFT_H 改回任务书的 76（+40 层）⇒ [bgp-shaft] 必须红
+    （实测 +40 层 = 0/8 达标，且 NBT 只有 36 层）。"""
+    return text.replace('EXIT_SHAFT_H = 36', 'EXIT_SHAFT_H = 76', 1)
+
+
 def run_val():
     r = subprocess.run([sys.executable, VAL], capture_output=True, text=True, encoding='utf-8',
                        errors='replace')
@@ -434,6 +501,17 @@ text_case('P18-room-fallback-empty', POOL, room_fallback_empty, 'bgp-pool-reach'
 text_case('P19-fertile-weight-1', POOL, room_fertile_weight_1, 'bgp-pool-reach')
 nbt_case('P20-exit-target-room', 'exit.nbt', exit_target_room, 'bgp-pool-reach')
 text_case('C3-room-only-whitespace', POOL, only_whitespace, '')
+# ---- 第六轮新增：按群系分支（两套 structure / 两套 set / 标签）+ 权重 + 井筒校准（P21~P28）
+text_case('P21-main-biomes-all-nether', STRUCT_MAIN, struct_main_biomes_all_nether, 'bgp-worldgen')
+text_case('P22-basalt-bury-verifyRange', STRUCT_BASALT, struct_basalt_bury, 'bgp-worldgen-basalt')
+text_case('P23-both-sets-same-salt', SSET_BASALT, sset_basalt_same_salt, 'bgp-worldgen-salt')
+text_case('P24-tag-replace-true', BIOME_TAG, tag_replace_true, 'bgp-biome-tag')
+text_case('P25-tag-add-basalt', BIOME_TAG, tag_add_basalt, 'bgp-biome-tag')
+text_case('P26-basalt-start-pool-room', STRUCT_BASALT, struct_basalt_start_pool_room,
+          'bgp-treasure-unique-start')
+text_case('P27-fertile-weight-back-6', POOL, room_fertile_weight_6, 'bgp-pool-reach')
+text_case('P28-exit-shaft-h-76', GP_BUILD, shaft_h_76, 'bgp-shaft')
+text_case('C4-structure-only-whitespace', STRUCT_MAIN, only_whitespace, '')
 
 
 def main():

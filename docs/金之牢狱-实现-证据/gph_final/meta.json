@@ -1,0 +1,4316 @@
+[
+  {
+    "structure": "golden_prison",
+    "biome": "soul_sand_valley",
+    "pos": [
+      -960,
+      0,
+      -1104
+    ],
+    "union": [
+      -1037,
+      35,
+      -1104,
+      -960,
+      80,
+      -1084
+    ],
+    "pieces": [
+      {
+        "i": 0,
+        "tpl": "treasure",
+        "rot": "clockwise_90",
+        "origin": [
+          -960,
+          35,
+          -1104
+        ],
+        "bbox": [
+          -980,
+          35,
+          -1104,
+          -960,
+          43,
+          -1084
+        ]
+      },
+      {
+        "i": 1,
+        "tpl": "lane",
+        "rot": "clockwise_90",
+        "origin": [
+          -981,
+          37,
+          -1096
+        ],
+        "bbox": [
+          -983,
+          37,
+          -1096,
+          -981,
+          41,
+          -1092
+        ]
+      },
+      {
+        "i": 2,
+        "tpl": "cell_small_fertile",
+        "rot": "clockwise_90",
+        "origin": [
+          -984,
+          37,
+          -1101
+        ],
+        "bbox": [
+          -994,
+          37,
+          -1101,
+          -984,
+          42,
+          -1087
+        ]
+      },
+      {
+        "i": 3,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -997,
+          37,
+          -1092
+        ],
+        "bbox": [
+          -997,
+          37,
+          -1096,
+          -995,
+          41,
+          -1092
+        ]
+      },
+      {
+        "i": 4,
+        "tpl": "cell_medium_c",
+        "rot": "clockwise_90",
+        "origin": [
+          -998,
+          37,
+          -1101
+        ],
+        "bbox": [
+          -1018,
+          37,
+          -1101,
+          -998,
+          42,
+          -1087
+        ]
+      },
+      {
+        "i": 5,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1021,
+          37,
+          -1092
+        ],
+        "bbox": [
+          -1021,
+          37,
+          -1096,
+          -1019,
+          41,
+          -1092
+        ]
+      },
+      {
+        "i": 6,
+        "tpl": "cell_small_c",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1032,
+          37,
+          -1087
+        ],
+        "bbox": [
+          -1032,
+          37,
+          -1101,
+          -1022,
+          42,
+          -1087
+        ]
+      },
+      {
+        "i": 7,
+        "tpl": "exit",
+        "rot": "clockwise_90",
+        "origin": [
+          -1033,
+          37,
+          -1096
+        ],
+        "bbox": [
+          -1037,
+          37,
+          -1096,
+          -1033,
+          80,
+          -1092
+        ]
+      }
+    ],
+    "treasurePieces": 1,
+    "ports": 14,
+    "paired": 14,
+    "orphans": [],
+    "dumpedBlocks": 51145,
+    "entities": [
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1036.03125,
+          44.5,
+          -1094.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1036.03125d,44.5d,-1094.5d],Rotation:[90.0f,0.0f],TileX:-1037,TileY:44,TileZ:-1095,UUID:[I;580608376,1624460914,-1112542818,-861290058],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1037,
+          44,
+          -1095
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1036.03125,
+          44.5,
+          -1092.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1036.03125d,44.5d,-1092.5d],Rotation:[90.0f,0.0f],TileX:-1037,TileY:44,TileZ:-1093,UUID:[I;1880754777,2137473486,-1392917476,1170976015],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1037,
+          44,
+          -1093
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -968.03125,
+          41.5,
+          -1092.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-968.03125d,41.5d,-1092.5d],Rotation:[90.0f,0.0f],TileX:-969,TileY:41,TileZ:-1093,UUID:[I;843778119,325928552,-1372198615,362428200],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -969,
+          41,
+          -1093
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -968.03125,
+          41.5,
+          -1094.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-968.03125d,41.5d,-1094.5d],Rotation:[90.0f,0.0f],TileX:-969,TileY:41,TileZ:-1095,UUID:[I;1539669688,-1588575034,-1831665548,-1963858997],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -969,
+          41,
+          -1095
+        ],
+        "facing": 4
+      }
+    ],
+    "blockEntities": [
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -989,
+          38,
+          -1100
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -988,
+          38,
+          -1099
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -986,
+          39,
+          -1099
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          37,
+          -1103
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 181
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          40,
+          -1100
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          40,
+          -1088
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          37,
+          -1085
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -974,
+          37,
+          -1098
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -974,
+          41,
+          -1098
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -974,
+          41,
+          -1090
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -968,
+          38,
+          -1090
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -966,
+          41,
+          -1098
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -966,
+          41,
+          -1090
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          37,
+          -1103
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          40,
+          -1100
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -964,
+          37,
+          -1095
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          40,
+          -1088
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          37,
+          -1085
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      }
+    ],
+    "exits": [
+      {
+        "pieceIndex": 7,
+        "bbox": [
+          -1037,
+          37,
+          -1096,
+          -1033,
+          80,
+          -1092
+        ],
+        "topY": 80,
+        "sourceGroundY": 37,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "airFromBestY": 38,
+        "maxNaturalTop": 122,
+        "firstAirRunY": 38,
+        "firstAirRunDelta": -42,
+        "scanTo": 122,
+        "outcrop": false,
+        "columnsClearAboveRim8": 0,
+        "cols": [
+          {
+            "x": -1036,
+            "z": -1095,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                40
+              ],
+              [
+                45,
+                80
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1036,
+            "z": -1094,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                40
+              ],
+              [
+                45,
+                80
+              ],
+              [
+                104,
+                104
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1036,
+            "z": -1093,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                40
+              ],
+              [
+                45,
+                80
+              ],
+              [
+                104,
+                104
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1035,
+            "z": -1095,
+            "naturalTop": 122,
+            "airFromY": 38,
+            "airRunEndY": 81,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                81
+              ],
+              [
+                103,
+                104
+              ]
+            ],
+            "firstGapFromRimY": 38,
+            "aboveRim3": [
+              "air",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1035,
+            "z": -1094,
+            "naturalTop": 122,
+            "airFromY": 38,
+            "airRunEndY": 81,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                81
+              ],
+              [
+                104,
+                104
+              ]
+            ],
+            "firstGapFromRimY": 38,
+            "aboveRim3": [
+              "air",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1035,
+            "z": -1093,
+            "naturalTop": 122,
+            "airFromY": 38,
+            "airRunEndY": 81,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                81
+              ],
+              [
+                104,
+                104
+              ]
+            ],
+            "firstGapFromRimY": 38,
+            "aboveRim3": [
+              "air",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1034,
+            "z": -1095,
+            "naturalTop": 122,
+            "airFromY": 38,
+            "airRunEndY": 83,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                83
+              ],
+              [
+                102,
+                104
+              ]
+            ],
+            "firstGapFromRimY": 38,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1034,
+            "z": -1094,
+            "naturalTop": 122,
+            "airFromY": 38,
+            "airRunEndY": 83,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                83
+              ],
+              [
+                103,
+                104
+              ]
+            ],
+            "firstGapFromRimY": 38,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1034,
+            "z": -1093,
+            "naturalTop": 122,
+            "airFromY": 38,
+            "airRunEndY": 83,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                38,
+                83
+              ],
+              [
+                102,
+                104
+              ]
+            ],
+            "firstGapFromRimY": 38,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "structure": "golden_prison",
+    "biome": "crimson_forest",
+    "pos": [
+      -1488,
+      0,
+      -208
+    ],
+    "union": [
+      -1569,
+      40,
+      -332,
+      -1401,
+      85,
+      -208
+    ],
+    "pieces": [
+      {
+        "i": 0,
+        "tpl": "treasure",
+        "rot": "180",
+        "origin": [
+          -1488,
+          40,
+          -208
+        ],
+        "bbox": [
+          -1508,
+          40,
+          -228,
+          -1488,
+          48,
+          -208
+        ]
+      },
+      {
+        "i": 1,
+        "tpl": "lane",
+        "rot": "180",
+        "origin": [
+          -1496,
+          42,
+          -229
+        ],
+        "bbox": [
+          -1500,
+          42,
+          -231,
+          -1496,
+          46,
+          -229
+        ]
+      },
+      {
+        "i": 2,
+        "tpl": "cross_b",
+        "rot": "180",
+        "origin": [
+          -1480,
+          42,
+          -232
+        ],
+        "bbox": [
+          -1516,
+          42,
+          -268,
+          -1480,
+          49,
+          -232
+        ]
+      },
+      {
+        "i": 3,
+        "tpl": "lane",
+        "rot": "clockwise_90",
+        "origin": [
+          -1517,
+          42,
+          -252
+        ],
+        "bbox": [
+          -1519,
+          42,
+          -252,
+          -1517,
+          46,
+          -248
+        ]
+      },
+      {
+        "i": 4,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1479,
+          42,
+          -248
+        ],
+        "bbox": [
+          -1479,
+          42,
+          -252,
+          -1477,
+          46,
+          -248
+        ]
+      },
+      {
+        "i": 5,
+        "tpl": "lane",
+        "rot": "none",
+        "origin": [
+          -1500,
+          42,
+          -271
+        ],
+        "bbox": [
+          -1500,
+          42,
+          -271,
+          -1496,
+          46,
+          -269
+        ]
+      },
+      {
+        "i": 6,
+        "tpl": "cell_large_fertile",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1550,
+          42,
+          -243
+        ],
+        "bbox": [
+          -1550,
+          42,
+          -257,
+          -1520,
+          47,
+          -243
+        ]
+      },
+      {
+        "i": 7,
+        "tpl": "cell_large_fertile",
+        "rot": "clockwise_90",
+        "origin": [
+          -1446,
+          42,
+          -257
+        ],
+        "bbox": [
+          -1476,
+          42,
+          -257,
+          -1446,
+          47,
+          -243
+        ]
+      },
+      {
+        "i": 8,
+        "tpl": "cell_medium_fertile",
+        "rot": "180",
+        "origin": [
+          -1491,
+          42,
+          -272
+        ],
+        "bbox": [
+          -1505,
+          42,
+          -292,
+          -1491,
+          47,
+          -272
+        ]
+      },
+      {
+        "i": 9,
+        "tpl": "lane",
+        "rot": "clockwise_90",
+        "origin": [
+          -1551,
+          42,
+          -252
+        ],
+        "bbox": [
+          -1553,
+          42,
+          -252,
+          -1551,
+          46,
+          -248
+        ]
+      },
+      {
+        "i": 10,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1445,
+          42,
+          -248
+        ],
+        "bbox": [
+          -1445,
+          42,
+          -252,
+          -1443,
+          46,
+          -248
+        ]
+      },
+      {
+        "i": 11,
+        "tpl": "lane",
+        "rot": "180",
+        "origin": [
+          -1496,
+          42,
+          -293
+        ],
+        "bbox": [
+          -1500,
+          42,
+          -295,
+          -1496,
+          46,
+          -293
+        ]
+      },
+      {
+        "i": 12,
+        "tpl": "cell_small_a",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1564,
+          42,
+          -243
+        ],
+        "bbox": [
+          -1564,
+          42,
+          -257,
+          -1554,
+          47,
+          -243
+        ]
+      },
+      {
+        "i": 13,
+        "tpl": "cross_b",
+        "rot": "clockwise_90",
+        "origin": [
+          -1406,
+          42,
+          -268
+        ],
+        "bbox": [
+          -1442,
+          42,
+          -268,
+          -1406,
+          49,
+          -232
+        ]
+      },
+      {
+        "i": 14,
+        "tpl": "cross_b",
+        "rot": "clockwise_90",
+        "origin": [
+          -1480,
+          42,
+          -332
+        ],
+        "bbox": [
+          -1516,
+          42,
+          -332,
+          -1480,
+          49,
+          -296
+        ]
+      },
+      {
+        "i": 15,
+        "tpl": "exit",
+        "rot": "clockwise_90",
+        "origin": [
+          -1565,
+          42,
+          -252
+        ],
+        "bbox": [
+          -1569,
+          42,
+          -252,
+          -1565,
+          85,
+          -248
+        ]
+      },
+      {
+        "i": 16,
+        "tpl": "exit",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1405,
+          42,
+          -248
+        ],
+        "bbox": [
+          -1405,
+          42,
+          -252,
+          -1401,
+          85,
+          -248
+        ]
+      },
+      {
+        "i": 17,
+        "tpl": "exit",
+        "rot": "180",
+        "origin": [
+          -1422,
+          42,
+          -269
+        ],
+        "bbox": [
+          -1426,
+          42,
+          -273,
+          -1422,
+          85,
+          -269
+        ]
+      },
+      {
+        "i": 18,
+        "tpl": "exit",
+        "rot": "none",
+        "origin": [
+          -1426,
+          42,
+          -231
+        ],
+        "bbox": [
+          -1426,
+          42,
+          -231,
+          -1422,
+          85,
+          -227
+        ]
+      },
+      {
+        "i": 19,
+        "tpl": "exit",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1479,
+          42,
+          -312
+        ],
+        "bbox": [
+          -1479,
+          42,
+          -316,
+          -1475,
+          85,
+          -312
+        ]
+      },
+      {
+        "i": 20,
+        "tpl": "exit",
+        "rot": "clockwise_90",
+        "origin": [
+          -1517,
+          42,
+          -316
+        ],
+        "bbox": [
+          -1521,
+          42,
+          -316,
+          -1517,
+          85,
+          -312
+        ]
+      }
+    ],
+    "treasurePieces": 1,
+    "ports": 41,
+    "paired": 40,
+    "orphans": [
+      {
+        "piece": 14,
+        "tpl": "cross_b",
+        "pos": [
+          -1498,
+          43,
+          -332
+        ],
+        "dir": "north",
+        "target": "lane"
+      }
+    ],
+    "dumpedBlocks": 471397,
+    "entities": [
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1568.03125,
+          49.5,
+          -250.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1568.03125d,49.5d,-250.5d],Rotation:[90.0f,0.0f],TileX:-1569,TileY:49,TileZ:-251,UUID:[I;1126021267,-2051259091,-1475498608,1229297897],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1569,
+          49,
+          -251
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1568.03125,
+          49.5,
+          -248.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1568.03125d,49.5d,-248.5d],Rotation:[90.0f,0.0f],TileX:-1569,TileY:49,TileZ:-249,UUID:[I;-200663656,1339575070,-1554820874,1398016033],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1569,
+          49,
+          -249
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1520.03125,
+          49.5,
+          -314.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1520.03125d,49.5d,-314.5d],Rotation:[90.0f,0.0f],TileX:-1521,TileY:49,TileZ:-315,UUID:[I;1829976860,-381465976,-1949069604,-138233418],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1521,
+          49,
+          -315
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1520.03125,
+          49.5,
+          -312.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1520.03125d,49.5d,-312.5d],Rotation:[90.0f,0.0f],TileX:-1521,TileY:49,TileZ:-313,UUID:[I;398856508,-1288943604,-1688501620,204893437],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1521,
+          49,
+          -313
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1499.03125,
+          47.5,
+          -314.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1499.03125d,47.5d,-314.5d],Rotation:[90.0f,0.0f],TileX:-1500,TileY:47,TileZ:-315,UUID:[I;27546863,1904036148,-1857544124,295367710],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1500,
+          47,
+          -315
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1499.03125,
+          47.5,
+          -312.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1499.03125d,47.5d,-312.5d],Rotation:[90.0f,0.0f],TileX:-1500,TileY:47,TileZ:-313,UUID:[I;1224578666,-1455863440,-1157739929,-729571054],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1500,
+          47,
+          -313
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1496.5,
+          47.5,
+          -251.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1496.5d,47.5d,-251.03125d],Rotation:[180.0f,0.0f],TileX:-1497,TileY:47,TileZ:-252,UUID:[I;-233117842,-78953909,-1192005004,-665578709],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1497,
+          47,
+          -252
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1498.5,
+          47.5,
+          -251.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1498.5d,47.5d,-251.03125d],Rotation:[180.0f,0.0f],TileX:-1499,TileY:47,TileZ:-252,UUID:[I;1978615214,805457170,-1141095713,941484283],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1499,
+          47,
+          -252
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1498.5,
+          46.5,
+          -216.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1498.5d,46.5d,-216.03125d],Rotation:[180.0f,0.0f],TileX:-1499,TileY:46,TileZ:-217,UUID:[I;-1871234666,-2094970977,-1279391365,-1614073171],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1499,
+          46,
+          -217
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1496.5,
+          46.5,
+          -216.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1496.5d,46.5d,-216.03125d],Rotation:[180.0f,0.0f],TileX:-1497,TileY:46,TileZ:-217,UUID:[I;-563796526,-922202199,-1669819596,1255903816],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1497,
+          46,
+          -217
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1474.96875,
+          49.5,
+          -312.5
+        ],
+        "nbt": "{Air:300s,Facing:5b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1474.96875d,49.5d,-312.5d],Rotation:[270.0f,0.0f],TileX:-1475,TileY:49,TileZ:-313,UUID:[I;549133806,1342852418,-1656900196,-1827310985],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1475,
+          49,
+          -313
+        ],
+        "facing": 5
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1474.96875,
+          49.5,
+          -314.5
+        ],
+        "nbt": "{Air:300s,Facing:5b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1474.96875d,49.5d,-314.5d],Rotation:[270.0f,0.0f],TileX:-1475,TileY:49,TileZ:-315,UUID:[I;2048500664,470041924,-1718443247,2132624567],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1475,
+          49,
+          -315
+        ],
+        "facing": 5
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1424.5,
+          49.5,
+          -272.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1424.5d,49.5d,-272.03125d],Rotation:[180.0f,0.0f],TileX:-1425,TileY:49,TileZ:-273,UUID:[I;103187662,-1987556510,-1573503799,1684136963],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1425,
+          49,
+          -273
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1425.03125,
+          47.5,
+          -250.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1425.03125d,47.5d,-250.5d],Rotation:[90.0f,0.0f],TileX:-1426,TileY:47,TileZ:-251,UUID:[I;-651824005,146164800,-1603396554,358267560],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1426,
+          47,
+          -251
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1425.03125,
+          47.5,
+          -248.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1425.03125d,47.5d,-248.5d],Rotation:[90.0f,0.0f],TileX:-1426,TileY:47,TileZ:-249,UUID:[I;-1967821363,-1911993130,-1491359080,-361889399],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1426,
+          47,
+          -249
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1424.5,
+          49.5,
+          -226.96875
+        ],
+        "nbt": "{Air:300s,Facing:3b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1424.5d,49.5d,-226.96875d],Rotation:[0.0f,0.0f],TileX:-1425,TileY:49,TileZ:-227,UUID:[I;-936046146,-983217011,-1827136376,2048844195],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1425,
+          49,
+          -227
+        ],
+        "facing": 3
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1422.5,
+          49.5,
+          -272.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1422.5d,49.5d,-272.03125d],Rotation:[180.0f,0.0f],TileX:-1423,TileY:49,TileZ:-273,UUID:[I;272309863,-710588983,-1476984001,619991330],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1423,
+          49,
+          -273
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1422.5,
+          49.5,
+          -226.96875
+        ],
+        "nbt": "{Air:300s,Facing:3b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1422.5d,49.5d,-226.96875d],Rotation:[0.0f,0.0f],TileX:-1423,TileY:49,TileZ:-227,UUID:[I;-221741073,-600096653,-1965818373,-73203176],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1423,
+          49,
+          -227
+        ],
+        "facing": 3
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1400.96875,
+          49.5,
+          -248.5
+        ],
+        "nbt": "{Air:300s,Facing:5b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1400.96875d,49.5d,-248.5d],Rotation:[270.0f,0.0f],TileX:-1401,TileY:49,TileZ:-249,UUID:[I;268569375,2072199680,-1623271706,468531561],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1401,
+          49,
+          -249
+        ],
+        "facing": 5
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1400.96875,
+          49.5,
+          -250.5
+        ],
+        "nbt": "{Air:300s,Facing:5b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1400.96875d,49.5d,-250.5d],Rotation:[270.0f,0.0f],TileX:-1401,TileY:49,TileZ:-251,UUID:[I;-176610986,134301197,-1397463568,96621376],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1401,
+          49,
+          -251
+        ],
+        "facing": 5
+      }
+    ],
+    "blockEntities": [
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1562,
+          44,
+          -245
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1559,
+          43,
+          -244
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1545,
+          43,
+          -244
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1541,
+          44,
+          -245
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 649
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1527,
+          43,
+          -244
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1515,
+          43,
+          -322
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 20
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1515,
+          43,
+          -306
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 532
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1515,
+          43,
+          -258
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 69
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1515,
+          43,
+          -242
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 151
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1507,
+          42,
+          -224
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1507,
+          42,
+          -212
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1506,
+          43,
+          -331
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 176
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1506,
+          43,
+          -297
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 69
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1506,
+          43,
+          -267
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 532
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1506,
+          43,
+          -233
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 422
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1504,
+          43,
+          -278
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 281
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1504,
+          43,
+          -277
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1504,
+          45,
+          -224
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1504,
+          45,
+          -212
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1502,
+          46,
+          -222
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1502,
+          43,
+          -216
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1502,
+          46,
+          -214
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1501,
+          44,
+          -314
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 155
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1501,
+          44,
+          -250
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 336
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1500,
+          44,
+          -314
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1499,
+          44,
+          -250
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1498,
+          44,
+          -317
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 391
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1498,
+          44,
+          -315
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1498,
+          44,
+          -313
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1498,
+          44,
+          -311
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 336
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1498,
+          44,
+          -253
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 155
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1498,
+          44,
+          -252
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1498,
+          44,
+          -249
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1498,
+          44,
+          -247
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 324
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1497,
+          44,
+          -314
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1497,
+          44,
+          -250
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1497,
+          42,
+          -212
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1495,
+          44,
+          -314
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 324
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1495,
+          44,
+          -250
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 391
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1494,
+          42,
+          -222
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1494,
+          46,
+          -222
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1494,
+          46,
+          -214
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1492,
+          43,
+          -275
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1492,
+          45,
+          -224
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1492,
+          45,
+          -212
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1490,
+          43,
+          -331
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 574
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1490,
+          43,
+          -297
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 151
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1490,
+          43,
+          -267
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 20
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1490,
+          43,
+          -233
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 359
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1489,
+          42,
+          -224
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 181
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1489,
+          42,
+          -212
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1481,
+          43,
+          -322
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 359
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1481,
+          43,
+          -306
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 422
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1481,
+          43,
+          -258
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 176
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1481,
+          43,
+          -242
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 574
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1469,
+          43,
+          -256
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1455,
+          44,
+          -255
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 649
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1451,
+          43,
+          -256
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1441,
+          43,
+          -258
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 20
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1441,
+          43,
+          -242
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 532
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1432,
+          43,
+          -267
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 176
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1432,
+          43,
+          -233
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 69
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1427,
+          44,
+          -250
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 155
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1426,
+          44,
+          -250
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1424,
+          44,
+          -253
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 391
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1424,
+          44,
+          -251
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1424,
+          44,
+          -249
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1424,
+          44,
+          -247
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 336
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1423,
+          44,
+          -250
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1421,
+          44,
+          -250
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 324
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1416,
+          43,
+          -267
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 574
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1416,
+          43,
+          -233
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 151
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1407,
+          43,
+          -258
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 359
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1407,
+          43,
+          -242
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 422
+      }
+    ],
+    "exits": [
+      {
+        "pieceIndex": 15,
+        "bbox": [
+          -1569,
+          42,
+          -252,
+          -1565,
+          85,
+          -248
+        ],
+        "topY": 85,
+        "sourceGroundY": 42,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "airFromY": 63,
+        "airFromBestY": 43,
+        "maxNaturalTop": 122,
+        "firstAirRunY": 63,
+        "firstAirRunDelta": -22,
+        "scanTo": 122,
+        "deltaNeededFromTop": -22,
+        "outcrop": true,
+        "columnsClearAboveRim8": 0,
+        "cols": [
+          {
+            "x": -1568,
+            "z": -251,
+            "naturalTop": 122,
+            "airFromY": 50,
+            "airRunEndY": 90,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                90
+              ],
+              [
+                102,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 50,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1568,
+            "z": -250,
+            "naturalTop": 122,
+            "airFromY": 62,
+            "airRunEndY": 90,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                60
+              ],
+              [
+                62,
+                90
+              ],
+              [
+                104,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 62,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1568,
+            "z": -249,
+            "naturalTop": 122,
+            "airFromY": 62,
+            "airRunEndY": 89,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                60
+              ],
+              [
+                62,
+                89
+              ],
+              [
+                103,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 62,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1567,
+            "z": -251,
+            "naturalTop": 122,
+            "airFromY": 43,
+            "airRunEndY": 90,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                90
+              ],
+              [
+                102,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 43,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1567,
+            "z": -250,
+            "naturalTop": 122,
+            "airFromY": 62,
+            "airRunEndY": 89,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                60
+              ],
+              [
+                62,
+                89
+              ],
+              [
+                103,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 62,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1567,
+            "z": -249,
+            "naturalTop": 122,
+            "airFromY": 63,
+            "airRunEndY": 89,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                59
+              ],
+              [
+                63,
+                89
+              ],
+              [
+                104,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 63,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1566,
+            "z": -251,
+            "naturalTop": 122,
+            "airFromY": 43,
+            "airRunEndY": 90,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                90
+              ],
+              [
+                102,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 43,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1566,
+            "z": -250,
+            "naturalTop": 122,
+            "airFromY": 62,
+            "airRunEndY": 89,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                58
+              ],
+              [
+                60,
+                60
+              ],
+              [
+                62,
+                89
+              ],
+              [
+                103,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 62,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1566,
+            "z": -249,
+            "naturalTop": 122,
+            "airFromY": 63,
+            "airRunEndY": 89,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                57
+              ],
+              [
+                61,
+                61
+              ],
+              [
+                63,
+                89
+              ],
+              [
+                103,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 63,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          }
+        ]
+      },
+      {
+        "pieceIndex": 16,
+        "bbox": [
+          -1405,
+          42,
+          -252,
+          -1401,
+          85,
+          -248
+        ],
+        "topY": 85,
+        "sourceGroundY": 42,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "airFromY": 102,
+        "airFromBestY": 101,
+        "maxNaturalTop": 122,
+        "firstAirRunY": 102,
+        "firstAirRunDelta": 17,
+        "scanTo": 122,
+        "deltaNeededFromTop": 17,
+        "outcrop": false,
+        "columnsClearAboveRim8": 0,
+        "cols": [
+          {
+            "x": -1404,
+            "z": -251,
+            "naturalTop": 122,
+            "airFromY": 102,
+            "airRunEndY": 105,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                102,
+                105
+              ]
+            ],
+            "firstGapFromRimY": 102,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1404,
+            "z": -250,
+            "naturalTop": 122,
+            "airFromY": 101,
+            "airRunEndY": 105,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                101,
+                105
+              ],
+              [
+                115,
+                120
+              ]
+            ],
+            "firstGapFromRimY": 101,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1404,
+            "z": -249,
+            "naturalTop": 122,
+            "airFromY": 101,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                101,
+                106
+              ],
+              [
+                113,
+                120
+              ]
+            ],
+            "firstGapFromRimY": 101,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1403,
+            "z": -251,
+            "naturalTop": 122,
+            "airFromY": 102,
+            "airRunEndY": 105,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                102,
+                105
+              ]
+            ],
+            "firstGapFromRimY": 102,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1403,
+            "z": -250,
+            "naturalTop": 122,
+            "airFromY": 101,
+            "airRunEndY": 105,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                101,
+                105
+              ],
+              [
+                113,
+                120
+              ]
+            ],
+            "firstGapFromRimY": 101,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1403,
+            "z": -249,
+            "naturalTop": 122,
+            "airFromY": 101,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                101,
+                106
+              ],
+              [
+                113,
+                120
+              ]
+            ],
+            "firstGapFromRimY": 101,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1402,
+            "z": -251,
+            "naturalTop": 122,
+            "airFromY": 102,
+            "airRunEndY": 105,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                102,
+                105
+              ]
+            ],
+            "firstGapFromRimY": 102,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1402,
+            "z": -250,
+            "naturalTop": 122,
+            "airFromY": 101,
+            "airRunEndY": 105,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                101,
+                105
+              ],
+              [
+                114,
+                120
+              ]
+            ],
+            "firstGapFromRimY": 101,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1402,
+            "z": -249,
+            "naturalTop": 122,
+            "airFromY": 101,
+            "airRunEndY": 105,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                101,
+                105
+              ],
+              [
+                113,
+                120
+              ]
+            ],
+            "firstGapFromRimY": 101,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          }
+        ]
+      },
+      {
+        "pieceIndex": 17,
+        "bbox": [
+          -1426,
+          42,
+          -273,
+          -1422,
+          85,
+          -269
+        ],
+        "topY": 85,
+        "sourceGroundY": 42,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "maxNaturalTop": 122,
+        "scanTo": 122,
+        "outcrop": false,
+        "columnsClearAboveRim8": 0,
+        "cols": [
+          {
+            "x": -1425,
+            "z": -272,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                59
+              ],
+              [
+                63,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1425,
+            "z": -271,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                60
+              ],
+              [
+                62,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1425,
+            "z": -270,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1424,
+            "z": -272,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1424,
+            "z": -271,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1424,
+            "z": -270,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1423,
+            "z": -272,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1423,
+            "z": -271,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1423,
+            "z": -270,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          }
+        ]
+      },
+      {
+        "pieceIndex": 18,
+        "bbox": [
+          -1426,
+          42,
+          -231,
+          -1422,
+          85,
+          -227
+        ],
+        "topY": 85,
+        "sourceGroundY": 42,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "airFromBestY": 87,
+        "maxNaturalTop": 122,
+        "firstAirRunY": 98,
+        "firstAirRunDelta": 13,
+        "scanTo": 122,
+        "outcrop": false,
+        "columnsClearAboveRim8": 0,
+        "cols": [
+          {
+            "x": -1425,
+            "z": -230,
+            "naturalTop": 122,
+            "airFromY": 98,
+            "airRunEndY": 100,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                98,
+                100
+              ]
+            ],
+            "firstGapFromRimY": 98,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1425,
+            "z": -229,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1425,
+            "z": -228,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1424,
+            "z": -230,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                99,
+                100
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1424,
+            "z": -229,
+            "naturalTop": 122,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ]
+            ],
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1424,
+            "z": -228,
+            "naturalTop": 122,
+            "airFromY": 88,
+            "airRunEndY": 90,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                88,
+                90
+              ]
+            ],
+            "firstGapFromRimY": 88,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "air"
+            ]
+          },
+          {
+            "x": -1423,
+            "z": -230,
+            "naturalTop": 122,
+            "airFromY": 87,
+            "airRunEndY": 89,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                87,
+                89
+              ]
+            ],
+            "firstGapFromRimY": 87,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1423,
+            "z": -229,
+            "naturalTop": 122,
+            "airFromY": 87,
+            "airRunEndY": 90,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                87,
+                90
+              ]
+            ],
+            "firstGapFromRimY": 87,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -1423,
+            "z": -228,
+            "naturalTop": 122,
+            "airFromY": 88,
+            "airRunEndY": 90,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                88,
+                90
+              ]
+            ],
+            "firstGapFromRimY": 88,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "air"
+            ]
+          }
+        ]
+      },
+      {
+        "pieceIndex": 19,
+        "bbox": [
+          -1479,
+          42,
+          -316,
+          -1475,
+          85,
+          -312
+        ],
+        "topY": 85,
+        "sourceGroundY": 42,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "airFromY": 98,
+        "airFromBestY": 93,
+        "maxNaturalTop": 122,
+        "firstAirRunY": 98,
+        "firstAirRunDelta": 13,
+        "scanTo": 122,
+        "deltaNeededFromTop": 13,
+        "outcrop": false,
+        "columnsClearAboveRim8": 0,
+        "cols": [
+          {
+            "x": -1478,
+            "z": -315,
+            "naturalTop": 122,
+            "airFromY": 94,
+            "airRunEndY": 97,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                83
+              ],
+              [
+                94,
+                97
+              ],
+              [
+                100,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 94,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1478,
+            "z": -314,
+            "naturalTop": 122,
+            "airFromY": 93,
+            "airRunEndY": 96,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                84
+              ],
+              [
+                93,
+                96
+              ],
+              [
+                98,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 93,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1478,
+            "z": -313,
+            "naturalTop": 122,
+            "airFromY": 93,
+            "airRunEndY": 107,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                84
+              ],
+              [
+                93,
+                107
+              ]
+            ],
+            "firstGapFromRimY": 93,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1477,
+            "z": -315,
+            "naturalTop": 122,
+            "airFromY": 94,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                94,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 94,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1477,
+            "z": -314,
+            "naturalTop": 122,
+            "airFromY": 98,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                98,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 98,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1477,
+            "z": -313,
+            "naturalTop": 122,
+            "airFromY": 94,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                94,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 94,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1476,
+            "z": -315,
+            "naturalTop": 122,
+            "airFromY": 94,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                94,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 94,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1476,
+            "z": -314,
+            "naturalTop": 122,
+            "airFromY": 95,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                95,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 95,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1476,
+            "z": -313,
+            "naturalTop": 122,
+            "airFromY": 94,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                94,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 94,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          }
+        ]
+      },
+      {
+        "pieceIndex": 20,
+        "bbox": [
+          -1521,
+          42,
+          -316,
+          -1517,
+          85,
+          -312
+        ],
+        "topY": 85,
+        "sourceGroundY": 42,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "airFromY": 94,
+        "airFromBestY": 90,
+        "maxNaturalTop": 122,
+        "firstAirRunY": 94,
+        "firstAirRunDelta": 9,
+        "scanTo": 122,
+        "deltaNeededFromTop": 9,
+        "outcrop": false,
+        "columnsClearAboveRim8": 0,
+        "cols": [
+          {
+            "x": -1520,
+            "z": -315,
+            "naturalTop": 122,
+            "airFromY": 92,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                92,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 92,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1520,
+            "z": -314,
+            "naturalTop": 122,
+            "airFromY": 93,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                93,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 93,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1520,
+            "z": -313,
+            "naturalTop": 122,
+            "airFromY": 94,
+            "airRunEndY": 104,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                45
+              ],
+              [
+                50,
+                85
+              ],
+              [
+                94,
+                104
+              ],
+              [
+                106,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 94,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1519,
+            "z": -315,
+            "naturalTop": 122,
+            "airFromY": 91,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                91,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 91,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1519,
+            "z": -314,
+            "naturalTop": 122,
+            "airFromY": 92,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                92,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 92,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1519,
+            "z": -313,
+            "naturalTop": 122,
+            "airFromY": 93,
+            "airRunEndY": 104,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                93,
+                104
+              ],
+              [
+                106,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 93,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1518,
+            "z": -315,
+            "naturalTop": 122,
+            "airFromY": 90,
+            "airRunEndY": 92,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                90,
+                92
+              ],
+              [
+                95,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 90,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1518,
+            "z": -314,
+            "naturalTop": 122,
+            "airFromY": 94,
+            "airRunEndY": 106,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                91,
+                92
+              ],
+              [
+                94,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 94,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          },
+          {
+            "x": -1518,
+            "z": -313,
+            "naturalTop": 122,
+            "airFromY": 92,
+            "airRunEndY": 94,
+            "clearAboveRim8": false,
+            "runsAboveRim": [
+              [
+                43,
+                85
+              ],
+              [
+                92,
+                94
+              ],
+              [
+                104,
+                104
+              ],
+              [
+                106,
+                106
+              ]
+            ],
+            "firstGapFromRimY": 92,
+            "aboveRim3": [
+              "minecraft:netherrack",
+              "minecraft:netherrack",
+              "minecraft:netherrack"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "structure": "golden_prison_basalt",
+    "biome": "basalt_deltas",
+    "pos": [
+      -512,
+      0,
+      -1472
+    ],
+    "union": [
+      -532,
+      38,
+      -1559,
+      -512,
+      83,
+      -1472
+    ],
+    "pieces": [
+      {
+        "i": 0,
+        "tpl": "treasure",
+        "rot": "180",
+        "origin": [
+          -512,
+          38,
+          -1472
+        ],
+        "bbox": [
+          -532,
+          38,
+          -1492,
+          -512,
+          46,
+          -1472
+        ]
+      },
+      {
+        "i": 1,
+        "tpl": "lane",
+        "rot": "none",
+        "origin": [
+          -524,
+          40,
+          -1495
+        ],
+        "bbox": [
+          -524,
+          40,
+          -1495,
+          -520,
+          44,
+          -1493
+        ]
+      },
+      {
+        "i": 2,
+        "tpl": "cell_small_fertile",
+        "rot": "180",
+        "origin": [
+          -515,
+          40,
+          -1496
+        ],
+        "bbox": [
+          -529,
+          40,
+          -1506,
+          -515,
+          45,
+          -1496
+        ]
+      },
+      {
+        "i": 3,
+        "tpl": "lane",
+        "rot": "none",
+        "origin": [
+          -524,
+          40,
+          -1509
+        ],
+        "bbox": [
+          -524,
+          40,
+          -1509,
+          -520,
+          44,
+          -1507
+        ]
+      },
+      {
+        "i": 4,
+        "tpl": "cell_small_a",
+        "rot": "none",
+        "origin": [
+          -529,
+          40,
+          -1520
+        ],
+        "bbox": [
+          -529,
+          40,
+          -1520,
+          -515,
+          45,
+          -1510
+        ]
+      },
+      {
+        "i": 5,
+        "tpl": "lane",
+        "rot": "180",
+        "origin": [
+          -520,
+          40,
+          -1521
+        ],
+        "bbox": [
+          -524,
+          40,
+          -1523,
+          -520,
+          44,
+          -1521
+        ]
+      },
+      {
+        "i": 6,
+        "tpl": "cell_large_c",
+        "rot": "180",
+        "origin": [
+          -515,
+          40,
+          -1524
+        ],
+        "bbox": [
+          -529,
+          40,
+          -1554,
+          -515,
+          45,
+          -1524
+        ]
+      },
+      {
+        "i": 7,
+        "tpl": "exit",
+        "rot": "180",
+        "origin": [
+          -520,
+          40,
+          -1555
+        ],
+        "bbox": [
+          -524,
+          40,
+          -1559,
+          -520,
+          83,
+          -1555
+        ]
+      }
+    ],
+    "treasurePieces": 1,
+    "ports": 14,
+    "paired": 14,
+    "orphans": [],
+    "dumpedBlocks": 16580,
+    "entities": [
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -520.5,
+          47.5,
+          -1558.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-520.5d,47.5d,-1558.03125d],Rotation:[180.0f,0.0f],TileX:-521,TileY:47,TileZ:-1559,UUID:[I;-1046406067,812466815,-1651474340,-1544353360],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -521,
+          47,
+          -1559
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -522.5,
+          47.5,
+          -1558.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-522.5d,47.5d,-1558.03125d],Rotation:[180.0f,0.0f],TileX:-523,TileY:47,TileZ:-1559,UUID:[I;-210496099,-1425324065,-1147296411,-699132294],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -523,
+          47,
+          -1559
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -522.5,
+          44.5,
+          -1480.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-522.5d,44.5d,-1480.03125d],Rotation:[180.0f,0.0f],TileX:-523,TileY:44,TileZ:-1481,UUID:[I;-1567179339,-1341765630,-2018429448,134791750],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -523,
+          44,
+          -1481
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -520.5,
+          44.5,
+          -1480.03125
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-520.5d,44.5d,-1480.03125d],Rotation:[180.0f,0.0f],TileX:-521,TileY:44,TileZ:-1481,UUID:[I;-1390247983,1762938463,-1176833511,-1715717482],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -521,
+          44,
+          -1481
+        ],
+        "facing": 2
+      }
+    ],
+    "blockEntities": [
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -531,
+          40,
+          -1488
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -531,
+          40,
+          -1476
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -528,
+          41,
+          -1515
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -528,
+          43,
+          -1488
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -528,
+          43,
+          -1476
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -527,
+          42,
+          -1518
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -526,
+          44,
+          -1486
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -526,
+          41,
+          -1480
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -526,
+          44,
+          -1478
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -521,
+          40,
+          -1476
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -518,
+          40,
+          -1486
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -518,
+          44,
+          -1486
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -518,
+          44,
+          -1478
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -517,
+          41,
+          -1546
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -517,
+          41,
+          -1500
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -517,
+          42,
+          -1498
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -516,
+          41,
+          -1549
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -516,
+          41,
+          -1501
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -516,
+          43,
+          -1488
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -516,
+          43,
+          -1476
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -513,
+          40,
+          -1488
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 181
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -513,
+          40,
+          -1476
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -512,
+          66,
+          -1534
+        ],
+        "lootTable": "minecraft:chests/ruined_portal"
+      }
+    ],
+    "exits": [
+      {
+        "pieceIndex": 7,
+        "bbox": [
+          -524,
+          40,
+          -1559,
+          -520,
+          83,
+          -1555
+        ],
+        "topY": 83,
+        "sourceGroundY": 40,
+        "terrainSurfaceY": 127,
+        "columns": 9,
+        "airFromY": 48,
+        "airFromBestY": 41,
+        "maxNaturalTop": 122,
+        "firstAirRunY": 48,
+        "firstAirRunDelta": -35,
+        "scanTo": 122,
+        "deltaNeededFromTop": -35,
+        "outcrop": true,
+        "columnsClearAboveRim8": 9,
+        "cols": [
+          {
+            "x": -523,
+            "z": -1558,
+            "naturalTop": 122,
+            "airFromY": 48,
+            "airRunEndY": 107,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                43
+              ],
+              [
+                48,
+                107
+              ]
+            ],
+            "firstGapFromRimY": 48,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -523,
+            "z": -1557,
+            "naturalTop": 122,
+            "airFromY": 41,
+            "airRunEndY": 107,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                107
+              ]
+            ],
+            "firstGapFromRimY": 41,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -523,
+            "z": -1556,
+            "naturalTop": 122,
+            "airFromY": 41,
+            "airRunEndY": 108,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                108
+              ]
+            ],
+            "firstGapFromRimY": 41,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -522,
+            "z": -1558,
+            "naturalTop": 122,
+            "airFromY": 48,
+            "airRunEndY": 107,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                43
+              ],
+              [
+                48,
+                107
+              ]
+            ],
+            "firstGapFromRimY": 48,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -522,
+            "z": -1557,
+            "naturalTop": 122,
+            "airFromY": 41,
+            "airRunEndY": 107,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                107
+              ]
+            ],
+            "firstGapFromRimY": 41,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -522,
+            "z": -1556,
+            "naturalTop": 122,
+            "airFromY": 41,
+            "airRunEndY": 108,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                108
+              ]
+            ],
+            "firstGapFromRimY": 41,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -521,
+            "z": -1558,
+            "naturalTop": 122,
+            "airFromY": 48,
+            "airRunEndY": 107,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                43
+              ],
+              [
+                48,
+                107
+              ]
+            ],
+            "firstGapFromRimY": 48,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -521,
+            "z": -1557,
+            "naturalTop": 122,
+            "airFromY": 41,
+            "airRunEndY": 107,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                107
+              ]
+            ],
+            "firstGapFromRimY": 41,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          },
+          {
+            "x": -521,
+            "z": -1556,
+            "naturalTop": 122,
+            "airFromY": 41,
+            "airRunEndY": 108,
+            "clearAboveRim8": true,
+            "runsAboveRim": [
+              [
+                41,
+                108
+              ]
+            ],
+            "firstGapFromRimY": 41,
+            "aboveRim3": [
+              "air",
+              "air",
+              "air"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

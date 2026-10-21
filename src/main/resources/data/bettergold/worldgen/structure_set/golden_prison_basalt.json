@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "bettergold:golden_prison_basalt",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 27,
+    "separation": 4,
+    "salt": 19710102,
+    "spread_type": "linear"
+  }
+}

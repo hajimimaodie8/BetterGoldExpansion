@@ -1,0 +1,746 @@
+{
+ "tag": "measure-36",
+ "dir": "docs\\金之牢狱-实现-证据\\gph_measure",
+ "world": {
+  "worldName": "gp_final_gph1",
+  "seed": 20261020
+ },
+ "seeds_main": {
+  "label": "golden_prison（主结构，非玄武岩群系）",
+  "runs": 10,
+  "distinctFingerprints": 10,
+  "pieceRange": [
+   8,
+   16
+  ],
+  "templateKindRange": [
+   6,
+   8
+  ],
+  "orphans": 0,
+  "treasurePieces": 10,
+  "treasurePerRun": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "poolHits": {
+   "start": 10,
+   "lane": 36,
+   "room": 36,
+   "exit": 26
+  },
+  "fertileRuns": 8,
+  "fertilePieces": 13,
+  "roomPieces": 36,
+  "fertilePieceRatio": 0.3611111111111111,
+  "fingerprints": [
+   "treasure>lane>cell_small_c>lane>cell_small_mirror>lane>cross_a>exit>exit>exit",
+   "treasure>lane>cell_large_a>lane>cell_small_a>lane>cell_medium_fertile>exit",
+   "treasure>lane>cell_medium_b>lane>cell_large_fertile>lane>cross_a>exit>exit>exit",
+   "treasure>lane>cell_small_fertile>lane>cell_small_a>lane>cross_b>exit>exit>exit",
+   "treasure>lane>cell_large_fertile>lane>cell_medium_fertile>lane>cell_medium_a>exit",
+   "treasure>lane>cell_small_fertile>lane>cell_large_fertile>lane>cell_small_b>exit",
+   "treasure>lane>cell_small_fertile>lane>cross_b>lane>lane>lane>cell_large_a>cell_large_fertile>cell_medium_a>exit>exit>exit",
+   "treasure>lane>cell_medium_fertile>lane>cross_b>lane>lane>lane>cross_b>cell_large_b>cell_medium_fertile>exit>exit>exit>exit>exit",
+   "treasure>lane>cell_large_fertile>lane>cross_a>lane>lane>lane>cell_medium_fertile>cell_small_c>cell_small_mirror>exit>exit>exit",
+   "treasure>lane>cell_medium_mirror>lane>cell_large_a>lane>cross_b>exit>exit>exit"
+  ]
+ },
+ "structureNames": [
+  "runs"
+ ],
+ "real": [
+  {
+   "structure": "golden_prison",
+   "biome": "soul_sand_valley",
+   "pieces": 8,
+   "treasurePieces": 1,
+   "foreign": 10,
+   "foreignNatural": 10,
+   "foreignTop": {
+    "minecraft:brown_mushroom": 7,
+    "minecraft:red_mushroom": 3
+   },
+   "spawner": [
+    15,
+    15
+   ],
+   "chest": [
+    6,
+    6
+   ],
+   "frames": 4,
+   "framesCoin": 4,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -1067,
+      37,
+      -1096,
+      -1063,
+      80,
+      -1092
+     ],
+     "topY": 80,
+     "sourceGroundY": 37,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 43,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1066,
+       "z": -1095,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1066,
+       "z": -1094,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1066,
+       "z": -1093,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1065,
+       "z": -1095,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1065,
+       "z": -1094,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1065,
+       "z": -1093,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1064,
+       "z": -1095,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1064,
+       "z": -1094,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1064,
+       "z": -1093,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "structure": "golden_prison",
+   "biome": "basalt_deltas",
+   "pieces": 10,
+   "treasurePieces": 1,
+   "foreign": 110,
+   "foreignNatural": 110,
+   "foreignTop": {
+    "minecraft:basalt": 98,
+    "minecraft:lava": 12
+   },
+   "spawner": [
+    26,
+    26
+   ],
+   "chest": [
+    10,
+    10
+   ],
+   "frames": 10,
+   "framesCoin": 10,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -1388,
+      32,
+      547,
+      -1384,
+      75,
+      551
+     ],
+     "topY": 75,
+     "sourceGroundY": 32,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 48,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1387,
+       "z": 548,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1387,
+       "z": 549,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1387,
+       "z": 550,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1386,
+       "z": 548,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1386,
+       "z": 549,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1386,
+       "z": 550,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1385,
+       "z": 548,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1385,
+       "z": 549,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1385,
+       "z": 550,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      }
+     ]
+    },
+    {
+     "pieceIndex": 8,
+     "bbox": [
+      -1409,
+      32,
+      568,
+      -1405,
+      75,
+      572
+     ],
+     "topY": 75,
+     "sourceGroundY": 32,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 48,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1408,
+       "z": 569,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1408,
+       "z": 570,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1408,
+       "z": 571,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1407,
+       "z": 569,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1407,
+       "z": 570,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1407,
+       "z": 571,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1406,
+       "z": 569,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1406,
+       "z": 570,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1406,
+       "z": 571,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      }
+     ]
+    },
+    {
+     "pieceIndex": 9,
+     "bbox": [
+      -1388,
+      32,
+      589,
+      -1384,
+      75,
+      593
+     ],
+     "topY": 75,
+     "sourceGroundY": 32,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 48,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1387,
+       "z": 590,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1387,
+       "z": 591,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1387,
+       "z": 592,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1386,
+       "z": 590,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1386,
+       "z": 591,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1386,
+       "z": 592,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1385,
+       "z": 590,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1385,
+       "z": 591,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1385,
+       "z": 592,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "structure": "golden_prison",
+   "biome": "crimson_forest",
+   "pieces": 18,
+   "treasurePieces": 1,
+   "foreign": 174,
+   "foreignNatural": 171,
+   "foreignTop": {
+    "minecraft:nether_wart_block": 141,
+    "minecraft:crimson_stem": 23,
+    "minecraft:weeping_vines": 5,
+    "minecraft:weeping_vines_plant": 3,
+    "minecraft:shroomlight": 2
+   },
+   "spawner": [
+    26,
+    26
+   ],
+   "chest": [
+    11,
+    11
+   ],
+   "frames": 8,
+   "framesCoin": 8,
+   "exits": [
+    {
+     "pieceIndex": 15,
+     "bbox": [
+      -1383,
+      34,
+      1032,
+      -1379,
+      77,
+      1036
+     ],
+     "topY": 77,
+     "sourceGroundY": 34,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 46,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1382,
+       "z": 1033,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1382,
+       "z": 1034,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1382,
+       "z": 1035,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1381,
+       "z": 1033,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1381,
+       "z": 1034,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1381,
+       "z": 1035,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1380,
+       "z": 1033,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1380,
+       "z": 1034,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1380,
+       "z": 1035,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      }
+     ]
+    },
+    {
+     "pieceIndex": 16,
+     "bbox": [
+      -1324,
+      34,
+      963,
+      -1320,
+      77,
+      967
+     ],
+     "topY": 77,
+     "sourceGroundY": 34,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 46,
+     "outcrop": false,
+     "columnsClearAboveRim8": 9,
+     "cols": [
+      {
+       "x": -1323,
+       "z": 964,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1323,
+       "z": 965,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1323,
+       "z": 966,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1322,
+       "z": 964,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1322,
+       "z": 965,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1322,
+       "z": 966,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1321,
+       "z": 964,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1321,
+       "z": 965,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      },
+      {
+       "x": -1321,
+       "z": 966,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": true
+      }
+     ]
+    },
+    {
+     "pieceIndex": 17,
+     "bbox": [
+      -1324,
+      34,
+      1101,
+      -1320,
+      77,
+      1105
+     ],
+     "topY": 77,
+     "sourceGroundY": 34,
+     "terrainSurfaceY": 127,
+     "columns": 9,
+     "airFromY": 123,
+     "airFromBestY": 123,
+     "maxNaturalTop": 122,
+     "scanTo": 122,
+     "deltaNeededFromTop": 46,
+     "outcrop": false,
+     "columnsClearAboveRim8": 0,
+     "cols": [
+      {
+       "x": -1323,
+       "z": 1102,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1323,
+       "z": 1103,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1323,
+       "z": 1104,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1322,
+       "z": 1102,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1322,
+       "z": 1103,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1322,
+       "z": 1104,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1321,
+       "z": 1102,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1321,
+       "z": 1103,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      },
+      {
+       "x": -1321,
+       "z": 1104,
+       "naturalTop": 122,
+       "airFromY": 123,
+       "clearAboveRim8": false
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -90,8 +90,10 @@ for _n in ('cell_small_a', 'cell_small_b', 'cell_small_c', 'cell_small_mirror', 
 # ★ 第五轮：15 个池 → **4 个**；room 池 = 15 个牢房变体 + 2 个四面道（按权重随机）。
 CELL_VARIANTS = ['cell_%s_%s' % (c, v) for c in ('small', 'medium', 'large')
                  for v in ('a', 'b', 'c', 'mirror', 'fertile')]
-ROOM_WEIGHTS = dict([(t, 6 if t.endswith('_fertile') else 2) for t in CELL_VARIANTS]
+ROOM_WEIGHTS = dict([(t, 10 if t.endswith('_fertile') else 2) for t in CELL_VARIANTS]
                     + [('cross_a', 5), ('cross_b', 5)])
+# ★ 第六轮：fertile 6 → 10（总权重 52 → 64，非丰饶 34）⇒ P(3 连) = 1-(34/64)^3 = 0.8501。
+#   旧口径留档（第五轮）：fertile=6、总权重 52、非丰饶 34、P(3 连)=1-(34/52)^3=0.720。
 EXPECT_POOLS = {
     'start': (['treasure'], 'minecraft:empty'),
     'lane': (['lane'], POOL + 'exit'),
@@ -147,6 +149,63 @@ FORTRESS_PLACEMENT = {
 }
 FORTRESS_SALT = 30084232
 OUR_SALT = 19710101
+
+# ------------------------------------------------------------------ 第六轮（2026-10-21）
+# ① 出入口「纯露头」：EXIT_SHAFT_H 36 → 40（**实测校准**，不是照任务书的 +40；
+#    读数与为什么 +40 是反效果见 docs\金之牢狱-实现记录.md §12.1）。
+# ② 按群系分支：两套 structure JSON + 两套 structure_set + 一个群系标签。
+# ③ 丰饶权重 fertile 6 → 10（room 池总权重 52 → 64）。
+STRUCT_MAIN = os.path.join(WG, 'structure', 'golden_prison.json')
+STRUCT_BASALT = os.path.join(WG, 'structure', 'golden_prison_basalt.json')
+SSET_MAIN = os.path.join(WG, 'structure_set', 'golden_prison.json')
+SSET_BASALT = os.path.join(WG, 'structure_set', 'golden_prison_basalt.json')
+BIOME_TAG = os.path.join(TAGS, 'worldgen', 'biome', 'golden_prison', 'no_basalt.json')
+
+# 两套 structure 的「非公共」字段（这三个是分支的全部差异）
+EXPECT_STRUCT_DIFF = {
+    'main': {'biomes': '#bettergold:golden_prison/no_basalt', 'terrain_adaptation': 'bury',
+             'max_distance_from_center': 116},
+    'basalt': {'biomes': 'minecraft:basalt_deltas', 'terrain_adaptation': 'none',
+               'max_distance_from_center': 128},
+}
+# 两套 structure 的「公共」字段（逐字相同 ⇒ 从**同一个构造入口** gp_build._structure 出来）
+EXPECT_STRUCT_COMMON = {
+    'type': 'minecraft:jigsaw', 'step': 'underground_decoration', 'size': 6,
+    'use_expansion_hack': False, 'spawn_overrides': {}, 'start_pool': POOL + 'start',
+}
+EXPECT_SSET_STRUCTURE = {'main': 'bettergold:golden_prison',
+                         'basalt': 'bettergold:golden_prison_basalt'}
+EXPECT_SSET_SALT = {'main': OUR_SALT, 'basalt': 19710102}
+# 原版 #minecraft:is_nether 的成员（真源 = build 里原版 resources jar 的
+# data/minecraft/tags/worldgen/biome/is_nether.json：**5 条、无嵌套标签**，逐字抄）
+NETHER_BIOMES = ['minecraft:nether_wastes', 'minecraft:soul_sand_valley',
+                 'minecraft:crimson_forest', 'minecraft:warped_forest',
+                 'minecraft:basalt_deltas']
+# 丰饶权重记账（第六轮）：fertile 6 → 10 ⇒ 每尺寸 4×2+10=18、三尺寸 54、+cross 10 = **64**；
+#   非丰饶 = 24+10 = 34 ⇒ P(3 连至少一个丰饶) = 1-(34/64)^3 = 0.8501
+ROOM_TOTAL_W = 64
+ROOM_FERTILE_W = 30
+ROOM_P3_MIN = 0.80
+
+# ---- 第六轮 ①：出入口「纯露头」的**实测校准快照**（2026-10-21，种子 20261020，真生成 3 座）
+# 口径（docs\金之牢狱-实现记录.md §12.1）：
+#   topY     = 井口环顶的世界 y（= 件 bbox.maxY = 件内 y=sy-1）
+#   airFromY = 件内 3x3 内腔 9 列里，**第一条"环顶之上、连续 ≥3 格空气"的空气段的起点**
+#              （若该段起点在环顶之下，说明井口本身就在空腔里 ⇒ 反正达标）。9 列取最差列。
+#   达标     = airFromY <= topY（井口已经在空气里）
+# 数据：docs\金之牢狱-实现-证据\gph_final\meta.json + gph_final\shaft_calibration.json
+# 每口 = (topY, airFromY, 需要再加多少层的窗口 (lo, hi) 或 None)
+SHAFT_CALIB = {
+    'crimson_forest#15': (85, 63, (0, 2)),
+    'crimson_forest#16': (85, 102, (17, 18)),
+    'crimson_forest#17': (85, None, None),
+    'crimson_forest#18': (85, None, None),
+    'crimson_forest#19': (85, 98, (13, 13)),
+    'crimson_forest#20': (85, 94, (9, 9)),
+    'soul_sand_valley#7': (80, None, None),
+    'basalt_deltas#7': (83, 48, (0, 22)),
+}
+EXIT_SHAFT_H = 36          # 实测：任何 0..40 的加高都不比它更好（最大 2/8，+40 层 = 0/8）
 
 problems = []
 checked = [0]
@@ -1091,7 +1150,8 @@ def check_cycle(pieces):
         if be.get('target') == 'room' or be.get('pool', '').endswith('/room'):
             ng('bgp-pool-reach', 'exit.nbt 的 jigsaw 仍是 room 目标：%r' % (be,))
         ok(2)
-    # ---- 3) room 池权重记账（可复算：总权重 48、丰饶 18 ⇒ P(3 连含丰饶)=75.6%）
+    # ---- 3) room 池权重记账（第六轮：fertile 10 ⇒ 总权重 64、丰饶 30 ⇒ P(3 连)=1-(34/64)^3=0.850）
+    #   旧口径留档（第五轮）：总权重 52、丰饶 18 ⇒ P = 1-(34/52)^3 = 0.720（原文不删）
     d = json.load(open(os.path.join(pdir, 'room.json'), encoding='utf-8'))
     got = {}
     for e in d.get('elements', []):
@@ -1103,13 +1163,14 @@ def check_cycle(pieces):
     tot = sum(ROOM_WEIGHTS.values())
     fert = sum(w for t, w in ROOM_WEIGHTS.items() if t.endswith('_fertile'))
     p3 = 1.0 - (1.0 - fert / float(tot)) ** 3
-    if tot != 52 or fert != 18:
-        ng('bgp-pool-reach', 'room 总权重 %d / 丰饶 %d != 52 / 18' % (tot, fert))
+    if tot != ROOM_TOTAL_W or fert != ROOM_FERTILE_W:
+        ng('bgp-pool-reach', 'room 总权重 %d / 丰饶 %d != %d / %d'
+           % (tot, fert, ROOM_TOTAL_W, ROOM_FERTILE_W))
     ok(2)
-    print('[bgp-pool-reach] room 池：总权重 %d、丰饶 %d（%.1f%%）⇒ P(3 连至少一个丰饶) = %.3f'
+    print('[bgp-pool-reach] room 池：总权重 %d、丰饶 %d（%.1f%%）⇒ P(3 连至少一个丰饶) = %.4f'
           % (tot, fert, 100.0 * fert / tot, p3))
-    if p3 < 0.70:
-        ng('bgp-pool-reach', 'P(3 连含丰饶)=%.3f < 0.70（作者要求"高概率"）' % p3)
+    if p3 < ROOM_P3_MIN:
+        ng('bgp-pool-reach', 'P(3 连含丰饶)=%.4f < %.2f（作者要求"高概率"）' % (p3, ROOM_P3_MIN))
     ok()
 
 
@@ -1297,56 +1358,214 @@ def check_exit_shaft(pieces):
     ok()
     print('[bgp-shaft] exit = 5x%d x5：门楼 8 层 + 上升段 %d 层（井筒墙 %d 格、井口 3x3 朝天、'
           '顶层 y=%d 上方是模板外）' % (sy, sy - 8, walls, sy - 1))
+    # ---- 第六轮 ①：井筒高度 = **实测校准值**（不是任务书的 +40；读数见 §12.1）
+    #   gp_build.py 的 EXIT_SHAFT_H 与 NBT 的实际上升段必须一致，且必须等于校准快照。
+    if sy - 8 != EXIT_SHAFT_H:
+        ng('bgp-shaft', 'exit 的上升段 %d 层 != 校准值 EXIT_SHAFT_H=%d' % (sy - 8, EXIT_SHAFT_H))
+    ok()
+    src = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'gp_build.py')
+    if not os.path.exists(src):
+        ng('bgp-shaft', '缺流水线 gp_build.py（没法核对 EXIT_SHAFT_H）')
+        return
+    txt = strip_comments(open(src, 'rb').read().decode('utf-8', 'replace'), 'py')
+    got_h = None
+    for line in txt.splitlines():
+        s = line.strip()
+        if s.startswith('EXIT_SHAFT_H') and '=' in s:
+            try:
+                got_h = int(s.split('=', 1)[1].strip().split()[0])
+            except (ValueError, IndexError):
+                got_h = None
+            break
+    if got_h is None:
+        ng('bgp-shaft', 'gp_build.py 去注释后找不到 EXIT_SHAFT_H 赋值')
+        return
+    if got_h != EXIT_SHAFT_H:
+        ng('bgp-shaft', 'gp_build.py 的 EXIT_SHAFT_H=%d != 校准值 %d' % (got_h, EXIT_SHAFT_H))
+    ok()
+    # 负向：任务书里的 +40 层（=76）实测是 0/8 达标，不许被悄悄改回去
+    if got_h == 76:
+        ng('bgp-shaft', 'EXIT_SHAFT_H 被改回 76（实测 +40 层是 0/8 达标，比现在的 2/8 更差）')
+    ok()
+    # ---- 第六轮 ①：校准快照自洽 + 「当前高度就是最优」
+    def pass_at(dh):
+        return sum(1 for (top, af, win) in SHAFT_CALIB.values()
+                   if win and win[0] <= dh <= win[1])
+
+    if len(SHAFT_CALIB) != 8:
+        ng('bgp-shaft-calib', '校准快照 %d 个口 != 8（真生成 3 座共 8 个出入口）' % len(SHAFT_CALIB))
+    ok()
+    now = sum(1 for (top, af, win) in SHAFT_CALIB.values()
+              if af is not None and af <= top)
+    if now != pass_at(0):
+        ng('bgp-shaft-calib', '达标数 %d 与窗口复算 %d 不一致（快照自相矛盾）' % (now, pass_at(0)))
+    ok()
+    if now != 2:
+        ng('bgp-shaft-calib', '当前达标 %d 个 != 记账 2 个（crimson#15 / basalt#7）' % now)
+    ok()
+    best = max(pass_at(dh) for dh in range(0, 41))
+    if best != 2:
+        ng('bgp-shaft-calib', '0..40 层的最大达标数 %d != 记账 2（"加高不是杠杆"这条依据变了）' % best)
+    ok()
+    if pass_at(40) != 0:
+        ng('bgp-shaft-calib', '+40 层（=任务书的 76）达标 %d 个 != 记账 0（"实心到 121" 的读数变了）'
+           % pass_at(40))
+    ok()
+    if pass_at(0) != best:
+        ng('bgp-shaft-calib', '当前高度不是最优（pass(0)=%d < 最大 %d）' % (pass_at(0), best))
+    ok()
+    print('[bgp-shaft-calib] 真生成 8 口：当前达标 %d/8（%s）；0..40 层最大 %d/8；+40 层 %d/8 ⇒ '
+          '井筒高度不是"露头"的杠杆，保持 EXIT_SHAFT_H=%d'
+          % (now, ', '.join('%s(topY=%s airFromY=%s)' % (k, v[0], v[1]) for k, v in
+                            sorted(SHAFT_CALIB.items()) if v[1] is not None and v[1] <= v[0]),
+             best, pass_at(40), EXIT_SHAFT_H))
 
 
 def check_worldgen():
-    sp = os.path.join(WG, 'structure', 'golden_prison.json')
-    ssp = os.path.join(WG, 'structure_set', 'golden_prison.json')
-    for f in (sp, ssp):
+    # ★ 第六轮（2026-10-21）：**按群系分支** —— 两套 structure + 两套 structure_set + 一个群系标签。
+    #   旧口径（第一~五轮，原文留档、不删）：只有 `structure/golden_prison.json` +
+    #   `structure_set/golden_prison.json` 各一个，`biomes = #minecraft:is_nether`、
+    #   `terrain_adaptation = none`、`max_distance_from_center = 128`（第五轮实测 110 / 10 / 187）。
+    #   第六轮把上面那份变成"**主结构（非玄武岩群系）**"，另加一份玄武岩专用；两套的
+    #   **公共字段逐字相同**（同一个构造入口 gp_build._structure 出来），差异只有
+    #   biomes / terrain_adaptation / max_distance_from_center。
+    for f in (STRUCT_MAIN, STRUCT_BASALT, SSET_MAIN, SSET_BASALT, BIOME_TAG):
         if not os.path.exists(f):
-            ng('bgp-worldgen', '缺 %s' % f)
+            ng('bgp-worldgen', '缺 %s' % os.path.basename(f))
             return
         ok()
-    st = json.load(open(sp, encoding='utf-8'))
-    # ★ 第五轮：step = underground_decoration（= 原版 fortress.json 的步；见 gp_build.py 注释），
-    #   terrain_adaptation = none（不再靠 bury/beard 改地形，改由模板空气自己清）。
-    exp = {'type': 'minecraft:jigsaw', 'biomes': '#minecraft:is_nether',
-           'step': 'underground_decoration', 'start_pool': POOL + 'start',
-           'size': 6, 'use_expansion_hack': False, 'terrain_adaptation': 'none',
-           'max_distance_from_center': 128}
-    for k, v in exp.items():
-        if st.get(k) != v:
-            ng('bgp-worldgen', 'structure.%s = %r != %r' % (k, st.get(k), v))
+    structs = {}
+    for kind, f in (('main', STRUCT_MAIN), ('basalt', STRUCT_BASALT)):
+        try:
+            structs[kind] = json.load(open(f, encoding='utf-8'))
+        except Exception as e:
+            ng('bgp-worldgen', '%s 解析失败：%s' % (os.path.basename(f), e))
+            return
         ok()
-    if st.get('spawn_overrides') != {}:
-        ng('bgp-worldgen', 'spawn_overrides 必须清空')
+    for kind in ('main', 'basalt'):
+        st = structs[kind]
+        code = 'bgp-worldgen' if kind == 'main' else 'bgp-worldgen-basalt'
+        # ---- 公共字段（两套逐字相同）
+        for k, v in EXPECT_STRUCT_COMMON.items():
+            if st.get(k) != v:
+                ng(code, '%s.%s = %r != %r（两套必须逐字相同）' % (kind, k, st.get(k), v))
+            ok()
+        # ---- 分支字段（只有这三项不同）
+        for k, v in EXPECT_STRUCT_DIFF[kind].items():
+            if st.get(k) != v:
+                ng(code, '%s.%s = %r != %r' % (kind, k, st.get(k), v))
+            ok()
+        # ---- 不许有多余/缺字段（两套的键集合必须完全一致，且只有上面这些）
+        want_keys = set(EXPECT_STRUCT_COMMON) | {'spawn_overrides', 'start_height', 'biomes',
+                                                 'terrain_adaptation', 'max_distance_from_center'}
+        if set(st) != want_keys:
+            ng(code, '%s 的字段集合 %s != 期望 %s' % (kind, sorted(st), sorted(want_keys)))
+        ok()
+        sh = st.get('start_height') or {}
+        lo = (sh.get('min_inclusive') or {}).get('absolute')
+        hi = (sh.get('max_inclusive') or {}).get('absolute')
+        if sh.get('type') != 'minecraft:uniform' or (lo, hi) != (31, 41):
+            ng(code, '%s start_height = %r（应为 uniform 31..41）' % (kind, sh))
+        ok(3)
+        if 'max_depth' in json.dumps(st):
+            ng(code, '%s 出现了 1.20 口径的 max_depth（1.21 叫 size）' % kind)
+        ok()
+        # ---- JigsawStructure.verifyRange（源码：sources jar
+        #      net/minecraft/world/level/levelgen/structure/structures/JigsawStructure.java）
+        #        int i = terrainAdaptation() == NONE ? 0 : (BURY|BEARD_THIN|BEARD_BOX|ENCAPSULATE) 12;
+        #        maxDistanceFromCenter + i > 128  ⇒ DataResult.error("Structure size including
+        #        terrain adaptation must not exceed 128")  ⇒ **整个结构静默加载失败**
+        pad = 0 if st.get('terrain_adaptation') == 'none' else 12
+        md = st.get('max_distance_from_center') or 0
+        if md + pad > 128:
+            ng(code, '%s max_distance_from_center=%r + 地形适应 padding %d > 128 ⇒ 结构会加载失败'
+               % (kind, md, pad))
+        ok()
+    # ---- 两套的 start_pool 必须**同一个**（= 每座结构仍然只有一个宝藏房）
+    if structs['main'].get('start_pool') != structs['basalt'].get('start_pool'):
+        ng('bgp-worldgen', '两套 start_pool 不同（%r vs %r）⇒ 宝藏房唯一性失去机制保证'
+           % (structs['main'].get('start_pool'), structs['basalt'].get('start_pool')))
     ok()
-    sh = st.get('start_height') or {}
-    if sh.get('type') != 'minecraft:uniform':
-        ng('bgp-worldgen', 'start_height.type=%r' % sh.get('type'))
-    lo = (sh.get('min_inclusive') or {}).get('absolute')
-    hi = (sh.get('max_inclusive') or {}).get('absolute')
-    if (lo, hi) != (31, 41):
-        ng('bgp-worldgen', 'start_height 区间 %r..%r != 31..41' % (lo, hi))
-    ok(3)
-    if 'max_depth' in json.dumps(st):
-        ng('bgp-worldgen', '出现了 1.20 口径的 max_depth（1.21 叫 size）')
+    # ---- 两套 structure_set：密度字段完全相同、salt 必须**不同**
+    sets = {}
+    for kind, f in (('main', SSET_MAIN), ('basalt', SSET_BASALT)):
+        try:
+            sets[kind] = json.load(open(f, encoding='utf-8'))
+        except Exception as e:
+            ng('bgp-worldgen', '%s 解析失败：%s' % (os.path.basename(f), e))
+            return
+        ok()
+    for kind in ('main', 'basalt'):
+        pl = sets[kind].get('placement') or {}
+        code = 'bgp-worldgen' if kind == 'main' else 'bgp-worldgen-basalt'
+        if pl.get('type') != 'minecraft:random_spread':
+            ng(code, '%s set placement.type=%r' % (kind, pl.get('type')))
+        if pl.get('spacing') != 27 or pl.get('separation') != 4 or pl.get('spread_type') != 'linear':
+            ng(code, '%s set 密度字段 %r != 27/4/linear（两套密度相同，否则会叠加）' % (kind, pl))
+        ok(4)
+        if pl.get('salt') != EXPECT_SSET_SALT[kind]:
+            ng('bgp-worldgen-salt', '%s set salt=%r != 记账值 %d'
+               % (kind, pl.get('salt'), EXPECT_SSET_SALT[kind]))
+        ok()
+        els = sets[kind].get('structures') or []
+        if len(els) != 1 or els[0].get('structure') != EXPECT_SSET_STRUCTURE[kind] \
+                or els[0].get('weight') != 1:
+            ng(code, '%s set structures=%r 必须恰好 1 条、指向 %r、weight=1'
+               % (kind, els, EXPECT_SSET_STRUCTURE[kind]))
+        ok()
+    if EXPECT_SSET_SALT['main'] == EXPECT_SSET_SALT['basalt']:
+        ng('bgp-worldgen-salt', '两套 salt 记账值相同（会重合候选区块）')
     ok()
-    ss = json.load(open(ssp, encoding='utf-8'))
-    pl = ss.get('placement') or {}
-    if pl.get('type') != 'minecraft:random_spread':
-        ng('bgp-worldgen', 'structure_set.placement.type=%r' % pl.get('type'))
-    if not (1 <= pl.get('spacing', 0) and pl.get('separation', 0) < pl.get('spacing', 0)):
-        ng('bgp-worldgen', 'spacing/separation 不合理：%r/%r' % (pl.get('spacing'), pl.get('separation')))
-    if pl.get('spacing') != 27 or pl.get('separation') != 4:
-        # ⚠ 旧期望原文留档（第一/二轮）：`spacing/separation 不是记账值 32/16`。
-        #    第三轮按作者「生成率跟下界要塞相同」改成 27/4（原版 nether_complexes 的值），
-        #    逐字段核对见 [bgp-rate-fortress]；这里保留一条粗粒度回归。
-        ng('bgp-worldgen', 'spacing/separation 不是记账值 27/4（= 下界要塞）')
-    ok(4)
-    if not ss.get('structures') or ss['structures'][0].get('structure') != 'bettergold:golden_prison':
-        ng('bgp-worldgen', 'structure_set.structures 没指向 bettergold:golden_prison')
+    if sets['main']['placement'].get('salt') == sets['basalt']['placement'].get('salt'):
+        ng('bgp-worldgen-salt', '两套 structure_set 的 salt 相同（=%r）：候选区块会逐个重合，'
+                                '同一格既排普通版又排玄武岩版' % sets['main']['placement'].get('salt'))
     ok()
+    # ---- 群系标签：成员 = 原版 #minecraft:is_nether 减 basalt_deltas；replace 必须 false
+    try:
+        tag = json.load(open(BIOME_TAG, encoding='utf-8'))
+    except Exception as e:
+        ng('bgp-biome-tag', '标签解析失败：%s' % e)
+        return
+    if tag.get('replace') is not False:
+        # ⚠ 写成 true（或缺省以外的真值）会把原版标签的条目**静默清空**
+        ng('bgp-biome-tag', 'replace=%r，必须显式 false（true 会静默清空原版条目）' % tag.get('replace'))
+    ok()
+    vals = tag.get('values') or []
+    want = [b for b in NETHER_BIOMES if b != 'minecraft:basalt_deltas']
+    if vals != want:
+        ng('bgp-biome-tag', 'values=%r != 原版 is_nether 减 basalt_deltas 的 %r' % (vals, want))
+    ok(len(want))
+    if 'minecraft:basalt_deltas' in vals:
+        ng('bgp-biome-tag', 'values 里还有 minecraft:basalt_deltas（玄武岩群系会被主结构命中）')
+    ok()
+    if len(set(vals)) != len(vals):
+        ng('bgp-biome-tag', 'values 有重复条目：%r' % vals)
+    ok()
+    # ---- 与原版 jar 对穿（防冻结常量过期）
+    jar = os.path.join(ROOT, 'build', 'moddev', 'artifacts',
+                       'neoforge-21.1.228-client-extra-aka-minecraft-resources.jar')
+    if os.path.exists(jar):
+        try:
+            with zipfile.ZipFile(jar) as z:
+                v = json.loads(z.read('data/minecraft/tags/worldgen/biome/is_nether.json')
+                               .decode('utf-8'))
+            jar_vals = v.get('values') or []
+            if sorted(jar_vals) != sorted(NETHER_BIOMES):
+                ng('bgp-biome-tag', '原版 is_nether 成员变了：jar=%r vs 冻结常量=%r'
+                   % (jar_vals, NETHER_BIOMES))
+            ok()
+            print('[bgp-biome-tag] 原版 jar 对穿：is_nether = %r' % (jar_vals,))
+        except Exception as e:
+            ng('bgp-biome-tag', '读原版 jar 失败：%s' % e)
+    else:
+        print('[bgp-biome-tag] 原版 jar 不在，只按冻结常量核对')
+    print('[bgp-worldgen] 两套结构：main(biomes=%s, %s, max=%s) / basalt(biomes=%s, %s, max=%s)；'
+          'salt %r vs %r；标签 members=%d'
+          % (structs['main']['biomes'], structs['main']['terrain_adaptation'],
+             structs['main']['max_distance_from_center'], structs['basalt']['biomes'],
+             structs['basalt']['terrain_adaptation'], structs['basalt']['max_distance_from_center'],
+             sets['main']['placement'].get('salt'), sets['basalt']['placement'].get('salt'),
+             len(vals)))
     # 池
     for name, (els, fb) in EXPECT_POOLS.items():
         f = os.path.join(WG, 'template_pool', 'golden_prison', name + '.json')
@@ -1481,6 +1700,34 @@ def check_rate():
         print('[bgp-rate] 原版 jar 不在（%s），只按冻结常量核对' % os.path.basename(jar))
     print('[bgp-rate] 我们的 placement=%r salt=%r（要塞 salt=%d，故意不同）'
           % (pl, pl.get('salt'), FORTRESS_SALT))
+    # ★ 第六轮：玄武岩那一套的 placement 必须与主结构**逐字段相同**（否则两套密度会叠加），
+    #   salt 必须**不同**（同 salt ⇒ 候选区块逐个重合，同一格既排普通版又排玄武岩版）。
+    if not os.path.exists(SSET_BASALT):
+        ng('bgp-rate-basalt', '缺 structure_set/golden_prison_basalt.json')
+        return
+    try:
+        ssb = json.load(open(SSET_BASALT, encoding='utf-8'))
+    except Exception as e:
+        ng('bgp-rate-basalt', 'structure_set/golden_prison_basalt.json 解析失败：%s' % e)
+        return
+    plb = ssb.get('placement') or {}
+    for k in ('type', 'spacing', 'separation', 'spread_type'):
+        if plb.get(k) != pl.get(k):
+            ng('bgp-rate-basalt', '玄武岩 set 的 placement.%s=%r != 主结构 %r（密度会叠加）'
+               % (k, plb.get(k), pl.get(k)))
+        ok()
+    if plb.get('salt') == pl.get('salt'):
+        ng('bgp-rate-salt', '两套 structure_set 的 salt 相同（=%r）：候选区块会逐个重合' % plb.get('salt'))
+    ok()
+    if plb.get('salt') != EXPECT_SSET_SALT['basalt']:
+        ng('bgp-rate-salt', '玄武岩 set 的 salt=%r != 记账 %d'
+           % (plb.get('salt'), EXPECT_SSET_SALT['basalt']))
+    ok()
+    if plb.get('salt') == FORTRESS_SALT:
+        ng('bgp-rate-salt', '玄武岩 set 抄成了下界要塞的 salt %d' % FORTRESS_SALT)
+    ok()
+    print('[bgp-rate] 两套 set：salt %r vs %r（差 %d）、其余 placement 逐字段相同'
+          % (pl.get('salt'), plb.get('salt'), abs((plb.get('salt') or 0) - (pl.get('salt') or 0))))
 
 
 def check_treasure_unique():
@@ -1548,6 +1795,17 @@ def check_treasure_unique():
     if spv != POOL + 'start':
         ng('bgp-treasure-unique-start',
            'structure.start_pool=%r 必须恰好是 %r（换池就可能从别处长大）' % (spv, POOL + 'start'))
+    ok()
+    # ★ 第六轮：玄武岩那套的 start_pool 必须**同一个**（两套都从 start 池起 ⇒ 每座结构仍只有一个宝藏房）
+    try:
+        st_b = json.load(open(STRUCT_BASALT, encoding='utf-8'))
+    except Exception as e:
+        ng('bgp-treasure-unique-start', '玄武岩 structure JSON 解析失败：%s' % e)
+        st_b = {}
+    if st_b.get('start_pool') != spv:
+        ng('bgp-treasure-unique-start',
+           'golden_prison_basalt.start_pool=%r != 主结构 %r（两套必须同一个 start 池，'
+           '否则一座结构可能长出两个宝藏房）' % (st_b.get('start_pool'), spv))
     ok()
 
     # ---- 2) 除 start.json 外，其余池里一个都不许引用 treasure（双向）

@@ -1,0 +1,2496 @@
+{
+  "worldName": "gp_final_gph2",
+  "seed": 20261020,
+  "seeds": [
+    20261021,
+    20261022,
+    20261023,
+    20261024,
+    20261025,
+    20261026,
+    20261027,
+    20261028,
+    20261029,
+    20261030
+  ],
+  "runs": [
+    {
+      "seed": 20261021,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "none",
+          "origin": [
+            640,
+            40,
+            640
+          ],
+          "bbox": [
+            640,
+            40,
+            640,
+            660,
+            48,
+            660
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            652,
+            42,
+            663
+          ],
+          "bbox": [
+            648,
+            42,
+            661,
+            652,
+            46,
+            663
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_small_c",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            657,
+            42,
+            674
+          ],
+          "bbox": [
+            643,
+            42,
+            664,
+            657,
+            47,
+            674
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            648,
+            42,
+            675
+          ],
+          "bbox": [
+            648,
+            42,
+            675,
+            652,
+            46,
+            677
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cell_small_mirror",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            643,
+            42,
+            678
+          ],
+          "bbox": [
+            643,
+            42,
+            678,
+            657,
+            47,
+            688
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            648,
+            42,
+            689
+          ],
+          "bbox": [
+            648,
+            42,
+            689,
+            652,
+            46,
+            691
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "cross_a",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            668,
+            42,
+            728
+          ],
+          "bbox": [
+            632,
+            42,
+            692,
+            668,
+            49,
+            728
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "counterclockwise_90",
+          "origin": [
+            669,
+            42,
+            712
+          ],
+          "bbox": [
+            669,
+            42,
+            708,
+            673,
+            85,
+            712
+          ]
+        },
+        {
+          "i": 8,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            648,
+            42,
+            729
+          ],
+          "bbox": [
+            648,
+            42,
+            729,
+            652,
+            85,
+            733
+          ]
+        },
+        {
+          "i": 9,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "clockwise_90",
+          "origin": [
+            631,
+            42,
+            708
+          ],
+          "bbox": [
+            627,
+            42,
+            708,
+            631,
+            85,
+            712
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_small_c",
+        "lane",
+        "cell_small_mirror",
+        "lane",
+        "cross_a",
+        "exit",
+        "exit",
+        "exit"
+      ],
+      "ports": 18,
+      "paired": 18,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 3,
+        "room": 3,
+        "exit": 3
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "seed": 20261022,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "180",
+          "origin": [
+            640,
+            31,
+            640
+          ],
+          "bbox": [
+            620,
+            31,
+            620,
+            640,
+            39,
+            640
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            632,
+            33,
+            619
+          ],
+          "bbox": [
+            628,
+            33,
+            617,
+            632,
+            37,
+            619
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_large_a",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            623,
+            33,
+            586
+          ],
+          "bbox": [
+            623,
+            33,
+            586,
+            637,
+            38,
+            616
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            632,
+            33,
+            585
+          ],
+          "bbox": [
+            628,
+            33,
+            583,
+            632,
+            37,
+            585
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cell_small_a",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            623,
+            33,
+            572
+          ],
+          "bbox": [
+            623,
+            33,
+            572,
+            637,
+            38,
+            582
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            628,
+            33,
+            569
+          ],
+          "bbox": [
+            628,
+            33,
+            569,
+            632,
+            37,
+            571
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "cell_medium_fertile",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            637,
+            33,
+            568
+          ],
+          "bbox": [
+            623,
+            33,
+            548,
+            637,
+            38,
+            568
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "180",
+          "origin": [
+            632,
+            33,
+            547
+          ],
+          "bbox": [
+            628,
+            33,
+            543,
+            632,
+            76,
+            547
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_large_a",
+        "lane",
+        "cell_small_a",
+        "lane",
+        "cell_medium_fertile",
+        "exit"
+      ],
+      "ports": 14,
+      "paired": 14,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 3,
+        "room": 3,
+        "exit": 1
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "seed": 20261023,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "counterclockwise_90",
+          "origin": [
+            640,
+            34,
+            640
+          ],
+          "bbox": [
+            640,
+            34,
+            620,
+            660,
+            42,
+            640
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            661,
+            36,
+            632
+          ],
+          "bbox": [
+            661,
+            36,
+            628,
+            663,
+            40,
+            632
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_medium_b",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            684,
+            36,
+            623
+          ],
+          "bbox": [
+            664,
+            36,
+            623,
+            684,
+            41,
+            637
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "clockwise_90",
+          "origin": [
+            687,
+            36,
+            628
+          ],
+          "bbox": [
+            685,
+            36,
+            628,
+            687,
+            40,
+            632
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cell_large_fertile",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            718,
+            36,
+            623
+          ],
+          "bbox": [
+            688,
+            36,
+            623,
+            718,
+            41,
+            637
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            719,
+            36,
+            632
+          ],
+          "bbox": [
+            719,
+            36,
+            628,
+            721,
+            40,
+            632
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "cross_a",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            722,
+            36,
+            612
+          ],
+          "bbox": [
+            722,
+            36,
+            612,
+            758,
+            43,
+            648
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            738,
+            36,
+            649
+          ],
+          "bbox": [
+            738,
+            36,
+            649,
+            742,
+            79,
+            653
+          ]
+        },
+        {
+          "i": 8,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "counterclockwise_90",
+          "origin": [
+            759,
+            36,
+            632
+          ],
+          "bbox": [
+            759,
+            36,
+            628,
+            763,
+            79,
+            632
+          ]
+        },
+        {
+          "i": 9,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "180",
+          "origin": [
+            742,
+            36,
+            611
+          ],
+          "bbox": [
+            738,
+            36,
+            607,
+            742,
+            79,
+            611
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_medium_b",
+        "lane",
+        "cell_large_fertile",
+        "lane",
+        "cross_a",
+        "exit",
+        "exit",
+        "exit"
+      ],
+      "ports": 18,
+      "paired": 18,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 3,
+        "room": 3,
+        "exit": 3
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "seed": 20261024,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "none",
+          "origin": [
+            640,
+            35,
+            640
+          ],
+          "bbox": [
+            640,
+            35,
+            640,
+            660,
+            43,
+            660
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            652,
+            37,
+            663
+          ],
+          "bbox": [
+            648,
+            37,
+            661,
+            652,
+            41,
+            663
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_small_fertile",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            657,
+            37,
+            674
+          ],
+          "bbox": [
+            643,
+            37,
+            664,
+            657,
+            42,
+            674
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            648,
+            37,
+            675
+          ],
+          "bbox": [
+            648,
+            37,
+            675,
+            652,
+            41,
+            677
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cell_small_a",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            657,
+            37,
+            688
+          ],
+          "bbox": [
+            643,
+            37,
+            678,
+            657,
+            42,
+            688
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            652,
+            37,
+            691
+          ],
+          "bbox": [
+            648,
+            37,
+            689,
+            652,
+            41,
+            691
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "cross_b",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            668,
+            37,
+            728
+          ],
+          "bbox": [
+            632,
+            37,
+            692,
+            668,
+            44,
+            728
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "counterclockwise_90",
+          "origin": [
+            669,
+            37,
+            712
+          ],
+          "bbox": [
+            669,
+            37,
+            708,
+            673,
+            80,
+            712
+          ]
+        },
+        {
+          "i": 8,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            648,
+            37,
+            729
+          ],
+          "bbox": [
+            648,
+            37,
+            729,
+            652,
+            80,
+            733
+          ]
+        },
+        {
+          "i": 9,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "clockwise_90",
+          "origin": [
+            631,
+            37,
+            708
+          ],
+          "bbox": [
+            627,
+            37,
+            708,
+            631,
+            80,
+            712
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_small_fertile",
+        "lane",
+        "cell_small_a",
+        "lane",
+        "cross_b",
+        "exit",
+        "exit",
+        "exit"
+      ],
+      "ports": 18,
+      "paired": 18,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 3,
+        "room": 3,
+        "exit": 3
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "seed": 20261025,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "180",
+          "origin": [
+            640,
+            35,
+            640
+          ],
+          "bbox": [
+            620,
+            35,
+            620,
+            640,
+            43,
+            640
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            628,
+            37,
+            617
+          ],
+          "bbox": [
+            628,
+            37,
+            617,
+            632,
+            41,
+            619
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_large_fertile",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            623,
+            37,
+            586
+          ],
+          "bbox": [
+            623,
+            37,
+            586,
+            637,
+            42,
+            616
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            628,
+            37,
+            583
+          ],
+          "bbox": [
+            628,
+            37,
+            583,
+            632,
+            41,
+            585
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cell_medium_fertile",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            637,
+            37,
+            582
+          ],
+          "bbox": [
+            623,
+            37,
+            562,
+            637,
+            42,
+            582
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            628,
+            37,
+            559
+          ],
+          "bbox": [
+            628,
+            37,
+            559,
+            632,
+            41,
+            561
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "cell_medium_a",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            637,
+            37,
+            558
+          ],
+          "bbox": [
+            623,
+            37,
+            538,
+            637,
+            42,
+            558
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "180",
+          "origin": [
+            632,
+            37,
+            537
+          ],
+          "bbox": [
+            628,
+            37,
+            533,
+            632,
+            80,
+            537
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_large_fertile",
+        "lane",
+        "cell_medium_fertile",
+        "lane",
+        "cell_medium_a",
+        "exit"
+      ],
+      "ports": 14,
+      "paired": 14,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 3,
+        "room": 3,
+        "exit": 1
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "seed": 20261026,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "clockwise_90",
+          "origin": [
+            640,
+            36,
+            640
+          ],
+          "bbox": [
+            620,
+            36,
+            640,
+            640,
+            44,
+            660
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "clockwise_90",
+          "origin": [
+            619,
+            38,
+            648
+          ],
+          "bbox": [
+            617,
+            38,
+            648,
+            619,
+            42,
+            652
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_small_fertile",
+          "pool": "room",
+          "rot": "counterclockwise_90",
+          "origin": [
+            606,
+            38,
+            657
+          ],
+          "bbox": [
+            606,
+            38,
+            643,
+            616,
+            43,
+            657
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "clockwise_90",
+          "origin": [
+            605,
+            38,
+            648
+          ],
+          "bbox": [
+            603,
+            38,
+            648,
+            605,
+            42,
+            652
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cell_large_fertile",
+          "pool": "room",
+          "rot": "counterclockwise_90",
+          "origin": [
+            572,
+            38,
+            657
+          ],
+          "bbox": [
+            572,
+            38,
+            643,
+            602,
+            43,
+            657
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "clockwise_90",
+          "origin": [
+            571,
+            38,
+            648
+          ],
+          "bbox": [
+            569,
+            38,
+            648,
+            571,
+            42,
+            652
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "cell_small_b",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            568,
+            38,
+            643
+          ],
+          "bbox": [
+            558,
+            38,
+            643,
+            568,
+            43,
+            657
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "clockwise_90",
+          "origin": [
+            557,
+            38,
+            648
+          ],
+          "bbox": [
+            553,
+            38,
+            648,
+            557,
+            81,
+            652
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_small_fertile",
+        "lane",
+        "cell_large_fertile",
+        "lane",
+        "cell_small_b",
+        "exit"
+      ],
+      "ports": 14,
+      "paired": 14,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 3,
+        "room": 3,
+        "exit": 1
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "seed": 20261027,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "clockwise_90",
+          "origin": [
+            640,
+            38,
+            640
+          ],
+          "bbox": [
+            620,
+            38,
+            640,
+            640,
+            46,
+            660
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            617,
+            40,
+            652
+          ],
+          "bbox": [
+            617,
+            40,
+            648,
+            619,
+            44,
+            652
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_small_fertile",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            616,
+            40,
+            643
+          ],
+          "bbox": [
+            606,
+            40,
+            643,
+            616,
+            45,
+            657
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            603,
+            40,
+            652
+          ],
+          "bbox": [
+            603,
+            40,
+            648,
+            605,
+            44,
+            652
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cross_b",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            602,
+            40,
+            668
+          ],
+          "bbox": [
+            566,
+            40,
+            632,
+            602,
+            47,
+            668
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            563,
+            40,
+            652
+          ],
+          "bbox": [
+            563,
+            40,
+            648,
+            565,
+            44,
+            652
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            586,
+            40,
+            631
+          ],
+          "bbox": [
+            582,
+            40,
+            629,
+            586,
+            44,
+            631
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            582,
+            40,
+            669
+          ],
+          "bbox": [
+            582,
+            40,
+            669,
+            586,
+            44,
+            671
+          ]
+        },
+        {
+          "i": 8,
+          "tpl": "cell_large_a",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            562,
+            40,
+            643
+          ],
+          "bbox": [
+            532,
+            40,
+            643,
+            562,
+            45,
+            657
+          ]
+        },
+        {
+          "i": 9,
+          "tpl": "cell_large_fertile",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            591,
+            40,
+            628
+          ],
+          "bbox": [
+            577,
+            40,
+            598,
+            591,
+            45,
+            628
+          ]
+        },
+        {
+          "i": 10,
+          "tpl": "cell_medium_a",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            591,
+            40,
+            692
+          ],
+          "bbox": [
+            577,
+            40,
+            672,
+            591,
+            45,
+            692
+          ]
+        },
+        {
+          "i": 11,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "clockwise_90",
+          "origin": [
+            531,
+            40,
+            648
+          ],
+          "bbox": [
+            527,
+            40,
+            648,
+            531,
+            83,
+            652
+          ]
+        },
+        {
+          "i": 12,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "180",
+          "origin": [
+            586,
+            40,
+            597
+          ],
+          "bbox": [
+            582,
+            40,
+            593,
+            586,
+            83,
+            597
+          ]
+        },
+        {
+          "i": 13,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            582,
+            40,
+            693
+          ],
+          "bbox": [
+            582,
+            40,
+            693,
+            586,
+            83,
+            697
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_small_fertile",
+        "lane",
+        "cross_b",
+        "lane",
+        "lane",
+        "lane",
+        "cell_large_a",
+        "cell_large_fertile",
+        "cell_medium_a",
+        "exit",
+        "exit",
+        "exit"
+      ],
+      "ports": 26,
+      "paired": 26,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 5,
+        "room": 5,
+        "exit": 3
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "seed": 20261028,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "counterclockwise_90",
+          "origin": [
+            640,
+            31,
+            640
+          ],
+          "bbox": [
+            640,
+            31,
+            620,
+            660,
+            39,
+            640
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "clockwise_90",
+          "origin": [
+            663,
+            33,
+            628
+          ],
+          "bbox": [
+            661,
+            33,
+            628,
+            663,
+            37,
+            632
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_medium_fertile",
+          "pool": "room",
+          "rot": "counterclockwise_90",
+          "origin": [
+            664,
+            33,
+            637
+          ],
+          "bbox": [
+            664,
+            33,
+            623,
+            684,
+            38,
+            637
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            685,
+            33,
+            632
+          ],
+          "bbox": [
+            685,
+            33,
+            628,
+            687,
+            37,
+            632
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cross_b",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            724,
+            33,
+            612
+          ],
+          "bbox": [
+            688,
+            33,
+            612,
+            724,
+            40,
+            648
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "clockwise_90",
+          "origin": [
+            727,
+            33,
+            628
+          ],
+          "bbox": [
+            725,
+            33,
+            628,
+            727,
+            37,
+            632
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            708,
+            33,
+            651
+          ],
+          "bbox": [
+            704,
+            33,
+            649,
+            708,
+            37,
+            651
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            704,
+            33,
+            609
+          ],
+          "bbox": [
+            704,
+            33,
+            609,
+            708,
+            37,
+            611
+          ]
+        },
+        {
+          "i": 8,
+          "tpl": "cross_b",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            728,
+            33,
+            612
+          ],
+          "bbox": [
+            728,
+            33,
+            612,
+            764,
+            40,
+            648
+          ]
+        },
+        {
+          "i": 9,
+          "tpl": "cell_large_b",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            699,
+            33,
+            652
+          ],
+          "bbox": [
+            699,
+            33,
+            652,
+            713,
+            38,
+            682
+          ]
+        },
+        {
+          "i": 10,
+          "tpl": "cell_medium_fertile",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            713,
+            33,
+            608
+          ],
+          "bbox": [
+            699,
+            33,
+            588,
+            713,
+            38,
+            608
+          ]
+        },
+        {
+          "i": 11,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            744,
+            33,
+            649
+          ],
+          "bbox": [
+            744,
+            33,
+            649,
+            748,
+            76,
+            653
+          ]
+        },
+        {
+          "i": 12,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "180",
+          "origin": [
+            748,
+            33,
+            611
+          ],
+          "bbox": [
+            744,
+            33,
+            607,
+            748,
+            76,
+            611
+          ]
+        },
+        {
+          "i": 13,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "counterclockwise_90",
+          "origin": [
+            765,
+            33,
+            632
+          ],
+          "bbox": [
+            765,
+            33,
+            628,
+            769,
+            76,
+            632
+          ]
+        },
+        {
+          "i": 14,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            704,
+            33,
+            683
+          ],
+          "bbox": [
+            704,
+            33,
+            683,
+            708,
+            76,
+            687
+          ]
+        },
+        {
+          "i": 15,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "180",
+          "origin": [
+            708,
+            33,
+            587
+          ],
+          "bbox": [
+            704,
+            33,
+            583,
+            708,
+            76,
+            587
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_medium_fertile",
+        "lane",
+        "cross_b",
+        "lane",
+        "lane",
+        "lane",
+        "cross_b",
+        "cell_large_b",
+        "cell_medium_fertile",
+        "exit",
+        "exit",
+        "exit",
+        "exit",
+        "exit"
+      ],
+      "ports": 30,
+      "paired": 30,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 5,
+        "room": 5,
+        "exit": 5
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "seed": 20261029,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "none",
+          "origin": [
+            640,
+            31,
+            640
+          ],
+          "bbox": [
+            640,
+            31,
+            640,
+            660,
+            39,
+            660
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            652,
+            33,
+            663
+          ],
+          "bbox": [
+            648,
+            33,
+            661,
+            652,
+            37,
+            663
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_large_fertile",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            657,
+            33,
+            694
+          ],
+          "bbox": [
+            643,
+            33,
+            664,
+            657,
+            38,
+            694
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "180",
+          "origin": [
+            652,
+            33,
+            697
+          ],
+          "bbox": [
+            648,
+            33,
+            695,
+            652,
+            37,
+            697
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cross_a",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            668,
+            33,
+            698
+          ],
+          "bbox": [
+            632,
+            33,
+            698,
+            668,
+            40,
+            734
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "none",
+          "origin": [
+            648,
+            33,
+            735
+          ],
+          "bbox": [
+            648,
+            33,
+            735,
+            652,
+            37,
+            737
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            669,
+            33,
+            718
+          ],
+          "bbox": [
+            669,
+            33,
+            714,
+            671,
+            37,
+            718
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "clockwise_90",
+          "origin": [
+            631,
+            33,
+            714
+          ],
+          "bbox": [
+            629,
+            33,
+            714,
+            631,
+            37,
+            718
+          ]
+        },
+        {
+          "i": 8,
+          "tpl": "cell_medium_fertile",
+          "pool": "room",
+          "rot": "180",
+          "origin": [
+            657,
+            33,
+            758
+          ],
+          "bbox": [
+            643,
+            33,
+            738,
+            657,
+            38,
+            758
+          ]
+        },
+        {
+          "i": 9,
+          "tpl": "cell_small_c",
+          "pool": "room",
+          "rot": "clockwise_90",
+          "origin": [
+            682,
+            33,
+            709
+          ],
+          "bbox": [
+            672,
+            33,
+            709,
+            682,
+            38,
+            723
+          ]
+        },
+        {
+          "i": 10,
+          "tpl": "cell_small_mirror",
+          "pool": "room",
+          "rot": "counterclockwise_90",
+          "origin": [
+            618,
+            33,
+            723
+          ],
+          "bbox": [
+            618,
+            33,
+            709,
+            628,
+            38,
+            723
+          ]
+        },
+        {
+          "i": 11,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            648,
+            33,
+            759
+          ],
+          "bbox": [
+            648,
+            33,
+            759,
+            652,
+            76,
+            763
+          ]
+        },
+        {
+          "i": 12,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "counterclockwise_90",
+          "origin": [
+            683,
+            33,
+            718
+          ],
+          "bbox": [
+            683,
+            33,
+            714,
+            687,
+            76,
+            718
+          ]
+        },
+        {
+          "i": 13,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "clockwise_90",
+          "origin": [
+            617,
+            33,
+            714
+          ],
+          "bbox": [
+            613,
+            33,
+            714,
+            617,
+            76,
+            718
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_large_fertile",
+        "lane",
+        "cross_a",
+        "lane",
+        "lane",
+        "lane",
+        "cell_medium_fertile",
+        "cell_small_c",
+        "cell_small_mirror",
+        "exit",
+        "exit",
+        "exit"
+      ],
+      "ports": 26,
+      "paired": 26,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 5,
+        "room": 5,
+        "exit": 3
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "seed": 20261030,
+      "structure": "golden_prison",
+      "valid": true,
+      "pieces": [
+        {
+          "i": 0,
+          "tpl": "treasure",
+          "pool": "start",
+          "rot": "clockwise_90",
+          "origin": [
+            640,
+            31,
+            640
+          ],
+          "bbox": [
+            620,
+            31,
+            640,
+            640,
+            39,
+            660
+          ]
+        },
+        {
+          "i": 1,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            617,
+            33,
+            652
+          ],
+          "bbox": [
+            617,
+            33,
+            648,
+            619,
+            37,
+            652
+          ]
+        },
+        {
+          "i": 2,
+          "tpl": "cell_medium_mirror",
+          "pool": "room",
+          "rot": "counterclockwise_90",
+          "origin": [
+            596,
+            33,
+            657
+          ],
+          "bbox": [
+            596,
+            33,
+            643,
+            616,
+            38,
+            657
+          ]
+        },
+        {
+          "i": 3,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            593,
+            33,
+            652
+          ],
+          "bbox": [
+            593,
+            33,
+            648,
+            595,
+            37,
+            652
+          ]
+        },
+        {
+          "i": 4,
+          "tpl": "cell_large_a",
+          "pool": "room",
+          "rot": "counterclockwise_90",
+          "origin": [
+            562,
+            33,
+            657
+          ],
+          "bbox": [
+            562,
+            33,
+            643,
+            592,
+            38,
+            657
+          ]
+        },
+        {
+          "i": 5,
+          "tpl": "lane",
+          "pool": "lane",
+          "rot": "counterclockwise_90",
+          "origin": [
+            559,
+            33,
+            652
+          ],
+          "bbox": [
+            559,
+            33,
+            648,
+            561,
+            37,
+            652
+          ]
+        },
+        {
+          "i": 6,
+          "tpl": "cross_b",
+          "pool": "room",
+          "rot": "none",
+          "origin": [
+            522,
+            33,
+            632
+          ],
+          "bbox": [
+            522,
+            33,
+            632,
+            558,
+            40,
+            668
+          ]
+        },
+        {
+          "i": 7,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "none",
+          "origin": [
+            538,
+            33,
+            669
+          ],
+          "bbox": [
+            538,
+            33,
+            669,
+            542,
+            76,
+            673
+          ]
+        },
+        {
+          "i": 8,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "clockwise_90",
+          "origin": [
+            521,
+            33,
+            648
+          ],
+          "bbox": [
+            517,
+            33,
+            648,
+            521,
+            76,
+            652
+          ]
+        },
+        {
+          "i": 9,
+          "tpl": "exit",
+          "pool": "exit",
+          "rot": "180",
+          "origin": [
+            542,
+            33,
+            631
+          ],
+          "bbox": [
+            538,
+            33,
+            627,
+            542,
+            76,
+            631
+          ]
+        }
+      ],
+      "fingerprint": [
+        "treasure",
+        "lane",
+        "cell_medium_mirror",
+        "lane",
+        "cell_large_a",
+        "lane",
+        "cross_b",
+        "exit",
+        "exit",
+        "exit"
+      ],
+      "ports": 18,
+      "paired": 18,
+      "orphans": [],
+      "poolHits": {
+        "start": 1,
+        "lane": 3,
+        "room": 3,
+        "exit": 3
+      },
+      "treasurePieces": 1,
+      "depths": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        7,
+        7
+      ]
+    }
+  ]
+}

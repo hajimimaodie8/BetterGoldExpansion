@@ -1069,14 +1069,27 @@ WG = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'world
 #   旧口径（1~4 轮，原文留档）：room 12 条 + cell_small_1..3 三段硬循环 ⇒ 序列固定。
 #   新口径：**所有池的 fallback 都是 exit**（唯一的例外是 start 与 exit 自己），
 #   于是「深度到顶 / 普通元素放不下」时一定收敛到出入口 ⇒ 落单口 = 0 的机制保证。
-#   权重记账：每个尺寸 5 个变体（a=2 b=2 c=2 mirror=2 fertile=6）=> 14/尺寸、三种尺寸 42；
+#   权重记账（第五轮）：每个尺寸 5 个变体（a=2 b=2 c=2 mirror=2 fertile=6）=> 14/尺寸、三种尺寸 42；
 #   再加 cross_a=5 / cross_b=5 = **总权重 52**。
 #   ⇒ P(一次 room 抽到丰饶) = 18/52 = 34.6%
 #   ⇒ P(连续 3 个 room 至少一个丰饶) = 1-(34/52)^3 = 72.0%（旧口径是"必含"，见 §11 记账）
 #   ⚠ max_distance_from_center 100 → **128**：JigsawStructure.verifyRange 在 terrain_adaptation=NONE
 #     时 padding=0 ⇒ 上限就是 128；100 会把"离中心 ~100 格之外"的口裁掉（A 级实测 2/10 个种子
-#     各留 1 个落单口，全部落在距中心 99~103 格那一圈）⇒ 改到 128 后落单口 = 0。
-POOL_CELL_W = {'a': 2, 'b': 2, 'c': 2, 'mirror': 2, 'fertile': 6}
+#     各留 1 个落单口，全部落在距中心 99~103 格内那一圈）⇒ 改到 128 后落单口 = 0。
+#
+# ★ 第六轮（本文件所在轮，2026-10-21）：丰饶权重 6 → **10**（作者放行"按推荐方案落地"）。
+#   旧口径原文留档在上面（fertile=6 / 总权重 52 / P(3 连)=72.0%），不删。
+#   新记账（**按文件里实际的三条 fertile 元素各 10 算**）：
+#     每个尺寸 4 个普通变体 2×4=8 + fertile 10 = 18/尺寸、三种尺寸 54；+ cross_a 5 + cross_b 5
+#     ⇒ **总权重 = 64**；非丰饶 = 24 + 10 = **34**。
+#     一次 room 抽到丰饶 = 30/64 = 46.875%
+#     P(连续 3 个 room 至少一个丰饶) = 1-(34/64)^3 = **0.8501 = 85.0%**（旧 72.0%）。
+#   ⚠ 任务书里写的「新总权重 = 56 ⇒ 1-(46/56)^3 ≈ 82.x%」是按**一条** fertile 元素记的账
+#     （52-6=46 非丰饶、52+4=56 总权重），而 room 池里 fertile 有**三条**（小/中/大各一条）
+#     ⇒ 实际是 64 与 34。按 1-(46/56)^3 算出来是 44.6%（比旧值更低），与"要更高"的意图相反；
+#     本轮按**文件实际**记账（总 64 / 非丰饶 34 / P=85.0%），差异见 docs\金之牢狱-实现记录.md §12。
+#     参考：想精确落在 82% 需要 fertile ≈ 8.74，即权重 9（1-(34/61)^3 = 82.7%）。
+POOL_CELL_W = {'a': 2, 'b': 2, 'c': 2, 'mirror': 2, 'fertile': 10}
 ROOM_WEIGHTS = []
 for _size in ('cell_small', 'cell_medium', 'cell_large'):
     for _v in ('a', 'b', 'c', 'mirror', 'fertile'):
@@ -1090,25 +1103,60 @@ POOLS = collections.OrderedDict([
     ('exit', ([('exit', 1)], 'minecraft:empty')),
 ])
 
-STRUCTURE = {
-    'type': 'minecraft:jigsaw',
-    'biomes': '#minecraft:is_nether',
-    # ★ 第五轮：地下结构 → 地下装饰。依据 = 原版 fortress.json 也是 underground_decoration；
-    #   玄武岩三角洲的 delta / small_basalt_columns / large_basalt_columns 在 surface_structures 步，
-    #   晚于 underground_structures ⇒ 柱子会长进结构里（"贯穿"）。改到更晚的步就能被模板空气清掉。
-    'step': 'underground_decoration',
-    'spawn_overrides': {},
-    # ★ 第五轮：bury → none。bury/beard_* 都是"改地形噪声"（Beardifier），而结构内部的地形
-    #   要靠模板空气自己清；none = 不额外造型、由模板清出自己需要的空间（读数见 §11）。
-    'terrain_adaptation': 'none',
-    'start_pool': POOL + 'start',
-    'size': 6,
-    'start_height': {'type': 'minecraft:uniform',
-                     'min_inclusive': {'absolute': 31},
-                     'max_inclusive': {'absolute': 41}},
-    'use_expansion_hack': False,
-    'max_distance_from_center': 128,
-}
+# ★ 第六轮（本文件所在轮）：**按群系分支**（纯数据，不写 Java）。
+#   旧口径（第五轮，原文留档、不删）：
+#     `biomes = #minecraft:is_nether` + `terrain_adaptation = none` 的**一套**结构 ——
+#     在玄武岩三角洲最好（件内异类方块 110），但在绯红森林比 bury 差（6 → 187，全是疣块/菌柄/藤）。
+#   ⇒ 拆两套（宝藏房唯一性靠两套的 start_pool **指向同一个 start 池**）：
+#     ① `structure/golden_prison.json`（**保留原名**）：biomes = #bettergold:golden_prison/no_basalt
+#        + terrain_adaptation = **bury**（对非玄武岩群系更好：把结构周围的植被压掉）；
+#     ② `structure/golden_prison_basalt.json`（新）：biomes = minecraft:basalt_deltas
+#        + terrain_adaptation = **none**（玄武岩的 delta / *_basalt_columns 是 feature，晚于结构放置，
+#        胡子挡不住；none + underground_decoration 的读数才是 110）。
+#   两套其余字段**逐字相同**（step / size / start_height / max_distance_from_center / start_pool）。
+#   ⚠ **max_distance_from_center 的 116**：JigsawStructure.verifyRange（源码逐行见关卡注释）
+#       `int i = terrainAdaptation()==NONE ? 0 : 12;  maxDistanceFromCenter + i > 128 ⇒ DataResult.error`
+#     ⇒ bury 档**最大只能 116**（116+12 = 128）。写 128 会让结构**静默加载失败**（整个结构没有），
+#       所以主结构用 116；玄武岩档是 none，照旧 128。
+#       （第五轮 100→128 是为了消掉"距中心 99~103 格那一圈被裁掉的口"；116 仍大于那一圈，实测见 §12。）
+BIOMES_ALL_NETHER = '#minecraft:is_nether'      # 旧口径（一套结构时用的，留档）
+BIOMES_MAIN = '#bettergold:golden_prison/no_basalt'
+BIOMES_BASALT = 'minecraft:basalt_deltas'
+
+
+def _structure(biomes, terrain_adaptation, max_distance_from_center):
+    """两套 structure JSON 的唯一构造入口 —— 除这三个字段外**逐字相同**。"""
+    return {
+        'type': 'minecraft:jigsaw',
+        'biomes': biomes,
+        # ★ 第五轮：地下结构 → 地下装饰。依据 = 原版 fortress.json 也是 underground_decoration；
+        #   玄武岩三角洲的 delta / small_basalt_columns / large_basalt_columns 在 surface_structures 步，
+        #   晚于 underground_structures ⇒ 柱子会长进结构里（"贯穿"）。改到更晚的步就能被模板空气清掉。
+        'step': 'underground_decoration',
+        'spawn_overrides': {},
+        # ★ 第五轮：bury → none（全局一套时）。第六轮按群系分支：
+        #   非玄武岩 = bury（恢复）、玄武岩 = none。两档的读数见 §11 / §12。
+        'terrain_adaptation': terrain_adaptation,
+        'start_pool': POOL + 'start',
+        'size': 6,
+        'start_height': {'type': 'minecraft:uniform',
+                         'min_inclusive': {'absolute': 31},
+                         'max_inclusive': {'absolute': 41}},
+        'use_expansion_hack': False,
+        'max_distance_from_center': max_distance_from_center,
+    }
+
+
+STRUCTURE = _structure(BIOMES_MAIN, 'bury', 116)
+STRUCTURE_BASALT = _structure(BIOMES_BASALT, 'none', 128)
+
+# 群系标签：原版 #minecraft:is_nether 的成员逐条（真源 = build 里原版 resources jar 的
+# data/minecraft/tags/worldgen/biome/is_nether.json，5 条、无嵌套标签），**去掉 basalt_deltas**。
+# ⚠ `replace` 必须是 **false**（缺省也是 false，但显式写出来）：写成 true 会把原版标签静默清空。
+NETHER_BIOMES = ['minecraft:nether_wastes', 'minecraft:soul_sand_valley', 'minecraft:crimson_forest',
+                 'minecraft:warped_forest', 'minecraft:basalt_deltas']
+BIOME_TAG = {'replace': False,
+             'values': [b for b in NETHER_BIOMES if b != BIOMES_BASALT]}
 
 STRUCTURE_SET = {
     'structures': [{'structure': 'bettergold:golden_prison', 'weight': 1}],
@@ -1121,6 +1169,23 @@ STRUCTURE_SET = {
         # salt 故意保持我们自己的：同 salt + 同种子 ⇒ 候选区块与下界要塞/堡垒重合
         'salt': 19710101,
         # 原版 nether_complexes 省略该字段 ⇒ codec 默认 linear（别按印象填 triangular）
+        'spread_type': 'linear',
+    },
+}
+
+# ★ 第六轮：玄武岩三角洲那一套 —— spacing/separation/spread_type **完全相同**（否则两套密度会叠加），
+#   **salt 只差 1**（19710102）：RandomSpreadStructurePlacement#getPotentialStructureChunk 用
+#   `setLargeFeatureWithSalt(seed, regionX, regionZ, salt)` 抽候选区块 ⇒ 两套若同 salt，候选区块逐个重合，
+#   同一格会既排普通版又排玄武岩版（本设计里两套群系互斥，实际不会双生成，但**不靠巧合**）；
+#   salt 只改分布偏移、不改密度。
+OUR_SALT_BASALT = 19710102
+STRUCTURE_SET_BASALT = {
+    'structures': [{'structure': 'bettergold:golden_prison_basalt', 'weight': 1}],
+    'placement': {
+        'type': 'minecraft:random_spread',
+        'spacing': 27,
+        'separation': 4,
+        'salt': OUR_SALT_BASALT,
         'spread_type': 'linear',
     },
 }
@@ -1151,14 +1216,23 @@ def stage4():
     if stale:
         print('  [pools] 删除旧池 %d 个：%s' % (len(stale), stale))
     write_json(os.path.join(WG, 'structure', 'golden_prison.json'), STRUCTURE)
+    write_json(os.path.join(WG, 'structure', 'golden_prison_basalt.json'), STRUCTURE_BASALT)
     write_json(os.path.join(WG, 'structure_set', 'golden_prison.json'), STRUCTURE_SET)
+    write_json(os.path.join(WG, 'structure_set', 'golden_prison_basalt.json'), STRUCTURE_SET_BASALT)
+    # 第六轮：群系标签（列表 = 原版 #minecraft:is_nether 减 basalt_deltas；replace 显式 false）
+    write_json(os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'tags',
+                            'worldgen', 'biome', 'golden_prison', 'no_basalt.json'), BIOME_TAG)
     print('== stage4: worldgen JSON ==')
-    print('  structure_set: spacing=27 separation=4 salt=19710101 weight=1'
+    print('  structure_set: spacing=27 separation=4 spread_type=linear'
           '（= 下界要塞的 spacing/separation；旧 32/16 已按作者第三轮要求改掉）')
-    print('  structure    : size=%d start_height=31..41 biomes=#minecraft:is_nether step=%s'
-          ' terrain_adaptation=%s max_distance_from_center=%d'
-          % (STRUCTURE['size'], STRUCTURE['step'], STRUCTURE['terrain_adaptation'],
-             STRUCTURE['max_distance_from_center']))
+    for label, st, pl in (('golden_prison（主，非玄武岩）', STRUCTURE, STRUCTURE_SET['placement']),
+                          ('golden_prison_basalt（玄武岩）', STRUCTURE_BASALT,
+                           STRUCTURE_SET_BASALT['placement'])):
+        print('  %-32s biomes=%-38s terrain_adaptation=%-4s max_distance=%-3d salt=%d'
+              % (label, st['biomes'], st['terrain_adaptation'], st['max_distance_from_center'],
+                 pl['salt']))
+    print('  biome tag no_basalt: replace=%r values=%s'
+          % (BIOME_TAG['replace'], BIOME_TAG['values']))
     for name, (els, fb) in POOLS.items():
         print('  pool %-16s elements=%s fallback=%s' %
               (name, ['%s x%d' % (t, w) for (t, w) in els], fb))

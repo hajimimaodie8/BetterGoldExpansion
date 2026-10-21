@@ -1,0 +1,366 @@
+{
+ "note": "airFromY <= topY 的逐口读数 + 每个 dH（井筒再加多少层）的达标数；口径见 docs/金之牢狱-实现记录.md §12.1",
+ "exits": [
+  {
+   "biome": "soul_sand_valley",
+   "structure": "golden_prison",
+   "piece": 7,
+   "topY": 80,
+   "airFromY": null,
+   "window": null
+  },
+  {
+   "biome": "crimson_forest",
+   "structure": "golden_prison",
+   "piece": 15,
+   "topY": 85,
+   "airFromY": 63,
+   "window": [
+    63,
+    87
+   ]
+  },
+  {
+   "biome": "crimson_forest",
+   "structure": "golden_prison",
+   "piece": 16,
+   "topY": 85,
+   "airFromY": 102,
+   "window": [
+    102,
+    103
+   ]
+  },
+  {
+   "biome": "crimson_forest",
+   "structure": "golden_prison",
+   "piece": 17,
+   "topY": 85,
+   "airFromY": null,
+   "window": null
+  },
+  {
+   "biome": "crimson_forest",
+   "structure": "golden_prison",
+   "piece": 18,
+   "topY": 85,
+   "airFromY": null,
+   "window": null
+  },
+  {
+   "biome": "crimson_forest",
+   "structure": "golden_prison",
+   "piece": 19,
+   "topY": 85,
+   "airFromY": 98,
+   "window": null
+  },
+  {
+   "biome": "crimson_forest",
+   "structure": "golden_prison",
+   "piece": 20,
+   "topY": 85,
+   "airFromY": 94,
+   "window": null
+  },
+  {
+   "biome": "basalt_deltas",
+   "structure": "golden_prison_basalt",
+   "piece": 7,
+   "topY": 83,
+   "airFromY": 48,
+   "window": [
+    48,
+    105
+   ]
+  }
+ ],
+ "sweep": [
+  {
+   "dH": 0,
+   "pass": 2,
+   "exits": [
+    "crimson_forest#15@85",
+    "basalt_deltas#7@83"
+   ]
+  },
+  {
+   "dH": 1,
+   "pass": 2,
+   "exits": [
+    "crimson_forest#15@86",
+    "basalt_deltas#7@84"
+   ]
+  },
+  {
+   "dH": 2,
+   "pass": 2,
+   "exits": [
+    "crimson_forest#15@87",
+    "basalt_deltas#7@85"
+   ]
+  },
+  {
+   "dH": 3,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@86"
+   ]
+  },
+  {
+   "dH": 4,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@87"
+   ]
+  },
+  {
+   "dH": 5,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@88"
+   ]
+  },
+  {
+   "dH": 6,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@89"
+   ]
+  },
+  {
+   "dH": 7,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@90"
+   ]
+  },
+  {
+   "dH": 8,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@91"
+   ]
+  },
+  {
+   "dH": 9,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@92"
+   ]
+  },
+  {
+   "dH": 10,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@93"
+   ]
+  },
+  {
+   "dH": 11,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@94"
+   ]
+  },
+  {
+   "dH": 12,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@95"
+   ]
+  },
+  {
+   "dH": 13,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@96"
+   ]
+  },
+  {
+   "dH": 14,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@97"
+   ]
+  },
+  {
+   "dH": 15,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@98"
+   ]
+  },
+  {
+   "dH": 16,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@99"
+   ]
+  },
+  {
+   "dH": 17,
+   "pass": 2,
+   "exits": [
+    "crimson_forest#16@102",
+    "basalt_deltas#7@100"
+   ]
+  },
+  {
+   "dH": 18,
+   "pass": 2,
+   "exits": [
+    "crimson_forest#16@103",
+    "basalt_deltas#7@101"
+   ]
+  },
+  {
+   "dH": 19,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@102"
+   ]
+  },
+  {
+   "dH": 20,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@103"
+   ]
+  },
+  {
+   "dH": 21,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@104"
+   ]
+  },
+  {
+   "dH": 22,
+   "pass": 1,
+   "exits": [
+    "basalt_deltas#7@105"
+   ]
+  },
+  {
+   "dH": 23,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 24,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 25,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 26,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 27,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 28,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 29,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 30,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 31,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 32,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 33,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 34,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 35,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 36,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 37,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 38,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 39,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 40,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 41,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 42,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 43,
+   "pass": 0,
+   "exits": []
+  },
+  {
+   "dH": 44,
+   "pass": 0,
+   "exits": []
+  }
+ ],
+ "maxPass": 2,
+ "maxPassAt": [
+  0,
+  1,
+  2,
+  17,
+  18
+ ],
+ "passNow": 2,
+ "passAt40": 0
+}
