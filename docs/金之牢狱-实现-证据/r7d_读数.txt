@@ -1,0 +1,45 @@
+﻿== [r7d] docs\金之牢狱-实现-证据\gph_r7d ==
+-- 真生成 3 座 --
+   #0 soul_sand_valley   golden_prison          件=19 宝藏房=1 口 36 / 配对 36 / 落单 0
+      箱子（件内）：9 块 / 9 带战利品表；件外箱子 0 条
+      刷怪笼 34 / 展示框 14
+      exit#14 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+      exit#15 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+      exit#16 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+      exit#17 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+      exit#18 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+   #1 crimson_forest     golden_prison          件= 7 宝藏房=1 口 12 / 配对 12 / 落单 0
+      箱子（件内）：7 块 / 7 带战利品表；件外箱子 0 条
+      刷怪笼 14 / 展示框 4
+      exit#6 topY=77 airFromY=42 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+   #2 basalt_deltas      golden_prison_basalt   件=15 宝藏房=1 口 28 / 配对 28 / 落单 0
+      箱子（件内）：9 块 / 9 带战利品表；件外箱子 0 条
+      刷怪笼 23 / 展示框 8
+      exit#12 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+      exit#13 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+      exit#14 topY=78 airFromY=43 达标=True（Δ=-35）环顶上方 8 格全空 9/9
+-- 汇总：出入口 9 个，达标（airFromY <= topY）9 个；落单口 0 个；箱子（件内）25 / 带战利品表 25
+-- 10 种子 [runs]：10 个有效 run
+   seed 20261021  件=23 宝藏房=1 落单=0 出入口=7 fertile=1
+   seed 20261022  件=11 宝藏房=1 落单=0 出入口=3 fertile=0
+   seed 20261023  件= 7 宝藏房=1 落单=0 出入口=1 fertile=0
+   seed 20261024  件=15 宝藏房=1 落单=0 出入口=3 fertile=0
+   seed 20261025  件= 7 宝藏房=1 落单=0 出入口=1 fertile=0
+   seed 20261026  件= 7 宝藏房=1 落单=0 出入口=1 fertile=0
+   seed 20261027  件= 7 宝藏房=1 落单=0 出入口=1 fertile=1
+   seed 20261028  件= 7 宝藏房=1 落单=0 出入口=1 fertile=2
+   seed 20261029  件= 7 宝藏房=1 落单=0 出入口=1 fertile=1
+   seed 20261030  件= 7 宝藏房=1 落单=0 出入口=1 fertile=1
+   落单口合计 = 0；件数范围 7..23；出入口合计 20
+-- 10 种子 [runs_golden_prison_basalt]：10 个有效 run
+   seed 20261021  件=23 宝藏房=1 落单=0 出入口=7 fertile=1
+   seed 20261022  件=11 宝藏房=1 落单=0 出入口=3 fertile=0
+   seed 20261023  件= 7 宝藏房=1 落单=0 出入口=1 fertile=0
+   seed 20261024  件=15 宝藏房=1 落单=0 出入口=3 fertile=0
+   seed 20261025  件= 7 宝藏房=1 落单=0 出入口=1 fertile=0
+   seed 20261026  件= 7 宝藏房=1 落单=0 出入口=1 fertile=0
+   seed 20261027  件= 7 宝藏房=1 落单=0 出入口=1 fertile=1
+   seed 20261028  件= 7 宝藏房=1 落单=0 出入口=1 fertile=2
+   seed 20261029  件= 7 宝藏房=1 落单=0 出入口=1 fertile=1
+   seed 20261030  件= 7 宝藏房=1 落单=0 出入口=1 fertile=1
+   落单口合计 = 0；件数范围 7..23；出入口合计 20

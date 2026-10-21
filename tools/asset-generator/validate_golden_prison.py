@@ -16,6 +16,7 @@ import gzip
 import hashlib
 import json
 import os
+import random
 import struct
 import sys
 import zipfile
@@ -42,9 +43,12 @@ LOOT_ID = 'bettergold:chests/golden_prison'
 # ★ 第五轮（2026-10-21）：exit 从 5×8×5 → 5×(8+36)×5。门楼仍是原样 8 层，上面 36 层是
 #   「上升段」井筒（井口朝天）；原因见 gp_build.py 的 EXIT_SHAFT_H 注释（fallback 件不入队，
 #   挂 up_jigsaw 也永远不会被展开 ⇒ 只能做进同一个模板）。
+# ★ 第七轮（2026-10-21）：exit 5×44×5 → **11×62×11**：井筒顶部加一个封闭洞厅（空腔），
+#   让井口一定露在空腔空气里（读数见 docs\金之牢狱-实现记录.md §13）。
+#   旧期望原文留档（第五/六轮）：'exit': (5, 44, 5)。
 EXPECT_SIZE = {
     'treasure': (21, 9, 21), 'cross_a': (37, 8, 37), 'cross_b': (37, 8, 37),
-    'lane': (5, 5, 3), 'exit': (5, 44, 5),
+    'lane': (5, 5, 3), 'exit': (11, 62, 11),
     'cell_large_a': (15, 6, 31), 'cell_large_b': (15, 6, 31), 'cell_large_c': (15, 6, 31),
     'cell_large_mirror': (15, 6, 31), 'cell_large_fertile': (15, 6, 31),
     'cell_medium_a': (15, 6, 21), 'cell_medium_b': (15, 6, 21), 'cell_medium_c': (15, 6, 21),
@@ -73,11 +77,16 @@ EXPECT_WALK_Y = {'treasure': 3, 'cells': 1, 'lane': 1, 'exit': 1}
 #   ① 小牢房不再走 cell_small_1→2→3 硬循环，三条小牢房的口一律 room→lane；
 #   ② lane 两口改成对称（都 lane→room），旧的"南口进小牢房链"是序列固定的根因；
 #   ③ exit 的口 target 从 room 改成 empty（自己不许再有 room 目标 ⇒ 不会无限长）。
+# ★ 第七轮：exit 的 jigsaw **name** lane → room（几何没动）。
+#   `JigsawBlock.canAttach` 要求「父口 target == 子件 name」⇒ name=lane 时 exit 只能贴 cell/cross
+#   的口（target=lane），贴不到 lane 的 target=room 口；size 6→5 后链尾一件是 lane，
+#   那两个 room 口就永远接不上（实测：3 座全 0 个出入口、落单口 5 个）。改成 room 后正好对上。
+#   旧期望原文留档（第一~六轮）：'exit': {'north': ('lane', 'empty', 'minecraft:empty')}
 SOCK = {
     'treasure': {'south': ('room', 'lane', POOL + 'lane')},
     'cross_a': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     'cross_b': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
-    'exit': {'north': ('lane', 'empty', 'minecraft:empty')},
+    'exit': {'north': ('room', 'empty', 'minecraft:empty')},
     'lane': {'north': ('lane', 'room', POOL + 'room'),
              'south': ('lane', 'room', POOL + 'room')},
 }
@@ -109,7 +118,10 @@ EXPECT_POOLS = {
 #   + 36 层 × 16 格井筒墙（4 角 gold_pillar + 12 边 gold_bricks）
 #   − 24 格被"开顶"打通掉的原件（y=4..7 的 x1..3 / z1..2 这一 3×2 列）。
 #   = 155 + 576 − 24 = 707（不含第 2 步的 1 个 jigsaw）
-EXPECT_EXIT_BLOCKS = 707
+# ★ 第七轮：+ 空腔 1021 格（地板 96 + 天花板 121 + 四壁 804；只填空格、不覆盖井筒/门楼）
+#   = 707 + 1021 = **1728**（不含 jigsaw；实测 NBT 1729 solid 含 1 个 jigsaw）。
+#   旧期望原文留档（第五/六轮）：EXPECT_EXIT_BLOCKS = 707
+EXPECT_EXIT_BLOCKS = 1728
 
 EXPECT_LOOT_WEIGHT = 80
 EXPECT_LOOT_ENTRIES = 27
@@ -170,7 +182,9 @@ EXPECT_STRUCT_DIFF = {
 }
 # 两套 structure 的「公共」字段（逐字相同 ⇒ 从**同一个构造入口** gp_build._structure 出来）
 EXPECT_STRUCT_COMMON = {
-    'type': 'minecraft:jigsaw', 'step': 'underground_decoration', 'size': 6,
+# ★ 第七轮：size 6 → 5（落单口只出现在距中心 114 格的口上；见 §13.2）。
+#   旧期望原文留档（第一~六轮）：'size': 6
+    'type': 'minecraft:jigsaw', 'step': 'underground_decoration', 'size': 5,
     'use_expansion_hack': False, 'spawn_overrides': {}, 'start_pool': POOL + 'start',
 }
 EXPECT_SSET_STRUCTURE = {'main': 'bettergold:golden_prison',
@@ -206,6 +220,49 @@ SHAFT_CALIB = {
     'basalt_deltas#7': (83, 48, (0, 22)),
 }
 EXIT_SHAFT_H = 36          # 实测：任何 0..40 的加高都不比它更好（最大 2/8，+40 层 = 0/8）
+
+# ---- 第七轮 ①：井口空腔（封闭洞厅）的几何 —— 与 gp_build.py 的 EXIT_CAVITY_* 同一组数
+RIM_TOP = 8 + EXIT_SHAFT_H - 1                 # 井口环顶（件内 y）= 43
+EXIT_CAVITY_FLOOR = 39                         # 地板层（3x3 井口留空）
+EXIT_CAVITY_AIR = (40, 60)                     # 净空 y（含两端）=> 21 层
+EXIT_CAVITY_CEIL = 61                          # 天花板层
+EXIT_CAVITY_INNER = (1, 9)                     # 净空 x/z（含两端）=> 9x9
+EXIT_CAVITY_SIZE = (11, 11)                    # x/z 外壳 => 11x11
+EXIT_CAVITY_H = EXIT_CAVITY_CEIL + 1 - (RIM_TOP + 1)   # 18 层（模板 y 高于环顶的部分）
+# ---- 第七轮：**空腔之后**的实测快照（两个种子各 3 座真生成；探针 GphProbe）
+#   topY = 井口环顶（件顶 − 18）；airFromY = 9 列里最差列的第一段 ≥3 空气的起点
+#   数据 = docs\金之牢狱-实现-证据\gph_r7c\meta.json（种子 20261020）
+#          docs\金之牢狱-实现-证据\gph_r7d\meta.json（种子 20261021）
+CAVITY_CALIB = {
+    'r7c（种子 20261020）': {
+        'soul_sand_valley#6': (80, 45),
+        'crimson_forest#12': (85, 82),
+        'crimson_forest#13': (85, 50),
+        'crimson_forest#14': (85, 50),
+        'basalt_deltas#6': (83, 48),
+    },
+    'r7d（种子 20261021）': {
+        'soul_sand_valley#14': (78, 43),
+        'soul_sand_valley#15': (78, 43),
+        'soul_sand_valley#16': (78, 43),
+        'soul_sand_valley#17': (78, 43),
+        'soul_sand_valley#18': (78, 43),
+        'crimson_forest#6': (77, 42),
+        'basalt_deltas#12': (78, 43),
+        'basalt_deltas#13': (78, 43),
+        'basalt_deltas#14': (78, 43),
+    },
+}
+CAVITY_CALIB_N = {'r7c（种子 20261020）': 5, 'r7d（种子 20261021）': 9}
+DOOR_BLOCKS = 132                              # y<=7 的实心格 = 131 门楼 + 1 个 jigsaw（155 − 24 开顶）
+# exit 的调色板白名单（含第七轮新用的 minecraft:gold_block；其余全部是作者原件里就有的）
+EXIT_PALETTE = {
+    'minecraft:air', 'minecraft:structure_void',
+    'bettergold:gold_bricks', 'bettergold:gold_pillar', 'bettergold:gold_bars',
+    'bettergold:gold_bricks_stairs', 'bettergold:gold_bricks_slab',
+    'bettergold:gold_bricks_wall', 'bettergold:gold_trapdoor', 'bettergold:gold_chain',
+    'minecraft:gold_block', 'minecraft:jigsaw',
+}
 
 problems = []
 checked = [0]
@@ -321,7 +378,8 @@ DIRV = {'north': (0, 0, -1), 'south': (0, 0, 1), 'east': (1, 0, 0), 'west': (-1,
 OPP = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}
 # 可走格：空气 / 结构空位 / jigsaw（jigsaw 的 final_state=air 在放置时变成空气）
 PASS = (AIR, VOID, 'minecraft:jigsaw')
-MAX_DEPTH = 6          # = structure json 的 size（[bgp-worldgen] 另有一条断言钉它）
+MAX_DEPTH = 5          # = structure json 的 size（[bgp-worldgen] 另有一条断言钉它）
+                       # 旧值 6（第一~六轮）留档：第七轮 6 → 5 修落单口，见 §13.2
 # 空气地板值（回归用；口径与实测见 docs\金之牢狱-生成预览.md §阶段 B）
 # ⚠ 作者原口径是「整 bbox 空气 >= 60%% / 行走层 >= 80%%」——按作者自己 20 件的几何**达不到**：
 #   外壳普遍 2~3 格厚、牢房内部还有栅栏/金堆/箱笼，实测整 bbox 22.00%%~44.67%%、
@@ -854,15 +912,19 @@ def load_pools_actual():
     return out
 
 
-def assemble(pieces, rev_opts, pools=None):
+def assemble(pieces, rev_opts, pools=None, seed=None):
     """按池的接线规则把 20 件虚拟拼成一座（复刻 JigsawPlacement 的口径，不跑游戏）。
 
     - 每个口只用一次（引擎里 jigsaw 被接上就消耗掉，剩下那个口才继续长）；
     - `depth+1 > size(6)` 时放的是**目标池的 fallback**（不是再 roll 元素）；
     - `depth+1 > 7` 不再放（A 级实测最深处就是 7：宝藏 0 … 出入口 7）。
     `rev_opts` 只影响候选/旋转的挑选次序，用来造出两种不同的真实拼法。
+    `seed` 非空时 = **忠实模式**：按 `JigsawPlacement` 第 349~354 行，每个深度都先试目标池、
+    再加 fallback 池，并用固定种子洗牌（引擎本身就是 `getShuffledTemplates` 按权重洗牌）。
+    seed 为空 = 旧口径（只在 maxDepth 用 fallback），用来保留"最长的纯走廊链"这一档。
     """
     pools = pools or EXPECT_POOLS
+    rnd = random.Random(seed) if seed is not None else None
     sock = {n: piece_sockets(p) for n, p in pieces.items()}
     root = {'name': 'treasure', 'rot': 'none', 'origin': (0, 0, 0),
             'bbox': piece_bbox(pieces['treasure'].size, 'none', (0, 0, 0)),
@@ -892,6 +954,15 @@ def assemble(pieces, rev_opts, pools=None):
                 cands = list(pools[fbn][0])
             else:
                 cands = list(pools[pn][0])
+                if rnd is not None:
+                    # ★ 第七轮：忠实模式 —— 引擎在每个深度都先试目标池、**再试 fallback 池**
+                    #   （`JigsawPlacement` 第 349~354 行：`list` = 目标池（depth != maxDepth 时）
+                    #   + `list.addAll(holder1.getShuffledTemplates(...))` 恒加 fallback）。
+                    #   旧口径（第一~六轮）只试目标池 ⇒ 虚拟拼接永远不在中间放 fallback（出入口），
+                    #   链一直长到 maxDepth 才收敛，和真生成（21 件里有 8 个出入口）对不上。
+                    fbn = pool_name(pools[pn][1])
+                    if fbn is not None and fbn in pools:
+                        cands += list(pools[fbn][0])
             d = DIRV[wside]
             rp0 = rot_pos(pos, cur['rot'])
             wpos = tuple(cur['origin'][k] + rp0[k] for k in range(3))
@@ -916,6 +987,8 @@ def assemble(pieces, rev_opts, pools=None):
             opts = [o for o in opts if o[2] in pieces]
             if rev_opts:
                 opts = opts[::-1]
+            if rnd is not None:
+                rnd.shuffle(opts)
             if not opts:
                 continue
             ci, ri, cn, cside, r, origin, cb = opts[0]
@@ -936,13 +1009,21 @@ def check_connect(pieces):
     """
     total = 0
     exits_total = 0
+    maxp = 0
     pools = load_pools_actual()
-    for rev in (False, True):
-        placed = assemble(pieces, rev, pools)
-        if len(placed) < 6:
-            ng('bgp-connect', '虚拟拼接 rev=%d 只放下 %d 件（应 >= 6），接线规则或件尺寸变了'
-               % (1 if rev else 0, len(placed)))
+    # ★ 第七轮：size 6→5 之后，"最长的纯走廊链"（旧口径）会停在 lane 上、接不到出入口；
+    #   而引擎在每个深度都会同时试 fallback（出入口）⇒ 真生成里出入口很多。
+    #   所以这里跑 5 组：前两组 = 旧口径（确定性，最长链），后三组 = **忠实模式**（固定种子洗牌，
+    #   目标池 + fallback 池一起试）。断言口径见函数末尾。
+    CASES = [('rev0', False, None), ('rev1', True, None),
+             ('seed11', False, 11), ('seed22', False, 22), ('seed33', False, 33)]
+    for tag, rev, sd in CASES:
+        placed = assemble(pieces, rev, pools, sd)
+        if len(placed) < 2:
+            ng('bgp-connect', '虚拟拼接 %s 只放下 %d 件（>= 2 都不到），接线规则或件尺寸变了'
+               % (tag, len(placed)))
             continue
+        maxp = max(maxp, len(placed))
         cells = {}
         for z in placed:
             p = pieces[z['name']]
@@ -980,8 +1061,8 @@ def check_connect(pieces):
             if p_in not in seen or c_in not in seen:
                 bad.append((z['name'], z['depth'], side))
         if bad:
-            ng('bgp-connect', '虚拟拼接 rev=%d 有 %d 条接线从宝藏房走不过去：%s'
-               % (1 if rev else 0, len(bad), bad[:4]))
+            ng('bgp-connect', '虚拟拼接 %s 有 %d 条接线从宝藏房走不过去：%s'
+               % (tag, len(bad), bad[:4]))
         ok(len(placed) - 1)
         exits = [z for z in placed if z['name'] == 'exit']
         exits_total += len(exits)
@@ -1001,20 +1082,24 @@ def check_connect(pieces):
             if air and 100.0 * got / len(air) < 50.0:
                 closed.append((z['name'], got, len(air)))
         if closed:
-            ng('bgp-connect', '虚拟拼接 rev=%d 有件从宝藏房走不进去（空气 < 50%% 可达）：%s'
-               % (1 if rev else 0, closed[:4]))
+            ng('bgp-connect', '虚拟拼接 %s 有件从宝藏房走不进去（空气 < 50%% 可达）：%s'
+               % (tag, closed[:4]))
         ok(len(placed) - 1)
         total += len(placed)
-        print('[bgp-connect] 虚拟拼接 rev=%d：%d 件 / 出入口 %d / 深度 %d..%d / 洪泛覆盖 %d 格 / 接线 %d 条全通'
-              % (1 if rev else 0, len(placed), len(exits),
+        print('[bgp-connect] 虚拟拼接 %s：%d 件 / 出入口 %d / 深度 %d..%d / 洪泛覆盖 %d 格 / 接线 %d 条全通'
+              % (tag, len(placed), len(exits),
                  min(z['depth'] for z in placed), max(z['depth'] for z in placed),
                  len(seen), len(placed) - 1))
         print('[bgp-connect]   ' + ' -> '.join('%d:%s(%s)' % (z['depth'], z['name'], z['rot'])
                                               for z in placed))
     if exits_total == 0:
-        ng('bgp-connect', '两组虚拟拼接里一个出入口都没有（空转：这条断言就没验到「能不能走到出入口」）')
+        ng('bgp-connect', '5 组虚拟拼接里一个出入口都没有（空转：这条断言就没验到「能不能走到出入口」）')
+    if maxp < 6:
+        ng('bgp-connect', '5 组里最多只拼下 %d 件（< 6），拼接规则退化' % maxp)
     if total == 0:
         ng('bgp-connect', '一组虚拟拼接都没拼成（空转）')
+    print('[bgp-connect] 5 组汇总：最多 %d 件 / 出入口合计 %d 个（前两组=最长纯走廊链，后三组=忠实洗牌）'
+          % (maxp, exits_total))
 
 
 def check_gate(pieces):
@@ -1265,6 +1350,28 @@ def check_entities_bes(pieces):
             ng('bgp-be', 'cell_%s_mirror 的 BE 格子没跟着镜像：%s vs %s'
                % (size, sorted(want)[:4], sorted(m.bes)[:4]))
         ok(len(want))
+    # ★ 第七轮 ③：箱子 ↔ 方块实体 **双向**（"空箱"事故的静态拦截）
+    #   正向（load_piece 已经逐块查了 LootTable）：每块 minecraft:chest ⇒ 自己那格必须带 LootTable；
+    #   反向（这里）：每一条 id=chest 的 BE ⇒ 必须压在 minecraft:chest 方块上。
+    #   ⚠ 反向往返才是"7/8 空箱"的真正拦截面：世界加载时 BE 的 id 与方块类型不符会被**静默丢弃**。
+    chest_blocks = 0
+    chest_bes = 0
+    for name, p in pieces.items():
+        for pos, be in p.bes.items():
+            if be.get('id') == 'minecraft:chest':
+                chest_bes += 1
+                if (p.at(pos) or ('',))[0] != 'minecraft:chest':
+                    ng('bgp-be', '%s 的箱子 BE %s 不在 minecraft:chest 方块上（世界加载会丢弃）'
+                       % (name, pos))
+                ok()
+            elif (p.at(pos) or ('',))[0] == 'minecraft:chest':
+                ng('bgp-be', '%s 的箱子方块 %s 上的 BE id=%r（应为 minecraft:chest）'
+                   % (name, pos, be.get('id')))
+                ok()
+        chest_blocks += len(p.chests)
+    if chest_blocks != chest_bes:
+        ng('bgp-be', '箱子方块 %d 个 != 箱子 BE %d 条（双向不等）' % (chest_blocks, chest_bes))
+    ok()
     # 清单文件对穿（防"NBT 里有、manifest 没记"）
     man_p = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'nbt_manifest.json')
     if os.path.exists(man_p):
@@ -1299,23 +1406,29 @@ FACE_OPP = {0: (0, 1, 0), 1: (0, -1, 0), 2: (0, 0, 1), 3: (0, 0, -1), 4: (1, 0, 
 
 
 def check_exit_shaft(pieces):
-    """[bgp-shaft] 第五轮：出入口的「上升段」——井口朝天 + 门楼 8 层一格不动。
+    """[bgp-shaft] / [bgp-cavity] —— 出入口 = 门楼 8 层 + 井筒 36 层 + **井口空腔**（第七轮）。
 
-    为什么做进 exit.nbt：JigsawPlacement.java:474 `if (depth + 1 <= maxDepth)` 才入队，
-    exit 是 lane 的 fallback（在 depth==maxDepth 被放、不再入队）⇒ 挂 up_jigsaw 永远不会展开。
+    为什么空腔必须做进 exit.nbt（源码依据）：`JigsawPlacement` 里 `if (depth + 1 <= this.maxDepth)`
+    才把新件入队展开；exit 是 lane 池的 fallback（在 depth==maxDepth 被放、不再入队）
+    ⇒ 挂在它顶上的 jigsaw 永远不会被展开。
+    为什么需要空腔（第七轮读数）：第五轮 8 个口只有 2 个露头，其余 airFromY 比环顶高 9~17 格
+    —— 下界天花板岩体把井口埋住，而井筒加高不是杠杆（+40 层 = 0/8）。空腔把"有没有天空"
+    变成结构自带的属性；**只填空格** ⇒ 门楼 8 层 / 井筒四角与边 / 展示框支撑一格不动。
     """
     p = pieces['exit']
     sx, sy, sz = p.size
-    if (sx, sz) != (5, 5) or sy <= 8:
-        ng('bgp-shaft', 'exit 尺寸 %s 不是"门楼 8 层 + 上升段"' % (p.size,))
+    want_y = EXIT_CAVITY_CEIL + 1
+    if p.size != (EXIT_CAVITY_SIZE[0], want_y, EXIT_CAVITY_SIZE[1]):
+        ng('bgp-shaft', 'exit 尺寸 %s != %dx%dx%d（门楼 8 + 井筒 36 + 空腔 %d）'
+           % (p.size, EXIT_CAVITY_SIZE[0], want_y, EXIT_CAVITY_SIZE[1], EXIT_CAVITY_H))
     ok()
-    # 井筒：y=8..sy-1 的周边是墙、内部 3x3 是空气
+    # 1) 井筒段 y=8..rim：周边是作者已有的金方块、内部 3x3 空气
     walls = 0
-    for y in range(8, sy):
-        for x in range(sx):
-            for z in range(sz):
+    for y in range(8, RIM_TOP + 1):
+        for x in range(5):
+            for z in range(5):
                 nm = (p.at((x, y, z)) or (AIR, {}))[0]
-                edge = x in (0, sx - 1) or z in (0, sz - 1)
+                edge = x in (0, 4) or z in (0, 4)
                 if edge:
                     if nm not in ('bettergold:gold_bricks', 'bettergold:gold_pillar'):
                         ng('bgp-shaft', '井筒墙 (%d,%d,%d)=%s 不是作者已有的金方块' % (x, y, z, nm))
@@ -1323,18 +1436,24 @@ def check_exit_shaft(pieces):
                 elif nm != AIR:
                     ng('bgp-shaft', '井筒内部 (%d,%d,%d)=%s 不是空气' % (x, y, z, nm))
                 ok()
-    # 顶层：内部必须是空气（井口朝天），四角是柱子
-    for x in range(1, sx - 1):
-        for z in range(1, sz - 1):
-            nm = (p.at((x, sy - 1, z)) or (AIR, {}))[0]
+    # 2) 井口顶层 y=rim：内部空气（井口朝天）、四角柱子
+    for x in range(1, 4):
+        for z in range(1, 4):
+            nm = (p.at((x, RIM_TOP, z)) or (AIR, {}))[0]
             if nm != AIR:
-                ng('bgp-shaft', '井口顶层 (%d,%d,%d)=%s 不是空气' % (x, sy - 1, z, nm))
+                ng('bgp-shaft', '井口顶层 (%d,%d,%d)=%s 不是空气' % (x, RIM_TOP, z, nm))
             ok()
-    for (x, z) in ((0, 0), (0, sz - 1), (sx - 1, 0), (sx - 1, sz - 1)):
-        nm = (p.at((x, sy - 1, z)) or (AIR, {}))[0]
+    for (x, z) in ((0, 0), (0, 4), (4, 0), (4, 4)):
+        nm = (p.at((x, RIM_TOP, z)) or (AIR, {}))[0]
         if nm != 'bettergold:gold_pillar':
             ng('bgp-shaft', '井口四角 (%d,%d)=%s 不是 gold_pillar' % (x, z, nm))
         ok()
+    # 3) 门楼 8 层（y<=7）：方块数 == 冻结值（155 原件 − 24 开顶 + 1 jigsaw）
+    door = sum(1 for k, v in p.blocks.items() if k[1] <= 7 and v[0] != AIR)
+    if door != DOOR_BLOCKS:
+        ng('bgp-shaft', '门楼 8 层的方块数 %d != 冻结值 %d（155 原件 − 24 开顶 + 1 jigsaw）'
+           % (door, DOOR_BLOCKS))
+    ok()
     # 屋顶开口（连通门楼与井筒）：y=4..7 的 x1..3 / z1..2 必须是空气（z=3 那列是展示框支撑，保留）
     for (x, y, z) in [(x, y, z) for x in (1, 2, 3) for z in (1, 2) for y in (4, 5, 6, 7)]:
         nm = (p.at((x, y, z)) or (AIR, {}))[0]
@@ -1347,78 +1466,206 @@ def check_exit_shaft(pieces):
         if nm in (AIR, VOID):
             ng('bgp-shaft', '展示框支撑 (%d,7,%d) 被开顶掉了' % (x, z))
         ok()
-    # 门楼 8 层：口底仍是 dy=1，南面金栅栏墙不变
     if (2, 1, 0) not in p.jigsaws:
         ng('bgp-shaft', 'exit 的北口 jigsaw (2,1,0) 不见了')
     ok()
-    bars = sum(1 for z in range(sz) for y in range(1, 5) for x in range(sx)
+    bars = sum(1 for z in range(5) for y in range(1, 5) for x in range(5)
                if (p.at((x, y, z)) or ('', {}))[0] == 'bettergold:gold_bars')
     if bars == 0:
         ng('bgp-shaft', 'exit 南面的金栅栏墙不见了')
     ok()
-    print('[bgp-shaft] exit = 5x%d x5：门楼 8 层 + 上升段 %d 层（井筒墙 %d 格、井口 3x3 朝天、'
-          '顶层 y=%d 上方是模板外）' % (sy, sy - 8, walls, sy - 1))
-    # ---- 第六轮 ①：井筒高度 = **实测校准值**（不是任务书的 +40；读数见 §12.1）
-    #   gp_build.py 的 EXIT_SHAFT_H 与 NBT 的实际上升段必须一致，且必须等于校准快照。
-    if sy - 8 != EXIT_SHAFT_H:
-        ng('bgp-shaft', 'exit 的上升段 %d 层 != 校准值 EXIT_SHAFT_H=%d' % (sy - 8, EXIT_SHAFT_H))
+    # ---- 第七轮 ①：**空腔**（封闭洞厅）—— 井口一定在空腔空气里
+    #   净空 9x9 / 21 层高（>= 任务书的 9x9 / 7 格）；环顶之上 17 层（覆盖实测的 9~17）
+    inner_w = EXIT_CAVITY_INNER[1] - EXIT_CAVITY_INNER[0] + 1
+    inner_h = EXIT_CAVITY_AIR[1] - EXIT_CAVITY_AIR[0] + 1
+    if inner_w < 9 or inner_h < 7:
+        ng('bgp-cavity', '空腔净空 %dx%d 小于任务书下限 9x9 / 7 格' % (inner_w, inner_h))
+    ok()
+    above = EXIT_CAVITY_AIR[1] - RIM_TOP
+    if above < 17:
+        ng('bgp-cavity', '空腔在环顶之上只有 %d 层（第五轮实测最差要 17 层才够埋住井口）' % above)
+    ok()
+    if not (EXIT_CAVITY_AIR[0] <= RIM_TOP <= EXIT_CAVITY_AIR[1]):
+        ng('bgp-cavity', '井口环顶 y=%d 不在空腔净空 %s 里（"井口露在空腔里"不成立）'
+           % (RIM_TOP, EXIT_CAVITY_AIR))
+    ok()
+    # 地板 y=F：铺满 11x11，**只有井筒 3x3 内腔留空**
+    holes = [(x, z) for x in range(EXIT_CAVITY_SIZE[0]) for z in range(EXIT_CAVITY_SIZE[1])
+             if (x, EXIT_CAVITY_FLOOR, z) not in p.blocks]
+    if holes:
+        ng('bgp-cavity', '空腔地板 y=%d 有 %d 个洞（第一格 %s）' % (EXIT_CAVITY_FLOOR, len(holes), holes[0]))
+    ok()
+    # 天花板 y=C：铺满 11x11（空腔是封闭的，不是"朝天敞开"）
+    holes = [(x, z) for x in range(EXIT_CAVITY_SIZE[0]) for z in range(EXIT_CAVITY_SIZE[1])
+             if (x, EXIT_CAVITY_CEIL, z) not in p.blocks]
+    if holes:
+        ng('bgp-cavity', '空腔天花板 y=%d 有 %d 个洞（第一格 %s）'
+           % (EXIT_CAVITY_CEIL, len(holes), holes[0]))
+    ok()
+    # 四壁 y=F+1..C-1：x=0/10、z=0/10 一圈必须实心
+    holes = [(x, y, z) for y in range(EXIT_CAVITY_FLOOR + 1, EXIT_CAVITY_CEIL)
+             for x in range(EXIT_CAVITY_SIZE[0]) for z in range(EXIT_CAVITY_SIZE[1])
+             if (x in (0, EXIT_CAVITY_SIZE[0] - 1) or z in (0, EXIT_CAVITY_SIZE[1] - 1))
+             and (x, y, z) not in p.blocks]
+    if holes:
+        ng('bgp-cavity', '空腔四壁有 %d 个洞（第一格 %s）' % (len(holes), holes[0]))
+    ok()
+    # 净空内部：除井沿（y<=rim 的 x==4 / z==4 两边 + (4,4) 角）外必须是空气
+    extra = []
+    for y in range(EXIT_CAVITY_AIR[0], EXIT_CAVITY_AIR[1] + 1):
+        for x in range(1, EXIT_CAVITY_SIZE[0] - 1):
+            for z in range(1, EXIT_CAVITY_SIZE[1] - 1):
+                nm = (p.at((x, y, z)) or (AIR, {}))[0]
+                if nm == AIR:
+                    continue
+                if y <= RIM_TOP and (x == 4 or z == 4):
+                    if nm not in ('bettergold:gold_bricks', 'bettergold:gold_pillar'):
+                        ng('bgp-cavity', '井沿 (%d,%d,%d)=%s 不是作者已有的金方块' % (x, y, z, nm))
+                    continue
+                extra.append((x, y, z, nm))
+    if extra:
+        ng('bgp-cavity', '空腔净空里有 %d 格非空气（第一格 %s）' % (len(extra), extra[0]))
+    ok()
+    # 3x3 井筒通道：y=8..C-1 全空（不许被地板/天花板/装饰堵住）
+    blocked = [(x, y, z) for x in (1, 2, 3) for z in (1, 2, 3) for y in range(8, EXIT_CAVITY_CEIL)
+               if (p.at((x, y, z)) or (AIR, {}))[0] != AIR]
+    if blocked:
+        ng('bgp-cavity', '井筒 3x3 通道被堵了 %d 格（第一格 %s）' % (len(blocked), blocked[0]))
+    ok()
+    # 外壳只用作者已有的金方块（不造新造型 / 不碰贴图）
+    if not set(v[0] for v in p.blocks.values()) <= EXIT_PALETTE:
+        ng('bgp-cavity', 'exit 的调色板出现了容器外的方块：%s'
+           % sorted(set(v[0] for v in p.blocks.values()) - EXIT_PALETTE))
+    ok()
+    # 空腔段只用 gold_block / gold_bricks / gold_pillar（外加井筒原有的两种）
+    cav_ids = set()
+    for y in range(EXIT_CAVITY_FLOOR, EXIT_CAVITY_CEIL + 1):
+        for x in range(EXIT_CAVITY_SIZE[0]):
+            for z in range(EXIT_CAVITY_SIZE[1]):
+                v = p.at((x, y, z))
+                if v and v[0] != AIR:
+                    cav_ids.add(v[0])
+    if not cav_ids <= {'minecraft:gold_block', 'bettergold:gold_bricks', 'bettergold:gold_pillar'}:
+        ng('bgp-cavity', '空腔段出现了作者已有方块之外的 id：%s' % sorted(cav_ids))
+    ok()
+    print('[bgp-shaft] exit = %dx%dx%d：门楼 8 层（%d 格，方向南栅栏/展示框支撑原样）+ 井筒 %d 层'
+          '（墙 %d 格、井口 3x3 朝天、环顶 y=%d）'
+          % (sx, sy, sz, door, EXIT_SHAFT_H, walls, RIM_TOP))
+    print('[bgp-cavity] 井口空腔：净空 %dx%d（y %d..%d）、地板 y=%d、天花板 y=%d、外壳 %dx%d、'
+          '环顶之上 %d 层、只用 %s'
+          % (inner_w, inner_w, EXIT_CAVITY_AIR[0], EXIT_CAVITY_AIR[1], EXIT_CAVITY_FLOOR,
+             EXIT_CAVITY_CEIL, EXIT_CAVITY_SIZE[0], EXIT_CAVITY_SIZE[1], above, sorted(cav_ids)))
+    # ---- 井筒层数 == 校准值；gp_build.py 的常量必须一致
+    if sy - 8 != EXIT_SHAFT_H + EXIT_CAVITY_H:
+        ng('bgp-shaft', 'exit 的上升段 %d 层 != EXIT_SHAFT_H(%d) + EXIT_CAVITY_H(%d)'
+           % (sy - 8, EXIT_SHAFT_H, EXIT_CAVITY_H))
     ok()
     src = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'gp_build.py')
     if not os.path.exists(src):
-        ng('bgp-shaft', '缺流水线 gp_build.py（没法核对 EXIT_SHAFT_H）')
+        ng('bgp-shaft', '缺流水线 gp_build.py（没法核对 EXIT_SHAFT_H / EXIT_CAVITY_*）')
         return
     txt = strip_comments(open(src, 'rb').read().decode('utf-8', 'replace'), 'py')
-    got_h = None
+    got = {}
     for line in txt.splitlines():
         s = line.strip()
-        if s.startswith('EXIT_SHAFT_H') and '=' in s:
-            try:
-                got_h = int(s.split('=', 1)[1].strip().split()[0])
-            except (ValueError, IndexError):
-                got_h = None
-            break
-    if got_h is None:
-        ng('bgp-shaft', 'gp_build.py 去注释后找不到 EXIT_SHAFT_H 赋值')
-        return
-    if got_h != EXIT_SHAFT_H:
-        ng('bgp-shaft', 'gp_build.py 的 EXIT_SHAFT_H=%d != 校准值 %d' % (got_h, EXIT_SHAFT_H))
+        for key in ('EXIT_SHAFT_H', 'EXIT_CAVITY_FLOOR', 'EXIT_CAVITY_CEIL',
+                    'EXIT_CAVITY_AIR', 'EXIT_CAVITY_INNER', 'EXIT_CAVITY_SIZE'):
+            if s.startswith(key) and '=' in s:
+                got.setdefault(key, s.split('=', 1)[1].split('#')[0].strip())
+    if got.get('EXIT_SHAFT_H') != str(EXIT_SHAFT_H):
+        ng('bgp-shaft', 'gp_build.py 的 EXIT_SHAFT_H=%r != 校准值 %d'
+           % (got.get('EXIT_SHAFT_H'), EXIT_SHAFT_H))
+    ok()
+    want = {'EXIT_CAVITY_FLOOR': str(EXIT_CAVITY_FLOOR),
+            'EXIT_CAVITY_CEIL': str(EXIT_CAVITY_CEIL),
+            'EXIT_CAVITY_AIR': '(%d, %d)' % EXIT_CAVITY_AIR,
+            'EXIT_CAVITY_INNER': '(%d, %d)' % EXIT_CAVITY_INNER,
+            'EXIT_CAVITY_SIZE': '(%d, %d)' % EXIT_CAVITY_SIZE}
+    for k, v in want.items():
+        if got.get(k) != v:
+            ng('bgp-cavity', 'gp_build.py 的 %s=%r != 关卡冻结值 %r（流水线与关卡不同源）'
+               % (k, got.get(k), v))
+        ok()
+    if 'def add_cavity(' not in txt:
+        ng('bgp-cavity', 'gp_build.py 去注释后没有 add_cavity()（空腔只许由流水线生成）')
+    ok()
+    # 正向 needle（去注释源码）：exit 的 jigsaw **name 必须是 room** ——
+    #   `JigsawBlock.canAttach` 要求「父口 target == 子件 name」；size 5 后链尾是 lane（target=room），
+    #   name=lane 会让链尾两个口永远接不上（第七轮实测：0 个出入口 + 5 个落单口）。
+    if "'north': ('room', 'empty', 'minecraft:empty')" not in txt:
+        ng('bgp-cavity', 'gp_build.py 里 exit 的 socket name 不是 room（canAttach 对不上 chain 尾）')
     ok()
     # 负向：任务书里的 +40 层（=76）实测是 0/8 达标，不许被悄悄改回去
-    if got_h == 76:
-        ng('bgp-shaft', 'EXIT_SHAFT_H 被改回 76（实测 +40 层是 0/8 达标，比现在的 2/8 更差）')
+    if got.get('EXIT_SHAFT_H') == '76':
+        ng('bgp-shaft', 'EXIT_SHAFT_H 被改回 76（实测 +40 层是 0/8 达标）')
     ok()
-    # ---- 第六轮 ①：校准快照自洽 + 「当前高度就是最优」
+    # ---- 历史快照（第五轮，**无空腔**的旧几何）：仍然自洽，留着当"为什么加空腔"的依据
     def pass_at(dh):
         return sum(1 for (top, af, win) in SHAFT_CALIB.values()
                    if win and win[0] <= dh <= win[1])
 
     if len(SHAFT_CALIB) != 8:
-        ng('bgp-shaft-calib', '校准快照 %d 个口 != 8（真生成 3 座共 8 个出入口）' % len(SHAFT_CALIB))
+        ng('bgp-shaft-calib', '历史快照 %d 个口 != 8（第五轮真生成 3 座共 8 个出入口）' % len(SHAFT_CALIB))
     ok()
     now = sum(1 for (top, af, win) in SHAFT_CALIB.values()
               if af is not None and af <= top)
     if now != pass_at(0):
-        ng('bgp-shaft-calib', '达标数 %d 与窗口复算 %d 不一致（快照自相矛盾）' % (now, pass_at(0)))
+        ng('bgp-shaft-calib', '历史快照达标数 %d 与窗口复算 %d 不一致（快照自相矛盾）'
+           % (now, pass_at(0)))
     ok()
     if now != 2:
-        ng('bgp-shaft-calib', '当前达标 %d 个 != 记账 2 个（crimson#15 / basalt#7）' % now)
+        ng('bgp-shaft-calib', '历史快照当前达标 %d 个 != 记账 2 个（crimson#15 / basalt#7）' % now)
     ok()
     best = max(pass_at(dh) for dh in range(0, 41))
     if best != 2:
-        ng('bgp-shaft-calib', '0..40 层的最大达标数 %d != 记账 2（"加高不是杠杆"这条依据变了）' % best)
+        ng('bgp-shaft-calib', '历史快照 0..40 层的最大达标数 %d != 记账 2' % best)
     ok()
     if pass_at(40) != 0:
-        ng('bgp-shaft-calib', '+40 层（=任务书的 76）达标 %d 个 != 记账 0（"实心到 121" 的读数变了）'
-           % pass_at(40))
+        ng('bgp-shaft-calib', '历史快照 +40 层达标 %d 个 != 记账 0' % pass_at(40))
     ok()
-    if pass_at(0) != best:
-        ng('bgp-shaft-calib', '当前高度不是最优（pass(0)=%d < 最大 %d）' % (pass_at(0), best))
+    print('[bgp-shaft-calib] 历史（无空腔，第五轮）：8 口达标 %d/8；0..40 层最大 %d/8；+40 层 %d/8 '
+          '⇒ 井筒高度不是杠杆，所以第七轮改成"自带空腔"（见 [bgp-cavity]）'
+          % (now, best, pass_at(40)))
+
+    # ---- 第七轮：**空腔之后**的实测快照（两个种子各 3 座，真生成，runServer 探针 GphProbe）
+    #   数据 = docs\金之牢狱-实现-证据\gph_r7c\meta.json（种子 20261020）/
+    #          gph_r7d\meta.json（种子 20261021）；口径 = 本函数开头（topY = 件顶 − 空腔 18 层）
+    #   每口 = (topY, airFromY)；达标 = airFromY <= topY。旧口径（无空腔 2/8）原文留在 SHAFT_CALIB。
+    min_margin = 999
+    for label, snap in sorted(CAVITY_CALIB.items()):
+        fail = [(k, v) for k, v in snap.items() if v[1] is None or v[1] > v[0]]
+        if len(snap) != CAVITY_CALIB_N[label]:
+            ng('bgp-cavity-calib', '%s 记账 %d 个口 != 期望 %d（真生成 3 座）'
+               % (label, len(snap), CAVITY_CALIB_N[label]))
+        ok()
+        if fail:
+            ng('bgp-cavity-calib', '%s 有 %d 个口没达标（airFromY > topY）：%s'
+               % (label, len(fail), fail[:3]))
+        ok(len(snap))
+        for k, (top, af) in snap.items():
+            min_margin = min(min_margin, top - af)
+        print('[bgp-cavity-calib] %s：%d 口全部达标（topY %d..%d / airFromY %d..%d / 最小余量 %d 格）'
+              % (label, len(snap),
+                 min(v[0] for v in snap.values()), max(v[0] for v in snap.values()),
+                 min(v[1] for v in snap.values()), max(v[1] for v in snap.values()),
+                 min(v[0] - v[1] for v in snap.values())))
+    if min_margin < 1:
+        ng('bgp-cavity-calib', '最小露头余量 %d 格 < 1（井口没在空腔空气里）' % min_margin)
     ok()
-    print('[bgp-shaft-calib] 真生成 8 口：当前达标 %d/8（%s）；0..40 层最大 %d/8；+40 层 %d/8 ⇒ '
-          '井筒高度不是"露头"的杠杆，保持 EXIT_SHAFT_H=%d'
-          % (now, ', '.join('%s(topY=%s airFromY=%s)' % (k, v[0], v[1]) for k, v in
-                            sorted(SHAFT_CALIB.items()) if v[1] is not None and v[1] <= v[0]),
-             best, pass_at(40), EXIT_SHAFT_H))
+    total_mouths = sum(len(v) for v in CAVITY_CALIB.values())
+    if total_mouths != 14:
+        ng('bgp-cavity-calib', '两个种子合计 %d 个出入口 != 记账 14' % total_mouths)
+    ok()
+    # 负向：口径不许退回"topY = 件 bbox.maxY"（第七轮起 exit 顶部还有 18 层空腔，bbox 顶 = 天花板）
+    srcp = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'GphProbe.java.txt')
+    if os.path.exists(srcp):
+        psrc = open(srcp, encoding='utf-8').read()
+        if 'int top = b.maxY();' in psrc and 'EXIT_CAVITY_ABOVE' not in psrc:
+            ng('bgp-cavity-calib', '探针又把 topY 写回 b.maxY()（空腔之后那是天花板，不是井口环顶）')
+        ok()
+        if 'EXIT_CAVITY_ABOVE = 18' not in psrc:
+            ng('bgp-cavity-calib', '探针缺 EXIT_CAVITY_ABOVE = 18（环顶口径的唯一真源）')
+        ok()
 
 
 def check_worldgen():

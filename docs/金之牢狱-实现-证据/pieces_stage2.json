@@ -142,6 +142,7 @@
    "block_entities": {
     "1,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 1,
@@ -9331,6 +9332,7 @@
     },
     "13,1,15": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 13,
@@ -18468,6 +18470,7 @@
    "block_entities": {
     "1,1,25": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 1,
@@ -27604,6 +27607,7 @@
     },
     "1,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 1,
@@ -36850,6 +36854,7 @@
     },
     "13,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 13,
@@ -45999,6 +46004,7 @@
    "block_entities": {
     "13,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 13,
@@ -52331,6 +52337,7 @@
    "block_entities": {
     "1,1,15": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 1,
@@ -64767,6 +64774,7 @@
     },
     "13,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 13,
@@ -71156,6 +71164,7 @@
    "block_entities": {
     "1,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 1,
@@ -77488,6 +77497,7 @@
    "block_entities": {
     "1,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 1,
@@ -80980,6 +80990,7 @@
     },
     "13,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 13,
@@ -87719,6 +87730,7 @@
    "block_entities": {
     "1,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 1,
@@ -91259,6 +91271,7 @@
     },
     "13,1,5": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 13,
@@ -126334,6 +126347,7 @@
     },
     "17,2,18": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 17,
@@ -126362,6 +126376,7 @@
     },
     "18,2,17": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 18,
@@ -126370,6 +126385,7 @@
     },
     "18,2,20": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 18,
@@ -126398,6 +126414,7 @@
     },
     "19,2,18": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 19,
@@ -157980,7 +157997,7 @@
    "walk_y": 1
   },
   "exit": {
-   "block_count": 708,
+   "block_count": 1729,
    "block_entities": {},
    "blocks": {
     "0,0,0": [
@@ -158787,6 +158804,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "0,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
     "0,39,2": [
      "bettergold:gold_bricks",
      {}
@@ -158800,6 +158821,26 @@
      {
       "axis": "y"
      }
+    ],
+    "0,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "0,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "0,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "0,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "0,39,9": [
+     "minecraft:gold_block",
+     {}
     ],
     "0,4,0": [
      "bettergold:gold_pillar",
@@ -158835,6 +158876,12 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "0,40,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
     "0,40,2": [
      "bettergold:gold_bricks",
      {}
@@ -158849,6 +158896,26 @@
       "axis": "y"
      }
     ],
+    "0,40,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,40,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,40,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,40,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,40,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "0,41,0": [
      "bettergold:gold_pillar",
      {
@@ -158858,6 +158925,12 @@
     "0,41,1": [
      "bettergold:gold_bricks",
      {}
+    ],
+    "0,41,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
     ],
     "0,41,2": [
      "bettergold:gold_bricks",
@@ -158873,6 +158946,26 @@
       "axis": "y"
      }
     ],
+    "0,41,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,41,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,41,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,41,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,41,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "0,42,0": [
      "bettergold:gold_pillar",
      {
@@ -158882,6 +158975,12 @@
     "0,42,1": [
      "bettergold:gold_bricks",
      {}
+    ],
+    "0,42,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
     ],
     "0,42,2": [
      "bettergold:gold_bricks",
@@ -158897,6 +158996,26 @@
       "axis": "y"
      }
     ],
+    "0,42,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,42,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,42,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,42,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,42,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "0,43,0": [
      "bettergold:gold_pillar",
      {
@@ -158906,6 +159025,12 @@
     "0,43,1": [
      "bettergold:gold_bricks",
      {}
+    ],
+    "0,43,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
     ],
     "0,43,2": [
      "bettergold:gold_bricks",
@@ -158920,6 +159045,314 @@
      {
       "axis": "y"
      }
+    ],
+    "0,43,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,43,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,43,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,43,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,43,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,44,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,44,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,44,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,45,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,45,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,45,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,46,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,46,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,46,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,47,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,47,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,47,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,48,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,48,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,48,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,49,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,49,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,49,9": [
+     "bettergold:gold_bricks",
+     {}
     ],
     "0,5,0": [
      "bettergold:gold_bricks_stairs",
@@ -158961,6 +159394,486 @@
       "waterlogged": "false"
      }
     ],
+    "0,50,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,50,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,50,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,50,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,51,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,51,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,51,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,52,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,52,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,52,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,53,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,53,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,53,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,54,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,54,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,54,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,55,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,55,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,55,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,56,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,56,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,56,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,57,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,57,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,57,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,58,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,58,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,58,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,59,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,59,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,59,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "0,6,0": [
      "minecraft:structure_void",
      {}
@@ -158975,6 +159888,98 @@
     ],
     "0,6,3": [
      "minecraft:structure_void",
+     {}
+    ],
+    "0,60,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,60,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,60,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,60,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,61,9": [
+     "bettergold:gold_bricks",
      {}
     ],
     "0,7,0": [
@@ -159328,8 +160333,32 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "1,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
     "1,39,4": [
      "bettergold:gold_bricks",
+     {}
+    ],
+    "1,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "1,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "1,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "1,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "1,39,9": [
+     "minecraft:gold_block",
      {}
     ],
     "1,4,0": [
@@ -159350,11 +160379,19 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "1,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "1,40,4": [
      "bettergold:gold_bricks",
      {}
     ],
     "1,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,41,10": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -159366,6 +160403,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "1,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "1,42,4": [
      "bettergold:gold_bricks",
      {}
@@ -159374,7 +160415,59 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "1,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "1,43,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,49,10": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -159405,6 +160498,86 @@
       "waterlogged": "false"
      }
     ],
+    "1,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "1,6,0": [
      "minecraft:structure_void",
      {}
@@ -159414,6 +160587,58 @@
      {}
     ],
     "1,6,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,61,9": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -159438,6 +160663,1102 @@
      {}
     ],
     "1,9,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,39,0": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,1": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,2": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,3": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,4": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,39,9": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "10,40,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,40,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,40,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,40,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,41,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,41,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,41,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,42,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,42,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,42,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,43,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,43,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,43,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,44,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,44,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,44,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,45,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,45,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,45,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,46,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,46,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,46,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,47,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,47,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,47,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,48,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,48,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,48,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,49,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,49,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,49,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,50,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,50,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,50,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,51,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,51,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,51,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,52,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,52,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,52,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,53,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,53,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,53,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,54,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,54,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,54,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,55,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,55,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,55,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,56,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,56,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,56,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,57,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,57,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,57,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,58,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,58,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,58,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,59,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,59,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,59,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,60,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,10": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "10,60,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,60,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "10,61,9": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -159482,7 +161803,7 @@
      {
       "final_state": "minecraft:air",
       "joint": "aligned",
-      "name": "lane",
+      "name": "room",
       "placement_priority": 0,
       "pool": "minecraft:empty",
       "selection_priority": 0,
@@ -159755,8 +162076,32 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "2,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
     "2,39,4": [
      "bettergold:gold_bricks",
+     {}
+    ],
+    "2,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "2,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "2,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "2,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "2,39,9": [
+     "minecraft:gold_block",
      {}
     ],
     "2,4,0": [
@@ -159781,11 +162126,19 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "2,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "2,40,4": [
      "bettergold:gold_bricks",
      {}
     ],
     "2,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,41,10": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -159797,6 +162150,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "2,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "2,42,4": [
      "bettergold:gold_bricks",
      {}
@@ -159805,7 +162162,59 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "2,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "2,43,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,49,10": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -159826,6 +162235,86 @@
       "waterlogged": "false"
      }
     ],
+    "2,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "2,6,0": [
      "minecraft:structure_void",
      {}
@@ -159835,6 +162324,58 @@
      {}
     ],
     "2,6,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,61,9": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -160156,8 +162697,32 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "3,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
     "3,39,4": [
      "bettergold:gold_bricks",
+     {}
+    ],
+    "3,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "3,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "3,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "3,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "3,39,9": [
+     "minecraft:gold_block",
      {}
     ],
     "3,4,0": [
@@ -160178,11 +162743,19 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "3,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "3,40,4": [
      "bettergold:gold_bricks",
      {}
     ],
     "3,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,41,10": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -160194,6 +162767,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "3,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "3,42,4": [
      "bettergold:gold_bricks",
      {}
@@ -160202,7 +162779,59 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "3,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "3,43,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,49,10": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -160233,6 +162862,86 @@
       "waterlogged": "false"
      }
     ],
+    "3,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "3,6,0": [
      "minecraft:structure_void",
      {}
@@ -160242,6 +162951,58 @@
      {}
     ],
     "3,6,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,61,9": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -161073,6 +163834,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "4,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
     "4,39,2": [
      "bettergold:gold_bricks",
      {}
@@ -161086,6 +163851,26 @@
      {
       "axis": "y"
      }
+    ],
+    "4,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "4,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "4,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "4,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "4,39,9": [
+     "minecraft:gold_block",
+     {}
     ],
     "4,4,0": [
      "bettergold:gold_pillar",
@@ -161121,6 +163906,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "4,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "4,40,2": [
      "bettergold:gold_bricks",
      {}
@@ -161142,6 +163931,10 @@
      }
     ],
     "4,41,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,41,10": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -161169,6 +163962,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "4,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "4,42,2": [
      "bettergold:gold_bricks",
      {}
@@ -161193,6 +163990,10 @@
      "bettergold:gold_bricks",
      {}
     ],
+    "4,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "4,43,2": [
      "bettergold:gold_bricks",
      {}
@@ -161206,6 +164007,54 @@
      {
       "axis": "y"
      }
+    ],
+    "4,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,49,10": [
+     "bettergold:gold_bricks",
+     {}
     ],
     "4,5,0": [
      "bettergold:gold_bricks_stairs",
@@ -161247,6 +164096,86 @@
       "waterlogged": "false"
      }
     ],
+    "4,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "4,6,0": [
      "minecraft:structure_void",
      {}
@@ -161261,6 +164190,58 @@
     ],
     "4,6,3": [
      "minecraft:structure_void",
+     {}
+    ],
+    "4,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,61,9": [
+     "bettergold:gold_bricks",
      {}
     ],
     "4,7,0": [
@@ -161322,6 +164303,1305 @@
      {
       "axis": "y"
      }
+    ],
+    "5,39,0": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,1": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,2": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,3": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,4": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,39,9": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "5,40,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,41,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,49,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "5,61,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,39,0": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,1": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,2": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,3": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,4": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,39,9": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "6,40,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,41,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,49,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "6,61,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,39,0": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,1": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,2": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,3": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,4": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,39,9": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "7,40,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,41,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,49,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "7,61,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,39,0": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,1": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,2": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,3": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,4": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,39,9": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "8,40,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,41,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,49,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "8,61,9": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,39,0": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,1": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,10": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,2": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,3": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,4": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,5": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,6": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,7": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,8": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,39,9": [
+     "minecraft:gold_block",
+     {}
+    ],
+    "9,40,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,40,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,41,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,42,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,43,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,44,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,44,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,45,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,45,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,46,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,46,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,47,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,47,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,48,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,48,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,49,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,49,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,50,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,50,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,51,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,51,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,52,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,52,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,53,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,53,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,54,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,54,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,55,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,55,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,56,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,56,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,57,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,57,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,58,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,58,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,59,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,59,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,60,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,60,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,10": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,5": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,6": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,7": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,8": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "9,61,9": [
+     "bettergold:gold_bricks",
+     {}
+    ]
+   },
+   "cavity": {
+    "added": 1021,
+    "air_y": [
+     40,
+     60
+    ],
+    "ceil_y": 61,
+    "floor_y": 39,
+    "inner": [
+     1,
+     9
+    ],
+    "passage_3x3_open": true,
+    "rim_inside_air": true,
+    "size": [
+     11,
+     11
     ]
    },
    "derived": "original",
@@ -161468,9 +165748,9 @@
     "top_y": 43
    },
    "size": [
-    5,
-    44,
-    5
+    11,
+    62,
+    11
    ],
    "src": "P14",
    "walk_y": 1
@@ -161807,6 +166087,7 @@
     },
     "14,3,8": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 14,
@@ -161975,6 +166256,7 @@
     },
     "6,2,14": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 6,
@@ -162023,6 +166305,7 @@
     },
     "9,2,4": {
      "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
      "id": "minecraft:chest",
      "keepPacked": 0,
      "x": 9,

@@ -6,7 +6,8 @@ package com.hjmmd_8.bettergold.probe;
  * 与第四轮的 GpFinalProbe 的差异（本轮新增）：
  *   A) **井筒高度校准**：每个出入口沿「件内 3x3 内腔」的 9 列，从井口环顶往上逐格扫到 y=122
  *      （下界天花板基岩在 123..127，再往上没有意义），记录
- *        · topY          = 井口环顶（= 件 bbox.maxY = 件内 y=sy-1）
+ *        · topY          = 井口环顶（第五/六轮：= 件 bbox.maxY；**第七轮起 = 件顶 − 空腔 18 层**，
+ *                          因为 exit 模板顶部多了 18 层封闭洞厅，bbox.maxY 已经是天花板了）
  *        · firstAirY     = **9 列全部为空气**的最小 y（严格口径 = 井口整圈已经在空气里）
  *        · firstAirBest  = 9 列里最好那一列的第一格空气 y（宽松口径，只用来报告）
  *        · maxSolidAbove = 9 列里最高的非空气 y（≤122）
@@ -88,6 +89,9 @@ public final class GphProbe {
     private static final int WAIT_TICKS = 60;
     /** 下界基岩天花板 123..127；扫到 122 就够说明"还差多少"。 */
     private static final int CEIL = 122;
+    // ★ 第七轮：exit 模板 = 门楼 8 + 井筒 36 + 空腔 18（y 44..61），环顶在件内 y=43。
+    //   环顶 = 件 bbox.maxY − 18（旋转不影响这个高度差）。
+    private static final int EXIT_CAVITY_ABOVE = 18;
 
     private static boolean pending = false;
     private static int tick = 0;
@@ -437,6 +441,8 @@ public final class GphProbe {
             m.put("ports", ps.get("ports"));
             m.put("paired", ps.get("paired"));
             m.put("orphans", ps.get("orphans"));
+            // ★ 第七轮：把逐件**连接图深度**也 dump 出来（落单口诊断要"所在件 + 深度 + 到中心距离"）
+            m.put("depths", ps.get("depths"));
             // ---- 逐格方块（件 union 内，非空气）
             Path bt = OUT.resolve("blocks_" + ci + ".tsv");
             int n = 0;
@@ -517,7 +523,40 @@ public final class GphProbe {
                     continue;
                 }
                 BoundingBox b = pep.getBoundingBox();
-                int top = b.maxY();                    // 井口环顶（件内 y = sy-1）
+                // ★ 第七轮（2026-10-21）：exit 从 5x44x5 长成 11x62x11（井筒顶部自带空腔）：
+                //   `bbox.maxY` 不再是井口环顶（它现在是空腔天花板）。环顶 = 件顶 − 空腔净空层数
+                //   （18 层：y 44..61；环顶在件内 y=43）。
+                //   3x3 井筒的 9 列：按**环顶那一层的 5x5 金环**定位（旋转 90/180/270 后井筒会换角，
+                //   所以不能写死 minX+1..+3）。
+                int top = b.maxY() - EXIT_CAVITY_ABOVE;
+                int sx3 = Integer.MIN_VALUE;
+                int sz3 = Integer.MIN_VALUE;
+                int[][] cand = {{1, 1}, {1, 7}, {7, 1}, {7, 7}};
+                for (int[] cc : cand) {
+                    int x0 = b.minX() + cc[0];
+                    int z0 = b.minZ() + cc[1];
+                    boolean ring = true;
+                    for (int dx = -1; dx <= 3 && ring; dx++) {
+                        for (int dz = -1; dz <= 3 && ring; dz++) {
+                            boolean edge = dx < 0 || dx > 2 || dz < 0 || dz > 2;
+                            if (!edge) {
+                                continue;
+                            }
+                            BlockState s = lvl.getBlockState(new BlockPos(x0 + dx, top, z0 + dz));
+                            if (s.isAir() || !isStructureBlock(s)) {
+                                ring = false;
+                            }
+                        }
+                    }
+                    if (ring) {
+                        sx3 = x0;
+                        sz3 = z0;
+                        break;
+                    }
+                }
+                if (sx3 == Integer.MIN_VALUE) {
+                    LOG.info("[gph] exit #{} 找不到 3x3 井口环（bbox={} top={}）", i, b, top);
+                }
                 int cols = 0;
                 int airFrom = Integer.MIN_VALUE;       // 9 列里最差的那一列（max）= 井口整圈露头所需的 y
                 int airFromBest = Integer.MIN_VALUE;
@@ -525,8 +564,8 @@ public final class GphProbe {
                 int firstAirRun = Integer.MIN_VALUE;   // 9 列里最差的那一列的第一段 >=3 空气的起点
                 int clearAbove = 0;                    // 环顶上方 8 格全空的列数（沿用第四轮口径）
                 List<Object> colData = new ArrayList<>();
-                for (int x = b.minX() + 1; x <= b.maxX() - 1; x++) {
-                    for (int z = b.minZ() + 1; z <= b.maxZ() - 1; z++) {
+                for (int x = sx3; x <= sx3 + 2; x++) {
+                    for (int z = sz3; z <= sz3 + 2; z++) {
                         int naturalTop = Integer.MIN_VALUE;
                         for (int y = b.minY(); y <= CEIL; y++) {
                             BlockState s = lvl.getBlockState(new BlockPos(x, y, z));
@@ -611,6 +650,8 @@ public final class GphProbe {
                 ex.put("pieceIndex", i);
                 ex.put("bbox", bbox(b));
                 ex.put("topY", top);
+                ex.put("bboxTopY", b.maxY());
+                ex.put("rimLocalY", 43);
                 ex.put("sourceGroundY", b.minY());
                 ex.put("terrainSurfaceY", lvl.getHeight(Heightmap.Types.WORLD_SURFACE, b.getCenter().getX(),
                         b.getCenter().getZ()) - 1);

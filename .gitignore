@@ -48,3 +48,6 @@ docs/金之牢狱-生成预览/_raw_seed2/
 __pycache__/
 docs/金之牢狱-实现-证据/gpf_raw/
 docs/金之牢狱-实现-证据/gph_raw/
+
+### 金之牢狱 第七轮 A 级 dump（blocks_*.tsv 单个最大 21 MB，不入库；用 gph_probe.py + gph_r7_analyze.py 可复算）
+docs/金之牢狱-实现-证据/gph_r7*/

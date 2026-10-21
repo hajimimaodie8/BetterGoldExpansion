@@ -1,0 +1,291 @@
+{
+ "tag": "r7c",
+ "dir": "docs\\金之牢狱-实现-证据\\gph_r7c",
+ "real": [
+  {
+   "biome": "soul_sand_valley",
+   "structure": "golden_prison",
+   "pieces": 7,
+   "treasure": 1,
+   "ports": 12,
+   "paired": 12,
+   "orphans": [],
+   "chestOurs": 5,
+   "chestLoot": 5,
+   "chestForeign": [],
+   "spawners": 13,
+   "frames": 4,
+   "exits": [
+    {
+     "idx": 6,
+     "topY": 80,
+     "airFromY": 45,
+     "pass": true,
+     "delta": -35,
+     "clear8": 9,
+     "cols": 9
+    }
+   ]
+  },
+  {
+   "biome": "crimson_forest",
+   "structure": "golden_prison",
+   "pieces": 15,
+   "treasure": 1,
+   "ports": 28,
+   "paired": 28,
+   "orphans": [],
+   "chestOurs": 13,
+   "chestLoot": 13,
+   "chestForeign": [],
+   "spawners": 27,
+   "frames": 10,
+   "exits": [
+    {
+     "idx": 12,
+     "topY": 85,
+     "airFromY": 82,
+     "pass": true,
+     "delta": -3,
+     "clear8": 9,
+     "cols": 9
+    },
+    {
+     "idx": 13,
+     "topY": 85,
+     "airFromY": 50,
+     "pass": true,
+     "delta": -35,
+     "clear8": 9,
+     "cols": 9
+    },
+    {
+     "idx": 14,
+     "topY": 85,
+     "airFromY": 50,
+     "pass": true,
+     "delta": -35,
+     "clear8": 9,
+     "cols": 9
+    }
+   ]
+  },
+  {
+   "biome": "basalt_deltas",
+   "structure": "golden_prison_basalt",
+   "pieces": 7,
+   "treasure": 1,
+   "ports": 12,
+   "paired": 12,
+   "orphans": [],
+   "chestOurs": 6,
+   "chestLoot": 6,
+   "chestForeign": [
+    [
+     "minecraft:chests/ruined_portal",
+     [
+      -512,
+      66,
+      -1534
+     ]
+    ]
+   ],
+   "spawners": 14,
+   "frames": 4,
+   "exits": [
+    {
+     "idx": 6,
+     "topY": 83,
+     "airFromY": 48,
+     "pass": true,
+     "delta": -35,
+     "clear8": 9,
+     "cols": 9
+    }
+   ]
+  }
+ ],
+ "seedRuns": [
+  {
+   "key": "runs",
+   "runs": 10,
+   "orphans": 0,
+   "rows": [
+    {
+     "seed": 20261021,
+     "pieces": 23,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 7
+    },
+    {
+     "seed": 20261022,
+     "pieces": 11,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 3
+    },
+    {
+     "seed": 20261023,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 1
+    },
+    {
+     "seed": 20261024,
+     "pieces": 15,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 3
+    },
+    {
+     "seed": 20261025,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 1
+    },
+    {
+     "seed": 20261026,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 1
+    },
+    {
+     "seed": 20261027,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 1
+    },
+    {
+     "seed": 20261028,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 2,
+     "exits": 1
+    },
+    {
+     "seed": 20261029,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 1
+    },
+    {
+     "seed": 20261030,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 1
+    }
+   ]
+  },
+  {
+   "key": "runs_golden_prison_basalt",
+   "runs": 10,
+   "orphans": 0,
+   "rows": [
+    {
+     "seed": 20261021,
+     "pieces": 23,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 7
+    },
+    {
+     "seed": 20261022,
+     "pieces": 11,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 3
+    },
+    {
+     "seed": 20261023,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 1
+    },
+    {
+     "seed": 20261024,
+     "pieces": 15,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 3
+    },
+    {
+     "seed": 20261025,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 1
+    },
+    {
+     "seed": 20261026,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 0,
+     "exits": 1
+    },
+    {
+     "seed": 20261027,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 1
+    },
+    {
+     "seed": 20261028,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 2,
+     "exits": 1
+    },
+    {
+     "seed": 20261029,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 1
+    },
+    {
+     "seed": 20261030,
+     "pieces": 7,
+     "treasure": 1,
+     "orphans": 0,
+     "fertile": 1,
+     "exits": 1
+    }
+   ]
+  }
+ ],
+ "summary": {
+  "exits": 5,
+  "exitsPass": 5,
+  "orphans": 0,
+  "chestOurs": 24,
+  "chestLoot": 24
+ }
+}

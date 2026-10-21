@@ -80,7 +80,12 @@ SOCK = {
     #   它只在"深度到顶"时被放（JigsawPlacement:474 不再入队），但万一被放在更浅的深度，
     #   target=room 会让它继续长；改成 minecraft:empty = 引擎的"空池"，既不再展开也不会报
     #   "Empty or non-existent pool"（Pools.EMPTY 是白名单）。
-    'exit':        {'north': ('lane', 'empty', 'minecraft:empty')},
+    # ★ 第七轮：**jigsaw 的 name 从 lane 改成 room**（纯数据，几何一格没动）。
+    #   依据 = `JigsawBlock.canAttach`：父口 target 必须等于子件 jigsaw 的 name。
+    #   第五/六轮里 exit 的 name=lane ⇒ 它只能贴到"target=lane"的口（cell/cross 的口），
+    #   贴不到 lane 的"target=room"口 ⇒ 链尾停在 lane 上时那两口永远接不上（落单口）。
+    #   size 5 之后链尾的奇偶性翻了（最深一件是 lane），所以 name 必须跟着改成 room。
+    'exit':        {'north': ('room', 'empty', 'minecraft:empty')},
     # ★ 第五轮：过道两口改成**对称**（都 name=lane / target=room）——
     #   旧的"南口进小牢房链"是序列固定的根因之一（见 §11）；现在两口等价，引擎挑哪个旋转都成立。
     'lane':        {'north': ('lane', 'room', POOL + 'room'),
@@ -515,6 +520,21 @@ def detect_mouths(blocks, sx, sy, sz):
 EXIT_SHAFT_H = 36          # 上升段层数（门楼仍是原样的 8 层，井筒在它上面）
 EXIT_ROOF_OPEN = (1, 3, 1, 3)   # 打通屋顶的 x/z 范围（x1..3, z1..3）；y=6 全开、y=7 只开 z1..2
 
+# ★ 第七轮（2026-10-21）：井口**自带一个封闭洞厅**（纯数据，只填空格）。
+#   为什么：第五轮实测 8 个口只有 2 个「露头」（airFromY <= topY）；其余 airFromY 比井口环顶**高 9~17 格**
+#   —— 下界天花板岩体（86..122 实心、123..127 基岩）把井口埋住，而井筒加高不是杠杆（+40 层 = 0/8）。
+#   ⇒ 让井筒顶部长出一个空腔，井口**一定**露在空腔空气里（不再指望外部地形有空腔）。
+#   几何（rim_top = 8 + EXIT_SHAFT_H - 1 = 43）：
+#     空腔净空 y = 40..60  （21 层 = 环顶下 3 层 + 环顶上 17 层，覆盖实测的 9..17）
+#     空腔净空平面 9x9（x1..9 / z1..9）；外壳 11x11（x0..10）
+#     地板 y=39（3x3 井口留空）、天花板 y=61 ⇒ 模板 y 高 62
+#   外壳只用作者已有的 gold_block / gold_bricks / gold_pillar；井筒四角/边、门楼 8 层、展示框支撑一格不动。
+EXIT_CAVITY_FLOOR = 39          # 地板层（实心，3x3 井口那一格留空）
+EXIT_CAVITY_AIR = (40, 60)      # 净空 y 区间（含两端）
+EXIT_CAVITY_CEIL = 61           # 天花板层（实心）
+EXIT_CAVITY_INNER = (1, 9)      # 净空 x/z 区间（含两端）=> 9x9
+EXIT_CAVITY_SIZE = (11, 11)     # x/z 外壳尺寸 => 11x11
+
 
 def extend_exit(piece):
     """给 exit 加「上升段」：屋顶开井 + 5×5 井筒（内 3×3、井口朝天）。门楼 8 层一格不动。
@@ -549,7 +569,64 @@ def extend_exit(piece):
                       'rim': 'gold_bricks + gold_pillar(axis=y) corners，井口 3×3 朝天'}
     print('  [exit] 上升段 +%d 层 ⇒ size=%s top_y=%d 开顶 %d 格'
           % (EXIT_SHAFT_H, piece['size'], sy + EXIT_SHAFT_H - 1, len(opened)))
+    add_cavity(piece)
     return piece
+
+
+def add_cavity(piece):
+    """★ 第七轮：在井筒顶部挖一个**封闭洞厅**（外壳 + 地板 + 天花板齐全），让井口一定在空腔里。
+
+    纪律：
+      · **只填空格**（`setdefault`）⇒ 门楼 8 层 / 井筒四角与边 / 展示框支撑方块一格不动；
+      · 井筒 3×3 内腔（x1..3 / z1..3）在整个高度上都是空气 ⇒ 通道不会被地板或天花板堵住；
+      · 外壳全部是作者已有的方块（gold_block / gold_bricks / gold_pillar），不造新造型、不碰贴图；
+      · 井筒在 y<=43 的那段（x=4 / z=4 两条边 + (4,4) 角）留在空腔里当"井沿"，不覆盖也不拆。
+    """
+    grid = {s2k(k): v for k, v in piece['blocks'].items()}
+    w, d = EXIT_CAVITY_SIZE
+    f, c = EXIT_CAVITY_FLOOR, EXIT_CAVITY_CEIL
+    a0, a1 = EXIT_CAVITY_AIR
+    x0, x1 = EXIT_CAVITY_INNER
+    added = 0
+
+    def put(k, nm, pr=None):
+        nonlocal added
+        if k not in grid:
+            grid[k] = [nm, dict(pr or {})]
+            added += 1
+
+    # 地板 y=F：铺满 11x11，只有井筒 3x3 内腔留空（否则通道被堵）
+    for x in range(w):
+        for z in range(d):
+            if 1 <= x <= 3 and 1 <= z <= 3:
+                continue
+            put((x, f, z), 'minecraft:gold_block')
+    # 天花板 y=C：铺满 11x11
+    for x in range(w):
+        for z in range(d):
+            put((x, c, z), 'bettergold:gold_bricks')
+    # 四壁 y=F+1..C-1：四角 gold_pillar(axis=y)、其余 gold_bricks；只填空格
+    for y in range(f + 1, c):
+        for x in range(w):
+            for z in range(d):
+                if not (x in (0, w - 1) or z in (0, d - 1)):
+                    continue
+                if x in (0, w - 1) and z in (0, d - 1):
+                    put((x, y, z), 'bettergold:gold_pillar', {'axis': 'y'})
+                else:
+                    put((x, y, z), 'bettergold:gold_bricks')
+    piece['size'] = [w, c + 1, d]
+    piece['blocks'] = {k2s(k): v for k, v in grid.items()}
+    piece['block_count'] = len(grid)
+    piece['cavity'] = {'floor_y': f, 'air_y': [a0, a1], 'ceil_y': c,
+                       'inner': [x0, x1], 'size': [w, d], 'added': added,
+                       'rim_inside_air': a0 <= f + 1 and a1 >= 8 + EXIT_SHAFT_H - 1,
+                       'passage_3x3_open': all((x, y, z) not in grid
+                                               for x in (1, 2, 3) for z in (1, 2, 3)
+                                               for y in range(a0, a1 + 1))}
+    print('  [exit] 空腔 +%d 格 ⇒ size=%s 净空 %dx%d（y %d..%d）、地板 y=%d、天花板 y=%d'
+          % (added, piece['size'], x1 - x0 + 1, x1 - x0 + 1, a0, a1, f, c))
+
 
 
 def stage1():
@@ -667,6 +744,30 @@ def validate_stage1(pieces, derived_meta):
     for new, meta in derived_meta.items():
         if not any(v[0] == 'minecraft:chest' for v in pieces[new]['blocks'].values()):
             problems.append('%s 没有箱子' % new)
+    # ★ 第七轮：箱子 ↔ 方块实体 **双向**（"空箱"事故的静态拦截；不是只查"丰饶件有没有补"）
+    #   正向：件里每一个 minecraft:chest 方块 ⇒ 必须有 BE、id 必须是 chest、必须带 LootTable；
+    #   反向：每一条 id=chest 的 BE ⇒ 必须压在 minecraft:chest 方块上（否则世界加载会丢掉 BE）。
+    for name, p in pieces.items():
+        chests = {k for k, v in p['blocks'].items() if v[0] == 'minecraft:chest'}
+        bes = p.get('block_entities') or {}
+        for k in sorted(chests, key=s2k):
+            b = bes.get(k)
+            if b is not None and b.get('id') == 'minecraft:chest':
+                # ★ 第七轮：盒子类的 LootTable 在 stage1 就补齐（唯一入口）；
+                #   pop 再赋值 = 固定成**最后一个键**（与历轮产物逐字节一致）
+                b.pop('LootTable', None)
+                b['LootTable'] = LOOT
+            if b is None:
+                problems.append('%s 的箱子 %s 没有 BE（放置后是空箱）' % (name, k))
+            elif b.get('id') != 'minecraft:chest':
+                problems.append('%s 的箱子 %s 的 BE id=%r（应为 minecraft:chest）'
+                                % (name, k, b.get('id')))
+            elif b.get('LootTable') != LOOT:
+                problems.append('%s 的箱子 %s 的 BE 缺 LootTable' % (name, k))
+        for k, b in bes.items():
+            if b.get('id') == 'minecraft:chest' and k not in chests:
+                problems.append('%s 的箱子 BE %s 不在 minecraft:chest 方块上（世界加载会丢掉）'
+                                % (name, k))
     if problems:
         for p in problems:
             print('[gp-build] NG', p)
@@ -860,7 +961,14 @@ def build_nbt(piece):
                     # ★ 源存档里的完整 BE（spawner 的 SpawnData/SpawnPotentials/Delay、
                     #   chest 的 Items…），坐标已是件内相对坐标；箱子再补我们的 LootTable。
                     be = copy.deepcopy(bes[key])
+                    if nm == 'minecraft:chest' and be.get('id') != 'minecraft:chest':
+                        # ★ 第七轮：**按方块类型兜底** —— 哪怕 BE 表里那一格是别的东西
+                        #   （例如刷怪笼），箱子也必须拿到 chest BE + LootTable，否则世界加载时
+                        #   id 与方块不符会被丢掉 ⇒ 空箱。双向断言在 validate_stage1 里。
+                        be = chest_be(x, y, z)
                     if nm == 'minecraft:chest':
+                        # ★ 第七轮：pop 再赋值 ⇒ LootTable 恒为最后一个键（字节稳定性）
+                        be.pop('LootTable', None)
                         be['LootTable'] = LOOT
                     b['nbt'] = be_tag(be)
                 elif nm == 'minecraft:chest':
@@ -892,7 +1000,11 @@ def stage3():
     manifest = {}
     for name in sorted(pieces):
         raw = build_nbt(pieces[name])
-        gz = gzip.compress(raw, 9, mtime=0)   # mtime=0 => 可复现的字节
+        gz = bytearray(gzip.compress(raw, 9, mtime=0))   # mtime=0 => 可复现的字节
+        # ★ 第七轮：gzip 头的 OS 字节（第 9 字节）—— Python 3.12 写 0x0a、3.14 写 0xff，
+        #   会让"内容没变"的 19 个 .nbt 全部变成 M（只差这一个字节）。钉回 0x0a，保持逐字节可比。
+        gz[9] = 0x0A
+        gz = bytes(gz)
         path = os.path.join(RES, name + '.nbt')
         with open(path, 'wb') as f:
             f.write(gz)
@@ -1138,7 +1250,12 @@ def _structure(biomes, terrain_adaptation, max_distance_from_center):
         #   非玄武岩 = bury（恢复）、玄武岩 = none。两档的读数见 §11 / §12。
         'terrain_adaptation': terrain_adaptation,
         'start_pool': POOL + 'start',
-        'size': 6,
+        # ★ 第七轮（2026-10-21）：6 → **5**。依据 = A 级读数（docs\金之牢狱-实现-记录 §13）：
+        #   落单口只出现在**距起点中心 114 格**那一圈的口上——它要放的子件（lane 深 3）需要
+        #   z <= -335，而 bury 档的可用空间只到 -334（max_distance 116 + 1）⇒ 差 1 格被裁掉；
+        #   换成 fallback 的 exit（深 5）差 3 格，同样裁掉。⇒ 唯一的非几何修法是**缩短链**。
+        #   旧口径（第一~六轮，原文留档）：size = 6（链最长 30 件，落单口 1~2 个）。
+        'size': 5,
         'start_height': {'type': 'minecraft:uniform',
                          'min_inclusive': {'absolute': 31},
                          'max_inclusive': {'absolute': 41}},

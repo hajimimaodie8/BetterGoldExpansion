@@ -5,7 +5,7 @@
   "spawn_overrides": {},
   "terrain_adaptation": "none",
   "start_pool": "bettergold:golden_prison/start",
-  "size": 6,
+  "size": 5,
   "start_height": {
     "type": "minecraft:uniform",
     "min_inclusive": {

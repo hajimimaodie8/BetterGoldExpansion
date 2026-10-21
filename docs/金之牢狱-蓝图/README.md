@@ -23,6 +23,6 @@
 | `cell_small_mirror` | [CELL_SMALL_MIRROR.png](CELL_SMALL_MIRROR.png) | 15×6×11 | 672 |
 | `cross_a` | [CROSS_A.png](CROSS_A.png) | 37×8×37 | 6284 |
 | `cross_b` | [CROSS_B.png](CROSS_B.png) | 37×8×37 | 6281 |
-| `exit` | [EXIT.png](EXIT.png) | 5×44×5 | 708 |
+| `exit` | [EXIT.png](EXIT.png) | 11×62×11 | 1729 |
 | `lane` | [LANE.png](LANE.png) | 5×5×3 | 50 |
 | `treasure` | [TREASURE.png](TREASURE.png) | 21×9×21 | 2196 |
