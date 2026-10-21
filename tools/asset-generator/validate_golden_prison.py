@@ -39,9 +39,12 @@ TREASURE_LOC = POOL + 'treasure'
 LOOT_ID = 'bettergold:chests/golden_prison'
 
 # 冻结快照：20 个模板的尺寸（第 1 步的产出，不许被悄悄改）
+# ★ 第五轮（2026-10-21）：exit 从 5×8×5 → 5×(8+36)×5。门楼仍是原样 8 层，上面 36 层是
+#   「上升段」井筒（井口朝天）；原因见 gp_build.py 的 EXIT_SHAFT_H 注释（fallback 件不入队，
+#   挂 up_jigsaw 也永远不会被展开 ⇒ 只能做进同一个模板）。
 EXPECT_SIZE = {
     'treasure': (21, 9, 21), 'cross_a': (37, 8, 37), 'cross_b': (37, 8, 37),
-    'lane': (5, 5, 3), 'exit': (5, 8, 5),
+    'lane': (5, 5, 3), 'exit': (5, 44, 5),
     'cell_large_a': (15, 6, 31), 'cell_large_b': (15, 6, 31), 'cell_large_c': (15, 6, 31),
     'cell_large_mirror': (15, 6, 31), 'cell_large_fertile': (15, 6, 31),
     'cell_medium_a': (15, 6, 21), 'cell_medium_b': (15, 6, 21), 'cell_medium_c': (15, 6, 21),
@@ -66,45 +69,45 @@ for _c in ('large', 'medium', 'small'):
         EXPECT_MOUTHS['cell_%s_%s' % (_c, _v)] = {'north', 'south'}
 EXPECT_WALK_Y = {'treasure': 3, 'cells': 1, 'lane': 1, 'exit': 1}
 # 冻结快照：第 2 步的 socket 命名（name, target, pool）
+# ★ 第五轮：口径变化（旧值原文留在 docs\金之牢狱-实现记录.md §11）
+#   ① 小牢房不再走 cell_small_1→2→3 硬循环，三条小牢房的口一律 room→lane；
+#   ② lane 两口改成对称（都 lane→room），旧的"南口进小牢房链"是序列固定的根因；
+#   ③ exit 的口 target 从 room 改成 empty（自己不许再有 room 目标 ⇒ 不会无限长）。
 SOCK = {
     'treasure': {'south': ('room', 'lane', POOL + 'lane')},
     'cross_a': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     'cross_b': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
-    'exit': {'north': ('lane', 'room', POOL + 'room')},
+    'exit': {'north': ('lane', 'empty', 'minecraft:empty')},
     'lane': {'north': ('lane', 'room', POOL + 'room'),
-             'south': ('lane', 'cell_small_1', POOL + 'cell_small_1')},
-    'cell_small_a': {'north': ('cell_small_1', 'cell_small_2', POOL + 'cell_small_2'),
-                     'south': ('cell_small_1', 'cell_small_2', POOL + 'cell_small_2')},
-    'cell_small_mirror': {'north': ('cell_small_2', 'cell_small_3', POOL + 'cell_small_3'),
-                          'south': ('cell_small_2', 'cell_small_3', POOL + 'cell_small_3')},
-    'cell_small_fertile': {'north': ('cell_small_3', 'lane', POOL + 'lane'),
-                           'south': ('cell_small_3', 'lane', POOL + 'lane')},
+             'south': ('lane', 'room', POOL + 'room')},
 }
-for _n in ('cell_medium_a', 'cell_medium_b', 'cell_medium_c', 'cell_medium_mirror', 'cell_medium_fertile',
-           'cell_large_a', 'cell_large_b', 'cell_large_c', 'cell_large_mirror', 'cell_large_fertile',
-           'cell_small_b', 'cell_small_c'):
+for _n in ('cell_small_a', 'cell_small_b', 'cell_small_c', 'cell_small_mirror', 'cell_small_fertile',
+           'cell_medium_a', 'cell_medium_b', 'cell_medium_c', 'cell_medium_mirror', 'cell_medium_fertile',
+           'cell_large_a', 'cell_large_b', 'cell_large_c', 'cell_large_mirror', 'cell_large_fertile'):
     SOCK[_n] = {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')}
 
 # 池：名字 -> (元素模板, fallback 池)
+# ★ 第五轮：15 个池 → **4 个**；room 池 = 15 个牢房变体 + 2 个四面道（按权重随机）。
+CELL_VARIANTS = ['cell_%s_%s' % (c, v) for c in ('small', 'medium', 'large')
+                 for v in ('a', 'b', 'c', 'mirror', 'fertile')]
+ROOM_WEIGHTS = dict([(t, 6 if t.endswith('_fertile') else 2) for t in CELL_VARIANTS]
+                    + [('cross_a', 5), ('cross_b', 5)])
 EXPECT_POOLS = {
     'start': (['treasure'], 'minecraft:empty'),
     'lane': (['lane'], POOL + 'exit'),
-    'room': (['cell_medium_a', 'cell_medium_b', 'cell_medium_c', 'cell_medium_mirror',
-              'cell_large_a', 'cell_large_b', 'cell_large_c', 'cell_large_mirror',
-              'cross_a', 'cross_b', 'cell_small_b', 'cell_small_c'], 'minecraft:empty'),
+    'room': (CELL_VARIANTS + ['cross_a', 'cross_b'], POOL + 'exit'),
     'exit': (['exit'], 'minecraft:empty'),
-    'cell_small_1': (['cell_small_a'], POOL + 'cell_small_1'),
-    'cell_small_2': (['cell_small_mirror'], POOL + 'cell_small_2'),
-    'cell_small_3': (['cell_small_fertile'], POOL + 'cell_small_3'),
-    'cell_medium_1': (['cell_medium_a'], 'minecraft:empty'),
-    'cell_medium_2': (['cell_medium_mirror'], 'minecraft:empty'),
-    'cell_medium_3': (['cell_medium_fertile'], 'minecraft:empty'),
-    'cell_large_1': (['cell_large_a'], 'minecraft:empty'),
-    'cell_large_2': (['cell_large_mirror'], 'minecraft:empty'),
-    'cell_large_3': (['cell_large_fertile'], 'minecraft:empty'),
-    'cross_a': (['cross_a'], 'minecraft:empty'),
-    'cross_b': (['cross_b'], 'minecraft:empty'),
 }
+# 旧口径留档（第一~四轮，原文不删）：
+#   'start': treasure | 'lane': lane→exit | 'room': 12 条 | 'exit': exit
+#   + cell_small_1/2/3（各 1 条，fallback=自己）+ cell_medium_1..3 / cell_large_1..3 / cross_a / cross_b
+#   （各自 1 条，fallback=empty）。共 15 个池文件。
+
+# ★ 第五轮：exit 重建后的方块数记账 = 155（作者原件，取证值不变）
+#   + 36 层 × 16 格井筒墙（4 角 gold_pillar + 12 边 gold_bricks）
+#   − 24 格被"开顶"打通掉的原件（y=4..7 的 x1..3 / z1..2 这一 3×2 列）。
+#   = 155 + 576 − 24 = 707（不含第 2 步的 1 个 jigsaw）
+EXPECT_EXIT_BLOCKS = 707
 
 EXPECT_LOOT_WEIGHT = 80
 EXPECT_LOOT_ENTRIES = 27
@@ -305,13 +308,15 @@ def strip_comments(s, style):
 
 
 class Piece:
-    def __init__(self, name, size, blocks, jigsaws, chests, palette):
+    def __init__(self, name, size, blocks, jigsaws, chests, palette, ents=None, bes=None):
         self.name = name
         self.size = size
         self.blocks = blocks          # (x,y,z) -> (name, props)
         self.jigsaws = jigsaws        # (x,y,z) -> be dict
         self.chests = chests          # list of (x,y,z)
         self.palette = palette
+        self.ents = ents or []        # [{pos, blockPos, nbt}] 第五轮
+        self.bes = bes or {}          # (x,y,z) -> be dict（不含 jigsaw）第五轮
 
     def at(self, p):
         return self.blocks.get(p)
@@ -322,7 +327,7 @@ def load_piece(name):
     root = parse_nbt(path)
     size = tuple(root['size'])
     pal = root['palette']
-    blocks, jig, chests = {}, {}, []
+    blocks, jig, chests, bes = {}, {}, [], {}
     for b in root['blocks']:
         p = tuple(b['pos'])
         e = pal[b['state']]
@@ -346,7 +351,14 @@ def load_piece(name):
                 ng('bgp-chest', '%s 的箱子 %s LootTable=%r（应为 %s）'
                    % (name, p, be.get('LootTable'), LOOT_ID))
             ok()
-    return Piece(name, size, blocks, jig, chests, pal)
+        if 'nbt' in b and nm != 'minecraft:jigsaw':
+            bes[p] = b['nbt']
+    ents = []
+    for e in (root.get('entities') or []):
+        ents.append({'pos': [float(v) for v in (e.get('pos') or [])],
+                     'blockPos': [int(v) for v in (e.get('blockPos') or [])],
+                     'nbt': e.get('nbt') or {}})
+    return Piece(name, size, blocks, jig, chests, pal, ents, bes)
 
 
 def outward(p, size):
@@ -533,12 +545,20 @@ def check_pieces(pieces):
             ng('bgp-nbt', '%s 尺寸 %s != %s' % (name, p.size, EXPECT_SIZE[name]))
         ok()
         # 方块数（14 个源件对照证据；派生件只要求 > 0）
-        if name in EXPECT_SRC_COUNT:
+        if name in EXPECT_SRC_COUNT and name != 'exit':
             # 取证表是「抠出来时」的方块数，不含第 2 步注入的 jigsaw；空气不算方块。
             got = sum(1 for v in p.blocks.values() if v[0] != AIR) - len(p.jigsaws)
             if got != EXPECT_SRC_COUNT[name]:
                 ng('bgp-nbt', '%s 方块数(不含 jigsaw) %d != 取证 %d'
                    % (name, got, EXPECT_SRC_COUNT[name]))
+            ok()
+        if name == 'exit':
+            # ★ 第五轮：作者原 155 格 + 上升段井筒 576 格 − 开顶打通掉的原件（y=4..7 的 3×2 列）。
+            #   155 这个**原值仍是取证值**（不许改）；这里只核对"重建后的账"能对上。
+            got = sum(1 for v in p.blocks.values() if v[0] != AIR) - len(p.jigsaws)
+            if got != EXPECT_EXIT_BLOCKS:
+                ng('bgp-nbt', 'exit 方块数(不含 jigsaw) %d != 记账 %d（155 原件 + 576 井筒 − 开顶）'
+                   % (got, EXPECT_EXIT_BLOCKS))
             ok()
         # 口位：数量 / 命名 / 朝向
         sides = {}
@@ -758,7 +778,24 @@ def pool_name(pool):
     return pool[len(POOL):] if isinstance(pool, str) and pool.startswith(POOL) else None
 
 
-def assemble(pieces, rev_opts):
+def load_pools_actual():
+    """从磁盘上的池文件读 (templates, fallback)。
+
+    让 [bgp-connect] 跟着**实际 JSON** 走 —— 否则"把 lane 的 fallback 改 empty"这类扰动
+    在虚拟拼接里看不出来（P9/P18 会假绿）。
+    """
+    out = {}
+    for f in sorted(os.listdir(POOL_DIR)):
+        if not f.endswith('.json'):
+            continue
+        d = json.load(open(os.path.join(POOL_DIR, f), encoding='utf-8'))
+        els = [((e.get('element') or {}).get('location') or '').split('/', 2)[-1]
+               for e in (d.get('elements') or [])]
+        out[f[:-5]] = (els, d.get('fallback'))
+    return out
+
+
+def assemble(pieces, rev_opts, pools=None):
     """按池的接线规则把 20 件虚拟拼成一座（复刻 JigsawPlacement 的口径，不跑游戏）。
 
     - 每个口只用一次（引擎里 jigsaw 被接上就消耗掉，剩下那个口才继续长）；
@@ -766,6 +803,7 @@ def assemble(pieces, rev_opts):
     - `depth+1 > 7` 不再放（A 级实测最深处就是 7：宝藏 0 … 出入口 7）。
     `rev_opts` 只影响候选/旋转的挑选次序，用来造出两种不同的真实拼法。
     """
+    pools = pools or EXPECT_POOLS
     sock = {n: piece_sockets(p) for n, p in pieces.items()}
     root = {'name': 'treasure', 'rot': 'none', 'origin': (0, 0, 0),
             'bbox': piece_bbox(pieces['treasure'].size, 'none', (0, 0, 0)),
@@ -782,25 +820,27 @@ def assemble(pieces, rev_opts):
             pos, be = sock[cur['name']][side]
             tg, pl = be.get('target'), be.get('pool')
             pn = pool_name(pl)
-            if pn is None or pn not in EXPECT_POOLS:
+            if pn is None or pn not in pools:
                 continue
             wside = rot_dir(side, cur['rot'])
             dchild = cur['depth'] + 1
             if dchild > MAX_DEPTH + 1:
                 continue
             if dchild > MAX_DEPTH:
-                fbn = pool_name(EXPECT_POOLS[pn][1])
-                if fbn is None:
+                fbn = pool_name(pools[pn][1])
+                if fbn is None or fbn not in pools:
                     continue
-                cands = list(EXPECT_POOLS[fbn][0])
+                cands = list(pools[fbn][0])
             else:
-                cands = list(EXPECT_POOLS[pn][0])
+                cands = list(pools[pn][0])
             d = DIRV[wside]
             rp0 = rot_pos(pos, cur['rot'])
             wpos = tuple(cur['origin'][k] + rp0[k] for k in range(3))
             tgt = tuple(wpos[k] + d[k] for k in range(3))
             opts = []
             for ci, cn in enumerate(cands):
+                if cn not in sock:
+                    continue
                 for cside, (cpos, cbe) in sorted(sock[cn].items()):
                     if cbe.get('name') != tg:
                         continue
@@ -813,6 +853,8 @@ def assemble(pieces, rev_opts):
                         if any(bbox_overlap(cb, z['bbox']) for z in placed):
                             continue
                         opts.append((ci, ri, cn, cside, r, origin, cb))
+            # 池里引用了不存在的模板时不要崩（[bgp-pool] 会报那条），跳过即可
+            opts = [o for o in opts if o[2] in pieces]
             if rev_opts:
                 opts = opts[::-1]
             if not opts:
@@ -835,8 +877,9 @@ def check_connect(pieces):
     """
     total = 0
     exits_total = 0
+    pools = load_pools_actual()
     for rev in (False, True):
-        placed = assemble(pieces, rev)
+        placed = assemble(pieces, rev, pools)
         if len(placed) < 6:
             ng('bgp-connect', '虚拟拼接 rev=%d 只放下 %d 件（应 >= 6），接线规则或件尺寸变了'
                % (1 if rev else 0, len(placed)))
@@ -940,9 +983,16 @@ def check_gate(pieces):
             if pos is None:
                 continue
             d = DIRV[side]
-            kids = byname.get(tg, [])
-            if not kids:
+            kids = byname.get(tg, []) if tg != 'empty' else []
+            if not kids and tg != 'empty':
                 ng('bgp-gate', '%s 的 %s 口 target=%r 没有任何子件能接' % (name, side, tg))
+            if tg == 'empty':
+                # ★ 第五轮：唯一合法的"终端口" = exit 的 target=empty（engine 的 Pools.EMPTY）。
+                #   它刻意没有子件；这里断言"只有 exit 允许这样"，别的件敢写 empty 就红。
+                if name != 'exit':
+                    ng('bgp-gate', '%s 的 %s 口 target=empty（只有 exit 允许终端口）' % (name, side))
+                ok()
+                continue
             for (cn, cside, cpos) in kids:
                 child = pieces[cn]
                 for r in ROTS:
@@ -993,30 +1043,260 @@ def check_gate(pieces):
 
 
 def check_cycle(pieces):
-    """小牢房三步循环：1(A) -> 2(镜像) -> 3(丰饶) -> 回过道。"""
-    chain = [('cell_small_a', 'cell_small_1', 'cell_small_2'),
-             ('cell_small_mirror', 'cell_small_2', 'cell_small_3'),
-             ('cell_small_fertile', 'cell_small_3', 'lane')]
-    for name, sn, tg in chain:
-        for side in ('north', 'south'):
-            cands = [v for k, v in pieces[name].jigsaws.items()
-                     if (outward(k, pieces[name].size) or [''])[0] == side]
-            if not cands:
-                ng('bgp-cycle', '%s 缺 %s 口的 jigsaw（口位不在外侧面上）' % (name, side))
-                continue
-            be = cands[0]
-            if be.get('name') != sn or be.get('target') != tg:
-                ng('bgp-cycle', '%s 的 %s 口 (%r -> %r) != (%r -> %r)'
-                   % (name, side, be.get('name'), be.get('target'), sn, tg))
-            ok(2)
-    # 第 3 步必须是丰饶版（作者：三件连一起必含丰饶）
-    if 'fertile' not in chain[2][0]:
-        ng('bgp-cycle', '三步循环的第 3 步不是丰饶版')
+    """[bgp-pool-reach] 第五轮：把「按序号硬链」换成「按权重随机 + 全员 fallback=exit」后的三条结构断言。
+
+    旧口径（`[bgp-cycle]`，原文留档在 docs\\金之牢狱-实现记录.md §11）：
+      cell_small_a → cell_small_mirror → cell_small_fertile → lane 的三段硬循环。
+    新口径：
+      1) **每个池的 fallback 链都必须终结在 `exit`**（start / exit 自己除外）⇒ 落单口 = 0 的机制保证；
+      2) **exit 的口 target / pool 都不许是 room**（否则被放在更浅深度时会继续长 ⇒ 无限链）；
+      3) 池目录**恰好 4 个文件**（旧 11 个死池必须删掉），room 池权重记账 = 单值 2 / 丰饶 6 / 四面道 3。
+    """
+    # ---- 1) 池文件恰好 4 个；每个池的 fallback 链终结于 exit
+    pdir = os.path.join(WG, 'template_pool', 'golden_prison')
+    files = sorted(f[:-5] for f in os.listdir(pdir) if f.endswith('.json'))
+    if files != sorted(EXPECT_POOLS):
+        ng('bgp-pool-reach', '池文件 %s != 期望 %s（旧 11 个死池必须删掉）'
+           % (files, sorted(EXPECT_POOLS)))
     ok()
-    # 池子接线
-    if EXPECT_POOLS['cell_small_1'][1] != POOL + 'cell_small_1':
-        ng('bgp-cycle', 'cell_small_1 的 fallback 不是自己')
+    for name in EXPECT_POOLS:
+        if name in ('start', 'exit'):
+            continue
+        chain = [name]
+        cur = EXPECT_POOLS[name][1]
+        while True:
+            if cur == 'minecraft:empty':
+                ng('bgp-pool-reach', '池 %s 的 fallback 链 %s 落到 empty（应到 exit）'
+                   % (name, ' -> '.join(chain)))
+                break
+            nxt = pool_name(cur)
+            if nxt is None:
+                ng('bgp-pool-reach', '池 %s 的 fallback 链指向非本结构池 %r' % (name, cur))
+                break
+            chain.append(nxt)
+            if nxt == 'exit':
+                ok()
+                break
+            if nxt in chain[:-1]:
+                ng('bgp-pool-reach', '池 %s 的 fallback 链成环 %s' % (name, ' -> '.join(chain)))
+                break
+            cur = EXPECT_POOLS[nxt][1]
+        print('[bgp-pool-reach] %-5s fallback 链 = %s' % (name, ' -> '.join(chain)))
+    # ---- 2) exit 不许有 room 目标
+    for side, (sn, tg, pl) in SOCK['exit'].items():
+        if tg == 'room' or pl == POOL + 'room' or pl == 'room':
+            ng('bgp-pool-reach', 'exit 的 %s 口 target/pool 仍是 room（会无限长）' % side)
+        ok(2)
+    for pos, be in pieces['exit'].jigsaws.items():
+        if be.get('target') == 'room' or be.get('pool', '').endswith('/room'):
+            ng('bgp-pool-reach', 'exit.nbt 的 jigsaw 仍是 room 目标：%r' % (be,))
+        ok(2)
+    # ---- 3) room 池权重记账（可复算：总权重 48、丰饶 18 ⇒ P(3 连含丰饶)=75.6%）
+    d = json.load(open(os.path.join(pdir, 'room.json'), encoding='utf-8'))
+    got = {}
+    for e in d.get('elements', []):
+        t = (e.get('element') or {}).get('location', '').split('/', 2)[-1]
+        got[t] = e.get('weight')
+    if got != ROOM_WEIGHTS:
+        ng('bgp-pool-reach', 'room 池权重 %r != 记账 %r' % (got, ROOM_WEIGHTS))
+    ok(len(ROOM_WEIGHTS))
+    tot = sum(ROOM_WEIGHTS.values())
+    fert = sum(w for t, w in ROOM_WEIGHTS.items() if t.endswith('_fertile'))
+    p3 = 1.0 - (1.0 - fert / float(tot)) ** 3
+    if tot != 52 or fert != 18:
+        ng('bgp-pool-reach', 'room 总权重 %d / 丰饶 %d != 52 / 18' % (tot, fert))
+    ok(2)
+    print('[bgp-pool-reach] room 池：总权重 %d、丰饶 %d（%.1f%%）⇒ P(3 连至少一个丰饶) = %.3f'
+          % (tot, fert, 100.0 * fert / tot, p3))
+    if p3 < 0.70:
+        ng('bgp-pool-reach', 'P(3 连含丰饶)=%.3f < 0.70（作者要求"高概率"）' % p3)
     ok()
+
+
+def check_entities_bes(pieces):
+    """[bgp-entity] / [bgp-be] —— 第五轮（作者三图：展示框没放、刷怪笼的金钱妖没了）。
+
+    源存档实测（docs\\金之牢狱-实现-证据\\src_entities_bes.json）：6 个实体、53 个件内 BE。
+    **注意坐标是「件内相对坐标」**：+512 展示区是纯方块副本（BE/实体都留在原件区），
+    所以 ① 实体 blockPos 必须落在 [0,size) ② BE 的 x/y/z 必须等于它的 pos。
+    """
+    EXPECT_ENT = {'treasure': 2, 'cross_b': 2, 'exit': 2}
+    EXPECT_BE = {
+        'treasure': {'minecraft:mob_spawner': 12, 'minecraft:chest': 3},
+        'cross_a': {'minecraft:mob_spawner': 8},
+        'cross_b': {'minecraft:mob_spawner': 12, 'minecraft:chest': 4},
+        'cell_large_a': {'minecraft:mob_spawner': 1, 'minecraft:chest': 1},
+        'cell_large_b': {'minecraft:mob_spawner': 1, 'minecraft:chest': 1},
+        'cell_large_c': {'minecraft:mob_spawner': 1, 'minecraft:chest': 1},
+        'cell_medium_a': {'minecraft:mob_spawner': 1, 'minecraft:chest': 1},
+        'cell_medium_b': {'minecraft:mob_spawner': 1, 'minecraft:chest': 1},
+        'cell_medium_c': {},
+        'cell_small_a': {'minecraft:mob_spawner': 1, 'minecraft:chest': 1},
+        'cell_small_b': {'minecraft:mob_spawner': 1, 'minecraft:chest': 1},
+        'cell_small_c': {},
+        'lane': {}, 'exit': {},
+    }
+    # 派生件：镜像 = 基准件的 BE 逐格镜像；丰饶 = 基准件 BE + 多 1 个箱子
+    for size in ('small', 'medium', 'large'):
+        base = 'cell_%s_a' % size
+        EXPECT_ENT['cell_%s_mirror' % size] = 0
+        EXPECT_ENT['cell_%s_fertile' % size] = 0
+        mb = dict(EXPECT_BE[base])
+        fb = dict(EXPECT_BE[base])
+        fb['minecraft:chest'] = fb.get('minecraft:chest', 0) + 1
+        EXPECT_BE['cell_%s_mirror' % size] = mb
+        EXPECT_BE['cell_%s_fertile' % size] = fb
+    for n in EXPECT_SIZE:
+        EXPECT_ENT.setdefault(n, 0)
+    total_ent = sum(EXPECT_ENT.values())
+    total_be = sum(sum(v.values()) for v in EXPECT_BE.values())
+    for name, p in pieces.items():
+        if len(p.ents) != EXPECT_ENT[name]:
+            ng('bgp-entity', '%s 实体 %d 个 != 源存档 %d' % (name, len(p.ents), EXPECT_ENT[name]))
+        ok()
+        for e in p.ents:
+            nb = e['nbt']
+            if nb.get('id') != 'minecraft:glow_item_frame':
+                ng('bgp-entity', '%s 的实体 id=%r（源存档只有 glow_item_frame）' % (name, nb.get('id')))
+            if (nb.get('Item') or {}).get('id') != 'bettergold:chaos_coin':
+                ng('bgp-entity', '%s 的展示框物品=%r（应为 bettergold:chaos_coin）'
+                   % (name, nb.get('Item')))
+            if nb.get('Facing') != 3:
+                ng('bgp-entity', '%s 的展示框 Facing=%r（源存档全是 3=south）' % (name, nb.get('Facing')))
+            bp = tuple(e['blockPos'])
+            if not all(0 <= bp[i] < p.size[i] for i in range(3)):
+                ng('bgp-entity', '%s 的实体 blockPos=%s 不在件内（坐标没换成相对坐标）' % (name, bp))
+            if tuple(int(v) for v in e['pos'][:3]) != bp:
+                ng('bgp-entity', '%s 的实体 pos=%s 与 blockPos=%s 不同格' % (name, e['pos'], bp))
+            sup = (bp[0] + FACE_OPP[nb.get('Facing', 3)][0], bp[1] + FACE_OPP[nb.get('Facing', 3)][1],
+                   bp[2] + FACE_OPP[nb.get('Facing', 3)][2])
+            sv = p.at(sup)
+            if sv is None or sv[0] in (AIR, VOID):
+                ng('bgp-entity', '%s 的展示框 %s 支撑方块 %s 不是实心（%r）'
+                   % (name, bp, sup, sv and sv[0]))
+            ok(5)
+        # BE
+        cnt = {}
+        for pos, be in p.bes.items():
+            cnt[be.get('id')] = cnt.get(be.get('id'), 0) + 1
+            if tuple(int(be.get(k, -999)) for k in ('x', 'y', 'z')) != pos:
+                ng('bgp-be', '%s 的 BE %s 的 x/y/z=%r 不是件内相对坐标'
+                   % (name, pos, (be.get('x'), be.get('y'), be.get('z'))))
+            if be.get('id') == 'minecraft:mob_spawner':
+                sid = ((be.get('SpawnData') or {}).get('entity') or {}).get('id')
+                if sid != 'bettergold:money_gremlin':
+                    ng('bgp-be', '%s 的刷怪笼 %s SpawnData.entity.id=%r（应为 bettergold:money_gremlin）'
+                       % (name, pos, sid))
+                if not isinstance(be.get('Delay'), int):
+                    ng('bgp-be', '%s 的刷怪笼 %s 缺 Delay' % (name, pos))
+            if be.get('id') == 'minecraft:chest' and be.get('LootTable') != LOOT_ID:
+                ng('bgp-be', '%s 的箱子 BE %s 缺 LootTable' % (name, pos))
+            ok(3)
+        if cnt != EXPECT_BE[name]:
+            ng('bgp-be', '%s 的方块实体 %r != 源存档 %r' % (name, cnt, EXPECT_BE[name]))
+        ok()
+    # 镜像件的 BE 必须逐格镜像（否则箱子/刷怪笼会错位）
+    for size in ('small', 'medium', 'large'):
+        a, m = pieces['cell_%s_a' % size], pieces['cell_%s_mirror' % size]
+        sx = a.size[0]
+        want = {(sx - 1 - x, y, z): be for (x, y, z), be in a.bes.items()}
+        if set(want) != set(m.bes):
+            ng('bgp-be', 'cell_%s_mirror 的 BE 格子没跟着镜像：%s vs %s'
+               % (size, sorted(want)[:4], sorted(m.bes)[:4]))
+        ok(len(want))
+    # 清单文件对穿（防"NBT 里有、manifest 没记"）
+    man_p = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'nbt_manifest.json')
+    if os.path.exists(man_p):
+        man = json.load(open(man_p, encoding='utf-8'))
+        for name, p in pieces.items():
+            m = man.get(name) or {}
+            if m.get('entities') != len(p.ents) or m.get('block_entities') != len(p.bes):
+                ng('bgp-be', '%s 的 nbt_manifest 记账 entities=%r be=%r 与 NBT 实际 %d/%d 不符'
+                   % (name, m.get('entities'), m.get('block_entities'), len(p.ents), len(p.bes)))
+            ok()
+    else:
+        ng('bgp-be', '缺 nbt_manifest.json（无法对穿实体/BE 计数）')
+    print('[bgp-entity] 实体 %d 个（treasure 2 / cross_b 2 / exit 2，全部 glow_item_frame + chaos_coin）；'
+          '方块实体 %d 个（spawner %d / chest %d）'
+          % (total_ent, total_be,
+             sum(v.get('minecraft:mob_spawner', 0) for v in EXPECT_BE.values()),
+             sum(v.get('minecraft:chest', 0) for v in EXPECT_BE.values())))
+    # 源码正向 needle（去注释）：不许回到「entities 永远写空列表」的老写法
+    gp = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'gp_build.py')
+    src = strip_comments(open(gp, encoding='utf-8').read(), 'py')
+    if "'entities': (9, (10, []))" in src or "root['entities'] = (9, (10, []))" in src:
+        ng('bgp-entity', 'gp_build.py 又把 entities 写成空列表了（P0 回归）')
+    if 'load_entities()' not in src or 'load_block_entities()' not in src:
+        ng('bgp-entity', 'gp_build.py 没有从 entities/*.mca 与 block_entities 读源数据')
+    if "'blockPos'" not in src:
+        ng('bgp-entity', 'gp_build.py 没有写 blockPos（模板实体段必须带 blockPos）')
+    ok(3)
+    print('[bgp-entity] 源码 needle：entities/block_entities/blockPos 三个关键分支都在（去注释后）')
+
+
+FACE_OPP = {0: (0, 1, 0), 1: (0, -1, 0), 2: (0, 0, 1), 3: (0, 0, -1), 4: (1, 0, 0), 5: (-1, 0, 0)}
+
+
+def check_exit_shaft(pieces):
+    """[bgp-shaft] 第五轮：出入口的「上升段」——井口朝天 + 门楼 8 层一格不动。
+
+    为什么做进 exit.nbt：JigsawPlacement.java:474 `if (depth + 1 <= maxDepth)` 才入队，
+    exit 是 lane 的 fallback（在 depth==maxDepth 被放、不再入队）⇒ 挂 up_jigsaw 永远不会展开。
+    """
+    p = pieces['exit']
+    sx, sy, sz = p.size
+    if (sx, sz) != (5, 5) or sy <= 8:
+        ng('bgp-shaft', 'exit 尺寸 %s 不是"门楼 8 层 + 上升段"' % (p.size,))
+    ok()
+    # 井筒：y=8..sy-1 的周边是墙、内部 3x3 是空气
+    walls = 0
+    for y in range(8, sy):
+        for x in range(sx):
+            for z in range(sz):
+                nm = (p.at((x, y, z)) or (AIR, {}))[0]
+                edge = x in (0, sx - 1) or z in (0, sz - 1)
+                if edge:
+                    if nm not in ('bettergold:gold_bricks', 'bettergold:gold_pillar'):
+                        ng('bgp-shaft', '井筒墙 (%d,%d,%d)=%s 不是作者已有的金方块' % (x, y, z, nm))
+                    walls += 1
+                elif nm != AIR:
+                    ng('bgp-shaft', '井筒内部 (%d,%d,%d)=%s 不是空气' % (x, y, z, nm))
+                ok()
+    # 顶层：内部必须是空气（井口朝天），四角是柱子
+    for x in range(1, sx - 1):
+        for z in range(1, sz - 1):
+            nm = (p.at((x, sy - 1, z)) or (AIR, {}))[0]
+            if nm != AIR:
+                ng('bgp-shaft', '井口顶层 (%d,%d,%d)=%s 不是空气' % (x, sy - 1, z, nm))
+            ok()
+    for (x, z) in ((0, 0), (0, sz - 1), (sx - 1, 0), (sx - 1, sz - 1)):
+        nm = (p.at((x, sy - 1, z)) or (AIR, {}))[0]
+        if nm != 'bettergold:gold_pillar':
+            ng('bgp-shaft', '井口四角 (%d,%d)=%s 不是 gold_pillar' % (x, z, nm))
+        ok()
+    # 屋顶开口（连通门楼与井筒）：y=4..7 的 x1..3 / z1..2 必须是空气（z=3 那列是展示框支撑，保留）
+    for (x, y, z) in [(x, y, z) for x in (1, 2, 3) for z in (1, 2) for y in (4, 5, 6, 7)]:
+        nm = (p.at((x, y, z)) or (AIR, {}))[0]
+        if nm != AIR:
+            ng('bgp-shaft', '屋顶开口 (%d,%d,%d)=%s 没打开' % (x, y, z, nm))
+        ok()
+    # 展示框的支撑方块必须还在（(1,7,3)/(3,7,3) 是 y=7 的 z=3 那两格）
+    for (x, z) in ((1, 3), (3, 3)):
+        nm = (p.at((x, 7, z)) or (AIR, {}))[0]
+        if nm in (AIR, VOID):
+            ng('bgp-shaft', '展示框支撑 (%d,7,%d) 被开顶掉了' % (x, z))
+        ok()
+    # 门楼 8 层：口底仍是 dy=1，南面金栅栏墙不变
+    if (2, 1, 0) not in p.jigsaws:
+        ng('bgp-shaft', 'exit 的北口 jigsaw (2,1,0) 不见了')
+    ok()
+    bars = sum(1 for z in range(sz) for y in range(1, 5) for x in range(sx)
+               if (p.at((x, y, z)) or ('', {}))[0] == 'bettergold:gold_bars')
+    if bars == 0:
+        ng('bgp-shaft', 'exit 南面的金栅栏墙不见了')
+    ok()
+    print('[bgp-shaft] exit = 5x%d x5：门楼 8 层 + 上升段 %d 层（井筒墙 %d 格、井口 3x3 朝天、'
+          '顶层 y=%d 上方是模板外）' % (sy, sy - 8, walls, sy - 1))
 
 
 def check_worldgen():
@@ -1028,10 +1308,12 @@ def check_worldgen():
             return
         ok()
     st = json.load(open(sp, encoding='utf-8'))
+    # ★ 第五轮：step = underground_decoration（= 原版 fortress.json 的步；见 gp_build.py 注释），
+    #   terrain_adaptation = none（不再靠 bury/beard 改地形，改由模板空气自己清）。
     exp = {'type': 'minecraft:jigsaw', 'biomes': '#minecraft:is_nether',
-           'step': 'underground_structures', 'start_pool': POOL + 'start',
-           'size': 6, 'use_expansion_hack': False, 'terrain_adaptation': 'bury',
-           'max_distance_from_center': 100}
+           'step': 'underground_decoration', 'start_pool': POOL + 'start',
+           'size': 6, 'use_expansion_hack': False, 'terrain_adaptation': 'none',
+           'max_distance_from_center': 128}
     for k, v in exp.items():
         if st.get(k) != v:
             ng('bgp-worldgen', 'structure.%s = %r != %r' % (k, st.get(k), v))
@@ -1477,6 +1759,8 @@ def main():
         check_fertile(pieces)
         check_gate(pieces)
         check_cycle(pieces)
+        check_entities_bes(pieces)
+        check_exit_shaft(pieces)
         check_worldgen()
         check_rate()
         check_treasure_unique()

@@ -1,0 +1,608 @@
+package com.hjmmd_8.bettergold.probe;
+
+/**
+ * 【临时探针 · 收尾整块删除】金之牢狱 第五轮 A 级取证（runServer）。
+ *
+ * 三件事，全部只读：
+ *   A) **10 个种子**各拼一座（走真实的 Structure#generate + JigsawPlacement，但**不生成区块**）
+ *      → 序列指纹 / 落单口 / 池命中（第 2、3 步的机器证据）。
+ *   B) **真实世界**里在 3 个下界群系（basalt_deltas / crimson_forest / soul_sand_valley）各找一座、
+ *      完整生成、逐格 dump（第 5 步的"结构内部地形格数"）。
+ *   C) 实体（item frame）+ 方块实体（spawner 的 SpawnData / chest 的 LootTable）+ 出入口顶部 vs 地表
+ *      （第 1、4 步的证据）。
+ *
+ * 开关：run/probe/gpf/PROBE_ON.flag。流程：STARTED 里挑座 + forceload → 等 60 tick（实体要 tick 才进
+ * 实体列表）→ 在 TICK 里 dump + 取消 forceload + halt(false) 一次。收尾 data.Forced 必须为空。
+ */
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
+import java.io.BufferedWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.JigsawBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+
+@EventBusSubscriber(modid = "bettergold")
+public final class GpFinalProbe {
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final ResourceLocation RL =
+            ResourceLocation.fromNamespaceAndPath("bettergold", "golden_prison");
+    private static final Pattern TPL = Pattern.compile("(bettergold:golden_prison/[a-z_]+)");
+    private static final String PREFIX = "bettergold:golden_prison/";
+    private static final Path OUT = Path.of("probe", "gpf");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final long[] SEEDS = {20261021L, 20261022L, 20261023L, 20261024L, 20261025L,
+            20261026L, 20261027L, 20261028L, 20261029L, 20261030L};
+    private static final String[] WANT_BIOMES = {"basalt_deltas", "crimson_forest", "soul_sand_valley"};
+    private static final int WAIT_TICKS = 60;
+
+    private static boolean pending = false;
+    private static int tick = 0;
+    private static MinecraftServer srv;
+    private static ServerLevel lvl;
+    private static Holder<Structure> holder;
+    private static List<Chosen> chosen = new ArrayList<>();
+    private static List<int[]> forced = new ArrayList<>();
+    private static Map<String, Object> seedJson = new LinkedHashMap<>();
+
+    private GpFinalProbe() {}
+
+    private static final class Chosen {
+        BlockPos pos;
+        StructureStart start;
+        String biome;
+        BoundingBox union;
+        List<PoolElementStructurePiece> pieces = new ArrayList<>();
+    }
+
+    private static final class Port {
+        int idx, piece;
+        BlockPos pos;
+        Direction dir;
+        String name = "", target = "", pool = "";
+        int other = -1;
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!Files.exists(OUT.resolve("PROBE_ON.flag"))) {
+            LOG.info("[gpf] probe OFF (no probe/gpf/PROBE_ON.flag)");
+            return;
+        }
+        srv = event.getServer();
+        try {
+            prepare();
+        } catch (Throwable t) {
+            LOG.error("[gpf] PREPARE FAILED", t);
+            srv.halt(false);
+            return;
+        }
+        pending = true;
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!pending) {
+            return;
+        }
+        tick++;
+        if (tick < WAIT_TICKS) {
+            return;
+        }
+        pending = false;
+        int rc = 0;
+        try {
+            dumpAll();
+        } catch (Throwable t) {
+            rc = 1;
+            LOG.error("[gpf] DUMP FAILED", t);
+        }
+        // 双向归零：取消所有 forceload（否则 data.Forced 里留残留）
+        for (int[] c : forced) {
+            lvl.setChunkForced(c[0], c[1], false);
+        }
+        LOG.info("[gpf] forced released = {} ; data.Forced should be empty", forced.size());
+        LOG.info("[gpf] DONE rc={} ticks={}", rc, tick);
+        srv.halt(false);
+    }
+
+    // ------------------------------------------------------------------ 准备
+    private static void prepare() throws Exception {
+        Files.createDirectories(OUT);
+        lvl = srv.getLevel(Level.NETHER);
+        if (lvl == null) {
+            throw new IllegalStateException("nether level is null");
+        }
+        Registry<Structure> reg = srv.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        ResourceKey<Structure> key = ResourceKey.create(Registries.STRUCTURE, RL);
+        holder = reg.getHolder(key).orElse(null);
+        if (holder == null) {
+            throw new IllegalStateException("structure not registered");
+        }
+        LOG.info("[gpf] worldName={} seed={}", srv.getWorldData().getLevelName(), lvl.getSeed());
+        seedJson.put("worldName", srv.getWorldData().getLevelName());
+        seedJson.put("seed", lvl.getSeed());
+        seedJson.put("seeds", SEEDS);
+
+        // ---- A) 10 个种子：只拼件（Structure#generate 走真实 JigsawPlacement，不生成区块）
+        List<Object> perSeed = new ArrayList<>();
+        for (long s : SEEDS) {
+            perSeed.add(genPiecesForSeed(s));
+        }
+        seedJson.put("runs", perSeed);
+
+        // ---- B) 真实世界：每个目标群系各挑一座
+        ChunkGenerator gen = lvl.getChunkSource().getGenerator();
+        HolderSet<Structure> set = HolderSet.direct(holder);
+        Set<Long> seen = new LinkedHashSet<>();
+        Set<String> got = new LinkedHashSet<>();
+        for (int gx = -2; gx <= 2 && got.size() < WANT_BIOMES.length; gx++) {
+            for (int gz = -2; gz <= 2 && got.size() < WANT_BIOMES.length; gz++) {
+                BlockPos from = new BlockPos(gx * 512, 64, gz * 512);
+                Pair<BlockPos, Holder<Structure>> found =
+                        gen.findNearestMapStructure(lvl, set, from, 100, false);
+                if (found == null) {
+                    continue;
+                }
+                BlockPos p = found.getFirst();
+                long ck = (((long) (p.getX() >> 4)) << 32) ^ ((p.getZ() >> 4) & 0xffffffffL);
+                if (!seen.add(ck)) {
+                    continue;
+                }
+                // 只用 STRUCTURE_STARTS 就能拿到 StructureStart（便宜）
+                for (int cx = (p.getX() >> 4) - 1; cx <= (p.getX() >> 4) + 1; cx++) {
+                    for (int cz = (p.getZ() >> 4) - 1; cz <= (p.getZ() >> 4) + 1; cz++) {
+                        lvl.getChunk(cx, cz, ChunkStatus.STRUCTURE_STARTS, true);
+                    }
+                }
+                StructureStart st = findStart(lvl, holder, p);
+                if (st == null || !st.isValid()) {
+                    continue;
+                }
+                String biome = biomeAt(p);
+                if (!got.contains(biome) && List.of(WANT_BIOMES).contains(biome)) {
+                    got.add(biome);
+                    Chosen c = new Chosen();
+                    c.pos = p;
+                    c.start = st;
+                    c.biome = biome;
+                    for (StructurePiece sp : st.getPieces()) {
+                        if (sp instanceof PoolElementStructurePiece pep) {
+                            c.pieces.add(pep);
+                        }
+                    }
+                    c.union = unionOf(c.pieces);
+                    chosen.add(c);
+                    LOG.info("[gpf] CHOSEN biome={} pos={} pieces={}", biome, p, c.pieces.size());
+                }
+            }
+        }
+        // 生成 + forceload（实体要 tick 才进实体列表）
+        for (Chosen c : chosen) {
+            for (int cx = (c.union.minX() >> 4) - 1; cx <= (c.union.maxX() >> 4) + 1; cx++) {
+                for (int cz = (c.union.minZ() >> 4) - 1; cz <= (c.union.maxZ() >> 4) + 1; cz++) {
+                    lvl.getChunk(cx, cz, ChunkStatus.FULL, true);
+                    lvl.setChunkForced(cx, cz, true);
+                    forced.add(new int[]{cx, cz});
+                }
+            }
+        }
+        LOG.info("[gpf] prepared: seeds={} realStructures={} forcedChunks={}", SEEDS.length,
+                chosen.size(), forced.size());
+    }
+
+    /** 一个种子：用真实 Structure#generate（换 RandomState 的 seed）拼一座，不碰世界。 */
+    private static Map<String, Object> genPiecesForSeed(long seed) throws Exception {
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("seed", seed);
+        RandomState rs = RandomState.create(
+                srv.registryAccess().lookupOrThrow(Registries.NOISE_SETTINGS)
+                        .getOrThrow(NoiseGeneratorSettings.NETHER).value(),
+                srv.registryAccess().lookupOrThrow(Registries.NOISE), seed);
+        ChunkGenerator gen = lvl.getChunkSource().getGenerator();
+        // 固定区块 (40,40)：下界全群系都在 #minecraft:is_nether 里，任何位置都合法
+        net.minecraft.world.level.ChunkPos cp = new net.minecraft.world.level.ChunkPos(40, 40);
+        StructureStart st = holder.value().generate(srv.registryAccess(), gen, gen.getBiomeSource(), rs,
+                srv.getStructureManager(), seed, cp, 0, lvl,
+                h -> holder.value().biomes().contains(h));
+        if (st == null || !st.isValid()) {
+            out.put("valid", false);
+            return out;
+        }
+        out.put("valid", true);
+        List<PoolElementStructurePiece> pieces = new ArrayList<>();
+        for (StructurePiece sp : st.getPieces()) {
+            if (sp instanceof PoolElementStructurePiece pep) {
+                pieces.add(pep);
+            }
+        }
+        List<Map<String, Object>> pl = new ArrayList<>();
+        List<String> fingerprint = new ArrayList<>();
+        for (int i = 0; i < pieces.size(); i++) {
+            PoolElementStructurePiece pep = pieces.get(i);
+            String tpl = tplOf(pep);
+            fingerprint.add(tpl);
+            Map<String, Object> pm = new LinkedHashMap<>();
+            pm.put("i", i);
+            pm.put("tpl", tpl);
+            pm.put("pool", poolOf(tpl));
+            pm.put("rot", pep.getRotation().getSerializedName());
+            BlockPos o = pep.getPosition();
+            pm.put("origin", List.of(o.getX(), o.getY(), o.getZ()));
+            pm.put("bbox", bbox(pep.getBoundingBox()));
+            pl.add(pm);
+        }
+        out.put("pieces", pl);
+        out.put("fingerprint", fingerprint);
+        // 口位 + 配对（口成对 = 落单 0）
+        List<Port> ports = new ArrayList<>();
+        for (int i = 0; i < pieces.size(); i++) {
+            PoolElementStructurePiece pep = pieces.get(i);
+            String tpl = tplOf(pep);
+            Optional<StructureTemplate> tplOpt = srv.getStructureManager().get(ResourceLocation.parse(PREFIX + tpl));
+            if (tplOpt.isEmpty()) {
+                continue;
+            }
+            StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(pep.getRotation());
+            for (StructureTemplate.StructureBlockInfo info :
+                    tplOpt.get().filterBlocks(pep.getPosition(), settings, Blocks.JIGSAW, true)) {
+                Port p = new Port();
+                p.idx = ports.size();
+                p.piece = i;
+                p.pos = info.pos();
+                p.dir = JigsawBlock.getFrontFacing(info.state());
+                if (info.nbt() != null) {
+                    p.name = info.nbt().getString("name");
+                    p.target = info.nbt().getString("target");
+                    p.pool = info.nbt().getString("pool");
+                }
+                ports.add(p);
+            }
+        }
+        Map<String, Integer> at = new LinkedHashMap<>();
+        for (Port p : ports) {
+            at.put(p.pos.getX() + "," + p.pos.getY() + "," + p.pos.getZ() + "|" + p.dir.getName(), p.idx);
+        }
+        for (Port p : ports) {
+            BlockPos nb = p.pos.relative(p.dir);
+            Integer j = at.get(nb.getX() + "," + nb.getY() + "," + nb.getZ() + "|"
+                    + p.dir.getOpposite().getName());
+            if (j != null) {
+                p.other = j;
+                ports.get(j).other = p.idx;
+            }
+        }
+        int paired = 0;
+        List<Map<String, Object>> orphans = new ArrayList<>();
+        for (Port p : ports) {
+            if (p.other >= 0) {
+                paired++;
+            } else if (!p.target.equals("empty")) {
+                Map<String, Object> om = new LinkedHashMap<>();
+                om.put("piece", p.piece);
+                om.put("tpl", pl.get(p.piece).get("tpl"));
+                om.put("pos", List.of(p.pos.getX(), p.pos.getY(), p.pos.getZ()));
+                om.put("dir", p.dir.getName());
+                om.put("target", p.target);
+                orphans.add(om);
+            }
+        }
+        out.put("ports", ports.size());
+        out.put("paired", paired);
+        out.put("orphans", orphans);
+        Map<String, Integer> poolHits = new LinkedHashMap<>();
+        for (Map<String, Object> pm : pl) {
+            poolHits.merge((String) pm.get("pool"), 1, Integer::sum);
+        }
+        out.put("poolHits", poolHits);
+        // 深度（BFS，从 #0 宝藏房）
+        int[] depth = new int[pieces.size()];
+        java.util.Arrays.fill(depth, -1);
+        if (!pieces.isEmpty()) {
+            depth[0] = 0;
+            java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<>();
+            q.add(0);
+            Map<Integer, List<Integer>> adj = new LinkedHashMap<>();
+            for (int i = 0; i < pieces.size(); i++) {
+                adj.put(i, new ArrayList<>());
+            }
+            for (Port p : ports) {
+                if (p.other > p.idx) {
+                    Port r = ports.get(p.other);
+                    adj.get(p.piece).add(r.piece);
+                    adj.get(r.piece).add(p.piece);
+                }
+            }
+            while (!q.isEmpty()) {
+                int a = q.poll();
+                for (int b : adj.get(a)) {
+                    if (depth[b] < 0) {
+                        depth[b] = depth[a] + 1;
+                        q.add(b);
+                    }
+                }
+            }
+        }
+        out.put("depths", depth);
+        LOG.info("[gpf] seed {} -> {} pieces, {} ports, {} paired, {} orphans, tpl={}", seed,
+                pieces.size(), ports.size(), paired, orphans.size(), new LinkedHashSet<>(fingerprint).size());
+        return out;
+    }
+
+    // ------------------------------------------------------------------ dump
+    private static void dumpAll() throws Exception {
+        List<Object> metas = new ArrayList<>();
+        for (int ci = 0; ci < chosen.size(); ci++) {
+            Chosen c = chosen.get(ci);
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("biome", c.biome);
+            m.put("pos", List.of(c.pos.getX(), c.pos.getY(), c.pos.getZ()));
+            m.put("union", bbox(c.union));
+            List<Map<String, Object>> pl = new ArrayList<>();
+            List<BoundingBox> boxes = new ArrayList<>();
+            for (int i = 0; i < c.pieces.size(); i++) {
+                PoolElementStructurePiece pep = c.pieces.get(i);
+                String tpl = tplOf(pep);
+                Map<String, Object> pm = new LinkedHashMap<>();
+                pm.put("i", i);
+                pm.put("tpl", tpl);
+                pm.put("rot", pep.getRotation().getSerializedName());
+                BlockPos o = pep.getPosition();
+                pm.put("origin", List.of(o.getX(), o.getY(), o.getZ()));
+                pm.put("bbox", bbox(pep.getBoundingBox()));
+                pl.add(pm);
+                boxes.add(pep.getBoundingBox());
+            }
+            m.put("pieces", pl);
+            // ---- 逐格方块（件 union 内，非空气）
+            Path bt = OUT.resolve("blocks_" + ci + ".tsv");
+            int n = 0;
+            try (BufferedWriter w = Files.newBufferedWriter(bt, StandardCharsets.UTF_8)) {
+                for (int x = c.union.minX(); x <= c.union.maxX(); x++) {
+                    for (int z = c.union.minZ(); z <= c.union.maxZ(); z++) {
+                        for (int y = c.union.minY(); y <= c.union.maxY(); y++) {
+                            BlockState s = lvl.getBlockState(new BlockPos(x, y, z));
+                            if (s.isAir()) {
+                                continue;
+                            }
+                            w.write(x + "," + y + "," + z + "," + s.getBlock().builtInRegistryHolder().key().location());
+                            w.write("\n");
+                            n++;
+                        }
+                    }
+                }
+            }
+            m.put("dumpedBlocks", n);
+            // ---- 实体（只取件 bbox 内的；含 item frame 的完整 NBT）
+            List<Object> ents = new ArrayList<>();
+            for (Entity e : lvl.getEntitiesOfClass(Entity.class, AABB.of(c.union.inflatedBy(2)))) {
+                CompoundTag tag = new CompoundTag();
+                e.save(tag);
+                Map<String, Object> em = new LinkedHashMap<>();
+                em.put("id", tag.getString("id"));
+                em.put("pos", List.of(e.getX(), e.getY(), e.getZ()));
+                em.put("nbt", tag.toString());
+                if (tag.contains("Item")) {
+                    em.put("item", tag.getCompound("Item").getString("id"));
+                }
+                em.put("tile", List.of(tag.getInt("TileX"), tag.getInt("TileY"), tag.getInt("TileZ")));
+                em.put("facing", tag.getInt("Facing"));
+                ents.add(em);
+            }
+            m.put("entities", ents);
+            // ---- 方块实体（spawner / chest 完整 NBT 摘要）
+            List<Object> bes = new ArrayList<>();
+            for (int x = c.union.minX(); x <= c.union.maxX(); x++) {
+                for (int z = c.union.minZ(); z <= c.union.maxZ(); z++) {
+                    for (int y = c.union.minY(); y <= c.union.maxY(); y++) {
+                        BlockEntity be = lvl.getBlockEntity(new BlockPos(x, y, z));
+                        if (be == null) {
+                            continue;
+                        }
+                        CompoundTag t = be.saveWithFullMetadata(srv.registryAccess());
+                        String id = t.getString("id");
+                        if (!id.equals("minecraft:mob_spawner") && !id.equals("minecraft:chest")) {
+                            continue;
+                        }
+                        Map<String, Object> bm = new LinkedHashMap<>();
+                        bm.put("id", id);
+                        bm.put("pos", List.of(x, y, z));
+                        if (id.equals("minecraft:mob_spawner")) {
+                            bm.put("spawnData", t.getCompound("SpawnData").toString());
+                            bm.put("delay", t.getShort("Delay"));
+                        } else {
+                            bm.put("lootTable", t.getString("LootTable"));
+                        }
+                        bes.add(bm);
+                    }
+                }
+            }
+            m.put("blockEntities", bes);
+            // ---- 出入口：件内最高方块 y / 该列地表 / 顶部上方是否空气
+            List<Object> exits = new ArrayList<>();
+            for (int i = 0; i < c.pieces.size(); i++) {
+                PoolElementStructurePiece pep = c.pieces.get(i);
+                if (!tplOf(pep).equals("exit")) {
+                    continue;
+                }
+                BoundingBox b = pep.getBoundingBox();
+                int top = Integer.MIN_VALUE;
+                for (int x = b.minX(); x <= b.maxX(); x++) {
+                    for (int z = b.minZ(); z <= b.maxZ(); z++) {
+                        for (int y = b.maxY(); y >= b.minY(); y--) {
+                            if (!lvl.getBlockState(new BlockPos(x, y, z)).isAir()) {
+                                top = Math.max(top, y);
+                                break;
+                            }
+                        }
+                    }
+                }
+                int surf = Integer.MIN_VALUE;
+                int airAbove = 0;
+                int cols = 0;
+                int maxSolidAbove = Integer.MIN_VALUE;
+                int airFrom = Integer.MIN_VALUE;
+                for (int x = b.minX(); x <= b.maxX(); x++) {
+                    for (int z = b.minZ(); z <= b.maxZ(); z++) {
+                        surf = Math.max(surf, lvl.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1);
+                        cols++;
+                        boolean clear = true;
+                        for (int y = top + 1; y <= top + 8; y++) {
+                            if (!lvl.getBlockState(new BlockPos(x, y, z)).isAir()) {
+                                clear = false;
+                                break;
+                            }
+                        }
+                        // 顶部往上 110 以内（避开 123+ 的基岩天花板）最高非空气 + 第一段连续 8 格空气的起点
+                        int colTop = Integer.MIN_VALUE;
+                        int colAir = Integer.MIN_VALUE;
+                        for (int y = top + 1; y <= 110; y++) {
+                            if (!lvl.getBlockState(new BlockPos(x, y, z)).isAir()) {
+                                colTop = y;
+                            }
+                        }
+                        for (int y = top + 1; y <= 110 - 8; y++) {
+                            boolean ok8 = true;
+                            for (int k = 0; k < 8; k++) {
+                                if (!lvl.getBlockState(new BlockPos(x, y + k, z)).isAir()) {
+                                    ok8 = false;
+                                    break;
+                                }
+                            }
+                            if (ok8) {
+                                colAir = y;
+                                break;
+                            }
+                        }
+                        if (colTop != Integer.MIN_VALUE) {
+                            maxSolidAbove = Math.max(maxSolidAbove, colTop);
+                        }
+                        if (colAir != Integer.MIN_VALUE) {
+                            airFrom = airFrom == Integer.MIN_VALUE ? colAir : Math.min(airFrom, colAir);
+                        }
+                        if (clear) {
+                            airAbove++;
+                        }
+                    }
+                }
+                Map<String, Object> ex = new LinkedHashMap<>();
+                ex.put("pieceIndex", i);
+                ex.put("bbox", bbox(b));
+                ex.put("topY", top);
+                ex.put("terrainSurfaceY", surf);
+                ex.put("topAboveTerrain", top >= surf);
+                ex.put("columns", cols);
+                ex.put("columnsClearAboveTop", airAbove);
+                ex.put("maxSolidAbove", maxSolidAbove == Integer.MIN_VALUE ? null : maxSolidAbove);
+                ex.put("airFromY", airFrom == Integer.MIN_VALUE ? null : airFrom);
+                exits.add(ex);
+                LOG.info("[gpf] exit #{} bbox={} topY={} surfaceY={} clearAbove={}/{} maxSolidAbove={} airFrom={}",
+                        i, b, top, surf, airAbove, cols,
+                        maxSolidAbove == Integer.MIN_VALUE ? "none" : maxSolidAbove,
+                        airFrom == Integer.MIN_VALUE ? "none" : airFrom);
+            }
+            m.put("exits", exits);
+            metas.add(m);
+            LOG.info("[gpf] dumped structure {} biome={} pieces={} blocks={}", ci, c.biome,
+                    c.pieces.size(), n);
+        }
+        Files.writeString(OUT.resolve("meta.json"), GSON.toJson(metas), StandardCharsets.UTF_8);
+        Files.writeString(OUT.resolve("seeds.json"), GSON.toJson(seedJson), StandardCharsets.UTF_8);
+        LOG.info("[gpf] wrote meta.json ({} structures) + seeds.json", metas.size());
+    }
+
+    // ------------------------------------------------------------------ helpers
+    private static String tplOf(PoolElementStructurePiece pep) {
+        Matcher m = TPL.matcher(pep.getElement().toString());
+        return m.find() ? m.group(1).substring(PREFIX.length()) : "UNKNOWN";
+    }
+
+    private static String poolOf(String tpl) {
+        return switch (tpl) {
+            case "treasure" -> "start";
+            case "lane" -> "lane";
+            case "exit" -> "exit";
+            default -> "room";
+        };
+    }
+
+    private static String biomeAt(BlockPos p) {
+        return lvl.getBiome(p).unwrapKey().map(k -> k.location().getPath()).orElse("?");
+    }
+
+    private static BoundingBox unionOf(List<PoolElementStructurePiece> pieces) {
+        int a = Integer.MAX_VALUE, b = Integer.MAX_VALUE, cc = Integer.MAX_VALUE;
+        int d = Integer.MIN_VALUE, e = Integer.MIN_VALUE, f = Integer.MIN_VALUE;
+        for (PoolElementStructurePiece p : pieces) {
+            BoundingBox x = p.getBoundingBox();
+            a = Math.min(a, x.minX());
+            b = Math.min(b, x.minY());
+            cc = Math.min(cc, x.minZ());
+            d = Math.max(d, x.maxX());
+            e = Math.max(e, x.maxY());
+            f = Math.max(f, x.maxZ());
+        }
+        return new BoundingBox(a, b, cc, d, e, f);
+    }
+
+    private static StructureStart findStart(ServerLevel level, Holder<Structure> holder, BlockPos sp) {
+        for (int y = 0; y <= 127; y++) {
+            StructureStart s = level.structureManager().getStructureAt(
+                    new BlockPos(sp.getX(), y, sp.getZ()), holder.value());
+            if (s.isValid()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    private static List<Integer> bbox(BoundingBox b) {
+        return List.of(b.minX(), b.minY(), b.minZ(), b.maxX(), b.maxY(), b.maxZ());
+    }
+}

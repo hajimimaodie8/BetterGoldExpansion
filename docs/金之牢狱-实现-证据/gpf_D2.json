@@ -1,0 +1,235 @@
+{
+ "tag": "D2-beardThin",
+ "dir": "docs\\金之牢狱-实现-证据\\gpf_D2",
+ "seeds": {
+  "runs": 10,
+  "distinctFingerprints": 10,
+  "pieceRange": [
+   5,
+   15
+  ],
+  "templateKindRange": [
+   4,
+   8
+  ],
+  "orphans": 3,
+  "poolHits": {
+   "start": 10,
+   "lane": 34,
+   "room": 34,
+   "exit": 21
+  },
+  "fingerprints": [
+   "treasure>lane>cell_small_c>lane>cell_small_mirror>lane>cross_a>exit>exit>exit",
+   "treasure>lane>cell_large_a>lane>cell_small_a",
+   "treasure>lane>cell_medium_b>lane>cell_large_fertile>lane>cross_a>exit>exit>exit",
+   "treasure>lane>cell_small_fertile>lane>cell_small_a",
+   "treasure>lane>cell_large_fertile>lane>cell_medium_fertile>lane>cell_medium_a>exit",
+   "treasure>lane>cell_small_fertile>lane>cell_large_fertile>lane>cell_small_b>exit",
+   "treasure>lane>cell_small_fertile>lane>cross_b>lane>lane>lane>cell_large_a>cell_large_fertile>cell_medium_a>exit>exit>exit",
+   "treasure>lane>cell_medium_fertile>lane>cross_b>lane>lane>lane>cross_b>cell_large_b>cell_medium_fertile>exit>exit>exit>exit",
+   "treasure>lane>cell_large_fertile>lane>cross_a>lane>lane>lane>cell_medium_fertile>cell_small_c>cell_small_mirror>exit>exit>exit",
+   "treasure>lane>cell_medium_mirror>lane>cell_large_a>lane>cross_b>exit>exit>exit"
+  ]
+ },
+ "real": [
+  {
+   "biome": "soul_sand_valley",
+   "pieces": 8,
+   "foreign": 158,
+   "foreignNatural": 0,
+   "foreignTop": {
+    "minecraft:nether_wart_block": 115,
+    "minecraft:crimson_stem": 25,
+    "minecraft:brown_mushroom": 7,
+    "minecraft:weeping_vines": 4,
+    "minecraft:weeping_vines_plant": 4,
+    "minecraft:red_mushroom": 3
+   },
+   "spawner": [
+    15,
+    15
+   ],
+   "chest": [
+    6,
+    6
+   ],
+   "frames": 4,
+   "framesCoin": 4,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -1067,
+      37,
+      -1096,
+      -1063,
+      80,
+      -1092
+     ],
+     "topY": 80,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110
+    }
+   ]
+  },
+  {
+   "biome": "basalt_deltas",
+   "pieces": 10,
+   "foreign": 878,
+   "foreignNatural": 878,
+   "foreignTop": {
+    "minecraft:basalt": 808,
+    "minecraft:lava": 38,
+    "minecraft:magma_block": 32
+   },
+   "spawner": [
+    26,
+    26
+   ],
+   "chest": [
+    10,
+    10
+   ],
+   "frames": 10,
+   "framesCoin": 10,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -1388,
+      32,
+      547,
+      -1384,
+      75,
+      551
+     ],
+     "topY": 75,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110,
+     "airFromY": 85
+    },
+    {
+     "pieceIndex": 8,
+     "bbox": [
+      -1409,
+      32,
+      568,
+      -1405,
+      75,
+      572
+     ],
+     "topY": 75,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110,
+     "airFromY": 90
+    },
+    {
+     "pieceIndex": 9,
+     "bbox": [
+      -1388,
+      32,
+      589,
+      -1384,
+      75,
+      593
+     ],
+     "topY": 75,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110
+    }
+   ]
+  },
+  {
+   "biome": "crimson_forest",
+   "pieces": 18,
+   "foreign": 1647,
+   "foreignNatural": 0,
+   "foreignTop": {
+    "minecraft:nether_wart_block": 1289,
+    "minecraft:crimson_stem": 275,
+    "minecraft:shroomlight": 43,
+    "minecraft:weeping_vines": 25,
+    "minecraft:weeping_vines_plant": 15
+   },
+   "spawner": [
+    26,
+    26
+   ],
+   "chest": [
+    11,
+    11
+   ],
+   "frames": 8,
+   "framesCoin": 8,
+   "exits": [
+    {
+     "pieceIndex": 15,
+     "bbox": [
+      -1383,
+      34,
+      1032,
+      -1379,
+      77,
+      1036
+     ],
+     "topY": 77,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110,
+     "airFromY": 91
+    },
+    {
+     "pieceIndex": 16,
+     "bbox": [
+      -1324,
+      34,
+      963,
+      -1320,
+      77,
+      967
+     ],
+     "topY": 77,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 25,
+     "maxSolidAbove": 110,
+     "airFromY": 78
+    },
+    {
+     "pieceIndex": 17,
+     "bbox": [
+      -1324,
+      34,
+      1101,
+      -1320,
+      77,
+      1105
+     ],
+     "topY": 77,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 1,
+     "maxSolidAbove": 110,
+     "airFromY": 78
+    }
+   ]
+  }
+ ]
+}

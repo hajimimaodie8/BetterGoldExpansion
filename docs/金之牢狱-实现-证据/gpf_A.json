@@ -1,0 +1,209 @@
+{
+ "tag": "A-bury-undergroundStructures",
+ "dir": "docs\\金之牢狱-实现-证据\\gpf_A",
+ "seeds": {
+  "runs": 10,
+  "distinctFingerprints": 10,
+  "pieceRange": [
+   8,
+   15
+  ],
+  "templateKindRange": [
+   6,
+   8
+  ],
+  "orphans": 3,
+  "poolHits": {
+   "start": 10,
+   "lane": 36,
+   "room": 36,
+   "exit": 19
+  },
+  "fingerprints": [
+   "treasure>lane>cell_small_c>lane>cell_small_mirror>lane>cross_a>exit>exit>exit",
+   "treasure>lane>cell_large_a>lane>cell_small_a>lane>cell_medium_fertile>exit",
+   "treasure>lane>cell_medium_b>lane>cell_large_fertile>lane>cell_small_fertile>exit",
+   "treasure>lane>cell_small_fertile>lane>cell_small_a>lane>cross_b>exit>exit>exit",
+   "treasure>lane>cell_large_fertile>lane>cell_medium_fertile>lane>cell_medium_a>exit",
+   "treasure>lane>cell_small_fertile>lane>cell_large_fertile>lane>cell_small_b>exit",
+   "treasure>lane>cell_small_fertile>lane>cross_b>lane>lane>lane>cell_large_a>cell_large_fertile>cell_medium_a>exit>exit",
+   "treasure>lane>cell_medium_fertile>lane>cross_b>lane>lane>lane>cell_medium_c>cross_a>cell_large_b>exit>exit>exit>exit",
+   "treasure>lane>cell_large_fertile>lane>cross_a>lane>lane>lane>cell_small_b>cell_large_fertile>cell_large_fertile>exit>exit",
+   "treasure>lane>cell_medium_mirror>lane>cell_large_a>lane>cell_medium_fertile>exit"
+  ]
+ },
+ "real": [
+  {
+   "biome": "soul_sand_valley",
+   "pieces": 8,
+   "foreign": 10,
+   "foreignNatural": 0,
+   "foreignTop": {
+    "minecraft:brown_mushroom": 7,
+    "minecraft:red_mushroom": 3
+   },
+   "spawner": [
+    15,
+    15
+   ],
+   "chest": [
+    6,
+    6
+   ],
+   "frames": 4,
+   "framesCoin": 4,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -1067,
+      37,
+      -1096,
+      -1063,
+      80,
+      -1092
+     ],
+     "topY": 80,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110
+    }
+   ]
+  },
+  {
+   "biome": "basalt_deltas",
+   "pieces": 9,
+   "foreign": 2827,
+   "foreignNatural": 2827,
+   "foreignTop": {
+    "minecraft:basalt": 2721,
+    "minecraft:lava": 62,
+    "minecraft:magma_block": 44
+   },
+   "spawner": [
+    26,
+    26
+   ],
+   "chest": [
+    10,
+    10
+   ],
+   "frames": 8,
+   "framesCoin": 8,
+   "exits": [
+    {
+     "pieceIndex": 7,
+     "bbox": [
+      -1388,
+      32,
+      547,
+      -1384,
+      75,
+      551
+     ],
+     "topY": 75,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110,
+     "airFromY": 85
+    },
+    {
+     "pieceIndex": 8,
+     "bbox": [
+      -1388,
+      32,
+      589,
+      -1384,
+      75,
+      593
+     ],
+     "topY": 75,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110
+    }
+   ]
+  },
+  {
+   "biome": "crimson_forest",
+   "pieces": 18,
+   "foreign": 6,
+   "foreignNatural": 0,
+   "foreignTop": {
+    "minecraft:nether_wart_block": 6
+   },
+   "spawner": [
+    26,
+    26
+   ],
+   "chest": [
+    11,
+    11
+   ],
+   "frames": 8,
+   "framesCoin": 8,
+   "exits": [
+    {
+     "pieceIndex": 15,
+     "bbox": [
+      -1383,
+      34,
+      1032,
+      -1379,
+      77,
+      1036
+     ],
+     "topY": 77,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 0,
+     "maxSolidAbove": 110,
+     "airFromY": 91
+    },
+    {
+     "pieceIndex": 16,
+     "bbox": [
+      -1324,
+      34,
+      963,
+      -1320,
+      77,
+      967
+     ],
+     "topY": 77,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 25,
+     "maxSolidAbove": 110,
+     "airFromY": 78
+    },
+    {
+     "pieceIndex": 17,
+     "bbox": [
+      -1324,
+      34,
+      1101,
+      -1320,
+      77,
+      1105
+     ],
+     "topY": 77,
+     "terrainSurfaceY": 127,
+     "topAboveTerrain": false,
+     "columns": 25,
+     "columnsClearAboveTop": 1,
+     "maxSolidAbove": 110,
+     "airFromY": 78
+    }
+   ]
+  }
+ ]
+}

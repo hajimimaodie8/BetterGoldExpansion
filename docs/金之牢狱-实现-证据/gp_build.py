@@ -13,12 +13,19 @@
 """
 import argparse
 import collections
+import copy
 import gzip
 import hashlib
 import json
 import os
 import struct
 import sys
+
+try:                     # 兜底：Windows 控制台默认 GBK，遇到 ⇒ / 中文标点会 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import nbt
@@ -69,11 +76,16 @@ SOCK = {
     'treasure':    {'south': ('room', 'lane', POOL + 'lane')},
     'cross_a':     {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     'cross_b':     {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
-    'exit':        {'north': ('lane', 'room', POOL + 'room')},
-    # 过道两个口不对称：北口把链子带回房间，南口把链子送进「小牢房三步循环」的第 1 步
+    # ★ 第五轮：出入口的口 target 从 room 改成 empty（任务书第 3 步）——
+    #   它只在"深度到顶"时被放（JigsawPlacement:474 不再入队），但万一被放在更浅的深度，
+    #   target=room 会让它继续长；改成 minecraft:empty = 引擎的"空池"，既不再展开也不会报
+    #   "Empty or non-existent pool"（Pools.EMPTY 是白名单）。
+    'exit':        {'north': ('lane', 'empty', 'minecraft:empty')},
+    # ★ 第五轮：过道两口改成**对称**（都 name=lane / target=room）——
+    #   旧的"南口进小牢房链"是序列固定的根因之一（见 §11）；现在两口等价，引擎挑哪个旋转都成立。
     'lane':        {'north': ('lane', 'room', POOL + 'room'),
-                    'south': ('lane', 'cell_small_1', POOL + 'cell_small_1')},
-    # 中/大牢房：两个口同名同目标 => 无论引擎选中哪个旋转都成立
+                    'south': ('lane', 'room', POOL + 'room')},
+    # 中/大/小牢房：两个口同名同目标 => 无论引擎选中哪个旋转都成立
     'cell_medium_a': {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')},
     'cell_medium_mirror': {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')},
     'cell_medium_fertile': {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')},
@@ -84,21 +96,38 @@ SOCK = {
     'cell_large_fertile': {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')},
     'cell_large_b': {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')},
     'cell_large_c': {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')},
-    # 小牢房三步循环：第 1 步（A）-> 第 2 步（镜像）-> 第 3 步（丰饶）-> 回过道
-    'cell_small_a':      {'north': ('cell_small_1', 'cell_small_2', POOL + 'cell_small_2'),
-                          'south': ('cell_small_1', 'cell_small_2', POOL + 'cell_small_2')},
+    # ★ 第五轮：小牢房也进同一个 room 池、按权重随机（不再有 cell_small_1→2→3 硬循环）
+    'cell_small_a':      {'north': ('room', 'lane', POOL + 'lane'),
+                          'south': ('room', 'lane', POOL + 'lane')},
     'cell_small_b':      {'north': ('room', 'lane', POOL + 'lane'),
                           'south': ('room', 'lane', POOL + 'lane')},
     'cell_small_c':      {'north': ('room', 'lane', POOL + 'lane'),
                           'south': ('room', 'lane', POOL + 'lane')},
-    'cell_small_mirror': {'north': ('cell_small_2', 'cell_small_3', POOL + 'cell_small_3'),
-                          'south': ('cell_small_2', 'cell_small_3', POOL + 'cell_small_3')},
-    'cell_small_fertile': {'north': ('cell_small_3', 'lane', POOL + 'lane'),
-                           'south': ('cell_small_3', 'lane', POOL + 'lane')},
+    'cell_small_mirror': {'north': ('room', 'lane', POOL + 'lane'),
+                          'south': ('room', 'lane', POOL + 'lane')},
+    'cell_small_fertile': {'north': ('room', 'lane', POOL + 'lane'),
+                           'south': ('room', 'lane', POOL + 'lane')},
 }
 
 AIR = {'minecraft:air'}
 NOT_WALKABLE = {'minecraft:air', 'minecraft:structure_void'}
+
+# ---------------------------------------------------------------- 第五轮：实体 / 方块实体源
+# ★ 为什么不能从 +512 展示区读：作者当年是「把方块搬过去、BE 与实体留给原地」
+#   （拼接分析 §2.4）。+512 的 14 个件是**纯方块副本**（BE = 0、entities = 0，本轮实测）。
+#   实体（6 个 glow_item_frame）与 53 个件的 BE（39 spawner + 14 chest）**全部还在原件区**。
+#   所以 BE / 实体的坐标一律「原件区坐标 − 原件区原点」，不是 +512 那边。
+#   12 个大件的原件区 = 展示区 − (512, 0, 512)；lane / exit 只平移了 z（x 仍是 3）。
+SRC_NEG = {
+    'treasure': (-115, -60, -21), 'cross_a': (-91, -60, -77), 'cross_b': (-91, -60, -37),
+    'cell_large_a': (-51, -60, -99), 'cell_large_b': (-51, -60, -65), 'cell_large_c': (-51, -60, -31),
+    'cell_medium_a': (-33, -60, -69), 'cell_medium_b': (-33, -60, -45), 'cell_medium_c': (-33, -60, -21),
+    'cell_small_a': (-15, -60, -39), 'cell_small_b': (-15, -60, -25), 'cell_small_c': (-15, -60, -11),
+    'lane': (3, -60, -11), 'exit': (3, -60, -5),
+}
+
+# 实体 Facing(0..5=down/up/north/south/west/east) -> 它「贴着的支撑方块」的偏移（= facing 的反方向）
+FACE_OPP = {0: (0, 1, 0), 1: (0, -1, 0), 2: (0, 0, 1), 3: (0, 0, -1), 4: (1, 0, 0), 5: (-1, 0, 0)}
 
 # 俯视蓝图的配色（按方块 id）
 COLORS = {
@@ -145,6 +174,32 @@ def load_world():
     return blocks
 
 
+def load_entities():
+    """实体区（entities/*.mca）的原始 NBT —— 逐字段照抄，不做任何"重新生成"。"""
+    out = []
+    ed = os.path.join(WORLD, 'entities')
+    for fn in sorted(os.listdir(ed)):
+        if not fn.endswith('.mca'):
+            continue
+        for cx, cz, root, comp in nbt.parse_region(os.path.join(ed, fn)):
+            for e in (root.get('Entities') or []):
+                out.append(e)
+    return out
+
+
+def load_block_entities():
+    """region 里**全部**方块实体的完整 NBT，键 = 绝对坐标。"""
+    out = {}
+    rd = os.path.join(WORLD, 'region')
+    for fn in sorted(os.listdir(rd)):
+        if not fn.endswith('.mca'):
+            continue
+        for cx, cz, root, comp in nbt.parse_region(os.path.join(rd, fn)):
+            for b in (root.get('block_entities') or []):
+                out[(b['x'], b['y'], b['z'])] = b
+    return out
+
+
 def k2s(pos):
     return '%d,%d,%d' % pos
 
@@ -155,7 +210,45 @@ def s2k(s):
 
 
 # ---------------------------------------------------------------- 第 1 步
-def extract(blocks):
+def piece_entities(ents, origin, size):
+    """件内实体：Pos -> 件内相对坐标、TileX/Y/Z -> 件内相对格；其余字段逐字照抄。
+
+    ⚠ 判定用**实体自己占的格子**（HangingEntity 的 Tile = 它自己的格子，
+    支撑方块 = Tile + facing 的反方向，见 ItemFrame#setDirection / BlockAttachedEntity#setPos）。
+    """
+    ox, oy, oz = origin
+    sx, sy, sz = size
+    out = []
+    for e in ents:
+        tx, ty, tz = e['TileX'], e['TileY'], e['TileZ']
+        if not (ox <= tx < ox + sx and oy <= ty < oy + sy and oz <= tz < oz + sz):
+            continue
+        ent = copy.deepcopy(e)
+        pos = list(ent['Pos'])
+        rel_pos = [pos[0] - ox, pos[1] - oy, pos[2] - oz]
+        rel_tile = [tx - ox, ty - oy, tz - oz]
+        # 模板格式：pos = 实体坐标（相对）、blockPos = Tile（相对）、nbt = 实体存档（Pos/Tile 也写相对）
+        ent['Pos'] = rel_pos
+        ent['TileX'], ent['TileY'], ent['TileZ'] = rel_tile
+        out.append({'pos': rel_pos, 'blockPos': rel_tile, 'nbt': ent})
+    return out
+
+
+def piece_bes(bes, origin, size):
+    """件内方块实体：完整 NBT 照抄，只把 x/y/z 改写成件内相对坐标。"""
+    ox, oy, oz = origin
+    sx, sy, sz = size
+    out = {}
+    for (bx, by, bz), b in bes.items():
+        if not (ox <= bx < ox + sx and oy <= by < oy + sy and oz <= bz < oz + sz):
+            continue
+        d = copy.deepcopy(b)
+        d['x'], d['y'], d['z'] = bx - ox, by - oy, bz - oz
+        out[k2s((bx - ox, by - oy, bz - oz))] = d
+    return out
+
+
+def extract(blocks, ents, bes):
     pieces = {}
     for name, src, x0, y0, z0, sx, sy, sz, note in SRC:
         sub = {}
@@ -170,7 +263,9 @@ def extract(blocks):
                         continue
                     sub[k2s((x - x0, y - y0, z - z0))] = [nm, dict(pr)]
         pieces[name] = {'name': name, 'src': src, 'note': note,
-                        'size': [sx, sy, sz], 'blocks': sub, 'derived': 'original'}
+                        'size': [sx, sy, sz], 'blocks': sub, 'derived': 'original',
+                        'entities': piece_entities(ents, SRC_NEG[name], (sx, sy, sz)),
+                        'block_entities': piece_bes(bes, SRC_NEG[name], (sx, sy, sz))}
     return pieces
 
 
@@ -201,6 +296,40 @@ def mirror_piece(piece):
         x, y, z = s2k(key)
         out[k2s((sx - 1 - x, y, z))] = [nm, mirror_props(nm, pr)]
     return out
+
+
+def mirror_entities(ents, sx):
+    """南北轴镜像：Pos 的 x -> sx - x，Tile 的 x -> sx-1-x，facing east<->west，yaw 取反。"""
+    out = []
+    for e in ents:
+        d = copy.deepcopy(e)
+        d['pos'][0] = sx - d['pos'][0]
+        d['blockPos'][0] = sx - 1 - d['blockPos'][0]
+        n = d['nbt']
+        n['Pos'][0] = d['pos'][0]
+        n['TileX'] = d['blockPos'][0]
+        if 'Facing' in n:
+            n['Facing'] = {4: 5, 5: 4}.get(n['Facing'], n['Facing'])
+        if 'Rotation' in n:
+            n['Rotation'] = [-n['Rotation'][0], n['Rotation'][1]]
+        out.append(d)
+    return out
+
+
+def mirror_bes(bes, sx):
+    out = {}
+    for key, b in bes.items():
+        x, y, z = s2k(key)
+        d = copy.deepcopy(b)
+        d['x'] = sx - 1 - x
+        out[k2s((sx - 1 - x, y, z))] = d
+    return out
+
+
+def chest_be(x, y, z):
+    """派生件（丰饶版）新放的箱子：与源件同款 BE（Items 空）+ 本仓 LootTable。"""
+    return {'id': 'minecraft:chest', 'keepPacked': 0, 'Items': [], 'LootTable': LOOT,
+            'x': x, 'y': y, 'z': z}
 
 
 def solids(blocks):
@@ -377,9 +506,65 @@ def detect_mouths(blocks, sx, sy, sz):
     return sorted(out)
 
 
+# ---------------------------------------------------------------- 第五轮：出入口「上升段」
+# ★ 为什么只能做进 exit.nbt：JigsawPlacement.java:474 `if (depth + 1 <= this.maxDepth)` ——
+#   件只有在这个条件下才会被重新入队展开。exit 是 lane 池的 **fallback**，正常情况下
+#   在 depth == maxDepth 那一层被放（且 fallback 件本身不再入队）⇒ **挂在 exit 顶上的
+#   up_jigsaw 永远不会被展开**。所以"从链尾向上接"只能做成同一个模板里的上升段。
+# 造型只用作者已有的方块（gold_bricks / gold_pillar），不引入新方块；井口朝天。
+EXIT_SHAFT_H = 36          # 上升段层数（门楼仍是原样的 8 层，井筒在它上面）
+EXIT_ROOF_OPEN = (1, 3, 1, 3)   # 打通屋顶的 x/z 范围（x1..3, z1..3）；y=6 全开、y=7 只开 z1..2
+
+
+def extend_exit(piece):
+    """给 exit 加「上升段」：屋顶开井 + 5×5 井筒（内 3×3、井口朝天）。门楼 8 层一格不动。
+
+    ⚠ 必须从 y=4 开始打通：门楼的可走空间只有 y=1..3，y=4..7 是作者的屋顶/装饰层
+    （y=4 是一整层实心 + 柱子、y=5..7 是楼梯/台阶/结构空）。只在 y=6..7 开洞的话，
+    井筒和门楼之间还隔着一层实心屋顶 —— 洪泛到不了（本轮实测：从口洪泛只到 9.14%）。
+    打通的只有 x1..3 / z1..2 这 3×2 列，**z=3 那一列（展示框的支撑方块）保留**。
+    """
+    sx, sy, sz = piece['size']
+    grid = {s2k(k): v for k, v in piece['blocks'].items()}
+    opened = []
+    for y in range(4, 8):
+        for x in range(1, sx - 1):
+            for z in (1, 2):
+                if grid.pop((x, y, z), None) is not None:
+                    opened.append([x, y, z])
+    for y in range(sy, sy + EXIT_SHAFT_H):
+        for x in range(sx):
+            for z in range(sz):
+                if x in (0, sx - 1) or z in (0, sz - 1):
+                    corner = (x in (0, sx - 1)) and (z in (0, sz - 1))
+                    if corner:
+                        grid[(x, y, z)] = ['bettergold:gold_pillar', {'axis': 'y'}]
+                    else:
+                        grid[(x, y, z)] = ['bettergold:gold_bricks', {}]
+    piece['size'] = [sx, sy + EXIT_SHAFT_H, sz]
+    piece['blocks'] = {k2s(k): v for k, v in grid.items()}
+    piece['block_count'] = len(grid)
+    piece['shaft'] = {'h': EXIT_SHAFT_H, 'shaft_from_y': sy, 'top_y': sy + EXIT_SHAFT_H - 1,
+                      'opened_cells': len(opened),
+                      'rim': 'gold_bricks + gold_pillar(axis=y) corners，井口 3×3 朝天'}
+    print('  [exit] 上升段 +%d 层 ⇒ size=%s top_y=%d 开顶 %d 格'
+          % (EXIT_SHAFT_H, piece['size'], sy + EXIT_SHAFT_H - 1, len(opened)))
+    return piece
+
+
 def stage1():
     blocks = load_world()
-    pieces = extract(blocks)
+    ents = load_entities()
+    bes = load_block_entities()
+    pieces = extract(blocks, ents, bes)
+    print('== stage1 实体 / 方块实体（源存档原件区）==')
+    print('  源实体 %d 个；源方块实体 %d 个（件内 %d）' %
+          (len(ents), len(bes), sum(len(p['block_entities']) for p in pieces.values())))
+    for name in sorted(pieces):
+        p = pieces[name]
+        print('  %-18s entities=%d bes=%d %s' %
+              (name, len(p['entities']), len(p['block_entities']),
+               [(e['nbt']['id'], e['blockPos']) for e in p['entities']]))
     # 口位：以「逐件实测」为准，再与理论表对照
     for name, p in pieces.items():
         sx, sy, sz = p['size']
@@ -399,13 +584,28 @@ def stage1():
                 if cell in grid:
                     raise SystemExit('[gp-build] %s 口 %s 第 %d 格被 %s 堵住' %
                                      (name, side, step, grid[cell][0]))
+        # 实体检查：展示框的支撑方块必须在件内是「实心非空气」（否则放置后存活不了）
+        for e in p['entities']:
+            n = e['nbt']
+            bx, by, bz = e['blockPos']
+            fx = FACE_OPP[n['Facing']]
+            sup = (bx + fx[0], by + fx[1], bz + fx[2])
+            sv = grid.get(sup)
+            if sv is None or sv[0] in NOT_WALKABLE:
+                raise SystemExit('[gp-build] %s 的实体 %s 支撑方块 %s 不是实心（%s）' %
+                                 (name, n['id'], sup, sv and sv[0]))
+            e['support'] = list(sup)
+            e['support_block'] = sv[0]
     # 派生
     derived_meta = {}
     for new, base in DERIVE:
         if new.endswith('_mirror'):
+            sx = pieces[base]['size'][0]
             pieces[new] = {'name': new, 'src': pieces[base]['src'], 'note': '%s 的南北轴镜像' % base,
                            'size': list(pieces[base]['size']), 'blocks': mirror_piece(pieces[base]),
-                           'derived': 'mirror', 'base': base}
+                           'derived': 'mirror', 'base': base,
+                           'entities': mirror_entities(pieces[base]['entities'], sx),
+                           'block_entities': mirror_bes(pieces[base]['block_entities'], sx)}
             pieces[new]['mouths'] = [list(m) for m in pieces[base]['mouths']]
             pieces[new]['block_count'] = len(pieces[new]['blocks'])
             pieces[new]['walk_y'] = pieces[base]['walk_y']
@@ -415,11 +615,19 @@ def stage1():
             pieces[new] = {'name': new, 'src': pieces[base]['src'],
                            'note': '%s 的丰饶变体（农田/金蟾/箱取自 P02、P03）' % base,
                            'size': list(pieces[base]['size']), 'blocks': nb,
-                           'derived': 'fertile', 'base': base}
+                           'derived': 'fertile', 'base': base,
+                           'entities': copy.deepcopy(pieces[base]['entities']),
+                           'block_entities': copy.deepcopy(pieces[base]['block_entities'])}
             pieces[new]['mouths'] = [list(m) for m in pieces[base]['mouths']]
             pieces[new]['block_count'] = len(nb)
             pieces[new]['walk_y'] = pieces[base]['walk_y']
+            # 丰饶版新放的箱子需要有 BE（否则放置后是无战利品的空箱）
+            cx, cy, cz = meta['chest'][0], meta['walk_y'], meta['chest'][1]
+            ck = k2s((cx, cy, cz))
+            if ck not in pieces[new]['block_entities']:
+                pieces[new]['block_entities'][ck] = chest_be(cx, cy, cz)
             derived_meta[new] = meta
+    extend_exit(pieces['exit'])
     validate_stage1(pieces, derived_meta)
     out = {'pieces': pieces, 'derive_meta': derived_meta}
     with open(os.path.join(EVID, 'pieces_stage1.json'), 'w', encoding='utf-8') as f:
@@ -559,6 +767,10 @@ def nbt_payload(buf, t, val):
         buf += struct.pack('>i', val)
     elif t == 4:
         buf += struct.pack('>q', val)
+    elif t == 5:
+        buf += struct.pack('>f', val)
+    elif t == 6:
+        buf += struct.pack('>d', val)
     elif t == 8:
         buf += nbt_string(val)
     elif t == 9:
@@ -570,8 +782,45 @@ def nbt_payload(buf, t, val):
         for k, (tt, vv) in val.items():
             nbt_tag(buf, tt, k, vv)
         buf += b'\x00'
+    elif t == 11:              # TAG_Int_Array（实体 UUID 必须保留这个类型，否则 Entity#load 读不到）
+        buf += struct.pack('>i', len(val))
+        for v in val:
+            buf += struct.pack('>i', v)
     else:
         raise ValueError('type %r' % t)
+
+
+# 解析器不保留类型，写回实体/BE NBT 时按「已知键」还原类型（错了实体/方块实体会读不到字段）
+LIST_TYPES = {'Pos': 6, 'Motion': 6, 'Rotation': 5}
+
+
+def nbt_obj(obj, key=''):
+    """把解析出来的 python 值写回带类型的 NBT 值。"""
+    if isinstance(obj, bool):
+        return (1, 1 if obj else 0)
+    if isinstance(obj, int):
+        return (3, obj)
+    if isinstance(obj, float):
+        return (6, obj)
+    if isinstance(obj, str):
+        return (8, obj)
+    if isinstance(obj, list):
+        if key in LIST_TYPES:
+            et = LIST_TYPES[key]
+            return (9, (et, [float(x) for x in obj]))
+        if key == 'UUID' and len(obj) == 4:
+            return (11, [int(x) for x in obj])
+        return (9, (10, [nbt_obj(x)[1] for x in obj]))
+    if isinstance(obj, dict):
+        return (10, collections.OrderedDict((k, nbt_obj(v, k)) for k, v in obj.items()))
+    raise ValueError('nbt_obj: unsupported %r' % (obj,))
+
+
+def be_tag(be):
+    t = nbt_obj(be)
+    if t[0] != 10:
+        raise SystemExit('[gp-build] BE 不是 compound: %r' % (be,))
+    return t
 
 
 def build_nbt(piece):
@@ -579,6 +828,7 @@ def build_nbt(piece):
     pal = []
     pal_idx = {}
     blocks_tag = []
+    bes = piece.get('block_entities') or {}
     # 逐格写满：件自己的 bbox 内，没有显式方块的格子就是 minecraft:air。
     # 模板空气 = 放置时把地形挖成房间/门洞；只写本件 bbox，件外世界空气一律不带。
     for y in range(sy):
@@ -599,23 +849,36 @@ def build_nbt(piece):
                     pal.append(entry)
                 b = {'pos': (9, (3, [x, y, z])), 'state': (3, pal_idx[sig])}
                 if v is not None and len(v) > 2 and v[2]:
-                    be = {'id': (8, 'minecraft:jigsaw')}
+                    jb = {'id': (8, 'minecraft:jigsaw')}
                     for k, x2 in v[2].items():
                         if isinstance(x2, int):
-                            be[k] = (3, x2)
+                            jb[k] = (3, x2)
                         else:
-                            be[k] = (8, str(x2))
-                    b['nbt'] = (10, be)
+                            jb[k] = (8, str(x2))
+                    b['nbt'] = (10, jb)
+                elif key in bes:
+                    # ★ 源存档里的完整 BE（spawner 的 SpawnData/SpawnPotentials/Delay、
+                    #   chest 的 Items…），坐标已是件内相对坐标；箱子再补我们的 LootTable。
+                    be = copy.deepcopy(bes[key])
+                    if nm == 'minecraft:chest':
+                        be['LootTable'] = LOOT
+                    b['nbt'] = be_tag(be)
                 elif nm == 'minecraft:chest':
-                    # 逐箱写 LootTable（导出阶段落地，见第 5 步）
-                    b['nbt'] = (10, {'id': (8, 'minecraft:chest'), 'LootTable': (8, LOOT)})
+                    b['nbt'] = be_tag(chest_be(x, y, z))
                 blocks_tag.append(b)
+    ents_tag = []
+    for e in (piece.get('entities') or []):
+        ents_tag.append(collections.OrderedDict([
+            ('pos', (9, (6, [float(x) for x in e['pos']]))),
+            ('blockPos', (9, (3, [int(x) for x in e['blockPos']]))),
+            ('nbt', nbt_obj(e['nbt'])),
+        ]))
     root = collections.OrderedDict()
     root['DataVersion'] = (3, DATAVERSION)
     root['size'] = (9, (3, [sx, sy, sz]))
     root['palette'] = (9, (10, pal))
     root['blocks'] = (9, (10, blocks_tag))
-    root['entities'] = (9, (10, []))
+    root['entities'] = (9, (10, ents_tag))
     buf = bytearray()
     nbt_tag(buf, 10, '', root)
     return bytes(buf)
@@ -658,15 +921,54 @@ def stage3():
                              (name, air, vol - len(want)))
         if list(back['size']) != pieces[name]['size']:
             raise SystemExit('[gp-build] %s size 不一致' % name)
+        # ③ 实体段逐条回读：数量、id、Item、blockPos 必须与源存档逐条相等
+        src_ents = pieces[name].get('entities') or []
+        got_ents = back.get('entities') or []
+        if len(got_ents) != len(src_ents):
+            raise SystemExit('[gp-build] %s 实体数 %d != 源 %d' %
+                             (name, len(got_ents), len(src_ents)))
+        for ge in got_ents:
+            sn = ge['nbt']
+            match = [se for se in src_ents
+                     if se['nbt']['id'] == sn['id'] and se['blockPos'] == list(ge['blockPos'])]
+            if not match:
+                raise SystemExit('[gp-build] %s 实体回读对不上：%s %s' %
+                                 (name, sn['id'], ge['blockPos']))
+            if 'Item' in match[0]['nbt'] and sn.get('Item') != match[0]['nbt']['Item']:
+                raise SystemExit('[gp-build] %s 实体 Item 丢了：%s' % (name, sn.get('Item')))
+        # ④ 方块实体段逐条回读：数量相等 + spawner 的 SpawnData / chest 的 LootTable 都在
+        src_bes = pieces[name].get('block_entities') or {}
+        got_bes = {}
+        for b in back['blocks']:
+            if 'nbt' in b and pal[b['state']]['Name'] != 'minecraft:jigsaw':
+                got_bes[k2s(tuple(b['pos']))] = b['nbt']
+        if len(got_bes) != len(src_bes):
+            raise SystemExit('[gp-build] %s 方块实体 %d != 源 %d' %
+                             (name, len(got_bes), len(src_bes)))
+        for k, sb in src_bes.items():
+            gb = got_bes.get(k)
+            if gb is None:
+                raise SystemExit('[gp-build] %s 缺方块实体 %s' % (name, k))
+            if sb['id'] == 'minecraft:mob_spawner':
+                if (gb.get('SpawnData') or {}).get('entity', {}).get('id') != \
+                        (sb.get('SpawnData') or {}).get('entity', {}).get('id'):
+                    raise SystemExit('[gp-build] %s 刷怪笼 SpawnData 丢了 %s' % (name, k))
+            if sb['id'] == 'minecraft:chest' and gb.get('LootTable') != LOOT:
+                raise SystemExit('[gp-build] %s 箱子缺 LootTable %s' % (name, k))
         manifest[name] = {'file': name + '.nbt', 'size': pieces[name]['size'],
                           'blocks': len(want), 'volume': vol, 'air': air,
                           'sha256': hashlib.sha256(gz).hexdigest(),
+                          'entities': len(got_ents),
+                          'entity_ids': sorted(set(e['nbt']['id'] for e in got_ents)),
+                          'block_entities': len(got_bes),
+                          'be_ids': sorted(set(v['id'] for v in got_bes.values())),
                           'loot_chests': sorted(k for k, v in pieces[name]['blocks'].items()
                                                 if v[0] == 'minecraft:chest'),
                           'jigsaw': sorted(k for k, v in pieces[name]['blocks'].items()
                                            if v[0] == 'minecraft:jigsaw')}
-        print('  nbt %-20s %5d solid + %5d air = %5d cells  %6d B  %s' %
-              (name, len(want), air, vol, len(gz), manifest[name]['sha256'][:16]))
+        print('  nbt %-20s %5d solid + %5d air = %5d cells  ent=%d be=%d  %6d B  %s' %
+              (name, len(want), air, vol, len(got_ents), len(got_bes), len(gz),
+               manifest[name]['sha256'][:16]))
     with open(os.path.join(EVID, 'nbt_manifest.json'), 'w', encoding='utf-8') as f:
         json.dump(manifest, f, ensure_ascii=False, indent=1, sort_keys=True)
     # 蓝图
@@ -762,42 +1064,50 @@ def main():
 
 # ---------------------------------------------------------------- 第 4 步：worldgen
 WG = os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'worldgen')
-# 池 -> (元素 [(模板, 权重)], fallback)
+
+# ★ 第五轮（2026-10-21）：池子从「按序号链」改成「按权重随机」。
+#   旧口径（1~4 轮，原文留档）：room 12 条 + cell_small_1..3 三段硬循环 ⇒ 序列固定。
+#   新口径：**所有池的 fallback 都是 exit**（唯一的例外是 start 与 exit 自己），
+#   于是「深度到顶 / 普通元素放不下」时一定收敛到出入口 ⇒ 落单口 = 0 的机制保证。
+#   权重记账：每个尺寸 5 个变体（a=2 b=2 c=2 mirror=2 fertile=6）=> 14/尺寸、三种尺寸 42；
+#   再加 cross_a=5 / cross_b=5 = **总权重 52**。
+#   ⇒ P(一次 room 抽到丰饶) = 18/52 = 34.6%
+#   ⇒ P(连续 3 个 room 至少一个丰饶) = 1-(34/52)^3 = 72.0%（旧口径是"必含"，见 §11 记账）
+#   ⚠ max_distance_from_center 100 → **128**：JigsawStructure.verifyRange 在 terrain_adaptation=NONE
+#     时 padding=0 ⇒ 上限就是 128；100 会把"离中心 ~100 格之外"的口裁掉（A 级实测 2/10 个种子
+#     各留 1 个落单口，全部落在距中心 99~103 格那一圈）⇒ 改到 128 后落单口 = 0。
+POOL_CELL_W = {'a': 2, 'b': 2, 'c': 2, 'mirror': 2, 'fertile': 6}
+ROOM_WEIGHTS = []
+for _size in ('cell_small', 'cell_medium', 'cell_large'):
+    for _v in ('a', 'b', 'c', 'mirror', 'fertile'):
+        ROOM_WEIGHTS.append(('%s_%s' % (_size, _v), POOL_CELL_W[_v]))
+ROOM_WEIGHTS += [('cross_a', 5), ('cross_b', 5)]
+
 POOLS = collections.OrderedDict([
     ('start', ([(('treasure'), 1)], 'minecraft:empty')),
     ('lane', ([(('lane'), 1)], POOL + 'exit')),
-    ('room', ([('cell_medium_a', 3), ('cell_medium_b', 2), ('cell_medium_c', 2), ('cell_medium_mirror', 3),
-               ('cell_large_a', 3), ('cell_large_b', 2), ('cell_large_c', 2), ('cell_large_mirror', 2),
-               ('cross_a', 3), ('cross_b', 3), ('cell_small_b', 2), ('cell_small_c', 2)],
-              'minecraft:empty')),
+    ('room', (ROOM_WEIGHTS, POOL + 'exit')),
     ('exit', ([('exit', 1)], 'minecraft:empty')),
-    # 小牢房三步循环：1(A) -> 2(镜像) -> 3(丰饶) -> 回过道；fallback 指向自己 => 深度截断时仍补齐下一步
-    ('cell_small_1', ([('cell_small_a', 1)], POOL + 'cell_small_1')),
-    ('cell_small_2', ([('cell_small_mirror', 1)], POOL + 'cell_small_2')),
-    ('cell_small_3', ([('cell_small_fertile', 1)], POOL + 'cell_small_3')),
-    ('cell_medium_1', ([('cell_medium_a', 1)], 'minecraft:empty')),
-    ('cell_medium_2', ([('cell_medium_mirror', 1)], 'minecraft:empty')),
-    ('cell_medium_3', ([('cell_medium_fertile', 1)], 'minecraft:empty')),
-    ('cell_large_1', ([('cell_large_a', 1)], 'minecraft:empty')),
-    ('cell_large_2', ([('cell_large_mirror', 1)], 'minecraft:empty')),
-    ('cell_large_3', ([('cell_large_fertile', 1)], 'minecraft:empty')),
-    ('cross_a', ([('cross_a', 1)], 'minecraft:empty')),
-    ('cross_b', ([('cross_b', 1)], 'minecraft:empty')),
 ])
 
 STRUCTURE = {
     'type': 'minecraft:jigsaw',
     'biomes': '#minecraft:is_nether',
-    'step': 'underground_structures',
+    # ★ 第五轮：地下结构 → 地下装饰。依据 = 原版 fortress.json 也是 underground_decoration；
+    #   玄武岩三角洲的 delta / small_basalt_columns / large_basalt_columns 在 surface_structures 步，
+    #   晚于 underground_structures ⇒ 柱子会长进结构里（"贯穿"）。改到更晚的步就能被模板空气清掉。
+    'step': 'underground_decoration',
     'spawn_overrides': {},
-    'terrain_adaptation': 'bury',
+    # ★ 第五轮：bury → none。bury/beard_* 都是"改地形噪声"（Beardifier），而结构内部的地形
+    #   要靠模板空气自己清；none = 不额外造型、由模板清出自己需要的空间（读数见 §11）。
+    'terrain_adaptation': 'none',
     'start_pool': POOL + 'start',
     'size': 6,
     'start_height': {'type': 'minecraft:uniform',
                      'min_inclusive': {'absolute': 31},
                      'max_inclusive': {'absolute': 41}},
     'use_expansion_hack': False,
-    'max_distance_from_center': 100,
+    'max_distance_from_center': 128,
 }
 
 STRUCTURE_SET = {
@@ -824,21 +1134,31 @@ def write_json(path, obj):
 
 
 def stage4():
+    pdir = os.path.join(WG, 'template_pool', 'golden_prison')
     for name, (els, fb) in POOLS.items():
         obj = {'fallback': fb, 'elements': [
             {'weight': w, 'element': {'element_type': 'minecraft:single_pool_element',
                                       'location': '%s:%s%s' % (NS, 'golden_prison/', t),
                                       'processors': 'minecraft:empty',
                                       'projection': 'rigid'}} for (t, w) in els]}
-        write_json(os.path.join(WG, 'template_pool', 'golden_prison', name + '.json'), obj)
+        write_json(os.path.join(pdir, name + '.json'), obj)
+    # 第五轮：池从 15 个收成 4 个，旧池文件必须删掉（否则引擎里还留着"死池"，关卡也会数错）
+    stale = []
+    for fn in sorted(os.listdir(pdir)):
+        if fn.endswith('.json') and fn[:-5] not in POOLS:
+            os.remove(os.path.join(pdir, fn))
+            stale.append(fn)
+    if stale:
+        print('  [pools] 删除旧池 %d 个：%s' % (len(stale), stale))
     write_json(os.path.join(WG, 'structure', 'golden_prison.json'), STRUCTURE)
     write_json(os.path.join(WG, 'structure_set', 'golden_prison.json'), STRUCTURE_SET)
     print('== stage4: worldgen JSON ==')
     print('  structure_set: spacing=27 separation=4 salt=19710101 weight=1'
           '（= 下界要塞的 spacing/separation；旧 32/16 已按作者第三轮要求改掉）')
-    print('  structure    : size=%d start_height=31..41 biomes=#minecraft:is_nether step=underground_structures'
+    print('  structure    : size=%d start_height=31..41 biomes=#minecraft:is_nether step=%s'
           ' terrain_adaptation=%s max_distance_from_center=%d'
-          % (STRUCTURE['size'], STRUCTURE['terrain_adaptation'], STRUCTURE['max_distance_from_center']))
+          % (STRUCTURE['size'], STRUCTURE['step'], STRUCTURE['terrain_adaptation'],
+             STRUCTURE['max_distance_from_center']))
     for name, (els, fb) in POOLS.items():
         print('  pool %-16s elements=%s fallback=%s' %
               (name, ['%s x%d' % (t, w) for (t, w) in els], fb))

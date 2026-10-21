@@ -1,9 +1,9 @@
 {
   "type": "minecraft:jigsaw",
   "biomes": "#minecraft:is_nether",
-  "step": "underground_structures",
+  "step": "underground_decoration",
   "spawn_overrides": {},
-  "terrain_adaptation": "bury",
+  "terrain_adaptation": "none",
   "start_pool": "bettergold:golden_prison/start",
   "size": 6,
   "start_height": {
@@ -16,5 +16,5 @@
     }
   },
   "use_expansion_hack": false,
-  "max_distance_from_center": 100
+  "max_distance_from_center": 128
 }

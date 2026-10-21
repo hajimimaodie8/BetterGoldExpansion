@@ -139,6 +139,36 @@
  "pieces": {
   "cell_large_a": {
    "block_count": 1755,
+   "block_entities": {
+    "1,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 5
+    },
+    "2,2,9": {
+     "Delay": 649,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 2,
+     "y": 2,
+     "z": 9
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -9211,6 +9241,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -9247,6 +9278,36 @@
   },
   "cell_large_b": {
    "block_count": 1752,
+   "block_entities": {
+    "13,1,14": {
+     "Delay": 582,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 14
+    },
+    "13,1,15": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 15
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -18307,6 +18368,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -18343,6 +18405,36 @@
   },
   "cell_large_c": {
    "block_count": 1742,
+   "block_entities": {
+    "1,1,25": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 25
+    },
+    "2,1,22": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 2,
+     "y": 1,
+     "z": 22
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -27372,6 +27464,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -27409,6 +27502,45 @@
   "cell_large_fertile": {
    "base": "cell_large_a",
    "block_count": 1764,
+   "block_entities": {
+    "1,1,23": {
+     "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 23
+    },
+    "1,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 5
+    },
+    "2,2,9": {
+     "Delay": 649,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 2,
+     "y": 2,
+     "z": 9
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -36537,6 +36669,7 @@
     ]
    },
    "derived": "fertile",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -36574,6 +36707,36 @@
   "cell_large_mirror": {
    "base": "cell_large_a",
    "block_count": 1755,
+   "block_entities": {
+    "12,2,9": {
+     "Delay": 649,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 12,
+     "y": 2,
+     "z": 9
+    },
+    "13,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 5
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -45646,6 +45809,7 @@
     ]
    },
    "derived": "mirror",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -45682,6 +45846,36 @@
   },
   "cell_medium_a": {
    "block_count": 1212,
+   "block_entities": {
+    "13,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 5
+    },
+    "13,1,6": {
+     "Delay": 281,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 6
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -51917,6 +52111,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -51953,6 +52148,36 @@
   },
   "cell_medium_b": {
    "block_count": 1200,
+   "block_entities": {
+    "1,1,15": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 15
+    },
+    "2,2,18": {
+     "Delay": 453,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 2,
+     "y": 2,
+     "z": 18
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -58119,6 +58344,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -58155,6 +58381,7 @@
   },
   "cell_medium_c": {
    "block_count": 1184,
+   "block_entities": {},
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -64250,6 +64477,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -64287,6 +64515,45 @@
   "cell_medium_fertile": {
    "base": "cell_medium_a",
    "block_count": 1221,
+   "block_entities": {
+    "1,1,3": {
+     "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 3
+    },
+    "13,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 5
+    },
+    "13,1,6": {
+     "Delay": 281,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 6
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -70578,6 +70845,7 @@
     ]
    },
    "derived": "fertile",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -70615,6 +70883,36 @@
   "cell_medium_mirror": {
    "base": "cell_medium_a",
    "block_count": 1212,
+   "block_entities": {
+    "1,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 5
+    },
+    "1,1,6": {
+     "Delay": 281,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 6
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -76850,6 +77148,7 @@
     ]
    },
    "derived": "mirror",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -76886,6 +77185,36 @@
   },
   "cell_small_a": {
    "block_count": 670,
+   "block_entities": {
+    "1,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 5
+    },
+    "2,2,2": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 2,
+     "y": 2,
+     "z": 2
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -80261,6 +80590,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -80297,6 +80627,36 @@
   },
   "cell_small_b": {
    "block_count": 663,
+   "block_entities": {
+    "12,1,2": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 12,
+     "y": 1,
+     "z": 2
+    },
+    "13,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 5
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -83644,6 +84004,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -83680,6 +84041,7 @@
   },
   "cell_small_c": {
    "block_count": 644,
+   "block_entities": {},
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -86926,6 +87288,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -86963,6 +87326,45 @@
   "cell_small_fertile": {
    "base": "cell_small_a",
    "block_count": 676,
+   "block_entities": {
+    "1,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 5
+    },
+    "2,1,4": {
+     "Items": [],
+     "LootTable": "bettergold:chests/golden_prison",
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 2,
+     "y": 1,
+     "z": 4
+    },
+    "2,2,2": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 2,
+     "y": 2,
+     "z": 2
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -90376,6 +90778,7 @@
     ]
    },
    "derived": "fertile",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -90413,6 +90816,36 @@
   "cell_small_mirror": {
    "base": "cell_small_a",
    "block_count": 670,
+   "block_entities": {
+    "12,2,2": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 12,
+     "y": 2,
+     "z": 2
+    },
+    "13,1,5": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 13,
+     "y": 1,
+     "z": 5
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -93788,6 +94221,7 @@
     ]
    },
    "derived": "mirror",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -93824,6 +94258,168 @@
   },
   "cross_a": {
    "block_count": 6280,
+   "block_entities": {
+    "1,1,10": {
+     "Delay": 455,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 10
+    },
+    "1,1,26": {
+     "Delay": 350,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 26
+    },
+    "10,1,1": {
+     "Delay": 190,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 10,
+     "y": 1,
+     "z": 1
+    },
+    "10,1,35": {
+     "Delay": 175,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 10,
+     "y": 1,
+     "z": 35
+    },
+    "26,1,1": {
+     "Delay": 306,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 26,
+     "y": 1,
+     "z": 1
+    },
+    "26,1,35": {
+     "Delay": 74,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 26,
+     "y": 1,
+     "z": 35
+    },
+    "35,1,10": {
+     "Delay": 441,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 35,
+     "y": 1,
+     "z": 10
+    },
+    "35,1,26": {
+     "Delay": 27,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 35,
+     "y": 1,
+     "z": 26
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -125066,6 +125662,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "east",
@@ -125124,6 +125721,280 @@
   },
   "cross_b": {
    "block_count": 6277,
+   "block_entities": {
+    "1,1,10": {
+     "Delay": 574,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 10
+    },
+    "1,1,26": {
+     "Delay": 176,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 1,
+     "z": 26
+    },
+    "10,1,1": {
+     "Delay": 359,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 10,
+     "y": 1,
+     "z": 1
+    },
+    "10,1,35": {
+     "Delay": 20,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 10,
+     "y": 1,
+     "z": 35
+    },
+    "15,2,18": {
+     "Delay": 391,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 15,
+     "y": 2,
+     "z": 18
+    },
+    "17,2,18": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 17,
+     "y": 2,
+     "z": 18
+    },
+    "18,2,15": {
+     "Delay": 324,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 18,
+     "y": 2,
+     "z": 15
+    },
+    "18,2,17": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 18,
+     "y": 2,
+     "z": 17
+    },
+    "18,2,20": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 18,
+     "y": 2,
+     "z": 20
+    },
+    "18,2,21": {
+     "Delay": 155,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 18,
+     "y": 2,
+     "z": 21
+    },
+    "19,2,18": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 19,
+     "y": 2,
+     "z": 18
+    },
+    "21,2,18": {
+     "Delay": 336,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 21,
+     "y": 2,
+     "z": 18
+    },
+    "26,1,1": {
+     "Delay": 422,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 26,
+     "y": 1,
+     "z": 1
+    },
+    "26,1,35": {
+     "Delay": 532,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 26,
+     "y": 1,
+     "z": 35
+    },
+    "35,1,10": {
+     "Delay": 151,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 35,
+     "y": 1,
+     "z": 10
+    },
+    "35,1,26": {
+     "Delay": 69,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 35,
+     "y": 1,
+     "z": 26
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -156362,6 +157233,126 @@
     ]
    },
    "derived": "original",
+   "entities": [
+    {
+     "blockPos": [
+      17,
+      5,
+      20
+     ],
+     "nbt": {
+      "Air": 300,
+      "Facing": 3,
+      "FallDistance": 0.0,
+      "Fire": -1,
+      "Fixed": 0,
+      "Invisible": 0,
+      "Invulnerable": 0,
+      "Item": {
+       "count": 1,
+       "id": "bettergold:chaos_coin"
+      },
+      "ItemDropChance": 1.0,
+      "ItemRotation": 0,
+      "Motion": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OnGround": 0,
+      "PortalCooldown": 0,
+      "Pos": [
+       17.5,
+       5.5,
+       20.03125
+      ],
+      "Rotation": [
+       0.0,
+       0.0
+      ],
+      "TileX": 17,
+      "TileY": 5,
+      "TileZ": 20,
+      "UUID": [
+       -1193316053,
+       -1400682354,
+       -1807534136,
+       1608369551
+      ],
+      "id": "minecraft:glow_item_frame"
+     },
+     "pos": [
+      17.5,
+      5.5,
+      20.03125
+     ],
+     "support": [
+      17,
+      5,
+      19
+     ],
+     "support_block": "bettergold:gold_bricks"
+    },
+    {
+     "blockPos": [
+      19,
+      5,
+      20
+     ],
+     "nbt": {
+      "Air": 300,
+      "Facing": 3,
+      "FallDistance": 0.0,
+      "Fire": -1,
+      "Fixed": 0,
+      "Invisible": 0,
+      "Invulnerable": 0,
+      "Item": {
+       "count": 1,
+       "id": "bettergold:chaos_coin"
+      },
+      "ItemDropChance": 1.0,
+      "ItemRotation": 0,
+      "Motion": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OnGround": 0,
+      "PortalCooldown": 0,
+      "Pos": [
+       19.5,
+       5.5,
+       20.03125
+      ],
+      "Rotation": [
+       0.0,
+       0.0
+      ],
+      "TileX": 19,
+      "TileY": 5,
+      "TileZ": 20,
+      "UUID": [
+       352879476,
+       773212535,
+       -1253894446,
+       1132190423
+      ],
+      "id": "minecraft:glow_item_frame"
+     },
+     "pos": [
+      19.5,
+      5.5,
+      20.03125
+     ],
+     "support": [
+      19,
+      5,
+      19
+     ],
+     "support_block": "bettergold:gold_bricks"
+    }
+   ],
    "mouths": [
     [
      "east",
@@ -156419,7 +157410,8 @@
    "walk_y": 1
   },
   "exit": {
-   "block_count": 155,
+   "block_count": 707,
+   "block_entities": {},
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -156465,6 +157457,246 @@
       "axis": "z"
      }
     ],
+    "0,10,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,10,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,10,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,10,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,10,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,11,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,11,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,11,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,11,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,11,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,12,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,12,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,12,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,12,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,12,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,13,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,13,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,13,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,13,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,13,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,14,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,14,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,14,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,14,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,14,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,15,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,15,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,15,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,15,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,15,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,16,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,16,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,16,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,16,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,16,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,17,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,17,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,17,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,17,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,17,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,18,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,18,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,18,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,18,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,18,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,19,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,19,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,19,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,19,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,19,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
     "0,2,0": [
      "bettergold:gold_pillar",
      {
@@ -156495,6 +157727,246 @@
       "axis": "y"
      }
     ],
+    "0,20,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,20,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,20,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,20,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,20,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,21,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,21,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,21,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,21,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,21,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,22,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,22,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,22,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,22,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,22,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,23,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,23,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,23,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,23,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,23,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,24,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,24,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,24,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,24,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,24,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,25,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,25,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,25,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,25,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,25,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,26,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,26,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,26,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,26,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,26,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,27,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,27,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,27,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,27,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,27,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,28,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,28,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,28,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,28,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,28,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,29,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,29,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,29,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,29,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,29,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
     "0,3,0": [
      "bettergold:gold_pillar",
      {
@@ -156514,6 +157986,246 @@
      {}
     ],
     "0,3,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,30,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,30,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,30,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,30,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,30,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,31,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,31,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,31,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,31,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,31,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,32,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,32,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,32,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,32,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,32,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,33,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,33,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,33,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,33,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,33,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,34,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,34,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,34,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,34,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,34,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,35,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,35,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,35,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,35,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,35,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,36,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,36,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,36,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,36,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,36,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,37,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,37,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,37,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,37,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,37,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,38,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,38,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,38,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,38,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,38,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,39,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,39,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,39,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,39,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,39,4": [
      "bettergold:gold_pillar",
      {
       "axis": "y"
@@ -156541,6 +158253,102 @@
      "bettergold:gold_pillar",
      {
       "axis": "z"
+     }
+    ],
+    "0,40,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,40,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,40,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,40,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,40,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,41,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,41,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,41,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,41,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,41,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,42,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,42,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,42,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,42,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,42,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,43,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,43,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,43,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,43,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,43,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
      }
     ],
     "0,5,0": [
@@ -156611,6 +158419,54 @@
      "minecraft:structure_void",
      {}
     ],
+    "0,8,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,8,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,8,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,8,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,8,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,9,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "0,9,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,9,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,9,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "0,9,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
     "1,0,0": [
      "bettergold:gold_bricks",
      {}
@@ -156646,6 +158502,86 @@
       "west": "true"
      }
     ],
+    "1,10,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,10,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,11,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,11,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,12,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,12,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,13,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,13,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,14,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,14,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,15,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,15,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,16,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,16,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,17,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,17,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,18,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,18,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,19,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,19,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "1,2,4": [
      "bettergold:gold_bars",
      {
@@ -156655,6 +158591,86 @@
       "waterlogged": "false",
       "west": "true"
      }
+    ],
+    "1,20,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,20,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,21,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,21,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,22,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,22,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,23,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,23,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,24,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,24,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,25,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,25,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,26,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,26,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,27,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,27,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,28,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,28,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,29,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,29,4": [
+     "bettergold:gold_bricks",
+     {}
     ],
     "1,3,4": [
      "bettergold:gold_bars",
@@ -156666,15 +158682,87 @@
       "west": "true"
      }
     ],
+    "1,30,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,30,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,31,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,31,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,32,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,32,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,33,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,33,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,34,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,34,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,35,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,35,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,36,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,36,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,37,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,37,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,38,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,38,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,39,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,39,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "1,4,0": [
-     "bettergold:gold_bricks",
-     {}
-    ],
-    "1,4,1": [
-     "bettergold:gold_bricks",
-     {}
-    ],
-    "1,4,2": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -156688,29 +158776,43 @@
       "axis": "x"
      }
     ],
+    "1,40,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,40,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,41,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,42,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,43,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "1,5,0": [
      "bettergold:gold_bricks_stairs",
      {
       "facing": "south",
       "half": "bottom",
-      "shape": "straight",
-      "waterlogged": "false"
-     }
-    ],
-    "1,5,1": [
-     "bettergold:gold_bricks_stairs",
-     {
-      "facing": "east",
-      "half": "top",
-      "shape": "outer_right",
-      "waterlogged": "false"
-     }
-    ],
-    "1,5,2": [
-     "bettergold:gold_bricks_stairs",
-     {
-      "facing": "east",
-      "half": "top",
       "shape": "straight",
       "waterlogged": "false"
      }
@@ -156737,19 +158839,6 @@
      "minecraft:structure_void",
      {}
     ],
-    "1,6,1": [
-     "bettergold:gold_bricks_stairs",
-     {
-      "facing": "south",
-      "half": "bottom",
-      "shape": "straight",
-      "waterlogged": "false"
-     }
-    ],
-    "1,6,2": [
-     "bettergold:gold_bricks",
-     {}
-    ],
     "1,6,3": [
      "bettergold:gold_bricks",
      {}
@@ -156762,18 +158851,23 @@
      "minecraft:structure_void",
      {}
     ],
-    "1,7,1": [
-     "minecraft:structure_void",
+    "1,7,3": [
+     "bettergold:gold_bricks",
      {}
     ],
-    "1,7,2": [
-     "bettergold:gold_bricks_slab",
-     {
-      "type": "bottom",
-      "waterlogged": "false"
-     }
+    "1,8,0": [
+     "bettergold:gold_bricks",
+     {}
     ],
-    "1,7,3": [
+    "1,8,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,9,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "1,9,4": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -156820,6 +158914,86 @@
       "west": "true"
      }
     ],
+    "2,10,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,10,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,11,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,11,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,12,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,12,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,13,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,13,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,14,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,14,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,15,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,15,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,16,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,16,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,17,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,17,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,18,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,18,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,19,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,19,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "2,2,4": [
      "bettergold:gold_bars",
      {
@@ -156829,6 +159003,86 @@
       "waterlogged": "false",
       "west": "true"
      }
+    ],
+    "2,20,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,20,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,21,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,21,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,22,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,22,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,23,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,23,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,24,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,24,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,25,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,25,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,26,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,26,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,27,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,27,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,28,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,28,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,29,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,29,4": [
+     "bettergold:gold_bricks",
+     {}
     ],
     "2,3,4": [
      "bettergold:gold_bars",
@@ -156840,19 +159094,87 @@
       "west": "true"
      }
     ],
+    "2,30,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,30,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,31,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,31,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,32,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,32,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,33,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,33,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,34,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,34,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,35,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,35,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,36,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,36,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,37,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,37,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,38,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,38,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,39,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,39,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "2,4,0": [
-     "bettergold:gold_pillar",
-     {
-      "axis": "z"
-     }
-    ],
-    "2,4,1": [
-     "bettergold:gold_pillar",
-     {
-      "axis": "z"
-     }
-    ],
-    "2,4,2": [
      "bettergold:gold_pillar",
      {
       "axis": "z"
@@ -156870,21 +159192,40 @@
       "axis": "x"
      }
     ],
-    "2,5,0": [
-     "minecraft:structure_void",
+    "2,40,0": [
+     "bettergold:gold_bricks",
      {}
     ],
-    "2,5,1": [
-     "bettergold:gold_bricks_stairs",
-     {
-      "facing": "south",
-      "half": "top",
-      "shape": "straight",
-      "waterlogged": "false"
-     }
-    ],
-    "2,5,2": [
+    "2,40,4": [
      "bettergold:gold_bricks",
+     {}
+    ],
+    "2,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,41,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,42,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,43,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,5,0": [
+     "minecraft:structure_void",
      {}
     ],
     "2,5,3": [
@@ -156904,14 +159245,6 @@
      "minecraft:structure_void",
      {}
     ],
-    "2,6,1": [
-     "bettergold:gold_bricks",
-     {}
-    ],
-    "2,6,2": [
-     "bettergold:gold_bricks",
-     {}
-    ],
     "2,6,3": [
      "bettergold:gold_bricks",
      {}
@@ -156924,23 +159257,28 @@
      "minecraft:structure_void",
      {}
     ],
-    "2,7,1": [
-     "minecraft:structure_void",
-     {}
-    ],
-    "2,7,2": [
-     "bettergold:gold_bricks_slab",
-     {
-      "type": "bottom",
-      "waterlogged": "false"
-     }
-    ],
     "2,7,3": [
      "bettergold:gold_bricks_slab",
      {
       "type": "bottom",
       "waterlogged": "false"
      }
+    ],
+    "2,8,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,8,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,9,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "2,9,4": [
+     "bettergold:gold_bricks",
+     {}
     ],
     "3,0,0": [
      "bettergold:gold_bricks",
@@ -156977,6 +159315,86 @@
       "west": "true"
      }
     ],
+    "3,10,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,10,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,11,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,11,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,12,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,12,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,13,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,13,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,14,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,14,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,15,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,15,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,16,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,16,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,17,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,17,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,18,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,18,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,19,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,19,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "3,2,4": [
      "bettergold:gold_bars",
      {
@@ -156986,6 +159404,86 @@
       "waterlogged": "false",
       "west": "true"
      }
+    ],
+    "3,20,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,20,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,21,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,21,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,22,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,22,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,23,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,23,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,24,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,24,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,25,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,25,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,26,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,26,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,27,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,27,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,28,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,28,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,29,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,29,4": [
+     "bettergold:gold_bricks",
+     {}
     ],
     "3,3,4": [
      "bettergold:gold_bars",
@@ -156997,15 +159495,87 @@
       "west": "true"
      }
     ],
+    "3,30,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,30,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,31,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,31,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,32,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,32,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,33,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,33,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,34,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,34,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,35,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,35,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,36,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,36,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,37,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,37,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,38,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,38,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,39,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,39,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "3,4,0": [
-     "bettergold:gold_bricks",
-     {}
-    ],
-    "3,4,1": [
-     "bettergold:gold_bricks",
-     {}
-    ],
-    "3,4,2": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -157019,29 +159589,43 @@
       "axis": "x"
      }
     ],
+    "3,40,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,40,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,41,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,41,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,42,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,42,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,43,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,43,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
     "3,5,0": [
      "bettergold:gold_bricks_stairs",
      {
       "facing": "south",
       "half": "bottom",
-      "shape": "straight",
-      "waterlogged": "false"
-     }
-    ],
-    "3,5,1": [
-     "bettergold:gold_bricks_stairs",
-     {
-      "facing": "south",
-      "half": "top",
-      "shape": "outer_right",
-      "waterlogged": "false"
-     }
-    ],
-    "3,5,2": [
-     "bettergold:gold_bricks_stairs",
-     {
-      "facing": "west",
-      "half": "top",
       "shape": "straight",
       "waterlogged": "false"
      }
@@ -157068,19 +159652,6 @@
      "minecraft:structure_void",
      {}
     ],
-    "3,6,1": [
-     "bettergold:gold_bricks_stairs",
-     {
-      "facing": "south",
-      "half": "bottom",
-      "shape": "straight",
-      "waterlogged": "false"
-     }
-    ],
-    "3,6,2": [
-     "bettergold:gold_bricks",
-     {}
-    ],
     "3,6,3": [
      "bettergold:gold_bricks",
      {}
@@ -157093,18 +159664,23 @@
      "minecraft:structure_void",
      {}
     ],
-    "3,7,1": [
-     "minecraft:structure_void",
+    "3,7,3": [
+     "bettergold:gold_bricks",
      {}
     ],
-    "3,7,2": [
-     "bettergold:gold_bricks_slab",
-     {
-      "type": "bottom",
-      "waterlogged": "false"
-     }
+    "3,8,0": [
+     "bettergold:gold_bricks",
+     {}
     ],
-    "3,7,3": [
+    "3,8,4": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,9,0": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "3,9,4": [
      "bettergold:gold_bricks",
      {}
     ],
@@ -157152,6 +159728,246 @@
       "axis": "z"
      }
     ],
+    "4,10,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,10,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,10,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,10,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,10,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,11,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,11,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,11,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,11,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,11,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,12,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,12,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,12,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,12,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,12,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,13,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,13,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,13,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,13,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,13,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,14,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,14,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,14,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,14,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,14,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,15,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,15,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,15,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,15,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,15,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,16,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,16,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,16,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,16,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,16,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,17,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,17,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,17,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,17,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,17,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,18,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,18,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,18,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,18,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,18,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,19,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,19,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,19,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,19,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,19,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
     "4,2,0": [
      "bettergold:gold_pillar",
      {
@@ -157182,6 +159998,246 @@
       "axis": "y"
      }
     ],
+    "4,20,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,20,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,20,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,20,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,20,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,21,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,21,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,21,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,21,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,21,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,22,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,22,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,22,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,22,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,22,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,23,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,23,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,23,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,23,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,23,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,24,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,24,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,24,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,24,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,24,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,25,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,25,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,25,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,25,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,25,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,26,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,26,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,26,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,26,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,26,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,27,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,27,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,27,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,27,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,27,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,28,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,28,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,28,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,28,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,28,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,29,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,29,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,29,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,29,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,29,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
     "4,3,0": [
      "bettergold:gold_pillar",
      {
@@ -157201,6 +160257,246 @@
      {}
     ],
     "4,3,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,30,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,30,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,30,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,30,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,30,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,31,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,31,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,31,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,31,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,31,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,32,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,32,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,32,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,32,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,32,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,33,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,33,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,33,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,33,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,33,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,34,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,34,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,34,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,34,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,34,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,35,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,35,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,35,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,35,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,35,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,36,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,36,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,36,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,36,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,36,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,37,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,37,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,37,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,37,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,37,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,38,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,38,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,38,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,38,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,38,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,39,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,39,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,39,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,39,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,39,4": [
      "bettergold:gold_pillar",
      {
       "axis": "y"
@@ -157228,6 +160524,102 @@
      "bettergold:gold_pillar",
      {
       "axis": "z"
+     }
+    ],
+    "4,40,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,40,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,40,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,40,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,40,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,41,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,41,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,41,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,41,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,41,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,42,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,42,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,42,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,42,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,42,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,43,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,43,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,43,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,43,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,43,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
      }
     ],
     "4,5,0": [
@@ -157297,9 +160689,177 @@
     "4,7,2": [
      "minecraft:structure_void",
      {}
+    ],
+    "4,8,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,8,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,8,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,8,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,8,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,9,0": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
+    ],
+    "4,9,1": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,9,2": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,9,3": [
+     "bettergold:gold_bricks",
+     {}
+    ],
+    "4,9,4": [
+     "bettergold:gold_pillar",
+     {
+      "axis": "y"
+     }
     ]
    },
    "derived": "original",
+   "entities": [
+    {
+     "blockPos": [
+      1,
+      7,
+      4
+     ],
+     "nbt": {
+      "Air": 300,
+      "Facing": 3,
+      "FallDistance": 0.0,
+      "Fire": -1,
+      "Fixed": 0,
+      "Invisible": 0,
+      "Invulnerable": 0,
+      "Item": {
+       "count": 1,
+       "id": "bettergold:chaos_coin"
+      },
+      "ItemDropChance": 1.0,
+      "ItemRotation": 0,
+      "Motion": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OnGround": 0,
+      "PortalCooldown": 0,
+      "Pos": [
+       1.5,
+       7.5,
+       4.03125
+      ],
+      "Rotation": [
+       0.0,
+       0.0
+      ],
+      "TileX": 1,
+      "TileY": 7,
+      "TileZ": 4,
+      "UUID": [
+       1568082808,
+       -69710235,
+       -1077732712,
+       -1419430251
+      ],
+      "id": "minecraft:glow_item_frame"
+     },
+     "pos": [
+      1.5,
+      7.5,
+      4.03125
+     ],
+     "support": [
+      1,
+      7,
+      3
+     ],
+     "support_block": "bettergold:gold_bricks"
+    },
+    {
+     "blockPos": [
+      3,
+      7,
+      4
+     ],
+     "nbt": {
+      "Air": 300,
+      "Facing": 3,
+      "FallDistance": 0.0,
+      "Fire": -1,
+      "Fixed": 0,
+      "Invisible": 0,
+      "Invulnerable": 0,
+      "Item": {
+       "count": 1,
+       "id": "bettergold:chaos_coin"
+      },
+      "ItemDropChance": 1.0,
+      "ItemRotation": 0,
+      "Motion": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OnGround": 0,
+      "PortalCooldown": 0,
+      "Pos": [
+       3.5,
+       7.5,
+       4.03125
+      ],
+      "Rotation": [
+       0.0,
+       0.0
+      ],
+      "TileX": 3,
+      "TileY": 7,
+      "TileZ": 4,
+      "UUID": [
+       803333139,
+       -144948009,
+       -1899544635,
+       2139031353
+      ],
+      "id": "minecraft:glow_item_frame"
+     },
+     "pos": [
+      3.5,
+      7.5,
+      4.03125
+     ],
+     "support": [
+      3,
+      7,
+      3
+     ],
+     "support_block": "bettergold:gold_bricks"
+    }
+   ],
    "mouths": [
     [
      "north",
@@ -157315,9 +160875,16 @@
    ],
    "name": "exit",
    "note": "出入口（5×8×5，南面金栅栏）",
+   "shaft": {
+    "h": 36,
+    "opened_cells": 24,
+    "rim": "gold_bricks + gold_pillar(axis=y) corners，井口 3×3 朝天",
+    "shaft_from_y": 8,
+    "top_y": 43
+   },
    "size": [
     5,
-    8,
+    44,
     5
    ],
    "src": "P14",
@@ -157325,6 +160892,7 @@
   },
   "lane": {
    "block_count": 48,
+   "block_entities": {},
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -157544,6 +161112,7 @@
     ]
    },
    "derived": "original",
+   "entities": [],
    "mouths": [
     [
      "north",
@@ -157580,6 +161149,272 @@
   },
   "treasure": {
    "block_count": 2195,
+   "block_entities": {
+    "1,2,16": {
+     "Delay": 181,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 2,
+     "z": 16
+    },
+    "1,2,4": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 1,
+     "y": 2,
+     "z": 4
+    },
+    "14,3,8": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 14,
+     "y": 3,
+     "z": 8
+    },
+    "14,6,14": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 14,
+     "y": 6,
+     "z": 14
+    },
+    "14,6,6": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 14,
+     "y": 6,
+     "z": 6
+    },
+    "16,5,16": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 16,
+     "y": 5,
+     "z": 16
+    },
+    "16,5,4": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 16,
+     "y": 5,
+     "z": 4
+    },
+    "19,2,16": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 19,
+     "y": 2,
+     "z": 16
+    },
+    "19,2,4": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 19,
+     "y": 2,
+     "z": 4
+    },
+    "4,5,16": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 4,
+     "y": 5,
+     "z": 16
+    },
+    "4,5,4": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 4,
+     "y": 5,
+     "z": 4
+    },
+    "6,2,14": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 6,
+     "y": 2,
+     "z": 14
+    },
+    "6,6,14": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 6,
+     "y": 6,
+     "z": 14
+    },
+    "6,6,6": {
+     "Delay": 0,
+     "MaxNearbyEntities": 6,
+     "MaxSpawnDelay": 800,
+     "MinSpawnDelay": 200,
+     "RequiredPlayerRange": 16,
+     "SpawnCount": 4,
+     "SpawnData": {
+      "entity": {
+       "id": "bettergold:money_gremlin"
+      }
+     },
+     "SpawnPotentials": [],
+     "SpawnRange": 4,
+     "id": "minecraft:mob_spawner",
+     "keepPacked": 0,
+     "x": 6,
+     "y": 6,
+     "z": 6
+    },
+    "9,2,4": {
+     "Items": [],
+     "id": "minecraft:chest",
+     "keepPacked": 0,
+     "x": 9,
+     "y": 2,
+     "z": 4
+    }
+   },
    "blocks": {
     "0,0,0": [
      "bettergold:gold_bricks",
@@ -168785,6 +172620,126 @@
     ]
    },
    "derived": "original",
+   "entities": [
+    {
+     "blockPos": [
+      11,
+      6,
+      9
+     ],
+     "nbt": {
+      "Air": 300,
+      "Facing": 3,
+      "FallDistance": 0.0,
+      "Fire": -1,
+      "Fixed": 0,
+      "Invisible": 0,
+      "Invulnerable": 0,
+      "Item": {
+       "count": 1,
+       "id": "bettergold:chaos_coin"
+      },
+      "ItemDropChance": 1.0,
+      "ItemRotation": 0,
+      "Motion": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OnGround": 0,
+      "PortalCooldown": 0,
+      "Pos": [
+       11.5,
+       6.5,
+       9.03125
+      ],
+      "Rotation": [
+       0.0,
+       0.0
+      ],
+      "TileX": 11,
+      "TileY": 6,
+      "TileZ": 9,
+      "UUID": [
+       1709029259,
+       -1017494381,
+       -2037705422,
+       1731283049
+      ],
+      "id": "minecraft:glow_item_frame"
+     },
+     "pos": [
+      11.5,
+      6.5,
+      9.03125
+     ],
+     "support": [
+      11,
+      6,
+      8
+     ],
+     "support_block": "bettergold:gold_bricks"
+    },
+    {
+     "blockPos": [
+      9,
+      6,
+      9
+     ],
+     "nbt": {
+      "Air": 300,
+      "Facing": 3,
+      "FallDistance": 0.0,
+      "Fire": -1,
+      "Fixed": 0,
+      "Invisible": 0,
+      "Invulnerable": 0,
+      "Item": {
+       "count": 1,
+       "id": "bettergold:chaos_coin"
+      },
+      "ItemDropChance": 1.0,
+      "ItemRotation": 0,
+      "Motion": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "OnGround": 0,
+      "PortalCooldown": 0,
+      "Pos": [
+       9.5,
+       6.5,
+       9.03125
+      ],
+      "Rotation": [
+       0.0,
+       0.0
+      ],
+      "TileX": 9,
+      "TileY": 6,
+      "TileZ": 9,
+      "UUID": [
+       -1891646825,
+       -1467920463,
+       -1603067180,
+       606584797
+      ],
+      "id": "minecraft:glow_item_frame"
+     },
+     "pos": [
+      9.5,
+      6.5,
+      9.03125
+     ],
+     "support": [
+      9,
+      6,
+      8
+     ],
+     "support_block": "bettergold:gold_bricks"
+    }
+   ],
    "mouths": [
     [
      "south",

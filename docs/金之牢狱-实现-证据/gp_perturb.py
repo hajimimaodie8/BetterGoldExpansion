@@ -334,6 +334,58 @@ def sset_spread_triangular(text):
     return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
 
 
+# ---------------------------------------------------------------- 第五轮新增
+def strip_entities(root):
+    """P15：把 treasure 的实体段清空（= 作者三图「展示框没放」的回归）。"""
+    n = len(root.get('entities') or [])
+    root['entities'] = []
+    return n
+
+
+def strip_spawn_data(root):
+    """P16：把第一个刷怪笼的 SpawnData 删掉（= 「刷怪笼的金钱妖没了」）。"""
+    for b in root['blocks']:
+        be = b.get('nbt') or {}
+        if be.get('id') == 'minecraft:mob_spawner' and 'SpawnData' in be:
+            be.pop('SpawnData')
+            return 1
+    return 0
+
+
+def cut_shaft(root):
+    """P17：把 exit 的上升段切掉（只留门楼 8 层）—— [bgp-shaft] 必须红。"""
+    n0 = len(root['blocks'])
+    root['blocks'] = [b for b in root['blocks'] if b['pos'][1] < 8]
+    return n0 - len(root['blocks'])
+
+
+def room_fallback_empty(text):
+    """P18：room 的 fallback 改成 empty ⇒ 深度到顶没有出口，[bgp-pool-reach] 必须红。"""
+    d = json.loads(text)
+    d['fallback'] = 'minecraft:empty'
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def room_fertile_weight_1(text):
+    """P19：丰饶权重 6 → 1 ⇒ [bgp-pool-reach] 的权重记账必须红。"""
+    d = json.loads(text)
+    for e in d['elements']:
+        if (e['element']['location'] or '').endswith('_fertile'):
+            e['weight'] = 1
+    return json.dumps(d, ensure_ascii=False, indent=2) + '\n'
+
+
+def exit_target_room(root):
+    """P20：把 exit 的口 target 改回 room ⇒ [bgp-pool-reach] 必须红。"""
+    for b in root['blocks']:
+        be = b.get('nbt') or {}
+        if be.get('id') == 'minecraft:jigsaw':
+            be['target'] = 'room'
+            be['pool'] = 'bettergold:golden_prison/room'
+            return 1
+    return 0
+
+
 def run_val():
     r = subprocess.run([sys.executable, VAL], capture_output=True, text=True, encoding='utf-8',
                        errors='replace')
@@ -374,6 +426,14 @@ text_case('P12-start-second-treasure', START, start_add_treasure, 'bgp-treasure-
 # ---- 第三轮追加：生成率 == 下界要塞（P13/P14 打 [bgp-rate-fortress]）
 text_case('P13-spacing-back-to-32', SSET, sset_spacing_32, 'bgp-rate-fortress')
 text_case('P14-spread-type-triangular', SSET, sset_spread_triangular, 'bgp-rate-fortress')
+# ---- 第五轮新增：实体/BE 导出（P15/P16）、出入口上升段（P17）、随机化的池（P18/P19/P20）
+nbt_case('P15-drop-entities', 'treasure.nbt', strip_entities, 'bgp-entity')
+nbt_case('P16-drop-spawn-data', 'treasure.nbt', strip_spawn_data, 'bgp-be')
+nbt_case('P17-cut-exit-shaft', 'exit.nbt', cut_shaft, 'bgp-shaft')
+text_case('P18-room-fallback-empty', POOL, room_fallback_empty, 'bgp-pool-reach')
+text_case('P19-fertile-weight-1', POOL, room_fertile_weight_1, 'bgp-pool-reach')
+nbt_case('P20-exit-target-room', 'exit.nbt', exit_target_room, 'bgp-pool-reach')
+text_case('C3-room-only-whitespace', POOL, only_whitespace, '')
 
 
 def main():

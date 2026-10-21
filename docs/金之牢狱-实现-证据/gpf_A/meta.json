@@ -1,0 +1,2166 @@
+[
+  {
+    "biome": "soul_sand_valley",
+    "pos": [
+      -960,
+      0,
+      -1104
+    ],
+    "union": [
+      -1067,
+      35,
+      -1104,
+      -960,
+      80,
+      -1084
+    ],
+    "pieces": [
+      {
+        "i": 0,
+        "tpl": "treasure",
+        "rot": "clockwise_90",
+        "origin": [
+          -960,
+          35,
+          -1104
+        ],
+        "bbox": [
+          -980,
+          35,
+          -1104,
+          -960,
+          43,
+          -1084
+        ]
+      },
+      {
+        "i": 1,
+        "tpl": "lane",
+        "rot": "clockwise_90",
+        "origin": [
+          -981,
+          37,
+          -1096
+        ],
+        "bbox": [
+          -983,
+          37,
+          -1096,
+          -981,
+          41,
+          -1092
+        ]
+      },
+      {
+        "i": 2,
+        "tpl": "cell_small_mirror",
+        "rot": "clockwise_90",
+        "origin": [
+          -984,
+          37,
+          -1101
+        ],
+        "bbox": [
+          -994,
+          37,
+          -1101,
+          -984,
+          42,
+          -1087
+        ]
+      },
+      {
+        "i": 3,
+        "tpl": "lane",
+        "rot": "clockwise_90",
+        "origin": [
+          -995,
+          37,
+          -1096
+        ],
+        "bbox": [
+          -997,
+          37,
+          -1096,
+          -995,
+          41,
+          -1092
+        ]
+      },
+      {
+        "i": 4,
+        "tpl": "cell_large_mirror",
+        "rot": "clockwise_90",
+        "origin": [
+          -998,
+          37,
+          -1101
+        ],
+        "bbox": [
+          -1028,
+          37,
+          -1101,
+          -998,
+          42,
+          -1087
+        ]
+      },
+      {
+        "i": 5,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1031,
+          37,
+          -1092
+        ],
+        "bbox": [
+          -1031,
+          37,
+          -1096,
+          -1029,
+          41,
+          -1092
+        ]
+      },
+      {
+        "i": 6,
+        "tpl": "cell_large_mirror",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1062,
+          37,
+          -1087
+        ],
+        "bbox": [
+          -1062,
+          37,
+          -1101,
+          -1032,
+          42,
+          -1087
+        ]
+      },
+      {
+        "i": 7,
+        "tpl": "exit",
+        "rot": "clockwise_90",
+        "origin": [
+          -1063,
+          37,
+          -1096
+        ],
+        "bbox": [
+          -1067,
+          37,
+          -1096,
+          -1063,
+          80,
+          -1092
+        ]
+      }
+    ],
+    "dumpedBlocks": 69251,
+    "entities": [
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1066.03125,
+          44.5,
+          -1094.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1066.03125d,44.5d,-1094.5d],Rotation:[90.0f,0.0f],TileX:-1067,TileY:44,TileZ:-1095,UUID:[I;1622142159,497240386,-1639897081,-1169054089],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1067,
+          44,
+          -1095
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1066.03125,
+          44.5,
+          -1092.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1066.03125d,44.5d,-1092.5d],Rotation:[90.0f,0.0f],TileX:-1067,TileY:44,TileZ:-1093,UUID:[I;1403869339,-1739439699,-1095674583,-1373755661],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1067,
+          44,
+          -1093
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -968.03125,
+          41.5,
+          -1092.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-968.03125d,41.5d,-1092.5d],Rotation:[90.0f,0.0f],TileX:-969,TileY:41,TileZ:-1093,UUID:[I;-2076147421,543641127,-1441716633,1492365007],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -969,
+          41,
+          -1093
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -968.03125,
+          41.5,
+          -1094.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-968.03125d,41.5d,-1094.5d],Rotation:[90.0f,0.0f],TileX:-969,TileY:41,TileZ:-1095,UUID:[I;1772351553,857295954,-1595716531,29076631],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -969,
+          41,
+          -1095
+        ],
+        "facing": 4
+      }
+    ],
+    "blockEntities": [
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1057,
+          38,
+          -1100
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1053,
+          39,
+          -1099
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 649
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1007,
+          39,
+          -1089
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 649
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1003,
+          38,
+          -1088
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -989,
+          38,
+          -1088
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -986,
+          39,
+          -1089
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          37,
+          -1103
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 181
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          40,
+          -1100
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          40,
+          -1088
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -976,
+          37,
+          -1085
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -974,
+          37,
+          -1098
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -974,
+          41,
+          -1098
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -974,
+          41,
+          -1090
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -968,
+          38,
+          -1090
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -966,
+          41,
+          -1098
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -966,
+          41,
+          -1090
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          37,
+          -1103
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          40,
+          -1100
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -964,
+          37,
+          -1095
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          40,
+          -1088
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -964,
+          37,
+          -1085
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      }
+    ],
+    "exits": [
+      {
+        "pieceIndex": 7,
+        "bbox": [
+          -1067,
+          37,
+          -1096,
+          -1063,
+          80,
+          -1092
+        ],
+        "topY": 80,
+        "terrainSurfaceY": 127,
+        "topAboveTerrain": false,
+        "columns": 25,
+        "columnsClearAboveTop": 0,
+        "maxSolidAbove": 110
+      }
+    ]
+  },
+  {
+    "biome": "basalt_deltas",
+    "pos": [
+      -1296,
+      0,
+      560
+    ],
+    "union": [
+      -1404,
+      30,
+      547,
+      -1296,
+      75,
+      593
+    ],
+    "pieces": [
+      {
+        "i": 0,
+        "tpl": "treasure",
+        "rot": "clockwise_90",
+        "origin": [
+          -1296,
+          30,
+          560
+        ],
+        "bbox": [
+          -1316,
+          30,
+          560,
+          -1296,
+          38,
+          580
+        ]
+      },
+      {
+        "i": 1,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1319,
+          32,
+          572
+        ],
+        "bbox": [
+          -1319,
+          32,
+          568,
+          -1317,
+          36,
+          572
+        ]
+      },
+      {
+        "i": 2,
+        "tpl": "cell_large_fertile",
+        "rot": "clockwise_90",
+        "origin": [
+          -1320,
+          32,
+          563
+        ],
+        "bbox": [
+          -1350,
+          32,
+          563,
+          -1320,
+          37,
+          577
+        ]
+      },
+      {
+        "i": 3,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1353,
+          32,
+          572
+        ],
+        "bbox": [
+          -1353,
+          32,
+          568,
+          -1351,
+          36,
+          572
+        ]
+      },
+      {
+        "i": 4,
+        "tpl": "cell_small_mirror",
+        "rot": "clockwise_90",
+        "origin": [
+          -1354,
+          32,
+          563
+        ],
+        "bbox": [
+          -1364,
+          32,
+          563,
+          -1354,
+          37,
+          577
+        ]
+      },
+      {
+        "i": 5,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1367,
+          32,
+          572
+        ],
+        "bbox": [
+          -1367,
+          32,
+          568,
+          -1365,
+          36,
+          572
+        ]
+      },
+      {
+        "i": 6,
+        "tpl": "cross_b",
+        "rot": "180",
+        "origin": [
+          -1368,
+          32,
+          588
+        ],
+        "bbox": [
+          -1404,
+          32,
+          552,
+          -1368,
+          39,
+          588
+        ]
+      },
+      {
+        "i": 7,
+        "tpl": "exit",
+        "rot": "180",
+        "origin": [
+          -1384,
+          32,
+          551
+        ],
+        "bbox": [
+          -1388,
+          32,
+          547,
+          -1384,
+          75,
+          551
+        ]
+      },
+      {
+        "i": 8,
+        "tpl": "exit",
+        "rot": "none",
+        "origin": [
+          -1388,
+          32,
+          589
+        ],
+        "bbox": [
+          -1388,
+          32,
+          589,
+          -1384,
+          75,
+          593
+        ]
+      }
+    ],
+    "dumpedBlocks": 220772,
+    "entities": [
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1384.5,
+          39.5,
+          547.96875
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1384.5d,39.5d,547.96875d],Rotation:[180.0f,0.0f],TileX:-1385,TileY:39,TileZ:547,UUID:[I;-1784350972,1350845519,-1704839798,-1527637835],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1385,
+          39,
+          547
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1386.5,
+          39.5,
+          547.96875
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1386.5d,39.5d,547.96875d],Rotation:[180.0f,0.0f],TileX:-1387,TileY:39,TileZ:547,UUID:[I;1472461535,468273652,-1089121169,2034577950],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1387,
+          39,
+          547
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1384.5,
+          37.5,
+          568.96875
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1384.5d,37.5d,568.96875d],Rotation:[180.0f,0.0f],TileX:-1385,TileY:37,TileZ:568,UUID:[I;-1872298039,956911237,-1707878059,488175797],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1385,
+          37,
+          568
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1386.5,
+          37.5,
+          568.96875
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1386.5d,37.5d,568.96875d],Rotation:[180.0f,0.0f],TileX:-1387,TileY:37,TileZ:568,UUID:[I;21800345,1269187796,-1701771665,627373588],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1387,
+          37,
+          568
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1386.5,
+          39.5,
+          593.03125
+        ],
+        "nbt": "{Air:300s,Facing:3b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1386.5d,39.5d,593.03125d],Rotation:[0.0f,0.0f],TileX:-1387,TileY:39,TileZ:593,UUID:[I;446697282,-85768104,-1616030120,1355489487],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1387,
+          39,
+          593
+        ],
+        "facing": 3
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1384.5,
+          39.5,
+          593.03125
+        ],
+        "nbt": "{Air:300s,Facing:3b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1384.5d,39.5d,593.03125d],Rotation:[0.0f,0.0f],TileX:-1385,TileY:39,TileZ:593,UUID:[I;1914999284,-1378074132,-2084996215,1298743369],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1385,
+          39,
+          593
+        ],
+        "facing": 3
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1304.03125,
+          36.5,
+          571.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1304.03125d,36.5d,571.5d],Rotation:[90.0f,0.0f],TileX:-1305,TileY:36,TileZ:571,UUID:[I;1700628942,-123977275,-1285462384,-2011134278],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1305,
+          36,
+          571
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1304.03125,
+          36.5,
+          569.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1304.03125d,36.5d,569.5d],Rotation:[90.0f,0.0f],TileX:-1305,TileY:36,TileZ:569,UUID:[I;464519244,-849196561,-1182231107,-1360620640],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1305,
+          36,
+          569
+        ],
+        "facing": 4
+      }
+    ],
+    "blockEntities": [
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1403,
+          33,
+          562
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 69
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1403,
+          33,
+          578
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 151
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1394,
+          33,
+          553
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 532
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1394,
+          33,
+          587
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 422
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1389,
+          34,
+          570
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 336
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1387,
+          34,
+          570
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1386,
+          34,
+          567
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 155
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1386,
+          34,
+          568
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1386,
+          34,
+          571
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1386,
+          34,
+          573
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 324
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1385,
+          34,
+          570
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1383,
+          34,
+          570
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 391
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1378,
+          33,
+          553
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 20
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1378,
+          33,
+          587
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 359
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1369,
+          33,
+          562
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 176
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1369,
+          33,
+          578
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 574
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1359,
+          33,
+          576
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1356,
+          34,
+          575
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1343,
+          33,
+          564
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1329,
+          34,
+          565
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 649
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1325,
+          33,
+          564
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1312,
+          32,
+          561
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 181
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1312,
+          35,
+          564
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1312,
+          35,
+          576
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1312,
+          32,
+          579
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1310,
+          32,
+          566
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1310,
+          36,
+          566
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1310,
+          36,
+          574
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1304,
+          33,
+          574
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1302,
+          36,
+          566
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1302,
+          36,
+          574
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1300,
+          32,
+          561
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1300,
+          35,
+          564
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1300,
+          32,
+          569
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1300,
+          35,
+          576
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1300,
+          32,
+          579
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      }
+    ],
+    "exits": [
+      {
+        "pieceIndex": 7,
+        "bbox": [
+          -1388,
+          32,
+          547,
+          -1384,
+          75,
+          551
+        ],
+        "topY": 75,
+        "terrainSurfaceY": 127,
+        "topAboveTerrain": false,
+        "columns": 25,
+        "columnsClearAboveTop": 0,
+        "maxSolidAbove": 110,
+        "airFromY": 85
+      },
+      {
+        "pieceIndex": 8,
+        "bbox": [
+          -1388,
+          32,
+          589,
+          -1384,
+          75,
+          593
+        ],
+        "topY": 75,
+        "terrainSurfaceY": 127,
+        "topAboveTerrain": false,
+        "columns": 25,
+        "columnsClearAboveTop": 0,
+        "maxSolidAbove": 110
+      }
+    ]
+  },
+  {
+    "biome": "crimson_forest",
+    "pos": [
+      -1280,
+      0,
+      1024
+    ],
+    "union": [
+      -1383,
+      32,
+      963,
+      -1280,
+      77,
+      1105
+    ],
+    "pieces": [
+      {
+        "i": 0,
+        "tpl": "treasure",
+        "rot": "clockwise_90",
+        "origin": [
+          -1280,
+          32,
+          1024
+        ],
+        "bbox": [
+          -1300,
+          32,
+          1024,
+          -1280,
+          40,
+          1044
+        ]
+      },
+      {
+        "i": 1,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1303,
+          34,
+          1036
+        ],
+        "bbox": [
+          -1303,
+          34,
+          1032,
+          -1301,
+          38,
+          1036
+        ]
+      },
+      {
+        "i": 2,
+        "tpl": "cross_a",
+        "rot": "180",
+        "origin": [
+          -1304,
+          34,
+          1052
+        ],
+        "bbox": [
+          -1340,
+          34,
+          1016,
+          -1304,
+          41,
+          1052
+        ]
+      },
+      {
+        "i": 3,
+        "tpl": "lane",
+        "rot": "clockwise_90",
+        "origin": [
+          -1341,
+          34,
+          1032
+        ],
+        "bbox": [
+          -1343,
+          34,
+          1032,
+          -1341,
+          38,
+          1036
+        ]
+      },
+      {
+        "i": 4,
+        "tpl": "lane",
+        "rot": "180",
+        "origin": [
+          -1320,
+          34,
+          1015
+        ],
+        "bbox": [
+          -1324,
+          34,
+          1013,
+          -1320,
+          38,
+          1015
+        ]
+      },
+      {
+        "i": 5,
+        "tpl": "lane",
+        "rot": "180",
+        "origin": [
+          -1320,
+          34,
+          1055
+        ],
+        "bbox": [
+          -1324,
+          34,
+          1053,
+          -1320,
+          38,
+          1055
+        ]
+      },
+      {
+        "i": 6,
+        "tpl": "cell_small_b",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1354,
+          34,
+          1041
+        ],
+        "bbox": [
+          -1354,
+          34,
+          1027,
+          -1344,
+          39,
+          1041
+        ]
+      },
+      {
+        "i": 7,
+        "tpl": "cell_medium_a",
+        "rot": "180",
+        "origin": [
+          -1315,
+          34,
+          1012
+        ],
+        "bbox": [
+          -1329,
+          34,
+          992,
+          -1315,
+          39,
+          1012
+        ]
+      },
+      {
+        "i": 8,
+        "tpl": "cell_medium_fertile",
+        "rot": "none",
+        "origin": [
+          -1329,
+          34,
+          1056
+        ],
+        "bbox": [
+          -1329,
+          34,
+          1056,
+          -1315,
+          39,
+          1076
+        ]
+      },
+      {
+        "i": 9,
+        "tpl": "lane",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1357,
+          34,
+          1036
+        ],
+        "bbox": [
+          -1357,
+          34,
+          1032,
+          -1355,
+          38,
+          1036
+        ]
+      },
+      {
+        "i": 10,
+        "tpl": "lane",
+        "rot": "180",
+        "origin": [
+          -1320,
+          34,
+          991
+        ],
+        "bbox": [
+          -1324,
+          34,
+          989,
+          -1320,
+          38,
+          991
+        ]
+      },
+      {
+        "i": 11,
+        "tpl": "lane",
+        "rot": "none",
+        "origin": [
+          -1324,
+          34,
+          1077
+        ],
+        "bbox": [
+          -1324,
+          34,
+          1077,
+          -1320,
+          38,
+          1079
+        ]
+      },
+      {
+        "i": 12,
+        "tpl": "cell_medium_fertile",
+        "rot": "counterclockwise_90",
+        "origin": [
+          -1378,
+          34,
+          1041
+        ],
+        "bbox": [
+          -1378,
+          34,
+          1027,
+          -1358,
+          39,
+          1041
+        ]
+      },
+      {
+        "i": 13,
+        "tpl": "cell_medium_mirror",
+        "rot": "none",
+        "origin": [
+          -1329,
+          34,
+          968
+        ],
+        "bbox": [
+          -1329,
+          34,
+          968,
+          -1315,
+          39,
+          988
+        ]
+      },
+      {
+        "i": 14,
+        "tpl": "cell_medium_a",
+        "rot": "180",
+        "origin": [
+          -1315,
+          34,
+          1100
+        ],
+        "bbox": [
+          -1329,
+          34,
+          1080,
+          -1315,
+          39,
+          1100
+        ]
+      },
+      {
+        "i": 15,
+        "tpl": "exit",
+        "rot": "clockwise_90",
+        "origin": [
+          -1379,
+          34,
+          1032
+        ],
+        "bbox": [
+          -1383,
+          34,
+          1032,
+          -1379,
+          77,
+          1036
+        ]
+      },
+      {
+        "i": 16,
+        "tpl": "exit",
+        "rot": "180",
+        "origin": [
+          -1320,
+          34,
+          967
+        ],
+        "bbox": [
+          -1324,
+          34,
+          963,
+          -1320,
+          77,
+          967
+        ]
+      },
+      {
+        "i": 17,
+        "tpl": "exit",
+        "rot": "none",
+        "origin": [
+          -1324,
+          34,
+          1101
+        ],
+        "bbox": [
+          -1324,
+          34,
+          1101,
+          -1320,
+          77,
+          1105
+        ]
+      }
+    ],
+    "dumpedBlocks": 343731,
+    "entities": [
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1382.03125,
+          41.5,
+          1033.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1382.03125d,41.5d,1033.5d],Rotation:[90.0f,0.0f],TileX:-1383,TileY:41,TileZ:1033,UUID:[I;-335625249,1708412756,-1876114467,-1214241355],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1383,
+          41,
+          1033
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1382.03125,
+          41.5,
+          1035.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1382.03125d,41.5d,1035.5d],Rotation:[90.0f,0.0f],TileX:-1383,TileY:41,TileZ:1035,UUID:[I;-388936421,-557366702,-2128071722,-837435782],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1383,
+          41,
+          1035
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1369.3406766536864,
+          31.5,
+          1050.550000011921
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:0b,Motion:[-0.00708113695657454d,-0.0784000015258789d,0.0d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1369.3406766536864d,31.5d,1050.550000011921d],Rotation:[10.279579f,0.0f],Saddle:0b,UUID:[I;-563824914,1514030473,-1914843483,-1298136626],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:0.008233654235679106d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1372.2587921492009,
+          31.5,
+          1048.9347618948907
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:0b,Motion:[-0.014157140629257265d,-0.0784000015258789d,0.03319873850975969d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1372.2587921492009d,31.5d,1048.9347618948907d],Rotation:[23.108192f,0.0f],Saddle:0b,UUID:[I;689769476,1417167145,-1426821014,1992124981],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:-0.04948509923925978d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1367.0,
+          31.5,
+          1104.8999999761581
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:1b,Motion:[0.0d,-0.0784000015258789d,0.0d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1367.0d,31.5d,1104.8999999761581d],Rotation:[239.74953f,0.0f],Saddle:0b,UUID:[I;-2097020406,-523744867,-1636003897,-654055898],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:-0.08786081941586157d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1357.0,
+          31.5,
+          999.0
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:0b,Motion:[0.0d,-0.0784000015258789d,0.0d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1357.0d,31.5d,999.0d],Rotation:[221.30632f,0.0f],Saddle:0b,UUID:[I;-220770247,-90553345,-2124097890,-1019545354],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:0.035135892730089366d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1333.549093976837,
+          31.5,
+          1055.1792901609422
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:0b,Motion:[5.937334486801844E-4d,-0.0784000015258789d,0.03596405819031066d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1333.549093976837d,31.5d,1055.1792901609422d],Rotation:[357.92737f,0.0f],Saddle:0b,UUID:[I;1773803090,-1641594521,-1979377126,-1702413534],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:0.056494079428887074d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1335.7417215536937,
+          31.5,
+          1054.4567701395256
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:0b,Motion:[-0.03283891184451661d,-0.0784000015258789d,8.982001471817951E-4d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1335.7417215536937d,31.5d,1054.4567701395256d],Rotation:[86.86156f,0.0f],Saddle:0b,UUID:[I;-1754793612,346636805,-1194314512,-526204961],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:-0.013308913554425471d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1320.5,
+          41.5,
+          963.96875
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1320.5d,41.5d,963.96875d],Rotation:[180.0f,0.0f],TileX:-1321,TileY:41,TileZ:963,UUID:[I;-1654446270,684804698,-1425235801,805913447],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1321,
+          41,
+          963
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1322.5,
+          41.5,
+          963.96875
+        ],
+        "nbt": "{Air:300s,Facing:2b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1322.5d,41.5d,963.96875d],Rotation:[180.0f,0.0f],TileX:-1323,TileY:41,TileZ:963,UUID:[I;2018100599,-75415136,-1344047573,1758690369],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1323,
+          41,
+          963
+        ],
+        "facing": 2
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1322.5,
+          41.5,
+          1105.03125
+        ],
+        "nbt": "{Air:300s,Facing:3b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1322.5d,41.5d,1105.03125d],Rotation:[0.0f,0.0f],TileX:-1323,TileY:41,TileZ:1105,UUID:[I;-2039035455,513819928,-1803393013,-2075879710],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1323,
+          41,
+          1105
+        ],
+        "facing": 3
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1320.5,
+          41.5,
+          1105.03125
+        ],
+        "nbt": "{Air:300s,Facing:3b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1320.5d,41.5d,1105.03125d],Rotation:[0.0f,0.0f],TileX:-1321,TileY:41,TileZ:1105,UUID:[I;-1405143571,-217822506,-1860933665,-870979445],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1321,
+          41,
+          1105
+        ],
+        "facing": 3
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1288.03125,
+          38.5,
+          1035.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1288.03125d,38.5d,1035.5d],Rotation:[90.0f,0.0f],TileX:-1289,TileY:38,TileZ:1035,UUID:[I;-275960904,566775802,-1665560841,1888933258],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1289,
+          38,
+          1035
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:glow_item_frame",
+        "pos": [
+          -1288.03125,
+          38.5,
+          1033.5
+        ],
+        "nbt": "{Air:300s,Facing:4b,FallDistance:0.0f,Fire:-1s,Fixed:0b,Invisible:0b,Invulnerable:0b,Item:{count:1,id:\"bettergold:chaos_coin\"},ItemDropChance:1.0f,ItemRotation:0b,Motion:[0.0d,0.0d,0.0d],OnGround:0b,PortalCooldown:0,Pos:[-1288.03125d,38.5d,1033.5d],Rotation:[90.0f,0.0f],TileX:-1289,TileY:38,TileZ:1033,UUID:[I;-608682557,-281130258,-1323269675,-1074830000],id:\"minecraft:glow_item_frame\"}",
+        "item": "bettergold:chaos_coin",
+        "tile": [
+          -1289,
+          38,
+          1033
+        ],
+        "facing": 4
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1293.4858703581701,
+          31.5,
+          1090.5146364455227
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:0b,Motion:[0.02552998327403572d,-0.0784000015258789d,0.025515115481397507d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1293.4858703581701d,31.5d,1090.5146364455227d],Rotation:[314.98517f,0.0f],Saddle:0b,UUID:[I;1060772453,-1240776582,-1169181179,-1143531552],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:-0.09349935033819284d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      },
+      {
+        "id": "minecraft:strider",
+        "pos": [
+          -1295.0,
+          31.5,
+          1095.0
+        ],
+        "nbt": "{AbsorptionAmount:0.0f,Age:0,Air:300s,ArmorDropChances:[0.085f,0.085f,0.085f,0.085f],ArmorItems:[{},{},{},{}],Brain:{memories:{}},CanPickUpLoot:0b,DeathTime:0s,FallDistance:0.0f,FallFlying:0b,Fire:0s,ForcedAge:0,HandDropChances:[0.085f,0.085f],HandItems:[{},{}],Health:20.0f,HurtByTimestamp:0,HurtTime:0s,InLove:0,Invulnerable:0b,LeftHanded:0b,Motion:[0.0d,-0.0784000015258789d,0.0d],NeoForgeData:{},OnGround:1b,PersistenceRequired:0b,PortalCooldown:0,Pos:[-1295.0d,31.5d,1095.0d],Rotation:[335.9311f,0.0f],Saddle:0b,UUID:[I;459829052,358894468,-1235242196,267888243],attributes:[{base:0.0d,id:\"minecraft:generic.oxygen_bonus\"},{base:16.0d,id:\"minecraft:generic.follow_range\",modifiers:[{amount:4.055703581236761E-4d,id:\"minecraft:random_spawn_bonus\",operation:\"add_multiplied_base\"}]},{base:0.0d,id:\"minecraft:generic.max_absorption\"},{base:0.17499999701976776d,id:\"minecraft:generic.movement_speed\"}],id:\"minecraft:strider\",\"neoforge:spawn_type\":\"CHUNK_GENERATION\"}",
+        "tile": [
+          0,
+          0,
+          0
+        ],
+        "facing": 0
+      }
+    ],
+    "blockEntities": [
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1375,
+          35,
+          1040
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1373,
+          35,
+          1028
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1372,
+          35,
+          1028
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 281
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1352,
+          35,
+          1029
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1349,
+          35,
+          1028
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1339,
+          35,
+          1026
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 27
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1339,
+          35,
+          1042
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 441
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1330,
+          35,
+          1017
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 74
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1330,
+          35,
+          1051
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 306
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1328,
+          35,
+          973
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1328,
+          35,
+          974
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 281
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1328,
+          35,
+          1006
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 281
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1328,
+          35,
+          1007
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1328,
+          35,
+          1059
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1328,
+          35,
+          1094
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 281
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1328,
+          35,
+          1095
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1316,
+          35,
+          1061
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1316,
+          35,
+          1062
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 281
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1314,
+          35,
+          1017
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 175
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1314,
+          35,
+          1051
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 190
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1305,
+          35,
+          1026
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 350
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1305,
+          35,
+          1042
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 455
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1296,
+          34,
+          1025
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 181
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1296,
+          37,
+          1028
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1296,
+          37,
+          1040
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1296,
+          34,
+          1043
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1294,
+          34,
+          1030
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1294,
+          38,
+          1030
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1294,
+          38,
+          1038
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1288,
+          35,
+          1038
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1286,
+          38,
+          1030
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1286,
+          38,
+          1038
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1284,
+          34,
+          1025
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1284,
+          37,
+          1028
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:chest",
+        "pos": [
+          -1284,
+          34,
+          1033
+        ],
+        "lootTable": "bettergold:chests/golden_prison"
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1284,
+          37,
+          1040
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      },
+      {
+        "id": "minecraft:mob_spawner",
+        "pos": [
+          -1284,
+          34,
+          1043
+        ],
+        "spawnData": "{entity:{id:\"bettergold:money_gremlin\"}}",
+        "delay": 0
+      }
+    ],
+    "exits": [
+      {
+        "pieceIndex": 15,
+        "bbox": [
+          -1383,
+          34,
+          1032,
+          -1379,
+          77,
+          1036
+        ],
+        "topY": 77,
+        "terrainSurfaceY": 127,
+        "topAboveTerrain": false,
+        "columns": 25,
+        "columnsClearAboveTop": 0,
+        "maxSolidAbove": 110,
+        "airFromY": 91
+      },
+      {
+        "pieceIndex": 16,
+        "bbox": [
+          -1324,
+          34,
+          963,
+          -1320,
+          77,
+          967
+        ],
+        "topY": 77,
+        "terrainSurfaceY": 127,
+        "topAboveTerrain": false,
+        "columns": 25,
+        "columnsClearAboveTop": 25,
+        "maxSolidAbove": 110,
+        "airFromY": 78
+      },
+      {
+        "pieceIndex": 17,
+        "bbox": [
+          -1324,
+          34,
+          1101,
+          -1320,
+          77,
+          1105
+        ],
+        "topY": 77,
+        "terrainSurfaceY": 127,
+        "topAboveTerrain": false,
+        "columns": 25,
+        "columnsClearAboveTop": 1,
+        "maxSolidAbove": 110,
+        "airFromY": 78
+      }
+    ]
+  }
+]
