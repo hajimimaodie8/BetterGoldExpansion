@@ -23,6 +23,12 @@
 | `cell_small_mirror` | [CELL_SMALL_MIRROR.png](CELL_SMALL_MIRROR.png) | 15×6×11 | 672 |
 | `cross_a` | [CROSS_A.png](CROSS_A.png) | 37×8×37 | 6284 |
 | `cross_b` | [CROSS_B.png](CROSS_B.png) | 37×8×37 | 6281 |
-| `exit` | [EXIT.png](EXIT.png) | 11×62×11 | 1729 |
+| `cross_slot_1_a` | [CROSS_SLOT_1_A.png](CROSS_SLOT_1_A.png) | 37×8×37 | 6284 |
+| `cross_slot_1_b` | [CROSS_SLOT_1_B.png](CROSS_SLOT_1_B.png) | 37×8×37 | 6281 |
+| `cross_slot_2_a` | [CROSS_SLOT_2_A.png](CROSS_SLOT_2_A.png) | 37×8×37 | 6284 |
+| `cross_slot_2_b` | [CROSS_SLOT_2_B.png](CROSS_SLOT_2_B.png) | 37×8×37 | 6281 |
+| `cross_slot_3_a` | [CROSS_SLOT_3_A.png](CROSS_SLOT_3_A.png) | 37×8×37 | 6284 |
+| `cross_slot_3_b` | [CROSS_SLOT_3_B.png](CROSS_SLOT_3_B.png) | 37×8×37 | 6281 |
+| `exit` | [EXIT.png](EXIT.png) | 5×8×5 | 156 |
 | `lane` | [LANE.png](LANE.png) | 5×5×3 | 50 |
 | `treasure` | [TREASURE.png](TREASURE.png) | 21×9×21 | 2196 |

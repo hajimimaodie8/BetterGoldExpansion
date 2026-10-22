@@ -1,0 +1,29 @@
+{
+  "money_gremlin_ambient": {
+    "subtitle": "subtitles.bettergold.money_gremlin_ambient",
+    "sounds": [
+      {
+        "name": "bettergold:money_gremlin_ambient",
+        "stream": false
+      }
+    ]
+  },
+  "money_gremlin_hurt": {
+    "subtitle": "subtitles.bettergold.money_gremlin_hurt",
+    "sounds": [
+      {
+        "name": "bettergold:money_gremlin_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "money_gremlin_death": {
+    "subtitle": "subtitles.bettergold.money_gremlin_death",
+    "sounds": [
+      {
+        "name": "bettergold:money_gremlin_death",
+        "stream": false
+      }
+    ]
+  }
+}

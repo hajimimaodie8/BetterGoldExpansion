@@ -73,7 +73,10 @@ DIRS = {'north': (0, 0, -1), 'south': (0, 0, 1), 'east': (1, 0, 0), 'west': (-1,
 
 # 每个模板的口：side -> (name, target, pool)
 SOCK = {
-    'treasure':    {'south': ('room', 'lane', POOL + 'lane')},
+    # ★ 第八轮（2026-10-22）：宝藏房的口**唯一去向 = 固定槽 1**（作者：「四面房最少得生成出三间」）。
+    #   旧口径（第一~七轮，原文留档）：'treasure': {'south': ('room', 'lane', POOL + 'lane')}
+    #   （口 name 只是"我是谁"，真正决定去向的是 target + pool：target 必须等于子件 jigsaw 的 name）
+    'treasure': {'south': ('start', 'cross_slot_1', POOL + 'cross_slot_1')},
     'cross_a':     {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     'cross_b':     {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     # ★ 第五轮：出入口的口 target 从 room 改成 empty（任务书第 3 步）——
@@ -517,8 +520,18 @@ def detect_mouths(blocks, sx, sy, sz):
 #   在 depth == maxDepth 那一层被放（且 fallback 件本身不再入队）⇒ **挂在 exit 顶上的
 #   up_jigsaw 永远不会被展开**。所以"从链尾向上接"只能做成同一个模板里的上升段。
 # 造型只用作者已有的方块（gold_bricks / gold_pillar），不引入新方块；井口朝天。
-EXIT_SHAFT_H = 36          # 上升段层数（门楼仍是原样的 8 层，井筒在它上面）
-EXIT_ROOF_OPEN = (1, 3, 1, 3)   # 打通屋顶的 x/z 范围（x1..3, z1..3）；y=6 全开、y=7 只开 z1..2
+# ★★ 第八轮（2026-10-22）作者裁定 **整体撤掉「自己挖空腔」的方案**：
+#   原话「四图：…需要让黄色不断延伸至空域再架起蓝色，而不是直接让蓝色架在红色区域里
+#   并把红色区域的周围清空掉」「五图：你可以参考一下滑行魔石地牢他那边就明了的出入口可分」
+#   ⇒ `exit.nbt` 回退成**第三轮那版 5×8×5（门楼 8 层原样、155 格）**：
+#     `EXIT_SHAFT_H = 0`（不加井筒）、`add_cavity()` 不再调用（不挖空腔）、屋顶不再开顶。
+#   ⚠ "出入口要落在空域"这件事本轮**不做**（等作者给「滑行魔石地牢」的参考）。
+#   旧口径原文留档（第五/六/七轮）：
+#     EXIT_SHAFT_H = 36      # 上升段层数（门楼仍是原样的 8 层，井筒在它上面）
+#     EXIT_ROOF_OPEN = (1, 3, 1, 3)   # 打通屋顶的 x/z 范围；y=6 全开、y=7 只开 z1..2
+#     第七轮又加了 11×62×11 的空腔段（EXIT_CAVITY_*，见下面注释），本轮一并停用。
+EXIT_SHAFT_H = 0           # 第八轮：0 = 不加井筒（回退到 5×8×5 门楼原样）
+EXIT_ROOF_OPEN = (1, 3, 1, 3)   # 仅 EXIT_SHAFT_H > 0 时才用（本轮不生效，常量留档）
 
 # ★ 第七轮（2026-10-21）：井口**自带一个封闭洞厅**（纯数据，只填空格）。
 #   为什么：第五轮实测 8 个口只有 2 个「露头」（airFromY <= topY）；其余 airFromY 比井口环顶**高 9~17 格**
@@ -539,12 +552,23 @@ EXIT_CAVITY_SIZE = (11, 11)     # x/z 外壳尺寸 => 11x11
 def extend_exit(piece):
     """给 exit 加「上升段」：屋顶开井 + 5×5 井筒（内 3×3、井口朝天）。门楼 8 层一格不动。
 
+    ★ 第八轮：`EXIT_SHAFT_H == 0` ⇒ **直接原样返回**（5×8×5、门楼 8 层、155 格：129 实心 + 26 空位）。
+      作者否掉了「自己挖空腔」这套方案（"神秘大金柱子" / "不要直接把红色区域清空"），
+      所以井筒 / 开顶 / 空腔三者全部停用，只留下面这段历史实现的原文（不删，等参考到了再改）。
+
     ⚠ 必须从 y=4 开始打通：门楼的可走空间只有 y=1..3，y=4..7 是作者的屋顶/装饰层
     （y=4 是一整层实心 + 柱子、y=5..7 是楼梯/台阶/结构空）。只在 y=6..7 开洞的话，
     井筒和门楼之间还隔着一层实心屋顶 —— 洪泛到不了（本轮实测：从口洪泛只到 9.14%）。
     打通的只有 x1..3 / z1..2 这 3×2 列，**z=3 那一列（展示框的支撑方块）保留**。
     """
     sx, sy, sz = piece['size']
+    if EXIT_SHAFT_H <= 0:
+        piece['shaft'] = {'h': 0, 'shaft_from_y': None, 'top_y': sy - 1,
+                          'rim': '第八轮回退：门楼 8 层原样、无井筒、无空腔',
+                          'reverted_from': 'EXIT_SHAFT_H=36 + EXIT_CAVITY_*（第五~七轮）'}
+        print('  [exit] 第八轮回退：不加井筒/不开顶/不挖空腔 ⇒ size=%s（门楼原样 8 层）'
+              % (piece['size'],))
+        return piece
     grid = {s2k(k): v for k, v in piece['blocks'].items()}
     opened = []
     for y in range(4, 8):
@@ -794,6 +818,62 @@ def jigsaw_nbt(name, target, pool):
             'placement_priority': 0, 'selection_priority': 0}
 
 
+# ★★ 第八轮（2026-10-22）④「四面房最少三间」：**固定前缀 + 池内随机变体**（纯数据，几何一格不动）
+#   作者要求：每座结构至少 3 个四面道/四面房，而且样式仍要随机。
+#   口径：`start(treasure) → cross_slot_1 → cross_slot_2 → cross_slot_3 → room(随机)`，
+#   三个槽各有自己的池，池里放**两种**四面道（cross_a / cross_b 的槽变体）按权重 ⇒ 数量固定 3、样式随机。
+#
+#   ⚠ 为什么是"同一件复制 3 份改 jigsaw"，而不是手合件 / 也不是"一件三连"：
+#     jigsaw 的 `name` 是**写在模板里的常量**，而 `JigsawBlock.canAttach` 要求
+#     「父口 target == 子件 name」⇒ 第 N 槽的子件必须有一个叫 `cross_slot_N` 的口，
+#     三个槽的口名不同 ⇒ 只能是三份模板（每份 = 同几何 + 不同 jigsaw NBT）。
+#
+#   ⚠ 为什么要**拐弯**（槽 1 从北进、往东接槽 2、槽 2 从西进、往东接槽 3）：
+#     `max_distance_from_center = 116`（bury 的 padding 12 顶着 128 的上限）。子件永远沿父口朝外
+#     长出整整 37 格（cross 的边长），直线三连 = 宝藏房半宽 10 + 37×3 = **121 > 116** ⇒ 第 3 件必被
+#     `verifyRange` 裁掉（第五轮实测过"距中心 114 格的口被裁"）。拐弯后三件的中心分别是
+#     (0,37) / (37,37) / (74,37)，最远边 92 ≤ 116 ⇒ **三件必成**。
+SLOT_ENTRY = {1: 'north', 2: 'west', 3: 'west'}    # 入场面（= 父口朝向的反面）
+SLOT_CHAIN = {1: ('east', 2), 2: ('east', 3), 3: None}   # 本槽往下一槽送的口
+SLOT_STYLES = ('cross_a', 'cross_b')
+SLOT_POOL_W = {'cross_a': 2, 'cross_b': 1}     # 两种样式按权重（A 常见一些）
+
+
+def slot_variants(pieces):
+    """从已注好 jigsaw 的 cross_a / cross_b 复制出 3 槽 × 2 样式 = 6 个模板（几何不动）。"""
+    out = {}
+    for n in (1, 2, 3):
+        entry, chain = SLOT_ENTRY[n], SLOT_CHAIN[n]
+        for style in SLOT_STYLES:
+            src = pieces[style]
+            sx, sy, sz = src['size']
+            name = 'cross_slot_%d_%s' % (n, style.split('_')[1])
+            p = copy.deepcopy(src)
+            p['name'] = name
+            p['derived'] = 'slot'
+            p['base'] = style
+            p['note'] = ('%s 的固定槽 %d 变体（几何/方块一格不动，只改 jigsaw 的 name/target/pool）'
+                         % (style, n))
+            for key, v in list(p['blocks'].items()):
+                if v[0] != 'minecraft:jigsaw':
+                    continue
+                x, y, z = s2k(key)
+                side = ('north' if z == 0 else 'south' if z == sz - 1
+                        else 'west' if x == 0 else 'east')
+                if side == entry:
+                    # 入场口：name 必须等于父口 target（slot1 ← treasure.target=cross_slot_1）
+                    sn, tg, pl = ('cross_slot_%d' % n, 'room', POOL + 'room')
+                elif chain is not None and side == chain[0]:
+                    nxt = chain[1]
+                    sn, tg, pl = ('room', 'cross_slot_%d' % nxt, POOL + 'cross_slot_%d' % nxt)
+                else:
+                    sn, tg, pl = ('room', 'room', POOL + 'room')
+                v[2] = jigsaw_nbt(sn, tg, pl)
+                p['blocks'][key] = v
+            out[name] = p
+    return out
+
+
 def stage2():
     with open(os.path.join(EVID, 'pieces_stage1.json'), encoding='utf-8') as f:
         data = json.load(f)
@@ -825,6 +905,12 @@ def stage2():
         for k, v in grid.items():
             p['blocks'][k2s(k)] = [v[0], v[1]] + ([v[2]] if len(v) > 2 else [])
         p['block_count'] = len(grid)
+    # ★ 第八轮 ④：三个固定槽的变体（6 个新模板；几何与 cross_a/cross_b 逐格相同）
+    variants = slot_variants(pieces)
+    for vn, vp in variants.items():
+        if vn in pieces:
+            raise SystemExit('[gp-build] 槽变体重名：%s' % vn)
+    pieces.update(variants)
     with open(os.path.join(EVID, 'pieces_stage2.json'), 'w', encoding='utf-8') as f:
         json.dump({'pieces': pieces, 'derive_meta': data['derive_meta']}, f,
                   ensure_ascii=False, indent=1, sort_keys=True)
@@ -929,14 +1015,31 @@ def build_nbt(piece):
     pal = []
     pal_idx = {}
     blocks_tag = []
+    void_cells = []
     bes = piece.get('block_entities') or {}
     # 逐格写满：件自己的 bbox 内，没有显式方块的格子就是 minecraft:air。
     # 模板空气 = 放置时把地形挖成房间/门洞；只写本件 bbox，件外世界空气一律不带。
+    #
+    # ★★ 第八轮（2026-10-22）**structure_void 的正确语义**（作者原话：
+    #   「结构空位（structure_void）适用于为结构方块生成结构时不会替代拥有结构空位位置的方块，
+    #     你居然给我神奇地保留下来并且生硬地把方块给顶掉了」）：
+    #   `StructureBlockEntity:341` 保存结构时调的是
+    #     `fillFromWorld(level, pos, size, !ignoreEntities, Blocks.STRUCTURE_VOID)`
+    #   ⇒ **结构空位格根本不进模板**；`StructureTemplate.placeInWorld` 只放置模板里有的格子。
+    #   ⇒ 正确导出 = **整格省略**：
+    #       写 air          = 把地形挖成空气（作者说的"生硬地把方块给顶掉了"）✗
+    #       写 structure_void = 世界里塞一个隐形方块（有 6/16 碰撞盒）**并顶掉地形** ✗
+    #       不写            = 该格原样保留（= 作者要的"别动这一格"）✓
+    #   ⚠ 反过来，**作者原本是 air 的格子必须照写 air**（上一轮 P0 "房间/走廊被灌满"的修复
+    #     就靠它），两者是**两个方向**的断言，见 stage3 自检 ①~④ 与关卡 `[bgp-void]`。
     for y in range(sy):
         for z in range(sz):
             for x in range(sx):
                 key = k2s((x, y, z))
                 v = piece['blocks'].get(key)
+                if v is not None and v[0] == 'minecraft:structure_void':
+                    void_cells.append(key)
+                    continue
                 if v is None:
                     nm, pr = 'minecraft:air', {}
                 else:
@@ -989,6 +1092,7 @@ def build_nbt(piece):
     root['entities'] = (9, (10, ents_tag))
     buf = bytearray()
     nbt_tag(buf, 10, '', root)
+    piece['_void_cells'] = sorted(void_cells)
     return bytes(buf)
 
 
@@ -1018,19 +1122,31 @@ def stage3():
             pr = dict(pal[b['state']].get('Properties') or {})
             got[k2s((x, y, z))] = [nm, pr]
         want = {k: [v[0], v[1]] for k, v in pieces[name]['blocks'].items()}
+        void_cells = set(pieces[name].get('_void_cells') or [])
+        if {k for k, v in want.items() if v[0] == 'minecraft:structure_void'} != void_cells:
+            raise SystemExit('[gp-build] %s 空位格清单与 blocks 里的 structure_void 对不上' % name)
+        want_blocks = {k: v for k, v in want.items() if k not in void_cells}
         got_nonair = {k: v for k, v in got.items() if v[0] != 'minecraft:air'}
-        if got_nonair != want:
-            diff = set(got_nonair) ^ set(want)
+        # ① 写出来的非空气格（含 jigsaw）必须逐格 == 「去掉空位格之后」的件
+        if got_nonair != want_blocks:
+            diff = set(got_nonair) ^ set(want_blocks)
             raise SystemExit('[gp-build] %s 逐格自检失败：差异 %d 格 %s' %
                              (name, len(diff), sorted(diff)[:5]))
         sx, sy, sz = pieces[name]['size']
         vol = sx * sy * sz
-        if len(got) != vol:
-            raise SystemExit('[gp-build] %s 只写了 %d/%d 格（空气没写满）' % (name, len(got), vol))
+        # ② 写入格数 = 体积 − 空位格（空位格**整格省略**，既不写 air 也不写 structure_void）
+        if len(got) != vol - len(void_cells):
+            raise SystemExit('[gp-build] %s 写了 %d 格 != 体积 %d − 空位 %d（空位格必须整格省略）' %
+                             (name, len(got), vol, len(void_cells)))
         air = sum(1 for v in got.values() if v[0] == 'minecraft:air')
-        if air != vol - len(want):
-            raise SystemExit('[gp-build] %s 空气 %d != 体积-非空气 %d' %
-                             (name, air, vol - len(want)))
+        # ③ 作者原本是 air 的格子**必须仍然是 air**（逐格；上一轮 P0 的修复不许回退）
+        #    件模型里 air 是隐式的（blocks 只存非空气）⇒ 空气格数 = 体积 − 空位格 − 非空气格
+        want_air = vol - len(void_cells) - len(want_blocks)
+        if air != want_air:
+            raise SystemExit('[gp-build] %s 空气 %d != 作者原本是 air 的格 %d' % (name, air, want_air))
+        # ④ 调色板里**一格 structure_void 都不许有**（写了就是"塞隐形方块 + 顶掉地形"）
+        if any(e['Name'][0] == 8 and e['Name'][1] == 'minecraft:structure_void' for e in back['palette']):
+            raise SystemExit('[gp-build] %s 的调色板里出现了 minecraft:structure_void' % name)
         if list(back['size']) != pieces[name]['size']:
             raise SystemExit('[gp-build] %s size 不一致' % name)
         # ③ 实体段逐条回读：数量、id、Item、blockPos 必须与源存档逐条相等
@@ -1067,8 +1183,13 @@ def stage3():
                     raise SystemExit('[gp-build] %s 刷怪笼 SpawnData 丢了 %s' % (name, k))
             if sb['id'] == 'minecraft:chest' and gb.get('LootTable') != LOOT:
                 raise SystemExit('[gp-build] %s 箱子缺 LootTable %s' % (name, k))
+        # 空位格的**逐格锚点**：按 (x,y,z) 数值序排，一行一格 "x,y,z"
+        void_sha = hashlib.sha256(
+            ('\n'.join('%d,%d,%d' % s2k(k) for k in sorted(void_cells, key=s2k))).encode('utf-8')
+        ).hexdigest()
         manifest[name] = {'file': name + '.nbt', 'size': pieces[name]['size'],
-                          'blocks': len(want), 'volume': vol, 'air': air,
+                          'blocks': len(want_blocks), 'volume': vol, 'air': air,
+                          'void': len(void_cells), 'void_sha256': void_sha,
                           'sha256': hashlib.sha256(gz).hexdigest(),
                           'entities': len(got_ents),
                           'entity_ids': sorted(set(e['nbt']['id'] for e in got_ents)),
@@ -1078,8 +1199,8 @@ def stage3():
                                                 if v[0] == 'minecraft:chest'),
                           'jigsaw': sorted(k for k, v in pieces[name]['blocks'].items()
                                            if v[0] == 'minecraft:jigsaw')}
-        print('  nbt %-20s %5d solid + %5d air = %5d cells  ent=%d be=%d  %6d B  %s' %
-              (name, len(want), air, vol, len(got_ents), len(got_bes), len(gz),
+        print('  nbt %-20s %5d solid + %5d air + %5d void(省略) = %5d cells  ent=%d be=%d  %6d B  %s' %
+              (name, len(want_blocks), air, len(void_cells), vol, len(got_ents), len(got_bes), len(gz),
                manifest[name]['sha256'][:16]))
     with open(os.path.join(EVID, 'nbt_manifest.json'), 'w', encoding='utf-8') as f:
         json.dump(manifest, f, ensure_ascii=False, indent=1, sort_keys=True)
@@ -1210,6 +1331,13 @@ ROOM_WEIGHTS += [('cross_a', 5), ('cross_b', 5)]
 
 POOLS = collections.OrderedDict([
     ('start', ([(('treasure'), 1)], 'minecraft:empty')),
+    # ★ 第八轮 ④：三个固定槽各一个池（池里 = 两种四面道的槽变体，按权重）
+    ('cross_slot_1', ([('cross_slot_1_a', SLOT_POOL_W['cross_a']),
+                       ('cross_slot_1_b', SLOT_POOL_W['cross_b'])], POOL + 'exit')),
+    ('cross_slot_2', ([('cross_slot_2_a', SLOT_POOL_W['cross_a']),
+                       ('cross_slot_2_b', SLOT_POOL_W['cross_b'])], POOL + 'exit')),
+    ('cross_slot_3', ([('cross_slot_3_a', SLOT_POOL_W['cross_a']),
+                       ('cross_slot_3_b', SLOT_POOL_W['cross_b'])], POOL + 'exit')),
     ('lane', ([(('lane'), 1)], POOL + 'exit')),
     ('room', (ROOM_WEIGHTS, POOL + 'exit')),
     ('exit', ([('exit', 1)], 'minecraft:empty')),
@@ -1265,7 +1393,15 @@ def _structure(biomes, terrain_adaptation, max_distance_from_center):
 
 
 STRUCTURE = _structure(BIOMES_MAIN, 'bury', 116)
-STRUCTURE_BASALT = _structure(BIOMES_BASALT, 'none', 128)
+# ★★ 第八轮（2026-10-22）③ 作者：「金之牢狱将无法生成于玄武岩三角洲」。
+#   ⇒ **删掉玄武岩那一套**（structure + structure_set 两个 JSON 都不再产出，旧文件在 stage4 里删除）。
+#   旧口径原文留档（第六/七轮，不删）：
+#     STRUCTURE_BASALT = _structure(BIOMES_BASALT, 'none', 128)
+#     OUR_SALT_BASALT = 19710102
+#     STRUCTURE_SET_BASALT = {... 'salt': OUR_SALT_BASALT ...}
+#   保留的 `golden_prison.json` 已经是 `biomes = #bettergold:golden_prison/no_basalt`（排除玄武岩的标签）
+#   ⇒ terrain_adaptation 用 **bury**（玄武岩档没了，'none' 不再需要）；max_distance_from_center 仍是 **116**
+#   （bury 的 padding 12 顶着 verifyRange 的 128 上限）。salt 保持 19710101。
 
 # 群系标签：原版 #minecraft:is_nether 的成员逐条（真源 = build 里原版 resources jar 的
 # data/minecraft/tags/worldgen/biome/is_nether.json，5 条、无嵌套标签），**去掉 basalt_deltas**。
@@ -1295,17 +1431,13 @@ STRUCTURE_SET = {
 #   `setLargeFeatureWithSalt(seed, regionX, regionZ, salt)` 抽候选区块 ⇒ 两套若同 salt，候选区块逐个重合，
 #   同一格会既排普通版又排玄武岩版（本设计里两套群系互斥，实际不会双生成，但**不靠巧合**）；
 #   salt 只改分布偏移、不改密度。
-OUR_SALT_BASALT = 19710102
-STRUCTURE_SET_BASALT = {
-    'structures': [{'structure': 'bettergold:golden_prison_basalt', 'weight': 1}],
-    'placement': {
-        'type': 'minecraft:random_spread',
-        'spacing': 27,
-        'separation': 4,
-        'salt': OUR_SALT_BASALT,
-        'spread_type': 'linear',
-    },
-}
+# ★★ 第八轮：整套**删除**（作者：「金之牢狱将无法生成于玄武岩三角洲」）。旧原文留档（第六/七轮）：
+#     OUR_SALT_BASALT = 19710102
+#     STRUCTURE_SET_BASALT = {
+#         'structures': [{'structure': 'bettergold:golden_prison_basalt', 'weight': 1}],
+#         'placement': {'type': 'minecraft:random_spread', 'spacing': 27, 'separation': 4,
+#                       'salt': OUR_SALT_BASALT, 'spread_type': 'linear'},
+#     }
 
 
 def write_json(path, obj):
@@ -1333,18 +1465,25 @@ def stage4():
     if stale:
         print('  [pools] 删除旧池 %d 个：%s' % (len(stale), stale))
     write_json(os.path.join(WG, 'structure', 'golden_prison.json'), STRUCTURE)
-    write_json(os.path.join(WG, 'structure', 'golden_prison_basalt.json'), STRUCTURE_BASALT)
     write_json(os.path.join(WG, 'structure_set', 'golden_prison.json'), STRUCTURE_SET)
-    write_json(os.path.join(WG, 'structure_set', 'golden_prison_basalt.json'), STRUCTURE_SET_BASALT)
+    # ★★ 第八轮 ③：玄武岩那一套**主动删除**（writer 只剩一套；旧文件不删就会继续在 worldgen 里生效）
+    removed = []
+    for rel in (('structure', 'golden_prison_basalt.json'),
+                ('structure_set', 'golden_prison_basalt.json')):
+        fp = os.path.join(WG, rel[0], rel[1])
+        if os.path.exists(fp):
+            os.remove(fp)
+            removed.append('/'.join(rel))
+    if removed:
+        print('  [worldgen] 第八轮删除玄武岩那一套 %d 个文件：%s' % (len(removed), removed))
     # 第六轮：群系标签（列表 = 原版 #minecraft:is_nether 减 basalt_deltas；replace 显式 false）
     write_json(os.path.join(ROOT, 'src', 'main', 'resources', 'data', 'bettergold', 'tags',
                             'worldgen', 'biome', 'golden_prison', 'no_basalt.json'), BIOME_TAG)
     print('== stage4: worldgen JSON ==')
     print('  structure_set: spacing=27 separation=4 spread_type=linear'
           '（= 下界要塞的 spacing/separation；旧 32/16 已按作者第三轮要求改掉）')
-    for label, st, pl in (('golden_prison（主，非玄武岩）', STRUCTURE, STRUCTURE_SET['placement']),
-                          ('golden_prison_basalt（玄武岩）', STRUCTURE_BASALT,
-                           STRUCTURE_SET_BASALT['placement'])):
+    for label, st, pl in (('golden_prison（唯一一套，非玄武岩）', STRUCTURE,
+                           STRUCTURE_SET['placement']),):
         print('  %-32s biomes=%-38s terrain_adaptation=%-4s max_distance=%-3d salt=%d'
               % (label, st['biomes'], st['terrain_adaptation'], st['max_distance_from_center'],
                  pl['salt']))

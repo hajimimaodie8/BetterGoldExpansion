@@ -18,13 +18,13 @@
    "1,1,5"
   ],
   "sha256": "05d838af6230684b24f75c4ca5de7eff8f9917b72b3b0768d80d4f58b39e21c4",
-  "sha256_raw": "b6f89f4bbfc2dfd336f72c00935b7c42e497460e3cc77b454dcc40ee8fe79cdb",
   "size": [
    15,
    6,
    31
   ],
-  "size_on_disk": 8349,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 2790
  },
  "cell_large_b": {
@@ -46,13 +46,13 @@
    "13,1,15"
   ],
   "sha256": "48cb5fe4a154ab4a0b06433d6fe2ce4f3b74f696e2f7c12f3bdc76388f3c7732",
-  "sha256_raw": "38c9c3ccfdc4ca915c75ec97cf947fdb8b7633e8d872aa02c088af33e495098d",
   "size": [
    15,
    6,
    31
   ],
-  "size_on_disk": 8348,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 2790
  },
  "cell_large_c": {
@@ -74,13 +74,13 @@
    "1,1,25"
   ],
   "sha256": "a8da5a4b201cbbee05ab4b30b5484029e9d9161a9d3657c2ab52a0870dcd1f59",
-  "sha256_raw": "179bee8a599f4441dec498495f784a58cafffce7c9654872943cd82b3eef9327",
   "size": [
    15,
    6,
    31
   ],
-  "size_on_disk": 8356,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 2790
  },
  "cell_large_fertile": {
@@ -102,14 +102,14 @@
    "1,1,23",
    "1,1,5"
   ],
-  "sha256": "d8df95120742e35e0c1e47ce25fe493bed2165eb911b6d701841b403e2f32d1d",
-  "sha256_raw": "5b99debb34718339f154a78a446017e2aee0ac3f22ac79b94e9ef3d5e78a0ed6",
+  "sha256": "1268a99c1faf8377cc6bb14fe5658d22f9231960a909193fb3c350add287bcc7",
   "size": [
    15,
    6,
    31
   ],
-  "size_on_disk": 8482,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 2790
  },
  "cell_large_mirror": {
@@ -131,13 +131,13 @@
    "13,1,5"
   ],
   "sha256": "b895ea8b80a5c4d23ebe0de0b5d7262a763b67c00b4c76fc1ba184e9e2517bc1",
-  "sha256_raw": "cca36308c4b01f2e68b5d1e3fc1a9a055f53a797fc1565a7a96112c9784d6e67",
   "size": [
    15,
    6,
    31
   ],
-  "size_on_disk": 8371,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 2790
  },
  "cell_medium_a": {
@@ -159,13 +159,13 @@
    "13,1,5"
   ],
   "sha256": "a7c1aff411e2973a7cc82c005ad20eb6b13cd6b5356cdef527cb80983c006b6e",
-  "sha256_raw": "98f288a1065b33afa550e6abaf9adbb18d7d752723d28e8e8a7d17efc94cd444",
   "size": [
    15,
    6,
    21
   ],
-  "size_on_disk": 5893,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 1890
  },
  "cell_medium_b": {
@@ -187,13 +187,13 @@
    "1,1,15"
   ],
   "sha256": "76d9dec22bade44f72749b6b53d560886f19e720c1ef294ff2af2fbbd61450c2",
-  "sha256_raw": "4458f3532f743a6d55d68569a8ad450ff3c24cc1cb993035ea1fc5526caf1f98",
   "size": [
    15,
    6,
    21
   ],
-  "size_on_disk": 5913,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 1890
  },
  "cell_medium_c": {
@@ -210,13 +210,13 @@
   ],
   "loot_chests": [],
   "sha256": "d66261297bbdbb1a64c400a27bf6cafe7ca40fd8862ec1847e726dc9beea23e3",
-  "sha256_raw": "667f4f8e3d6280e4b574a6669bd27e05c94361a4a60507bb9f10cfa9145d9f33",
   "size": [
    15,
    6,
    21
   ],
-  "size_on_disk": 5542,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 1890
  },
  "cell_medium_fertile": {
@@ -238,14 +238,14 @@
    "1,1,3",
    "13,1,5"
   ],
-  "sha256": "ed5bd499ba474c4026a7a37e0afe99160b71cd2a81cf8c48ab464f3edaed7f24",
-  "sha256_raw": "ddd039f701679a61738578fb3557f7469b34716795ee32bd7decf7f6ac43eb46",
+  "sha256": "c62660723cf13faa28e330f8ed7eb7a3e3df0b375234cde438343f916d42396d",
   "size": [
    15,
    6,
    21
   ],
-  "size_on_disk": 6034,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 1890
  },
  "cell_medium_mirror": {
@@ -267,13 +267,13 @@
    "1,1,5"
   ],
   "sha256": "b97afc0d70cb5bc3a7c51b56f0cad78b94f19e9fa307be7ac9eaeaefbc10e3b2",
-  "sha256_raw": "6f99b8419ef8052634cabddc1b95430cc7f705cdb23ebd98e11ddb13d726327c",
   "size": [
    15,
    6,
    21
   ],
-  "size_on_disk": 5889,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 1890
  },
  "cell_small_a": {
@@ -295,13 +295,13 @@
    "1,1,5"
   ],
   "sha256": "6e119b0df4ddd184dece20c80105c5054a9bb49ef70bb9d2f3a4e919b1f9417c",
-  "sha256_raw": "a2435688ded06199569e241c0409ed995dfcf78a0a9ad550d20998d66b6db472",
   "size": [
    15,
    6,
    11
   ],
-  "size_on_disk": 3554,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 990
  },
  "cell_small_b": {
@@ -323,13 +323,13 @@
    "13,1,5"
   ],
   "sha256": "bc7e2ccb5a1d5da3d514d45fdeefcb919fe26ff5b8c261b7b491a1c6a41e1cd7",
-  "sha256_raw": "f577762a9a7170571cd9cfb369437c09a9b336691eec63432220d56793e8339c",
   "size": [
    15,
    6,
    11
   ],
-  "size_on_disk": 3544,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 990
  },
  "cell_small_c": {
@@ -346,13 +346,13 @@
   ],
   "loot_chests": [],
   "sha256": "236a848e7cf7cc850b03e8231d0edb8964673e81b53debc67e8b5d2fc57342ae",
-  "sha256_raw": "4deeb9abafb32ac5b705bc228a5cf64f14fbd477ece75e42665068a0dd2bc9dd",
   "size": [
    15,
    6,
    11
   ],
-  "size_on_disk": 3243,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 990
  },
  "cell_small_fertile": {
@@ -374,14 +374,14 @@
    "1,1,5",
    "2,1,4"
   ],
-  "sha256": "c646fcde16a120d0f2802ae57d7aa24633ac10bff3bd2adc1d045098917287ba",
-  "sha256_raw": "474bae91c585e5f7f03030b8a9d24bbc450f41b670e6487ab9f00076b10a969b",
+  "sha256": "c6624f555ed9bee6754d7a5f1fa1b8ae15aae1ea48e542bef78b53a82c396561",
   "size": [
    15,
    6,
    11
   ],
-  "size_on_disk": 3674,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 990
  },
  "cell_small_mirror": {
@@ -403,13 +403,13 @@
    "13,1,5"
   ],
   "sha256": "64c54c3163c3bf69a40abce3e43e42c02f6b8d6f4e6b8cf3101e921b1240a2e7",
-  "sha256_raw": "6398605f787a37c2d96b7f940067f440b67bb0d2a17de3ebfe9fad4111d3ae61",
   "size": [
    15,
    6,
    11
   ],
-  "size_on_disk": 3546,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 990
  },
  "cross_a": {
@@ -418,7 +418,7 @@
    "minecraft:mob_spawner"
   ],
   "block_entities": 8,
-  "blocks": 6284,
+  "blocks": 4804,
   "entities": 0,
   "entity_ids": [],
   "file": "cross_a.nbt",
@@ -429,14 +429,14 @@
    "36,1,18"
   ],
   "loot_chests": [],
-  "sha256": "a74ea5e2a5c2d409d569ceb571ed72aace7b9332ee4892a3f8a486842c29a5ed",
-  "sha256_raw": "fc22b00129dbd7647adaa7487083c5c799d935fde181386424c2fb3e11075499",
+  "sha256": "49b6f3a473ce839cc7273dde1a9890fc998290ceb05e570c6d6fb395ce062f8e",
   "size": [
    37,
    8,
    37
   ],
-  "size_on_disk": 30879,
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
   "volume": 10952
  },
  "cross_b": {
@@ -446,7 +446,7 @@
    "minecraft:mob_spawner"
   ],
   "block_entities": 16,
-  "blocks": 6281,
+  "blocks": 4801,
   "entities": 2,
   "entity_ids": [
    "minecraft:glow_item_frame"
@@ -464,21 +464,207 @@
    "18,2,20",
    "19,2,18"
   ],
-  "sha256": "e929e25423b33a7100519ed933900f364b963e093b3c9004809317cb5ee5fa2a",
-  "sha256_raw": "98b70730b650466c16201dba1f6d370221095c38264be443ebb10a2bf6bfecd6",
+  "sha256": "537933ffae422c2ba7cd594be71b7250d3c868a8d78e5052c8e2db23d6f2b489",
   "size": [
    37,
    8,
    37
   ],
-  "size_on_disk": 31696,
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
+  "volume": 10952
+ },
+ "cross_slot_1_a": {
+  "air": 4668,
+  "be_ids": [
+   "minecraft:mob_spawner"
+  ],
+  "block_entities": 8,
+  "blocks": 4804,
+  "entities": 0,
+  "entity_ids": [],
+  "file": "cross_slot_1_a.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [],
+  "sha256": "0ee5be59a31bd5f622b72ba5beb31ab0098da7918e9210ddecadcb44514bafd8",
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
+  "volume": 10952
+ },
+ "cross_slot_1_b": {
+  "air": 4671,
+  "be_ids": [
+   "minecraft:chest",
+   "minecraft:mob_spawner"
+  ],
+  "block_entities": 16,
+  "blocks": 4801,
+  "entities": 2,
+  "entity_ids": [
+   "minecraft:glow_item_frame"
+  ],
+  "file": "cross_slot_1_b.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [
+   "17,2,18",
+   "18,2,17",
+   "18,2,20",
+   "19,2,18"
+  ],
+  "sha256": "1f896e88e9073f0f045032c17508ebb860578829accc8b9aa58df3775f6649fc",
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
+  "volume": 10952
+ },
+ "cross_slot_2_a": {
+  "air": 4668,
+  "be_ids": [
+   "minecraft:mob_spawner"
+  ],
+  "block_entities": 8,
+  "blocks": 4804,
+  "entities": 0,
+  "entity_ids": [],
+  "file": "cross_slot_2_a.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [],
+  "sha256": "ecaa7f13f929794c5ccf2140e19d43fae063accde7cf14528df657f242400870",
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
+  "volume": 10952
+ },
+ "cross_slot_2_b": {
+  "air": 4671,
+  "be_ids": [
+   "minecraft:chest",
+   "minecraft:mob_spawner"
+  ],
+  "block_entities": 16,
+  "blocks": 4801,
+  "entities": 2,
+  "entity_ids": [
+   "minecraft:glow_item_frame"
+  ],
+  "file": "cross_slot_2_b.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [
+   "17,2,18",
+   "18,2,17",
+   "18,2,20",
+   "19,2,18"
+  ],
+  "sha256": "31a1896ad6b9821b98643e26baa0d5994f95302285ae5feda84813d531c8dd1e",
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
+  "volume": 10952
+ },
+ "cross_slot_3_a": {
+  "air": 4668,
+  "be_ids": [
+   "minecraft:mob_spawner"
+  ],
+  "block_entities": 8,
+  "blocks": 4804,
+  "entities": 0,
+  "entity_ids": [],
+  "file": "cross_slot_3_a.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [],
+  "sha256": "31dff98fd5ff4902d3e7cce7969cc9ad948420df723d7284fa920c3a191e0eea",
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
+  "volume": 10952
+ },
+ "cross_slot_3_b": {
+  "air": 4671,
+  "be_ids": [
+   "minecraft:chest",
+   "minecraft:mob_spawner"
+  ],
+  "block_entities": 16,
+  "blocks": 4801,
+  "entities": 2,
+  "entity_ids": [
+   "minecraft:glow_item_frame"
+  ],
+  "file": "cross_slot_3_b.nbt",
+  "jigsaw": [
+   "0,1,18",
+   "18,1,0",
+   "18,1,36",
+   "36,1,18"
+  ],
+  "loot_chests": [
+   "17,2,18",
+   "18,2,17",
+   "18,2,20",
+   "19,2,18"
+  ],
+  "sha256": "515d7ef6499e6f5f29638bc2110c8b7c3fd6acf426f9a2cd7840455b3ac727c3",
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "void": 1480,
+  "void_sha256": "d778eef52d68d754600386041d89cd249639d94381c230e382500ac2378363b4",
   "volume": 10952
  },
  "exit": {
-  "air": 5773,
+  "air": 44,
   "be_ids": [],
   "block_entities": 0,
-  "blocks": 1729,
+  "blocks": 130,
   "entities": 2,
   "entity_ids": [
    "minecraft:glow_item_frame"
@@ -488,15 +674,15 @@
    "2,1,0"
   ],
   "loot_chests": [],
-  "sha256": "28eb4245c7452bd4466694e8a6f964e506c897cee89c74009da0966b37d2c4ab",
-  "sha256_raw": "ca1e5c2cc9c179cfa5cda62de8026a2ca9cd0c6be9052f08ba08d93983ab361e",
+  "sha256": "03e317e19d268a27189ec9ad07aab1430d0140dd644c212f15a55c5a907172c9",
   "size": [
-   11,
-   62,
-   11
+   5,
+   8,
+   5
   ],
-  "size_on_disk": 22703,
-  "volume": 7502
+  "void": 26,
+  "void_sha256": "6a8e32100a5a5b0f790c320646e0528101e87538e4400c7ca26102ad9b6ec7d4",
+  "volume": 200
  },
  "lane": {
   "air": 25,
@@ -512,13 +698,13 @@
   ],
   "loot_chests": [],
   "sha256": "6225262fa350834d1ef1076e99414389f8419b98a105a6f31fadc81bfbb6d3a4",
-  "sha256_raw": "401dada5adbb85dba30d284344caf3e1eead699e5580f87b1f46aed6fd06c732",
   "size": [
    5,
    5,
    3
   ],
-  "size_on_disk": 540,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 75
  },
  "treasure": {
@@ -542,14 +728,14 @@
    "6,2,14",
    "9,2,4"
   ],
-  "sha256": "f2bf704b79be92c0be2c4359d7f8ab98533b2b09cb094c97b895271911df8496",
-  "sha256_raw": "41a35fb57c776399a52090508c328b9c45cd1a8581d678709b45c1d18ba1d169",
+  "sha256": "0f0d3cd8bf8f9e11740f64bc3184dffab63ba306a3418f39c6b7c36c245b31b0",
   "size": [
    21,
    9,
    21
   ],
-  "size_on_disk": 12123,
+  "void": 0,
+  "void_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "volume": 3969
  }
 }

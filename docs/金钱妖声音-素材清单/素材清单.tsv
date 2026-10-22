@@ -1,0 +1,9 @@
+# 金钱妖声音.zip（作者 2026-10-21 交付）只读入库清单
+# 原 zip 路径	E:\mc\mc资料\金钱妖声音.zip
+# 原 zip SHA256	c0bda7adeed24dc0058ab0c4ef55ecfdf99ef74717cd3e9705e4f56e1318d16b
+# ⚠ 三个文件名是 .mp3，实际容器 = **MP4（ftyp isom）**：各含 HEVC 视频流 + AAC 音频流；
+#   接入游戏只取**音频流**（-vn -map 0:a:0）转成 ogg vorbis 单声道。
+文件	字节	SHA256	流	音频声道	音频采样率	duration_s	归类
+金钱妖：刷刷响.mp3	165830	d31b219a49ba366765c1c3a3954b3284ad05505301ad999481fc42d81e581e92	video:hevc+audio:aac	2	44100	2.067	money_gremlin_ambient
+金钱妖：受伤.mp3	639212	9ebe6756e3eed249ed95f606c13a9eaef600ba3af05041bf4ca10d60c0ba55ab	video:hevc+audio:aac	2	44100	0.975	money_gremlin_hurt
+金钱妖：死亡.mp3	1152199	e02259755683d530151dcd7f3fb18f630ed4b0791872003763dceac863e3ce42	video:hevc+audio:aac	2	44100	1.733	money_gremlin_death

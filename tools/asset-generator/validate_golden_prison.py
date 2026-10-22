@@ -39,16 +39,17 @@ POOL_DIR = os.path.join(WG, 'template_pool', 'golden_prison')
 TREASURE_LOC = POOL + 'treasure'
 LOOT_ID = 'bettergold:chests/golden_prison'
 
-# 冻结快照：20 个模板的尺寸（第 1 步的产出，不许被悄悄改）
+# 冻结快照：26 个模板的尺寸（第 1 步的产出，不许被悄悄改）
 # ★ 第五轮（2026-10-21）：exit 从 5×8×5 → 5×(8+36)×5。门楼仍是原样 8 层，上面 36 层是
 #   「上升段」井筒（井口朝天）；原因见 gp_build.py 的 EXIT_SHAFT_H 注释（fallback 件不入队，
 #   挂 up_jigsaw 也永远不会被展开 ⇒ 只能做进同一个模板）。
-# ★ 第七轮（2026-10-21）：exit 5×44×5 → **11×62×11**：井筒顶部加一个封闭洞厅（空腔），
-#   让井口一定露在空腔空气里（读数见 docs\金之牢狱-实现记录.md §13）。
-#   旧期望原文留档（第五/六轮）：'exit': (5, 44, 5)。
+# ★ 第七轮（2026-10-21）：exit 5×44×5 → 11×62×11：井筒顶部加一个封闭洞厅（空腔）。
+# ★★ 第八轮（2026-10-22）：作者否掉了「自己挖空腔」⇒ **exit 回退成 5×8×5（门楼 8 层原样、155 格）**。
+#   旧期望原文留档（第五/六/七轮）：'exit': (5, 44, 5) / 'exit': (11, 62, 11)。
+#   另加 6 个「四面道固定槽」变体（几何与 cross_a/cross_b 逐格相同，只有 jigsaw 的 name/target/pool 不同）。
 EXPECT_SIZE = {
     'treasure': (21, 9, 21), 'cross_a': (37, 8, 37), 'cross_b': (37, 8, 37),
-    'lane': (5, 5, 3), 'exit': (11, 62, 11),
+    'lane': (5, 5, 3), 'exit': (5, 8, 5),
     'cell_large_a': (15, 6, 31), 'cell_large_b': (15, 6, 31), 'cell_large_c': (15, 6, 31),
     'cell_large_mirror': (15, 6, 31), 'cell_large_fertile': (15, 6, 31),
     'cell_medium_a': (15, 6, 21), 'cell_medium_b': (15, 6, 21), 'cell_medium_c': (15, 6, 21),
@@ -56,6 +57,9 @@ EXPECT_SIZE = {
     'cell_small_a': (15, 6, 11), 'cell_small_b': (15, 6, 11), 'cell_small_c': (15, 6, 11),
     'cell_small_mirror': (15, 6, 11), 'cell_small_fertile': (15, 6, 11),
 }
+SLOT_TEMPLATES = ['cross_slot_%d_%s' % (n, s) for n in (1, 2, 3) for s in ('a', 'b')]
+for _t in SLOT_TEMPLATES:
+    EXPECT_SIZE[_t] = (37, 8, 37)
 # 冻结快照：从作者存档逐格抠出来的 14 件方块数（docs\\金之牢狱-拼接分析.md §3.3）
 EXPECT_SRC_COUNT = {
     'treasure': 2195, 'cross_a': 6280, 'cross_b': 6277, 'lane': 48, 'exit': 155,
@@ -68,6 +72,8 @@ EXPECT_MOUTHS = {
     'treasure': {'south'}, 'cross_a': {'north', 'south', 'east', 'west'},
     'cross_b': {'north', 'south', 'east', 'west'}, 'lane': {'north', 'south'}, 'exit': {'north'},
 }
+for _t in SLOT_TEMPLATES:
+    EXPECT_MOUTHS[_t] = {'north', 'south', 'east', 'west'}
 for _c in ('large', 'medium', 'small'):
     for _v in ('a', 'b', 'c', 'mirror', 'fertile'):
         EXPECT_MOUTHS['cell_%s_%s' % (_c, _v)] = {'north', 'south'}
@@ -82,8 +88,10 @@ EXPECT_WALK_Y = {'treasure': 3, 'cells': 1, 'lane': 1, 'exit': 1}
 #   的口（target=lane），贴不到 lane 的 target=room 口；size 6→5 后链尾一件是 lane，
 #   那两个 room 口就永远接不上（实测：3 座全 0 个出入口、落单口 5 个）。改成 room 后正好对上。
 #   旧期望原文留档（第一~六轮）：'exit': {'north': ('lane', 'empty', 'minecraft:empty')}
+# ★★ 第八轮 ④：宝藏房的口**唯一去向 = 固定槽 1**（旧口径：('room', 'lane', POOL + 'lane')）。
+#   三个固定槽的 socket 见 SLOT_SOCK（入场口 / 送往下一槽的口 / 其余全部 room）。
 SOCK = {
-    'treasure': {'south': ('room', 'lane', POOL + 'lane')},
+    'treasure': {'south': ('start', 'cross_slot_1', POOL + 'cross_slot_1')},
     'cross_a': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     'cross_b': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     'exit': {'north': ('room', 'empty', 'minecraft:empty')},
@@ -95,6 +103,24 @@ for _n in ('cell_small_a', 'cell_small_b', 'cell_small_c', 'cell_small_mirror', 
            'cell_large_a', 'cell_large_b', 'cell_large_c', 'cell_large_mirror', 'cell_large_fertile'):
     SOCK[_n] = {'north': ('room', 'lane', POOL + 'lane'), 'south': ('room', 'lane', POOL + 'lane')}
 
+# ★★ 第八轮 ④：三个固定槽的 socket（= gp_build.SLOT_ENTRY / SLOT_CHAIN 的同一组数）
+#   槽 N 的「入场口」= 父口朝向的反面，name 必须是 `cross_slot_N`（canAttach：父 target == 子 name）；
+#   槽 1 从北进、往东送；槽 2 从西进、往东送；槽 3 从西进、其余全 room。
+SLOT_ENTRY = {1: 'north', 2: 'west', 3: 'west'}
+SLOT_CHAIN = {1: ('east', 2), 2: ('east', 3), 3: None}
+for _n in (1, 2, 3):
+    for _s in ('a', 'b'):
+        _cfg = {}
+        for _side in ('north', 'south', 'east', 'west'):
+            if _side == SLOT_ENTRY[_n]:
+                _cfg[_side] = ('cross_slot_%d' % _n, 'room', POOL + 'room')
+            elif SLOT_CHAIN[_n] and _side == SLOT_CHAIN[_n][0]:
+                _cfg[_side] = ('room', 'cross_slot_%d' % SLOT_CHAIN[_n][1],
+                               POOL + 'cross_slot_%d' % SLOT_CHAIN[_n][1])
+            else:
+                _cfg[_side] = ('room', 'room', POOL + 'room')
+        SOCK['cross_slot_%d_%s' % (_n, _s)] = _cfg
+
 # 池：名字 -> (元素模板, fallback 池)
 # ★ 第五轮：15 个池 → **4 个**；room 池 = 15 个牢房变体 + 2 个四面道（按权重随机）。
 CELL_VARIANTS = ['cell_%s_%s' % (c, v) for c in ('small', 'medium', 'large')
@@ -105,23 +131,42 @@ ROOM_WEIGHTS = dict([(t, 10 if t.endswith('_fertile') else 2) for t in CELL_VARI
 #   旧口径留档（第五轮）：fertile=6、总权重 52、非丰饶 34、P(3 连)=1-(34/52)^3=0.720。
 EXPECT_POOLS = {
     'start': (['treasure'], 'minecraft:empty'),
+    # ★★ 第八轮 ④：三个固定槽各一个池（池里 = 两种四面道的槽变体，权重 a=2 / b=1）
+    'cross_slot_1': (['cross_slot_1_a', 'cross_slot_1_b'], POOL + 'exit'),
+    'cross_slot_2': (['cross_slot_2_a', 'cross_slot_2_b'], POOL + 'exit'),
+    'cross_slot_3': (['cross_slot_3_a', 'cross_slot_3_b'], POOL + 'exit'),
     'lane': (['lane'], POOL + 'exit'),
     'room': (CELL_VARIANTS + ['cross_a', 'cross_b'], POOL + 'exit'),
     'exit': (['exit'], 'minecraft:empty'),
 }
+SLOT_POOL_W = {'cross_slot_1': {'cross_slot_1_a': 2, 'cross_slot_1_b': 1},
+               'cross_slot_2': {'cross_slot_2_a': 2, 'cross_slot_2_b': 1},
+               'cross_slot_3': {'cross_slot_3_a': 2, 'cross_slot_3_b': 1}}
+# 旧口径留档（第一~七轮，原文不删）：
+#   'start': treasure | 'lane': lane→exit | 'room': 12 条 | 'exit': exit   （第五~七轮：4 个池）
+#   + cell_small_1/2/3（各 1 条，fallback=自己）+ cell_medium_1..3 / cell_large_1..3 / cross_a / cross_b
+#   （各自 1 条，fallback=empty）。共 15 个池文件。
 # 旧口径留档（第一~四轮，原文不删）：
 #   'start': treasure | 'lane': lane→exit | 'room': 12 条 | 'exit': exit
 #   + cell_small_1/2/3（各 1 条，fallback=自己）+ cell_medium_1..3 / cell_large_1..3 / cross_a / cross_b
 #   （各自 1 条，fallback=empty）。共 15 个池文件。
 
-# ★ 第五轮：exit 重建后的方块数记账 = 155（作者原件，取证值不变）
-#   + 36 层 × 16 格井筒墙（4 角 gold_pillar + 12 边 gold_bricks）
-#   − 24 格被"开顶"打通掉的原件（y=4..7 的 x1..3 / z1..2 这一 3×2 列）。
-#   = 155 + 576 − 24 = 707（不含第 2 步的 1 个 jigsaw）
-# ★ 第七轮：+ 空腔 1021 格（地板 96 + 天花板 121 + 四壁 804；只填空格、不覆盖井筒/门楼）
-#   = 707 + 1021 = **1728**（不含 jigsaw；实测 NBT 1729 solid 含 1 个 jigsaw）。
-#   旧期望原文留档（第五/六轮）：EXPECT_EXIT_BLOCKS = 707
-EXPECT_EXIT_BLOCKS = 1728
+# ★★ 第八轮 ②：exit **回退**成作者原件 5×8×5（门楼 8 层原样）。
+#   记账：作者原件 155 格 = **129 实心 + 26 结构空位**；空位格按 ① 的语义**整格省略**
+#   ⇒ .nbt 里写出来的实心格（不含第 2 步注入的 1 个 jigsaw）= **129**。
+#   旧期望原文留档（第五/六/七轮）：EXPECT_EXIT_BLOCKS = 707（井筒）/ 1728（井筒+空腔）
+EXPECT_EXIT_BLOCKS = 129
+# 结构空位（structure_void）→ **整格省略**的格数（逐件；1 件=0 表示该件不含结构空位）
+#   来源 = 作者存档逐格实测（docs\金之牢狱-实现-证据\nbt_manifest.json 的 void 字段同一组数）
+#   cross_a/cross_b 的 1480 格在 y=6..7 的屋顶外圈；exit 的 26 格在 y=5..7 的门楼顶。
+EXPECT_VOID = {
+    'treasure': 0, 'cross_a': 1480, 'cross_b': 1480, 'lane': 0, 'exit': 26,
+}
+for _t in SLOT_TEMPLATES:
+    EXPECT_VOID[_t] = 1480
+for _c in ('large', 'medium', 'small'):
+    for _v in ('a', 'b', 'c', 'mirror', 'fertile'):
+        EXPECT_VOID['cell_%s_%s' % (_c, _v)] = 0
 
 EXPECT_LOOT_WEIGHT = 80
 EXPECT_LOOT_ENTRIES = 27
@@ -162,24 +207,29 @@ FORTRESS_PLACEMENT = {
 FORTRESS_SALT = 30084232
 OUR_SALT = 19710101
 
-# ------------------------------------------------------------------ 第六轮（2026-10-21）
-# ① 出入口「纯露头」：EXIT_SHAFT_H 36 → 40（**实测校准**，不是照任务书的 +40；
-#    读数与为什么 +40 是反效果见 docs\金之牢狱-实现记录.md §12.1）。
-# ② 按群系分支：两套 structure JSON + 两套 structure_set + 一个群系标签。
-# ③ 丰饶权重 fertile 6 → 10（room 池总权重 52 → 64）。
+# ------------------------------------------------------------------ 第八轮（2026-10-22）
+# ① structure_void = 「别动这一格」⇒ 导出时**整格省略**（不是 air、也不是 structure_void）；
+# ② exit 回退 5×8×5（撤掉井筒 + 空腔）；
+# ③ **只剩一套** structure / structure_set：玄武岩那一套删除，biomes 标签排除 basalt_deltas；
+# ④ 三个固定槽的四面道（≥3 间）。
 STRUCT_MAIN = os.path.join(WG, 'structure', 'golden_prison.json')
+# ★★ 第八轮 ③：这两个文件名**必须不存在**（下面 [bgp-worldgen-single] 用它们做负向断言）
 STRUCT_BASALT = os.path.join(WG, 'structure', 'golden_prison_basalt.json')
-SSET_MAIN = os.path.join(WG, 'structure_set', 'golden_prison.json')
 SSET_BASALT = os.path.join(WG, 'structure_set', 'golden_prison_basalt.json')
+SSET_MAIN = os.path.join(WG, 'structure_set', 'golden_prison.json')
 BIOME_TAG = os.path.join(TAGS, 'worldgen', 'biome', 'golden_prison', 'no_basalt.json')
 
-# 两套 structure 的「非公共」字段（这三个是分支的全部差异）
-EXPECT_STRUCT_DIFF = {
-    'main': {'biomes': '#bettergold:golden_prison/no_basalt', 'terrain_adaptation': 'bury',
-             'max_distance_from_center': 116},
-    'basalt': {'biomes': 'minecraft:basalt_deltas', 'terrain_adaptation': 'none',
-               'max_distance_from_center': 128},
-}
+# 唯一一套 structure 的字段（第八轮口径）
+EXPECT_STRUCT_MAIN = {'biomes': '#bettergold:golden_prison/no_basalt',
+                      'terrain_adaptation': 'bury',
+                      'max_distance_from_center': 116}
+# 旧口径原文留档（第六/七轮，**已作废**，不删）：
+# EXPECT_STRUCT_DIFF = {
+#     'main': {'biomes': '#bettergold:golden_prison/no_basalt', 'terrain_adaptation': 'bury',
+#              'max_distance_from_center': 116},
+#     'basalt': {'biomes': 'minecraft:basalt_deltas', 'terrain_adaptation': 'none',
+#                'max_distance_from_center': 128},
+# }
 # 两套 structure 的「公共」字段（逐字相同 ⇒ 从**同一个构造入口** gp_build._structure 出来）
 EXPECT_STRUCT_COMMON = {
 # ★ 第七轮：size 6 → 5（落单口只出现在距中心 114 格的口上；见 §13.2）。
@@ -187,9 +237,12 @@ EXPECT_STRUCT_COMMON = {
     'type': 'minecraft:jigsaw', 'step': 'underground_decoration', 'size': 5,
     'use_expansion_hack': False, 'spawn_overrides': {}, 'start_pool': POOL + 'start',
 }
-EXPECT_SSET_STRUCTURE = {'main': 'bettergold:golden_prison',
-                         'basalt': 'bettergold:golden_prison_basalt'}
-EXPECT_SSET_SALT = {'main': OUR_SALT, 'basalt': 19710102}
+# 旧口径原文留档（第六/七轮）：
+# EXPECT_SSET_STRUCTURE = {'main': 'bettergold:golden_prison',
+#                          'basalt': 'bettergold:golden_prison_basalt'}
+# EXPECT_SSET_SALT = {'main': OUR_SALT, 'basalt': 19710102}
+EXPECT_SSET_STRUCTURE = {'main': 'bettergold:golden_prison'}   # 只剩一套
+EXPECT_SSET_SALT = {'main': OUR_SALT}                          # salt 保持 19710101
 # 原版 #minecraft:is_nether 的成员（真源 = build 里原版 resources jar 的
 # data/minecraft/tags/worldgen/biome/is_nether.json：**5 条、无嵌套标签**，逐字抄）
 NETHER_BIOMES = ['minecraft:nether_wastes', 'minecraft:soul_sand_valley',
@@ -219,16 +272,26 @@ SHAFT_CALIB = {
     'soul_sand_valley#7': (80, None, None),
     'basalt_deltas#7': (83, 48, (0, 22)),
 }
-EXIT_SHAFT_H = 36          # 实测：任何 0..40 的加高都不比它更好（最大 2/8，+40 层 = 0/8）
-
-# ---- 第七轮 ①：井口空腔（封闭洞厅）的几何 —— 与 gp_build.py 的 EXIT_CAVITY_* 同一组数
-RIM_TOP = 8 + EXIT_SHAFT_H - 1                 # 井口环顶（件内 y）= 43
-EXIT_CAVITY_FLOOR = 39                         # 地板层（3x3 井口留空）
-EXIT_CAVITY_AIR = (40, 60)                     # 净空 y（含两端）=> 21 层
-EXIT_CAVITY_CEIL = 61                          # 天花板层
-EXIT_CAVITY_INNER = (1, 9)                     # 净空 x/z（含两端）=> 9x9
-EXIT_CAVITY_SIZE = (11, 11)                    # x/z 外壳 => 11x11
-EXIT_CAVITY_H = EXIT_CAVITY_CEIL + 1 - (RIM_TOP + 1)   # 18 层（模板 y 高于环顶的部分）
+EXIT_SHAFT_H = 0           # ★★ 第八轮：撤掉井筒（旧值 36；第五~七轮的「露头/空腔」口径一并作废）
+# 旧口径原文留档（第五/六/七轮，**已作废**，不删）：
+#   EXIT_SHAFT_H = 36      # 实测：任何 0..40 的加高都不比它更好（最大 2/8，+40 层 = 0/8）
+#   RIM_TOP = 8 + EXIT_SHAFT_H - 1                 # 井口环顶（件内 y）= 43
+#   EXIT_CAVITY_FLOOR = 39 / EXIT_CAVITY_AIR = (40, 60) / EXIT_CAVITY_CEIL = 61
+#   EXIT_CAVITY_INNER = (1, 9) / EXIT_CAVITY_SIZE = (11, 11)
+#   EXIT_CAVITY_H = EXIT_CAVITY_CEIL + 1 - (RIM_TOP + 1)   # 18 层
+#   CAVITY_CALIB = {...} / CAVITY_CALIB_N = {...} / DOOR_BLOCKS = 132
+#   （作者 2026-10-22 明确否掉"自己挖空腔"：见 docs\金之牢狱-实现记录.md §14.2）
+# 门楼原件的 155 格 = 129 实心 + 26 结构空位（空位格按 ① 整格省略，不进 .nbt）
+DOOR_BLOCKS = 155
+# exit 的调色板白名单（第八轮回退后只用到作者原件里的方块；structure_void 已改成"省略"，
+#   所以它**出现在调色板里就是 bug** —— 由 [bgp-void] 的反向断言抓）
+EXIT_PALETTE = {
+    'minecraft:air',
+    'bettergold:gold_bricks', 'bettergold:gold_pillar', 'bettergold:gold_bars',
+    'bettergold:gold_bricks_stairs', 'bettergold:gold_bricks_slab',
+    'bettergold:gold_bricks_wall', 'bettergold:gold_trapdoor', 'bettergold:gold_chain',
+    'minecraft:gold_block', 'minecraft:jigsaw',
+}
 # ---- 第七轮：**空腔之后**的实测快照（两个种子各 3 座真生成；探针 GphProbe）
 #   topY = 井口环顶（件顶 − 18）；airFromY = 9 列里最差列的第一段 ≥3 空气的起点
 #   数据 = docs\金之牢狱-实现-证据\gph_r7c\meta.json（种子 20261020）
@@ -253,16 +316,17 @@ CAVITY_CALIB = {
         'basalt_deltas#14': (78, 43),
     },
 }
-CAVITY_CALIB_N = {'r7c（种子 20261020）': 5, 'r7d（种子 20261021）': 9}
-DOOR_BLOCKS = 132                              # y<=7 的实心格 = 131 门楼 + 1 个 jigsaw（155 − 24 开顶）
-# exit 的调色板白名单（含第七轮新用的 minecraft:gold_block；其余全部是作者原件里就有的）
-EXIT_PALETTE = {
-    'minecraft:air', 'minecraft:structure_void',
-    'bettergold:gold_bricks', 'bettergold:gold_pillar', 'bettergold:gold_bars',
-    'bettergold:gold_bricks_stairs', 'bettergold:gold_bricks_slab',
-    'bettergold:gold_bricks_wall', 'bettergold:gold_trapdoor', 'bettergold:gold_chain',
-    'minecraft:gold_block', 'minecraft:jigsaw',
-}
+CAVITY_CALIB_N = {'r7c（种子 20261020）': 5, 'r7d（种子 20261021）': 9}   # 仅留档（第八轮作废）
+# 旧口径原文留档（第七轮，**已作废**）：
+# DOOR_BLOCKS = 132                              # y<=7 的实心格 = 131 门楼 + 1 个 jigsaw（155 − 24 开顶）
+# # exit 的调色板白名单（含第七轮新用的 minecraft:gold_block；其余全部是作者原件里就有的）
+# EXIT_PALETTE = {
+#     'minecraft:air', 'minecraft:structure_void',
+#     'bettergold:gold_bricks', 'bettergold:gold_pillar', 'bettergold:gold_bars',
+#     'bettergold:gold_bricks_stairs', 'bettergold:gold_bricks_slab',
+#     'bettergold:gold_bricks_wall', 'bettergold:gold_trapdoor', 'bettergold:gold_chain',
+#     'minecraft:gold_block', 'minecraft:jigsaw',
+# }
 
 problems = []
 checked = [0]
@@ -371,6 +435,154 @@ def parse_nbt(path):
     return rp(r, TAG_COMPOUND)
 
 
+# ------------------------------------------------------------------ 作者存档（region）只读
+# ★ 第八轮 ①：structure_void 的**唯一真源 = 作者存档**（他把"别动这一格"用结构空位块标在件里）。
+#   本段只读 region（绝不写），逐格取出 14 个源件的方块，用来对穿「件内被省略的格子 == 源存档的结构空位」。
+WORLD_SAVE = os.path.join(ROOT, 'docs', '金之牢狱-素材清单', '金之牢狱')
+# (件名, 世界原点 x,y,z, 尺寸 sx,sy,sz) —— 与 gp_build.SRC 逐字相同（14 条）
+SRC_PIECES = [
+    ('treasure', 397, -60, 491, 21, 9, 21),
+    ('cross_a', 421, -60, 435, 37, 8, 37),
+    ('cross_b', 421, -60, 475, 37, 8, 37),
+    ('cell_large_a', 461, -60, 413, 15, 6, 31),
+    ('cell_large_b', 461, -60, 447, 15, 6, 31),
+    ('cell_large_c', 461, -60, 481, 15, 6, 31),
+    ('cell_medium_a', 479, -60, 443, 15, 6, 21),
+    ('cell_medium_b', 479, -60, 467, 15, 6, 21),
+    ('cell_medium_c', 479, -60, 491, 15, 6, 21),
+    ('cell_small_a', 497, -60, 473, 15, 6, 11),
+    ('cell_small_b', 497, -60, 487, 15, 6, 11),
+    ('cell_small_c', 497, -60, 501, 15, 6, 11),
+    ('lane', 3, -60, 501, 5, 5, 3),
+    ('exit', 3, -60, 507, 5, 8, 5),
+]
+# 派生件 → 基准件（镜像 x→sx-1-x；丰饶/固定槽 = 几何与基准逐格相同）
+SRC_DERIVED = {}
+for _c in ('small', 'medium', 'large'):
+    SRC_DERIVED['cell_%s_mirror' % _c] = ('mirror', 'cell_%s_a' % _c)
+    SRC_DERIVED['cell_%s_fertile' % _c] = ('same', 'cell_%s_a' % _c)
+for _n in (1, 2, 3):
+    for _s in ('a', 'b'):
+        SRC_DERIVED['cross_slot_%d_%s' % (_n, _s)] = ('same', 'cross_%s' % _s)
+# 注意：cross_a / cross_b 自身也是源件（不镜像、不派生）。
+_SRC_CACHE = {}
+
+
+def _decode_section(sec):
+    """把 1.21 的 section.block_states 解成 {(lx,y,z): Name}（bits 不跨 long 的 padded 格式）。"""
+    st = sec.get('block_states')
+    sy = sec.get('Y')
+    if not st or sy is None:
+        return {}
+    pal = [p.get('Name') for p in (st.get('palette') or [])]
+    if not pal:
+        return {}
+    if len(pal) == 1:
+        return {(x, y, z): pal[0] for x in range(16) for y in range(16) for z in range(16)}
+    bits = max(4, (len(pal) - 1).bit_length())
+    per = 64 // bits
+    mask = (1 << bits) - 1
+    data = st.get('data') or []
+    out = {}
+    idx = 0
+    for y in range(16):
+        for z in range(16):
+            for x in range(16):
+                li, off = divmod(idx, per)
+                idx += 1
+                if li >= len(data):
+                    continue
+                v = (data[li] >> (off * bits)) & mask
+                if v < len(pal):
+                    out[(x, y, z)] = pal[v]
+    return out
+
+
+def load_world_cells(box):
+    """只读作者存档 ⇒ {(wx,wy,wz): Name}（只解码与该 box 相交的区块）。
+
+    ⚠ 坐标口径必须与 `docs\\金之牢狱-实现-证据\\gp_build.load_world()` **逐字一致**：
+      区块坐标 = region 文件里的**表内索引**（`cx = i & 31` / `cz = i >> 5`，不带文件名里的符号），
+      文件名（r.-1.-1 / r.0.0 ...）只决定读的顺序（sorted，后者覆盖前者）。
+      这套存档的 region 文件名与索引不是标准对应（同一片 0..511 由 4 个文件拼起来），
+      当年流水线就是这么读出 14 个件的 —— 关卡照抄同一口径，才对得上"件内省略格 == 源存档空位"。
+    """
+    import zlib
+    x0, y0, z0, x1, y1, z1 = box
+    want = set()
+    for cx in range(x0 >> 4, (x1 >> 4) + 1):
+        for cz in range(z0 >> 4, (z1 >> 4) + 1):
+            want.add((cx, cz))
+    rd = os.path.join(WORLD_SAVE, 'region')
+    if not os.path.isdir(rd):
+        return {}
+    cells = {}
+    for fn in sorted(os.listdir(rd)):
+        if not fn.endswith('.mca'):
+            continue
+        raw = open(os.path.join(rd, fn), 'rb').read()
+        if len(raw) < 8192:
+            continue
+        for (cx, cz) in want:
+            li = (cx & 31) + (cz & 31) * 32
+            off = int.from_bytes(raw[li * 4:li * 4 + 3], 'big')
+            cnt = raw[li * 4 + 3]
+            if off == 0 or cnt == 0:
+                continue
+            base = off * 4096
+            if base + 5 > len(raw):
+                continue
+            ln = int.from_bytes(raw[base:base + 4], 'big')
+            comp = raw[base + 4]
+            payload = raw[base + 5:base + 4 + ln]
+            if comp == 1:
+                payload = gzip.decompress(payload)
+            elif comp == 2:
+                payload = zlib.decompress(payload)
+            elif comp != 3:
+                continue
+            r = R(payload)
+            if r.u1() != TAG_COMPOUND:
+                continue
+            r.s()
+            root = rp(r, TAG_COMPOUND)
+            for sec in (root.get('sections') or []):
+                sy = (sec.get('Y') or 0) * 16
+                for (lx, ly, lz), nm in _decode_section(sec).items():
+                    cells[(cx * 16 + lx, sy + ly, cz * 16 + lz)] = nm
+    return cells
+
+
+def source_void_cells(name):
+    """作者存档里某件（件内相对坐标）的结构空位格集合。"""
+    if name in _SRC_CACHE:
+        return _SRC_CACHE[name]
+    if name in SRC_DERIVED:
+        kind, base = SRC_DERIVED[name]
+        if kind == 'mirror':
+            base_row = [p for p in SRC_PIECES if p[0] == base][0]
+            sx = base_row[4]
+            out = {(sx - 1 - x, y, z) for (x, y, z) in source_void_cells(base)}
+        else:
+            out = set(source_void_cells(base))
+        _SRC_CACHE[name] = out
+        return out
+    row = [p for p in SRC_PIECES if p[0] == name]
+    if not row:
+        _SRC_CACHE[name] = set()
+        return set()
+    _, x0, y0, z0, sx, sy, sz = row[0]
+    cells = load_world_cells((x0, y0, z0, x0 + sx - 1, y0 + sy - 1, z0 + sz - 1))
+    out = set()
+    for y in range(y0, y0 + sy):
+        for z in range(z0, z0 + sz):
+            for x in range(x0, x0 + sx):
+                if cells.get((x, y, z)) == VOID:
+                    out.add((x - x0, y - y0, z - z0))
+    _SRC_CACHE[name] = out
+    return out
+
+
 # ------------------------------------------------------------------ 件模型
 AIR = 'minecraft:air'
 VOID = 'minecraft:structure_void'
@@ -425,7 +637,8 @@ def strip_comments(s, style):
 
 
 class Piece:
-    def __init__(self, name, size, blocks, jigsaws, chests, palette, ents=None, bes=None):
+    def __init__(self, name, size, blocks, jigsaws, chests, palette, ents=None, bes=None,
+                 absent=None):
         self.name = name
         self.size = size
         self.blocks = blocks          # (x,y,z) -> (name, props)
@@ -434,6 +647,8 @@ class Piece:
         self.palette = palette
         self.ents = ents or []        # [{pos, blockPos, nbt}] 第五轮
         self.bes = bes or {}          # (x,y,z) -> be dict（不含 jigsaw）第五轮
+        # ★ 第八轮 ①：**没写进 .nbt 的格子** = 结构空位（"别动这一格"）
+        self.absent = absent or set()
 
     def at(self, p):
         return self.blocks.get(p)
@@ -475,7 +690,14 @@ def load_piece(name):
         ents.append({'pos': [float(v) for v in (e.get('pos') or [])],
                      'blockPos': [int(v) for v in (e.get('blockPos') or [])],
                      'nbt': e.get('nbt') or {}})
-    return Piece(name, size, blocks, jig, chests, pal, ents, bes)
+    # ★ 第八轮 ①：bbox 里"没写的格子"= 结构空位（整格省略）。数量由 [bgp-void] 逐件钉住。
+    absent = set()
+    for y in range(size[1]):
+        for z in range(size[2]):
+            for x in range(size[0]):
+                if (x, y, z) not in blocks:
+                    absent.add((x, y, z))
+    return Piece(name, size, blocks, jig, chests, pal, ents, bes, absent)
 
 
 def outward(p, size):
@@ -636,8 +858,9 @@ def check_inventory():
     files = sorted(f for f in os.listdir(STRUCT) if f.endswith('.nbt')) if os.path.isdir(STRUCT) else []
     if not os.path.isdir(STRUCT):
         raise SystemExit(2)
-    if len(files) != 20:
-        ng('bgp-inventory', '模板数 %d != 20' % len(files))
+    if len(files) != 26:
+        # 第八轮：20 → 26（+ 6 个四面道固定槽变体）；旧口径 20
+        ng('bgp-inventory', '模板数 %d != 26' % len(files))
     for f in files:
         ok()
     got = {f[:-4] for f in files}
@@ -648,8 +871,8 @@ def check_inventory():
         ng('bgp-inventory', '多出模板 %s' % n)
     # 蓝图
     pngs = [f for f in os.listdir(BP) if f.endswith('.png')] if os.path.isdir(BP) else []
-    if len(pngs) < 20:
-        ng('bgp-blueprint', '蓝图 %d 张 < 20' % len(pngs))
+    if len(pngs) < 26:
+        ng('bgp-blueprint', '蓝图 %d 张 < 26' % len(pngs))
     for n in EXPECT_SIZE:
         if n.upper() + '.png' not in pngs:
             ng('bgp-blueprint', '缺蓝图 %s.png' % n.upper())
@@ -663,19 +886,26 @@ def check_pieces(pieces):
         ok()
         # 方块数（14 个源件对照证据；派生件只要求 > 0）
         if name in EXPECT_SRC_COUNT and name != 'exit':
-            # 取证表是「抠出来时」的方块数，不含第 2 步注入的 jigsaw；空气不算方块。
-            got = sum(1 for v in p.blocks.values() if v[0] != AIR) - len(p.jigsaws)
+            # 取证表是「抠出来时」的方块数（含作者的结构空位格），不含第 2 步注入的 jigsaw。
+            # ★ 第八轮：结构空位格**整格省略** ⇒ 写出来的非空气格 + 省略格 − jigsaw 才对得上取证值。
+            got = (sum(1 for v in p.blocks.values() if v[0] != AIR) + len(p.absent)
+                   - len(p.jigsaws))
             if got != EXPECT_SRC_COUNT[name]:
-                ng('bgp-nbt', '%s 方块数(不含 jigsaw) %d != 取证 %d'
+                ng('bgp-nbt', '%s 方块数(不含 jigsaw，含省略的空位格) %d != 取证 %d'
                    % (name, got, EXPECT_SRC_COUNT[name]))
             ok()
         if name == 'exit':
-            # ★ 第五轮：作者原 155 格 + 上升段井筒 576 格 − 开顶打通掉的原件（y=4..7 的 3×2 列）。
-            #   155 这个**原值仍是取证值**（不许改）；这里只核对"重建后的账"能对上。
+            # ★★ 第八轮：回退成作者原件 5×8×5 ⇒ 写出的实心格 = 155 − 26 结构空位 = **129**
+            #   （不含第 2 步注入的 1 个 jigsaw）。
+            #   旧口径原文留档（第五/六/七轮）：1728（井筒 36 层 + 空腔）/ 707（井筒）。
             got = sum(1 for v in p.blocks.values() if v[0] != AIR) - len(p.jigsaws)
             if got != EXPECT_EXIT_BLOCKS:
-                ng('bgp-nbt', 'exit 方块数(不含 jigsaw) %d != 记账 %d（155 原件 + 576 井筒 − 开顶）'
+                ng('bgp-nbt', 'exit 写出的实心格(不含 jigsaw) %d != 记账 %d（155 原件 − 26 结构空位）'
                    % (got, EXPECT_EXIT_BLOCKS))
+            ok()
+            if got + len(p.absent) != DOOR_BLOCKS:
+                ng('bgp-nbt', 'exit 实心 %d + 省略的空位 %d != 作者原件 %d'
+                   % (got, len(p.absent), DOOR_BLOCKS))
             ok()
         # 口位：数量 / 命名 / 朝向
         sides = {}
@@ -815,9 +1045,14 @@ def check_air(pieces):
         if AIR not in names:
             ng('bgp-air', '%s 的 palette 没有 minecraft:air（模板不会挖空）' % name)
         ok()
-        if len(p.blocks) != vol:
+        if len(p.blocks) + len(p.absent) != vol:
             ng('bgp-air', '%s 只写了 %d / %d 格（空气没写满，放置时不会把地形挖成房间）'
                % (name, len(p.blocks), vol))
+        ok()
+        # ★ 第八轮 ①：省略的格子只许是「结构空位」⇒ 数量必须逐件等于 EXPECT_VOID
+        if len(p.absent) != EXPECT_VOID.get(name, 0):
+            ng('bgp-void', '%s 省略了 %d 格 != 期望结构空位 %d'
+               % (name, len(p.absent), EXPECT_VOID.get(name, 0)))
         ok()
         air = sum(1 for v in p.blocks.values() if v[0] == AIR)
         if air <= 0:
@@ -889,6 +1124,93 @@ def check_air(pieces):
         if 'if nm in AIR: continue' in src:
             ng('bgp-air', 'gp_build.py 里 P0 的老写法「if nm in AIR: continue」又回来了')
         ok()
+
+
+def check_void(pieces):
+    """[bgp-void] ★★ 第八轮 ①：structure_void = 「别动这一格」，导出时必须**整格省略**。
+
+    作者原话（2026-10-22）：
+      「冷知识：结构空位（structure_void）适用于为结构方块生成结构时不会替代拥有结构空位位置的方块，
+        你居然给我神奇地保留下来并且生硬地把方块给顶掉了」
+    源码依据（build\\moddev\\artifacts\\neoforge-21.1.228-sources.jar）：
+      · `StructureBlockEntity:341` 保存结构 = `fillFromWorld(..., Blocks.STRUCTURE_VOID)`
+        ⇒ 结构空位格**根本不进模板**；`fillFromWorld:100` 就是 `if (toIgnore == null || !blockstate.is(toIgnore))`。
+      · `StructureTemplate.placeInWorld:248-261` 只放置模板里有的格子 ⇒ 不写 = 原样保留地形。
+      · 写 air = 地形被挖成空气（作者说的"生硬地把方块给顶掉了"）；写 structure_void = 世界里塞一个
+        隐形但有 6/16 碰撞盒的方块（`StructureVoidBlock.getShape`）**并同样顶掉地形**。
+
+    本段四条（双向）：
+      ① 件内**省略格数**逐件 == 源存档里的结构空位格数（EXPECT_VOID，同时与 region 逐格对穿）；
+      ② 任何模板的 palette/top 都不许出现 `minecraft:structure_void`（写了就是顶掉地形）；
+      ③ 作者原本是 **air** 的格子必须仍是 air（上一轮 P0 的"房间/走廊被灌满"修复不许回退）；
+      ④ 省略的格子只许在**行走面之上**（房间/走廊内部一格都不许省 ⇒ 洪泛照旧能到出口）。
+    """
+    bad = []
+    for name, p in sorted(pieces.items()):
+        # ② 整件调色板里不许有 structure_void
+        names = {v[0] for v in p.blocks.values()}
+        if VOID in names:
+            ng('bgp-void', '%s 的调色板里有 minecraft:structure_void（会把地形顶掉）' % name)
+        ok()
+        # ① 省略格数 == 冻结期望 == 源存档逐格
+        want = source_void_cells(name)
+        if len(p.absent) != EXPECT_VOID.get(name, 0):
+            ng('bgp-void', '%s 省略 %d 格 != 冻结期望 %d'
+               % (name, len(p.absent), EXPECT_VOID.get(name, 0)))
+        ok()
+        if p.absent != want:
+            only_nbt = sorted(p.absent - want)[:4]
+            only_src = sorted(want - p.absent)[:4]
+            ng('bgp-void', '%s 省略格与源存档的结构空位**逐格不符**（多 %d / 少 %d；例 %s / %s）'
+               % (name, len(p.absent - want), len(want - p.absent), only_nbt, only_src))
+            bad.append(name)
+        ok()
+        # ④ 省略格必须全在行走面之上（房间/走廊内部一格都不许省）
+        wy = 3 if name == 'treasure' else 1
+        low = [c for c in p.absent if c[1] <= wy]
+        if low:
+            ng('bgp-void', '%s 有 %d 个省略格在行走面 y<=%d（房间/走廊被省掉了）例 %s'
+               % (name, len(low), wy, sorted(low)[:3]))
+        ok()
+        # ③ 作者原本是 air 的格子**必须仍是 air**：件内每个非省略格都必须写进模板（air 或方块）
+        missing = [c for c in ((x, y, z) for y in range(p.size[1])
+                               for z in range(p.size[2]) for x in range(p.size[0]))
+                   if c not in p.absent and c not in p.blocks]
+        if missing:
+            ng('bgp-void', '%s 有 %d 格既没写也没省略（作者原本是 air 的格被漏掉）例 %s'
+               % (name, len(missing), sorted(missing)[:3]))
+        ok()
+    # 特别放大：cross / exit 的省略格**必须**是"屋顶外圈"，不许侵到行走层
+    for name in ('cross_a', 'cross_b', 'exit') + tuple(SLOT_TEMPLATES):
+        p = pieces[name]
+        ys = sorted({c[1] for c in p.absent})
+        if not p.absent:
+            ng('bgp-void', '%s 一格结构空位都没有（源存档里是有 1480 / 26 格的）' % name)
+        ok()
+        walk_y = 3 if name == 'treasure' else 1
+        if ys and ys[0] <= walk_y + 1:
+            ng('bgp-void', '%s 的结构空位最低在 y=%d（行走面 y=%d 附近）' % (name, ys[0], walk_y))
+        ok()
+    print('[bgp-void] 结构空位：26 件里 %d 件含空位（cross/槽变体 1480 格、exit 26 格），'
+          '逐格 == 源存档；palette 里 structure_void = 0；省略格全在行走面之上'
+          % sum(1 for p in pieces.values() if p.absent))
+    print('[bgp-void] 语义依据：StructureBlockEntity:341 fillFromWorld(..., Blocks.STRUCTURE_VOID)'
+          ' ⇒ 空位格不进模板；placeInWorld 只放模板里有的格子 ⇒ 不写 = 地形原样保留')
+    # 正向 needle（去注释源码）：流水线必须"跳过空位格"，不许把空位写成 air / structure_void
+    gp = os.path.join(ROOT, 'docs', '金之牢狱-实现-证据', 'gp_build.py')
+    if not os.path.exists(gp):
+        ng('bgp-void', '缺流水线 gp_build.py')
+        return
+    src = strip_comments(open(gp, encoding='utf-8').read(), 'py')
+    if "if v is not None and v[0] == 'minecraft:structure_void':" not in src:
+        ng('bgp-void', 'gp_build.build_nbt 里找不到"跳过 structure_void 格"的分支')
+    ok()
+    if 'void_cells.append(key)' not in src:
+        ng('bgp-void', 'gp_build.build_nbt 没有把空位格记进 void_cells')
+    ok()
+    if "nm, pr = 'minecraft:air', {}" not in src:
+        ng('bgp-void', 'gp_build.build_nbt 里"作者原本是 air ⇒ 写 air"的分支不见了（P0 修复会回退）')
+    ok()
 
 
 def pool_name(pool):
@@ -1259,6 +1581,110 @@ def check_cycle(pieces):
     ok()
 
 
+def check_cross3(pieces):
+    """[bgp-cross3] ★★ 第八轮 ④：每座结构**至少 3 个四面道**（作者：「还要上一个四面房最少得生成出三间」）。
+
+    机制（纯数据）：`start(treasure) → cross_slot_1 → cross_slot_2 → cross_slot_3 → room(随机)`。
+    三个槽各有自己的池，池里 = **两种四面道**（A/B 的槽变体）按权重 2:1 ⇒ **数量固定 3、样式随机**。
+    本段断言：
+      ① treasure 的口**只指向** cross_slot_1（唯一去向 ⇒ 第一件必是四面道）；
+      ② 每个槽池**恰好 2 个元素**（A/B）且权重 2:1（⇒ 样式随机但数量唯一）；
+      ③ 链上每一级都接得上：slotN 的入场口 name == 上一级的 target（canAttach 的硬要求）；
+      ④ 槽 3 之后**不再有**任何 `cross_slot_` 目标（链恰好三级，不多不少）；
+      ⑤ 几何可行：三件 bent 链的最远边 ≤ max_distance_from_center 116
+         （直线三连 = 10+37×3 = 121 > 116 会被裁掉，所以槽 1 往南、槽 2/3 往东拐）；
+      ⑥ room 池里仍然保留两种四面道（额外的随机四面道，不影响"至少 3"的保证）。
+    """
+    # ① treasure 的唯一口
+    sock = SOCK['treasure']
+    if set(sock) != {'south'}:
+        ng('bgp-cross3', 'treasure 的口集合 %s != {south}' % set(sock))
+    ok()
+    sn, tg, pl = sock['south']
+    if (tg, pl) != ('cross_slot_1', POOL + 'cross_slot_1'):
+        ng('bgp-cross3', 'treasure 的口 target/pool = (%r, %r) != (cross_slot_1, %s)'
+           % (tg, pl, POOL + 'cross_slot_1'))
+    ok(2)
+    for pos, be in pieces['treasure'].jigsaws.items():
+        if (be.get('target'), be.get('pool')) != ('cross_slot_1', POOL + 'cross_slot_1'):
+            ng('bgp-cross3', 'treasure.nbt 的口 %s target/pool = %r（应为 cross_slot_1）'
+               % (pos, (be.get('target'), be.get('pool'))))
+        ok(2)
+    # ② 三个槽池：恰好 2 个元素、权重 2:1、元素名 = 槽变体
+    pdir = os.path.join(WG, 'template_pool', 'golden_prison')
+    chain_pools = ['cross_slot_1', 'cross_slot_2', 'cross_slot_3']
+    for pn in chain_pools:
+        f = os.path.join(pdir, pn + '.json')
+        if not os.path.exists(f):
+            ng('bgp-cross3', '缺槽池 %s.json' % pn)
+            continue
+        d = json.load(open(f, encoding='utf-8'))
+        got = {}
+        for e in d.get('elements', []):
+            t = (e.get('element') or {}).get('location', '').split('/', 2)[-1]
+            got[t] = e.get('weight')
+        if got != SLOT_POOL_W[pn]:
+            ng('bgp-cross3', '槽池 %s 元素/权重 %r != %r（必须恰好 A/B 两种、2:1）'
+               % (pn, got, SLOT_POOL_W[pn]))
+        ok()
+        if d.get('fallback') != POOL + 'exit':
+            ng('bgp-cross3', '槽池 %s fallback=%r != exit（落单口机制）' % (pn, d.get('fallback')))
+        ok()
+    # ③④ 链的接续 + 恰好三级
+    for n in (1, 2, 3):
+        for style in ('a', 'b'):
+            nm = 'cross_slot_%d_%s' % (n, style)
+            cfg = SOCK[nm]
+            entry = SLOT_ENTRY[n]
+            if cfg[entry][0] != 'cross_slot_%d' % n:
+                ng('bgp-cross3', '%s 的入场口 %s name=%r != cross_slot_%d（父口 target 对不上）'
+                   % (nm, entry, cfg[entry][0], n))
+            ok()
+            if cfg[entry][0] == 'cross_slot_%d' % n:
+                pass
+            # nbt 侧同样核对（防止 SOCK 表与产物不一致）
+            want_side = entry
+            for pos, be in pieces[nm].jigsaws.items():
+                out = outward(pos, pieces[nm].size)
+                if not out:
+                    continue
+                side = out[0]
+                if side == want_side:
+                    if be.get('name') != 'cross_slot_%d' % n:
+                        ng('bgp-cross3', '%s.nbt 的 %s 口 name=%r != cross_slot_%d'
+                           % (nm, side, be.get('name'), n))
+                    ok()
+                if n == 3 and be.get('target', '').startswith('cross_slot_'):
+                    ng('bgp-cross3', '%s 还能接下一槽（target=%r）⇒ 链不止三级'
+                       % (nm, be.get('target')))
+                ok()
+            if SLOT_CHAIN[n]:
+                side, nxt = SLOT_CHAIN[n]
+                if cfg[side][1] != 'cross_slot_%d' % nxt:
+                    ng('bgp-cross3', '%s 的 %s 口 target=%r != cross_slot_%d'
+                       % (nm, side, cfg[side][1], nxt))
+                ok()
+    # ⑤ 几何可行（bent 链）：最远边 ≤ max_distance_from_center
+    maxd = EXPECT_STRUCT_MAIN['max_distance_from_center']
+    half_cross = EXPECT_SIZE['cross_a'][0] // 2
+    far_z = EXPECT_SIZE['treasure'][2] // 2 + EXPECT_SIZE['cross_a'][2]     # 10 + 37 = 47
+    far_x = EXPECT_SIZE['cross_a'][0] * 2 + half_cross                      # 37×2 + 18 = 92
+    if max(far_z, far_x) > maxd:
+        ng('bgp-cross3', '三件 bent 链最远边 %d > max_distance_from_center %d ⇒ 第 3 件会被裁掉'
+           % (max(far_z, far_x), maxd))
+    ok(2)
+    straight = EXPECT_SIZE['treasure'][2] // 2 + EXPECT_SIZE['cross_a'][2] * 3
+    print('[bgp-cross3] 三槽固定前缀：treasure→cross_slot_1→cross_slot_2→cross_slot_3→room；'
+          '每池 A/B 2:1 ⇒ 每座**恰好 3 个四面道**（样式随机）；'
+          'bent 链最远边 %d ≤ %d（直线三连 %d 会被裁）'
+          % (max(far_z, far_x), maxd, straight))
+    # ⑥ room 池仍有两种四面道（额外随机四面道）
+    for t in ('cross_a', 'cross_b'):
+        if t not in EXPECT_POOLS['room'][0]:
+            ng('bgp-cross3', 'room 池里少了随机四面道 %s' % t)
+        ok()
+
+
 def check_entities_bes(pieces):
     """[bgp-entity] / [bgp-be] —— 第五轮（作者三图：展示框没放、刷怪笼的金钱妖没了）。
 
@@ -1294,6 +1720,12 @@ def check_entities_bes(pieces):
         EXPECT_BE['cell_%s_fertile' % size] = fb
     for n in EXPECT_SIZE:
         EXPECT_ENT.setdefault(n, 0)
+    # ★ 第八轮 ④：6 个槽变体 = cross_a / cross_b 的逐格副本（实体 + BE 一起复制）
+    for _n in (1, 2, 3):
+        EXPECT_ENT['cross_slot_%d_a' % _n] = EXPECT_ENT['cross_a']
+        EXPECT_ENT['cross_slot_%d_b' % _n] = EXPECT_ENT['cross_b']
+        EXPECT_BE['cross_slot_%d_a' % _n] = dict(EXPECT_BE['cross_a'])
+        EXPECT_BE['cross_slot_%d_b' % _n] = dict(EXPECT_BE['cross_b'])
     total_ent = sum(EXPECT_ENT.values())
     total_be = sum(sum(v.values()) for v in EXPECT_BE.values())
     for name, p in pieces.items():
@@ -1406,22 +1838,86 @@ FACE_OPP = {0: (0, 1, 0), 1: (0, -1, 0), 2: (0, 0, 1), 3: (0, 0, -1), 4: (1, 0, 
 
 
 def check_exit_shaft(pieces):
-    """[bgp-shaft] / [bgp-cavity] —— 出入口 = 门楼 8 层 + 井筒 36 层 + **井口空腔**（第七轮）。
+    """[bgp-shaft] ★★ 第八轮 ②：exit 回退成作者原件 **5×8×5**（门楼 8 层原样、155 格）。
 
-    为什么空腔必须做进 exit.nbt（源码依据）：`JigsawPlacement` 里 `if (depth + 1 <= this.maxDepth)`
-    才把新件入队展开；exit 是 lane 池的 fallback（在 depth==maxDepth 被放、不再入队）
-    ⇒ 挂在它顶上的 jigsaw 永远不会被展开。
-    为什么需要空腔（第七轮读数）：第五轮 8 个口只有 2 个露头，其余 airFromY 比环顶高 9~17 格
-    —— 下界天花板岩体把井口埋住，而井筒加高不是杠杆（+40 层 = 0/8）。空腔把"有没有天空"
-    变成结构自带的属性；**只填空格** ⇒ 门楼 8 层 / 井筒四角与边 / 展示框支撑一格不动。
+    作者原话（2026-10-22）：四图「…需要让黄色不断延伸至空域再架起蓝色，而不是直接让蓝色架在
+    红色区域里并把红色区域的周围清空掉」+ 五图「你可以参考一下滑行魔石地牢他那边就明了的出入口可分」
+    ⇒ 第七轮那套「井筒 36 层 + 11×62×11 空腔段」整体撤掉（那是"神秘大金柱子" + 把红色区域清空）。
+    ⚠ "出入口要落在空域"这件事**本轮不做**（等作者给「滑行魔石地牢」的参考）。
+
+    下面 1725-1988 的旧实现（井筒 / 空腔 / 露头校准）**原文留档**，第八轮起不执行。
     """
     p = pieces['exit']
     sx, sy, sz = p.size
-    want_y = EXIT_CAVITY_CEIL + 1
-    if p.size != (EXIT_CAVITY_SIZE[0], want_y, EXIT_CAVITY_SIZE[1]):
-        ng('bgp-shaft', 'exit 尺寸 %s != %dx%dx%d（门楼 8 + 井筒 36 + 空腔 %d）'
-           % (p.size, EXIT_CAVITY_SIZE[0], want_y, EXIT_CAVITY_SIZE[1], EXIT_CAVITY_H))
+    if p.size != (5, 8, 5):
+        ng('bgp-shaft', 'exit 尺寸 %s != 5×8×5（第八轮回退：门楼 8 层原样、无井筒、无空腔）' % (p.size,))
     ok()
+    # 1) 门楼 8 层：写出来的实心格（含 jigsaw）+ 省略的结构空位 = 作者原件 155 格 + 1 jigsaw
+    door = sum(1 for k, v in p.blocks.items() if k[1] <= 7 and v[0] != AIR)
+    if door != EXPECT_EXIT_BLOCKS + 1:
+        ng('bgp-shaft', '门楼 8 层写出的非空气格 %d != %d（129 实心 + 1 jigsaw）'
+           % (door, EXPECT_EXIT_BLOCKS + 1))
+    ok()
+    if door + len(p.absent) != DOOR_BLOCKS + 1:
+        ng('bgp-shaft', '门楼 8 层 %d + 省略空位 %d != %d（155 原件 + 1 jigsaw）'
+           % (door, len(p.absent), DOOR_BLOCKS + 1))
+    ok()
+    # 2) 结构空位的分布必须与源存档一致（y=5:3 / y=6:11 / y=7:12），且全在 y>=5
+    per_y = {}
+    for (_x, y, _z) in p.absent:
+        per_y[y] = per_y.get(y, 0) + 1
+    if per_y != {5: 3, 6: 11, 7: 12}:
+        ng('bgp-shaft', 'exit 的结构空位逐层分布 %r != {5:3, 6:11, 7:12}（源存档实测）' % (per_y,))
+    ok()
+    # 3) 门楼内部（y=1..3）是可走空间：空气 + 3x3 通道，且从北口洪泛能到南面
+    wy = 1
+    inner_air = sum(1 for x in range(1, 4) for z in range(1, 4) for y in (1, 2, 3)
+                    if (p.at((x, y, z)) or (AIR, {}))[0] == AIR)
+    if inner_air != 27:
+        ng('bgp-shaft', '门楼内部 3x3x3 的空气只有 %d/27（门洞被堵）' % inner_air)
+    ok()
+    seeds = []
+    for side, (pos, be) in sorted(piece_sockets(p).items()):
+        seeds.append(inner_of(pos, side))
+    if not seeds:
+        ng('bgp-shaft', 'exit 一个口都没扫到')
+    ok()
+    seen = flood(p, seeds)
+    rooms = [(x, y, z) for x in range(1, 4) for z in range(1, 4) for y in (1, 2, 3)]
+    miss = [c for c in rooms if c not in seen]
+    if miss:
+        ng('bgp-shaft', '门楼内部有 %d 格从口洪泛到不了（例 %s）' % (len(miss), miss[:3]))
+    ok()
+    # 4) 北口 jigsaw 还在 (2,1,0)；南面金栅栏墙还在；展示框的 2 个实体还在
+    if (2, 1, 0) not in p.jigsaws:
+        ng('bgp-shaft', 'exit 的北口 jigsaw (2,1,0) 不见了')
+    ok()
+    bars = sum(1 for z in range(5) for y in range(1, 5) for x in range(5)
+               if (p.at((x, y, z)) or ('', {}))[0] == 'bettergold:gold_bars')
+    if bars == 0:
+        ng('bgp-shaft', 'exit 南面的金栅栏墙不见了')
+    ok()
+    if len(p.ents) != 2:
+        ng('bgp-shaft', 'exit 的展示框实体 %d 个 != 2' % len(p.ents))
+    ok()
+    # 5) 调色板白名单（第八轮回退后不该再有第八轮以前没出现过的方块）
+    names = {v[0] for v in p.blocks.values()}
+    extra = names - EXIT_PALETTE
+    if extra:
+        ng('bgp-shaft', 'exit 出现了白名单外的方块 %s' % sorted(extra))
+    ok()
+    # 6) 门楼 8 层之上**一格都不许有**（回退的硬条件：不许再长井筒/空腔）
+    if any(k[1] > 7 for k in p.blocks):
+        ng('bgp-shaft', 'exit 在 y>7 还有方块（井筒/空腔没撤干净）')
+    ok()
+    print('[bgp-shaft] exit = %dx%dx%d（第八轮回退）：门楼 8 层 %d 格（含 1 jigsaw）+ 结构空位 %d 格'
+          '（逐层 %r，整格省略）；y>7 无方块；展示框 %d 个；金栅栏 %d 格'
+          % (sx, sy, sz, door, len(p.absent), per_y, len(p.ents), bars))
+    return
+    # ------------------------------------------------------------------
+    # ★ 以下为第五~七轮的旧实现（井筒 36 层 + 11×62×11 空腔 + 露头校准），
+    #   第八轮起 **不执行**，原文留档（不许删：那三轮的读数是"为什么回退"的依据）。
+    # ------------------------------------------------------------------
     # 1) 井筒段 y=8..rim：周边是作者已有的金方块、内部 3x3 空气
     walls = 0
     for y in range(8, RIM_TOP + 1):
@@ -1669,40 +2165,40 @@ def check_exit_shaft(pieces):
 
 
 def check_worldgen():
-    # ★ 第六轮（2026-10-21）：**按群系分支** —— 两套 structure + 两套 structure_set + 一个群系标签。
-    #   旧口径（第一~五轮，原文留档、不删）：只有 `structure/golden_prison.json` +
-    #   `structure_set/golden_prison.json` 各一个，`biomes = #minecraft:is_nether`、
-    #   `terrain_adaptation = none`、`max_distance_from_center = 128`（第五轮实测 110 / 10 / 187）。
-    #   第六轮把上面那份变成"**主结构（非玄武岩群系）**"，另加一份玄武岩专用；两套的
-    #   **公共字段逐字相同**（同一个构造入口 gp_build._structure 出来），差异只有
-    #   biomes / terrain_adaptation / max_distance_from_center。
-    for f in (STRUCT_MAIN, STRUCT_BASALT, SSET_MAIN, SSET_BASALT, BIOME_TAG):
+    # ★★ 第八轮（2026-10-22）③：**只剩一套** structure + structure_set。
+    #   作者：「最后再备注一下金之牢狱将无法生成于玄武岩三角洲」⇒ 玄武岩那一套删掉，
+    #   保留的 `golden_prison.json` 的 biomes 标签本来就排除 basalt_deltas，terrain_adaptation 用 bury。
+    #   旧口径原文留档（第六/七轮，**已作废**，不删）：两套 structure + 两套 structure_set，
+    #   公共字段逐字相同，差异只有 biomes / terrain_adaptation / max_distance_from_center。
+    #   更早（第一~五轮）：只有 `structure/golden_prison.json` + `structure_set/golden_prison.json` 各一个，
+    #   `biomes = #minecraft:is_nether`、`terrain_adaptation = none`、`max_distance_from_center = 128`。
+    for f in (STRUCT_MAIN, SSET_MAIN, BIOME_TAG):
         if not os.path.exists(f):
             ng('bgp-worldgen', '缺 %s' % os.path.basename(f))
             return
         ok()
+    # ★ 负向（第八轮 ③ 的核心）：玄武岩那一套的两个文件**必须不存在**
+    for f in (STRUCT_BASALT, SSET_BASALT):
+        if os.path.exists(f):
+            ng('bgp-worldgen-single', '%s 还在（玄武岩那一套必须删除）' % os.path.basename(f))
+        ok()
     structs = {}
-    for kind, f in (('main', STRUCT_MAIN), ('basalt', STRUCT_BASALT)):
+    for kind, f in (('main', STRUCT_MAIN),):
         try:
             structs[kind] = json.load(open(f, encoding='utf-8'))
         except Exception as e:
             ng('bgp-worldgen', '%s 解析失败：%s' % (os.path.basename(f), e))
             return
         ok()
-    for kind in ('main', 'basalt'):
+    for kind in ('main',):
         st = structs[kind]
-        code = 'bgp-worldgen' if kind == 'main' else 'bgp-worldgen-basalt'
-        # ---- 公共字段（两套逐字相同）
-        for k, v in EXPECT_STRUCT_COMMON.items():
-            if st.get(k) != v:
-                ng(code, '%s.%s = %r != %r（两套必须逐字相同）' % (kind, k, st.get(k), v))
-            ok()
-        # ---- 分支字段（只有这三项不同）
-        for k, v in EXPECT_STRUCT_DIFF[kind].items():
+        code = 'bgp-worldgen'
+        # ---- 唯一一套的字段（第八轮：biomes 排除玄武岩 / bury / max_distance 116）
+        for k, v in EXPECT_STRUCT_MAIN.items():
             if st.get(k) != v:
                 ng(code, '%s.%s = %r != %r' % (kind, k, st.get(k), v))
             ok()
-        # ---- 不许有多余/缺字段（两套的键集合必须完全一致，且只有上面这些）
+        # ---- 不许有多余/缺字段
         want_keys = set(EXPECT_STRUCT_COMMON) | {'spawn_overrides', 'start_height', 'biomes',
                                                  'terrain_adaptation', 'max_distance_from_center'}
         if set(st) != want_keys:
@@ -1728,27 +2224,26 @@ def check_worldgen():
             ng(code, '%s max_distance_from_center=%r + 地形适应 padding %d > 128 ⇒ 结构会加载失败'
                % (kind, md, pad))
         ok()
-    # ---- 两套的 start_pool 必须**同一个**（= 每座结构仍然只有一个宝藏房）
-    if structs['main'].get('start_pool') != structs['basalt'].get('start_pool'):
-        ng('bgp-worldgen', '两套 start_pool 不同（%r vs %r）⇒ 宝藏房唯一性失去机制保证'
-           % (structs['main'].get('start_pool'), structs['basalt'].get('start_pool')))
+    # ---- 唯一一套：start_pool 指向 start（宝藏房唯一性另见 [bgp-treasure-unique]）
+    if structs['main'].get('start_pool') != POOL + 'start':
+        ng('bgp-worldgen', 'start_pool=%r != %r' % (structs['main'].get('start_pool'), POOL + 'start'))
     ok()
-    # ---- 两套 structure_set：密度字段完全相同、salt 必须**不同**
+    # ---- structure_set：密度字段 / salt 19710101 / 只引用主结构
     sets = {}
-    for kind, f in (('main', SSET_MAIN), ('basalt', SSET_BASALT)):
+    for kind, f in (('main', SSET_MAIN),):
         try:
             sets[kind] = json.load(open(f, encoding='utf-8'))
         except Exception as e:
             ng('bgp-worldgen', '%s 解析失败：%s' % (os.path.basename(f), e))
             return
         ok()
-    for kind in ('main', 'basalt'):
+    for kind in ('main',):
         pl = sets[kind].get('placement') or {}
-        code = 'bgp-worldgen' if kind == 'main' else 'bgp-worldgen-basalt'
+        code = 'bgp-worldgen'
         if pl.get('type') != 'minecraft:random_spread':
             ng(code, '%s set placement.type=%r' % (kind, pl.get('type')))
         if pl.get('spacing') != 27 or pl.get('separation') != 4 or pl.get('spread_type') != 'linear':
-            ng(code, '%s set 密度字段 %r != 27/4/linear（两套密度相同，否则会叠加）' % (kind, pl))
+            ng(code, '%s set 密度字段 %r != 27/4/linear' % (kind, pl))
         ok(4)
         if pl.get('salt') != EXPECT_SSET_SALT[kind]:
             ng('bgp-worldgen-salt', '%s set salt=%r != 记账值 %d'
@@ -1760,13 +2255,6 @@ def check_worldgen():
             ng(code, '%s set structures=%r 必须恰好 1 条、指向 %r、weight=1'
                % (kind, els, EXPECT_SSET_STRUCTURE[kind]))
         ok()
-    if EXPECT_SSET_SALT['main'] == EXPECT_SSET_SALT['basalt']:
-        ng('bgp-worldgen-salt', '两套 salt 记账值相同（会重合候选区块）')
-    ok()
-    if sets['main']['placement'].get('salt') == sets['basalt']['placement'].get('salt'):
-        ng('bgp-worldgen-salt', '两套 structure_set 的 salt 相同（=%r）：候选区块会逐个重合，'
-                                '同一格既排普通版又排玄武岩版' % sets['main']['placement'].get('salt'))
-    ok()
     # ---- 群系标签：成员 = 原版 #minecraft:is_nether 减 basalt_deltas；replace 必须 false
     try:
         tag = json.load(open(BIOME_TAG, encoding='utf-8'))
@@ -1806,13 +2294,11 @@ def check_worldgen():
             ng('bgp-biome-tag', '读原版 jar 失败：%s' % e)
     else:
         print('[bgp-biome-tag] 原版 jar 不在，只按冻结常量核对')
-    print('[bgp-worldgen] 两套结构：main(biomes=%s, %s, max=%s) / basalt(biomes=%s, %s, max=%s)；'
-          'salt %r vs %r；标签 members=%d'
+    print('[bgp-worldgen] 唯一一套结构：biomes=%s / %s / max=%s；salt=%r；'
+          '玄武岩那一套文件（structure+structure_set）**不存在**；标签 members=%d'
           % (structs['main']['biomes'], structs['main']['terrain_adaptation'],
-             structs['main']['max_distance_from_center'], structs['basalt']['biomes'],
-             structs['basalt']['terrain_adaptation'], structs['basalt']['max_distance_from_center'],
-             sets['main']['placement'].get('salt'), sets['basalt']['placement'].get('salt'),
-             len(vals)))
+             structs['main']['max_distance_from_center'],
+             sets['main']['placement'].get('salt'), len(vals)))
     # 池
     for name, (els, fb) in EXPECT_POOLS.items():
         f = os.path.join(WG, 'template_pool', 'golden_prison', name + '.json')
@@ -1947,34 +2433,15 @@ def check_rate():
         print('[bgp-rate] 原版 jar 不在（%s），只按冻结常量核对' % os.path.basename(jar))
     print('[bgp-rate] 我们的 placement=%r salt=%r（要塞 salt=%d，故意不同）'
           % (pl, pl.get('salt'), FORTRESS_SALT))
-    # ★ 第六轮：玄武岩那一套的 placement 必须与主结构**逐字段相同**（否则两套密度会叠加），
-    #   salt 必须**不同**（同 salt ⇒ 候选区块逐个重合，同一格既排普通版又排玄武岩版）。
-    if not os.path.exists(SSET_BASALT):
-        ng('bgp-rate-basalt', '缺 structure_set/golden_prison_basalt.json')
-        return
-    try:
-        ssb = json.load(open(SSET_BASALT, encoding='utf-8'))
-    except Exception as e:
-        ng('bgp-rate-basalt', 'structure_set/golden_prison_basalt.json 解析失败：%s' % e)
-        return
-    plb = ssb.get('placement') or {}
-    for k in ('type', 'spacing', 'separation', 'spread_type'):
-        if plb.get(k) != pl.get(k):
-            ng('bgp-rate-basalt', '玄武岩 set 的 placement.%s=%r != 主结构 %r（密度会叠加）'
-               % (k, plb.get(k), pl.get(k)))
-        ok()
-    if plb.get('salt') == pl.get('salt'):
-        ng('bgp-rate-salt', '两套 structure_set 的 salt 相同（=%r）：候选区块会逐个重合' % plb.get('salt'))
+    # ★★ 第八轮 ③：玄武岩那一套已删除 ⇒ 这里改成**负向断言**（旧口径原文留档在下面）
+    #   旧口径（第六/七轮）：玄武岩 set 的 placement 必须与主结构逐字段相同、salt 必须不同（19710102）。
+    if os.path.exists(SSET_BASALT):
+        ng('bgp-rate-single', 'structure_set/golden_prison_basalt.json 还在（第八轮必须删除）')
     ok()
-    if plb.get('salt') != EXPECT_SSET_SALT['basalt']:
-        ng('bgp-rate-salt', '玄武岩 set 的 salt=%r != 记账 %d'
-           % (plb.get('salt'), EXPECT_SSET_SALT['basalt']))
+    if os.path.exists(os.path.join(WG, 'structure', 'golden_prison_basalt.json')):
+        ng('bgp-rate-single', 'structure/golden_prison_basalt.json 还在（第八轮必须删除）')
     ok()
-    if plb.get('salt') == FORTRESS_SALT:
-        ng('bgp-rate-salt', '玄武岩 set 抄成了下界要塞的 salt %d' % FORTRESS_SALT)
-    ok()
-    print('[bgp-rate] 两套 set：salt %r vs %r（差 %d）、其余 placement 逐字段相同'
-          % (pl.get('salt'), plb.get('salt'), abs((plb.get('salt') or 0) - (pl.get('salt') or 0))))
+    print('[bgp-rate] 只剩一套 structure_set：salt=%r（玄武岩那一套已按作者要求删除）' % (pl.get('salt'),))
 
 
 def check_treasure_unique():
@@ -2044,16 +2511,13 @@ def check_treasure_unique():
            'structure.start_pool=%r 必须恰好是 %r（换池就可能从别处长大）' % (spv, POOL + 'start'))
     ok()
     # ★ 第六轮：玄武岩那套的 start_pool 必须**同一个**（两套都从 start 池起 ⇒ 每座结构仍只有一个宝藏房）
-    try:
-        st_b = json.load(open(STRUCT_BASALT, encoding='utf-8'))
-    except Exception as e:
-        ng('bgp-treasure-unique-start', '玄武岩 structure JSON 解析失败：%s' % e)
-        st_b = {}
-    if st_b.get('start_pool') != spv:
+    # ★★ 第八轮 ③：玄武岩那套已删除 ⇒ 改成"文件必须不存在"的负向断言（旧口径留档在下面注释里）
+    #   旧口径：st_b = json.load(open(STRUCT_BASALT)) ; st_b['start_pool'] == spv
+    if os.path.exists(STRUCT_BASALT):
         ng('bgp-treasure-unique-start',
-           'golden_prison_basalt.start_pool=%r != 主结构 %r（两套必须同一个 start 池，'
-           '否则一座结构可能长出两个宝藏房）' % (st_b.get('start_pool'), spv))
+           'golden_prison_basalt.json 还在（第八轮已删除；旧口径是"两套同一个 start 池"）')
     ok()
+    print('[bgp-treasure-unique] 只剩一套 structure：start_pool=%r；玄武岩那一套文件不存在' % (spv,))
 
     # ---- 2) 除 start.json 外，其余池里一个都不许引用 treasure（双向）
     bad = []
@@ -2254,16 +2718,18 @@ def main():
             return 2
         check_inventory()
         pieces = {n: load_piece(n) for n in EXPECT_SIZE if os.path.exists(os.path.join(STRUCT, n + '.nbt'))}
-        if len(pieces) != 20:
+        if len(pieces) != 26:      # 第八轮：20 → 26（+6 个四面道固定槽变体）；旧口径 20
             print('[bgp-baseline] 只加载到 %d 个件' % len(pieces))
             return 2
         check_pieces(pieces)
         check_air(pieces)
+        check_void(pieces)
         check_connect(pieces)
         check_mirror(pieces)
         check_fertile(pieces)
         check_gate(pieces)
         check_cycle(pieces)
+        check_cross3(pieces)
         check_entities_bes(pieces)
         check_exit_shaft(pieces)
         check_worldgen()

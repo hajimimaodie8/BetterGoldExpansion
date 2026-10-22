@@ -107,6 +107,8 @@ public class bettergold {
         modEventBus.addListener(com.hjmmd_8.bettergold.network.BetterGoldNetwork::register);
         // Register custom mob effects
         AllEffects.EFFECTS.register(modEventBus);
+        // 第八轮（2026-10-22）：金钱妖音效（author zip → ogg）+ 字幕键，见 AllSounds 的类注释
+        com.hjmmd_8.bettergold.registry.AllSounds.SOUNDS.register(modEventBus);
         // 1.7（bg-n10 轮8）：万坚金砧的**容器类型**（本仓第一个 MenuType）。
         //   ⚠ 双端都注册（这里是主类 = 双端）；客户端的 Screen 才是单独一次注册，
         //   走 bettergoldClient 的 RegisterMenuScreensEvent（NeoForge 21.1 没有 Forge 的 RegisterMenuTypes 事件）。

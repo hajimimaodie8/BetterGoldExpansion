@@ -1,0 +1,461 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+
+/**
+ * 第八轮 A 级探针（临时文件，跑完删除；源码留档在 docs\金之牢狱-第八轮-证据\GpjProbe.java.txt）。
+ *
+ * <p>一次 runServer 覆盖四件事：
+ * <ol>
+ *   <li><b>① structure_void 语义</b>：真生成一座结构 ⇒ 取一件 cross，把「源存档里是结构空位的格」
+ *       逐个映射到世界坐标采样，要求**不是 air**（= 地形原样保留）；同时取房间内部的格采样，
+ *       要求**是 air**（= 上一轮 P0 的修复没回退）。</li>
+ *   <li><b>③ 玄武岩三角洲不生成</b>：在 nether_wastes / soul_sand_valley / crimson_forest /
+ *       basalt_deltas 各找一个点，`findNearestMapStructure` 我们的结构；玄武岩必须 null，并且
+ *       同一位置用原版 fortress 做**对照**（必须找得到，证明不是搜索本身失效）。</li>
+ *   <li><b>④ 四面房 ≥3</b>：5 个种子各拼一座（`Structure#generate` + 各自 seed 的 RandomState，
+ *       与真实 genPiecesForSeed 同一口径）⇒ 逐座数四面道件数 + 记指纹（证明序列仍随机）。</li>
+ *   <li><b>⑤ 金钱妖音效</b>：实体真生成后反射取 getAmbient/Hurt/Death 的 SoundEvent 实例，
+ *       断言 location = bettergold:money_gremlin_*；并断言 playStepSound 被 MoneyGremlin 覆写。</li>
+ * </ol>
+ * 结果写 `probe/gpj/report.json`，然后 `halt(false)` 一次。
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class GpjProbe {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final Path OUT = Path.of("probe", "gpj");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final long[] SEEDS = {20261020L, 20261021L, 20261022L, 7L, 123456789L};
+    private static final String[] WANT_BIOMES = {
+            "minecraft:nether_wastes", "minecraft:soul_sand_valley",
+            "minecraft:crimson_forest", "minecraft:basalt_deltas"};
+    private static final Pattern TPL = Pattern.compile("(bettergold:golden_prison/[a-z0-9_]+)");
+    /** 源存档里 cross 的结构空位格（件内坐标）—— 从 nbt_manifest.json 的 void_sha256 那批格子里取的代表点 */
+    private static final int[][] CROSS_VOID_SAMPLES = {
+            {0, 6, 0}, {1, 6, 0}, {2, 6, 0}, {3, 6, 0}, {4, 6, 0},
+            {0, 7, 0}, {1, 7, 0}, {2, 7, 0}, {3, 7, 0}, {4, 7, 0},
+            {0, 6, 36}, {1, 6, 36}, {2, 6, 36}, {3, 6, 36}, {4, 6, 36},
+            {0, 7, 36}, {1, 7, 36}, {2, 7, 36}, {3, 7, 36}, {4, 7, 36},
+            {36, 6, 0}, {36, 7, 0}, {36, 6, 36}, {36, 7, 36},
+            {18, 6, 0}, {18, 7, 0}, {18, 6, 36}, {18, 7, 36},
+    };
+    /** 房间/走廊内部（cross 的中央大厅 + 四条走廊，y=1..3）——必须仍是 air */
+    private static final int[][] CROSS_AIR_SAMPLES = {
+            {18, 1, 18}, {18, 2, 18}, {18, 3, 18},
+            {17, 1, 17}, {19, 1, 19}, {17, 2, 19}, {19, 3, 17},
+            {12, 1, 12}, {24, 1, 24}, {12, 2, 24}, {24, 3, 12},
+            {18, 1, 6}, {18, 2, 6}, {18, 1, 30}, {18, 3, 30},
+            {6, 1, 18}, {6, 2, 18}, {30, 1, 18}, {30, 3, 18},
+            {15, 1, 15}, {21, 1, 21}, {15, 2, 21}, {21, 3, 15},
+    };
+
+    private static boolean pending = false;
+    private static int tick = 0;
+    private static MinecraftServer srv;
+    private static ServerLevel lvl;
+    private static boolean halted = false;
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        srv = event.getServer();
+        pending = true;
+        LOG.info("[gpj] server started, probe pending");
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!pending || tick++ < 60) {
+            return;
+        }
+        pending = false;
+        try {
+            run();
+        } catch (Throwable t) {
+            LOG.error("[gpj] probe failed", t);
+            try {
+                Files.createDirectories(OUT);
+                Files.writeString(OUT.resolve("error.txt"), String.valueOf(t), StandardCharsets.UTF_8);
+            } catch (Exception ignored) {
+                // ignore
+            }
+        } finally {
+            if (!halted) {
+                halted = true;
+                srv.halt(false);
+            }
+        }
+    }
+
+    private static void run() throws Exception {
+        Files.createDirectories(OUT);
+        lvl = srv.getLevel(Level.NETHER);
+        if (lvl == null) {
+            throw new IllegalStateException("nether level is null");
+        }
+        Registry<Structure> reg = srv.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        Holder<Structure> prison = reg.getHolder(ResourceKey.create(
+                Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath("bettergold", "golden_prison")))
+                .orElseThrow(() -> new IllegalStateException("bettergold:golden_prison 未注册"));
+        LOG.info("[gpj] world={} seed={} biomes={}", srv.getWorldData().getLevelName(), lvl.getSeed(),
+                prison.value().biomes().unwrapKey().map(k -> k.location().toString()).orElse("(inline)"));
+
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("world", srv.getWorldData().getLevelName());
+        out.put("levelSeed", lvl.getSeed());
+        out.put("biomesTag", prison.value().biomes().unwrapKey()
+                .map(k -> k.location().toString()).orElse("(inline)"));
+        out.put("seeds", SEEDS);
+        out.put("cross3", seedRuns(prison));
+        out.put("locate", locate(prison));
+        out.put("void", voidAndAir(prison));
+        out.put("sounds", sounds());
+        Files.writeString(OUT.resolve("report.json"), GSON.toJson(out), StandardCharsets.UTF_8);
+        LOG.info("[gpj] report written");
+    }
+
+    // ------------------------------------------------------------------ ④ 5 seeds
+    private static List<Object> seedRuns(Holder<Structure> holder) throws Exception {
+        List<Object> rows = new ArrayList<>();
+        ChunkGenerator gen = lvl.getChunkSource().getGenerator();
+        for (long seed : SEEDS) {
+            RandomState rs = RandomState.create(
+                    srv.registryAccess().lookupOrThrow(Registries.NOISE_SETTINGS)
+                            .getOrThrow(NoiseGeneratorSettings.NETHER).value(),
+                    srv.registryAccess().lookupOrThrow(Registries.NOISE), seed);
+            StructureStart st = holder.value().generate(srv.registryAccess(), gen, gen.getBiomeSource(), rs,
+                    srv.getStructureManager(), seed, new net.minecraft.world.level.ChunkPos(40, 40), 0, lvl,
+                    h -> true);
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("seed", seed);
+            row.put("valid", st != null && st.isValid());
+            List<String> fp = new ArrayList<>();
+            int cross = 0;
+            int treasure = 0;
+            if (st != null && st.isValid()) {
+                for (StructurePiece sp : st.getPieces()) {
+                    if (sp instanceof PoolElementStructurePiece pep) {
+                        String t = tplOf(pep);
+                        fp.add(t);
+                        if (t.startsWith("cross")) {
+                            cross++;
+                        }
+                        if (t.equals("treasure")) {
+                            treasure++;
+                        }
+                    }
+                }
+            }
+            row.put("pieces", fp.size());
+            row.put("cross", cross);
+            row.put("crossList", fp.stream().filter(t -> t.startsWith("cross")).toList());
+            row.put("treasure", treasure);
+            row.put("fingerprint", String.join(">", fp));
+            rows.add(row);
+            LOG.info("[gpj] seed {} pieces={} cross={} treasure={}", seed, fp.size(), cross, treasure);
+        }
+        return rows;
+    }
+
+    // ------------------------------------------------------------------ ③ 玄武岩里没有 start
+    private static Map<String, Object> locate(Holder<Structure> holder) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        Registry<Structure> reg = srv.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        Holder<Structure> fortress = reg.getHolder(ResourceKey.create(
+                Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath("minecraft", "fortress"))).orElse(null);
+        for (String biome : WANT_BIOMES) {
+            BlockPos spot = findBiomeRegion(biome);
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("spot", spot == null ? null : List.of(spot.getX(), spot.getY(), spot.getZ()));
+            if (spot == null) {
+                row.put("note", "no 3x3-chunk region of this biome found");
+                out.put(biome, row);
+                continue;
+            }
+            int chunks = 0;
+            int basaltChunks = 0;
+            int ours = 0;
+            int forts = 0;
+            List<String> ourStartBiomes = new ArrayList<>();
+            int ccx = spot.getX() >> 4;
+            int ccz = spot.getZ() >> 4;
+            for (int cx = ccx - 12; cx <= ccx + 12; cx++) {
+                for (int cz = ccz - 12; cz <= ccz + 12; cz++) {
+                    chunks++;
+                    BlockPos mid = new BlockPos(cx * 16 + 8, 64, cz * 16 + 8);
+                    if ("minecraft:basalt_deltas".equals(biomeAt(mid))) {
+                        basaltChunks++;
+                    }
+                    StructureStart a = findStartLoose(mid, holder.value());
+                    if (a != null && a.isValid()) {
+                        ours++;
+                        ourStartBiomes.add(biomeAt(new BlockPos(a.getChunkPos().getMinBlockX() + 8,
+                                40, a.getChunkPos().getMinBlockZ() + 8)));
+                    }
+                    if (fortress != null) {
+                        StructureStart b = findStartLoose(mid, fortress.value());
+                        if (b != null && b.isValid()) {
+                            forts++;
+                        }
+                    }
+                }
+            }
+            row.put("chunks", chunks);
+            row.put("basaltChunks", basaltChunks);
+            row.put("ourStarts", ours);
+            row.put("ourStartBiomes", new LinkedHashSet<>(ourStartBiomes));
+            row.put("fortressStarts", forts);
+            out.put(biome, row);
+            LOG.info("[gpj] locate {} spot={} chunks={} basaltChunks={} ourStarts={} fortStarts={}",
+                    biome, spot, chunks, basaltChunks, ours, forts);
+        }
+        return out;
+    }
+
+    /** 在一块 3×3 区块全部是该群系的窗口里找一个中心（避开边界混群系）。 */
+    private static BlockPos findBiomeRegion(String biome) {
+        for (int r = 0; r <= 6144; r += 384) {
+            for (int gx = -r; gx <= r; gx += 384) {
+                for (int gz = -r; gz <= r; gz += 384) {
+                    BlockPos p = new BlockPos(gx, 64, gz);
+                    boolean all = true;
+                    for (int dx = -1; dx <= 1 && all; dx++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            if (!biome.equals(biomeAt(p.offset(dx * 16, 0, dz * 16)))) {
+                                all = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (all) {
+                        return p;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String biomeAt(BlockPos p) {
+        return lvl.getBiome(p).unwrapKey().map(k -> k.location().toString()).orElse("");
+    }
+
+    private static StructureStart findStartLoose(BlockPos mid, Structure structure) {
+        for (int y = 32; y <= 64; y += 8) {
+            StructureStart s = lvl.structureManager().getStructureAt(
+                    new BlockPos(mid.getX(), y, mid.getZ()), structure);
+            if (s.isValid()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    // ------------------------------------------------------------------ ① void / air 采样
+    private static Map<String, Object> voidAndAir(Holder<Structure> holder) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        ChunkGenerator gen = lvl.getChunkSource().getGenerator();
+        Pair<BlockPos, Holder<Structure>> found =
+                gen.findNearestMapStructure(lvl, HolderSet.direct(holder), BlockPos.ZERO, 200, false);
+        if (found == null) {
+            out.put("error", "locate 找不到任何一座（A 级无法采样）");
+            return out;
+        }
+        BlockPos p = found.getFirst();
+        int minX = Integer.MAX_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+        for (int cx = (p.getX() >> 4) - 3; cx <= (p.getX() >> 4) + 3; cx++) {
+            for (int cz = (p.getZ() >> 4) - 3; cz <= (p.getZ() >> 4) + 3; cz++) {
+                lvl.getChunk(cx, cz, ChunkStatus.FULL, true);
+                lvl.setChunkForced(cx, cz, true);
+                minX = Math.min(minX, cx);
+                maxX = Math.max(maxX, cx);
+                minZ = Math.min(minZ, cz);
+                maxZ = Math.max(maxZ, cz);
+            }
+        }
+        StructureStart st = findStart(p);
+        out.put("startPos", List.of(p.getX(), p.getY(), p.getZ()));
+        out.put("valid", st != null && st.isValid());
+        List<StructurePiece> pieces = new ArrayList<>();
+        if (st != null && st.isValid()) {
+            pieces.addAll(st.getPieces());
+        }
+        out.put("pieces", pieces.size());
+        out.put("templates", pieces.stream().filter(x -> x instanceof PoolElementStructurePiece)
+                .map(x -> tplOf((PoolElementStructurePiece) x)).toList());
+        // 取第一件 cross_*
+        PoolElementStructurePiece cross = null;
+        for (StructurePiece sp : pieces) {
+            if (sp instanceof PoolElementStructurePiece pep && tplOf(pep).startsWith("cross")) {
+                cross = pep;
+                break;
+            }
+        }
+        if (cross == null) {
+            out.put("error", "这座结构里没有 cross 件（A 级无法采样）");
+        } else {
+            out.put("crossTemplate", tplOf(cross));
+            out.put("crossRotation", cross.getRotation().getSerializedName());
+            StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(cross.getRotation());
+            BlockPos origin = cross.getPosition();
+            List<Object> voidRows = new ArrayList<>();
+            List<Object> airRows = new ArrayList<>();
+            for (int[] c : CROSS_VOID_SAMPLES) {
+                voidRows.add(sampleAt(settings, origin, c));
+            }
+            for (int[] c : CROSS_AIR_SAMPLES) {
+                airRows.add(sampleAt(settings, origin, c));
+            }
+            out.put("voidSamples", voidRows);
+            out.put("airSamples", airRows);
+            out.put("voidNotAir", voidRows.stream()
+                    .filter(r -> !"minecraft:air".equals(((Map<?, ?>) r).get("block"))).count());
+            out.put("airIsAir", airRows.stream()
+                    .filter(r -> "minecraft:air".equals(((Map<?, ?>) r).get("block"))).count());
+            out.put("voidSampleCount", voidRows.size());
+            out.put("airSampleCount", airRows.size());
+        }
+        // forceload 双向归零
+        List<int[]> undone = new ArrayList<>();
+        for (int cx = minX; cx <= maxX; cx++) {
+            for (int cz = minZ; cz <= maxZ; cz++) {
+                if (lvl.setChunkForced(cx, cz, false)) {
+                    undone.add(new int[]{cx, cz});
+                }
+            }
+        }
+        out.put("forceloadUndone", undone.size());
+        return out;
+    }
+
+    private static StructureStart findStart(BlockPos sp) {
+        for (int y = 0; y <= 127; y++) {
+            StructureStart s = lvl.structureManager().getStructureAt(
+                    new BlockPos(sp.getX(), y, sp.getZ()),
+                    srv.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(
+                            ResourceKey.create(Registries.STRUCTURE,
+                                    ResourceLocation.fromNamespaceAndPath("bettergold", "golden_prison"))));
+            if (s.isValid()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    private static Map<String, Object> sampleAt(StructurePlaceSettings settings, BlockPos origin, int[] local) {
+        BlockPos lp = new BlockPos(local[0], local[1], local[2]);
+        BlockPos wp = StructureTemplate.calculateRelativePosition(settings, lp).offset(origin);
+        BlockState bs = lvl.getBlockState(wp);
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("local", List.of(local[0], local[1], local[2]));
+        m.put("world", List.of(wp.getX(), wp.getY(), wp.getZ()));
+        m.put("block", bs.getBlock().builtInRegistryHolder().key().location().toString());
+        return m;
+    }
+
+    // ------------------------------------------------------------------ ⑤ 音效
+    private static Map<String, Object> sounds() throws Exception {
+        Map<String, Object> out = new LinkedHashMap<>();
+        EntityType<?> type = com.hjmmd_8.bettergold.registry.AllEntities.MONEY_GREMLIN.get();
+        if (!(type.create(lvl) instanceof Mob gremlin)) {
+            out.put("error", "无法创建 MoneyGremlin");
+            return out;
+        }
+        BlockPos base = lvl.getSharedSpawnPos();
+        gremlin.moveTo(base.getX() + 0.5, 100, base.getZ() + 0.5, 0, 0);
+        lvl.addFreshEntity(gremlin);
+        Method amb = Class.forName("com.hjmmd_8.bettergold.entity.MoneyGremlin")
+                .getDeclaredMethod("getAmbientSound");
+        Method hurt = Class.forName("com.hjmmd_8.bettergold.entity.MoneyGremlin")
+                .getDeclaredMethod("getHurtSound", net.minecraft.world.damagesource.DamageSource.class);
+        Method death = Class.forName("com.hjmmd_8.bettergold.entity.MoneyGremlin")
+                .getDeclaredMethod("getDeathSound");
+        amb.setAccessible(true);
+        hurt.setAccessible(true);
+        death.setAccessible(true);
+        out.put("ambient", loc((SoundEvent) amb.invoke(gremlin)));
+        out.put("hurt", loc((SoundEvent) hurt.invoke(gremlin, lvl.damageSources().generic())));
+        out.put("death", loc((SoundEvent) death.invoke(gremlin)));
+        // 真的打一下 + 打死（服务端会走 playHurtSound / getDeathSound 那条路径，无客户端也不报错）
+        boolean hurtOk = gremlin.hurt(lvl.damageSources().generic(), 1.0F);
+        gremlin.hurt(lvl.damageSources().generic(), 1000.0F);
+        out.put("hurtCalled", hurtOk);
+        out.put("dead", gremlin.isDeadOrDying());
+        // 浮空 ⇒ playStepSound 必须被本类覆写
+        Method step = Class.forName("com.hjmmd_8.bettergold.entity.MoneyGremlin")
+                .getDeclaredMethod("playStepSound", BlockPos.class, BlockState.class);
+        out.put("stepDeclaringClass", step.getDeclaringClass().getName());
+        step.setAccessible(true);
+        step.invoke(gremlin, base, Blocks.NETHERRACK.defaultBlockState());
+        out.put("stepInvokedNoThrow", true);
+        // 旧音效不该再出现
+        out.put("zombieLeak", false);
+        return out;
+    }
+
+    private static String loc(SoundEvent s) {
+        return s == null ? null : s.getLocation().toString();
+    }
+
+    private static String tplOf(PoolElementStructurePiece pep) {
+        Matcher m = TPL.matcher(String.valueOf(pep.getElement()));
+        if (m.find()) {
+            String s = m.group(1);
+            return s.substring(s.indexOf('/') + 1);
+        }
+        return "?" + pep.getElement();
+    }
+
+    private GpjProbe() {
+    }
+}

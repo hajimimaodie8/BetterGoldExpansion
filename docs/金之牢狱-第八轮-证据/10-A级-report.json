@@ -1,0 +1,873 @@
+{
+  "world": "gpj_probe",
+  "levelSeed": 20261022,
+  "biomesTag": "bettergold:golden_prison/no_basalt",
+  "seeds": [
+    20261020,
+    20261021,
+    20261022,
+    7,
+    123456789
+  ],
+  "cross3": [
+    {
+      "seed": 20261020,
+      "valid": true,
+      "pieces": 28,
+      "cross": 3,
+      "crossList": [
+        "cross_slot_1_a",
+        "cross_slot_2_b",
+        "cross_slot_3_a"
+      ],
+      "treasure": 1,
+      "fingerprint": "treasure\u003ecross_slot_1_a\u003ecell_small_fertile\u003ecell_medium_c\u003ecross_slot_2_b\u003elane\u003elane\u003ecell_medium_fertile\u003ecross_slot_3_a\u003ecell_large_mirror\u003ecell_small_fertile\u003ecell_small_mirror\u003elane\u003ecell_medium_c\u003ecell_large_a\u003ecell_medium_a\u003elane\u003elane\u003elane\u003ecell_small_a\u003elane\u003elane\u003elane\u003ecell_small_fertile\u003eexit\u003eexit\u003eexit\u003eexit"
+    },
+    {
+      "seed": 20261021,
+      "valid": true,
+      "pieces": 32,
+      "cross": 4,
+      "crossList": [
+        "cross_slot_1_b",
+        "cross_slot_2_a",
+        "cross_b",
+        "cross_slot_3_a"
+      ],
+      "treasure": 1,
+      "fingerprint": "treasure\u003ecross_slot_1_b\u003ecell_small_mirror\u003ecross_slot_2_a\u003ecell_small_a\u003elane\u003ecross_b\u003ecell_small_mirror\u003ecross_slot_3_a\u003elane\u003ecell_medium_fertile\u003elane\u003elane\u003elane\u003elane\u003ecell_small_fertile\u003ecell_medium_fertile\u003ecell_large_b\u003ecell_medium_fertile\u003elane\u003ecell_large_b\u003eexit\u003eexit\u003ecell_small_a\u003elane\u003elane\u003elane\u003elane\u003eexit\u003eexit\u003eexit\u003eexit"
+    },
+    {
+      "seed": 20261022,
+      "valid": true,
+      "pieces": 31,
+      "cross": 4,
+      "crossList": [
+        "cross_slot_1_a",
+        "cross_slot_2_a",
+        "cross_b",
+        "cross_slot_3_a"
+      ],
+      "treasure": 1,
+      "fingerprint": "treasure\u003ecross_slot_1_a\u003ecell_medium_fertile\u003ecross_slot_2_a\u003ecell_small_fertile\u003elane\u003ecross_b\u003ecross_slot_3_a\u003ecell_large_a\u003elane\u003ecell_medium_fertile\u003elane\u003elane\u003elane\u003ecell_small_b\u003ecell_small_fertile\u003ecell_small_a\u003elane\u003ecell_small_fertile\u003elane\u003ecell_small_fertile\u003ecell_medium_fertile\u003eexit\u003elane\u003elane\u003ecell_medium_c\u003elane\u003eexit\u003eexit\u003eexit\u003eexit"
+    },
+    {
+      "seed": 7,
+      "valid": true,
+      "pieces": 28,
+      "cross": 3,
+      "crossList": [
+        "cross_slot_1_b",
+        "cross_slot_2_a",
+        "cross_slot_3_a"
+      ],
+      "treasure": 1,
+      "fingerprint": "treasure\u003ecross_slot_1_b\u003ecell_large_fertile\u003ecross_slot_2_a\u003ecell_medium_mirror\u003elane\u003ecell_medium_c\u003ecross_slot_3_a\u003ecell_small_a\u003elane\u003ecell_medium_fertile\u003elane\u003ecell_small_fertile\u003ecell_medium_a\u003ecell_medium_mirror\u003elane\u003ecell_large_c\u003elane\u003ecell_large_fertile\u003elane\u003elane\u003elane\u003ecell_large_fertile\u003elane\u003eexit\u003eexit\u003eexit\u003eexit"
+    },
+    {
+      "seed": 123456789,
+      "valid": true,
+      "pieces": 29,
+      "cross": 4,
+      "crossList": [
+        "cross_slot_1_a",
+        "cross_slot_2_a",
+        "cross_slot_3_b",
+        "cross_a"
+      ],
+      "treasure": 1,
+      "fingerprint": "treasure\u003ecross_slot_1_a\u003ecell_small_mirror\u003ecross_slot_2_a\u003ecell_large_b\u003elane\u003ecell_medium_fertile\u003ecross_slot_3_b\u003ecell_large_b\u003elane\u003ecell_large_fertile\u003elane\u003ecell_medium_c\u003ecell_small_c\u003ecell_small_b\u003elane\u003ecell_medium_fertile\u003elane\u003ecross_a\u003elane\u003elane\u003elane\u003ecell_medium_b\u003elane\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit"
+    }
+  ],
+  "locate": {
+    "minecraft:nether_wastes": {
+      "spot": [
+        -384,
+        64,
+        384
+      ],
+      "chunks": 625,
+      "basaltChunks": 131,
+      "ourStarts": 99,
+      "ourStartBiomes": [
+        "minecraft:nether_wastes"
+      ],
+      "fortressStarts": 48
+    },
+    "minecraft:soul_sand_valley": {
+      "spot": [
+        384,
+        64,
+        -768
+      ],
+      "chunks": 625,
+      "basaltChunks": 0,
+      "ourStarts": 217,
+      "ourStartBiomes": [
+        "minecraft:crimson_forest",
+        "minecraft:nether_wastes",
+        "minecraft:soul_sand_valley"
+      ],
+      "fortressStarts": 0
+    },
+    "minecraft:crimson_forest": {
+      "spot": [
+        -384,
+        64,
+        -384
+      ],
+      "chunks": 625,
+      "basaltChunks": 15,
+      "ourStarts": 0,
+      "ourStartBiomes": [],
+      "fortressStarts": 0
+    },
+    "minecraft:basalt_deltas": {
+      "spot": [
+        0,
+        64,
+        0
+      ],
+      "chunks": 625,
+      "basaltChunks": 435,
+      "ourStarts": 89,
+      "ourStartBiomes": [
+        "minecraft:nether_wastes",
+        "minecraft:soul_sand_valley"
+      ],
+      "fortressStarts": 32
+    }
+  },
+  "void": {
+    "startPos": [
+      16,
+      0,
+      240
+    ],
+    "valid": true,
+    "pieces": 37,
+    "templates": [
+      "treasure",
+      "cross_slot_1_a",
+      "cross_slot_2_b",
+      "cell_medium_b",
+      "cross_b",
+      "cross_slot_3_a",
+      "cell_large_c",
+      "cell_large_b",
+      "lane",
+      "lane",
+      "lane",
+      "lane",
+      "cell_medium_a",
+      "cell_large_fertile",
+      "cell_small_a",
+      "lane",
+      "lane",
+      "cell_small_a",
+      "cell_large_mirror",
+      "cell_large_b",
+      "cell_large_fertile",
+      "lane",
+      "lane",
+      "lane",
+      "cell_small_a",
+      "cell_large_b",
+      "lane",
+      "lane",
+      "lane",
+      "lane",
+      "exit",
+      "exit",
+      "exit",
+      "exit",
+      "exit",
+      "exit",
+      "exit"
+    ],
+    "crossTemplate": "cross_slot_1_a",
+    "crossRotation": "180",
+    "voidSamples": [
+      {
+        "local": [
+          0,
+          6,
+          0
+        ],
+        "world": [
+          24,
+          41,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          1,
+          6,
+          0
+        ],
+        "world": [
+          23,
+          41,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          2,
+          6,
+          0
+        ],
+        "world": [
+          22,
+          41,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          3,
+          6,
+          0
+        ],
+        "world": [
+          21,
+          41,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          4,
+          6,
+          0
+        ],
+        "world": [
+          20,
+          41,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          0,
+          7,
+          0
+        ],
+        "world": [
+          24,
+          42,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          1,
+          7,
+          0
+        ],
+        "world": [
+          23,
+          42,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          2,
+          7,
+          0
+        ],
+        "world": [
+          22,
+          42,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          3,
+          7,
+          0
+        ],
+        "world": [
+          21,
+          42,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          4,
+          7,
+          0
+        ],
+        "world": [
+          20,
+          42,
+          219
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          0,
+          6,
+          36
+        ],
+        "world": [
+          24,
+          41,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          1,
+          6,
+          36
+        ],
+        "world": [
+          23,
+          41,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          2,
+          6,
+          36
+        ],
+        "world": [
+          22,
+          41,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          3,
+          6,
+          36
+        ],
+        "world": [
+          21,
+          41,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          4,
+          6,
+          36
+        ],
+        "world": [
+          20,
+          41,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          0,
+          7,
+          36
+        ],
+        "world": [
+          24,
+          42,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          1,
+          7,
+          36
+        ],
+        "world": [
+          23,
+          42,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          2,
+          7,
+          36
+        ],
+        "world": [
+          22,
+          42,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          3,
+          7,
+          36
+        ],
+        "world": [
+          21,
+          42,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          4,
+          7,
+          36
+        ],
+        "world": [
+          20,
+          42,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          36,
+          6,
+          0
+        ],
+        "world": [
+          -12,
+          41,
+          219
+        ],
+        "block": "minecraft:netherrack"
+      },
+      {
+        "local": [
+          36,
+          7,
+          0
+        ],
+        "world": [
+          -12,
+          42,
+          219
+        ],
+        "block": "minecraft:netherrack"
+      },
+      {
+        "local": [
+          36,
+          6,
+          36
+        ],
+        "world": [
+          -12,
+          41,
+          183
+        ],
+        "block": "minecraft:netherrack"
+      },
+      {
+        "local": [
+          36,
+          7,
+          36
+        ],
+        "world": [
+          -12,
+          42,
+          183
+        ],
+        "block": "minecraft:netherrack"
+      },
+      {
+        "local": [
+          18,
+          6,
+          0
+        ],
+        "world": [
+          6,
+          41,
+          219
+        ],
+        "block": "minecraft:netherrack"
+      },
+      {
+        "local": [
+          18,
+          7,
+          0
+        ],
+        "world": [
+          6,
+          42,
+          219
+        ],
+        "block": "minecraft:netherrack"
+      },
+      {
+        "local": [
+          18,
+          6,
+          36
+        ],
+        "world": [
+          6,
+          41,
+          183
+        ],
+        "block": "minecraft:basalt"
+      },
+      {
+        "local": [
+          18,
+          7,
+          36
+        ],
+        "world": [
+          6,
+          42,
+          183
+        ],
+        "block": "minecraft:basalt"
+      }
+    ],
+    "airSamples": [
+      {
+        "local": [
+          18,
+          1,
+          18
+        ],
+        "world": [
+          6,
+          36,
+          201
+        ],
+        "block": "bettergold:gold_infused_dirt"
+      },
+      {
+        "local": [
+          18,
+          2,
+          18
+        ],
+        "world": [
+          6,
+          37,
+          201
+        ],
+        "block": "bettergold:gold_pillar"
+      },
+      {
+        "local": [
+          18,
+          3,
+          18
+        ],
+        "world": [
+          6,
+          38,
+          201
+        ],
+        "block": "bettergold:gold_pillar"
+      },
+      {
+        "local": [
+          17,
+          1,
+          17
+        ],
+        "world": [
+          7,
+          36,
+          202
+        ],
+        "block": "bettergold:gold_infused_farmland"
+      },
+      {
+        "local": [
+          19,
+          1,
+          19
+        ],
+        "world": [
+          5,
+          36,
+          200
+        ],
+        "block": "bettergold:gold_infused_dirt"
+      },
+      {
+        "local": [
+          17,
+          2,
+          19
+        ],
+        "world": [
+          7,
+          37,
+          200
+        ],
+        "block": "bettergold:golden_eggplant_crop"
+      },
+      {
+        "local": [
+          19,
+          3,
+          17
+        ],
+        "world": [
+          5,
+          38,
+          202
+        ],
+        "block": "bettergold:gold_pillar"
+      },
+      {
+        "local": [
+          12,
+          1,
+          12
+        ],
+        "world": [
+          12,
+          36,
+          207
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          24,
+          1,
+          24
+        ],
+        "world": [
+          0,
+          36,
+          195
+        ],
+        "block": "minecraft:red_mushroom"
+      },
+      {
+        "local": [
+          12,
+          2,
+          24
+        ],
+        "world": [
+          12,
+          37,
+          195
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          24,
+          3,
+          12
+        ],
+        "world": [
+          0,
+          38,
+          207
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          18,
+          1,
+          6
+        ],
+        "world": [
+          6,
+          36,
+          213
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          18,
+          2,
+          6
+        ],
+        "world": [
+          6,
+          37,
+          213
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          18,
+          1,
+          30
+        ],
+        "world": [
+          6,
+          36,
+          189
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          18,
+          3,
+          30
+        ],
+        "world": [
+          6,
+          38,
+          189
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          6,
+          1,
+          18
+        ],
+        "world": [
+          18,
+          36,
+          201
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          6,
+          2,
+          18
+        ],
+        "world": [
+          18,
+          37,
+          201
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          30,
+          1,
+          18
+        ],
+        "world": [
+          -6,
+          36,
+          201
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          30,
+          3,
+          18
+        ],
+        "world": [
+          -6,
+          38,
+          201
+        ],
+        "block": "minecraft:air"
+      },
+      {
+        "local": [
+          15,
+          1,
+          15
+        ],
+        "world": [
+          9,
+          36,
+          204
+        ],
+        "block": "bettergold:gold_infused_farmland"
+      },
+      {
+        "local": [
+          21,
+          1,
+          21
+        ],
+        "world": [
+          3,
+          36,
+          198
+        ],
+        "block": "bettergold:gold_infused_farmland"
+      },
+      {
+        "local": [
+          15,
+          2,
+          21
+        ],
+        "world": [
+          9,
+          37,
+          198
+        ],
+        "block": "bettergold:golden_rose_bush"
+      },
+      {
+        "local": [
+          21,
+          3,
+          15
+        ],
+        "world": [
+          3,
+          38,
+          204
+        ],
+        "block": "bettergold:golden_rose_bush"
+      }
+    ],
+    "voidNotAir": 28,
+    "airIsAir": 11,
+    "voidSampleCount": 28,
+    "airSampleCount": 23,
+    "forceloadUndone": 49
+  },
+  "sounds": {
+    "ambient": "bettergold:money_gremlin_ambient",
+    "hurt": "bettergold:money_gremlin_hurt",
+    "death": "bettergold:money_gremlin_death",
+    "hurtCalled": true,
+    "dead": true,
+    "stepDeclaringClass": "com.hjmmd_8.bettergold.entity.MoneyGremlin",
+    "stepInvokedNoThrow": true,
+    "zombieLeak": false
+  }
+}

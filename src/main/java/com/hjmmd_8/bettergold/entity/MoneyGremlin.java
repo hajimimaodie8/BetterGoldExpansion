@@ -57,6 +57,7 @@ import net.minecraft.world.phys.Vec3;
  *   <li><b>移速</b> = {@value #MOVEMENT_SPEED}（僵尸是 0.23，这里「相当或略快」）；</li>
  *   <li><b>命中箱</b> = 1.2 × 1.2（模型最宽处 = 圆环直径 26.8 px ≈ 1.675 格、最高处 ≈ 1.375 格，取整到 1.2 便于近战判定）；</li>
  *   <li><b>音效</b> = 原版僵尸的 ambient / hurt / death（本仓没有 {@code sounds.json}，不新增音频文件）；</li>
+ *   <li>★ <b>第八轮（2026-10-22）已改</b>：上面那条「用原版僵尸音效」<b>按作者要求作废</b>（「浮空所以不需要走路音效，僵尸音效请给它毙掉」）⇒ ambient / hurt / death 走 {@code AllSounds.MONEY_GREMLIN_*}（作者 zip 的音轨转 ogg），并且 {@link #playStepSound} 覆写成空实现（浮空 = 不踩踏）；字幕键 {@code subtitles.bettergold.money_gremlin_*}。旧原文保留在上面不删。</li>
  *   <li><b>近战属性</b>：{@code ATTACK_DAMAGE} 的基值写 8 只作「面板参考」——真实伤害只走
  *       {@link #doHurtTarget} 的显式难度表（A 级实测会把属性改成 1 再打，证明表才是真源）。</li>
  * </ul>
@@ -305,22 +306,41 @@ public class MoneyGremlin extends Monster {
         return EnchantmentHelper.getEnchantmentLevel(looting, killer);
     }
 
-    // ==================== 音效（工作值：原版僵尸） ====================
+    // ==================== 音效 ====================
+    // ★★ 第八轮（2026-10-22）：**僵尸音效全部毙掉**，换成作者交付的金钱妖音效（AllSounds）。
+    //   作者原话：「补充一下金钱妖的音效（因为人家是浮空的所以不需要什么走路音效，所以之前用的
+    //   僵尸音效请给它毙掉）」「这些声音发生的时候，如果开了声音字幕，最好在声音字幕那里显示」。
+    //   字幕键 = `subtitles.bettergold.money_gremlin_*`（sounds.json 的 subtitle 字段 + 两套语言文件）。
+    //   旧口径原文留档（工作值，1.7 起一直用原版僵尸）：ambient/hurt/death = ZOMBIE_AMBIENT/HURT/DEATH。
 
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ZOMBIE_AMBIENT;
+        return com.hjmmd_8.bettergold.registry.AllSounds.MONEY_GREMLIN_AMBIENT.get();
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ZOMBIE_HURT;
+        return com.hjmmd_8.bettergold.registry.AllSounds.MONEY_GREMLIN_HURT.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ZOMBIE_DEATH;
+        return com.hjmmd_8.bettergold.registry.AllSounds.MONEY_GREMLIN_DEATH.get();
+    }
+
+    /**
+     * ★ 浮空 ⇒ <b>不要走路音效</b>（作者原话）。
+     *
+     * <p>源码依据：{@code Entity#playStepSound(BlockPos, BlockState)} 是 {@code protected}，
+     * 它内部调的是 {@code soundtype.getStepSound()}（{@code Entity.java:1109-1111}），
+     * 而 {@code LivingEntity#travel} / {@code Entity#move} 在落地走动时由
+     * {@code Entity#walkDist} 跨格触发（{@code Entity.java:1078}）。
+     * ⇒ 本类<b>覆写成空实现</b>：金钱妖是浮空的，脚下不发声（连原版"落地闷响"也没有）。</p>
+     */
+    @Override
+    protected void playStepSound(net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
+        // 浮空生物：不走路 ⇒ 不播放任何踩踏音（作者 2026-10-22 原话）
     }
 
     /** 目标选择：只锁定玩家，范围 = {@link #TARGET_RANGE}（与跟随范围分开写） */

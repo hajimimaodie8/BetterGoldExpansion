@@ -833,5 +833,8 @@
   "advancements.bettergold.chaosalloy_weapon.title": "崩乱的锋刃",
   "advancements.bettergold.chaosalloy_weapon.description": "获得任意一种崩乱合金武器工具",
   "advancements.bettergold.chaosalloy_armor.title": "崩乱的庇护",
-  "advancements.bettergold.chaosalloy_armor.description": "获得一整套崩乱合金盔甲"
+  "advancements.bettergold.chaosalloy_armor.description": "获得一整套崩乱合金盔甲",
+  "subtitles.bettergold.money_gremlin_ambient": "金钱妖：刷刷响",
+  "subtitles.bettergold.money_gremlin_hurt": "金钱妖：受伤",
+  "subtitles.bettergold.money_gremlin_death": "金钱妖：死亡"
 }

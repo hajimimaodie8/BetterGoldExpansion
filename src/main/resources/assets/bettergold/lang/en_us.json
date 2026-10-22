@@ -833,5 +833,8 @@
   "advancements.bettergold.chaosalloy_weapon.title": "Blade of Collapse",
   "advancements.bettergold.chaosalloy_weapon.description": "Obtain any kind of Chaosalloy weapon or tool.",
   "advancements.bettergold.chaosalloy_armor.title": "Shelter of Collapse",
-  "advancements.bettergold.chaosalloy_armor.description": "Obtain a full set of Chaosalloy armor."
+  "advancements.bettergold.chaosalloy_armor.description": "Obtain a full set of Chaosalloy armor.",
+  "subtitles.bettergold.money_gremlin_ambient": "Money Gremlin rustles",
+  "subtitles.bettergold.money_gremlin_hurt": "Money Gremlin hurts",
+  "subtitles.bettergold.money_gremlin_death": "Money Gremlin dies"
 }

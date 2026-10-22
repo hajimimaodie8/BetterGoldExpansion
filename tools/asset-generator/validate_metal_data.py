@@ -6201,18 +6201,24 @@ else:
 #   ② 新增 2 条页码键：`..._upstream_string` / `..._upstream_smelt` ⇒ 键数 **111 → 113**。
 #   旧值（bg-n10rc2，原文留档、不删）：
 #     zh 54BBC7A51136E9883B0F46E954554593… / en 2EFA1997FF53366C9FD811836DC29554… / 键数 111
-_BGN10_ZH_AFTER_SHA = "65C45198982830B343543F1A27D668CF7E125E4CC25C30427E96C3105FC00643"
+# 旧期望原文留档（bg-n10up 轮）：_BGN10_ZH_AFTER_SHA = "65C45198982830B343543F1A27D668CF7E125E4CC25C30427E96C3105FC00643"
+# ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
+_BGN10_ZH_AFTER_SHA = "908BF4666ECE6055E6EDEE456DA218EE038E835E077349EC138FD9980921B395"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
-_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
+# 旧期望原文留档（bg-n10up 轮）：_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
+# ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
+_BGN10_EN_AFTER_SHA = "465D9228E22666E45C92645266CDE49ACCD46CAD2753B120684E27F41CBB308E"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
 #     zh 24348D4628134D39441CEE393B236D1B… / en 116A20B59C9D46A068749835F1CD08DE… / 键数 75
 # ★ 1.7 bg-n10up：+ **2** 条（材料章新增两页的正文键：`upstream_string` / `upstream_smelt`）
 #   ⇒ 111 → **113**。旧值（轮9 的 111）原文留档、不删。
-_BGN10_NEW_LANG_KEYS = 113    # zh/en 各 113 条 = 轮3..轮8 的 75 + 轮9 的 36 + bg-n10up 的 2
+# ★★ 第八轮（2026-10-22）：金钱妖音效 3 条字幕键（subtitles.bettergold.money_gremlin_*）
+#   ⇒ 113 + 3 = **116**。旧期望原文留档：_BGN10_NEW_LANG_KEYS = 113
+_BGN10_NEW_LANG_KEYS = 116    # zh/en 各 113 条 = 轮3..轮8 的 75 + 轮9 的 36 + bg-n10up 的 2
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
 # _BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
 # _BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
@@ -10754,6 +10760,176 @@ if not bgn10fix2_problems:
           "③ 力量 ×(1−r) 与抗性 ×(1+r)，r = nextInt(50)+1 每次重取、无等级 / "
           "④ 两把新刀最终值 2.5..6.5 与 6.5..13、攻速 2.0，既有 8 族刀 2.0/-1.8 不动")
 
+# ======================================================================================
+# 第八轮（2026-10-22）⑤：**金钱妖音效 + 声音字幕**（作者 zip → ogg）
+#   作者原话：「补充一下金钱妖的音效（因为人家是浮空的所以不需要什么走路音效，所以之前用的
+#   僵尸音效请给它毙掉）」「这些声音发生的时候，如果开了声音字幕，最好在声音字幕那里显示」
+#   「E:\mc\mc资料\金钱妖声音.zip 这个地方是金钱妖的声音，还有就是金桥」。
+#   本段只查**静态可查**的六件事（A 级探针另外跑，见 docs\金之牢狱-实现记录.md §15）：
+#     ① sounds.json 的每个 event 都有非空 subtitle（没有 subtitle ⇒ 开字幕也不显示任何文字）；
+#     ② 每个 event 的 sounds[].name 都能对上一个**真实存在且是 OggS** 的 .ogg 文件；
+#     ③ AllSounds 注册的 3 个事件名与 sounds.json 的键集**双向相等**；
+#     ④ MoneyGremlin 里**僵尸音效全部消失**（去注释后 grep `ZOMBIE_` = 0）+ 三个 get*Sound 都指向 AllSounds；
+#     ⑤ 浮空 ⇒ `playStepSound` 覆写成空实现（源码口径：Entity#playStepSound 是 protected，见 AllSounds 注释）；
+#     ⑥ zh_cn / en_us 两条字幕键都存在且非空，并且两条语言文件的**键集一致**。
+#   「金桥」：zip 里没有名字含 桥/bridge 的文件 ⇒ 本仓不接（作者未给素材，不做猜测）。
+# ======================================================================================
+_bgsnd_problems: list = []
+_bgsnd_checked = 0
+_SND_ROOT = Path(__file__).resolve().parent.parent.parent      # 仓库根（tools/asset-generator 往上三层）
+
+
+def _bgsnd_bad(tag: str, msg: str) -> None:
+    _bgsnd_problems.append("[" + tag + "] " + msg)
+
+
+def _bgsnd_src(rel: str) -> str:
+    """读源码并**去掉注释**（正向 needle 必须跑在去注释源码上）。"""
+    p = _SND_ROOT / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / rel
+    if not p.exists():
+        _bgsnd_bad("bgsnd-src", "缺源码 " + rel)
+        return ""
+    s = p.read_text(encoding="utf-8")
+    out = []
+    i, n = 0, len(s)
+    while i < n:
+        if s.startswith("//", i):
+            j = s.find("\n", i)
+            i = n if j < 0 else j
+            continue
+        if s.startswith("/*", i):
+            j = s.find("*/", i)
+            i = n if j < 0 else j + 2
+            continue
+        out.append(s[i])
+        i += 1
+    return "".join(out)
+
+
+_SND_ASSETS = _SND_ROOT / "src" / "main" / "resources" / "assets" / "bettergold"
+_SND_JSON = _SND_ASSETS / "sounds.json"
+_SND_EVENTS = ("money_gremlin_ambient", "money_gremlin_hurt", "money_gremlin_death")
+_bgsnd_checked += 1
+if not _SND_JSON.exists():
+    _bgsnd_bad("bgsnd-json", "缺 assets/bettergold/sounds.json")
+    _snd_obj = {}
+else:
+    try:
+        _snd_obj = json.loads(_SND_JSON.read_text(encoding="utf-8"))
+    except Exception as e:                                  # noqa: BLE001
+        _bgsnd_bad("bgsnd-json", "sounds.json 解析失败：" + str(e))
+        _snd_obj = {}
+if sorted(_snd_obj) != sorted(_SND_EVENTS):
+    _bgsnd_bad("bgsnd-json", "sounds.json 的事件集 " + str(sorted(_snd_obj))
+               + " != " + str(sorted(_SND_EVENTS)))
+_bgsnd_checked += 1
+for _ev in _SND_EVENTS:
+    _e = _snd_obj.get(_ev) or {}
+    _bgsnd_checked += 1
+    _sub = _e.get("subtitle")
+    if not isinstance(_sub, str) or not _sub.strip():
+        _bgsnd_bad("bgsnd-subtitle", _ev + " 缺 subtitle（开声音字幕后什么都不显示）")
+    elif _sub != "subtitles.bettergold." + _ev:
+        _bgsnd_bad("bgsnd-subtitle", _ev + " 的 subtitle=" + repr(_sub)
+                   + " != subtitles.bettergold." + _ev)
+    _bgsnd_checked += 1
+    _sounds = _e.get("sounds") or []
+    if not _sounds:
+        _bgsnd_bad("bgsnd-sound", _ev + " 的 sounds 为空")
+    for _s in _sounds:
+        _bgsnd_checked += 1
+        _name = _s.get("name") if isinstance(_s, dict) else None
+        if _name != "bettergold:" + _ev:
+            _bgsnd_bad("bgsnd-sound", _ev + " 的 sounds[].name=" + repr(_name)
+                       + " != bettergold:" + _ev)
+            continue
+        _ogg = _SND_ASSETS / "sounds" / (_ev + ".ogg")
+        _bgsnd_checked += 1
+        if not _ogg.exists():
+            _bgsnd_bad("bgsnd-ogg", "缺音频文件 " + str(_ogg.relative_to(_SND_ROOT)))
+            continue
+        _head = _ogg.read_bytes()[:4]
+        if _head != b"OggS":
+            _bgsnd_bad("bgsnd-ogg", _ev + ".ogg 不是 Ogg 容器（头 " + repr(_head) + "）")
+        if _ogg.stat().st_size < 4096:
+            _bgsnd_bad("bgsnd-ogg", _ev + ".ogg 只有 " + str(_ogg.stat().st_size) + " B（像是空文件）")
+
+# ③ AllSounds 注册 ↔ sounds.json 键集
+_ALLSND = _bgsnd_src("registry/AllSounds.java")
+_bgsnd_checked += 1
+for _ev in _SND_EVENTS:
+    _bgsnd_checked += 1
+    if 'register("' + _ev + '")' not in _ALLSND:
+        _bgsnd_bad("bgsnd-register", "AllSounds 没有注册 " + _ev)
+_bgsnd_checked += 1
+if "DeferredRegister.create(Registries.SOUND_EVENT, bettergold.MODID)" not in _ALLSND:
+    _bgsnd_bad("bgsnd-register", "AllSounds 的 DeferredRegister 不是 SOUND_EVENT / bettergold 命名空间")
+_bgsnd_checked += 1
+if "SoundEvent.createVariableRangeEvent" not in _ALLSND:
+    _bgsnd_bad("bgsnd-register", "AllSounds 没有用可变范围事件（生物音效必须可变范围）")
+_BGMAIN = _bgsnd_src("bettergold.java")
+_bgsnd_checked += 1
+if "AllSounds.SOUNDS.register(modEventBus)" not in _BGMAIN:
+    _bgsnd_bad("bgsnd-register", "bettergold#register 没有挂 AllSounds.SOUNDS")
+
+# ④ 僵尸音效全部毙掉 + 三个 get*Sound 指向新事件
+_GREMLIN = _bgsnd_src("entity/MoneyGremlin.java")
+_bgsnd_checked += 1
+if "ZOMBIE_" in _GREMLIN:
+    _bgsnd_bad("bgsnd-zombie", "MoneyGremlin 去注释源码里还有 ZOMBIE_*（僵尸音效没毙掉）")
+for _m, _ev in (("getAmbientSound", "MONEY_GREMLIN_AMBIENT"),
+                ("getHurtSound", "MONEY_GREMLIN_HURT"),
+                ("getDeathSound", "MONEY_GREMLIN_DEATH")):
+    _bgsnd_checked += 1
+    _i = _GREMLIN.find("protected SoundEvent " + _m)
+    if _i < 0:
+        _bgsnd_bad("bgsnd-entity", "MoneyGremlin 缺 " + _m)
+    elif ("AllSounds." + _ev) not in _GREMLIN[_i:_i + 260]:
+        _bgsnd_bad("bgsnd-entity", _m + " 没有返回 AllSounds." + _ev)
+
+# ⑤ 浮空 ⇒ playStepSound 空实现
+_bgsnd_checked += 1
+_i = _GREMLIN.find("protected void playStepSound")
+if _i < 0:
+    _bgsnd_bad("bgsnd-step", "MoneyGremlin 没有覆写 playStepSound（浮空却还会踩踏发声）")
+else:
+    _bgsnd_checked += 1
+    if "playSound(" in _GREMLIN[_i:_i + 400]:
+        _bgsnd_bad("bgsnd-step", "playStepSound 覆写里还在 playSound（走路音效没去掉）")
+
+# ⑥ 字幕键：中英各一条、非空、键集一致
+_snd_lang = {}
+for _lc in ("zh_cn", "en_us"):
+    _lp = _SND_ASSETS / "lang" / (_lc + ".json")
+    _bgsnd_checked += 1
+    if not _lp.exists():
+        _bgsnd_bad("bgsnd-lang", "缺语言文件 " + _lc + ".json")
+        _snd_lang[_lc] = {}
+        continue
+    _snd_lang[_lc] = json.loads(_lp.read_text(encoding="utf-8"))
+_bgsnd_checked += 1
+if set(_snd_lang.get("zh_cn", {})) != set(_snd_lang.get("en_us", {})):
+    _bgsnd_bad("bgsnd-lang", "zh_cn / en_us 键集不一致：zh 独有 "
+               + str(sorted(set(_snd_lang.get("zh_cn", {})) - set(_snd_lang.get("en_us", {})))[:4]))
+for _ev in _SND_EVENTS:
+    _k = "subtitles.bettergold." + _ev
+    for _lc in ("zh_cn", "en_us"):
+        _bgsnd_checked += 1
+        _v = _snd_lang.get(_lc, {}).get(_k)
+        if not isinstance(_v, str) or not _v.strip():
+            _bgsnd_bad("bgsnd-lang", _lc + " 缺非空字幕 " + _k)
+
+if _bgsnd_checked < 30:
+    _bgsnd_bad("bgsnd-anti-vacuum", "只检查了 " + str(_bgsnd_checked) + " 项（明显过少）")
+print("[bgsnd-summary] 金钱妖音效 / 字幕：检查 " + str(_bgsnd_checked)
+      + " 项，问题 " + str(len(_bgsnd_problems)) + " 条"
+      + ("" if not _bgsnd_problems else "：" + str(_bgsnd_problems[:4])))
+if not _bgsnd_problems:
+    print("[bgsnd-ok] 3 个 sound event（ambient/hurt/death）都有 subtitle + 真实 OggS 文件；"
+          "僵尸音效 0 处残留；playStepSound 空实现；中英字幕键集一致；"
+          "「金桥」zip 未提供 ⇒ 未接入")
+
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -10766,7 +10942,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgn10r8_problems, bgn10r9_problems,
                        bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems,
                        bgn10up_problems, bgn10fix_problems, bgn10anvil_problems,
-                       bgn10err_problems, bgn10fix2_problems)
+                       bgn10err_problems, bgn10fix2_problems, _bgsnd_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems
