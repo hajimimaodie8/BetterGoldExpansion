@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "bettergold:golden_prison",
   "biomes": "#bettergold:golden_prison/no_basalt",
   "step": "underground_decoration",
   "spawn_overrides": {},

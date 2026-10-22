@@ -1,0 +1,17 @@
+[
+  "PASS resolved_money_gremlin_ambient :: getSoundEvent(bettergold:money_gremlin_ambient) \u003d 非空",
+  "PASS ogg_money_gremlin_ambient :: Sound.getPath() \u003d bettergold:sounds/money_gremlin_ambient.ogg",
+  "PASS file_money_gremlin_ambient :: 资源管理器能打开 bettergold:sounds/money_gremlin_ambient.ogg",
+  "PASS resolved_money_gremlin_hurt :: getSoundEvent(bettergold:money_gremlin_hurt) \u003d 非空",
+  "PASS ogg_money_gremlin_hurt :: Sound.getPath() \u003d bettergold:sounds/money_gremlin_hurt.ogg",
+  "PASS file_money_gremlin_hurt :: 资源管理器能打开 bettergold:sounds/money_gremlin_hurt.ogg",
+  "PASS resolved_money_gremlin_death :: getSoundEvent(bettergold:money_gremlin_death) \u003d 非空",
+  "PASS ogg_money_gremlin_death :: Sound.getPath() \u003d bettergold:sounds/money_gremlin_death.ogg",
+  "PASS file_money_gremlin_death :: 资源管理器能打开 bettergold:sounds/money_gremlin_death.ogg",
+  "PASS registry_money_gremlin_ambient :: BuiltInRegistries.SOUND_EVENT.get(bettergold:money_gremlin_ambient) \u003d bettergold:money_gremlin_ambient",
+  "PASS registry_money_gremlin_hurt :: BuiltInRegistries.SOUND_EVENT.get(bettergold:money_gremlin_hurt) \u003d bettergold:money_gremlin_hurt",
+  "PASS registry_money_gremlin_death :: BuiltInRegistries.SOUND_EVENT.get(bettergold:money_gremlin_death) \u003d bettergold:money_gremlin_death",
+  "PASS subtitle_money_gremlin_ambient :: subtitles.bettergold.money_gremlin_ambient \u003d 金钱妖：刷刷响",
+  "PASS subtitle_money_gremlin_hurt :: subtitles.bettergold.money_gremlin_hurt \u003d 金钱妖：受伤",
+  "PASS subtitle_money_gremlin_death :: subtitles.bettergold.money_gremlin_death \u003d 金钱妖：死亡"
+]

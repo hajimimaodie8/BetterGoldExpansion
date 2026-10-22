@@ -1,0 +1,140 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import com.hjmmd_8.bettergold.bettergold;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.client.sounds.WeighedSoundEvents;
+import net.minecraft.client.resources.sounds.Sound;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.RandomSource;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+/**
+ * 第九轮客户端探针（临时文件，跑完删除；源码留档 docs\金之牢狱-第九轮-证据\脚本副本\）。
+ *
+ * <p>补上一轮欠的档：上一轮把金钱妖音效定成 **B 级**（只查了 sounds.json 结构与文件存在），
+ * 没有客户端 `SoundManager` 的解析读数。本探针在**标题界面**（不建世界、不进存档、不 quickPlay）
+ * 读三件事：</p>
+ * <ol>
+ *   <li>{@code SoundManager#getSoundEvent(id)} 对 3 个 {@code bettergold:money_gremlin_*} 都非 null
+ *       （= sounds.json 真的被解析进了 soundRegistry）；</li>
+ *   <li>解析出来的 {@link Sound} 落到真实 ogg（{@code getPath()} 非空）且资源管理器里那个
+ *       {@code bettergold:sounds/*.ogg} 真的能打开；</li>
+ *   <li>3 个事件都有 subtitle 键，且 zh_cn / en_us 两份语言里都能取到文案。</li>
+ * </ol>
+ *
+ * <p>⚠ 探针纪律：开关文件 {@code gp9_client_probe.on} 不存在就整段不跑；{@code halt(0)} 只调一次；
+ * 不建世界、不写存档。</p>
+ */
+@EventBusSubscriber(modid = "bettergold", value = Dist.CLIENT)
+public final class Gp9ClientProbe {
+
+    private static final String TAG = "[gp9c]";
+    private static final Path SWITCH = Path.of("gp9_client_probe.on");
+    private static final Path OUT = Path.of("probe", "gpk");
+    private static final int CHECK_AT_TICK = 100;
+    private static final String[] EVENTS = {
+            "money_gremlin_ambient", "money_gremlin_hurt", "money_gremlin_death"
+    };
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private static int ticks = 0;
+    private static boolean done = false;
+    private static int passes = 0;
+    private static int fails = 0;
+
+    private Gp9ClientProbe() {
+    }
+
+    private static boolean enabled() {
+        return Files.exists(Path.of(System.getProperty("user.dir")).resolve(SWITCH));
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (done || !enabled()) {
+            return;
+        }
+        ticks++;
+        if (ticks < CHECK_AT_TICK) {
+            return;
+        }
+        done = true;
+        List<String> lines = new ArrayList<>();
+        try {
+            run(lines);
+        } catch (Throwable t) {
+            bettergold.LOGGER.error("{} EXCEPTION", TAG, t);
+            check(lines, "c_exception", false, String.valueOf(t));
+        }
+        try {
+            Files.createDirectories(OUT);
+            Files.writeString(OUT.resolve("client_sound.json"), GSON.toJson(lines), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            bettergold.LOGGER.warn("{} 报告写入失败", TAG, e);
+        }
+        bettergold.LOGGER.info("{} SUMMARY pass={} fail={}", TAG, passes, fails);
+        Runtime.getRuntime().halt(0);
+    }
+
+    private static void check(List<String> lines, String name, boolean ok, String detail) {
+        if (ok) {
+            passes++;
+            bettergold.LOGGER.info("{} PASS {} :: {}", TAG, name, detail);
+        } else {
+            fails++;
+            bettergold.LOGGER.error("{} FAIL {} :: {}", TAG, name, detail);
+        }
+        lines.add((ok ? "PASS " : "FAIL ") + name + " :: " + detail);
+    }
+
+    private static void run(List<String> lines) throws Exception {
+        Minecraft mc = Minecraft.getInstance();
+        SoundManager sm = mc.getSoundManager();
+        for (String name : EVENTS) {
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath("bettergold", name);
+            WeighedSoundEvents wse = sm.getSoundEvent(id);
+            check(lines, "resolved_" + name, wse != null,
+                    "getSoundEvent(" + id + ") = " + (wse == null ? "null（sounds.json 没被解析进来）" : "非空"));
+            if (wse == null) {
+                continue;
+            }
+            Sound s = wse.getSound(RandomSource.create(0L));
+            String path = s == null ? null : s.getPath().toString();
+            check(lines, "ogg_" + name, s != null && path != null && path.endsWith(".ogg"),
+                    "Sound.getPath() = " + path);
+            ResourceLocation file = ResourceLocation.fromNamespaceAndPath("bettergold",
+                    "sounds/" + name + ".ogg");
+            var opt = mc.getResourceManager().getResource(file);
+            boolean present = opt.isPresent() && opt.get().open() != null;
+            check(lines, "file_" + name, present, "资源管理器能打开 " + file);
+        }
+        // 事件本身（注册表里的实例）与 location 对齐
+        for (String name : EVENTS) {
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath("bettergold", name);
+            SoundEvent se = BuiltInRegistries.SOUND_EVENT.get(id);
+            check(lines, "registry_" + name, se != null && id.equals(se.getLocation()),
+                    "BuiltInRegistries.SOUND_EVENT.get(" + id + ") = " + (se == null ? "null" : se.getLocation()));
+        }
+        // subtitle：sounds.json 里必须有；语言文件里必须有文案
+        for (String name : EVENTS) {
+            String key = "subtitles.bettergold." + name;
+            String zh = net.minecraft.locale.Language.getInstance().getOrDefault(key);
+            check(lines, "subtitle_" + name, !zh.equals(key) && !zh.isEmpty(), key + " = " + zh);
+        }
+    }
+}

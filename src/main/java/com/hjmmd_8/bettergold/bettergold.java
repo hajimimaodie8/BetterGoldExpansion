@@ -139,6 +139,8 @@ public class bettergold {
         // 新约 1.3：易金商人的工作站点（兴趣点）与村民职业
         com.hjmmd_8.bettergold.registry.AllVillagers.POI_TYPES.register(modEventBus);
         com.hjmmd_8.bettergold.registry.AllVillagers.PROFESSIONS.register(modEventBus);
+        // 金之牢狱（第九轮，2026-10-22）：自定义 StructureType —— 出入口件搬进空域（afterPlace 后处理）
+        com.hjmmd_8.bettergold.registry.AllStructures.STRUCTURE_TYPES.register(modEventBus);
         // Register brewing recipes on the game event bus (RegisterBrewingRecipesEvent is NOT an IModBusEvent)
         NeoForge.EVENT_BUS.addListener(ModBrewing::registerBrewingRecipes);
 

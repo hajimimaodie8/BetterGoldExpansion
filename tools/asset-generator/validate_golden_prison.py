@@ -234,7 +234,10 @@ EXPECT_STRUCT_MAIN = {'biomes': '#bettergold:golden_prison/no_basalt',
 EXPECT_STRUCT_COMMON = {
 # ★ 第七轮：size 6 → 5（落单口只出现在距中心 114 格的口上；见 §13.2）。
 #   旧期望原文留档（第一~六轮）：'size': 6
-    'type': 'minecraft:jigsaw', 'step': 'underground_decoration', 'size': 5,
+# ★★ 第九轮（2026-10-22）：type `minecraft:jigsaw` → `bettergold:golden_prison`
+#   （jigsaw 装配感知不到空域 ⇒ 出入口搬不出去；理由与源码依据见 §15）。
+#   旧期望原文留档（第一~八轮）：'type': 'minecraft:jigsaw'
+    'type': 'bettergold:golden_prison', 'step': 'underground_decoration', 'size': 5,
     'use_expansion_hack': False, 'spawn_overrides': {}, 'start_pool': POOL + 'start',
 }
 # 旧口径原文留档（第六/七轮）：
@@ -2704,6 +2707,114 @@ def check_loot():
         ok()
 
 
+# ================================================================== 第九轮（2026-10-22）
+# 「让牢狱延伸至空域再架出入口」：**出入口件必须整块落在空气里**（overwroteNatural == 0）。
+# jigsaw 装配是纯几何的、感知不到空域 ⇒ 新增自定义 StructureType + afterPlace 后处理（Java）。
+# 静态关卡能守的是**机制在不在**（文件/注册/写入入口唯一/连通性前置/退化分支/恢复逻辑）；
+# 真正的空域读数是 A 级 runServer 探针（probe/gpk/report.json，见 §15 的读数表）。
+JAVA_ROOT = os.path.join(ROOT, 'src', 'main', 'java', 'com', 'hjmmd_8', 'bettergold')
+JAVA_STRUCT = os.path.join(JAVA_ROOT, 'worldgen', 'GoldenPrisonStructure.java')
+JAVA_REG = os.path.join(JAVA_ROOT, 'registry', 'AllStructures.java')
+JAVA_MOD = os.path.join(JAVA_ROOT, 'bettergold.java')
+EXIT_AIR_TYPE = 'bettergold:golden_prison'
+# 正向 needle（跑在**去注释源码**上；每条都是"实现里必须真的有的句子"）
+EXIT_AIR_NEEDLES = [
+    ('extends Structure', '必须是 Structure 的子类（JigsawStructure 是 final，源码 :26）'),
+    ('public void afterPlace(', '必须在 afterPlace 里做（件已放完才有地形可探测）'),
+    ('JigsawPlacement.addPieces(', '装配仍然走原版 JigsawPlacement（不自己写装配）'),
+    ('MAX_SEARCH = 24', '搜索距离 1..24'),
+    ('level.setBlock(', '写方块的唯一入口'),
+    ('allowedCells.contains(', '写入前的允许集断言（只动出入口）'),
+    ('naturalBelow(level, c.pos, oldBox)', '旧 footprint 恢复成原地形'),
+    ('usableTerrain(s)', '恢复材质必须是地形方块（不许抄结构方块/带 BE 的方块）'),
+    ('floodAir(level, window, seed, oldAir, MAX_FLOOD_CELLS)', 'air-only 洪泛（连通性前置）'),
+    ('Destination dest = searchDestination(', '目的地搜索必须真的被调用（关掉它就整段失效）'),
+    ('boxSum(pre, strideX, strideY, i1, j1, k1, i2, j2, k2) != vol', '判据：整个 bbox 每一格都必须是空域'),
+    ('== volShell', '严格档：外圈一圈也必须是空域'),
+    ('if (write(level, c.pos, natural, rec))', '恢复 footprint 的那一次写必须真的发生'),
+    ('"minecraft:air".equals(c.cell.placedBlockId())',
+     '连通性闸门只挡"放置后是实心"的格（jigsaw 的 final_state=air 必须留空）'),
+    ('protectedCells.contains(', '别的出入口的门道格不许被压掉'),
+    ('overwroteNatural', 'overwroteNatural 判据必须真的在源码里'),
+    ('"notConnected"', '退化分支：连通不到就不搬'),
+    ('"noAir"', '退化分支：找不到空域就不搬'),
+]
+
+
+def check_exit_air():
+    """[bgp-exit-air] 第九轮：出入口搬进空域的**机制**（读数在 A 级探针里）。"""
+    # ---- 1) structure json 的 type（★ 本轮唯一改动的数据字段）
+    try:
+        st = json.load(open(STRUCT_MAIN, encoding='utf-8'))
+    except Exception as e:
+        ng('bgp-struct-type', 'structure json 解析失败：%s' % e)
+        return
+    if st.get('type') != EXIT_AIR_TYPE:
+        ng('bgp-struct-type', 'structure.type = %r != %r' % (st.get('type'), EXIT_AIR_TYPE))
+    ok()
+    if st.get('type') == 'minecraft:jigsaw':
+        ng('bgp-struct-type', 'type 退回 minecraft:jigsaw（纯数据搬运不了出入口）')
+    ok()
+    # 其余字段一格都不许跟着变（防止"改 type 时顺手改了别的"）
+    for k, v in EXPECT_STRUCT_MAIN.items():
+        if st.get(k) != v:
+            ng('bgp-struct-type', '改 type 时 %s 被动过了：%r != %r' % (k, st.get(k), v))
+        ok()
+
+    # ---- 2) 注册（StaticRegistry.Name+Type）
+    for path, what in ((JAVA_STRUCT, 'GoldenPrisonStructure.java'), (JAVA_REG, 'AllStructures.java')):
+        if not os.path.exists(path):
+            ng('bgp-exit-air', '缺文件 %s（本轮必须新增）' % what)
+            return
+        ok()
+    reg_src = strip_comments(open(JAVA_REG, encoding='utf-8').read(), 'java')
+    struct_src = strip_comments(open(JAVA_STRUCT, encoding='utf-8').read(), 'java')
+    mod_src = strip_comments(open(JAVA_MOD, encoding='utf-8').read(), 'java')
+    if 'Registries.STRUCTURE_TYPE' not in reg_src:
+        ng('bgp-exit-air', 'AllStructures 没注册到 Registries.STRUCTURE_TYPE')
+    ok()
+    if '"golden_prison"' not in reg_src:
+        ng('bgp-exit-air', 'AllStructures 里没有 register("golden_prison", …)')
+    ok()
+    if 'STRUCTURE_TYPES.register(modEventBus)' not in mod_src:
+        ng('bgp-exit-air', 'bettergold.java 没把 STRUCTURE_TYPES 挂到 mod 总线（= 静默不注册）')
+    ok()
+
+    # ---- 3) 正向 needle（去注释源码）
+    for needle, why in EXIT_AIR_NEEDLES:
+        if needle not in struct_src:
+            ng('bgp-exit-air', '源码里找不到 %r —— %s' % (needle, why))
+        ok()
+    # ---- 4) 唯一写入入口：setBlock 全文件恰好 1 次（"只动出入口"的结构性保证）
+    n_set = struct_src.count('level.setBlock(')
+    if n_set != 1:
+        ng('bgp-exit-air', 'GoldenPrisonStructure 里 level.setBlock( 出现 %d 次（必须恰好 1 次，= 单一写入入口）'
+           % n_set)
+    ok()
+    if struct_src.count('static boolean write(') != 1:
+        ng('bgp-exit-air', '缺少唯一的 write(...) 写入助手')
+    ok()
+    # ---- 5) 判据必须真的在代码里（不是注释）：空判定 + 外圈 + 洪泛 + 断开就不搬
+    if 'isAir()' not in struct_src:
+        ng('bgp-exit-air', '没有 isAir() —— 空域判据不在代码里')
+    ok()
+    if 'boxSum(' not in struct_src:
+        ng('bgp-exit-air', '没有 boxSum( —— 穷举搜索的 3D 前缀和不见了')
+    ok()
+    if 'reach2.contains(' not in struct_src:
+        ng('bgp-exit-air', '最终连通性闸门（把新出入口实心格挡上再洪泛）不见了')
+    ok()
+    # ---- 6) 反退化：不许在搬不动时"自己挖空腔"（作者第七轮已否掉）
+    if 'setBlock(pos, Blocks.' in struct_src:
+        ng('bgp-exit-air', "源码里出现 'setBlock(pos, Blocks.' —— 写入必须来自模板/地形采样，不许写死字面量")
+    ok()
+    # Blocks.AIR 只允许出现 1 次（NBT 解析失败时的兜底 state），**不许**当成写入值
+    if struct_src.count('Blocks.AIR') != 1 or 'state = Blocks.AIR.defaultBlockState();' not in struct_src:
+        ng('bgp-exit-air', 'Blocks.AIR 出现 %d 次（只允许 1 次 = NBT 解析兜底；当成"挖空气"写进世界 = 作者已否掉的方案）'
+           % struct_src.count('Blocks.AIR'))
+    ok()
+
+
 def check_forbid_vacuous():
     if checked[0] <= 0:
         print('[bgp-counter] checked=0 —— 空转，判 exit 2')
@@ -2732,6 +2843,7 @@ def main():
         check_cross3(pieces)
         check_entities_bes(pieces)
         check_exit_shaft(pieces)
+        check_exit_air()
         check_worldgen()
         check_rate()
         check_treasure_unique()
