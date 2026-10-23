@@ -38,7 +38,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
@@ -83,12 +85,27 @@ import org.slf4j.Logger;
  *       每次写都断言 {@code pos ∈ 允许集}（旧 footprint ∪ 新 footprint），越界**拒写**并计数。</li>
  *   <li><b>恢复只碰自己的方块</b>：填旧 footprint 前逐格比对「当前格 == 该格模板期望方块」，
  *       不等就跳过（别的件/别的东西一格都不碰）。</li>
- *   <li><b>连通性前置</b>（父代理 2026-10-22 追加）：以**父件口位外侧那一格**
- *       （= 出入口自己的口位格 M）为种子做 air-only 洪泛，**必须能到新位置的口位格**才搬；
- *       到不了就不搬（记账 {@code notConnected}）。宁可退化，**也不许挖洞**。</li>
+ *   <li><b>连通性前置</b>（父代理 2026-10-22 追加，2026-10-23 收紧）：以**出入口自己的口位格 M**
+ *       为种子做 air-only 洪泛，**必须能到新位置的口位格 M'** 才搬；到不了就不搬（记账 {@code notConnected}）。
+ *       宁可退化，**也不许挖洞**。洪泛的障碍集 = ① 旧位置里**放置后仍是实心**的格（会被恢复成原地形；
+ *       模板空气格 + M 搬迁后仍是空气，是玩家走进旧 3×3 房间的路，**不许挡**）；
+ *       ② `PiecesContainer` 里**每一个件**（含父件与本件）的**模板实心格** —— 件是"先算 bbox、再逐区块
+ *       postProcess"的，现在还没放的件最终一定会放；按模板逐格当墙后"生成期连通"才等于"最终世界连通"。
+ *       ⚠ 不能把整箱 bbox 当墙：bbox 里也有件内的走廊/门道（模板 air），整箱挡会把洪泛关死在旧件里
+ *       （A 级实测 33 个出入口 0 次搬迁）。</li>
+ *   <li><b>出入口的真实几何（2026-10-23 按 exit.nbt 逐格核）</b>：5×8×5、174 条 blocks =
+ *       129 实心 + 1 jigsaw + 44 air；44 air = 3×3×3 房间 27 + 3×3 口位面 9（其中 6 air + 2 实心柱 +
+ *       jigsaw）+ 顶部通风角 8。**jigsaw 在 z=0 那一面，其余五面是实心壳 ⇒ 这个件只有一个开口
+ *       （朝父件的口位面）**。所以"搬家后玩家能不能走到新口位"等价于"最终世界里新口位面那一侧
+ *       是否与牢狱空气连通"，判据就是 `reach2.contains(M')`；旧代码查的 `newMouth.relative(front)`
+ *       正是 M' 的外侧一格（语义重复），没有"另一面的大门"可查。</li>
  *   <li><b>口位不补实</b>：口位格（父件 `final_state = minecraft:air` + 出入口自己的口位格）
  *       **保持空气** —— 那是"走廊通往空域的门道"。补实会把玩家锁死在牢狱里（与第 4 条直接冲突）。
  *       世界口径的"落单口" = 口位外侧**是实心**且没有配对件；这里口位外侧是空气 ⇒ 是门道、不是洞。</li>
+ *   <li><b>恢复只恢复实心格（第十轮修正）</b>：旧 footprint 里**模板写的是空气**的格
+ *       （3×3×3 内腔 27 + 3×3 门口 9 + 顶部开口 8）一律**保持空气**，只把实心格恢复成原地形。
+ *       旧口径只留口位格 M（1 格）⇒ 玩家只能钻 1×1 洞；现口径 = 整条 3×3×3 通道保留
+ *       （读数见 docs\金之牢狱-实现记录.md §16；模板几何见 exit.nbt：5×8×5 / 44 air / 1 jigsaw）。</li>
  * </ol>
  *
  * <h2>为什么不能 {@code extends JigsawStructure}</h2>
@@ -121,8 +138,9 @@ public class GoldenPrisonStructure extends Structure {
     private static final List<RelocationRecord> RECORDS = Collections.synchronizedList(new ArrayList<>());
     private static final int MAX_RECORDS = 256;
 
-    /** 洪泛上限（防御性；正常一片洞穴远小于它）。 */
-    private static final int MAX_FLOOD_CELLS = 60_000;
+    /** 洪泛上限（防御性；正常一片洞穴远小于它）。2026-10-23：28 → 40 万格
+     *  （诚实洪泛会走进旧门口外的空域，可能远大于旧口径的"父件那 28 格"；截断只会少搬、不会假通）。 */
+    private static final int MAX_FLOOD_CELLS = 400_000;
 
     // ------------------------------------------------------------------ codec（照抄 JigsawStructure.java:32-50）
     public static final MapCodec<GoldenPrisonStructure> CODEC = RecordCodecBuilder.<GoldenPrisonStructure>mapCodec(
@@ -280,6 +298,13 @@ public class GoldenPrisonStructure extends Structure {
             if (!inside(pep.getBoundingBox(), window)) {
                 continue;
             }
+            // ★ 第十轮修正：件是**逐区块** postProcess 的 ⇒ 旧 bbox 覆盖的别的区块可能还没放。
+            //   必须等它们都到 FEATURES（整件已落地）再搬；否则旧位置只有"当前区块那一片"是真的，
+            //   3×3×3 内腔在别的区块里仍是地形（A 级实测：一个跨区块的出入口只恢复 20/129 格、
+            //   内腔 2/27）。不标 DONE ⇒ 最后一个 bbox 区块的 afterPlace 会再来一次。
+            if (!fullyPlaced(level, pep.getBoundingBox(), chunkPos)) {
+                continue;
+            }
             DONE.put(pep, Boolean.TRUE);
             RelocationRecord rec = relocateOne(level, structureManager, generator, random, pieces, pep, mgr, exitTemplate, window, chunkBox, chunkPos);
             if (rec != null) {
@@ -353,14 +378,52 @@ public class GoldenPrisonStructure extends Structure {
         rec.parentCell = mouth.parentCell;
         BlockPos seed = mouth.exitCell; // 「父件口位外侧那一格」= 出入口自己的口位格
 
-        // ---- 连通性：以 M 为种子的 air-only 洪泛（把"将要恢复成石头"的格子挡住，只留 M 当门道）
-        Set<Long> oldAir = new HashSet<>();
+        // ---- ★ 墙集：PiecesContainer 里**每一个件**（含父件与本件）的**模板实心格**整格当墙。
+        //   件是"先算 bbox、再逐区块 postProcess"的 ⇒ 现在还没放的件最终一定会放；把每个件的
+        //   **实心格**（不是整箱 bbox —— bbox 会把件内的走廊/门道也当墙，实测把洪泛关死在旧件里、
+        //   33 个出入口 0 次搬迁）当墙后，"生成期看到的连通" = "最终世界的连通"。
+        //   父件同样只挡实心格：它的口位格/走廊是空气 ⇒ 洪泛能走进牢狱；它的墙照样挡。
+        //   模板里的 air 格是**会被放置成空气**的（模板 blocks 里就有 air），structure_void 格
+        //   不进模板（= 地形原样），两边都不当墙 —— 与最终世界逐格一致。
+        PieceWalls walls = new PieceWalls(window);
+        int wallPieces = 0;
+        for (StructurePiece other : pieces.pieces()) {
+            if (!(other instanceof PoolElementStructurePiece opep)) {
+                walls.addBox(other.getBoundingBox());
+                wallPieces++;
+                continue;
+            }
+            StructureTemplate otherTpl = templateOf(opep, mgr);
+            if (otherTpl == null) {
+                // 拿不到模板（本结构 7 个池全是 single_pool_element，理论上不会）⇒ 退回整箱当墙（保守）
+                walls.addBox(opep.getBoundingBox());
+                wallPieces++;
+                continue;
+            }
+            StructurePlaceSettings otherSettings = new StructurePlaceSettings().setRotation(opep.getRotation());
+            for (PlacedCell c : place(templateCells(otherTpl), otherSettings, opep.getPosition())) {
+                if ("minecraft:air".equals(c.cell.placedBlockId())) {
+                    walls.addAir(c.pos);
+                } else {
+                    walls.addCell(c.pos);
+                }
+            }
+            wallPieces++;
+        }
+        rec.wallPieces = wallPieces;
+
+        // ---- 连通性：以 M 为种子的 air-only 洪泛。
+        //   ★ 旧位置里**只有"放置后仍是实心"的格**才是障碍（恢复逻辑会把它们变回原地形）；
+        //     模板空气格 + 口位格 M 搬迁后**保持空气**（见类注释第 6 条）⇒ 它们是"旧 3×3 通道"，
+        //     是玩家走出旧位置的必经之路。旧口径把 44 个模板空气格也挡住 ⇒ 洪泛被关在旧件里
+        //     （A 级实测只剩 28 格、0 次搬迁），这是 §16 那 9 个"到不了"的根因。
+        Set<Long> oldBlocked = new HashSet<>();
         for (PlacedCell c : oldCells) {
-            if (!c.pos.equals(seed)) {
-                oldAir.add(pack(c.pos));
+            if (!"minecraft:air".equals(c.cell.placedBlockId())) {
+                oldBlocked.add(pack(c.pos));
             }
         }
-        Set<Long> reachable = floodAir(level, window, seed, oldAir, MAX_FLOOD_CELLS);
+        Set<Long> reachable = floodAir(level, window, seed, oldBlocked, MAX_FLOOD_CELLS, walls);
         rec.reachable = reachable.size();
 
         // ---- 别的出入口的"门道"格要保护：一件 5×8×5，搬 4 件时很容易把前一件的口盖掉
@@ -390,8 +453,8 @@ public class GoldenPrisonStructure extends Structure {
 
         // ---- 找目的地：在"从口位洪泛可达的空气"里**穷举**所有放得下出入口 bbox 的位置
         //   （只沿 6 条轴射线试是不够的：空腔往往斜着错开，实测 0 命中）
-        Destination dest = searchDestination(level, window, oldBox, reachable, seed, oldAir, cells, settings, mouth, origin,
-                protectedCells, otherBoxes, rec);
+        Destination dest = searchDestination(level, window, oldBox, reachable, seed, oldBlocked, cells, settings, mouth, origin,
+                protectedCells, otherBoxes, walls, rec);
         if (dest == null) {
             rec.outcome = reachable.size() <= 1 ? "noAir" : "notConnected";
             return rec;
@@ -444,7 +507,8 @@ public class GoldenPrisonStructure extends Structure {
         rec.solidNew = solidNew;
         rec.placed = solidNew > 0 && matchedNew == solidNew;
 
-        // ---- ② 恢复旧 footprint（只碰"当前格 == 出入口自己的方块"的格；口位格 M 留着当门道）
+        // ---- ② 恢复旧 footprint（只碰"当前格 == 出入口自己的方块"的**实心**格；
+        //      模板空气格 + 口位格 M 一律保持空气 = 整条 3×3×3 通道）
         Set<Long> destinationCells = new HashSet<>();
         for (PlacedCell c : dest.cells) {
             destinationCells.add(pack(c.pos));
@@ -452,10 +516,16 @@ public class GoldenPrisonStructure extends Structure {
         int restored = 0;
         int skipped = 0;
         int doorway = 0;
+        int keptAir = 0;
         Map<String, Integer> materials = new LinkedHashMap<>();
         for (PlacedCell c : oldCells) {
-            if (c.pos.equals(seed)) {
-                doorway++; // 门道：保持空气（否则玩家被锁死）
+            if (c.cell.air() || c.pos.equals(seed)) {
+                // 门道：模板空气格（3×3×3 内腔 27 + 3×3 门口 9 + 顶部开口 8）与口位格保持空气。
+                // 旧口径只留 M 一格 ⇒ 玩家只能钻 1×1 洞（第十轮修正，见类注释第 6 条）。
+                if (c.cell.air()) {
+                    keptAir++;
+                }
+                doorway++;
                 continue;
             }
             if (destinationCells.contains(pack(c.pos))) {
@@ -477,12 +547,13 @@ public class GoldenPrisonStructure extends Structure {
         rec.restored = restored;
         rec.skipped = skipped;
         rec.doorway = doorway;
+        rec.keptAir = keptAir;
         rec.restoreMaterials = materials;
 
         // ---- ③ 实体卫生：同一格只留一个（件可能因跨区块被重放一次）
         rec.entityDupesRemoved = dedupeEntities(level, dest.box);
 
-        rec.cap = "kept-doorway"; // 口位不补实（见类注释 §5）
+        rec.cap = "kept-3x3x3"; // 口位 + 整个 3×3×3 内腔保持空气（见类注释第 5、6 条）
         rec.outcome = "relocated";
         return rec;
     }
@@ -507,13 +578,14 @@ public class GoldenPrisonStructure extends Structure {
             BoundingBox oldBox,
             Set<Long> reachable,
             BlockPos seed,
-            Set<Long> oldAir,
+            Set<Long> oldBlocked,
             List<TemplateCell> cells,
             StructurePlaceSettings settings,
             Mouth mouth,
             BlockPos origin,
             Set<Long> protectedCells,
             List<BoundingBox> otherBoxes,
+            PieceWalls walls,
             RelocationRecord rec) {
         int minX = window.minX();
         int maxX = window.maxX();
@@ -616,6 +688,8 @@ public class GoldenPrisonStructure extends Structure {
             BoundingBox candBox = oldBox.moved(hit[0], hit[1], hit[2]);
             boolean outside = true;
             for (BoundingBox ob : otherBoxes) {
+                // ★ 不相交**也不相邻**：inflatedBy(1) 把"贴脸一格"也算相交（≥1 格空隙），
+                //   否则后放的件会正好把新门口糊住（父代理 2026-10-23 裁定）。
                 if (ob.intersects(candBox.inflatedBy(1))) {
                     outside = false;
                     break;
@@ -628,23 +702,21 @@ public class GoldenPrisonStructure extends Structure {
             List<PlacedCell> newCells = place(cells, settings, candOrigin);
             BoundingBox newBox = oldBox.moved(hit[0], hit[1], hit[2]);
             BlockPos newMouth = mouthAt(cells, settings, candOrigin);
-            Set<Long> block2 = new HashSet<>(oldAir);
+            Set<Long> block2 = new HashSet<>(oldBlocked);
             for (PlacedCell c : newCells) {
                 // 只挡"放置后是实心"的格；jigsaw 的 final_state = air ⇒ 口位格必须是空的
                 if (!"minecraft:air".equals(c.cell.placedBlockId())) {
                     block2.add(pack(c.pos));
                 }
             }
-            Set<Long> reach2 = floodAir(level, window, seed, block2, MAX_FLOOD_CELLS);
+            Set<Long> reach2 = floodAir(level, window, seed, block2, MAX_FLOOD_CELLS, walls);
             if (newMouth == null || !reach2.contains(pack(newMouth))) {
                 rec.pathBlocked++;
                 continue;
             }
-            // 门口本身必须朝空气（否则玩家进不去：口位贴着岩壁）
-            if (!level.getBlockState(newMouth.relative(mouth.front)).isAir()) {
-                rec.doorBlocked++;
-                continue;
-            }
+            // 口位格 M' 是整个件**唯一**的开口（exit.nbt：jigsaw 在 z=0 面，其余 5 面是实心壳；
+            // 模板 44 个 air 全在 z=0..3 的 3×3 竖井里）。所以「M' 在洪泛集里」= 玩家能从新位置
+            // 的开口走进这个件；不需要再单独查某一面（旧代码查 jigsaw 外侧一格，语义上就是 M' 自己）。
             rec.strictTier = strictHits;
             rec.lenientTier = lenientHits;
             return new Destination(candOrigin, newBox, newCells, hit[3] == 1, hit[5], null);
@@ -712,6 +784,32 @@ public class GoldenPrisonStructure extends Structure {
     private static boolean inside(BoundingBox box, BoundingBox window) {
         return box.minX() >= window.minX() && box.maxX() <= window.maxX()
                 && box.minZ() >= window.minZ() && box.maxZ() <= window.maxZ();
+    }
+
+    /**
+     * 旧 bbox 覆盖的所有区块是否都已经是 FEATURES（= 这个件的**所有切片**都放完了）。
+     *
+     * <p>件是逐区块 `postProcess` 的；`afterPlace` 每区块调一次。当前区块的切片在调用前已放，
+     * 所以跳过它；其余区块用 `getChunk(cx,cz)`（EMPTY，3×3 依赖区内安全）读持久状态。
+     * 拿不到/状态不够 ⇒ 返回 false（**不标 DONE**，等最后一个 bbox 区块再来）。
+     */
+    private static boolean fullyPlaced(WorldGenLevel level, BoundingBox box, ChunkPos current) {
+        try {
+            for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
+                for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
+                    if (cx == current.x && cz == current.z) {
+                        continue;
+                    }
+                    ChunkAccess chunk = level.getChunk(cx, cz);
+                    if (chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.FEATURES)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     /** 出入口件识别：尺寸与 exit 模板一致 + **恰好 1 个口且 target = empty**（26 件里只有 exit 这样）。 */
@@ -797,7 +895,8 @@ public class GoldenPrisonStructure extends Structure {
     }
 
     /** air-only 洪泛（只走"现在是 air 且不在 blocked 里"的格），限制在窗口内。 */
-    private static Set<Long> floodAir(WorldGenLevel level, BoundingBox window, BlockPos seed, Set<Long> blocked, int maxCells) {
+    private static Set<Long> floodAir(WorldGenLevel level, BoundingBox window, BlockPos seed, Set<Long> blocked,
+            int maxCells, PieceWalls walls) {
         Set<Long> seen = new HashSet<>();
         if (level.isOutsideBuildHeight(seed) || !window.isInside(seed) || !level.getBlockState(seed).isAir()) {
             return seen;
@@ -813,10 +912,17 @@ public class GoldenPrisonStructure extends Structure {
                 if (seen.contains(key) || blocked.contains(key)) {
                     continue;
                 }
+                // ★ 其它件的 bbox 整箱当墙（除 exit 自身与父件）：这些件最终一定会放，
+                //   现在是不是空气都不许走 —— 这是"生成期连通 = 最终世界连通"的关键。
+                if (walls != null && walls.blocked(n)) {
+                    continue;
+                }
                 if (!window.isInside(n) || level.isOutsideBuildHeight(n)) {
                     continue;
                 }
-                if (!level.getBlockState(n).isAir()) {
+                // 最终世界是空气：现在就是空气，或者这一格是某个件的**模板 air 格**
+                // （件还没放时地形可能还是岩体，但模板会把这一格写成空气）。
+                if (!level.getBlockState(n).isAir() && (walls == null || !walls.air(n))) {
                     continue;
                 }
                 seen.add(key);
@@ -824,6 +930,117 @@ public class GoldenPrisonStructure extends Structure {
             }
         }
         return seen;
+    }
+
+    /**
+     * 其它件的**模板格**：实心格 = 墙；air 格 = "最终世界一定是空气"（件还没放时地形可能是岩体，
+     * 但模板会把这一格写成空气）。两类都是 O(1) 查询。拿不到模板时退回**整箱当墙**（保守）。
+     */
+    private static final class PieceWalls {
+        private final int minX;
+        private final int minY;
+        private final int minZ;
+        private final int maxX;
+        private final int maxY;
+        private final int maxZ;
+        private final int sx;
+        private final int sy;
+        private final int sz;
+        private final boolean[] solidBits;
+        private final boolean[] airBits;
+
+        PieceWalls(BoundingBox region) {
+            this.minX = region.minX();
+            this.minY = region.minY();
+            this.minZ = region.minZ();
+            this.maxX = region.maxX();
+            this.maxY = region.maxY();
+            this.maxZ = region.maxZ();
+            this.sx = maxX - minX + 1;
+            this.sy = maxY - minY + 1;
+            this.sz = maxZ - minZ + 1;
+            this.solidBits = new boolean[sx * sy * sz];
+            this.airBits = new boolean[sx * sy * sz];
+        }
+
+        void addBox(BoundingBox b) {
+            int x1 = Math.max(b.minX(), minX);
+            int y1 = Math.max(b.minY(), minY);
+            int z1 = Math.max(b.minZ(), minZ);
+            int x2 = Math.min(b.maxX(), maxX);
+            int y2 = Math.min(b.maxY(), maxY);
+            int z2 = Math.min(b.maxZ(), maxZ);
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    int base = ((y - minY) * sz + (z - minZ)) * sx;
+                    for (int x = x1; x <= x2; x++) {
+                        solidBits[base + (x - minX)] = true;
+                    }
+                }
+            }
+        }
+
+        void addCell(BlockPos p) {
+            int i = index(p);
+            if (i >= 0) {
+                solidBits[i] = true;
+            }
+        }
+
+        void addAir(BlockPos p) {
+            int i = index(p);
+            if (i >= 0) {
+                airBits[i] = true;
+            }
+        }
+
+        /** 模板 air 格 ⇒ 最终世界一定可走（即使现在还没放、地形还是岩体）。 */
+        boolean air(BlockPos p) {
+            int i = index(p);
+            return i >= 0 && airBits[i];
+        }
+
+        boolean blocked(BlockPos p) {
+            int i = index(p);
+            return i >= 0 && solidBits[i];
+        }
+
+        private int index(BlockPos p) {
+            int x = p.getX() - minX;
+            int y = p.getY() - minY;
+            int z = p.getZ() - minZ;
+            if (x < 0 || y < 0 || z < 0 || x >= sx || y >= sy || z >= sz) {
+                return -1;
+            }
+            return (y * sz + z) * sx + x;
+        }
+    }
+
+    /**
+     * 取件的模板。本结构 7 个池全是 {@code minecraft:single_pool_element} ⇒
+     * {@code SinglePoolElement#toString()} = {@code Single[Left[<location>]]}，从中解析 location。
+     * 解析失败/不是单模板件 ⇒ 返回 null（调用方退回整箱当墙）。
+     */
+    private static StructureTemplate templateOf(StructurePiece sp, StructureTemplateManager mgr) {
+        if (!(sp instanceof PoolElementStructurePiece pep)) {
+            return null;
+        }
+        try {
+            String s = String.valueOf(pep.getElement());
+            int a = s.indexOf("Left[");
+            int b = a < 0 ? -1 : s.indexOf(']', a);
+            if (a < 0 || b < 0) {
+                return null;
+            }
+            ResourceLocation loc = ResourceLocation.tryParse(s.substring(a + 5, b));
+            if (loc == null) {
+                return null;
+            }
+            StructureTemplate tpl = mgr.getOrCreate(loc);
+            return tpl.getSize().equals(Vec3i.ZERO) ? null : tpl;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -1058,13 +1275,14 @@ public class GoldenPrisonStructure extends Structure {
         public int candidates;
         public int protectedCells;
         public int protectedBlocked;
-        public int doorBlocked;
         public int insideStructure;
         public int pathBlocked;
         public int overwroteNatural = -1;
         public int restored;
         public int skipped;
         public int doorway;
+        public int keptAir;
+        public int wallPieces;
         public int entitiesRemoved;
         public int entityDupesRemoved;
         public boolean placed;
@@ -1092,7 +1310,7 @@ public class GoldenPrisonStructure extends Structure {
                     + " strict=" + strict
                     + " tiers=" + strictTier + "/" + lenientTier + " cand=" + candidates
                     + " prot=" + protectedCells + "/" + protectedBlocked
-                    + " doorBlk=" + doorBlocked + " inStruct=" + insideStructure
+                    + " inStruct=" + insideStructure
                     + " pathBlocked=" + pathBlocked
                     + " reachable=" + reachable
                     + " overwroteNatural=" + overwroteNatural
@@ -1100,6 +1318,8 @@ public class GoldenPrisonStructure extends Structure {
                     + " new=" + newMin + ".." + newMax
                     + " placed=" + placed + "(" + matchedNew + "/" + solidNew + ")"
                     + " restored=" + restored + " skipped=" + skipped + " doorway=" + doorway
+                    + " keptAir=" + keptAir
+                    + " walls=" + wallPieces
                     + " cap=" + cap
                     + " entsRemoved=" + entitiesRemoved + " entDupes=" + entityDupesRemoved
                     + " writes=" + writes + " violations=" + violations + " oob=" + outOfWorld
@@ -1119,7 +1339,6 @@ public class GoldenPrisonStructure extends Structure {
             m.put("candidates", candidates);
             m.put("protectedCells", protectedCells);
             m.put("protectedBlocked", protectedBlocked);
-            m.put("doorBlocked", doorBlocked);
             m.put("insideStructure", insideStructure);
             m.put("pathBlocked", pathBlocked);
             m.put("reachable", reachable);
@@ -1139,6 +1358,8 @@ public class GoldenPrisonStructure extends Structure {
             m.put("restored", restored);
             m.put("skipped", skipped);
             m.put("doorway", doorway);
+            m.put("keptAir", keptAir);
+            m.put("wallPieces", wallPieces);
             m.put("cap", cap);
             m.put("entitiesRemoved", entitiesRemoved);
             m.put("entityDupesRemoved", entityDupesRemoved);

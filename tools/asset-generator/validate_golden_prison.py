@@ -2727,7 +2727,7 @@ EXIT_AIR_NEEDLES = [
     ('allowedCells.contains(', '写入前的允许集断言（只动出入口）'),
     ('naturalBelow(level, c.pos, oldBox)', '旧 footprint 恢复成原地形'),
     ('usableTerrain(s)', '恢复材质必须是地形方块（不许抄结构方块/带 BE 的方块）'),
-    ('floodAir(level, window, seed, oldAir, MAX_FLOOD_CELLS)', 'air-only 洪泛（连通性前置）'),
+    ('floodAir(level, window, seed, oldBlocked, MAX_FLOOD_CELLS, walls)', 'air-only 洪泛（连通性前置）'),
     ('Destination dest = searchDestination(', '目的地搜索必须真的被调用（关掉它就整段失效）'),
     ('boxSum(pre, strideX, strideY, i1, j1, k1, i2, j2, k2) != vol', '判据：整个 bbox 每一格都必须是空域'),
     ('== volShell', '严格档：外圈一圈也必须是空域'),
@@ -2738,6 +2738,30 @@ EXIT_AIR_NEEDLES = [
     ('overwroteNatural', 'overwroteNatural 判据必须真的在源码里'),
     ('"notConnected"', '退化分支：连通不到就不搬'),
     ('"noAir"', '退化分支：找不到空域就不搬'),
+    # ★ 第九轮收尾（第十轮工作项，2026-10-23）：恢复旧 footprint 时**保留整条 3×3×3 通道**
+    ('if (c.cell.air() || c.pos.equals(seed))',
+     '恢复只能跳过"模板空气格 + 口位格"（旧口径只留 M 一格 ⇒ 玩家只能钻 1×1 洞）'),
+    ('keptAir++;', '保留的模板空气格必须真的计数（读数 keptAir）'),
+    ('if (!fullyPlaced(level, pep.getBoundingBox(), chunkPos)) {',
+     '跨区块件必须等整件落地再搬（否则 3×3×3 内腔只有当前区块那一片是真的）'),
+    ('if (!window.isInside(n) || level.isOutsideBuildHeight(n)) {',
+     'air-only 洪泛必须是逐格 6 邻接 BFS（不许退化成"只看中心一格"）'),
+    ('queue.add(n);', '洪泛必须真的把邻格入队（反"只看中心"）'),
+    # ★ 父代理 2026-10-23 裁定 (b)+增强：全部件 bbox（**含父件**）整箱当墙 + 相邻禁止
+    ('new PieceWalls(', '必须把其它件的模板格做成墙集（生成期连通 = 最终世界连通）'),
+    ('walls.blocked(n)', '洪泛必须真的检查墙集（否则墙集是摆设）'),
+    ('walls.addAir(c.pos);', '模板 air 格必须登记为"最终世界可走"（件还没放时地形可能还是岩体）'),
+    ('ob.intersects(candBox.inflatedBy(1))', '目的地不许与任何其它件 bbox 相交**或相邻**（≥1 格空隙）'),
+    # ★ 第十轮（2026-10-23）根因修复：旧 3×3 房间必须可走 + 全部件的**实心格**（不是整箱 bbox）当墙
+    ('oldBlocked.add(pack(c.pos));',
+     '旧位置只有"放置后仍是实心"的格才是障碍（模板空气格 + 口位格搬迁后仍是空气，是玩家走进旧房间的路）'),
+    ('if (!"minecraft:air".equals(c.cell.placedBlockId())) {\n                oldBlocked.add(pack(c.pos));',
+     '旧位置的障碍集必须只含"放置后是实心"的格（P3 扰动：改回挡住全部旧格 ⇒ 必须红）'),
+    ('templateOf(opep, mgr)', '每个件都要按自己的模板展开（先算 bbox、再逐区块放 ⇒ 模板实心格才是未来的墙）'),
+    ('templateCells(otherTpl)', '墙集必须逐格来自模板（不是整箱 bbox：bbox 会把件内走廊也当墙）'),
+    ('walls.addCell(c.pos);', '模板实心格必须真的进墙集（否则墙集是摆设）'),
+    ('walls.addBox(other.getBoundingBox());', '拿不到模板时才许退回整箱当墙（保守分支）'),
+    ('ob.intersects(candBox.inflatedBy(1))', '目的地不许与任何其它件 bbox 相交**或相邻**（≥1 格空隙）'),
 ]
 
 
@@ -2785,6 +2809,15 @@ def check_exit_air():
         if needle not in struct_src:
             ng('bgp-exit-air', '源码里找不到 %r —— %s' % (needle, why))
         ok()
+    # ---- 3b) 反回退：第十轮修掉的三个错口径不许回来
+    for bad, why in (
+        ('parentPiece', '父件 bbox 不许再放行（放行只会放进"未放置的实心格"这种假通）'),
+        ('oldAir', '旧口径变量 oldAir（挡住全部旧格）不许回来 —— 模板空气格+口位格搬迁后仍是空气'),
+        ('newMouth.relative(mouth.front)', '外门口不许再查 jigsaw 外侧那一格（查错面）'),
+    ):
+        if bad in struct_src:
+            ng('bgp-exit-air', '源码里还有旧口径 %r —— %s' % (bad, why))
+        ok()
     # ---- 4) 唯一写入入口：setBlock 全文件恰好 1 次（"只动出入口"的结构性保证）
     n_set = struct_src.count('level.setBlock(')
     if n_set != 1:
@@ -2813,6 +2846,165 @@ def check_exit_air():
         ng('bgp-exit-air', 'Blocks.AIR 出现 %d 次（只允许 1 次 = NBT 解析兜底；当成"挖空气"写进世界 = 作者已否掉的方案）'
            % struct_src.count('Blocks.AIR'))
     ok()
+
+
+# ================================================================== 第九轮收尾（2026-10-23）
+# ① 旧 footprint 恢复必须保留整条 3×3×3 通道（旧口径只留 M 一格；静态关卡守 needle，世界读数在探针）；
+# ② 全链连通：从宝藏房的可站格 air-only 洪泛必须到**每一个**出入口的当前口位格。
+#    静态关卡读**归档的 A 级探针报告**（probe/gpm/report.json ⇒ docs\…\02/03），逐座逐口核。
+EVID_CHAIN = os.path.join(ROOT, 'docs', '金之牢狱-第九轮收尾-证据')
+EXIT_CHAIN_FILES = [
+    # (标签, 归档文件, 期望座数, 期望出入口数, orphansInWorld 基线（上一轮 15/5，只许不增）)
+    ('A', '02-A-种子20261022.json', 5, 33, 15),
+    ('B', '03-B-种子7.json', 3, 28, 5),
+]
+
+
+def check_exit_chain():
+    """[bgp-exit-chain] 全链连通 A 级归档（逐座逐口）。
+
+    数据 = 本轮 `runServer` 探针（`GpmProbe`）写出的 `report.json`，两次运行各归档一份。
+    判据（读报告，不重算世界）：
+      ① 每座宝藏房 1、四面道 >= 3、forceload 双向归零；
+      ② **每一个出入口的当前口位格**都能从宝藏房的可站格 air-only 洪泛到（不可达就列堵点）；
+      ③ 搬迁后的旧位置：exit 模板 3×3×3 内腔 27 格 + 3×3 门口 9 格全是空气，
+         且从父件口位格洪泛能到全部 27 格；
+      ④ 回归：overwroteNatural == 0（搬迁件）、violations == 0、旧 footprint 出入口方块 0 / 外来方块 0；
+      ⑤ orphansInWorld 不增（基线 A=15 / B=5，上一轮读数，见 §15.6）。
+    """
+    total_exits = 0
+    total_reached = 0
+    total_moved = 0
+    moved_rows = []
+    for tag, fname, want_structures, want_exits, max_orphans in EXIT_CHAIN_FILES:
+        path = os.path.join(EVID_CHAIN, fname)
+        if not os.path.exists(path):
+            ng('bgp-exit-chain', '缺归档报告 %s（先跑 A 级 runServer 探针，再跑本关卡）' % fname)
+            continue
+        try:
+            d = json.load(open(path, encoding='utf-8'))
+        except Exception as e:
+            ng('bgp-exit-chain', '%s 解析失败：%s' % (fname, e))
+            continue
+        ok()
+        if not d.get('typeIsOurs'):
+            ng('bgp-exit-chain', '%s 的 structure type 不是 bettergold:golden_prison' % fname)
+        ok()
+        if str(d.get('structureClass', '')).rsplit('.', 1)[-1] != 'GoldenPrisonStructure':
+            ng('bgp-exit-chain', '%s 的 structureClass=%r' % (fname, d.get('structureClass')))
+        ok()
+        rows = d.get('structures') or []
+        if len(rows) != want_structures:
+            ng('bgp-exit-chain', '%s 测到 %d 座 != 期望 %d' % (fname, len(rows), want_structures))
+        ok()
+        orphans = 0
+        exits_sum = 0
+        for row in rows:
+            where = '%s/%s' % (tag, row.get('chunk'))
+            if row.get('treasure') != 1:
+                ng('bgp-exit-chain', '%s 宝藏房 %r != 1' % (where, row.get('treasure')))
+            ok()
+            if int(row.get('cross') or 0) < 3:
+                ng('bgp-exit-chain', '%s 四面道 %r < 3' % (where, row.get('cross')))
+            ok()
+            if row.get('forceloadedChunks') != row.get('forceloadUndone'):
+                ng('bgp-exit-chain', '%s forceload 没双向归零：%r != %r'
+                   % (where, row.get('forceloadedChunks'), row.get('forceloadUndone')))
+            ok()
+            ports = row.get('ports') or {}
+            orphans += int(ports.get('orphansInWorld') or 0)
+            exits = row.get('exits') or []
+            if not exits:
+                ng('bgp-exit-chain', '%s 一个出入口都没测到（空转）' % where)
+            ok()
+            exits_sum += len(exits)
+            for ex in exits:
+                who = '%s#%d' % (where, ex.get('idx'))
+                if not ex.get('reachable'):
+                    ng('bgp-exit-chain', '%s 口位 %s 从宝藏房 air-only 洪泛**到不了**：%s %s'
+                       % (who, ex.get('mouth'), ex.get('reason'), ex.get('blockers')))
+                ok()
+                if ex.get('oldCavity27Air') != 27:
+                    ng('bgp-exit-chain', '%s 旧位置 3×3×3 内腔空气 %r/27（门道被压回 1 格？）'
+                       % (who, ex.get('oldCavity27Air')))
+                ok()
+                if ex.get('oldDoorPlane9Air') != 9:
+                    ng('bgp-exit-chain', '%s 旧位置 3×3 门口空气 %r/9（门洞被恢复成岩体）'
+                       % (who, ex.get('oldDoorPlane9Air')))
+                ok()
+                if ex.get('cavityFromParent') != 27:
+                    ng('bgp-exit-chain', '%s 从父件口位洪泛只到内腔 %r/27' % (who, ex.get('cavityFromParent')))
+                ok()
+                # ★ 父代理 2026-10-23 硬判据：搬迁件必须"旧父口 P → 新口位 M'"在最终世界也通
+                if ex.get('moved') and not ex.get('reachedFromOldParent'):
+                    ng('bgp-exit-chain', '%s 搬迁件 reachedFromOldParent=False（旧父口→新口位不通）' % who)
+                ok()
+                if ex.get('moved'):
+                    # 旧 footprint 的"恢复干净"只对**搬迁件**成立（没搬迁的旧 footprint 就是它自己）
+                    if ex.get('oldExitBlocksLeft') not in (None, 0):
+                        ng('bgp-exit-chain', '%s 旧 footprint 还剩 %r 个出入口方块'
+                           % (who, ex.get('oldExitBlocksLeft')))
+                    ok()
+                    if ex.get('oldForeignBlocks') not in (None, 0):
+                        ng('bgp-exit-chain', '%s 旧 footprint 有 %r 个外来方块'
+                           % (who, ex.get('oldForeignBlocks')))
+                    ok()
+                    # ★ 第十轮：搬迁件的新位置必须离**所有**别的件 bbox ≥1 格空隙（inflatedBy(1) 口径）
+                    if ex.get('gapToPieces') is None or int(ex.get('gapToPieces')) < 2:
+                        ng('bgp-exit-chain', '%s 搬迁件与别的件 bbox 空隙 %r < 2（贴脸/相邻）'
+                           % (who, ex.get('gapToPieces')))
+                    ok()
+                    # ★ 第十轮：新口位面（这个件**唯一**的开口）外侧至少一格从宝藏房可达
+                    if int(ex.get('frontReach') or 0) < 1 and int(ex.get('doorwayReach') or 0) < 1:
+                        ng('bgp-exit-chain', '%s 新口位面外侧没有一格从宝藏房可达（门口埋在岩体里）' % who)
+                    ok()
+                    # ★ 第十轮：旧位置整条 3×3 房间（44 个模板空气格）必须全空气
+                    if ex.get('oldTunnelCells') != 44 or ex.get('oldTunnelAir') != 44:
+                        ng('bgp-exit-chain', '%s 旧位置整条 3×3 房间空气 %r/%r（应 44/44）'
+                           % (who, ex.get('oldTunnelAir'), ex.get('oldTunnelCells')))
+                    ok()
+                    if not ex.get('oldMouthReach'):
+                        ng('bgp-exit-chain', '%s 搬迁件旧口位 M（旧 3×3 房间入口）从宝藏房不可达' % who)
+                    ok()
+                    moved_rows.append((who, ex.get('mouth'), ex.get('oldMouth'),
+                                       ex.get('frontReach'), ex.get('doorwayReach'),
+                                       ex.get('oldTunnelAir'), ex.get('gapToPieces'),
+                                       (ex.get('record') or {}).get('outcome')))
+                rec = ex.get('record')
+                if isinstance(rec, dict):
+                    if rec.get('violations') != 0:
+                        ng('bgp-exit-chain', '%s violations=%r != 0' % (who, rec.get('violations')))
+                    ok()
+                    if rec.get('dist', -1) > 0:
+                        total_moved += 1
+                        if rec.get('overwroteNatural') != 0:
+                            ng('bgp-exit-chain', '%s overwroteNatural=%r != 0'
+                               % (who, rec.get('overwroteNatural')))
+                        ok()
+        if exits_sum != want_exits:
+            ng('bgp-exit-chain', '%s 出入口数 %d != 期望 %d（扫描/计数口径变了？）'
+               % (fname, exits_sum, want_exits))
+        ok()
+        if orphans > max_orphans:
+            ng('bgp-exit-chain', '%s orphansInWorld=%d 比上一轮基线 %d 增加了'
+               % (fname, orphans, max_orphans))
+        ok()
+        total_exits += exits_sum
+        total_reached += sum(1 for row in rows for ex in (row.get('exits') or []) if ex.get('reachable'))
+        print('[bgp-exit-chain] %s：%d 座 / %d 出入口 / 可达 %d / moved %d / orphansInWorld %d（基线 <= %d）'
+              % (tag, len(rows), exits_sum,
+                 sum(1 for row in rows for ex in (row.get('exits') or []) if ex.get('reachable')),
+                 sum(1 for row in rows for ex in (row.get('exits') or []) if ex.get('moved')),
+                 orphans, max_orphans))
+    for r in moved_rows:
+        print('[bgp-exit-chain] moved %s mouth=%s oldM=%s frontReach=%s doorwayReach=%s '
+              'oldTunnelAir=%s gap=%s outcome=%s' % r)
+    if total_exits and total_reached != total_exits:
+        print('[bgp-exit-chain] ✗ 合计 %d/%d 可达（**如实报**：到不了的口见上面的 NG 行）'
+              % (total_reached, total_exits))
+    elif total_exits:
+        print('[bgp-exit-chain] ✓ 合计 %d/%d 可达（逐座逐口；moved=%d）'
+              % (total_reached, total_exits, total_moved))
 
 
 def check_forbid_vacuous():
@@ -2844,6 +3036,7 @@ def main():
         check_entities_bes(pieces)
         check_exit_shaft(pieces)
         check_exit_air()
+        check_exit_chain()
         check_worldgen()
         check_rate()
         check_treasure_unique()

@@ -1,0 +1,7097 @@
+{
+  "world": "gpmprobe_b",
+  "levelSeed": 7,
+  "structureClass": "com.hjmmd_8.bettergold.worldgen.GoldenPrisonStructure",
+  "structureType": "bettergold:golden_prison",
+  "typeIsOurs": true,
+  "scanRadiusChunks": 20,
+  "scanMs": 2533,
+  "startCount": 3,
+  "startChunks": [
+    "-19,10",
+    "7,7",
+    "20,-18"
+  ],
+  "structures": [
+    {
+      "chunk": "-19,10",
+      "pieces": 38,
+      "treasure": 1,
+      "cross": 5,
+      "fingerprint": "treasure\u003ecross_slot_1_a\u003ecross_slot_2_b\u003ecross_a\u003ecell_medium_c\u003ecross_slot_3_a\u003ecell_large_fertile\u003ecell_large_fertile\u003elane\u003elane\u003elane\u003elane\u003ecell_medium_fertile\u003ecell_large_fertile\u003ecross_a\u003elane\u003elane\u003ecell_medium_fertile\u003ecell_medium_a\u003eexit\u003ecell_medium_fertile\u003elane\u003elane\u003elane\u003elane\u003elane\u003ecell_small_c\u003ecell_large_fertile\u003elane\u003elane\u003elane\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit",
+      "exits": [
+        {
+          "idx": 0,
+          "bbox": [
+            -340,
+            41,
+            82,
+            -336,
+            48,
+            86
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -336,
+            42,
+            84
+          ],
+          "parent": [
+            -335,
+            42,
+            84
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-21,5",
+            "outcome": "notConnected",
+            "rotation": "clockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 1386,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -340,
+              41,
+              82
+            ],
+            "oldMax": [
+              -336,
+              48,
+              86
+            ],
+            "mouth": [
+              -336,
+              42,
+              84
+            ],
+            "parentCell": [
+              -335,
+              42,
+              84
+            ],
+            "cells": 174,
+            "solidCells": 21,
+            "matched": 21,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -336,
+            41,
+            82
+          ],
+          "oldMouth": [
+            -336,
+            42,
+            84
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -338,
+            43,
+            84
+          ],
+          "oldParent": [
+            -335,
+            42,
+            84
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 1,
+          "bbox": [
+            -390,
+            41,
+            174,
+            -386,
+            48,
+            178
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -388,
+            42,
+            174
+          ],
+          "parent": [
+            -388,
+            42,
+            173
+          ],
+          "front": "north",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-25,11",
+            "outcome": "notConnected",
+            "rotation": "none",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 298,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -390,
+              41,
+              174
+            ],
+            "oldMax": [
+              -386,
+              48,
+              178
+            ],
+            "mouth": [
+              -388,
+              42,
+              174
+            ],
+            "parentCell": [
+              -388,
+              42,
+              173
+            ],
+            "cells": 174,
+            "solidCells": 85,
+            "matched": 85,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -390,
+            41,
+            174
+          ],
+          "oldMouth": [
+            -388,
+            42,
+            174
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -388,
+            43,
+            176
+          ],
+          "oldParent": [
+            -388,
+            42,
+            173
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 2,
+          "bbox": [
+            -390,
+            41,
+            58,
+            -386,
+            48,
+            62
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -388,
+            42,
+            62
+          ],
+          "parent": [
+            -388,
+            42,
+            63
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-25,3",
+            "outcome": "notConnected",
+            "rotation": "180",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 10,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -390,
+              41,
+              58
+            ],
+            "oldMax": [
+              -386,
+              48,
+              62
+            ],
+            "mouth": [
+              -388,
+              42,
+              62
+            ],
+            "parentCell": [
+              -388,
+              42,
+              63
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -386,
+            41,
+            62
+          ],
+          "oldMouth": [
+            -388,
+            42,
+            62
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -388,
+            43,
+            60
+          ],
+          "oldParent": [
+            -388,
+            42,
+            63
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 3,
+          "bbox": [
+            -414,
+            41,
+            82,
+            -410,
+            48,
+            86
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -410,
+            42,
+            84
+          ],
+          "parent": [
+            -409,
+            42,
+            84
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-26,5",
+            "outcome": "notConnected",
+            "rotation": "clockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 386,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -414,
+              41,
+              82
+            ],
+            "oldMax": [
+              -410,
+              48,
+              86
+            ],
+            "mouth": [
+              -410,
+              42,
+              84
+            ],
+            "parentCell": [
+              -409,
+              42,
+              84
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -410,
+            41,
+            82
+          ],
+          "oldMouth": [
+            -410,
+            42,
+            84
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -412,
+            43,
+            84
+          ],
+          "oldParent": [
+            -409,
+            42,
+            84
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40001,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 4,
+          "bbox": [
+            -366,
+            41,
+            82,
+            -362,
+            48,
+            86
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -366,
+            42,
+            84
+          ],
+          "parent": [
+            -367,
+            42,
+            84
+          ],
+          "front": "west",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-23,5",
+            "outcome": "notConnected",
+            "rotation": "counterclockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 1839,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -366,
+              41,
+              82
+            ],
+            "oldMax": [
+              -362,
+              48,
+              86
+            ],
+            "mouth": [
+              -366,
+              42,
+              84
+            ],
+            "parentCell": [
+              -367,
+              42,
+              84
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -366,
+            41,
+            86
+          ],
+          "oldMouth": [
+            -366,
+            42,
+            84
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -364,
+            43,
+            84
+          ],
+          "oldParent": [
+            -367,
+            42,
+            84
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40001,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 5,
+          "bbox": [
+            -316,
+            41,
+            34,
+            -312,
+            48,
+            38
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -314,
+            42,
+            38
+          ],
+          "parent": [
+            -314,
+            42,
+            39
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-20,2",
+            "outcome": "notConnected",
+            "rotation": "180",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 701,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -316,
+              41,
+              34
+            ],
+            "oldMax": [
+              -312,
+              48,
+              38
+            ],
+            "mouth": [
+              -314,
+              42,
+              38
+            ],
+            "parentCell": [
+              -314,
+              42,
+              39
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -312,
+            41,
+            38
+          ],
+          "oldMouth": [
+            -314,
+            42,
+            38
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -314,
+            43,
+            36
+          ],
+          "oldParent": [
+            -314,
+            42,
+            39
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 6,
+          "bbox": [
+            -268,
+            41,
+            82,
+            -264,
+            48,
+            86
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -268,
+            42,
+            84
+          ],
+          "parent": [
+            -269,
+            42,
+            84
+          ],
+          "front": "west",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-17,5",
+            "outcome": "notConnected",
+            "rotation": "counterclockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 597,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -268,
+              41,
+              82
+            ],
+            "oldMax": [
+              -264,
+              48,
+              86
+            ],
+            "mouth": [
+              -268,
+              42,
+              84
+            ],
+            "parentCell": [
+              -269,
+              42,
+              84
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -268,
+            41,
+            86
+          ],
+          "oldMouth": [
+            -268,
+            42,
+            84
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -266,
+            43,
+            84
+          ],
+          "oldParent": [
+            -269,
+            42,
+            84
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 7,
+          "bbox": [
+            -247,
+            41,
+            119,
+            -243,
+            48,
+            123
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            -247,
+            42,
+            121
+          ],
+          "parent": [
+            -248,
+            42,
+            121
+          ],
+          "front": "west",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "-16,7",
+            "outcome": "notConnected",
+            "rotation": "counterclockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 14,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 699,
+            "overwroteNatural": -1,
+            "oldMin": [
+              -247,
+              41,
+              119
+            ],
+            "oldMax": [
+              -243,
+              48,
+              123
+            ],
+            "mouth": [
+              -247,
+              42,
+              121
+            ],
+            "parentCell": [
+              -248,
+              42,
+              121
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            -247,
+            41,
+            123
+          ],
+          "oldMouth": [
+            -247,
+            42,
+            121
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            -245,
+            43,
+            121
+          ],
+          "oldParent": [
+            -248,
+            42,
+            121
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        }
+      ],
+      "chain": {
+        "regionMin": [
+          -506,
+          0,
+          -42
+        ],
+        "regionMax": [
+          -167,
+          124,
+          260
+        ],
+        "treasureStandableSeeds": 1427,
+        "treasureAirSeeds": 1421,
+        "reachAir": 200000,
+        "reachNonSolid": 200000,
+        "exits": 8,
+        "reached": 8,
+        "moved": 0,
+        "movedCavityOk": 0,
+        "cavityOk": 8,
+        "cavityFromParentOk": 8
+      },
+      "records": [
+        {
+          "chunk": "-26,5",
+          "outcome": "notConnected",
+          "rotation": "clockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 386,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -414,
+            41,
+            82
+          ],
+          "oldMax": [
+            -410,
+            48,
+            86
+          ],
+          "mouth": [
+            -410,
+            42,
+            84
+          ],
+          "parentCell": [
+            -409,
+            42,
+            84
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "-25,11",
+          "outcome": "notConnected",
+          "rotation": "none",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 298,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -390,
+            41,
+            174
+          ],
+          "oldMax": [
+            -386,
+            48,
+            178
+          ],
+          "mouth": [
+            -388,
+            42,
+            174
+          ],
+          "parentCell": [
+            -388,
+            42,
+            173
+          ],
+          "cells": 174,
+          "solidCells": 85,
+          "matched": 85,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "-25,3",
+          "outcome": "notConnected",
+          "rotation": "180",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 10,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -390,
+            41,
+            58
+          ],
+          "oldMax": [
+            -386,
+            48,
+            62
+          ],
+          "mouth": [
+            -388,
+            42,
+            62
+          ],
+          "parentCell": [
+            -388,
+            42,
+            63
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "-23,5",
+          "outcome": "notConnected",
+          "rotation": "counterclockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 1839,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -366,
+            41,
+            82
+          ],
+          "oldMax": [
+            -362,
+            48,
+            86
+          ],
+          "mouth": [
+            -366,
+            42,
+            84
+          ],
+          "parentCell": [
+            -367,
+            42,
+            84
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "-21,5",
+          "outcome": "notConnected",
+          "rotation": "clockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 1386,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -340,
+            41,
+            82
+          ],
+          "oldMax": [
+            -336,
+            48,
+            86
+          ],
+          "mouth": [
+            -336,
+            42,
+            84
+          ],
+          "parentCell": [
+            -335,
+            42,
+            84
+          ],
+          "cells": 174,
+          "solidCells": 21,
+          "matched": 21,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "-20,2",
+          "outcome": "notConnected",
+          "rotation": "180",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 701,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -316,
+            41,
+            34
+          ],
+          "oldMax": [
+            -312,
+            48,
+            38
+          ],
+          "mouth": [
+            -314,
+            42,
+            38
+          ],
+          "parentCell": [
+            -314,
+            42,
+            39
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "-17,5",
+          "outcome": "notConnected",
+          "rotation": "counterclockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 597,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -268,
+            41,
+            82
+          ],
+          "oldMax": [
+            -264,
+            48,
+            86
+          ],
+          "mouth": [
+            -268,
+            42,
+            84
+          ],
+          "parentCell": [
+            -269,
+            42,
+            84
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "-16,7",
+          "outcome": "notConnected",
+          "rotation": "counterclockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 14,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 699,
+          "overwroteNatural": -1,
+          "oldMin": [
+            -247,
+            41,
+            119
+          ],
+          "oldMax": [
+            -243,
+            48,
+            123
+          ],
+          "mouth": [
+            -247,
+            42,
+            121
+          ],
+          "parentCell": [
+            -248,
+            42,
+            121
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        }
+      ],
+      "ports": {
+        "ports": 77,
+        "paired": 37,
+        "orphansByTemplate": 3,
+        "orphansInWorld": 2,
+        "detail": [
+          "byTemplate:BlockPos{x\u003d-430, y\u003d42, z\u003d121} target\u003droom",
+          "inWorld:BlockPos{x\u003d-430, y\u003d42, z\u003d121} outside\u003dminecraft:netherrack",
+          "byTemplate:BlockPos{x\u003d-351, y\u003d42, z\u003d184} target\u003dlane",
+          "byTemplate:BlockPos{x\u003d-351, y\u003d42, z\u003d38} target\u003dlane",
+          "inWorld:BlockPos{x\u003d-351, y\u003d42, z\u003d38} outside\u003dminecraft:netherrack"
+        ]
+      },
+      "forceloadedChunks": 288,
+      "forceloadUndone": 288,
+      "ms": 5750
+    },
+    {
+      "chunk": "7,7",
+      "pieces": 37,
+      "treasure": 1,
+      "cross": 5,
+      "fingerprint": "treasure\u003ecross_slot_1_b\u003ecell_large_c\u003ecell_small_fertile\u003ecross_slot_2_b\u003elane\u003elane\u003ecross_a\u003ecell_large_a\u003ecross_slot_3_b\u003ecell_medium_a\u003ecell_medium_fertile\u003elane\u003elane\u003elane\u003elane\u003ecell_large_fertile\u003ecross_a\u003ecell_small_fertile\u003elane\u003elane\u003eexit\u003eexit\u003ecell_small_c\u003ecell_large_fertile\u003elane\u003elane\u003elane\u003elane\u003elane\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit",
+      "exits": [
+        {
+          "idx": 0,
+          "bbox": [
+            34,
+            36,
+            133,
+            38,
+            43,
+            137
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            36,
+            37,
+            137
+          ],
+          "parent": [
+            36,
+            37,
+            138
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "2,8",
+            "outcome": "notConnected",
+            "rotation": "180",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 65,
+            "overwroteNatural": -1,
+            "oldMin": [
+              34,
+              36,
+              133
+            ],
+            "oldMax": [
+              38,
+              43,
+              137
+            ],
+            "mouth": [
+              36,
+              37,
+              137
+            ],
+            "parentCell": [
+              36,
+              37,
+              138
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            38,
+            36,
+            137
+          ],
+          "oldMouth": [
+            36,
+            37,
+            137
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            36,
+            38,
+            135
+          ],
+          "oldParent": [
+            36,
+            37,
+            138
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 1,
+          "bbox": [
+            34,
+            36,
+            181,
+            38,
+            43,
+            185
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            36,
+            37,
+            181
+          ],
+          "parent": [
+            36,
+            37,
+            180
+          ],
+          "front": "north",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "2,11",
+            "outcome": "notConnected",
+            "rotation": "none",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 2022,
+            "overwroteNatural": -1,
+            "oldMin": [
+              34,
+              36,
+              181
+            ],
+            "oldMax": [
+              38,
+              43,
+              185
+            ],
+            "mouth": [
+              36,
+              37,
+              181
+            ],
+            "parentCell": [
+              36,
+              37,
+              180
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            34,
+            36,
+            181
+          ],
+          "oldMouth": [
+            36,
+            37,
+            181
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            36,
+            38,
+            183
+          ],
+          "oldParent": [
+            36,
+            37,
+            180
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 2,
+          "bbox": [
+            71,
+            36,
+            41,
+            75,
+            43,
+            45
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            73,
+            37,
+            45
+          ],
+          "parent": [
+            73,
+            37,
+            46
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "4,2",
+            "outcome": "notConnected",
+            "rotation": "180",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 512,
+            "overwroteNatural": -1,
+            "oldMin": [
+              71,
+              36,
+              41
+            ],
+            "oldMax": [
+              75,
+              43,
+              45
+            ],
+            "mouth": [
+              73,
+              37,
+              45
+            ],
+            "parentCell": [
+              73,
+              37,
+              46
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            75,
+            36,
+            45
+          ],
+          "oldMouth": [
+            73,
+            37,
+            45
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            73,
+            38,
+            43
+          ],
+          "oldParent": [
+            73,
+            37,
+            46
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 3,
+          "bbox": [
+            12,
+            36,
+            120,
+            16,
+            43,
+            124
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            16,
+            37,
+            122
+          ],
+          "parent": [
+            17,
+            37,
+            122
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "1,7",
+            "outcome": "notConnected",
+            "rotation": "clockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 357,
+            "overwroteNatural": -1,
+            "oldMin": [
+              12,
+              36,
+              120
+            ],
+            "oldMax": [
+              16,
+              43,
+              124
+            ],
+            "mouth": [
+              16,
+              37,
+              122
+            ],
+            "parentCell": [
+              17,
+              37,
+              122
+            ],
+            "cells": 174,
+            "solidCells": 21,
+            "matched": 21,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            16,
+            36,
+            120
+          ],
+          "oldMouth": [
+            16,
+            37,
+            122
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            14,
+            38,
+            122
+          ],
+          "oldParent": [
+            17,
+            37,
+            122
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 4,
+          "bbox": [
+            16,
+            36,
+            194,
+            20,
+            43,
+            198
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            20,
+            37,
+            196
+          ],
+          "parent": [
+            21,
+            37,
+            196
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "1,12",
+            "outcome": "notConnected",
+            "rotation": "clockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 290,
+            "overwroteNatural": -1,
+            "oldMin": [
+              16,
+              36,
+              194
+            ],
+            "oldMax": [
+              20,
+              43,
+              198
+            ],
+            "mouth": [
+              20,
+              37,
+              196
+            ],
+            "parentCell": [
+              21,
+              37,
+              196
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            20,
+            36,
+            194
+          ],
+          "oldMouth": [
+            20,
+            37,
+            196
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            18,
+            38,
+            196
+          ],
+          "oldParent": [
+            21,
+            37,
+            196
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 5,
+          "bbox": [
+            108,
+            36,
+            218,
+            112,
+            43,
+            222
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            110,
+            37,
+            218
+          ],
+          "parent": [
+            110,
+            37,
+            217
+          ],
+          "front": "north",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "7,13",
+            "outcome": "notConnected",
+            "rotation": "none",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 2839,
+            "overwroteNatural": -1,
+            "oldMin": [
+              108,
+              36,
+              218
+            ],
+            "oldMax": [
+              112,
+              43,
+              222
+            ],
+            "mouth": [
+              110,
+              37,
+              218
+            ],
+            "parentCell": [
+              110,
+              37,
+              217
+            ],
+            "cells": 174,
+            "solidCells": 29,
+            "matched": 29,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            108,
+            36,
+            218
+          ],
+          "oldMouth": [
+            110,
+            37,
+            218
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            110,
+            38,
+            220
+          ],
+          "oldParent": [
+            110,
+            37,
+            217
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 6,
+          "bbox": [
+            108,
+            36,
+            170,
+            112,
+            43,
+            174
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            110,
+            37,
+            174
+          ],
+          "parent": [
+            110,
+            37,
+            175
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "7,10",
+            "outcome": "notConnected",
+            "rotation": "180",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 1604,
+            "overwroteNatural": -1,
+            "oldMin": [
+              108,
+              36,
+              170
+            ],
+            "oldMax": [
+              112,
+              43,
+              174
+            ],
+            "mouth": [
+              110,
+              37,
+              174
+            ],
+            "parentCell": [
+              110,
+              37,
+              175
+            ],
+            "cells": 174,
+            "solidCells": 29,
+            "matched": 29,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            112,
+            36,
+            174
+          ],
+          "oldMouth": [
+            110,
+            37,
+            174
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            110,
+            38,
+            172
+          ],
+          "oldParent": [
+            110,
+            37,
+            175
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 2,
+          "oldForeignKinds": {
+            "minecraft:polished_blackstone_bricks": 2
+          },
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 7,
+          "bbox": [
+            132,
+            36,
+            194,
+            136,
+            43,
+            198
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            132,
+            37,
+            196
+          ],
+          "parent": [
+            131,
+            37,
+            196
+          ],
+          "front": "west",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "8,12",
+            "outcome": "notConnected",
+            "rotation": "counterclockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 2122,
+            "overwroteNatural": -1,
+            "oldMin": [
+              132,
+              36,
+              194
+            ],
+            "oldMax": [
+              136,
+              43,
+              198
+            ],
+            "mouth": [
+              132,
+              37,
+              196
+            ],
+            "parentCell": [
+              131,
+              37,
+              196
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            132,
+            36,
+            198
+          ],
+          "oldMouth": [
+            132,
+            37,
+            196
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            134,
+            38,
+            196
+          ],
+          "oldParent": [
+            131,
+            37,
+            196
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 8,
+          "bbox": [
+            71,
+            36,
+            229,
+            75,
+            43,
+            233
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            73,
+            37,
+            229
+          ],
+          "parent": [
+            73,
+            37,
+            228
+          ],
+          "front": "north",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "4,14",
+            "outcome": "notConnected",
+            "rotation": "none",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 16,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 719,
+            "overwroteNatural": -1,
+            "oldMin": [
+              71,
+              36,
+              229
+            ],
+            "oldMax": [
+              75,
+              43,
+              233
+            ],
+            "mouth": [
+              73,
+              37,
+              229
+            ],
+            "parentCell": [
+              73,
+              37,
+              228
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            71,
+            36,
+            229
+          ],
+          "oldMouth": [
+            73,
+            37,
+            229
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            73,
+            38,
+            231
+          ],
+          "oldParent": [
+            73,
+            37,
+            228
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 32214,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        }
+      ],
+      "chain": {
+        "regionMin": [
+          -72,
+          0,
+          -35
+        ],
+        "regionMax": [
+          232,
+          119,
+          309
+        ],
+        "treasureStandableSeeds": 1427,
+        "treasureAirSeeds": 1421,
+        "reachAir": 32214,
+        "reachNonSolid": 32581,
+        "exits": 9,
+        "reached": 9,
+        "moved": 0,
+        "movedCavityOk": 0,
+        "cavityOk": 9,
+        "cavityFromParentOk": 9
+      },
+      "records": [
+        {
+          "chunk": "1,7",
+          "outcome": "notConnected",
+          "rotation": "clockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 357,
+          "overwroteNatural": -1,
+          "oldMin": [
+            12,
+            36,
+            120
+          ],
+          "oldMax": [
+            16,
+            43,
+            124
+          ],
+          "mouth": [
+            16,
+            37,
+            122
+          ],
+          "parentCell": [
+            17,
+            37,
+            122
+          ],
+          "cells": 174,
+          "solidCells": 21,
+          "matched": 21,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "1,12",
+          "outcome": "notConnected",
+          "rotation": "clockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 290,
+          "overwroteNatural": -1,
+          "oldMin": [
+            16,
+            36,
+            194
+          ],
+          "oldMax": [
+            20,
+            43,
+            198
+          ],
+          "mouth": [
+            20,
+            37,
+            196
+          ],
+          "parentCell": [
+            21,
+            37,
+            196
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "2,8",
+          "outcome": "notConnected",
+          "rotation": "180",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 65,
+          "overwroteNatural": -1,
+          "oldMin": [
+            34,
+            36,
+            133
+          ],
+          "oldMax": [
+            38,
+            43,
+            137
+          ],
+          "mouth": [
+            36,
+            37,
+            137
+          ],
+          "parentCell": [
+            36,
+            37,
+            138
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "2,11",
+          "outcome": "notConnected",
+          "rotation": "none",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 2022,
+          "overwroteNatural": -1,
+          "oldMin": [
+            34,
+            36,
+            181
+          ],
+          "oldMax": [
+            38,
+            43,
+            185
+          ],
+          "mouth": [
+            36,
+            37,
+            181
+          ],
+          "parentCell": [
+            36,
+            37,
+            180
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "4,14",
+          "outcome": "notConnected",
+          "rotation": "none",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 719,
+          "overwroteNatural": -1,
+          "oldMin": [
+            71,
+            36,
+            229
+          ],
+          "oldMax": [
+            75,
+            43,
+            233
+          ],
+          "mouth": [
+            73,
+            37,
+            229
+          ],
+          "parentCell": [
+            73,
+            37,
+            228
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "4,2",
+          "outcome": "notConnected",
+          "rotation": "180",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 512,
+          "overwroteNatural": -1,
+          "oldMin": [
+            71,
+            36,
+            41
+          ],
+          "oldMax": [
+            75,
+            43,
+            45
+          ],
+          "mouth": [
+            73,
+            37,
+            45
+          ],
+          "parentCell": [
+            73,
+            37,
+            46
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "7,13",
+          "outcome": "notConnected",
+          "rotation": "none",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 2839,
+          "overwroteNatural": -1,
+          "oldMin": [
+            108,
+            36,
+            218
+          ],
+          "oldMax": [
+            112,
+            43,
+            222
+          ],
+          "mouth": [
+            110,
+            37,
+            218
+          ],
+          "parentCell": [
+            110,
+            37,
+            217
+          ],
+          "cells": 174,
+          "solidCells": 29,
+          "matched": 29,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "7,10",
+          "outcome": "notConnected",
+          "rotation": "180",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 1604,
+          "overwroteNatural": -1,
+          "oldMin": [
+            108,
+            36,
+            170
+          ],
+          "oldMax": [
+            112,
+            43,
+            174
+          ],
+          "mouth": [
+            110,
+            37,
+            174
+          ],
+          "parentCell": [
+            110,
+            37,
+            175
+          ],
+          "cells": 174,
+          "solidCells": 29,
+          "matched": 29,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "8,12",
+          "outcome": "notConnected",
+          "rotation": "counterclockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 16,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 2122,
+          "overwroteNatural": -1,
+          "oldMin": [
+            132,
+            36,
+            194
+          ],
+          "oldMax": [
+            136,
+            43,
+            198
+          ],
+          "mouth": [
+            132,
+            37,
+            196
+          ],
+          "parentCell": [
+            131,
+            37,
+            196
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        }
+      ],
+      "ports": {
+        "ports": 74,
+        "paired": 36,
+        "orphansByTemplate": 2,
+        "orphansInWorld": 2,
+        "detail": [
+          "byTemplate:BlockPos{x\u003d4, y\u003d37, z\u003d159} target\u003dlane",
+          "inWorld:BlockPos{x\u003d4, y\u003d37, z\u003d159} outside\u003dminecraft:basalt",
+          "byTemplate:BlockPos{x\u003d156, y\u003d37, z\u003d159} target\u003dlane",
+          "inWorld:BlockPos{x\u003d156, y\u003d37, z\u003d159} outside\u003dminecraft:netherrack"
+        ]
+      },
+      "forceloadedChunks": 304,
+      "forceloadUndone": 304,
+      "ms": 5142
+    },
+    {
+      "chunk": "20,-18",
+      "pieces": 43,
+      "treasure": 1,
+      "cross": 6,
+      "fingerprint": "treasure\u003ecross_slot_1_b\u003ecross_slot_2_a\u003ecell_large_fertile\u003ecross_a\u003ecell_small_mirror\u003ecell_small_fertile\u003ecross_slot_3_a\u003elane\u003elane\u003elane\u003elane\u003elane\u003elane\u003ecell_small_fertile\u003ecell_small_b\u003ecross_b\u003ecell_small_fertile\u003ecross_a\u003ecell_small_b\u003ecell_small_fertile\u003ecell_medium_mirror\u003eexit\u003elane\u003elane\u003elane\u003elane\u003elane\u003elane\u003elane\u003elane\u003elane\u003elane\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit\u003eexit",
+      "exits": [
+        {
+          "idx": 0,
+          "bbox": [
+            244,
+            39,
+            -243,
+            248,
+            46,
+            -239
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            248,
+            40,
+            -241
+          ],
+          "parent": [
+            249,
+            40,
+            -241
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "15,-15",
+            "outcome": "notConnected",
+            "rotation": "clockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 89,
+            "overwroteNatural": -1,
+            "oldMin": [
+              244,
+              39,
+              -243
+            ],
+            "oldMax": [
+              248,
+              46,
+              -239
+            ],
+            "mouth": [
+              248,
+              40,
+              -241
+            ],
+            "parentCell": [
+              249,
+              40,
+              -241
+            ],
+            "cells": 174,
+            "solidCells": 53,
+            "matched": 53,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            248,
+            39,
+            -243
+          ],
+          "oldMouth": [
+            248,
+            40,
+            -241
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            246,
+            41,
+            -241
+          ],
+          "oldParent": [
+            249,
+            40,
+            -241
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 1,
+          "bbox": [
+            233,
+            39,
+            -206,
+            237,
+            46,
+            -202
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            237,
+            40,
+            -204
+          ],
+          "parent": [
+            238,
+            40,
+            -204
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "15,-13",
+            "outcome": "relocated",
+            "rotation": "clockwise_90",
+            "dist": 11,
+            "dir": "",
+            "strict": true,
+            "strictTier": 1,
+            "lenientTier": 0,
+            "candidates": 18135,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 60000,
+            "overwroteNatural": 0,
+            "oldMin": [
+              244,
+              39,
+              -206
+            ],
+            "oldMax": [
+              248,
+              46,
+              -202
+            ],
+            "newMin": [
+              233,
+              39,
+              -206
+            ],
+            "newMax": [
+              237,
+              46,
+              -202
+            ],
+            "mouth": [
+              248,
+              40,
+              -204
+            ],
+            "parentCell": [
+              249,
+              40,
+              -204
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": true,
+            "matchedNew": 130,
+            "solidNew": 130,
+            "restored": 129,
+            "skipped": 0,
+            "doorway": 45,
+            "keptAir": 44,
+            "cap": "kept-3x3x3",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 129,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {
+              "minecraft:netherrack": 129
+            },
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": true,
+          "outcome": "relocated",
+          "dist": 11,
+          "oldOrigin": [
+            248,
+            39,
+            -206
+          ],
+          "oldMouth": [
+            248,
+            40,
+            -204
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            246,
+            41,
+            -204
+          ],
+          "oldParent": [
+            249,
+            40,
+            -204
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": false,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 0,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": 0,
+          "violations": 0
+        },
+        {
+          "idx": 2,
+          "bbox": [
+            279,
+            39,
+            -171,
+            283,
+            46,
+            -167
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            281,
+            40,
+            -171
+          ],
+          "parent": [
+            281,
+            40,
+            -172
+          ],
+          "front": "north",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "17,-11",
+            "outcome": "notConnected",
+            "rotation": "none",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 721,
+            "overwroteNatural": -1,
+            "oldMin": [
+              279,
+              39,
+              -171
+            ],
+            "oldMax": [
+              283,
+              46,
+              -167
+            ],
+            "mouth": [
+              281,
+              40,
+              -171
+            ],
+            "parentCell": [
+              281,
+              40,
+              -172
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            279,
+            39,
+            -171
+          ],
+          "oldMouth": [
+            281,
+            40,
+            -171
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            281,
+            41,
+            -169
+          ],
+          "oldParent": [
+            281,
+            40,
+            -172
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 3,
+          "bbox": [
+            340,
+            39,
+            -192,
+            344,
+            46,
+            -188
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            340,
+            40,
+            -190
+          ],
+          "parent": [
+            339,
+            40,
+            -190
+          ],
+          "front": "west",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:cave_air",
+          "record": {
+            "chunk": "21,-13",
+            "outcome": "relocated",
+            "rotation": "counterclockwise_90",
+            "dist": 14,
+            "dir": "",
+            "strict": true,
+            "strictTier": 1,
+            "lenientTier": 0,
+            "candidates": 5427,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 60001,
+            "overwroteNatural": 0,
+            "oldMin": [
+              340,
+              39,
+              -206
+            ],
+            "oldMax": [
+              344,
+              46,
+              -202
+            ],
+            "newMin": [
+              340,
+              39,
+              -192
+            ],
+            "newMax": [
+              344,
+              46,
+              -188
+            ],
+            "mouth": [
+              340,
+              40,
+              -204
+            ],
+            "parentCell": [
+              339,
+              40,
+              -204
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": true,
+            "matchedNew": 130,
+            "solidNew": 130,
+            "restored": 129,
+            "skipped": 0,
+            "doorway": 45,
+            "keptAir": 44,
+            "cap": "kept-3x3x3",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 129,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {
+              "minecraft:netherrack": 85,
+              "minecraft:nether_bricks": 44
+            },
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": true,
+          "outcome": "relocated",
+          "dist": 14,
+          "oldOrigin": [
+            340,
+            39,
+            -202
+          ],
+          "oldMouth": [
+            340,
+            40,
+            -204
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            342,
+            41,
+            -204
+          ],
+          "oldParent": [
+            339,
+            40,
+            -204
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": false,
+          "reachable": false,
+          "reachableNonSolid": false,
+          "gapPathLen": 7,
+          "blockers": [
+            [
+              337,
+              41,
+              -190,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              336,
+              41,
+              -190,
+              "bettergold:gold_bricks",
+              "cross_b"
+            ]
+          ],
+          "reason": "gap:2格非空气",
+          "oldExitBlocksLeft": 0,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": 0,
+          "violations": 0
+        },
+        {
+          "idx": 4,
+          "bbox": [
+            316,
+            39,
+            -230,
+            320,
+            46,
+            -226
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            318,
+            40,
+            -226
+          ],
+          "parent": [
+            318,
+            40,
+            -225
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "20,-15",
+            "outcome": "notConnected",
+            "rotation": "180",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 871,
+            "overwroteNatural": -1,
+            "oldMin": [
+              316,
+              39,
+              -230
+            ],
+            "oldMax": [
+              320,
+              46,
+              -226
+            ],
+            "mouth": [
+              318,
+              40,
+              -226
+            ],
+            "parentCell": [
+              318,
+              40,
+              -225
+            ],
+            "cells": 174,
+            "solidCells": 29,
+            "matched": 29,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            320,
+            39,
+            -226
+          ],
+          "oldMouth": [
+            318,
+            40,
+            -226
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            318,
+            41,
+            -228
+          ],
+          "oldParent": [
+            318,
+            40,
+            -225
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 5,
+          "bbox": [
+            316,
+            39,
+            -171,
+            320,
+            46,
+            -167
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            318,
+            40,
+            -171
+          ],
+          "parent": [
+            318,
+            40,
+            -172
+          ],
+          "front": "north",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "20,-12",
+            "outcome": "relocated",
+            "rotation": "none",
+            "dist": 11,
+            "dir": "",
+            "strict": true,
+            "strictTier": 1,
+            "lenientTier": 0,
+            "candidates": 9890,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 60000,
+            "overwroteNatural": 0,
+            "oldMin": [
+              316,
+              39,
+              -182
+            ],
+            "oldMax": [
+              320,
+              46,
+              -178
+            ],
+            "newMin": [
+              316,
+              39,
+              -171
+            ],
+            "newMax": [
+              320,
+              46,
+              -167
+            ],
+            "mouth": [
+              318,
+              40,
+              -182
+            ],
+            "parentCell": [
+              318,
+              40,
+              -183
+            ],
+            "cells": 174,
+            "solidCells": 29,
+            "matched": 29,
+            "placed": true,
+            "matchedNew": 130,
+            "solidNew": 130,
+            "restored": 129,
+            "skipped": 0,
+            "doorway": 45,
+            "keptAir": 44,
+            "cap": "kept-3x3x3",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 129,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {
+              "minecraft:netherrack": 120,
+              "minecraft:warped_nylium": 9
+            },
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": true,
+          "outcome": "relocated",
+          "dist": 11,
+          "oldOrigin": [
+            316,
+            39,
+            -182
+          ],
+          "oldMouth": [
+            318,
+            40,
+            -182
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            318,
+            41,
+            -180
+          ],
+          "oldParent": [
+            318,
+            40,
+            -183
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": false,
+          "reachable": false,
+          "reachableNonSolid": false,
+          "gapPathLen": 9,
+          "blockers": [
+            [
+              318,
+              40,
+              -173,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              318,
+              40,
+              -174,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              318,
+              40,
+              -175,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              318,
+              40,
+              -176,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              318,
+              40,
+              -177,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              318,
+              40,
+              -178,
+              "minecraft:netherrack",
+              "natural"
+            ]
+          ],
+          "reason": "gap:6格非空气",
+          "oldExitBlocksLeft": 0,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": 0,
+          "violations": 0
+        },
+        {
+          "idx": 6,
+          "bbox": [
+            279,
+            39,
+            -349,
+            283,
+            46,
+            -345
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            281,
+            40,
+            -345
+          ],
+          "parent": [
+            281,
+            40,
+            -344
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "17,-22",
+            "outcome": "notConnected",
+            "rotation": "180",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 589,
+            "overwroteNatural": -1,
+            "oldMin": [
+              279,
+              39,
+              -349
+            ],
+            "oldMax": [
+              283,
+              46,
+              -345
+            ],
+            "mouth": [
+              281,
+              40,
+              -345
+            ],
+            "parentCell": [
+              281,
+              40,
+              -344
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            283,
+            39,
+            -345
+          ],
+          "oldMouth": [
+            281,
+            40,
+            -345
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            281,
+            41,
+            -347
+          ],
+          "oldParent": [
+            281,
+            40,
+            -344
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 1,
+          "oldForeignKinds": {
+            "minecraft:fire": 1
+          },
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 7,
+          "bbox": [
+            238,
+            53,
+            -358,
+            242,
+            60,
+            -354
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            240,
+            54,
+            -354
+          ],
+          "parent": [
+            240,
+            54,
+            -353
+          ],
+          "front": "south",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "15,-22",
+            "outcome": "relocated",
+            "rotation": "180",
+            "dist": 14,
+            "dir": "",
+            "strict": true,
+            "strictTier": 1,
+            "lenientTier": 0,
+            "candidates": 1012,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 27283,
+            "overwroteNatural": 0,
+            "oldMin": [
+              242,
+              39,
+              -344
+            ],
+            "oldMax": [
+              246,
+              46,
+              -340
+            ],
+            "newMin": [
+              238,
+              53,
+              -358
+            ],
+            "newMax": [
+              242,
+              60,
+              -354
+            ],
+            "mouth": [
+              244,
+              40,
+              -340
+            ],
+            "parentCell": [
+              244,
+              40,
+              -339
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": true,
+            "matchedNew": 130,
+            "solidNew": 130,
+            "restored": 129,
+            "skipped": 0,
+            "doorway": 45,
+            "keptAir": 44,
+            "cap": "kept-3x3x3",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 129,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {
+              "minecraft:netherrack": 129
+            },
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": true,
+          "outcome": "relocated",
+          "dist": 14,
+          "oldOrigin": [
+            246,
+            39,
+            -340
+          ],
+          "oldMouth": [
+            244,
+            40,
+            -340
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            244,
+            41,
+            -342
+          ],
+          "oldParent": [
+            244,
+            40,
+            -339
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": false,
+          "reachable": false,
+          "reachableNonSolid": false,
+          "gapPathLen": 27,
+          "blockers": [
+            [
+              240,
+              53,
+              -354,
+              "bettergold:gold_pillar",
+              "exit"
+            ]
+          ],
+          "reason": "gap:1格非空气",
+          "oldExitBlocksLeft": 0,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": 0,
+          "violations": 0
+        },
+        {
+          "idx": 8,
+          "bbox": [
+            218,
+            39,
+            -320,
+            222,
+            46,
+            -316
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            222,
+            40,
+            -318
+          ],
+          "parent": [
+            223,
+            40,
+            -318
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "13,-20",
+            "outcome": "notConnected",
+            "rotation": "clockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 10,
+            "overwroteNatural": -1,
+            "oldMin": [
+              218,
+              39,
+              -320
+            ],
+            "oldMax": [
+              222,
+              46,
+              -316
+            ],
+            "mouth": [
+              222,
+              40,
+              -318
+            ],
+            "parentCell": [
+              223,
+              40,
+              -318
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            222,
+            39,
+            -320
+          ],
+          "oldMouth": [
+            222,
+            40,
+            -318
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            220,
+            41,
+            -318
+          ],
+          "oldParent": [
+            223,
+            40,
+            -318
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40001,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 9,
+          "bbox": [
+            266,
+            39,
+            -320,
+            270,
+            46,
+            -316
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            266,
+            40,
+            -318
+          ],
+          "parent": [
+            265,
+            40,
+            -318
+          ],
+          "front": "west",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:air",
+          "record": {
+            "chunk": "16,-20",
+            "outcome": "notConnected",
+            "rotation": "counterclockwise_90",
+            "dist": -1,
+            "dir": "",
+            "strict": false,
+            "strictTier": 0,
+            "lenientTier": 0,
+            "candidates": 0,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 3340,
+            "overwroteNatural": -1,
+            "oldMin": [
+              266,
+              39,
+              -320
+            ],
+            "oldMax": [
+              270,
+              46,
+              -316
+            ],
+            "mouth": [
+              266,
+              40,
+              -318
+            ],
+            "parentCell": [
+              265,
+              40,
+              -318
+            ],
+            "cells": 174,
+            "solidCells": 130,
+            "matched": 130,
+            "placed": false,
+            "matchedNew": 0,
+            "solidNew": 0,
+            "restored": 0,
+            "skipped": 0,
+            "doorway": 0,
+            "keptAir": 0,
+            "cap": "",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 0,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {},
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": false,
+          "outcome": "notConnected",
+          "dist": -1,
+          "oldOrigin": [
+            266,
+            39,
+            -316
+          ],
+          "oldMouth": [
+            266,
+            40,
+            -318
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            268,
+            41,
+            -318
+          ],
+          "oldParent": [
+            265,
+            40,
+            -318
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": true,
+          "reachable": true,
+          "reachableNonSolid": true,
+          "gapPathLen": 0,
+          "blockers": [],
+          "reason": "",
+          "oldExitBlocksLeft": 129,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": -1,
+          "violations": 0
+        },
+        {
+          "idx": 10,
+          "bbox": [
+            195,
+            38,
+            -280,
+            199,
+            45,
+            -276
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placedOk": true,
+          "mouth": [
+            199,
+            39,
+            -278
+          ],
+          "parent": [
+            200,
+            39,
+            -278
+          ],
+          "front": "east",
+          "mouthState": "minecraft:air",
+          "parentState": "minecraft:cave_air",
+          "record": {
+            "chunk": "13,-18",
+            "outcome": "relocated",
+            "rotation": "clockwise_90",
+            "dist": 9,
+            "dir": "",
+            "strict": true,
+            "strictTier": 1,
+            "lenientTier": 0,
+            "candidates": 7191,
+            "protectedCells": 20,
+            "protectedBlocked": 0,
+            "doorBlocked": 0,
+            "insideStructure": 0,
+            "pathBlocked": 0,
+            "reachable": 60000,
+            "overwroteNatural": 0,
+            "oldMin": [
+              204,
+              39,
+              -280
+            ],
+            "oldMax": [
+              208,
+              46,
+              -276
+            ],
+            "newMin": [
+              195,
+              38,
+              -280
+            ],
+            "newMax": [
+              199,
+              45,
+              -276
+            ],
+            "mouth": [
+              208,
+              40,
+              -278
+            ],
+            "parentCell": [
+              209,
+              40,
+              -278
+            ],
+            "cells": 174,
+            "solidCells": 21,
+            "matched": 21,
+            "placed": true,
+            "matchedNew": 130,
+            "solidNew": 130,
+            "restored": 129,
+            "skipped": 0,
+            "doorway": 45,
+            "keptAir": 44,
+            "cap": "kept-3x3x3",
+            "entitiesRemoved": 0,
+            "entityDupesRemoved": 0,
+            "writes": 129,
+            "violations": 0,
+            "outOfWorld": 0,
+            "restoreMaterials": {
+              "minecraft:netherrack": 123,
+              "minecraft:magma_block": 6
+            },
+            "element": "Single[Left[bettergold:golden_prison/exit]]"
+          },
+          "moved": true,
+          "outcome": "relocated",
+          "dist": 9,
+          "oldOrigin": [
+            208,
+            39,
+            -280
+          ],
+          "oldMouth": [
+            208,
+            40,
+            -278
+          ],
+          "oldCavity27Air": 27,
+          "oldCavityAllAir": true,
+          "oldDoorPlane9Air": 9,
+          "oldDoorPlaneAllAir": true,
+          "oldCavitySample": [
+            206,
+            41,
+            -278
+          ],
+          "oldParent": [
+            209,
+            40,
+            -278
+          ],
+          "oldParentState": "minecraft:air",
+          "parentFlood": 40000,
+          "cavityFromParent": 27,
+          "reachedFromOldParent": false,
+          "reachable": false,
+          "reachableNonSolid": false,
+          "gapPathLen": 8,
+          "blockers": [
+            [
+              202,
+              40,
+              -278,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              203,
+              40,
+              -278,
+              "minecraft:netherrack",
+              "natural"
+            ],
+            [
+              204,
+              40,
+              -278,
+              "minecraft:netherrack",
+              "natural"
+            ]
+          ],
+          "reason": "gap:3格非空气",
+          "oldExitBlocksLeft": 0,
+          "oldForeignBlocks": 0,
+          "oldForeignKinds": {},
+          "overwroteNatural": 0,
+          "violations": 0
+        }
+      ],
+      "chain": {
+        "regionMin": [
+          128,
+          0,
+          -425
+        ],
+        "regionMax": [
+          420,
+          122,
+          -91
+        ],
+        "treasureStandableSeeds": 1427,
+        "treasureAirSeeds": 1421,
+        "reachAir": 200000,
+        "reachNonSolid": 200000,
+        "exits": 11,
+        "reached": 7,
+        "moved": 5,
+        "movedCavityOk": 5,
+        "cavityOk": 11,
+        "cavityFromParentOk": 11
+      },
+      "records": [
+        {
+          "chunk": "13,-20",
+          "outcome": "notConnected",
+          "rotation": "clockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 10,
+          "overwroteNatural": -1,
+          "oldMin": [
+            218,
+            39,
+            -320
+          ],
+          "oldMax": [
+            222,
+            46,
+            -316
+          ],
+          "mouth": [
+            222,
+            40,
+            -318
+          ],
+          "parentCell": [
+            223,
+            40,
+            -318
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "13,-18",
+          "outcome": "relocated",
+          "rotation": "clockwise_90",
+          "dist": 9,
+          "dir": "",
+          "strict": true,
+          "strictTier": 1,
+          "lenientTier": 0,
+          "candidates": 7191,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 60000,
+          "overwroteNatural": 0,
+          "oldMin": [
+            204,
+            39,
+            -280
+          ],
+          "oldMax": [
+            208,
+            46,
+            -276
+          ],
+          "newMin": [
+            195,
+            38,
+            -280
+          ],
+          "newMax": [
+            199,
+            45,
+            -276
+          ],
+          "mouth": [
+            208,
+            40,
+            -278
+          ],
+          "parentCell": [
+            209,
+            40,
+            -278
+          ],
+          "cells": 174,
+          "solidCells": 21,
+          "matched": 21,
+          "placed": true,
+          "matchedNew": 130,
+          "solidNew": 130,
+          "restored": 129,
+          "skipped": 0,
+          "doorway": 45,
+          "keptAir": 44,
+          "cap": "kept-3x3x3",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 129,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {
+            "minecraft:netherrack": 123,
+            "minecraft:magma_block": 6
+          },
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "15,-15",
+          "outcome": "notConnected",
+          "rotation": "clockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 89,
+          "overwroteNatural": -1,
+          "oldMin": [
+            244,
+            39,
+            -243
+          ],
+          "oldMax": [
+            248,
+            46,
+            -239
+          ],
+          "mouth": [
+            248,
+            40,
+            -241
+          ],
+          "parentCell": [
+            249,
+            40,
+            -241
+          ],
+          "cells": 174,
+          "solidCells": 53,
+          "matched": 53,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "15,-13",
+          "outcome": "relocated",
+          "rotation": "clockwise_90",
+          "dist": 11,
+          "dir": "",
+          "strict": true,
+          "strictTier": 1,
+          "lenientTier": 0,
+          "candidates": 18135,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 60000,
+          "overwroteNatural": 0,
+          "oldMin": [
+            244,
+            39,
+            -206
+          ],
+          "oldMax": [
+            248,
+            46,
+            -202
+          ],
+          "newMin": [
+            233,
+            39,
+            -206
+          ],
+          "newMax": [
+            237,
+            46,
+            -202
+          ],
+          "mouth": [
+            248,
+            40,
+            -204
+          ],
+          "parentCell": [
+            249,
+            40,
+            -204
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": true,
+          "matchedNew": 130,
+          "solidNew": 130,
+          "restored": 129,
+          "skipped": 0,
+          "doorway": 45,
+          "keptAir": 44,
+          "cap": "kept-3x3x3",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 129,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {
+            "minecraft:netherrack": 129
+          },
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "15,-22",
+          "outcome": "relocated",
+          "rotation": "180",
+          "dist": 14,
+          "dir": "",
+          "strict": true,
+          "strictTier": 1,
+          "lenientTier": 0,
+          "candidates": 1012,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 27283,
+          "overwroteNatural": 0,
+          "oldMin": [
+            242,
+            39,
+            -344
+          ],
+          "oldMax": [
+            246,
+            46,
+            -340
+          ],
+          "newMin": [
+            238,
+            53,
+            -358
+          ],
+          "newMax": [
+            242,
+            60,
+            -354
+          ],
+          "mouth": [
+            244,
+            40,
+            -340
+          ],
+          "parentCell": [
+            244,
+            40,
+            -339
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": true,
+          "matchedNew": 130,
+          "solidNew": 130,
+          "restored": 129,
+          "skipped": 0,
+          "doorway": 45,
+          "keptAir": 44,
+          "cap": "kept-3x3x3",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 129,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {
+            "minecraft:netherrack": 129
+          },
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "16,-20",
+          "outcome": "notConnected",
+          "rotation": "counterclockwise_90",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 3340,
+          "overwroteNatural": -1,
+          "oldMin": [
+            266,
+            39,
+            -320
+          ],
+          "oldMax": [
+            270,
+            46,
+            -316
+          ],
+          "mouth": [
+            266,
+            40,
+            -318
+          ],
+          "parentCell": [
+            265,
+            40,
+            -318
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "17,-22",
+          "outcome": "notConnected",
+          "rotation": "180",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 589,
+          "overwroteNatural": -1,
+          "oldMin": [
+            279,
+            39,
+            -349
+          ],
+          "oldMax": [
+            283,
+            46,
+            -345
+          ],
+          "mouth": [
+            281,
+            40,
+            -345
+          ],
+          "parentCell": [
+            281,
+            40,
+            -344
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "17,-11",
+          "outcome": "notConnected",
+          "rotation": "none",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 721,
+          "overwroteNatural": -1,
+          "oldMin": [
+            279,
+            39,
+            -171
+          ],
+          "oldMax": [
+            283,
+            46,
+            -167
+          ],
+          "mouth": [
+            281,
+            40,
+            -171
+          ],
+          "parentCell": [
+            281,
+            40,
+            -172
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "20,-15",
+          "outcome": "notConnected",
+          "rotation": "180",
+          "dist": -1,
+          "dir": "",
+          "strict": false,
+          "strictTier": 0,
+          "lenientTier": 0,
+          "candidates": 0,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 871,
+          "overwroteNatural": -1,
+          "oldMin": [
+            316,
+            39,
+            -230
+          ],
+          "oldMax": [
+            320,
+            46,
+            -226
+          ],
+          "mouth": [
+            318,
+            40,
+            -226
+          ],
+          "parentCell": [
+            318,
+            40,
+            -225
+          ],
+          "cells": 174,
+          "solidCells": 29,
+          "matched": 29,
+          "placed": false,
+          "matchedNew": 0,
+          "solidNew": 0,
+          "restored": 0,
+          "skipped": 0,
+          "doorway": 0,
+          "keptAir": 0,
+          "cap": "",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 0,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {},
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "20,-12",
+          "outcome": "relocated",
+          "rotation": "none",
+          "dist": 11,
+          "dir": "",
+          "strict": true,
+          "strictTier": 1,
+          "lenientTier": 0,
+          "candidates": 9890,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 60000,
+          "overwroteNatural": 0,
+          "oldMin": [
+            316,
+            39,
+            -182
+          ],
+          "oldMax": [
+            320,
+            46,
+            -178
+          ],
+          "newMin": [
+            316,
+            39,
+            -171
+          ],
+          "newMax": [
+            320,
+            46,
+            -167
+          ],
+          "mouth": [
+            318,
+            40,
+            -182
+          ],
+          "parentCell": [
+            318,
+            40,
+            -183
+          ],
+          "cells": 174,
+          "solidCells": 29,
+          "matched": 29,
+          "placed": true,
+          "matchedNew": 130,
+          "solidNew": 130,
+          "restored": 129,
+          "skipped": 0,
+          "doorway": 45,
+          "keptAir": 44,
+          "cap": "kept-3x3x3",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 129,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {
+            "minecraft:netherrack": 120,
+            "minecraft:warped_nylium": 9
+          },
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        },
+        {
+          "chunk": "21,-13",
+          "outcome": "relocated",
+          "rotation": "counterclockwise_90",
+          "dist": 14,
+          "dir": "",
+          "strict": true,
+          "strictTier": 1,
+          "lenientTier": 0,
+          "candidates": 5427,
+          "protectedCells": 20,
+          "protectedBlocked": 0,
+          "doorBlocked": 0,
+          "insideStructure": 0,
+          "pathBlocked": 0,
+          "reachable": 60001,
+          "overwroteNatural": 0,
+          "oldMin": [
+            340,
+            39,
+            -206
+          ],
+          "oldMax": [
+            344,
+            46,
+            -202
+          ],
+          "newMin": [
+            340,
+            39,
+            -192
+          ],
+          "newMax": [
+            344,
+            46,
+            -188
+          ],
+          "mouth": [
+            340,
+            40,
+            -204
+          ],
+          "parentCell": [
+            339,
+            40,
+            -204
+          ],
+          "cells": 174,
+          "solidCells": 130,
+          "matched": 130,
+          "placed": true,
+          "matchedNew": 130,
+          "solidNew": 130,
+          "restored": 129,
+          "skipped": 0,
+          "doorway": 45,
+          "keptAir": 44,
+          "cap": "kept-3x3x3",
+          "entitiesRemoved": 0,
+          "entityDupesRemoved": 0,
+          "writes": 129,
+          "violations": 0,
+          "outOfWorld": 0,
+          "restoreMaterials": {
+            "minecraft:netherrack": 85,
+            "minecraft:nether_bricks": 44
+          },
+          "element": "Single[Left[bettergold:golden_prison/exit]]"
+        }
+      ],
+      "ports": {
+        "ports": 86,
+        "paired": 37,
+        "orphansByTemplate": 7,
+        "orphansInWorld": 1,
+        "detail": [
+          "byTemplate:BlockPos{x\u003d244, y\u003d40, z\u003d-246} target\u003dlane",
+          "byTemplate:BlockPos{x\u003d334, y\u003d40, z\u003d-241} target\u003dlane",
+          "inWorld:BlockPos{x\u003d334, y\u003d40, z\u003d-241} outside\u003dminecraft:gravel",
+          "byTemplate:BlockPos{x\u003d249, y\u003d40, z\u003d-204} target\u003droom",
+          "byTemplate:BlockPos{x\u003d339, y\u003d40, z\u003d-204} target\u003droom",
+          "byTemplate:BlockPos{x\u003d318, y\u003d40, z\u003d-183} target\u003droom",
+          "byTemplate:BlockPos{x\u003d244, y\u003d40, z\u003d-339} target\u003droom",
+          "byTemplate:BlockPos{x\u003d209, y\u003d40, z\u003d-278} target\u003droom"
+        ]
+      },
+      "forceloadedChunks": 270,
+      "forceloadUndone": 270,
+      "ms": 4725
+    }
+  ],
+  "chainSummary": {
+    "structures": 3,
+    "treasure": 3,
+    "cross": 16,
+    "exits": 28,
+    "exitsReached": 24,
+    "exitsUnreached": 4,
+    "moved": 5,
+    "movedCavityOk": 5,
+    "movedCavityFromParentOk": 28,
+    "orphansInWorld": 5
+  },
+  "relocationRecords": [
+    {
+      "chunk": "-26,5",
+      "outcome": "notConnected",
+      "rotation": "clockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 386,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -414,
+        41,
+        82
+      ],
+      "oldMax": [
+        -410,
+        48,
+        86
+      ],
+      "mouth": [
+        -410,
+        42,
+        84
+      ],
+      "parentCell": [
+        -409,
+        42,
+        84
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "-25,11",
+      "outcome": "notConnected",
+      "rotation": "none",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 298,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -390,
+        41,
+        174
+      ],
+      "oldMax": [
+        -386,
+        48,
+        178
+      ],
+      "mouth": [
+        -388,
+        42,
+        174
+      ],
+      "parentCell": [
+        -388,
+        42,
+        173
+      ],
+      "cells": 174,
+      "solidCells": 85,
+      "matched": 85,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "-25,3",
+      "outcome": "notConnected",
+      "rotation": "180",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 10,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -390,
+        41,
+        58
+      ],
+      "oldMax": [
+        -386,
+        48,
+        62
+      ],
+      "mouth": [
+        -388,
+        42,
+        62
+      ],
+      "parentCell": [
+        -388,
+        42,
+        63
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "-23,5",
+      "outcome": "notConnected",
+      "rotation": "counterclockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 1839,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -366,
+        41,
+        82
+      ],
+      "oldMax": [
+        -362,
+        48,
+        86
+      ],
+      "mouth": [
+        -366,
+        42,
+        84
+      ],
+      "parentCell": [
+        -367,
+        42,
+        84
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "-21,5",
+      "outcome": "notConnected",
+      "rotation": "clockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 1386,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -340,
+        41,
+        82
+      ],
+      "oldMax": [
+        -336,
+        48,
+        86
+      ],
+      "mouth": [
+        -336,
+        42,
+        84
+      ],
+      "parentCell": [
+        -335,
+        42,
+        84
+      ],
+      "cells": 174,
+      "solidCells": 21,
+      "matched": 21,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "-20,2",
+      "outcome": "notConnected",
+      "rotation": "180",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 701,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -316,
+        41,
+        34
+      ],
+      "oldMax": [
+        -312,
+        48,
+        38
+      ],
+      "mouth": [
+        -314,
+        42,
+        38
+      ],
+      "parentCell": [
+        -314,
+        42,
+        39
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "-17,5",
+      "outcome": "notConnected",
+      "rotation": "counterclockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 597,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -268,
+        41,
+        82
+      ],
+      "oldMax": [
+        -264,
+        48,
+        86
+      ],
+      "mouth": [
+        -268,
+        42,
+        84
+      ],
+      "parentCell": [
+        -269,
+        42,
+        84
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "-16,7",
+      "outcome": "notConnected",
+      "rotation": "counterclockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 14,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 699,
+      "overwroteNatural": -1,
+      "oldMin": [
+        -247,
+        41,
+        119
+      ],
+      "oldMax": [
+        -243,
+        48,
+        123
+      ],
+      "mouth": [
+        -247,
+        42,
+        121
+      ],
+      "parentCell": [
+        -248,
+        42,
+        121
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "1,7",
+      "outcome": "notConnected",
+      "rotation": "clockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 357,
+      "overwroteNatural": -1,
+      "oldMin": [
+        12,
+        36,
+        120
+      ],
+      "oldMax": [
+        16,
+        43,
+        124
+      ],
+      "mouth": [
+        16,
+        37,
+        122
+      ],
+      "parentCell": [
+        17,
+        37,
+        122
+      ],
+      "cells": 174,
+      "solidCells": 21,
+      "matched": 21,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "1,12",
+      "outcome": "notConnected",
+      "rotation": "clockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 290,
+      "overwroteNatural": -1,
+      "oldMin": [
+        16,
+        36,
+        194
+      ],
+      "oldMax": [
+        20,
+        43,
+        198
+      ],
+      "mouth": [
+        20,
+        37,
+        196
+      ],
+      "parentCell": [
+        21,
+        37,
+        196
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "2,8",
+      "outcome": "notConnected",
+      "rotation": "180",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 65,
+      "overwroteNatural": -1,
+      "oldMin": [
+        34,
+        36,
+        133
+      ],
+      "oldMax": [
+        38,
+        43,
+        137
+      ],
+      "mouth": [
+        36,
+        37,
+        137
+      ],
+      "parentCell": [
+        36,
+        37,
+        138
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "2,11",
+      "outcome": "notConnected",
+      "rotation": "none",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 2022,
+      "overwroteNatural": -1,
+      "oldMin": [
+        34,
+        36,
+        181
+      ],
+      "oldMax": [
+        38,
+        43,
+        185
+      ],
+      "mouth": [
+        36,
+        37,
+        181
+      ],
+      "parentCell": [
+        36,
+        37,
+        180
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "4,14",
+      "outcome": "notConnected",
+      "rotation": "none",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 719,
+      "overwroteNatural": -1,
+      "oldMin": [
+        71,
+        36,
+        229
+      ],
+      "oldMax": [
+        75,
+        43,
+        233
+      ],
+      "mouth": [
+        73,
+        37,
+        229
+      ],
+      "parentCell": [
+        73,
+        37,
+        228
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "4,2",
+      "outcome": "notConnected",
+      "rotation": "180",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 512,
+      "overwroteNatural": -1,
+      "oldMin": [
+        71,
+        36,
+        41
+      ],
+      "oldMax": [
+        75,
+        43,
+        45
+      ],
+      "mouth": [
+        73,
+        37,
+        45
+      ],
+      "parentCell": [
+        73,
+        37,
+        46
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "7,13",
+      "outcome": "notConnected",
+      "rotation": "none",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 2839,
+      "overwroteNatural": -1,
+      "oldMin": [
+        108,
+        36,
+        218
+      ],
+      "oldMax": [
+        112,
+        43,
+        222
+      ],
+      "mouth": [
+        110,
+        37,
+        218
+      ],
+      "parentCell": [
+        110,
+        37,
+        217
+      ],
+      "cells": 174,
+      "solidCells": 29,
+      "matched": 29,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "7,10",
+      "outcome": "notConnected",
+      "rotation": "180",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 1604,
+      "overwroteNatural": -1,
+      "oldMin": [
+        108,
+        36,
+        170
+      ],
+      "oldMax": [
+        112,
+        43,
+        174
+      ],
+      "mouth": [
+        110,
+        37,
+        174
+      ],
+      "parentCell": [
+        110,
+        37,
+        175
+      ],
+      "cells": 174,
+      "solidCells": 29,
+      "matched": 29,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "8,12",
+      "outcome": "notConnected",
+      "rotation": "counterclockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 16,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 2122,
+      "overwroteNatural": -1,
+      "oldMin": [
+        132,
+        36,
+        194
+      ],
+      "oldMax": [
+        136,
+        43,
+        198
+      ],
+      "mouth": [
+        132,
+        37,
+        196
+      ],
+      "parentCell": [
+        131,
+        37,
+        196
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "13,-20",
+      "outcome": "notConnected",
+      "rotation": "clockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 10,
+      "overwroteNatural": -1,
+      "oldMin": [
+        218,
+        39,
+        -320
+      ],
+      "oldMax": [
+        222,
+        46,
+        -316
+      ],
+      "mouth": [
+        222,
+        40,
+        -318
+      ],
+      "parentCell": [
+        223,
+        40,
+        -318
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "13,-18",
+      "outcome": "relocated",
+      "rotation": "clockwise_90",
+      "dist": 9,
+      "dir": "",
+      "strict": true,
+      "strictTier": 1,
+      "lenientTier": 0,
+      "candidates": 7191,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 60000,
+      "overwroteNatural": 0,
+      "oldMin": [
+        204,
+        39,
+        -280
+      ],
+      "oldMax": [
+        208,
+        46,
+        -276
+      ],
+      "newMin": [
+        195,
+        38,
+        -280
+      ],
+      "newMax": [
+        199,
+        45,
+        -276
+      ],
+      "mouth": [
+        208,
+        40,
+        -278
+      ],
+      "parentCell": [
+        209,
+        40,
+        -278
+      ],
+      "cells": 174,
+      "solidCells": 21,
+      "matched": 21,
+      "placed": true,
+      "matchedNew": 130,
+      "solidNew": 130,
+      "restored": 129,
+      "skipped": 0,
+      "doorway": 45,
+      "keptAir": 44,
+      "cap": "kept-3x3x3",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 129,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {
+        "minecraft:netherrack": 123,
+        "minecraft:magma_block": 6
+      },
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "15,-15",
+      "outcome": "notConnected",
+      "rotation": "clockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 89,
+      "overwroteNatural": -1,
+      "oldMin": [
+        244,
+        39,
+        -243
+      ],
+      "oldMax": [
+        248,
+        46,
+        -239
+      ],
+      "mouth": [
+        248,
+        40,
+        -241
+      ],
+      "parentCell": [
+        249,
+        40,
+        -241
+      ],
+      "cells": 174,
+      "solidCells": 53,
+      "matched": 53,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "15,-13",
+      "outcome": "relocated",
+      "rotation": "clockwise_90",
+      "dist": 11,
+      "dir": "",
+      "strict": true,
+      "strictTier": 1,
+      "lenientTier": 0,
+      "candidates": 18135,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 60000,
+      "overwroteNatural": 0,
+      "oldMin": [
+        244,
+        39,
+        -206
+      ],
+      "oldMax": [
+        248,
+        46,
+        -202
+      ],
+      "newMin": [
+        233,
+        39,
+        -206
+      ],
+      "newMax": [
+        237,
+        46,
+        -202
+      ],
+      "mouth": [
+        248,
+        40,
+        -204
+      ],
+      "parentCell": [
+        249,
+        40,
+        -204
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": true,
+      "matchedNew": 130,
+      "solidNew": 130,
+      "restored": 129,
+      "skipped": 0,
+      "doorway": 45,
+      "keptAir": 44,
+      "cap": "kept-3x3x3",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 129,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {
+        "minecraft:netherrack": 129
+      },
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "15,-22",
+      "outcome": "relocated",
+      "rotation": "180",
+      "dist": 14,
+      "dir": "",
+      "strict": true,
+      "strictTier": 1,
+      "lenientTier": 0,
+      "candidates": 1012,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 27283,
+      "overwroteNatural": 0,
+      "oldMin": [
+        242,
+        39,
+        -344
+      ],
+      "oldMax": [
+        246,
+        46,
+        -340
+      ],
+      "newMin": [
+        238,
+        53,
+        -358
+      ],
+      "newMax": [
+        242,
+        60,
+        -354
+      ],
+      "mouth": [
+        244,
+        40,
+        -340
+      ],
+      "parentCell": [
+        244,
+        40,
+        -339
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": true,
+      "matchedNew": 130,
+      "solidNew": 130,
+      "restored": 129,
+      "skipped": 0,
+      "doorway": 45,
+      "keptAir": 44,
+      "cap": "kept-3x3x3",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 129,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {
+        "minecraft:netherrack": 129
+      },
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "16,-20",
+      "outcome": "notConnected",
+      "rotation": "counterclockwise_90",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 3340,
+      "overwroteNatural": -1,
+      "oldMin": [
+        266,
+        39,
+        -320
+      ],
+      "oldMax": [
+        270,
+        46,
+        -316
+      ],
+      "mouth": [
+        266,
+        40,
+        -318
+      ],
+      "parentCell": [
+        265,
+        40,
+        -318
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "17,-22",
+      "outcome": "notConnected",
+      "rotation": "180",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 589,
+      "overwroteNatural": -1,
+      "oldMin": [
+        279,
+        39,
+        -349
+      ],
+      "oldMax": [
+        283,
+        46,
+        -345
+      ],
+      "mouth": [
+        281,
+        40,
+        -345
+      ],
+      "parentCell": [
+        281,
+        40,
+        -344
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "17,-11",
+      "outcome": "notConnected",
+      "rotation": "none",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 721,
+      "overwroteNatural": -1,
+      "oldMin": [
+        279,
+        39,
+        -171
+      ],
+      "oldMax": [
+        283,
+        46,
+        -167
+      ],
+      "mouth": [
+        281,
+        40,
+        -171
+      ],
+      "parentCell": [
+        281,
+        40,
+        -172
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "20,-15",
+      "outcome": "notConnected",
+      "rotation": "180",
+      "dist": -1,
+      "dir": "",
+      "strict": false,
+      "strictTier": 0,
+      "lenientTier": 0,
+      "candidates": 0,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 871,
+      "overwroteNatural": -1,
+      "oldMin": [
+        316,
+        39,
+        -230
+      ],
+      "oldMax": [
+        320,
+        46,
+        -226
+      ],
+      "mouth": [
+        318,
+        40,
+        -226
+      ],
+      "parentCell": [
+        318,
+        40,
+        -225
+      ],
+      "cells": 174,
+      "solidCells": 29,
+      "matched": 29,
+      "placed": false,
+      "matchedNew": 0,
+      "solidNew": 0,
+      "restored": 0,
+      "skipped": 0,
+      "doorway": 0,
+      "keptAir": 0,
+      "cap": "",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 0,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {},
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "20,-12",
+      "outcome": "relocated",
+      "rotation": "none",
+      "dist": 11,
+      "dir": "",
+      "strict": true,
+      "strictTier": 1,
+      "lenientTier": 0,
+      "candidates": 9890,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 60000,
+      "overwroteNatural": 0,
+      "oldMin": [
+        316,
+        39,
+        -182
+      ],
+      "oldMax": [
+        320,
+        46,
+        -178
+      ],
+      "newMin": [
+        316,
+        39,
+        -171
+      ],
+      "newMax": [
+        320,
+        46,
+        -167
+      ],
+      "mouth": [
+        318,
+        40,
+        -182
+      ],
+      "parentCell": [
+        318,
+        40,
+        -183
+      ],
+      "cells": 174,
+      "solidCells": 29,
+      "matched": 29,
+      "placed": true,
+      "matchedNew": 130,
+      "solidNew": 130,
+      "restored": 129,
+      "skipped": 0,
+      "doorway": 45,
+      "keptAir": 44,
+      "cap": "kept-3x3x3",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 129,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {
+        "minecraft:netherrack": 120,
+        "minecraft:warped_nylium": 9
+      },
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    },
+    {
+      "chunk": "21,-13",
+      "outcome": "relocated",
+      "rotation": "counterclockwise_90",
+      "dist": 14,
+      "dir": "",
+      "strict": true,
+      "strictTier": 1,
+      "lenientTier": 0,
+      "candidates": 5427,
+      "protectedCells": 20,
+      "protectedBlocked": 0,
+      "doorBlocked": 0,
+      "insideStructure": 0,
+      "pathBlocked": 0,
+      "reachable": 60001,
+      "overwroteNatural": 0,
+      "oldMin": [
+        340,
+        39,
+        -206
+      ],
+      "oldMax": [
+        344,
+        46,
+        -202
+      ],
+      "newMin": [
+        340,
+        39,
+        -192
+      ],
+      "newMax": [
+        344,
+        46,
+        -188
+      ],
+      "mouth": [
+        340,
+        40,
+        -204
+      ],
+      "parentCell": [
+        339,
+        40,
+        -204
+      ],
+      "cells": 174,
+      "solidCells": 130,
+      "matched": 130,
+      "placed": true,
+      "matchedNew": 130,
+      "solidNew": 130,
+      "restored": 129,
+      "skipped": 0,
+      "doorway": 45,
+      "keptAir": 44,
+      "cap": "kept-3x3x3",
+      "entitiesRemoved": 0,
+      "entityDupesRemoved": 0,
+      "writes": 129,
+      "violations": 0,
+      "outOfWorld": 0,
+      "restoreMaterials": {
+        "minecraft:netherrack": 85,
+        "minecraft:nether_bricks": 44
+      },
+      "element": "Single[Left[bettergold:golden_prison/exit]]"
+    }
+  ]
+}
