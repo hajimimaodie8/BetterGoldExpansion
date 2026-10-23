@@ -1,0 +1,4 @@
+﻿exit=1
+[bgp] NG [bgp-exit-parent] lane ������� 1 �� exit ���ã�['bettergold:golden_prison/exit']�������ֵ�������ˣ�
+[bgp] NG [bgp-exit-parent] lane �ص�Ԫ��=['exit'] != [lane]�����ԵĲ��ձ��ˣ�
+restore=True sha_before=b752025936fac6a426c6a620598353bc3416ecdaa448f407f47cddeb35a8f585 sha_after=b752025936fac6a426c6a620598353bc3416ecdaa448f407f47cddeb35a8f585

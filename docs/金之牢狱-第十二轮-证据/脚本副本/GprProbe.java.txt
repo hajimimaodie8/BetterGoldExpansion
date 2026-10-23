@@ -1,0 +1,570 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.logging.LogUtils;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.JigsawBlock;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
+import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
+import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
+import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
+import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import org.slf4j.Logger;
+
+/**
+ * gpr 探针（临时文件，跑完整块删除；源码留档 docs/金之牢狱-第十二轮-证据/）。
+ *
+ * <p>只读探针：只拼件（{@code Structure#generate} 走真实 {@code JigsawPlacement}，不生成区块、
+ * 不 forceload、不写世界），读三件事：</p>
+ * <ol>
+ *   <li><b>深度 → 件类型序列</b>（每个种子每座，逐件：深度 / 模板 / 池）；</li>
+ *   <li><b>逐口 parentKind</b>：每个出入口件的父件模板 + 类型（start / lane / room / exit）；</li>
+ *   <li><b>尺寸矩阵</b>：直接用 {@code JigsawPlacement.addPieces} 换 {@code size}（4/5/6）拼同一批种子，
+ *       看链尾落在哪、出入口的父件是谁、落单口与 max_distance 裁剪各多少 —— 用来选 {@code size}。</li>
+ * </ol>
+ * 结果写 {@code probe/gpr/report.json}（cwd = run/），然后 {@code halt(false)} <b>一次</b>。
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class GprProbe {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final Path OUT = Path.of("probe", "gpr");
+    private static final Path SWITCH = Path.of("gpr-probe.enabled");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+    private static final String NS = "bettergold";
+    private static final ResourceLocation STRUCT_RL = ResourceLocation.fromNamespaceAndPath(NS, "golden_prison");
+    private static final ResourceLocation START_POOL_RL =
+            ResourceLocation.fromNamespaceAndPath(NS, "golden_prison/start");
+    private static final String PREFIX = NS + ":golden_prison/";
+    private static final Pattern TPL = Pattern.compile("(bettergold:golden_prison/[a-z0-9_]+)");
+
+    /** 6 个种子 × 2 个区块坐标 = 12 座/配置。 */
+    private static final long[] SEEDS = {20261020L, 20261021L, 20261022L, 20261023L, 20261024L, 20261025L};
+    private static final int[][] CPS = {{40, 40}, {0, 0}};
+    /** 尺寸矩阵；真实结构那一条用 0 表示"从注册表拿"。 */
+    private static final int[] MATRIX_SIZES = {4, 5, 6};
+    private static final int MAX_DISTANCE = 116;
+
+    private static boolean pending = false;
+    private static int tick = 0;
+    private static boolean halted = false;
+    private static MinecraftServer srv;
+    private static ServerLevel lvl;
+    private static ChunkGenerator gen;
+    private static Holder<Structure> structHolder;
+    private static Holder<StructureTemplatePool> startPool;
+    private static UniformHeight startHeight;
+
+    private GprProbe() {
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!Files.isRegularFile(SWITCH)) {
+            LOG.info("[gpr] switch file {} absent -> probe skipped", SWITCH.toAbsolutePath());
+            return;
+        }
+        srv = event.getServer();
+        lvl = srv.overworld();
+        pending = true;
+        LOG.info("[gpr] server started, probe pending");
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!pending || tick++ < 60) {
+            return;
+        }
+        pending = false;
+        try {
+            run();
+        } catch (Throwable t) {
+            LOG.error("[gpr] probe failed", t);
+            try {
+                Files.createDirectories(OUT);
+                Files.writeString(OUT.resolve("error.txt"), String.valueOf(t), StandardCharsets.UTF_8);
+            } catch (Exception ignored) {
+                // 落盘失败也要 halt
+            }
+        } finally {
+            if (!halted) {
+                halted = true;
+                LOG.info("[gpr] halting server (once)");
+                event.getServer().halt(false);
+            }
+        }
+    }
+
+    // ================================================================== 主体
+
+    private static void run() throws Exception {
+        gen = lvl.getChunkSource().getGenerator();
+        structHolder = srv.registryAccess().registryOrThrow(Registries.STRUCTURE)
+                .getHolder(ResourceKey.create(Registries.STRUCTURE, STRUCT_RL)).orElseThrow();
+        startPool = srv.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
+                .getHolder(ResourceKey.create(Registries.TEMPLATE_POOL, START_POOL_RL)).orElseThrow();
+        startHeight = UniformHeight.of(VerticalAnchor.absolute(31), VerticalAnchor.absolute(41));
+
+        List<String> forcedBefore = forced(lvl);
+
+        Map<String, Object> root = new LinkedHashMap<>();
+        root.put("probe", "gpr-v1");
+        root.put("maxDistance", MAX_DISTANCE);
+        root.put("seeds", SEEDS.length);
+        root.put("chunkPositions", CPS.length);
+
+        // ---- A：真实结构（注册表里那个，size / fallback 都是磁盘 JSON 的实际值）
+        Map<String, Object> a = new LinkedHashMap<>();
+        a.put("mode", "A-registry-structure");
+        a.put("runs", matrix(0, true));
+        root.put("A", a);
+
+        // ---- M：尺寸矩阵（只换 maxDepth，走同一个 addPieces）
+        List<Object> rows = new ArrayList<>();
+        for (int size : MATRIX_SIZES) {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("mode", "M-matrix");
+            m.put("size", size);
+            m.put("runs", matrix(size, false));
+            rows.add(m);
+        }
+        root.put("M", rows);
+
+        List<String> forcedAfter = forced(lvl);
+        root.put("forcedChunksBefore", forcedBefore);
+        root.put("forcedChunksAfter", forcedAfter);
+        root.put("forcedChunksUnchanged", forcedBefore.equals(forcedAfter));
+
+        Files.createDirectories(OUT);
+        Path out = OUT.resolve("report.json");
+        Files.writeString(out, GSON.toJson(root), StandardCharsets.UTF_8);
+        LOG.info("[gpr] report written to {} ({} B)", out.toAbsolutePath(), Files.size(out));
+    }
+
+    private static List<String> forced(ServerLevel level) {
+        List<String> out = new ArrayList<>();
+        level.getForcedChunks().forEach(v -> out.add(Long.toString(v)));
+        out.sort(String::compareTo);
+        return out;
+    }
+
+    /** 跑 6 个种子 × 2 个区块坐标，返回逐座读数 + 汇总。 */
+    private static Map<String, Object> matrix(int size, boolean viaRegistry) throws Exception {
+        List<Object> per = new ArrayList<>();
+        int structures = 0;
+        int valid = 0;
+        int withExit = 0;
+        int totalExits = 0;
+        int totalOrphans = 0;
+        int culled = 0;
+        Map<String, Integer> parentKinds = new TreeMap<>();
+        Map<String, Integer> parentTpls = new TreeMap<>();
+        int maxReachAll = 0;
+        for (long seed : SEEDS) {
+            for (int[] cpc : CPS) {
+                ChunkPos cp = new ChunkPos(cpc[0], cpc[1]);
+                structures++;
+                List<PoolElementStructurePiece> pieces = genPieces(seed, cp, size, viaRegistry);
+                Map<String, Object> row;
+                if (pieces.isEmpty()) {
+                    row = new LinkedHashMap<>();
+                    row.put("seed", seed);
+                    row.put("cp", cp.x + "," + cp.z);
+                    row.put("valid", false);
+                    per.add(row);
+                    continue;
+                }
+                valid++;
+                row = analyze(pieces, seed, cp);
+                per.add(row);
+                int ex = (Integer) row.get("exitCount");
+                totalExits += ex;
+                if (ex > 0) {
+                    withExit++;
+                }
+                totalOrphans += (Integer) row.get("orphanCount");
+                culled += (Integer) row.get("culledWouldBe");
+                maxReachAll = Math.max(maxReachAll, (Integer) row.get("maxReach"));
+                @SuppressWarnings("unchecked")
+                Map<String, Integer> pk = (Map<String, Integer>) row.get("parentKindCounts");
+                for (Map.Entry<String, Integer> e : pk.entrySet()) {
+                    parentKinds.merge(e.getKey(), e.getValue(), Integer::sum);
+                }
+                @SuppressWarnings("unchecked")
+                Map<String, Integer> pt = (Map<String, Integer>) row.get("parentTplCounts");
+                for (Map.Entry<String, Integer> e : pt.entrySet()) {
+                    parentTpls.merge(e.getKey(), e.getValue(), Integer::sum);
+                }
+            }
+        }
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("viaRegistry", viaRegistry);
+        out.put("size", viaRegistry ? "registry" : size);
+        out.put("structures", structures);
+        out.put("valid", valid);
+        out.put("structuresWithExit", withExit);
+        out.put("totalExits", totalExits);
+        out.put("parentKindCounts", parentKinds);
+        out.put("parentTplCounts", parentTpls);
+        out.put("totalOrphans", totalOrphans);
+        out.put("culledWouldBe", culled);
+        out.put("maxReach", maxReachAll);
+        out.put("runs", per);
+        LOG.info("[gpr] {} size={} -> structs={}/{} withExit={} exits={} parentKinds={} orphans={} culled={} maxReach={}",
+                viaRegistry ? "A" : "M", viaRegistry ? "registry" : size, valid, structures, withExit,
+                totalExits, parentKinds, totalOrphans, culled, maxReachAll);
+        return out;
+    }
+
+    /** 一个种子一座：真实拼件（不碰世界）。 */
+    private static List<PoolElementStructurePiece> genPieces(long seed, ChunkPos cp, int size,
+                                                             boolean viaRegistry) {
+        RandomState rs = RandomState.create(
+                srv.registryAccess().lookupOrThrow(Registries.NOISE_SETTINGS)
+                        .getOrThrow(NoiseGeneratorSettings.NETHER).value(),
+                srv.registryAccess().lookupOrThrow(Registries.NOISE), seed);
+        if (viaRegistry) {
+            StructureStart st = structHolder.value().generate(srv.registryAccess(), gen, gen.getBiomeSource(),
+                    rs, srv.getStructureManager(), seed, cp, 0, lvl, h -> true);
+            return poolPieces(st);
+        }
+        Structure.GenerationContext ctx = new Structure.GenerationContext(srv.registryAccess(), gen,
+                gen.getBiomeSource(), rs, srv.getStructureManager(), seed, cp, lvl, h -> true);
+        int y = startHeight.sample(ctx.random(), new WorldGenerationContext(gen, lvl));
+        BlockPos pos = new BlockPos(cp.getMinBlockX(), y, cp.getMinBlockZ());
+        Optional<Structure.GenerationStub> stub = JigsawPlacement.addPieces(ctx, startPool, Optional.empty(),
+                size, pos, false, Optional.empty(), MAX_DISTANCE, PoolAliasLookup.EMPTY,
+                DimensionPadding.ZERO, LiquidSettings.APPLY_WATERLOGGING);
+        if (stub.isEmpty()) {
+            return List.of();
+        }
+        PiecesContainer container = stub.get().getPiecesBuilder().build();
+        List<PoolElementStructurePiece> out = new ArrayList<>();
+        for (StructurePiece sp : container.pieces()) {
+            if (sp instanceof PoolElementStructurePiece pep) {
+                out.add(pep);
+            }
+        }
+        return out;
+    }
+
+    private static List<PoolElementStructurePiece> poolPieces(StructureStart st) {
+        List<PoolElementStructurePiece> out = new ArrayList<>();
+        if (st == null || !st.isValid()) {
+            return out;
+        }
+        for (StructurePiece sp : st.getPieces()) {
+            if (sp instanceof PoolElementStructurePiece pep) {
+                out.add(pep);
+            }
+        }
+        return out;
+    }
+
+    // ================================================================== 单座分析
+
+    private static Map<String, Object> analyze(List<PoolElementStructurePiece> pieces, long seed, ChunkPos cp) {
+        // ---- 口（jigsaw 方块，世界坐标）
+        List<Port> ports = new ArrayList<>();
+        int[] tplIndex = new int[pieces.size()];
+        List<String> tpls = new ArrayList<>();
+        for (int i = 0; i < pieces.size(); i++) {
+            PoolElementStructurePiece pep = pieces.get(i);
+            String tpl = tplOf(pep);
+            tpls.add(tpl);
+            Optional<StructureTemplate> tplOpt = srv.getStructureManager()
+                    .get(ResourceLocation.parse(PREFIX + tpl));
+            if (tplOpt.isEmpty()) {
+                continue;
+            }
+            StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(pep.getRotation());
+            for (StructureTemplate.StructureBlockInfo info
+                    : tplOpt.get().filterBlocks(pep.getPosition(), settings, Blocks.JIGSAW, true)) {
+                Port p = new Port();
+                p.piece = i;
+                p.pos = info.pos();
+                p.dir = JigsawBlock.getFrontFacing(info.state());
+                if (info.nbt() != null) {
+                    p.name = info.nbt().getString("name");
+                    p.target = info.nbt().getString("target");
+                    p.pool = info.nbt().getString("pool");
+                } else {
+                    p.name = "";
+                    p.target = "";
+                    p.pool = "";
+                }
+                p.other = -1;
+                ports.add(p);
+            }
+        }
+        // ---- 配对：口 A 朝 d，对面一格有朝 -d 的口 ⇒ 同一对
+        Map<String, Integer> at = new HashMap<>();
+        for (int k = 0; k < ports.size(); k++) {
+            Port p = ports.get(k);
+            at.put(key(p.pos, p.dir), k);
+        }
+        for (int k = 0; k < ports.size(); k++) {
+            Port p = ports.get(k);
+            BlockPos nb = p.pos.relative(p.dir);
+            Integer j = at.get(key(nb, p.dir.getOpposite()));
+            if (j != null && j != k) {
+                p.other = j;
+                ports.get(j).other = k;
+            }
+        }
+        // ---- 连通图 + 深度（BFS，根 = 宝藏房）
+        int n = pieces.size();
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (Port p : ports) {
+            if (p.other > p.piece) {
+                int b = ports.get(p.other).piece;
+                adj.get(p.piece).add(b);
+                adj.get(b).add(p.piece);
+            }
+        }
+        int root = 0;
+        for (int i = 0; i < n; i++) {
+            if ("treasure".equals(tpls.get(i))) {
+                root = i;
+                break;
+            }
+        }
+        int[] depth = new int[n];
+        java.util.Arrays.fill(depth, -1);
+        int[] parent = new int[n];
+        java.util.Arrays.fill(parent, -1);
+        depth[root] = 0;
+        ArrayDeque<Integer> q = new ArrayDeque<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            int a = q.poll();
+            for (int b : adj.get(a)) {
+                if (depth[b] < 0) {
+                    depth[b] = depth[a] + 1;
+                    parent[b] = a;
+                    q.add(b);
+                }
+            }
+        }
+        // ---- 深度 → 件类型序列
+        Map<Integer, List<String>> byDepth = new TreeMap<>();
+        for (int i = 0; i < n; i++) {
+            if (depth[i] < 0) {
+                continue;
+            }
+            byDepth.computeIfAbsent(depth[i], k -> new ArrayList<>()).add(tpls.get(i));
+        }
+        Map<String, Object> depthKinds = new LinkedHashMap<>();
+        for (Map.Entry<Integer, List<String>> e : byDepth.entrySet()) {
+            Map<String, Integer> counts = new TreeMap<>();
+            for (String t : e.getValue()) {
+                counts.merge(t, 1, Integer::sum);
+            }
+            depthKinds.put(String.valueOf(e.getKey()), counts);
+        }
+        // ---- 出入口：父件 + 深度
+        List<Object> exits = new ArrayList<>();
+        Map<String, Integer> parentKindCounts = new TreeMap<>();
+        Map<String, Integer> parentTplCounts = new TreeMap<>();
+        for (int i = 0; i < n; i++) {
+            if (!"exit".equals(tpls.get(i))) {
+                continue;
+            }
+            int par = -1;
+            for (Port p : ports) {
+                if (p.piece == i && p.other >= 0) {
+                    par = ports.get(p.other).piece;
+                    break;
+                }
+            }
+            String parentTpl = par >= 0 ? tpls.get(par) : "(none)";
+            String parentKind = par >= 0 ? poolOf(parentTpl) : "(none)";
+            parentKindCounts.merge(parentKind, 1, Integer::sum);
+            parentTplCounts.merge(parentTpl, 1, Integer::sum);
+            Map<String, Object> ex = new LinkedHashMap<>();
+            ex.put("piece", i);
+            ex.put("depth", depth[i]);
+            ex.put("parentPiece", par);
+            ex.put("parentTpl", parentTpl);
+            ex.put("parentKind", parentKind);
+            ex.put("parentDepth", par >= 0 ? depth[par] : -1);
+            BoundingBox b = pieces.get(i).getBoundingBox();
+            ex.put("bbox", new int[] {b.minX(), b.minY(), b.minZ(), b.maxX(), b.maxY(), b.maxZ()});
+            exits.add(ex);
+        }
+        // ---- 落单口（target != empty 且对面没有口）
+        List<Object> orphans = new ArrayList<>();
+        for (Port p : ports) {
+            if (p.other >= 0 || "empty".equals(p.target)) {
+                continue;
+            }
+            Map<String, Object> om = new LinkedHashMap<>();
+            om.put("piece", p.piece);
+            om.put("tpl", tpls.get(p.piece));
+            om.put("depth", depth[p.piece]);
+            om.put("pos", new int[] {p.pos.getX(), p.pos.getY(), p.pos.getZ()});
+            om.put("dir", p.dir.getName());
+            om.put("target", p.target);
+            om.put("pool", p.pool);
+            orphans.add(om);
+        }
+        // ---- max_distance 记账：以**宝藏房 bbox 中心**为原点（JigsawPlacement 的口径）
+        BoundingBox rb = pieces.get(root).getBoundingBox();
+        int cx = (rb.minX() + rb.maxX()) / 2;
+        int cz = (rb.minZ() + rb.maxZ()) / 2;
+        int maxReach = 0;
+        int culled = 0;
+        for (int i = 0; i < n; i++) {
+            BoundingBox b = pieces.get(i).getBoundingBox();
+            int reach = 0;
+            for (int x : new int[] {b.minX(), b.maxX()}) {
+                for (int z : new int[] {b.minZ(), b.maxZ()}) {
+                    reach = Math.max(reach, Math.max(Math.abs(x - cx), Math.abs(z - cz)));
+                }
+            }
+            maxReach = Math.max(maxReach, reach);
+            if (reach >= MAX_DISTANCE) {
+                culled++;
+            }
+        }
+        int crosses = 0;
+        for (String t : tpls) {
+            if (t.startsWith("cross_slot_")) {
+                crosses++;
+            } else if ("cross_a".equals(t) || "cross_b".equals(t)) {
+                crosses++;
+            }
+        }
+        Map<String, Integer> poolHits = new TreeMap<>();
+        for (String t : tpls) {
+            poolHits.merge(poolOf(t), 1, Integer::sum);
+        }
+        Map<String, Object> row = new LinkedHashMap<>();
+        row.put("seed", seed);
+        row.put("cp", cp.x + "," + cp.z);
+        row.put("valid", true);
+        row.put("pieces", n);
+        row.put("treasure", (int) tpls.stream().filter("treasure"::equals).count());
+        row.put("crosses", crosses);
+        row.put("unreachablePieces", (int) java.util.Arrays.stream(depth).filter(d -> d < 0).count());
+        row.put("depthKinds", depthKinds);
+        row.put("tailKind", tailKind(tpls, depth, byDepth));
+        row.put("exitCount", exits.size());
+        row.put("exits", exits);
+        row.put("parentKindCounts", parentKindCounts);
+        row.put("parentTplCounts", parentTplCounts);
+        row.put("orphanCount", orphans.size());
+        row.put("orphans", orphans);
+        row.put("maxReach", maxReach);
+        row.put("culledWouldBe", culled);
+        row.put("poolHits", poolHits);
+        return row;
+    }
+
+    /** 链尾件类型（= 深度最大的那批件里出现最多的池）。 */
+    private static String tailKind(List<String> tpls, int[] depth, Map<Integer, List<String>> byDepth) {
+        if (byDepth.isEmpty()) {
+            return "(none)";
+        }
+        int maxD = 0;
+        for (int d : byDepth.keySet()) {
+            maxD = Math.max(maxD, d);
+        }
+        Map<String, Integer> counts = new TreeMap<>();
+        for (String t : byDepth.getOrDefault(maxD, List.of())) {
+            counts.merge(poolOf(t), 1, Integer::sum);
+        }
+        String best = "(none)";
+        int bc = -1;
+        for (Map.Entry<String, Integer> e : counts.entrySet()) {
+            if (e.getValue() > bc) {
+                bc = e.getValue();
+                best = e.getKey();
+            }
+        }
+        return maxD + ":" + best + counts;
+    }
+
+    private static String key(BlockPos p, Direction d) {
+        return p.getX() + "," + p.getY() + "," + p.getZ() + "|" + d.getName();
+    }
+
+    private static String tplOf(PoolElementStructurePiece pep) {
+        Matcher m = TPL.matcher(pep.getElement().toString());
+        return m.find() ? m.group(1).substring(PREFIX.length()) : "UNKNOWN";
+    }
+
+    /** 模板 → 池（结构只有 7 个池：start / cross_slot_1..3 / lane / room / exit）。 */
+    private static String poolOf(String tpl) {
+        if ("treasure".equals(tpl)) {
+            return "start";
+        }
+        if ("lane".equals(tpl)) {
+            return "lane";
+        }
+        if ("exit".equals(tpl)) {
+            return "exit";
+        }
+        return "room";
+    }
+
+    private static final class Port {
+        int piece;
+        BlockPos pos;
+        Direction dir;
+        String name;
+        String target;
+        String pool;
+        int other;
+    }
+}

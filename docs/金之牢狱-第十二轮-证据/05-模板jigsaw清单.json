@@ -1,0 +1,1094 @@
+{
+ "cell_large_a": {
+  "size": [
+   15,
+   6,
+   31
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     30
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 13
+   }
+  ]
+ },
+ "cell_large_b": {
+  "size": [
+   15,
+   6,
+   31
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     30
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 14
+   }
+  ]
+ },
+ "cell_large_c": {
+  "size": [
+   15,
+   6,
+   31
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     30
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 14
+   }
+  ]
+ },
+ "cell_large_fertile": {
+  "size": [
+   15,
+   6,
+   31
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     7,
+     1,
+     30
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 19
+   }
+  ]
+ },
+ "cell_large_mirror": {
+  "size": [
+   15,
+   6,
+   31
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     30
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 13
+   }
+  ]
+ },
+ "cell_medium_a": {
+  "size": [
+   15,
+   6,
+   21
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     20
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 14
+   }
+  ]
+ },
+ "cell_medium_b": {
+  "size": [
+   15,
+   6,
+   21
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     20
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 13
+   }
+  ]
+ },
+ "cell_medium_c": {
+  "size": [
+   15,
+   6,
+   21
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     20
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 12
+   }
+  ]
+ },
+ "cell_medium_fertile": {
+  "size": [
+   15,
+   6,
+   21
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     7,
+     1,
+     20
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 20
+   }
+  ]
+ },
+ "cell_medium_mirror": {
+  "size": [
+   15,
+   6,
+   21
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     20
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 14
+   }
+  ]
+ },
+ "cell_small_a": {
+  "size": [
+   15,
+   6,
+   11
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     10
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 13
+   }
+  ]
+ },
+ "cell_small_b": {
+  "size": [
+   15,
+   6,
+   11
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     10
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 14
+   }
+  ]
+ },
+ "cell_small_c": {
+  "size": [
+   15,
+   6,
+   11
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     10
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 12
+   }
+  ]
+ },
+ "cell_small_fertile": {
+  "size": [
+   15,
+   6,
+   11
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     7,
+     1,
+     10
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 19
+   }
+  ]
+ },
+ "cell_small_mirror": {
+  "size": [
+   15,
+   6,
+   11
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     7,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   },
+   {
+    "pos": [
+     7,
+     1,
+     10
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 13
+   }
+  ]
+ },
+ "cross_a": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 29
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 30
+   }
+  ]
+ },
+ "cross_b": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 34
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/lane",
+    "target": "lane",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 32
+   }
+  ]
+ },
+ "cross_slot_1_a": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 29
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "cross_slot_1",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/cross_slot_2",
+    "target": "cross_slot_2",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 30
+   }
+  ]
+ },
+ "cross_slot_1_b": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "cross_slot_1",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 34
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/cross_slot_2",
+    "target": "cross_slot_2",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 32
+   }
+  ]
+ },
+ "cross_slot_2_a": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "cross_slot_2",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 29
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/cross_slot_3",
+    "target": "cross_slot_3",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 30
+   }
+  ]
+ },
+ "cross_slot_2_b": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "cross_slot_2",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 34
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/cross_slot_3",
+    "target": "cross_slot_3",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 32
+   }
+  ]
+ },
+ "cross_slot_3_a": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "cross_slot_3",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 29
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 30
+   }
+  ]
+ },
+ "cross_slot_3_b": {
+  "size": [
+   37,
+   8,
+   37
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     0,
+     1,
+     18
+    ],
+    "name": "cross_slot_3",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 31
+   },
+   {
+    "pos": [
+     18,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 5
+   },
+   {
+    "pos": [
+     18,
+     1,
+     36
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 34
+   },
+   {
+    "pos": [
+     36,
+     1,
+     18
+    ],
+    "name": "room",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 32
+   }
+  ]
+ },
+ "exit": {
+  "size": [
+   5,
+   8,
+   5
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     2,
+     1,
+     0
+    ],
+    "name": "room",
+    "pool": "minecraft:empty",
+    "target": "empty",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   }
+  ]
+ },
+ "lane": {
+  "size": [
+   5,
+   5,
+   3
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     2,
+     1,
+     0
+    ],
+    "name": "lane",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 3
+   },
+   {
+    "pos": [
+     2,
+     1,
+     2
+    ],
+    "name": "lane",
+    "pool": "bettergold:golden_prison/room",
+    "target": "room",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 4
+   }
+  ]
+ },
+ "treasure": {
+  "size": [
+   21,
+   9,
+   21
+  ],
+  "jigsaws": [
+   {
+    "pos": [
+     10,
+     3,
+     20
+    ],
+    "name": "start",
+    "pool": "bettergold:golden_prison/cross_slot_1",
+    "target": "cross_slot_1",
+    "joint": "aligned",
+    "facing": null,
+    "final_state": 22
+   }
+  ]
+ }
+}

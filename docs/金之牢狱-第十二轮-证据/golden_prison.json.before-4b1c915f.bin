@@ -1,0 +1,20 @@
+{
+  "type": "bettergold:golden_prison",
+  "biomes": "#bettergold:golden_prison/no_basalt",
+  "step": "underground_decoration",
+  "spawn_overrides": {},
+  "terrain_adaptation": "bury",
+  "start_pool": "bettergold:golden_prison/start",
+  "size": 5,
+  "start_height": {
+    "type": "minecraft:uniform",
+    "min_inclusive": {
+      "absolute": 31
+    },
+    "max_inclusive": {
+      "absolute": 41
+    }
+  },
+  "use_expansion_hack": false,
+  "max_distance_from_center": 116
+}

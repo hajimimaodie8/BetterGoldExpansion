@@ -1,0 +1,16 @@
+# 扰动矩阵（[bgp-exit-parent] / 第十三轮）
+
+| 用例 | 改动 | 期望 | 实测 exit | 命中 / 计数行 | 复原 |
+|---|---|---|---|---|---|
+| P1 | lane.fallback: room -> exit（= 回退到第十二轮口径） | 红 | **1** | `[bgp] NG [bgp-exit-parent] lane.json 的 fallback='bettergold:golden_prison/exit' != 'bettergold:golden_prison/room'（过道后面只许再进房间）` | OK |
+| P2 | room.fallback: exit -> lane（方向搞反） | 红 | **1** | `[bgp] NG [bgp-exit-parent] room.json 的 fallback='bettergold:golden_prison/lane' != 'bettergold:golden_prison/exit'（房间放不下 ⇒ 直接放出入口）` | OK |
+| P3 | 只加一行注释（validate_golden_prison.py） | 绿 | **0** | `[bgp-ok] problems=0 checked=16697 templates=26` | OK |
+| P4 | 只改空白（lane.json 冒号两侧加空格） | 绿 | **0** | `[bgp-ok] problems=0 checked=16697 templates=26` | OK |
+
+复原后 SHA256（应与改前逐字节相同）：
+
+- `src\main\resources\data\bettergold\worldgen\template_pool\golden_prison\lane.json` = `b752025936fac6a426c6a620598353bc3416ecdaa448f407f47cddeb35a8f585`
+- `src\main\resources\data\bettergold\worldgen\template_pool\golden_prison\room.json` = `7100e3931e5961ab008cee7ca7e71564fd975e6e9533b28e78feba875577101b`
+- `tools\asset-generator\validate_golden_prison.py` = `8c464d98264c30320ed536d1cb2396b144b62c3881f2f1950c8b5ede016ad341`
+
+结论：4 个用例，失败 0 个。

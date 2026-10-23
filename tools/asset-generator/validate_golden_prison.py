@@ -90,11 +90,16 @@ EXPECT_WALK_Y = {'treasure': 3, 'cells': 1, 'lane': 1, 'exit': 1}
 #   旧期望原文留档（第一~六轮）：'exit': {'north': ('lane', 'empty', 'minecraft:empty')}
 # ★★ 第八轮 ④：宝藏房的口**唯一去向 = 固定槽 1**（旧口径：('room', 'lane', POOL + 'lane')）。
 #   三个固定槽的 socket 见 SLOT_SOCK（入场口 / 送往下一槽的口 / 其余全部 room）。
+# ★★ 第十三轮（2026-10-23，A 方案）：exit 的 jigsaw name **room → lane**（只 4 字节，几何没动）。
+#   这是对第七轮那次改动的**反转**：现在链尾不是 lane、而是"牢房的口"（请求 lane 池）⇒
+#   name=lane 正好对上 target=lane 的牢房/四面道口，出入口只挂在房间后面。
+#   第七~十二轮口径（原文留档）：exit name=room ⇒ 只能贴 lane 的 target=room 口 ⇒ 100% 挂在过道后。
+#   旧期望原文留档（第一~六轮 / 第七~十二轮）：'exit': {'north': ('lane', …)} / ('room', …)。
 SOCK = {
     'treasure': {'south': ('start', 'cross_slot_1', POOL + 'cross_slot_1')},
     'cross_a': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
     'cross_b': {s: ('room', 'lane', POOL + 'lane') for s in ('north', 'south', 'east', 'west')},
-    'exit': {'north': ('room', 'empty', 'minecraft:empty')},
+    'exit': {'north': ('lane', 'empty', 'minecraft:empty')},
     'lane': {'north': ('lane', 'room', POOL + 'room'),
              'south': ('lane', 'room', POOL + 'room')},
 }
@@ -135,6 +140,10 @@ EXPECT_POOLS = {
     'cross_slot_1': (['cross_slot_1_a', 'cross_slot_1_b'], POOL + 'exit'),
     'cross_slot_2': (['cross_slot_2_a', 'cross_slot_2_b'], POOL + 'exit'),
     'cross_slot_3': (['cross_slot_3_a', 'cross_slot_3_b'], POOL + 'exit'),
+    # ★ 第十三轮（2026-10-23）A 方案：`exit.nbt` 的 jigsaw name 已由 `room` 改为 `lane`
+    #   ⇒ 能接出入口的口 = `target=lane` 的牢房/四面道口，它们请求 `lane` 池 ⇒
+    #   `lane` 池的 fallback 必须是 `exit`（改回 `room` 会让出入口 0 座，A 级实测 12/12 座为 0）。
+    #   历史：第七~十二轮为 `POOL + 'exit'`；本轮中间态曾试 `POOL + 'room'`（已否，见 docs §18）。
     'lane': (['lane'], POOL + 'exit'),
     'room': (CELL_VARIANTS + ['cross_a', 'cross_b'], POOL + 'exit'),
     'exit': (['exit'], 'minecraft:empty'),
@@ -1519,6 +1528,105 @@ def check_gate(pieces):
     if pairs == 0:
         ng('bgp-gate', '方向闸一对都没算到（空转）')
     print('[bgp-gate] attach pairs (socket x child x rotation) = %d' % pairs)
+
+
+def check_exit_parent(pieces):
+    """[bgp-exit-parent] 第十三轮（2026-10-23）：出入口只许「房间收口」，不许「过道叠着放」。
+
+    作者原话：「过道和出入口不要叠着放，结构临近出入口时就直接放出入口不要再叠着放过道了。」
+
+    本闸守**静态 wiring + nbt 口径**（第十三轮 A 方案，父代理 2026-10-23 批准改 4 字节）：
+      ① room.json 的 fallback == bettergold:golden_prison/exit（原样保留）；
+      ② lane.json 的 fallback == bettergold:golden_prison/exit
+         （⭐ 第十二轮曾是 room；**改回 room 会让出入口彻底生不出来** —— A 级实测 0/12 座，
+          证据 docs\\金之牢狱-第十三轮-证据\\02a-…（0出口）.json。原因：能接出入口的口是
+          `target=lane` 的牢房口，它们请求的是 `lane` 池 ⇒ 出入口只能从 `lane` 池的 fallback 出）；
+      ③ 负向锚（**本轮核心**）：`exit.nbt` 的 jigsaw `name` 必须是 `lane`、`target` 必须是 `empty`；
+         且 **`lane` 件的所有口 `target` 必须是 `room`**（≠ exit.name）⇒ 出入口**永远接不到过道上**。
+         （旧口径：name 曾是 `room`，原值留档在这里与 docs §18；第十二轮「整份 lane.json 零 exit 引用」
+          这条断言因此**退役** —— 现在 lane 池的 fallback 就是 exit，而 `elements` 仍必须零 exit。）
+      ④ lane 池的 `elements` 仍必须**恰好一条**、指向 `lane` 模板（零 exit 引用，逐 JSON 取值）；
+      ⑤ 正向 needle（跑在**去注释**的 assemble 源码上）：fallback 取的是「**父口 pool**
+         指向的池」的 fallback（`pools[pn][1]`），不是"件自己来的池"——§18 的机制依据。
+    """
+    docs = {}
+    for nm in ('room', 'lane'):
+        f = os.path.join(POOL_DIR, nm + '.json')
+        if not os.path.exists(f):
+            ng('bgp-exit-parent', '缺池文件 %s.json' % nm)
+            continue
+        try:
+            docs[nm] = json.load(open(f, encoding='utf-8'))
+        except Exception as e:
+            ng('bgp-exit-parent', '池 %s.json 解析失败：%s' % (nm, e))
+    if 'room' in docs and docs['room'].get('fallback') != POOL + 'exit':
+        ng('bgp-exit-parent', 'room.json 的 fallback=%r != %r（房间放不下 ⇒ 直接放出入口）'
+           % (docs['room'].get('fallback'), POOL + 'exit'))
+    ok()
+    if 'lane' in docs and docs['lane'].get('fallback') != POOL + 'exit':
+        ng('bgp-exit-parent', 'lane.json 的 fallback=%r != %r（出入口只能从 lane 池的 fallback 出；'
+           'room 会让出入口 0 座）' % (docs['lane'].get('fallback'), POOL + 'exit'))
+    ok()
+    # ③ lane 池的 elements 零 exit 引用（逐 JSON 取值；fallback=exit 是本轮口径，见 docstring）
+    if 'lane' in docs:
+        els = [((e.get('element') or {}).get('location') or '').rsplit('/', 1)[-1]
+               for e in (docs['lane'].get('elements') or [])]
+        if els != ['lane']:
+            ng('bgp-exit-parent', 'lane 池的元素=%r != [lane]（断言的参照变了）' % (els,))
+        refs = [loc for loc in
+                [((e.get('element') or {}).get('location') or '')
+                 for e in (docs['lane'].get('elements') or [])]
+                if isinstance(loc, str) and loc.rsplit('/', 1)[-1] == 'exit']
+        if refs:
+            ng('bgp-exit-parent', 'lane 池的 elements 里出现 exit 引用：%s' % refs[:4])
+        ok(2)
+    else:
+        ng('bgp-exit-parent', '拿不到 lane.json，无法断言 elements 零 exit 引用')
+    # ④ exit.nbt 锚 + 「过道的口接不到出入口」的静态证明
+    p = pieces.get('exit')
+    exit_name = None
+    if p is None:
+        ng('bgp-exit-parent', '没有 exit 件（无法核对 nbt 锚）')
+    else:
+        if len(p.jigsaws) != 1:
+            ng('bgp-exit-parent', 'exit.nbt 的 jigsaw 有 %d 个 != 1（形状变了）' % len(p.jigsaws))
+        for _pos, be in sorted(p.jigsaws.items()):
+            if be.get('name') != 'lane':
+                ng('bgp-exit-parent', 'exit.nbt 的 jigsaw name=%r != lane（旧口径是 room；'
+                   '本轮父代理只批准这 4 字节）' % be.get('name'))
+            else:
+                exit_name = 'lane'
+            if be.get('target') != 'empty':
+                ng('bgp-exit-parent', 'exit.nbt 的 jigsaw target=%r != empty' % be.get('target'))
+            ok(2)
+    lane_p = pieces.get('lane')
+    if lane_p is None:
+        ng('bgp-exit-parent', '没有 lane 件（无法证明"过道接不到出入口"）')
+    else:
+        tg = sorted(set(be.get('target') for be in lane_p.jigsaws.values()))
+        if tg != ['room']:
+            ng('bgp-exit-parent', 'lane.nbt 的口 target=%r != [room]（若出现 %r 就能接出入口了）'
+               % (tg, exit_name))
+        else:
+            print('[bgp-exit-parent] 静态证明：lane 件的口 target=room，exit.name=lane ⇒ '
+                  '出入口接不到过道上（canAttach 只看父口 target == 子件 name）')
+        ok()
+    # ⑤ 正向 needle：assemble 里 fallback 必须取「父口 pool」的 fallback
+    try:
+        src = open(os.path.abspath(__file__), encoding='utf-8').read()
+        i = src.find('def assemble(')
+        j = src.find('def check_connect(', i)
+        body = strip_comments(src[i:j], 'py') if i >= 0 and j > i else ''
+        needle = 'fbn = pool_name(pools[pn][' + '1])'
+        if needle not in body:
+            ng('bgp-exit-parent', 'assemble 里找不到「fallback 取父口 pool 的 fallback」'
+               '（正向 needle 跑在去注释源码上）')
+        ok()
+    except Exception as e:
+        ng('bgp-exit-parent', '读自身源码失败：%s' % e)
+    print('[bgp-exit-parent] room.fallback=%s / lane.fallback=%s / lane.elements 零 exit / '
+          'exit.nbt name=lane target=empty / lane 口 target=room / fallback 取父口 pool'
+          % ((docs.get('room') or {}).get('fallback'), (docs.get('lane') or {}).get('fallback')))
 
 
 def check_cycle(pieces):
@@ -3060,6 +3168,7 @@ def main():
         check_mirror(pieces)
         check_fertile(pieces)
         check_gate(pieces)
+        check_exit_parent(pieces)
         check_cycle(pieces)
         check_cross3(pieces)
         check_entities_bes(pieces)

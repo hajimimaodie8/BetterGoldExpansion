@@ -1,0 +1,14 @@
+# 静态试算（assemble 忠实模式 ×3 种子）—— 只用于选 size / 预判 wiring
+
+| room.fallback | lane.fallback | size | 件数 | 出入口 | 父件类型 | 链尾件 | 最深层 |
+|---|---|---|---|---|---|---|---|
+| `exit` | `exit` | 4 | 19..27 | 11 | `{'room': 1, 'lane': 10}` | `{'exit': 8}` | 5 |
+| `exit` | `exit` | 5 | 31..53 | 31 | `{'room': 1, 'lane': 30}` | `{'exit': 26}` | 6 |
+| `exit` | `exit` | 6 | 35..57 | 19 | `{'room': 1, 'lane': 18}` | `{'exit': 8}` | 7 |
+| `exit` | `room` | 4 | 19..27 | 11 | `{'room': 1, 'lane': 10}` | `{'exit': 8}` | 5 |
+| `exit` | `room` | 5 | 31..53 | 31 | `{'room': 1, 'lane': 30}` | `{'exit': 26}` | 6 |
+| `exit` | `room` | 6 | 35..57 | 19 | `{'room': 1, 'lane': 18}` | `{'exit': 8}` | 7 |
+| `exit` | `exit` | 4 | 19..27 | 11 | `{'room': 1, 'lane': 10}` | `{'exit': 8}` | 5 |
+| `exit` | `exit` | 5 | 31..53 | 31 | `{'room': 1, 'lane': 30}` | `{'exit': 26}` | 6 |
+| `exit` | `exit` | 6 | 35..57 | 19 | `{'room': 1, 'lane': 18}` | `{'exit': 8}` | 7 |
+

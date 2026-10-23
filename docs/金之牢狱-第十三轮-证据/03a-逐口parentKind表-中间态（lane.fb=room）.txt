@@ -1,0 +1,150 @@
+== 改前：12 座（6 种子 × 2 区块）
+件数 28..35（合计 372） / 有出入口 12/12 / 出入口 68 / parentKind {'lane': 68} / 落单口 34 / 被裁 5 / 最远 116 / 宝藏房 12 / 四面道 3..5
+
+== 改后：12 座（6 种子 × 2 区块）
+件数 28..37（合计 387） / 有出入口 12/12 / 出入口 77 / parentKind {'lane': 77} / 落单口 33 / 被裁 5 / 最远 116 / 宝藏房 12 / 四面道 3..6
+
+## 1 逐座读数（改后）
+
+| 种子 | 区块 | 件数 | 宝藏房 | 四面道 | 出入口 | 父件模板 | 落单口 | 最远件 | 最深层 | 链尾 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 20261020 | 40,40 | 32 | 1 | 4 | 6 | lane×6 | 3 | 116 | 6 | `6:exit{exit=4}` |
+| 20261020 | 0,0 | 29 | 1 | 4 | 5 | lane×5 | 4 | 111 | 6 | `6:exit{exit=5}` |
+| 20261021 | 40,40 | 32 | 1 | 4 | 6 | lane×6 | 3 | 116 | 6 | `6:exit{exit=6}` |
+| 20261021 | 0,0 | 32 | 1 | 4 | 6 | lane×6 | 3 | 116 | 6 | `6:exit{exit=6}` |
+| 20261022 | 40,40 | 37 | 1 | 6 | 9 | lane×9 | 4 | 111 | 6 | `6:exit{exit=9}` |
+| 20261022 | 0,0 | 29 | 1 | 3 | 5 | lane×5 | 2 | 111 | 6 | `6:exit{exit=5}` |
+| 20261023 | 40,40 | 32 | 1 | 4 | 6 | lane×6 | 3 | 116 | 6 | `6:exit{exit=6}` |
+| 20261023 | 0,0 | 37 | 1 | 5 | 9 | lane×9 | 2 | 111 | 6 | `6:exit{exit=9}` |
+| 20261024 | 40,40 | 29 | 1 | 3 | 5 | lane×5 | 2 | 111 | 6 | `6:exit{exit=5}` |
+| 20261024 | 0,0 | 37 | 1 | 5 | 9 | lane×9 | 2 | 111 | 6 | `6:exit{exit=7}` |
+| 20261025 | 40,40 | 33 | 1 | 4 | 7 | lane×7 | 2 | 111 | 6 | `6:exit{exit=7}` |
+| 20261025 | 0,0 | 28 | 1 | 3 | 4 | lane×4 | 3 | 116 | 6 | `6:exit{exit=4}` |
+
+## 2 逐口 parentKind 表（改后，77 口）
+
+| # | 种子 | 区块 | 出入口件 # | 深度 | 父件模板 | **父件类型** | 父件深度 |
+|---|---|---|---|---|---|---|---|
+| 1 | 20261020 | 40,40 | 25 | 5 | `lane` | **lane** | 4 |
+| 2 | 20261020 | 40,40 | 27 | 5 | `lane` | **lane** | 4 |
+| 3 | 20261020 | 40,40 | 28 | 6 | `lane` | **lane** | 5 |
+| 4 | 20261020 | 40,40 | 29 | 6 | `lane` | **lane** | 5 |
+| 5 | 20261020 | 40,40 | 30 | 6 | `lane` | **lane** | 5 |
+| 6 | 20261020 | 40,40 | 31 | 6 | `lane` | **lane** | 5 |
+| 7 | 20261020 | 0,0 | 24 | 6 | `lane` | **lane** | 5 |
+| 8 | 20261020 | 0,0 | 25 | 6 | `lane` | **lane** | 5 |
+| 9 | 20261020 | 0,0 | 26 | 6 | `lane` | **lane** | 5 |
+| 10 | 20261020 | 0,0 | 27 | 6 | `lane` | **lane** | 5 |
+| 11 | 20261020 | 0,0 | 28 | 6 | `lane` | **lane** | 5 |
+| 12 | 20261021 | 40,40 | 26 | 6 | `lane` | **lane** | 5 |
+| 13 | 20261021 | 40,40 | 27 | 6 | `lane` | **lane** | 5 |
+| 14 | 20261021 | 40,40 | 28 | 6 | `lane` | **lane** | 5 |
+| 15 | 20261021 | 40,40 | 29 | 6 | `lane` | **lane** | 5 |
+| 16 | 20261021 | 40,40 | 30 | 6 | `lane` | **lane** | 5 |
+| 17 | 20261021 | 40,40 | 31 | 6 | `lane` | **lane** | 5 |
+| 18 | 20261021 | 0,0 | 26 | 6 | `lane` | **lane** | 5 |
+| 19 | 20261021 | 0,0 | 27 | 6 | `lane` | **lane** | 5 |
+| 20 | 20261021 | 0,0 | 28 | 6 | `lane` | **lane** | 5 |
+| 21 | 20261021 | 0,0 | 29 | 6 | `lane` | **lane** | 5 |
+| 22 | 20261021 | 0,0 | 30 | 6 | `lane` | **lane** | 5 |
+| 23 | 20261021 | 0,0 | 31 | 6 | `lane` | **lane** | 5 |
+| 24 | 20261022 | 40,40 | 28 | 6 | `lane` | **lane** | 5 |
+| 25 | 20261022 | 40,40 | 29 | 6 | `lane` | **lane** | 5 |
+| 26 | 20261022 | 40,40 | 30 | 6 | `lane` | **lane** | 5 |
+| 27 | 20261022 | 40,40 | 31 | 6 | `lane` | **lane** | 5 |
+| 28 | 20261022 | 40,40 | 32 | 6 | `lane` | **lane** | 5 |
+| 29 | 20261022 | 40,40 | 33 | 6 | `lane` | **lane** | 5 |
+| 30 | 20261022 | 40,40 | 34 | 6 | `lane` | **lane** | 5 |
+| 31 | 20261022 | 40,40 | 35 | 6 | `lane` | **lane** | 5 |
+| 32 | 20261022 | 40,40 | 36 | 6 | `lane` | **lane** | 5 |
+| 33 | 20261022 | 0,0 | 24 | 6 | `lane` | **lane** | 5 |
+| 34 | 20261022 | 0,0 | 25 | 6 | `lane` | **lane** | 5 |
+| 35 | 20261022 | 0,0 | 26 | 6 | `lane` | **lane** | 5 |
+| 36 | 20261022 | 0,0 | 27 | 6 | `lane` | **lane** | 5 |
+| 37 | 20261022 | 0,0 | 28 | 6 | `lane` | **lane** | 5 |
+| 38 | 20261023 | 40,40 | 26 | 6 | `lane` | **lane** | 5 |
+| 39 | 20261023 | 40,40 | 27 | 6 | `lane` | **lane** | 5 |
+| 40 | 20261023 | 40,40 | 28 | 6 | `lane` | **lane** | 5 |
+| 41 | 20261023 | 40,40 | 29 | 6 | `lane` | **lane** | 5 |
+| 42 | 20261023 | 40,40 | 30 | 6 | `lane` | **lane** | 5 |
+| 43 | 20261023 | 40,40 | 31 | 6 | `lane` | **lane** | 5 |
+| 44 | 20261023 | 0,0 | 28 | 6 | `lane` | **lane** | 5 |
+| 45 | 20261023 | 0,0 | 29 | 6 | `lane` | **lane** | 5 |
+| 46 | 20261023 | 0,0 | 30 | 6 | `lane` | **lane** | 5 |
+| 47 | 20261023 | 0,0 | 31 | 6 | `lane` | **lane** | 5 |
+| 48 | 20261023 | 0,0 | 32 | 6 | `lane` | **lane** | 5 |
+| 49 | 20261023 | 0,0 | 33 | 6 | `lane` | **lane** | 5 |
+| 50 | 20261023 | 0,0 | 34 | 6 | `lane` | **lane** | 5 |
+| 51 | 20261023 | 0,0 | 35 | 6 | `lane` | **lane** | 5 |
+| 52 | 20261023 | 0,0 | 36 | 6 | `lane` | **lane** | 5 |
+| 53 | 20261024 | 40,40 | 24 | 6 | `lane` | **lane** | 5 |
+| 54 | 20261024 | 40,40 | 25 | 6 | `lane` | **lane** | 5 |
+| 55 | 20261024 | 40,40 | 26 | 6 | `lane` | **lane** | 5 |
+| 56 | 20261024 | 40,40 | 27 | 6 | `lane` | **lane** | 5 |
+| 57 | 20261024 | 40,40 | 28 | 6 | `lane` | **lane** | 5 |
+| 58 | 20261024 | 0,0 | 22 | 5 | `lane` | **lane** | 4 |
+| 59 | 20261024 | 0,0 | 23 | 5 | `lane` | **lane** | 4 |
+| 60 | 20261024 | 0,0 | 30 | 6 | `lane` | **lane** | 5 |
+| 61 | 20261024 | 0,0 | 31 | 6 | `lane` | **lane** | 5 |
+| 62 | 20261024 | 0,0 | 32 | 6 | `lane` | **lane** | 5 |
+| 63 | 20261024 | 0,0 | 33 | 6 | `lane` | **lane** | 5 |
+| 64 | 20261024 | 0,0 | 34 | 6 | `lane` | **lane** | 5 |
+| 65 | 20261024 | 0,0 | 35 | 6 | `lane` | **lane** | 5 |
+| 66 | 20261024 | 0,0 | 36 | 6 | `lane` | **lane** | 5 |
+| 67 | 20261025 | 40,40 | 26 | 6 | `lane` | **lane** | 5 |
+| 68 | 20261025 | 40,40 | 27 | 6 | `lane` | **lane** | 5 |
+| 69 | 20261025 | 40,40 | 28 | 6 | `lane` | **lane** | 5 |
+| 70 | 20261025 | 40,40 | 29 | 6 | `lane` | **lane** | 5 |
+| 71 | 20261025 | 40,40 | 30 | 6 | `lane` | **lane** | 5 |
+| 72 | 20261025 | 40,40 | 31 | 6 | `lane` | **lane** | 5 |
+| 73 | 20261025 | 40,40 | 32 | 6 | `lane` | **lane** | 5 |
+| 74 | 20261025 | 0,0 | 24 | 6 | `lane` | **lane** | 5 |
+| 75 | 20261025 | 0,0 | 25 | 6 | `lane` | **lane** | 5 |
+| 76 | 20261025 | 0,0 | 26 | 6 | `lane` | **lane** | 5 |
+| 77 | 20261025 | 0,0 | 27 | 6 | `lane` | **lane** | 5 |
+
+合计 `{'lane': 77}` ⇒ **parentKind == lane 的口 = 77**
+
+## 3 深度 → 件类型序列（改前 / 改后，全部 12 座）
+
+### 改前 lane.fallback=exit
+
+- seed 20261020 / cp 40,40（28 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_c×1,cell_small_fertile×1,cross_slot_2_b×1] d3[cell_large_mirror×1,cell_medium_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_large_a×1,cell_medium_a×1,cell_medium_c×1,cell_small_fertile×1,cell_small_mirror×1,lane×2] d5[cell_small_a×1,cell_small_fertile×1,lane×5] d6[exit×4]
+- seed 20261020 / cp 0,0（33 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_b×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_large_a×1,cell_small_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_medium_a×1,cell_small_c×2,cell_small_mirror×1,cross_b×1,lane×2] d5[cell_medium_fertile×1,cell_small_a×1,lane×7] d6[exit×7]
+- seed 20261021 / cp 40,40（32 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_small_a×1,cell_small_mirror×1,cross_slot_2_a×1] d3[cell_small_mirror×1,cross_b×1,cross_slot_3_a×1,lane×2] d4[cell_large_b×1,cell_medium_fertile×3,cell_small_fertile×1,lane×4] d5[cell_large_b×1,cell_small_a×1,exit×2,lane×5] d6[exit×4]
+- seed 20261021 / cp 0,0（29 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_mirror×1,cell_medium_fertile×1,cross_slot_2_a×1] d3[cell_large_fertile×1,cell_small_mirror×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×1,cell_medium_b×2,cell_medium_fertile×1,cell_small_fertile×1,lane×2] d5[cell_large_mirror×1,cell_small_fertile×1,lane×5] d6[exit×5]
+- seed 20261022 / cp 40,40（31 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_fertile×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_large_a×1,cross_b×1,cross_slot_3_a×1,lane×2] d4[cell_medium_fertile×1,cell_small_a×1,cell_small_b×1,cell_small_fertile×2,lane×4] d5[cell_medium_c×1,cell_medium_fertile×1,cell_small_fertile×1,exit×1,lane×4] d6[exit×4]
+- seed 20261022 / cp 0,0（33 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_fertile×1,cell_small_mirror×1,cross_slot_2_b×1] d3[cell_large_fertile×1,cell_medium_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_large_c×1,cell_large_fertile×1,cell_medium_fertile×1,cell_small_b×1,cross_b×1,lane×2] d5[cell_medium_c×1,cell_small_fertile×1,lane×7] d6[exit×7]
+- seed 20261023 / cp 40,40（28 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_mirror×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_medium_fertile×2,cross_slot_3_a×1,lane×2] d4[cell_large_c×1,cell_medium_fertile×2,cell_small_a×1,cell_small_fertile×1,lane×2] d5[cell_large_mirror×1,cross_b×1,lane×5] d6[exit×4]
+- seed 20261023 / cp 0,0（28 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_b×1,cell_small_mirror×1,cross_slot_2_b×1] d3[cell_large_c×1,cell_small_b×1,cross_slot_3_a×1,lane×2] d4[cell_medium_a×2,cell_medium_fertile×2,cell_small_c×1,lane×2] d5[cell_large_b×1,cell_large_fertile×1,lane×5] d6[exit×4]
+- seed 20261024 / cp 40,40（33 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_mirror×1,cell_small_c×1,cross_slot_2_b×1] d3[cell_large_fertile×1,cell_medium_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_medium_fertile×1,cell_small_b×3,cross_b×1,lane×2] d5[cell_medium_a×1,cell_small_fertile×1,lane×7] d6[exit×7]
+- seed 20261024 / cp 0,0（33 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_fertile×2,cross_slot_2_a×1] d3[cell_small_fertile×1,cross_a×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×1,cell_medium_fertile×1,cell_small_fertile×3,lane×4] d5[cell_small_c×1,cell_small_fertile×1,exit×2,lane×5] d6[exit×5]
+- seed 20261025 / cp 40,40（29 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_large_c×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_small_b×1,cell_small_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×1,cell_medium_a×1,cell_medium_mirror×1,cell_small_fertile×2,lane×2] d5[cell_medium_fertile×2,lane×5] d6[exit×5]
+- seed 20261025 / cp 0,0（35 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_large_fertile×1,cell_medium_fertile×1,cross_slot_2_a×1] d3[cell_large_mirror×1,cell_small_c×1,cross_slot_3_a×1,lane×2] d4[cell_large_c×1,cell_large_fertile×1,cell_medium_fertile×1,cross_a×2,lane×2] d5[cell_large_fertile×1,cell_medium_fertile×1,lane×9] d6[exit×7]
+
+### 改后 lane.fallback=room
+
+- seed 20261020 / cp 40,40（32 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_c×1,cell_small_fertile×1,cross_slot_2_b×1] d3[cell_small_fertile×1,cross_b×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×1,cell_medium_fertile×3,cell_small_fertile×1,lane×4] d5[cell_large_c×1,cell_medium_fertile×1,exit×2,lane×5] d6[exit×4]
+- seed 20261020 / cp 0,0（29 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_b×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_large_a×1,cell_small_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×1,cell_medium_mirror×1,cell_small_c×1,cell_small_fertile×1,cell_small_mirror×1,lane×2] d5[cell_small_fertile×1,cross_b×1,lane×5] d6[exit×5]
+- seed 20261021 / cp 40,40（32 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_small_a×1,cell_small_mirror×1,cross_slot_2_a×1] d3[cell_large_fertile×1,cell_medium_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_medium_fertile×1,cell_small_b×1,cell_small_c×1,cell_small_fertile×1,cross_a×1,lane×2] d5[cell_small_fertile×2,lane×7] d6[exit×6]
+- seed 20261021 / cp 0,0（32 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_mirror×1,cell_medium_fertile×1,cross_slot_2_a×1] d3[cell_large_fertile×1,cell_medium_mirror×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×2,cell_medium_fertile×1,cell_medium_mirror×1,cross_a×1,lane×2] d5[cell_large_b×2,lane×7] d6[exit×6]
+- seed 20261022 / cp 40,40（37 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_fertile×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_medium_fertile×1,cell_small_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_medium_a×1,cell_medium_fertile×1,cell_small_fertile×1,cross_a×2,lane×2] d5[cell_medium_fertile×1,cross_b×1,lane×9] d6[exit×9]
+- seed 20261022 / cp 0,0（29 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_fertile×1,cell_small_mirror×1,cross_slot_2_b×1] d3[cell_large_fertile×1,cell_small_b×1,cross_slot_3_a×1,lane×2] d4[cell_large_b×1,cell_medium_a×1,cell_medium_fertile×1,cell_medium_mirror×1,cell_small_fertile×1,lane×2] d5[cell_medium_fertile×1,cell_small_fertile×1,lane×5] d6[exit×5]
+- seed 20261023 / cp 40,40（32 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_mirror×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_medium_fertile×2,cross_slot_3_a×1,lane×2] d4[cell_medium_mirror×1,cell_small_fertile×1,cell_small_mirror×2,cross_b×1,lane×2] d5[cell_medium_mirror×1,cell_small_b×1,lane×7] d6[exit×6]
+- seed 20261023 / cp 0,0（37 件）：d0[treasure×1] d1[cross_slot_1_b×1] d2[cell_large_b×1,cell_small_mirror×1,cross_slot_2_b×1] d3[cell_small_a×1,cell_small_fertile×1,cross_slot_3_b×1,lane×2] d4[cell_large_mirror×1,cell_small_c×1,cell_small_fertile×1,cross_a×1,cross_b×1,lane×2] d5[cell_large_a×1,cell_medium_b×1,lane×9] d6[exit×9]
+- seed 20261024 / cp 40,40（29 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_mirror×1,cell_small_c×1,cross_slot_2_b×1] d3[cell_large_fertile×1,cell_medium_fertile×1,cross_slot_3_b×1,lane×2] d4[cell_large_a×1,cell_large_c×1,cell_medium_b×1,cell_medium_fertile×1,cell_small_mirror×1,lane×2] d5[cell_large_fertile×1,cell_medium_a×1,lane×5] d6[exit×5]
+- seed 20261024 / cp 0,0（37 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_medium_fertile×2,cross_slot_2_a×1] d3[cell_large_fertile×1,cross_a×1,cross_slot_3_b×1,lane×2] d4[cell_large_mirror×2,cell_medium_mirror×1,cell_small_fertile×1,cross_a×1,lane×4] d5[cell_medium_fertile×1,cell_small_c×1,exit×2,lane×7] d6[exit×7]
+- seed 20261025 / cp 40,40（33 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_large_c×1,cell_small_fertile×1,cross_slot_2_a×1] d3[cell_small_b×1,cell_small_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×1,cell_medium_b×1,cell_small_b×1,cell_small_fertile×1,cross_a×1,lane×2] d5[cell_large_fertile×1,cell_small_fertile×1,lane×7] d6[exit×7]
+- seed 20261025 / cp 0,0（28 件）：d0[treasure×1] d1[cross_slot_1_a×1] d2[cell_large_fertile×1,cell_medium_fertile×1,cross_slot_2_a×1] d3[cell_medium_c×1,cell_small_fertile×1,cross_slot_3_a×1,lane×2] d4[cell_large_fertile×1,cell_large_mirror×1,cell_medium_c×1,cell_small_fertile×2,lane×2] d5[cell_large_c×1,cell_medium_b×1,lane×5] d6[exit×4]
+
+## 4 尺寸矩阵（同一构建、同一批种子，只换 size；本轮 wiring）
+
+| size | 件数 | 有出入口 | 出入口 | 父件类型 | lane 父件 | 落单口 | 被裁 | 最远 |
+|---|---|---|---|---|---|---|---|---|
+| **4** | 19..23 | 12/12 | 28 | `{'lane': 28}` | **28** | 78 | 0 | 113 |
+| **5** | 28..37 | 12/12 | 77 | `{'lane': 77}` | **77** | 33 | 5 | 116 |
+| **6** | 32..45 | 12/12 | 44 | `{'lane': 44}` | **44** | 80 | 15 | 116 |
+
+> 结论：size ∈ {4,5,6} 三档 parentKind 全是 `lane`（出入口只挂在过道口上）；
+> size=4 落单口 78 / 出入口 28；size=6 落单口 80 / 出入口 44；size=5 落单口 33 / 出入口 77
+> ⇒ 按「落单口不增」保留 size=5（基线落单口 34）。

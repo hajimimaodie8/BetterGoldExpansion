@@ -1,0 +1,20 @@
+# 第十二轮 扰动矩阵（[bgp-exit-parent]）
+
+| 用例 | 改动 | 期望 | 实测 exit | 命中文案 | 复原 SHA256 |
+|---|---|---|---|---|---|
+| P1 | room.json 的 fallback: empty → exit（= 回退到第七~十一轮口径） | 红 | **1** | `[bgp] NG [bgp-exit-parent] room.json 全文出现了 exit（当前 1 处）⇒ 过道仍可能接出入口` | OK |
+| P2 | lane.json 的 fallback: exit → room（= 房间不再收口） | 红 | **1** | `[bgp] NG [bgp-exit-parent] lane 的 fallback = 'bettergold:golden_prison/room'，必须是 'bettergold:golden_prison/exit'（房间的口 target=lane ⇒ 链尾靠它收口）` | OK |
+| P3 | exit.nbt 的口 name: lane → room（= 回退到第七轮） | 红 | **1** | `[bgp] NG [bgp-exit-parent] exit.nbt 的口 name='room'，必须是 lane（否则只能贴在过道的 target=room 口上）` | OK |
+| P4 | structure 的 size: 4 → 5（奇数 ⇒ 链尾是过道） | 红 | **1** | `[bgp] NG [bgp-exit-parent] size=5 不是偶数 ⇒ depth == maxDepth 那层是过道 ⇒ 出入口又挂在过道后面` | OK |
+| P5 | structure 的 size: 4 → 7（偶数但越界） | 红 | **1** | `[bgp] NG [bgp-exit-parent] size=7 越界（4 或 6：再小保不住三连四面道前缀，再大会被 max_distance_from_center 裁件）` | OK |
+| P6 | 只改空白（room.json 的冒号两侧多空格）⇒ 必须仍绿 | 绿 | **0** | `[bgp-ok] problems=0 checked=16685 templates=26` | OK |
+| P7 | 只加一个换行（lane.json 末尾）⇒ 必须仍绿 | 绿 | **0** | `[bgp-ok] problems=0 checked=16685 templates=26` | OK |
+
+复原后 SHA256（应与改前逐字节相同）：
+
+- `src\main\resources\data\bettergold\structure\golden_prison\exit.nbt` = `10646abfbeec84006f3fb2814c3b277f0a8a9ae63af6eb838d47b6ea3054887c`
+- `src\main\resources\data\bettergold\worldgen\template_pool\golden_prison\room.json` = `7c4c81da21f87e2c0336f45783c893fd4a1a61738d3c1b211192dec95a0e0ff9`
+- `src\main\resources\data\bettergold\worldgen\template_pool\golden_prison\lane.json` = `e6d68147e0740b8472003d9815a02646d532cfcf3711dded49caa67d5531fe38`
+- `src\main\resources\data\bettergold\worldgen\structure\golden_prison.json` = `f835556c35870c695fbd11afe2b6f31f204fb904e3d9add4cb1a468b6c3b3980`
+
+结论：7 个用例，失败 0 个。

@@ -1,0 +1,17 @@
+# 扰动矩阵（[bgp-exit-parent] 新口径 / 第十三轮 A 方案）
+
+| 用例 | 改动 | 期望 | 实测 exit | 命中 / 计数行 | 复原 |
+|---|---|---|---|---|---|
+| P1 | exit.nbt 的 jigsaw name: lane -> room（= 第十二轮口径；本轮核心闸） | 红 | **1** | `[bgp] NG [bgp-exit-parent] exit.nbt 的 jigsaw name='room' != lane（旧口径是 room；本轮父代理只批准这 4 字节）` | OK |
+| P2 | room.fallback: exit -> lane（方向搞反） | 红 | **1** | `[bgp] NG [bgp-exit-parent] room.json 的 fallback='bettergold:golden_prison/lane' != 'bettergold:golden_prison/exit'（房间放不下 ⇒ 直接放出入口）` | OK |
+| P3 | lane.fallback: exit -> room（出入口会 0 座） | 红 | **1** | `[bgp] NG [bgp-exit-parent] lane.json 的 fallback='bettergold:golden_prison/room' != 'bettergold:golden_prison/exit'（出入口只能从 lane 池的 fallback 出；room 会让出入口 0 座）` | OK |
+| P4 | 只加一行注释（validate_golden_prison.py） | 绿 | **0** | `[bgp-ok] problems=0 checked=16645 templates=26` | OK |
+
+复原后 SHA256（应与改前逐字节相同）：
+
+- `src\main\resources\data\bettergold\structure\golden_prison\exit.nbt` = `301e00471e228cdfcf0c386664237f6f7a2c0571842f8f1d7518ed6e1d3b234b`
+- `src\main\resources\data\bettergold\worldgen\template_pool\golden_prison\lane.json` = `e6d68147e0740b8472003d9815a02646d532cfcf3711dded49caa67d5531fe38`
+- `src\main\resources\data\bettergold\worldgen\template_pool\golden_prison\room.json` = `7100e3931e5961ab008cee7ca7e71564fd975e6e9533b28e78feba875577101b`
+- `tools\asset-generator\validate_golden_prison.py` = `30062aa4f8fc0bf6b6c22d1c2669dc18df3de13749243a29132e57742099af5e`
+
+结论：4 个用例，失败 0 个。
