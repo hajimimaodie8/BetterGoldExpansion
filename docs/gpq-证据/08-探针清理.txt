@@ -1,0 +1,10 @@
+留档 docs\gpq-证据\07-GpqProbe.java.txt  17000 B  SHA256 732D476BFE9B5D091BB0946404281D319B702DBF3DAE4269DA2EC669A21220D6
+src 里的探针与留档一致 = True
+deleted src\main\java\com\hjmmd_8\bettergold\probe\GpqProbe.java
+rmdir src\main\java\com\hjmmd_8\bettergold\probe
+deleted run\gpq-probe.enabled
+rmtree run\probe\gpq
+grep GpqProbe     in src/ = 0
+grep gpq-probe    in src/ = 0
+grep BG-PROBE     in src/ = 0
+grep probe/gpq    in src/ = 0

@@ -1,0 +1,594 @@
+{
+  "probe": "gpq-v1",
+  "fdLoaded": true,
+  "knives": [
+    {
+      "id": "flamegold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 4096,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "voodoogold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 4096,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "thundergold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 4096,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "indigoseagold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 4096,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "illusiongold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 4096,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "thornsgold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 4096,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "echogold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 4096,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "sturdygold",
+      "generation": "eight",
+      "knifeValuesAreFinal": false,
+      "knifeDamageField": 2.0,
+      "knifeSpeedField": -1.7999999523162842,
+      "tierAttackDamageBonus": 4.5,
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 6144,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -1.7999999523162842,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -1.7999999523162842,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.200000047683716
+    },
+    {
+      "id": "chaosgold",
+      "generation": "chaos",
+      "knifeValuesAreFinal": true,
+      "knifeDamageField": 2.5,
+      "knifeSpeedField": 2.0,
+      "tierAttackDamageBonus": 4.5,
+      "declaredRange": [
+        2.5,
+        6.5
+      ],
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 426,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 2.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -2.0,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 2.5,
+      "attackSpeedSum": -2.0,
+      "displayDamage": 3.5,
+      "finalAttackSpeed": 2.0
+    },
+    {
+      "id": "chaosalloy",
+      "generation": "chaos",
+      "knifeValuesAreFinal": true,
+      "knifeDamageField": 6.5,
+      "knifeSpeedField": 2.0,
+      "tierAttackDamageBonus": 4.5,
+      "declaredRange": [
+        6.5,
+        13.0
+      ],
+      "itemRegistered": true,
+      "itemClass": "vectorwing.farmersdelight.common.item.KnifeItem",
+      "maxDamage": 8192,
+      "attackDamageModifiers": [
+        {
+          "id": "minecraft:base_attack_damage",
+          "op": "ADD_VALUE",
+          "amount": 6.5,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackSpeedModifiers": [
+        {
+          "id": "minecraft:base_attack_speed",
+          "op": "ADD_VALUE",
+          "amount": -2.0,
+          "slot": "MAINHAND"
+        }
+      ],
+      "attackDamageSum": 6.5,
+      "attackSpeedSum": -2.0,
+      "displayDamage": 7.5,
+      "finalAttackSpeed": 2.0
+    }
+  ],
+  "chaosKnifeRanges": {
+    "chaosgold": {
+      "itemRegistered": true,
+      "min": 2.5,
+      "max": 6.5,
+      "mean": 4.543637998580933,
+      "distinct": 396,
+      "speedSum": -2.0,
+      "finalAttackSpeed": 2.0
+    },
+    "chaosalloy": {
+      "itemRegistered": true,
+      "min": 6.5,
+      "max": 13.0,
+      "mean": 9.807291000366211,
+      "distinct": 611,
+      "speedSum": -2.0,
+      "finalAttackSpeed": 2.0
+    }
+  },
+  "armor": {
+    "chaosalloy": [
+      {
+        "slot": "helmet",
+        "itemRegistered": true,
+        "maxDamage": 1924,
+        "armorSum": 3.0,
+        "toughnessSum": 8.0,
+        "knockbackResistanceSum": 0.20000000298023224
+      },
+      {
+        "slot": "chestplate",
+        "itemRegistered": true,
+        "maxDamage": 2368,
+        "armorSum": 8.0,
+        "toughnessSum": 8.0,
+        "knockbackResistanceSum": 0.20000000298023224
+      },
+      {
+        "slot": "leggings",
+        "itemRegistered": true,
+        "maxDamage": 2220,
+        "armorSum": 6.0,
+        "toughnessSum": 8.0,
+        "knockbackResistanceSum": 0.20000000298023224
+      },
+      {
+        "slot": "boots",
+        "itemRegistered": true,
+        "maxDamage": 2035,
+        "armorSum": 3.0,
+        "toughnessSum": 8.0,
+        "knockbackResistanceSum": 0.20000000298023224
+      }
+    ],
+    "chaosgold": [
+      {
+        "slot": "helmet",
+        "itemRegistered": true,
+        "maxDamage": 200,
+        "armorSum": 2.0,
+        "toughnessSum": 3.0,
+        "knockbackResistanceSum": 0.15000000596046448
+      },
+      {
+        "slot": "chestplate",
+        "itemRegistered": true,
+        "maxDamage": 264,
+        "armorSum": 5.0,
+        "toughnessSum": 3.0,
+        "knockbackResistanceSum": 0.15000000596046448
+      },
+      {
+        "slot": "leggings",
+        "itemRegistered": true,
+        "maxDamage": 240,
+        "armorSum": 3.0,
+        "toughnessSum": 3.0,
+        "knockbackResistanceSum": 0.15000000596046448
+      },
+      {
+        "slot": "boots",
+        "itemRegistered": true,
+        "maxDamage": 246,
+        "armorSum": 2.0,
+        "toughnessSum": 3.0,
+        "knockbackResistanceSum": 0.15000000596046448
+      }
+    ]
+  },
+  "loot": {
+    "resolved": true,
+    "pools": 1,
+    "entryCount": 27,
+    "totalWeight": 80,
+    "bookName": "bettergold:chaosgold_enchanting_book",
+    "bookWeight": -1,
+    "names": [
+      "minecraft:gold_nugget",
+      "minecraft:gold_ingot",
+      "minecraft:raw_gold",
+      "bettergold:golden_cowrie",
+      "minecraft:enchanted_book",
+      "bettergold:gift_gold_ticket",
+      "bettergold:small_netherite_scrap",
+      "minecraft:golden_apple",
+      "minecraft:golden_carrot",
+      "bettergold:golden_egg",
+      "minecraft:enchanted_book",
+      "bettergold:golden_wheat_seeds",
+      "bettergold:golden_wheat",
+      "bettergold:chaos_coin",
+      "bettergold:chaos_coin_string",
+      "bettergold:golden_eggplant_seeds",
+      "bettergold:golden_eggplant",
+      "bettergold:golden_cowrie_mold",
+      "bettergold:chaosgold_nugget",
+      "minecraft:netherite_scrap",
+      "minecraft:golden_horse_armor",
+      "bettergold:idol_gift_box",
+      "bettergold:gourmet_box",
+      "minecraft:enchanted_golden_apple",
+      "minecraft:netherite_ingot",
+      "bettergold:chaosgold_ingot"
+    ],
+    "poolDetail": [
+      {
+        "entries": 27,
+        "entryList": [
+          {
+            "weight": 7,
+            "name": "minecraft:gold_nugget",
+            "class": "LootItem"
+          },
+          {
+            "weight": 5,
+            "name": "minecraft:gold_ingot",
+            "class": "LootItem"
+          },
+          {
+            "weight": 5,
+            "name": "minecraft:raw_gold",
+            "class": "LootItem"
+          },
+          {
+            "weight": 5,
+            "name": "bettergold:golden_cowrie",
+            "class": "LootItem"
+          },
+          {
+            "weight": 5,
+            "name": "minecraft:enchanted_book",
+            "class": "LootItem"
+          },
+          {
+            "weight": 4,
+            "name": "bettergold:gift_gold_ticket",
+            "class": "LootItem"
+          },
+          {
+            "weight": 4,
+            "name": "bettergold:small_netherite_scrap",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "minecraft:golden_apple",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "minecraft:golden_carrot",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "bettergold:golden_egg",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "minecraft:enchanted_book",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "bettergold:golden_wheat_seeds",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "bettergold:golden_wheat",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "bettergold:chaos_coin",
+            "class": "LootItem"
+          },
+          {
+            "weight": 3,
+            "name": "bettergold:chaos_coin_string",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "name": "bettergold:golden_eggplant_seeds",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "name": "bettergold:golden_eggplant",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "class": "TagEntry"
+          },
+          {
+            "weight": 2,
+            "name": "bettergold:golden_cowrie_mold",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "name": "bettergold:chaosgold_nugget",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "name": "minecraft:netherite_scrap",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "name": "minecraft:golden_horse_armor",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "name": "bettergold:idol_gift_box",
+            "class": "LootItem"
+          },
+          {
+            "weight": 2,
+            "name": "bettergold:gourmet_box",
+            "class": "LootItem"
+          },
+          {
+            "weight": 1,
+            "name": "minecraft:enchanted_golden_apple",
+            "class": "LootItem"
+          },
+          {
+            "weight": 1,
+            "name": "minecraft:netherite_ingot",
+            "class": "LootItem"
+          },
+          {
+            "weight": 1,
+            "name": "bettergold:chaosgold_ingot",
+            "class": "LootItem"
+          }
+        ]
+      }
+    ]
+  },
+  "forcedChunksBefore": [],
+  "forcedChunksAfter": [],
+  "forcedChunksUnchanged": true
+}

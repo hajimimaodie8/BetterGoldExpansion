@@ -99,7 +99,15 @@ public final class MetalFamily {
     private static final float TRIDENT_DMG = 12.0F;
     private static final float TRIDENT_SPD = -2.7F;
 
-    /** 乐事联动小刀用的修正（伤害 7.5 / 攻速 2.2，与规格一致） */
+    /**
+     * 乐事联动小刀：<b>旧口径的「修正」</b>（伤害 2.0 / 攻速 −1.8；配合 tier 的 +4.5 与玩家基值 4.0
+     * 得到规格里的 7.5 / 2.2）。
+     *
+     * <p>⚠ 作者 2026-10-23「第三个：全部」之后，既有 8 族也改「数值即最终值」⇒
+     * {@code Spec.knifeDamage} / {@code Spec.knifeSpeed} 的默认值改成 <b>6.5 / 2.2</b>
+     * （= 显示 7.5 减玩家基值 1.0 / 4.0 − 1.8）。这两个常量<b>不再被注册路径引用</b>，
+     * 只作旧口径的原文留档（旧值一个字节没改）。</p>
+     */
     public static final float KNIFE_DMG = 2.0F;
     public static final float KNIFE_SPD = -1.8F;
 
@@ -584,7 +592,13 @@ public final class MetalFamily {
     /** 乐事联动小刀：伤害 / 攻速修正（⚠ {@link #knifeValuesAreFinal} 为 true 时它们是最终值） */
     public final float knifeDamage;
     public final float knifeSpeed;
-    /** 乐事联动小刀：上面两个数是不是<b>最终值</b>（1.7 bg-n10fix2 ④；既有 8 族 = false） */
+    /**
+     * 乐事联动小刀：上面两个数是不是<b>最终值</b>（1.7 bg-n10fix2 ④）。
+     *
+     * <p>旧口径原文留档：{@code （1.7 bg-n10fix2 ④；既有 8 族 = false）}。</p>
+     * <p>⚠ 作者 2026-10-23「第三个：全部」⇒ <b>10 族全部 = true</b>（既有 8 族也改最终值；
+     * 声明 6.5 / 2.2 ⇒ 物品层读数与改前逐项相同：ATTACK_DAMAGE 6.5 = 工具提示 7.5、最终攻速 2.2）。</p>
+     */
     public final boolean knifeValuesAreFinal;
     /** 器具的最终攻速（键 = Form 名；空 = 全走既有常量） */
     public final java.util.Map<String, Float> gearAttackSpeeds;
@@ -1621,17 +1635,34 @@ public final class MetalFamily {
         /** 弩：蓄力秒数（既有 8 族 = {@value MetalWeapons#CROSSBOW_CHARGE_SECONDS} 1.0；
          *  作者：混沌金 = **1.2 秒** = 24 tick；留 0 表示"用既有常量"） */
         public float crossbowChargeSeconds = 0.0F;
-        /** 乐事联动小刀：{@code createAttributes} 的伤害修正（既有 8 族 = {@link MetalFamily#KNIFE_DMG}） */
-        public float knifeDamage = KNIFE_DMG;
-        /** 乐事联动小刀：{@code createAttributes} 的攻速修正（既有 8 族 = {@link MetalFamily#KNIFE_SPD}） */
-        public float knifeSpeed = KNIFE_SPD;
+        /**
+         * 乐事联动小刀：{@code createAttributes} 的伤害参数 —— {@link #knifeValuesAreFinal} 为 true 时
+         * 它是<b>最终值</b>（{@code FdItems} 注册前减掉 tier 的 +4.5，{@code createAttributes} 再加回）。
+         *
+         * <p>作者 2026-10-23「第三个：全部」⇒ 默认 = 最终值 <b>6.5</b>。物品
+         * {@code ATTACK_DAMAGE} = 6.5（工具提示显示 <b>7.5</b> = 6.5 + 玩家基值 1.0），
+         * 与改前**逐项相同**（旧口径是把「修正 2.0」交给 createAttributes，加 tier 的 4.5 得 6.5）。</p>
+         * <p>旧口径原文留档：{@code 伤害修正（既有 8 族 = MetalFamily#KNIFE_DMG 2.0）} +
+         * {@code public float knifeDamage = KNIFE_DMG;}。</p>
+         */
+        public float knifeDamage = 6.5F;
+        /**
+         * 同上：攻速的<b>最终值 2.2</b>（{@code FdItems} 注册前减 4.0 玩家基值 ⇒ 属性修正 −1.8）。
+         *
+         * <p>旧口径原文留档：{@code 攻速修正（既有 8 族 = MetalFamily#KNIFE_SPD -1.8）} +
+         * {@code public float knifeSpeed = KNIFE_SPD;}。</p>
+         */
+        public float knifeSpeed = 2.2F;
         /**
          * 乐事联动小刀：{@link #knifeDamage} / {@link #knifeSpeed} 是不是<b>最终值</b>。
          *
-         * <p>默认 {@code false} = 旧口径（数值直接交给 {@code createAttributes}，tier 的 +4.5 会叠上去）
-         * ⇒ 既有 8 族的刀保持原样。只有 {@link #knifeAttributesFinal(float, float)} 会置 true。</p>
+         * <p>旧口径原文留档：{@code 默认 false = 旧口径（数值直接交给 createAttributes，tier 的 +4.5
+         * 会叠上去）⇒ 既有 8 族的刀保持原样。只有 knifeAttributesFinal(float, float) 会置 true。}</p>
+         * <p>⚠ 作者 2026-10-23「第三个：全部」⇒ <b>默认 true</b>：既有 8 族（不写任何 knife 声明）
+         * 也是最终值族（6.5 / 2.2）；{@link #knifeAttributesFinal(float, float)} 仍可逐族覆盖
+         * （混沌金 2.5 / 2.0、崩乱合金 6.5 / 2.0 就是这么写的）。</p>
          */
-        public boolean knifeValuesAreFinal = false;
+        public boolean knifeValuesAreFinal = true;
 
         /**
          * 器具的<b>攻击速度</b>（作者逐件给的固定值；键 = Form 名）。
@@ -1700,10 +1731,16 @@ public final class MetalFamily {
             return this;
         }
 
-        /** 乐事联动小刀的两个 {@code createAttributes} 修正（既有 8 族不调用；混沌金：1.5 / 2.0） */
+        /**
+         * 乐事联动小刀的两个 {@code createAttributes} <b>修正</b>（旧口径入口；现在全仓 0 调用，原文留档）。
+         *
+         * <p>⚠ 默认值已改成「最终值」（{@link #knifeValuesAreFinal} = true）⇒ 本方法显式把开关**关回去**，
+         * 免得哪天有人调它却被默认值当成最终值（静默把伤害降 4.5）。</p>
+         */
         public Spec knifeAttributes(float damage, float speed) {
             this.knifeDamage = damage;
             this.knifeSpeed = speed;
+            this.knifeValuesAreFinal = false;
             return this;
         }
 
@@ -1716,9 +1753,14 @@ public final class MetalFamily {
          * 而攻速参数是 {@code ADD_VALUE} 到玩家基值 <b>4.0</b> 上的修正。
          * ⇒ 声明「最终值」时由 {@code FdItems} 在注册前减掉这两段，实机值 = 声明值。</p>
          *
-         * <p>⚠ 既有 8 族的刀<b>不动</b>：它们的 {@code 2.0 / -1.8} 是「修正」而不是最终值，
-         * 叠上 +4.5 正好是规格里的 <b>7.5 / 2.2</b>（{@link #KNIFE_DMG} 的注释）——
-         * 那是<b>故意</b>的偏移，不是 bug。按族分别处理，见规格 §27.4。</p>
+         * <p>旧口径原文留档：{@code ⚠ 既有 8 族的刀不动：它们的 2.0 / -1.8 是「修正」而不是最终值，
+         * 叠上 +4.5 正好是规格里的 7.5 / 2.2（KNIFE_DMG 的注释）—— 那是故意的偏移，不是 bug。
+         * 按族分别处理，见规格 §27.4。}</p>
+         *
+         * <p>⚠ 作者 2026-10-23「第三个：全部」⇒ 上面那段已被取代：既有 8 族也是「最终值」族，
+         * 且走的是 {@link #knifeDamage} / {@link #knifeSpeed} 的<b>默认值</b>（6.5 / 2.2），
+         * <b>不需要</b>逐族调用本方法；只有混沌金 / 崩乱合金两把新刀仍显式调用。
+         * 换算口径没变（声明值 − tier 的 4.5 / − 玩家基值 4.0），所以 8 族的物品层读数与改前逐项相同。</p>
          */
         public Spec knifeAttributesFinal(float damage, float speed) {
             this.knifeDamage = damage;

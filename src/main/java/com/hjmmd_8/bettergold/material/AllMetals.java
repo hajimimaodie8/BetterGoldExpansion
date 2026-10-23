@@ -321,6 +321,9 @@ public final class AllMetals {
                 // ---- 区间之外的固定值 ----
                 // ⚠ 三叉戟**投掷** 9..13：与混沌金一字不差 ⇒ 立档 §4 歧义 ⑫ **疑似笔误**
                 //   （作者未裁）。本轮按字面实现 9..13，并在规格 / 报告里标明"待作者确认"。
+                // ✅ **作者 2026-10-23 确认：9..13 就是对的（不是笔误、不用改）** —— 原话「**9-13**」。
+                //   ⇒ 数值一个字节没动（上面那两行原文保留）；关卡 `[bgn10-chaos-wiring]` 早就把
+                //   两族的 `tridentThrowDamage(Form.TRIDENT, 9, 13)` 字面钉住了，本轮**不新增重复断言**。
                 .tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)
                 // 重锤：作者「最终伤 ×1.4 固定」（既有 8 族是 1.2，混沌金是 1.0）
                 .maceFinalDamageMultiplier(1.4F)

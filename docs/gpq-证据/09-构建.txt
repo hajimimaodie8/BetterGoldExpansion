@@ -1,0 +1,17 @@
+
+> Task :compileJava
+
+> Task :classes
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test NO-SOURCE
+> Task :check UP-TO-DATE
+> Task :jar
+> Task :assemble
+> Task :build
+
+BUILD SUCCESSFUL in 3s
+4 actionable tasks: 2 executed, 2 up-to-date
+Configuration cache entry reused.
+
+jar: build\libs\bettergold-1.7.0.jar  1886783 B  SHA256 3E7DDDD43B5A211B9F40C20961AEAB65AF485431C0E60DF38A9B856A814E8FCF

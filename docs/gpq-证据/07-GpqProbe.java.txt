@@ -1,0 +1,388 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.logging.LogUtils;
+
+import com.hjmmd_8.bettergold.fd.FdModule;
+import com.hjmmd_8.bettergold.material.AllMetals;
+import com.hjmmd_8.bettergold.material.ChaosRange;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+
+/**
+ * gpq 探针（临时文件，跑完整块删除；源码留档见 docs/gpq-证据/）。
+ *
+ * <p>一次 runServer 干的事（<b>只读</b>，不改世界、不 forceload）：</p>
+ * <ol>
+ *   <li><b>10 族乐事刀</b>：族上的 {@code knifeValuesAreFinal / knifeDamage / knifeSpeed} +
+ *       物品层 {@code getDefaultAttributeModifiers} 读出来的 ATTACK_DAMAGE / ATTACK_SPEED
+ *       修饰符（逐项 id + amount）、显示伤害（+ 玩家基值 1.0）、最终攻速（+ 玩家基值 4.0）；</li>
+ *   <li>两把混沌刀：2000 次 {@code ChaosRange.reroll} 后的 min/max/mean/distinct（种子固定）；</li>
+ *   <li>崩乱合金 4 件盔甲：{@code getMaxDamage()} + ARMOR / TOUGHNESS / 击退抗性（混沌金同读做对照）；</li>
+ *   <li>战利品表 {@code bettergold:chests/golden_prison}：能不能被 {@code LootTable} 解析、
+ *       池/条目/权重（反射读 {@code LootTable.pools} → {@code LootPool.entries}）；
+ *       <b>改前 / 改后各跑一次</b>，用同一份探针比读数。</li>
+ * </ol>
+ * 结果写 {@code probe/gpq/report.json}（cwd = run/），然后 {@code halt(false)} <b>一次</b>。
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class GpqProbe {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final Path OUT = Path.of("probe", "gpq");
+    private static final Path SWITCH = Path.of("gpq-probe.enabled");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final String NS = "bettergold";
+    private static final List<String> EIGHT = List.of("flamegold", "voodoogold", "thundergold",
+            "indigoseagold", "illusiongold", "thornsgold", "echogold", "sturdygold");
+
+    private static boolean pending = false;
+    private static int tick = 0;
+    private static boolean halted = false;
+
+    private GpqProbe() {
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!Files.isRegularFile(SWITCH)) {
+            LOG.info("[gpq] switch file {} absent -> probe skipped", SWITCH.toAbsolutePath());
+            return;
+        }
+        pending = true;
+        LOG.info("[gpq] server started, probe pending");
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (!pending || tick++ < 60) {
+            return;
+        }
+        pending = false;
+        try {
+            run(event.getServer());
+        } catch (Throwable t) {
+            LOG.error("[gpq] probe failed", t);
+            try {
+                Files.createDirectories(OUT);
+                Files.writeString(OUT.resolve("error.txt"), String.valueOf(t), StandardCharsets.UTF_8);
+            } catch (Exception ignored) {
+                // 落盘失败也要 halt，否则 runServer 会一直挂着
+            }
+        } finally {
+            if (!halted) {
+                halted = true;
+                LOG.info("[gpq] halting server (once)");
+                event.getServer().halt(false);
+            }
+        }
+    }
+
+    // ==================== 主体 ====================
+
+    private static void run(MinecraftServer srv) throws Exception {
+        Map<String, Object> root = new LinkedHashMap<>();
+        root.put("probe", "gpq-v1");
+        root.put("fdLoaded", FdModule.isLoaded());
+
+        ServerLevel overworld = srv.overworld();
+        List<String> forcedBefore = forced(overworld);
+
+        root.put("knives", knives());
+        root.put("chaosKnifeRanges", chaosKnifeRanges());
+        root.put("armor", armor());
+        root.put("loot", loot(srv));
+
+        List<String> forcedAfter = forced(overworld);
+        root.put("forcedChunksBefore", forcedBefore);
+        root.put("forcedChunksAfter", forcedAfter);
+        root.put("forcedChunksUnchanged", forcedBefore.equals(forcedAfter));
+
+        Files.createDirectories(OUT);
+        Path out = OUT.resolve("report.json");
+        Files.writeString(out, GSON.toJson(root), StandardCharsets.UTF_8);
+        LOG.info("[gpq] report written to {} ({} B)", out.toAbsolutePath(), Files.size(out));
+    }
+
+    private static List<String> forced(ServerLevel level) {
+        List<String> out = new ArrayList<>();
+        level.getForcedChunks().forEach((long v) -> out.add(Long.toString(v)));
+        out.sort(String::compareTo);
+        return out;
+    }
+
+    /** 10 族小刀：族上声明 + 物品属性表逐项读数。 */
+    private static List<Map<String, Object>> knives() {
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (String id : EIGHT) {
+            out.add(knifeRow(id, false));
+        }
+        out.add(knifeRow("chaosgold", true));
+        out.add(knifeRow("chaosalloy", true));
+        return out;
+    }
+
+    private static Map<String, Object> knifeRow(String familyId, boolean chaos) {
+        Map<String, Object> row = new LinkedHashMap<>();
+        row.put("id", familyId);
+        row.put("generation", chaos ? "chaos" : "eight");
+        MetalFamily f = null;
+        for (MetalFamily cand : MetalFamily.all()) {
+            if (cand.id.equals(familyId)) {
+                f = cand;
+                break;
+            }
+        }
+        if (f == null) {
+            row.put("familyMissing", true);
+            return row;
+        }
+        row.put("knifeValuesAreFinal", f.knifeValuesAreFinal);
+        row.put("knifeDamageField", (double) f.knifeDamage);
+        row.put("knifeSpeedField", (double) f.knifeSpeed);
+        row.put("tierAttackDamageBonus", (double) f.tier.getAttackDamageBonus());
+        ChaosRange.Range range = f.range(MetalFamily.Form.KNIFE, ChaosRange.Channel.ATTACK);
+        row.put("declaredRange", range == null ? null : List.of((double) range.min(), (double) range.max()));
+
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(NS, familyId + "_knife"));
+        boolean present = item != null && item != net.minecraft.world.item.Items.AIR;
+        row.put("itemRegistered", present);
+        if (!present) {
+            return row;
+        }
+        ItemStack stack = new ItemStack(item);
+        row.put("itemClass", item.getClass().getName());
+        row.put("maxDamage", stack.getMaxDamage());
+
+        List<Map<String, Object>> dmg = new ArrayList<>();
+        List<Map<String, Object>> spd = new ArrayList<>();
+        double dmgSum = 0.0;
+        double spdSum = 0.0;
+        for (var entry : stack.getAttributeModifiers().modifiers()) {
+            double amount = entry.modifier().amount();
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", String.valueOf(entry.modifier().id()));
+            m.put("op", entry.modifier().operation().name());
+            m.put("amount", amount);
+            m.put("slot", String.valueOf(entry.slot()));
+            if (sameAttribute(entry.attribute(), Attributes.ATTACK_DAMAGE)) {
+                dmg.add(m);
+                dmgSum += amount;
+            } else if (sameAttribute(entry.attribute(), Attributes.ATTACK_SPEED)) {
+                spd.add(m);
+                spdSum += amount;
+            }
+        }
+        row.put("attackDamageModifiers", dmg);
+        row.put("attackSpeedModifiers", spd);
+        row.put("attackDamageSum", dmgSum);
+        row.put("attackSpeedSum", spdSum);
+        row.put("displayDamage", 1.0 + dmgSum);
+        row.put("finalAttackSpeed", 4.0 + spdSum);
+        return row;
+    }
+
+    private static boolean sameAttribute(Holder<Attribute> holder, Holder<Attribute> other) {
+        return holder.value() == other.value();
+    }
+
+    /** 两把混沌刀：固定种子 2000 次重掷，读伤害修饰符的 min / max / mean / distinct。 */
+    private static Map<String, Object> chaosKnifeRanges() {
+        Map<String, Object> out = new LinkedHashMap<>();
+        for (String id : List.of("chaosgold", "chaosalloy")) {
+            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(NS, id + "_knife"));
+            Map<String, Object> row = new LinkedHashMap<>();
+            if (item == null || item == net.minecraft.world.item.Items.AIR) {
+                row.put("itemRegistered", false);
+                out.put(id, row);
+                continue;
+            }
+            row.put("itemRegistered", true);
+            ItemStack stack = new ItemStack(item);
+            RandomSource rng = RandomSource.create(20261023L + (id.equals("chaosgold") ? 0 : 1));
+            float lo = Float.MAX_VALUE;
+            float hi = -Float.MAX_VALUE;
+            double total = 0.0D;
+            java.util.Set<Integer> distinct = new java.util.HashSet<>();
+            for (int i = 0; i < 2000; i++) {
+                ChaosRange.reroll(stack, ChaosRange.Channel.ATTACK, rng);
+                float dmg = (float) attackDamageSum(stack);
+                lo = Math.min(lo, dmg);
+                hi = Math.max(hi, dmg);
+                total += dmg;
+                distinct.add(Math.round(dmg * 100.0F));
+            }
+            row.put("min", (double) lo);
+            row.put("max", (double) hi);
+            row.put("mean", total / 2000.0D);
+            row.put("distinct", distinct.size());
+            row.put("speedSum", attackSpeedSum(stack));
+            row.put("finalAttackSpeed", 4.0 + attackSpeedSum(stack));
+            out.put(id, row);
+        }
+        return out;
+    }
+
+    private static double attackDamageSum(ItemStack stack) {
+        double total = 0.0D;
+        for (var entry : stack.getAttributeModifiers().modifiers()) {
+            if (sameAttribute(entry.attribute(), Attributes.ATTACK_DAMAGE)) {
+                total += entry.modifier().amount();
+            }
+        }
+        return total;
+    }
+
+    private static double attackSpeedSum(ItemStack stack) {
+        double total = 0.0D;
+        for (var entry : stack.getAttributeModifiers().modifiers()) {
+            if (sameAttribute(entry.attribute(), Attributes.ATTACK_SPEED)) {
+                total += entry.modifier().amount();
+            }
+        }
+        return total;
+    }
+
+    /** 崩乱合金 4 件盔甲（耐久 / 护甲值 / 韧性 / 击退抗性）+ 混沌金 4 件做对照。 */
+    private static Map<String, Object> armor() {
+        Map<String, Object> out = new LinkedHashMap<>();
+        for (String familyId : List.of("chaosalloy", "chaosgold")) {
+            List<Map<String, Object>> rows = new ArrayList<>();
+            for (String slot : List.of("helmet", "chestplate", "leggings", "boots")) {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("slot", slot);
+                Item item = BuiltInRegistries.ITEM.get(
+                        ResourceLocation.fromNamespaceAndPath(NS, familyId + "_" + slot));
+                boolean present = item != null && item != net.minecraft.world.item.Items.AIR;
+                row.put("itemRegistered", present);
+                if (present) {
+                    ItemStack stack = new ItemStack(item);
+                    row.put("maxDamage", stack.getMaxDamage());
+                    double armorSum = 0.0D;
+                    double toughSum = 0.0D;
+                    double kbSum = 0.0D;
+                    for (var entry : stack.getAttributeModifiers().modifiers()) {
+                        double amount = entry.modifier().amount();
+                        if (sameAttribute(entry.attribute(), Attributes.ARMOR)) {
+                            armorSum += amount;
+                        } else if (sameAttribute(entry.attribute(), Attributes.ARMOR_TOUGHNESS)) {
+                            toughSum += amount;
+                        } else if (sameAttribute(entry.attribute(), Attributes.KNOCKBACK_RESISTANCE)) {
+                            kbSum += amount;
+                        }
+                    }
+                    row.put("armorSum", armorSum);
+                    row.put("toughnessSum", toughSum);
+                    row.put("knockbackResistanceSum", kbSum);
+                }
+                rows.add(row);
+            }
+            out.put(familyId, rows);
+        }
+        return out;
+    }
+
+    /** 战利品表：LootTable 解析 + 池/条目/权重（反射读私有字段）。 */
+    private static Map<String, Object> loot(MinecraftServer srv) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
+                ResourceLocation.fromNamespaceAndPath(NS, "chests/golden_prison"));
+        LootTable table;
+        try {
+            table = srv.reloadableRegistries().getLootTable(key);
+        } catch (Throwable t) {
+            out.put("resolved", false);
+            out.put("error", String.valueOf(t));
+            return out;
+        }
+        out.put("resolved", table != null);
+        if (table == null) {
+            return out;
+        }
+        Object poolsRaw = reflect(table, LootTable.class, "pools");
+        @SuppressWarnings("unchecked")
+        List<LootPool> pools = (List<LootPool>) poolsRaw;
+        out.put("pools", pools.size());
+        List<Map<String, Object>> poolRows = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        int totalWeight = 0;
+        int entryCount = 0;
+        int bookWeight = -1;
+        for (LootPool pool : pools) {
+            Map<String, Object> poolRow = new LinkedHashMap<>();
+            @SuppressWarnings("unchecked")
+            List<Object> entries = (List<Object>) reflect(pool, LootPool.class, "entries");
+            poolRow.put("entries", entries.size());
+            List<Map<String, Object>> entryRows = new ArrayList<>();
+            for (Object entry : entries) {
+                entryCount++;
+                Map<String, Object> er = new LinkedHashMap<>();
+                int weight = (int) reflect(entry, LootPoolSingletonContainer.class, "weight");
+                er.put("weight", weight);
+                totalWeight += weight;
+                String name = null;
+                if (entry instanceof LootItem) {
+                    @SuppressWarnings("unchecked")
+                    Holder<Item> holder = (Holder<Item>) reflect(entry, LootItem.class, "item");
+                    name = String.valueOf(BuiltInRegistries.ITEM.getKey(holder.value()));
+                    names.add(name);
+                }
+                er.put("name", name);
+                er.put("class", entry.getClass().getSimpleName());
+                if (name != null && name.equals(NS + ":chaosgold_enchanting_book")) {
+                    bookWeight = weight;
+                }
+                entryRows.add(er);
+            }
+            poolRow.put("entryList", entryRows);
+            poolRows.add(poolRow);
+        }
+        out.put("entryCount", entryCount);
+        out.put("totalWeight", totalWeight);
+        out.put("bookName", NS + ":chaosgold_enchanting_book");
+        out.put("bookWeight", bookWeight);
+        out.put("names", names);
+        out.put("poolDetail", poolRows);
+        return out;
+    }
+
+    private static Object reflect(Object target, Class<?> declaring, String name) {
+        try {
+            var field = declaring.getDeclaredField(name);
+            field.setAccessible(true);
+            return field.get(target);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("cannot read " + declaring.getSimpleName() + "." + name, e);
+        }
+    }
+}

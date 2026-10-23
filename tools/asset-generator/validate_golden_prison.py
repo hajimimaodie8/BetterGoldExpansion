@@ -168,8 +168,12 @@ for _c in ('large', 'medium', 'small'):
     for _v in ('a', 'b', 'c', 'mirror', 'fertile'):
         EXPECT_VOID['cell_%s_%s' % (_c, _v)] = 0
 
-EXPECT_LOOT_WEIGHT = 80
-EXPECT_LOOT_ENTRIES = 27
+# ⚠ **旧值原文留档（未删）**：EXPECT_LOOT_WEIGHT = 80 / EXPECT_LOOT_ENTRIES = 27
+#   （= 第五轮「xlsx 28 行减 1 行算不出来的」那个口径）。
+#   作者 2026-10-23 第四条「应该是**物品**」⇒ 把 xlsx #22「混沌金附魔书」按**物品**
+#   `bettergold:chaosgold_enchanting_book` 加回（权重 2 = 当年被删的那一条）⇒ 分母 80 → **82**、条目 27 → **28**。
+EXPECT_LOOT_WEIGHT = 82
+EXPECT_LOOT_ENTRIES = 28
 EXPECT_LOOT_IDS = [
     'minecraft:gold_nugget', 'minecraft:gold_ingot', 'minecraft:raw_gold', 'bettergold:golden_cowrie',
     'minecraft:enchanted_book', 'bettergold:gift_gold_ticket', 'bettergold:small_netherite_scrap',
@@ -178,9 +182,15 @@ EXPECT_LOOT_IDS = [
     'bettergold:chaos_coin_string', 'bettergold:golden_eggplant_seeds', 'bettergold:golden_eggplant',
     'bettergold:golden_cowrie_mold', 'bettergold:chaosgold_nugget', 'minecraft:netherite_scrap',
     'minecraft:golden_horse_armor', 'bettergold:idol_gift_box', 'bettergold:gourmet_box',
+    # 作者 2026-10-23 第四条「应该是物品」：混沌金附魔书按物品加回（权重 2）
+    'bettergold:chaosgold_enchanting_book',
     'minecraft:enchanted_golden_apple', 'minecraft:netherite_ingot', 'bettergold:chaosgold_ingot',
 ]
 # 「算不出来」被删掉的两行（不许悄悄回来，也不许悄悄换 id）
+# ⚠ 2026-10-23 作者裁定（第四条「应该是**物品**」）：#22「混沌金附魔书」= **物品**
+#   `bettergold:chaosgold_enchanting_book`（已按权重 2 加回本表，见 EXPECT_LOOT_IDS）。
+#   当年被删的那个**不存在的 id** `bettergold:chaosgold_enchantment` 仍然不许出现
+#   （换个 id 混回来同样会红）—— 那一条不是「书」，是"算不出来"的伪 id。
 FORBIDDEN_LOOT = ['bettergold:chaosgold_enchantment']
 
 # ---- 生成率 = 下界要塞（作者 2026-10-20 第三轮追加原话：「结构生成率的话跟下界要塞相同吧」）
@@ -2654,6 +2664,25 @@ def check_loot():
         if n in json.dumps(d):
             ng('bgp-loot', '出现了「算不出来」被删的那一条 %s' % n)
         ok()
+    # ---- 作者 2026-10-23 第四条「应该是物品」：混沌金附魔书按**物品**加回 ----
+    #   判据（四件一起）：① 恰好 1 条；② type = minecraft:item（不是 tag / empty）；
+    #   ③ weight = 2（= 当年被删的那一条）；④ **没有 functions**（作者：不要随机附魔，
+    #   它是「附魔书道具」，用法由物品自身逻辑决定）+ 没有 count（数量恒 1）。
+    book = [e for e in entries if e.get('name') == 'bettergold:chaosgold_enchanting_book']
+    if len(book) != 1:
+        ng('bgp-loot-book', '混沌金附魔书条目 %d 条（应恰好 1 条）' % len(book))
+    ok()
+    if book:
+        b = book[0]
+        if b.get('type') != 'minecraft:item':
+            ng('bgp-loot-book', '附魔书的 type=%r（作者：应该是**物品**，不是 tag / empty）' % b.get('type'))
+        if b.get('weight') != 2:
+            ng('bgp-loot-book', '附魔书的权重 %r != 2（= 当年被删的那一条，分母 82）' % b.get('weight'))
+        if 'functions' in b:
+            ng('bgp-loot-book', '附魔书带了 functions（作者：**不要**随机附魔 —— 它是附魔书道具）')
+        if 'count' in b:
+            ng('bgp-loot-book', '附魔书写了 count（数量必须恒 1 = 不写 set_count）')
+    ok(3)
     # 物品 id 存在性：bettergold 物品必须有 zh_cn 语言键（冻结快照 = 本仓既有口径）
     lang = json.load(open(LANG, encoding='utf-8'))
     for e in entries:

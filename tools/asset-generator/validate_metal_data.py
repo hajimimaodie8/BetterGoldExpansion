@@ -6537,6 +6537,9 @@ for _k, _want in _B10W_WANT_RANGES.items():
 # ---------- 崩乱合金（1.7 bg-n10r7 轮7）：作者逐件给的数 ----------
 # 剑 8..16 / 重锤 7..14 / 三叉戟 11..22 / 斧 10..20 / 镐 6..12 / 锹 6.5..13 / 锄 5..10 /
 #   刀 6.5..13（2026-10-19 更正；旧 5.5..11 留档，乐事）/ 弓 3.5..4.5 / 弩 4.5..5；投掷 9..13（⚠ 与混沌金一字不差 ⇒ 疑似笔误，待作者裁）
+#   ⚠ **旧口径原文留档（未删，那一行就在上面）**：作者 2026-10-23 已确认「**9-13**」⇒ **不是笔误**、
+#     数值不改；本段对它**没有新增断言**（下面两条 `tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)`
+#     的 needle 早就分别钉住混沌金 / 崩乱合金两族，只在这次把失败文案里的"疑似笔误"改成"已确认"）。
 _B10W_WANT_RANGES_CA = {
     ("SWORD", "ATTACK"): (8.0, 16.0),
     ("MACE", "ATTACK"): (7.0, 14.0),
@@ -6600,8 +6603,10 @@ for _lit, _why in (
         _bgn10w_bad("bgn10-chaos-wiring", "AllMetals 里%s（字面 `%s`）" % (_why, _lit))
 # 崩乱合金的区间外固定值：**逐条按作者原话**（与混沌金同名的三条 + 重锤 1.4 + 刀 5.5）
 for _lit, _why in (
+        # ⚠ 旧文案原文留档（未删）："崩乱合金缺投掷 9..13（⚠ 作者给的就是 9..13，与混沌金一字不差 ⇒ 疑似笔误，按字面做）"
+        #   ✅ 作者 2026-10-23 确认「9-13」⇒ **不是笔误、不用改**；断言本身（那个字面 needle）一字未改。
         ("tridentThrowDamage(MetalFamily.Form.TRIDENT, 9, 13)",
-         "崩乱合金缺投掷 9..13（⚠ 作者给的就是 9..13，与混沌金一字不差 ⇒ 疑似笔误，按字面做）"),
+         "崩乱合金缺投掷 9..13（✅ 作者 2026-10-23 确认：9..13 就是对的，不是笔误）"),
         ("maceFinalDamageMultiplier(1.4F)", "崩乱合金缺重锤「最终伤 ×1.4 固定」"),
         ("bowFullDraw(20, 0.0F)", "崩乱合金缺弓「最大拉弓 20」"),
         ("crossbowCharge(1.2F)", "崩乱合金缺弩「蓄力 1.2 秒」"),
@@ -7599,6 +7604,83 @@ if _bgn10r7_checked <= 0:
 if not bgn10r7_problems:
     print("[bgn10r7-ok] 崩乱合金：20 条配方 / 块 ×3 + 信标 + §9.7 / 两个状态公式与无等级 / "
           "50% 三条派发 / 盔甲四件 / 禁果 11.6 全部通过")
+
+# ======================================================================================
+# ① 崩乱合金盔甲耐久：**按作者写的原样保留、一个字节都不改**（作者 2026-10-23 裁定）
+#
+#   作者原话（本轮派单转述）：「第一个：**他写的是什么就是什么，你不要改**。」
+#   ⇒ 四件耐久 = 头 1924 / 胸 2368 / 腿 2220 / 靴 2035（作者原话的四个数，按位置对应）；
+#     源码数组顺序是 **靴 / 腿 / 胸 / 头** ⇒ `spec.armorDurability = new int[] { 2035, 2220, 2368, 1924 };`
+#   ⚠ 旧记账（头 1924 = 4×481 靴基数、靴 2035 = 5×407 头基数，「疑似头/靴写反」；
+#     若"改对"应是 {1924, 2220, 2368, 1628}）**算术仍然成立**，但**作者已明确不改**
+#     ⇒ 那不是 bug，是作者的字面值。本段钉四件事（改任一数字 / 换顺序都单独变红）：
+#       · 数组字面量恰好 `{ 2035, 2220, 2368, 1924 }`
+#       · 位置映射：头 1924 / 胸 2368 / 腿 2220 / 靴 2035
+#       · 反回退：崩乱合金的方法体里**不许**出现 1628（"修好版"）
+#       · 文档侧：1.7 立档里必须有「作者 2026-10-23 明确：按他写的、不改」这一行 + 四个数的位置写法
+#   ⚠ 本段**只加断言**：AllMetals.java 里那四个数一个字节都没动（见 00-基线SHA256 与现行 SHA256）。
+# ======================================================================================
+_bgn10r7dur_problems: list = []
+_bgn10r7dur_checked = 0
+
+
+def _bgn10r7dur_bad(tag, msg):
+    _bgn10r7dur_problems.append("[" + tag + "] " + msg)
+
+
+_AM_DUR_RAW = (REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "material"
+               / "AllMetals.java").read_text(encoding="utf-8")
+_am_dur_nc = strip_comments(_AM_DUR_RAW)
+_i_chaosalloy = _am_dur_nc.find("private static MetalFamily registerChaosalloy()")
+_i_sturdygold = _am_dur_nc.find("private static MetalFamily registerSturdygold()")
+_bgn10r7dur_checked += 1
+if not (_i_chaosalloy >= 0 and _i_sturdygold > _i_chaosalloy):
+    _bgn10r7dur_bad("bgn10r7-armor-durability-author",
+                    "定位不到 registerChaosalloy() 的方法体（起 %r / 止 %r）"
+                    % (_i_chaosalloy, _i_sturdygold))
+    _ca_dur_body = ""
+else:
+    _ca_dur_body = _am_dur_nc[_i_chaosalloy:_i_sturdygold]
+_m_dur = re.search(r"spec\.armorDurability = new int\[\] \{ (\d+), (\d+), (\d+), (\d+) \};",
+                   _ca_dur_body)
+_bgn10r7dur_checked += 1
+if not _m_dur:
+    _bgn10r7dur_bad("bgn10r7-armor-durability-author",
+                    "崩乱合金没有 armorDurability 的数组字面量（去注释源码里找不到）")
+else:
+    _dur_nums = [int(g) for g in _m_dur.groups()]
+    _bgn10r7dur_checked += 1
+    if _dur_nums != [2035, 2220, 2368, 1924]:
+        _bgn10r7dur_bad("bgn10r7-armor-durability-author",
+                        "数组不是 靴/腿/胸/头 = 2035/2220/2368/1924（实际 %r）" % (_dur_nums,))
+    _dur_by_slot = dict(zip(("boots", "leggings", "chestplate", "helmet"), _dur_nums))
+    for _slot, _want_v in (("helmet", 1924), ("chestplate", 2368), ("leggings", 2220), ("boots", 2035)):
+        _bgn10r7dur_checked += 1
+        if _dur_by_slot.get(_slot) != _want_v:
+            _bgn10r7dur_bad("bgn10r7-armor-durability-author",
+                            "位置映射 %s 应为 %d（实际 %r）"
+                            % (_slot, _want_v, _dur_by_slot.get(_slot)))
+_bgn10r7dur_checked += 1
+if "1628" in _ca_dur_body:
+    _bgn10r7dur_bad("bgn10r7-armor-durability-author",
+                    "崩乱合金里出现了 1628（旧记账「若按 ×4 头应为 1628」的修好版；作者明确不改）")
+_DOC17_ARMOR = (REPO / "docs" / "1.7-混沌金与崩乱合金-需求立档.md").read_text(encoding="utf-8")
+_bgn10r7dur_checked += 1
+if u"作者 2026-10-23 明确：按他写的、不改" not in _DOC17_ARMOR:
+    _bgn10r7dur_bad("bgn10r7-armor-durability-author",
+                    "1.7 立档里没有「作者 2026-10-23 明确：按他写的、不改」这一行")
+_bgn10r7dur_checked += 1
+if u"头 1924 / 胸 2368 / 腿 2220 / 靴 2035" not in _DOC17_ARMOR:
+    _bgn10r7dur_bad("bgn10r7-armor-durability-author",
+                    "1.7 立档里没有「头 1924 / 胸 2368 / 腿 2220 / 靴 2035」的位置写法")
+if _bgn10r7dur_checked <= 0:
+    _bgn10r7dur_bad("bgn10r7dur-anti-vacuum", "本段一条判定都没跑（反空转）")
+print("[bgn10r7dur-summary] 崩乱合金盔甲耐久（按作者字面值钉死）：判定 "
+      + str(_bgn10r7dur_checked) + " 条，问题 " + str(len(_bgn10r7dur_problems)) + " 条"
+      + ("" if not _bgn10r7dur_problems else "：" + str(_bgn10r7dur_problems[:4])))
+if not _bgn10r7dur_problems:
+    print("[bgn10r7-armor-durability-author-ok] 头 1924 / 胸 2368 / 腿 2220 / 靴 2035 "
+          "（= 作者 2026-10-23「按他写的、不改」；数组序 靴/腿/胸/头 = 2035/2220/2368/1924）")
 
 # ============================================================================
 # 1.7 轮8（bg-n10r8，2026-10-17）：万坚金砧（Sturdygold Anvil）
@@ -10726,15 +10808,35 @@ if _am.count("knifeAttributesFinal(") != 2:
                 "knifeAttributesFinal 不是恰好 2 处（实际 " + str(_am.count("knifeAttributesFinal(")) + "）")
 _bgn10fix2_checked += 1
 _mf = _bgfix2_src("material/MetalFamily.java")
+# ⚠ **旧期望原文留档（未删）**：作者 2026-10-23 之前这条的期望是
+#   ("public boolean knifeValuesAreFinal = false;", "缺 knifeValuesAreFinal 的默认值（既有 8 族必须 false）")
+#   ("KNIFE_DMG = 2.0F", "既有 8 族刀的伤害修正被动了（应是 2.0）")
+#   ("KNIFE_SPD = -1.8F", "既有 8 族刀的攻速修正被动了（应是 -1.8）")
+#   作者原话「第三个：**全部**」⇒ 既有 8 族也改「数值即最终值」：
+#     默认 true + 默认值 6.5 / 2.2；两个旧常量（2.0 / -1.8）**保留在源码里**（原文留档，不再被引用）。
+#   ⚠ 6.5 **不是**「把伤害降 1 点」：最终值口径是**物品 ATTACK_DAMAGE 修饰符**
+#     （FdItems 先减 tier 的 4.5、createAttributes 再加回）⇒ 6.5 − 4.5 = 2.0，+4.5 = 6.5 = 改前读数；
+#     工具提示显示 = 6.5 + 玩家基值 1.0 = **7.5**（A 级改前/改后逐项相同，见 docs/gpq-证据）。
 for _needle, _why in (
-        ("public boolean knifeValuesAreFinal = false;", "缺 knifeValuesAreFinal 的默认值（既有 8 族必须 false）"),
+        ("public boolean knifeValuesAreFinal = true;",
+         "缺 knifeValuesAreFinal 的默认值 true（作者 2026-10-23「全部」⇒ 既有 8 族也是最终值）"),
+        ("public float knifeDamage = 6.5F;",
+         "刀的默认伤害不是最终值 6.5（物品 ATTACK_DAMAGE = 6.5 ⇒ 工具提示 7.5）"),
+        ("public float knifeSpeed = 2.2F;",
+         "刀的默认攻速不是最终值 2.2（4.0 − 1.8）；写成 -1.8 就变成「修正」口径"),
         ("this.knifeValuesAreFinal = spec.knifeValuesAreFinal;", "Spec → 家族的拷贝丢了"),
         ("public Spec knifeAttributesFinal(float damage, float speed)", "缺 knifeAttributesFinal 入口"),
-        ("KNIFE_DMG = 2.0F", "既有 8 族刀的伤害修正被动了（应是 2.0）"),
-        ("KNIFE_SPD = -1.8F", "既有 8 族刀的攻速修正被动了（应是 -1.8）")):
+        ("KNIFE_DMG = 2.0F", "旧口径的伤害修正常量被删了（2.0 必须原文留档）"),
+        ("KNIFE_SPD = -1.8F", "旧口径的攻速修正常量被删了（-1.8 必须原文留档）")):
     _bgn10fix2_checked += 1
     if _needle not in _mf:
         _bgfix2_bad("bgn10fix2-knife", _why + "（缺 " + _needle + "）")
+# 反向（改回旧口径必须变红）：
+_bgn10fix2_checked += 2
+if "public boolean knifeValuesAreFinal = false;" in _mf:
+    _bgfix2_bad("bgn10fix2-knife", "既有 8 族刀的 knifeValuesAreFinal 又变回 false（作者：全部）")
+if "public float knifeDamage = KNIFE_DMG;" in _mf:
+    _bgfix2_bad("bgn10fix2-knife", "刀的默认伤害又退回「修正」口径（KNIFE_DMG 会被当成最终值）")
 _bgn10fix2_checked += 1
 _fd = _bgfix2_src("fd/FdItems.java")
 for _needle, _why in (
@@ -10758,7 +10860,11 @@ if not bgn10fix2_problems:
     print("[bgn10fix2-ok] ① 金币对 MoneyGremlin 直接穿过（不伤害 / 不饥饿 / 不 discard）/ "
           "② 模具掉率 16%×(1+抢夺)、数量恒 1（金币串不动）/ "
           "③ 力量 ×(1−r) 与抗性 ×(1+r)，r = nextInt(50)+1 每次重取、无等级 / "
-          "④ 两把新刀最终值 2.5..6.5 与 6.5..13、攻速 2.0，既有 8 族刀 2.0/-1.8 不动")
+          # ⚠ 旧口径原文留档（未删）：④ 两把新刀最终值 2.5..6.5 与 6.5..13、攻速 2.0，
+          #   既有 8 族刀 2.0/-1.8 不动。作者 2026-10-23「全部」⇒ 8 族也改最终值（6.5 / 2.2），
+          #   物品层读数一字未变 —— 见 docs/gpq-证据/03-读数对照.md
+          "④ 两把新刀最终值 2.5..6.5 与 6.5..13、攻速 2.0；既有 8 族刀也改最终值 "
+          "6.5（工具提示仍是 7.5）/ 2.2，物品层读数逐项与改前相同")
 
 # ======================================================================================
 # 第八轮（2026-10-22）⑤：**金钱妖音效 + 声音字幕**（作者 zip → ogg）
@@ -10942,7 +11048,9 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgn10r8_problems, bgn10r9_problems,
                        bgn10rc_problems, bgn10rg_problems, bgn10d_problems, bgn10rc2_problems,
                        bgn10up_problems, bgn10fix_problems, bgn10anvil_problems,
-                       bgn10err_problems, bgn10fix2_problems, _bgsnd_problems)
+                       bgn10err_problems, bgn10fix2_problems, _bgsnd_problems,
+                       # ① 崩乱合金盔甲耐久按作者字面值（作者 2026-10-23「按他写的、不改」）
+                       _bgn10r7dur_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

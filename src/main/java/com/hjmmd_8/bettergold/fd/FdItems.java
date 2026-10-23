@@ -181,11 +181,26 @@ public class FdItems {
      * （KnifeItem 属可选依赖）；与另外三套新金属一样，注册后通过 {@code addExtraItem} 登记进家族。
      * 这里保持显式注册，是为了让物品注册顺序与 1.3 完全一致（创造页"小刀"分区按注册顺序排）。</p>
      */
-    public static final DeferredItem<Item> STURDYGOLD_KNIFE =
-            ITEMS.register("sturdygold_knife", () -> createKnife(
-                    com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD.tier,
-                    com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_DMG,
-                    com.hjmmd_8.bettergold.material.MetalFamily.KNIFE_SPD, true));
+    public static final DeferredItem<Item> STURDYGOLD_KNIFE = registerSturdygoldKnife();
+
+    /**
+     * 万坚金小刀：走与其余 7 族**同一套**换算（伤害 / 攻速都是「最终值」）。
+     *
+     * <p>⚠ 作者 2026-10-23「第三个：全部」：8 族全部按最终值；万坚金这一件是<b>显式注册</b>的
+     * （物品注册顺序 = 创造页小刀分区的次序），所以它的数值也必须从这里走
+     * {@link #knifeDamageModifier} / {@link #knifeSpeedModifier}，否则会变成唯一一件
+     * 「名义上 final、实际仍在吃旧修正」的小刀。</p>
+     *
+     * <p>旧口径原文留档（直接吃两个「修正」常量，2.0 / −1.8 交给 createAttributes）：
+     * {@code ITEMS.register("sturdygold_knife", () -> createKnife(
+     * AllMetals.STURDYGOLD.tier, MetalFamily.KNIFE_DMG, MetalFamily.KNIFE_SPD, true));}</p>
+     */
+    private static DeferredItem<Item> registerSturdygoldKnife() {
+        return ITEMS.register("sturdygold_knife", () -> {
+            var family = com.hjmmd_8.bettergold.material.AllMetals.STURDYGOLD;
+            return createKnife(family.tier, knifeDamageModifier(family), knifeSpeedModifier(family), true);
+        });
+    }
 
     /** 古董屠刀（新约 1.3）：古董器具的乐事联动刀，伤害 4.5 / 攻速 2 */
     public static final DeferredItem<Item> ANTIQUE_KNIFE =
@@ -218,10 +233,14 @@ public class FdItems {
     }
 
     /**
-     * 伤害修正：<b>最终值</b>族的刀先减掉 {@code tier.getAttackDamageBonus()}（{@code createAttributes}
+     * 伤害参数：<b>最终值</b>族的刀先减掉 {@code tier.getAttackDamageBonus()}（{@code createAttributes}
      * 会再加一次；1.7 {@code bg-n10fix2} ④ 的 +4.5 偏移就是这一段）。
      *
-     * <p>既有 8 族（{@code knifeValuesAreFinal = false}）原样返回 —— 它们的 2.0 叠上 4.5 = 规格里的 7.5。</p>
+     * <p>旧口径原文留档：{@code 既有 8 族（knifeValuesAreFinal = false）原样返回 ——
+     * 它们的 2.0 叠上 4.5 = 规格里的 7.5。}</p>
+     *
+     * <p>⚠ 作者 2026-10-23「第三个：全部」⇒ 既有 8 族也走这一支：声明 6.5 − 4.5 = 2.0，
+     * createAttributes 再加回 4.5 = <b>6.5</b>（= 改前读数；工具提示仍是 7.5）。</p>
      */
     private static float knifeDamageModifier(com.hjmmd_8.bettergold.material.MetalFamily family) {
         return family.knifeValuesAreFinal
@@ -229,7 +248,12 @@ public class FdItems {
                 : family.knifeDamage;
     }
 
-    /** 攻速修正：{@code createAttributes} 的参数是相对玩家基值 4.0 的修正 ⇒ 最终值要减 4.0 */
+    /**
+     * 攻速参数：{@code createAttributes} 的参数是相对玩家基值 4.0 的修正 ⇒ 最终值要减 4.0。
+     *
+     * <p>⚠ 作者 2026-10-23「第三个：全部」⇒ 既有 8 族也走这一支：2.2 − 4.0 = −1.7999999523162842，
+     * 与旧口径的 −1.8F <b>是同一 bit 模式</b> ⇒ 最终攻速仍是 2.2。</p>
+     */
     private static float knifeSpeedModifier(com.hjmmd_8.bettergold.material.MetalFamily family) {
         return family.knifeValuesAreFinal
                 ? family.knifeSpeed - 4.0F
