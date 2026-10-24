@@ -1,5 +1,5 @@
 {
-  "count": 59,
+  "count": 63,
   "lang_prefix": "advancements.bettergold",
   "advancements": [
     {
@@ -573,15 +573,60 @@
       "recipe_ids": []
     },
     {
-      "id": "bettergold:treasure/chaos_coin",
-      "path": "treasure/chaos_coin",
-      "key": "chaos_coin",
+      "id": "bettergold:treasure/golden_prison",
+      "path": "treasure/golden_prison",
+      "key": "golden_prison",
       "parent": "bettergold:root",
+      "icon": "bettergold:gold_bricks",
+      "frame": "task",
+      "fd": false,
+      "title": "红中黄室",
+      "description": "进入金之牢狱",
+      "triggers": [
+        "minecraft:location"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosgold/dance",
+      "path": "metal/chaosgold/dance",
+      "key": "chaosgold_dance",
+      "parent": "bettergold:treasure/golden_prison",
+      "icon": "bettergold:chaos_coin_string",
+      "frame": "task",
+      "fd": false,
+      "title": "与金共舞",
+      "description": "获得混沌金币串",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosgold/craft",
+      "path": "metal/chaosgold/craft",
+      "key": "chaosgold_craft",
+      "parent": "bettergold:metal/chaosgold/dance",
       "icon": "bettergold:chaos_coin",
       "frame": "task",
       "fd": false,
-      "title": "混沌的起点",
-      "description": "获得一枚混沌金币",
+      "title": "金工细作",
+      "description": "制作出任意一个含\"混沌金币/混沌金币串\"配方的铜块/铁块/金块/下界合金锭，或含\"混沌金块 + 高精度炼金油\"配方的贵金原料",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:metal/chaosgold/enchant",
+      "path": "metal/chaosgold/enchant",
+      "key": "chaosgold_enchant",
+      "parent": "bettergold:metal/chaosgold/dance",
+      "icon": "bettergold:chaosgold_enchanting_book",
+      "frame": "task",
+      "fd": false,
+      "title": "赋予无序之咒",
+      "description": "投入这份魔咒溢出的混沌怀抱吧",
       "triggers": [
         "minecraft:inventory_changed"
       ],
@@ -591,11 +636,11 @@
       "id": "bettergold:metal/chaosgold/ingot",
       "path": "metal/chaosgold/ingot",
       "key": "chaosgold_ingot",
-      "parent": "bettergold:treasure/chaos_coin",
+      "parent": "bettergold:metal/chaosgold/dance",
       "icon": "bettergold:chaosgold_ingot",
       "frame": "task",
       "fd": false,
-      "title": "混沌金，到手",
+      "title": "格格不入之金属",
       "description": "获得一个混沌金锭",
       "triggers": [
         "minecraft:inventory_changed"
@@ -610,7 +655,7 @@
       "icon": "bettergold:chaosgold_sword",
       "frame": "task",
       "fd": false,
-      "title": "混沌的锋芒",
+      "title": "随性的锋芒",
       "description": "获得任意一种混沌金武器工具",
       "triggers": [
         "minecraft:inventory_changed"
@@ -625,7 +670,7 @@
       "icon": "bettergold:chaosgold_chestplate",
       "frame": "challenge",
       "fd": false,
-      "title": "混沌的庇护",
+      "title": "失衡的庇护",
       "description": "获得一整套混沌金盔甲",
       "triggers": [
         "minecraft:inventory_changed"
@@ -636,27 +681,12 @@
       "id": "bettergold:metal/chaosalloy/ingot",
       "path": "metal/chaosalloy/ingot",
       "key": "chaosalloy_ingot",
-      "parent": "bettergold:root",
+      "parent": "bettergold:metal/chaosgold/ingot",
       "icon": "bettergold:chaosalloy_ingot",
       "frame": "task",
       "fd": false,
-      "title": "崩乱的开端",
+      "title": "展开崩坏的开端",
       "description": "获得一个崩乱合金锭",
-      "triggers": [
-        "minecraft:inventory_changed"
-      ],
-      "recipe_ids": []
-    },
-    {
-      "id": "bettergold:metal/chaosalloy/supply",
-      "path": "metal/chaosalloy/supply",
-      "key": "chaosalloy_supply",
-      "parent": "bettergold:metal/chaosalloy/ingot",
-      "icon": "bettergold:chaosalloy_upgrade_template",
-      "frame": "task",
-      "fd": false,
-      "title": "崩乱的结构",
-      "description": "获得崩乱合金块或崩乱合金升级锻造模板",
       "triggers": [
         "minecraft:inventory_changed"
       ],
@@ -666,11 +696,11 @@
       "id": "bettergold:metal/chaosalloy/weapon",
       "path": "metal/chaosalloy/weapon",
       "key": "chaosalloy_weapon",
-      "parent": "bettergold:metal/chaosalloy/supply",
+      "parent": "bettergold:metal/chaosalloy/ingot",
       "icon": "bettergold:chaosalloy_sword",
       "frame": "task",
       "fd": false,
-      "title": "崩乱的锋刃",
+      "title": "催拉苦朽之刃",
       "description": "获得任意一种崩乱合金武器工具",
       "triggers": [
         "minecraft:inventory_changed"
@@ -685,7 +715,7 @@
       "icon": "bettergold:chaosalloy_chestplate",
       "frame": "challenge",
       "fd": false,
-      "title": "崩乱的庇护",
+      "title": "暴乱裹身",
       "description": "获得一整套崩乱合金盔甲",
       "triggers": [
         "minecraft:inventory_changed"
@@ -792,6 +822,36 @@
       "fd": false,
       "title": "好大的金蛋～",
       "description": "使用金种子喂给鸡从而获取金蛋",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/golden_torchflower",
+      "path": "agriculture/golden_torchflower",
+      "key": "golden_torchflower",
+      "parent": "bettergold:agriculture/gold_infused_dirt",
+      "icon": "bettergold:golden_torchflower",
+      "frame": "task",
+      "fd": false,
+      "title": "黄金火焰！",
+      "description": "获得金火把花种子 和 金火把花",
+      "triggers": [
+        "minecraft:inventory_changed"
+      ],
+      "recipe_ids": []
+    },
+    {
+      "id": "bettergold:agriculture/refined_oil",
+      "path": "agriculture/refined_oil",
+      "key": "refined_oil",
+      "parent": "bettergold:agriculture/golden_torchflower",
+      "icon": "bettergold:refined_alchemic_oil",
+      "frame": "task",
+      "fd": false,
+      "title": "膏状的油将升华为精炼的油",
+      "description": "可塑性更强的燃油，使我造出来的“贵金”原料翻倍",
       "triggers": [
         "minecraft:inventory_changed"
       ],

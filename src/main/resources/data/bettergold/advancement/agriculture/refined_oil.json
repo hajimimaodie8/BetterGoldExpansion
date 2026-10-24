@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:agriculture/golden_torchflower",
+  "display": {
+    "icon": {
+      "id": "bettergold:refined_alchemic_oil",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.refined_oil.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.refined_oil.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:refined_alchemic_oil"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

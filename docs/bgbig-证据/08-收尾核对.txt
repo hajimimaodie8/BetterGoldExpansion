@@ -1,0 +1,16 @@
+bgbig 收尾核对（2026-10-24）
+
+server.properties SHA256 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+build.gradle SHA256        = 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+jar SHA256                 = 84A8A7C2F0A597A74CB6884ABE001DDFB42A0F03B37228EC0C76DECB97923FA8
+zh_cn.json SHA256          = B8384693249D9B83EA0C44D8DCD6D06D8E926952ED8513D5399F931A3C716275  keys=850
+en_us.json SHA256          = E60A0BC201B18A0FE76736E9C2E0DC1480C173E7310752AE1B97AD0BD8565A16  keys=850
+docs/1.7-* 行数            = 4660
+run/saves 目录             = ['新的世界']
+run 下 bgbig* 残留         = []
+src probe 目录             = []
+java run 进程              = 0
+git diff 合计              = +1527 / -1137
+docs/ 的删除行             = 0（文档侧只追加）
+
+八关卡 / 扰动 / D 键数见同目录 06-八关卡.txt、04-扰动矩阵.txt、zh-json-替换证据/。

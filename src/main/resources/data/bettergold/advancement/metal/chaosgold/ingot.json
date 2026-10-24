@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:treasure/chaos_coin",
+  "parent": "bettergold:metal/chaosgold/dance",
   "display": {
     "icon": {
       "id": "bettergold:chaosgold_ingot",

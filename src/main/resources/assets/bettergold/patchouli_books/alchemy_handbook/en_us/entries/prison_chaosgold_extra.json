@@ -1,0 +1,37 @@
+{
+  "name": "bettergold.handbook.entry.prison_chaosgold_extra",
+  "category": "bettergold:golden_prison",
+  "icon": "bettergold:chaosgold_enchanting_book",
+  "sortnum": 4,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_enchanting_book",
+      "text": "bettergold.handbook.page.prison_chaosgold_extra_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_forbidden_fruit",
+      "text": "bettergold.handbook.page.prison_chaosgold_extra_1_right"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:chaosgold_block",
+        "bettergold:chaosgold_bricks",
+        "bettergold:chaosgold_pillar",
+        "bettergold:chaosgold_bricks_stairs",
+        "bettergold:chaosgold_bricks_slab",
+        "bettergold:chaosgold_bricks_wall",
+        "bettergold:chaosgold_door",
+        "bettergold:chaosgold_trapdoor",
+        "bettergold:chaosgold_bars",
+        "bettergold:chaosgold_chain",
+        "bettergold:chaosgold_lantern"
+      ],
+      "text": "bettergold.handbook.page.prison_chaosgold_extra_2_left",
+      "title": "bettergold.handbook.page.prison_chaosgold_extra_2_left_title"
+    }
+  ]
+}

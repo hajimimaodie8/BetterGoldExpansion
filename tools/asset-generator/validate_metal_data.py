@@ -1532,10 +1532,12 @@ if len(_zh_files) < 11:
                 % len(_zh_files))
 
 # 四个类别：顺序（sortnum）= 作者给的顺序，**材料类必须第一**，图标逐一钉住（§3.3）
+# ⚠ 1.7 大轮（`bgbig`）：新增第 5 个类别「金铸的牢狱」（封面 = 混沌金币串）。
 _EXPECT_CATEGORIES = [("alchemy_start", "bettergold:raw_sturdygold"),
                       ("gear_upgrade", "bettergold:sturdygold_sword"),
                       ("golden_feast", "bettergold:sturdygold_apple"),
-                      ("merchant_antiques", "bettergold:gold_exchange_counter")]
+                      ("merchant_antiques", "bettergold:gold_exchange_counter"),
+                      ("golden_prison", "bettergold:chaos_coin_string")]
 _cats_now = []
 for _p in sorted((_ZH_BOOK / "categories").glob("*.json")) if (_ZH_BOOK / "categories").is_dir() else []:
     _c = json.loads(_p.read_text(encoding="utf-8"))
@@ -1599,8 +1601,17 @@ _BG10_ENTRY_NAMES = ("golden_feast_crops", "golden_feast_foods", "golden_feast_s
                      "golden_feast_fd_foods", "golden_feast_fd_sturdy")
 # ★ 1.7 收口轮（bg-n10r9，2026-10-17）：两族的 4 个条目
 #   （材料 / 禁果 / 混沌金装备章 / 崩乱合金装备章）⇒ 条目总数 20 → **24**、页数 192 → **230**。
-_BGN10R9_ENTRY_NAMES = ("chaos_materials", "chaos_feast",
-                        "gear_chaosgold", "gear_chaosalloy")
+# ⛔ **1.7 大轮（2026-10-24，`bgbig`）就地作废**（作者：「这意味着你之前设的那些章节可以直接毙掉了」）：
+#   ⇒ 这 4 个条目**不再产出**，由新类别「金铸的牢狱」的 6 章取代（见 `_PRISON_ENTRY_NAMES`）。
+#   ⚠ 旧期望原文留档（未删）：`_BGN10R9_ENTRY_NAMES = ("chaos_materials", "chaos_feast",
+#     "gear_chaosgold", "gear_chaosalloy")`；它们仍留在生成器的 `RETIRED_ENTRIES` 里自证页数
+#     （18 / 4 / 15 / 11 = 48 页）。
+_BGN10R9_ENTRY_NAMES = ()                 # 旧四条，已作废（不再计入条目总数）
+_GOLDEN_PRISON_RETIRED = ("chaos_materials", "chaos_feast",
+                          "gear_chaosgold", "gear_chaosalloy")
+# ★ 1.7 大轮：新类别「金铸的牢狱」6 章（条目数 20 + 6 = 26）
+_PRISON_ENTRY_NAMES = ("prison_main", "prison_gremlin", "prison_coin_anvil",
+                       "prison_chaosgold_main", "prison_chaosgold_extra", "prison_chaosalloy")
 # ⛔ §九 作废的两个旧占位（必须不存在于产物里；见上面的 `_bgbook9_bad` 段）
 _BG9_RETIRED_ENTRIES = ("merchant", "antiques")
 for _retired in _RETIRED_ENTRIES:
@@ -1615,6 +1626,22 @@ for _retired in _BG9_RETIRED_ENTRIES:
             _bgbook_bad("bgbook9-old-placeholders-gone",
                         "§九 作废的「商人与古董」旧占位 %s 又回到了产物里（%s）：它的 11 页已由"
                         "「关于易金商人 / 礼品盒 / 古董器具」3 章 20 页取代" % (_retired, _side.name))
+# ⛔ 1.7 大轮（`bgbig`）：旧四条混沌金 / 崩乱合金章节作废（作者「之前设的那些章节可以直接毙掉了」）
+#   ⇒ 产物里**必须不存在**；生成器里**必须仍在** RETIRED_ENTRIES，且页数照常算得出来
+#     （18 / 4 / 15 / 11 = 48 页，见 `[bgn10r9-*]` 段的"留档自证"）。
+for _retired in _GOLDEN_PRISON_RETIRED:
+    for _side in (_ZH_BOOK, _EN_BOOK):
+        if (_side / "entries" / ("%s.json" % _retired)).exists():
+            _bgbook_bad("bgbig-old-chapters-gone",
+                        "bgbig 作废的混沌金旧章节 %s 又回到了产物里（%s）：它已由「金铸的牢狱」"
+                        "6 章 36 页取代（作者 2026-10-24）" % (_retired, _side.name))
+# 新类别必须真的落在产物里（负向之外的正向，别让"全删了"也绿）
+for _c in ("golden_prison",):
+    if not (_ZH_BOOK / "categories" / ("%s.json" % _c)).is_file():
+        _bgbook_bad("bgbig-category", "产物里缺新类别 %s（金铸的牢狱）" % _c)
+for _e in _PRISON_ENTRY_NAMES:
+    if not (_ZH_BOOK / "entries" / ("%s.json" % _e)).is_file():
+        _bgbook_bad("bgbig-entry", "产物里缺金铸的牢狱条目 %s" % _e)
 # ⛔ bg-fix3 §三：两个骨架条目（「贵金的材料链」/「升级锻造模板」）的负向断言 + 生成器侧守卫。
 for _retired in _BGFIX3_RETIRED_ENTRIES:
     for _side in (_ZH_BOOK, _EN_BOOK):
@@ -1686,16 +1713,18 @@ if _missing_skeleton:
                    list(_BG10_RETIRED_ENTRIES), _missing_skeleton))
 # ⚠ **旧期望原文保留（未删）**：右端只有前五项（合计 20 条）。
 # ★ 1.7 收口轮：+ `_BGN10R9_ENTRY_NAMES`（4 条）⇒ 24。
+# ★ 1.7 大轮（`bgbig`）：旧四条作废 ⇒ 条目数 = 20 + **6**（金铸的牢狱）= **26**。
 if len(_entries_now) != (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
                          + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES)
-                         + len(_BG10_ENTRY_NAMES) + len(_BGN10R9_ENTRY_NAMES)):
+                         + len(_BG10_ENTRY_NAMES) + len(_PRISON_ENTRY_NAMES)):
     _bgbook_bad("bgbook-entry-count",
                 "条目数应为 %d（骨架 %d + §六 章节 3 + §八 强化 9 + §九 商人与古董 3 + "
-                "§十 金灿的盛宴 5 + 1.7 两族 4；"
-                "bg-fix3 §三 作废 2 条骨架条目、§十 作废最后 1 条骨架条目），实际 %d"
+                "§十 金灿的盛宴 5 + 金铸的牢狱 6；"
+                "bg-fix3 §三 作废 2 条骨架条目、§十 作废最后 1 条骨架条目、"
+                "bgbig 作废旧四条混沌金章节），实际 %d"
                 % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
                    + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES) + len(_BG10_ENTRY_NAMES)
-                   + len(_BGN10R9_ENTRY_NAMES),
+                   + len(_PRISON_ENTRY_NAMES),
                    len(_SKELETON_ENTRIES), len(_entries_now)))
 _valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
 _total_pages = 0
@@ -3143,8 +3172,9 @@ for _n, _why in (("BASE_CHANCE = 0.06F", "6% 基础概率被改"),
 _adv_files = sorted(_ADV.rglob("*.json"))
 # ⚠ **旧期望原文保留（未删）**：`if len(_adv_files) != 51: ... 期望 51`。
 # ★ 1.7 收口轮：51 → **59**（混沌金 / 崩乱合金各 4 条）。
-if len(_adv_files) != 59:
-    _bgfix2_bad("bgfix2-adv-51", "成就 JSON 数 = %d，期望 59（反空转守护）" % len(_adv_files))
+# ★ 1.7 大轮（bgbig）：59 → **63**（删 2 加 6）。旧期望原文留档：`!= 59`。
+if len(_adv_files) != 63:
+    _bgfix2_bad("bgfix2-adv-51", "成就 JSON 数 = %d，期望 63（反空转守护）" % len(_adv_files))
 _hidden_files, _inv_files, _rc_files, _cond_files = [], [], [], []
 for _f in _adv_files:
     _t = _f.read_text(encoding="utf-8")
@@ -3529,11 +3559,23 @@ else:
     if len(_bg8_parsed) != 9:
         _bgbook8_bad("bgbook8-texts-verbatim",
                      "从冻结快照解析到 %d 章（应 9 = 1 + 8；反空转守护）" % len(_bg8_parsed))
+    # ★ 1.7 大轮（bgbig）D 段：作者本轮的 `zh_cn.json` **改了两段既有文案**（魔法伤害 / 中毒减免），
+    #   以作者文件为准 ⇒ 这两段的期望值就地覆盖；快照里的旧原文**不删**（历史留档）。
+    #   旧文案（原文留档在冻结快照里）与作者新文案的差异见 `docs/zh-json-替换证据/`。
+    _BG8_AUTHOR_REPLACED = {
+        "bettergold.handbook.page.gear_voodoogold_1_left":
+            "使用巫毒金升级而成的金武器工具进行攻击可对目标附着高达 6 秒的巫毒状态，并随着攻击频率不断叠加此状态的等级，"
+            "赋予巫毒状态的 6 秒期限结束之后会以此状态的等级 + 这期间所受到的伤害提取于 36% 点对目标造成百分比的魔法伤害，"
+            "其次只要是任何手段的攻击就能够触发，像弓弩这样主架构为远程的武器进行近战自然是可以触发的。",
+        "bettergold.handbook.page.gear_voodoogold_2_left":
+            "使用巫毒金升级而成的盔甲穿戴后不仅能抵挡部分的魔法和中毒伤害，并有几率对攻击者附着并叠加与武器工具同框的巫毒状态，"
+            "自然而然的会随着该装备的穿戴数量提升魔法伤害和中毒伤害的抵抗和巫毒状态的施加率。",
+    }
     _bg8_texts, _bg8_bad_names = [], []
     for _chap, _name, _texts in _bg8_parsed:
         for _label in _BG8_TEXT_LABELS:
             _k = "bettergold.handbook.page.gear_%s_%s" % (_chap, _label)
-            _v = _texts.get(_label, "")
+            _v = _BG8_AUTHOR_REPLACED.get(_k, _texts.get(_label, ""))
             _bg8_texts.append(_v)
             if zh.get(_k) != _v:
                 _bgbook8_bad("bgbook8-texts-verbatim",
@@ -4788,8 +4830,14 @@ else:
     #   冒号不再紧跟其后 ⇒ needle 放宽成"这一项还在写盘循环里"，并**额外**要求两族那一段也在。
     if "+ FEAST_ENTRIES" not in _bg10_gen:
         _bgbook10_bad("bgbook10-generator", "`main()` 的写盘循环里没有 FEAST_ENTRIES（不会产出）")
-    if "+ CHAOS_ENTRIES" not in _bg10_gen:
-        _bgbook10_bad("bgbook10-generator", "`main()` 的写盘循环里没有 CHAOS_ENTRIES（两族不会产出）")
+    # ⚠ `+ CHAOS_ENTRIES` 这条 needle 已被 1.7 大轮（`bgbig`）取代：旧四条作废、不再写盘。
+    #   旧 needle 原文留档（未删）：`if "+ CHAOS_ENTRIES" not in _bg10_gen: ...`
+    if "+ PRISON_ENTRIES" not in _bg10_gen:
+        _bgbook10_bad("bgbook10-generator",
+                      "`main()` 的写盘循环里没有 PRISON_ENTRIES（金铸的牢狱 6 章不会产出）")
+    if "+ CHAOS_ENTRIES" in _bg10_gen:
+        _bgbook10_bad("bgbook10-generator",
+                      "`main()` 的写盘循环里又出现了 CHAOS_ENTRIES（旧四条已作废，会写回产物）")
 
 # ---------- ⑤ 两处「待作者补原文」（正向钉住占位仍在）----------
 _bg10_todo_keys = ["%s.page.golden_feast_fd_foods_5_right" % _BG10_LANG,
@@ -6221,13 +6269,23 @@ else:
 #     zh 54BBC7A51136E9883B0F46E954554593… / en 2EFA1997FF53366C9FD811836DC29554… / 键数 111
 # 旧期望原文留档（bg-n10up 轮）：_BGN10_ZH_AFTER_SHA = "65C45198982830B343543F1A27D668CF7E125E4CC25C30427E96C3105FC00643"
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
-_BGN10_ZH_AFTER_SHA = "908BF4666ECE6055E6EDEE456DA218EE038E835E077349EC138FD9980921B395"
+# ★ 1.7 大轮（`bgbig`，2026-10-24）：新增「金铸的牢狱」26 条键（2 类别 + 6 条目 + 16 页正文 +
+#   2 页标题）⇒ 键数 838 → **864**、新增键 116 → **142**；两个文件级 SHA 同步换成本轮的值。
+#   旧值（第八轮 116）原文留档、不删：
+#     zh 908BF4666ECE6055E6EDEE456DA218EE… / en 465D9228E22666E45C92645266CDE49A…
+# ★ 1.7 大轮 C 段（`bgbig`）：成就 59 → 63（删 2 加 6）⇒ 新增键 142 → **150**、键数 864 → **872**；
+#   两个文件级 SHA 同步换成本轮的值。旧值（B 段 142）原文留档、不删：
+#     zh A54365AC96AE7B2E684CD2323ED0D455… / en 7E2360921393049FD9DCD56DF161A70D…
+# ★ 1.7 大轮 D 段（作者替换 zh_cn.json + 补 B/C 新键）：zh 850 键 / SHA 换成本轮最终值。
+#   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
+_BGN10_ZH_AFTER_SHA = "B8384693249D9B83EA0C44D8DCD6D06D8E926952ED8513D5399F931A3C716275"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
 # 旧期望原文留档（bg-n10up 轮）：_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
-_BGN10_EN_AFTER_SHA = "465D9228E22666E45C92645266CDE49ACCD46CAD2753B120684E27F41CBB308E"
+#   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
+_BGN10_EN_AFTER_SHA = "E60A0BC201B18A0FE76736E9C2E0DC1480C173E7310752AE1B97AD0BD8565A16"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6236,7 +6294,13 @@ _BGN10_EN_AFTER_SHA = "465D9228E22666E45C92645266CDE49ACCD46CAD2753B120684E27F41
 #   ⇒ 111 → **113**。旧值（轮9 的 111）原文留档、不删。
 # ★★ 第八轮（2026-10-22）：金钱妖音效 3 条字幕键（subtitles.bettergold.money_gremlin_*）
 #   ⇒ 113 + 3 = **116**。旧期望原文留档：_BGN10_NEW_LANG_KEYS = 113
-_BGN10_NEW_LANG_KEYS = 116    # zh/en 各 113 条 = 轮3..轮8 的 75 + 轮9 的 36 + bg-n10up 的 2
+# ★ 1.7 大轮（`bgbig`）：+ **26** 条（金铸的牢狱：2 类别 + 6 条目 + 16 页正文 + 2 页标题）
+#   ⇒ 116 → **142**。旧期望原文留档：_BGN10_NEW_LANG_KEYS = 116
+# ★ 1.7 大轮 C 段：B 的 26 + C 的 12（6 条新成就 ×2）− 4（被毙两条成就的 4 键）= 34
+#   ⇒ 116 + 34 = **150**。旧期望原文留档：`_BGN10_NEW_LANG_KEYS = 142`。
+# ★ D 段（作者替换 zh）：旧四条手册章节的 22 条键随作者文件一起消失 ⇒ 150 − 22 = **128**。
+#   旧期望原文留档：`_BGN10_NEW_LANG_KEYS = 150`。
+_BGN10_NEW_LANG_KEYS = 128    # zh/en 各 128 条（相对冻结副本的净新增）
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
 # _BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
 # _BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
@@ -6258,8 +6322,16 @@ if not _BGFIX11_FROZEN_ZH.is_file():
                  "找不到 zh 冻结副本 %s（反空转守护）" % _BGFIX11_FROZEN_ZH.relative_to(REPO))
 else:
     _bg11_frozen_zh = json.loads(_BGFIX11_FROZEN_ZH.read_text(encoding="utf-8"))
+    # ★ 1.7 大轮（bgbig）D 段：作者**自己**替换了 zh_cn.json（新文件在
+    #   `docs/zh-json-替换证据/zh_cn.before-replace.json`），其中两段巫毒文案改了值
+    #   ⇒ 这两条算"作者授权的改值"，不算被篡改；其余键仍逐字冻结。
+    _BG11_AUTHOR_CHANGED = {
+        "bettergold.handbook.page.gear_voodoogold_1_left",
+        "bettergold.handbook.page.gear_voodoogold_2_left",
+    }
     _bg11_zh_changed = sorted(k for k, v in _bg11_frozen_zh.items()
-                              if k in zh and str(zh[k]) != str(v))
+                              if k in zh and str(zh[k]) != str(v)
+                              and k not in _BG11_AUTHOR_CHANGED)
     _bg11_zh_missing = sorted(k for k in _bg11_frozen_zh if k not in zh)
     _bg11_zh_added = sorted(set(zh) - set(_bg11_frozen_zh))
     if _bg11_zh_changed or _bg11_zh_missing:
@@ -6720,14 +6792,37 @@ if not _r4_fruit.is_file():
     _bgn10r4_bad("bgn10r4-forbidden-fruit", "缺配方 chaosgold_forbidden_fruit.json")
 else:
     _r4_fruit_obj = json.loads(_r4_fruit.read_text(encoding="utf-8"))
-    _r4_ings = [i.get("item") for i in _r4_fruit_obj.get("ingredients", [])]
-    if _r4_fruit_obj.get("type") != "minecraft:crafting_shapeless":
-        _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方不是无序合成（作者只给了「1 苹果 + 8 混沌金锭」）")
-    if _r4_ings.count("minecraft:apple") != 1:
-        _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方里苹果不是 1 个：%s" % _r4_ings)
-    if _r4_ings.count("bettergold:chaosgold_ingot") != 8:
+    # ⚠ 1.7 大轮（2026-10-24，`bgbig`）第 A2 条**就地改口径**：禁果从「无序 1 苹果 + 8 锭」
+    #   改成「**有序 9 格满：中心 1 苹果 + 周围 8 锭**」。旧断言原文留档（已作废、不删）：
+    #     _r4_ings = [i.get("item") for i in _r4_fruit_obj.get("ingredients", [])]
+    #     if _r4_fruit_obj.get("type") != "minecraft:crafting_shapeless":
+    #         _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方不是无序合成（作者只给了「1 苹果 + 8 混沌金锭」）")
+    #     if _r4_ings.count("minecraft:apple") != 1: ...
+    #     if _r4_ings.count("bettergold:chaosgold_ingot") != 8: ...
+    # 逐格展开（本段在文件前部，`_rg_grid` 还没定义 ⇒ 就地展开 3×3，空格补空串）
+    _r4_pat = _r4_fruit_obj.get("pattern") or []
+    _r4_key = _r4_fruit_obj.get("key") or {}
+    _r4_cells = []
+    for _r in range(3):
+        for _c in range(3):
+            _ch = _r4_pat[_r][_c] if _r < len(_r4_pat) and _c < len(str(_r4_pat[_r])) else " "
+            if _ch == " ":
+                _r4_cells.append("")
+            else:
+                _ing = _r4_key.get(_ch) or {}
+                _r4_cells.append("item:" + _ing["item"] if "item" in _ing else "tag:" + _ing.get("tag", "?"))
+    if _r4_fruit_obj.get("type") != "minecraft:crafting_shaped":
         _bgn10r4_bad("bgn10r4-forbidden-fruit",
-                     "禁果配方里混沌金锭不是 8 个（实际 %d）" % _r4_ings.count("bettergold:chaosgold_ingot"))
+                     "禁果配方不是有序合成（作者第 A2 条：9 格满、有序）")
+    if _r4_cells.count("item:minecraft:apple") != 1:
+        _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方里苹果不是 1 个：%s" % _r4_cells)
+    if _r4_cells.count("item:bettergold:chaosgold_ingot") != 8:
+        _bgn10r4_bad("bgn10r4-forbidden-fruit",
+                     "禁果配方里混沌金锭不是 8 个（实际 %d）"
+                     % _r4_cells.count("item:bettergold:chaosgold_ingot"))
+    if len(_r4_cells) != 9 or _r4_cells[4] != "item:minecraft:apple":
+        _bgn10r4_bad("bgn10r4-forbidden-fruit",
+                     "禁果不是「中心苹果 + 周围 8 锭、9 格满」：%s" % _r4_cells)
     if _r4_fruit_obj.get("result", {}).get("id") != "bettergold:chaosgold_forbidden_fruit":
         _bgn10r4_bad("bgn10r4-forbidden-fruit", "禁果配方的产物不是 chaosgold_forbidden_fruit")
 _ci = JAVA / "material" / "ChaosItems.java"
@@ -8553,41 +8648,54 @@ def _bgn10r9_bad(tag: str, msg: str) -> None:
 
 
 _R9_LANG = "bettergold.handbook"
+# ---------- ⓪ 旧四条（bgbig 作废）：产物里必须不存在，生成器里必须仍在 RETIRED_ENTRIES ----------
+# ⚠ 旧期望原文留档（未删；它们已不再写盘）：
+#   "chaos_materials": (18, [...])  / "chaos_feast": (4, [...]) /
+#   "gear_chaosgold": (15, [...])   / "gear_chaosalloy": (11, [...])
+#   ⇒ 页数 18 / 4 / 15 / 11 仍在生成器里可算（下方 `_HB.entry_*()["pages"]` 自证）。
+_R9_RETIRED = {"chaos_materials": 18, "chaos_feast": 4,
+               "gear_chaosgold": 15, "gear_chaosalloy": 11}
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import generate_handbook_data as _HB      # noqa: E402  （页数的唯一真源）
+for _eid, _n in _R9_RETIRED.items():
+    _bgn10r9_checked += 4
+    for _side in (_ZH_BOOK, _EN_BOOK):
+        if (_side / "entries" / ("%s.json" % _eid)).exists():
+            _bgn10r9_bad("bgn10r9-retired",
+                         "旧条目 %s 又回到了产物里（%s）：它已由「金铸的牢狱」6 章取代"
+                         % (_eid, _side.name))
+    _b = getattr(_HB, "entry_%s" % _eid, None)
+    if _b is None:
+        _bgn10r9_bad("bgn10r9-retired",
+                     "生成器里 `entry_%s` 的构造函数被删掉了 —— 作废内容必须原样保留" % _eid)
+    else:
+        if len(_b()["pages"]) != _n:
+            _bgn10r9_bad("bgn10r9-retired",
+                         "生成器里 entry_%s 的页数不再是 %d（实际 %d）"
+                         % (_eid, _n, len(_b()["pages"])))
+        if _b not in _HB.RETIRED_ENTRIES:
+            _bgn10r9_bad("bgn10r9-retired",
+                         "生成器的 RETIRED_ENTRIES 里没有 entry_%s（作废条目失去留档入口）" % _eid)
+# ---------- ① 新 6 章（金铸的牢狱）的页数 / 页型序列 ----------
 _R9_ENTRIES = {
-    # 条目 -> (页数, 页型序列)
-    # ⚠ 1.7 `bg-n10up`（2026-10-18）第三次换锚点：作者补了**混沌金锭的上游**（币串 → 3 币 /
-    #   币 →（烧炼）→ 粒）⇒ 材料章 **16 → 18 页**：在第 4 页（币的 spotlight）之后插入
-    #   「patchouli:crafting（币串→3币）」+「patchouli:smelting（币→粒）」两页，各 1 条配方。
-    #   旧期望（16 页 / 无 smelting 页）**原文留档、已作废**：
-    #     "chaos_materials": (16, ["patchouli:text", "patchouli:crafting", "patchouli:crafting",
-    #                              "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
-    #                              "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
-    #                              "patchouli:crafting", "patchouli:crafting", "patchouli:crafting",
-    #                              "patchouli:text", "patchouli:crafting", "patchouli:crafting",
-    #                              "patchouli:spotlight"]),
-    #   页数变了**不等于放宽**：这两条的具体 id / 页序 / 每页配方数由 `[bgn10up-*]` 逐条钉住。
-    "chaos_materials": (18, ["patchouli:text", "patchouli:crafting", "patchouli:crafting",
-                             "patchouli:spotlight", "patchouli:crafting", "patchouli:smelting",
-                             "patchouli:crafting", "patchouli:crafting",
-                             "patchouli:spotlight", "patchouli:crafting", "patchouli:crafting",
-                             "patchouli:crafting", "patchouli:crafting", "patchouli:crafting",
-                             "patchouli:text", "patchouli:crafting", "patchouli:crafting",
-                             "patchouli:spotlight"]),
-    "chaos_feast": (4, ["patchouli:spotlight", "patchouli:crafting",
-                        "patchouli:spotlight", "patchouli:crafting"]),
-    # ⚠ 旧期望（bg-n10r9，7 页 = 3 文案 + 3 轮换图标 + 1 附魔书配方）**原文留档、已作废**：
-    #       "gear_chaosgold": (7, ["patchouli:text"] * 3 + ["patchouli:spotlight"] * 3
-    #                             + ["patchouli:crafting"]),
-    #   1.7 bg-n10rg（作者 2026-10-17「原版装备在工作台上面怎么来合成它就怎么来」）之后，
-    #   混沌金装备有 **11 件工作台配方** ⇒ 本章 13 页 = 3 文案 + **6 页配方** + 3 轮换图标
-    #   + 1 附魔书配方。页数与页型序列跟着改，**不等于放宽**：那 11 条具体引用由
-    #   `[bgn10rg-handbook]` 逐条钉住（顺序 / 每页最多 2 条 / 无死链）。
-    # ⚠ 第二次换锚点（`bg-n10rc2`，2026-10-18）：4 件补齐 ⇒ **15 件配方 = 8 页**
-    #   ⇒ 本章 **15 页** = 3 文案 + **8 页配方** + 3 轮换图标 + 1 附魔书配方。
-    #   旧期望（13 页 / 6 页配方）**原文留档**：`"gear_chaosgold": (13, [...crafting]*6 + ...)`。
-    "gear_chaosgold": (15, ["patchouli:text"] * 3 + ["patchouli:crafting"] * 8
-                           + ["patchouli:spotlight"] * 3 + ["patchouli:crafting"]),
-    "gear_chaosalloy": (11, ["patchouli:text"] * 3 + ["patchouli:smithing"] * 8),
+    # 章1 金之牢狱主体（2 页纯文案）
+    "prison_main": (2, ["patchouli:text"] * 2),
+    # 章2 金钱妖的记事（3 页纯文案）
+    "prison_gremlin": (3, ["patchouli:text"] * 3),
+    # 章3 混沌金币与万坚金砧（轮换栈 + 3 页配方）
+    "prison_coin_anvil": (4, ["patchouli:spotlight", "patchouli:crafting",
+                              "patchouli:crafting", "patchouli:crafting"]),
+    # 章4 混沌金的主要内容（4 页 + 15 件工作台配方 = 8 页）
+    #   ⚠ 「烧制（smelting）+ 制作（crafting）」两种配方类型不能同页 ⇒ 拆成相邻两页。
+    "prison_chaosgold_main": (12, ["patchouli:text", "patchouli:smelting", "patchouli:crafting",
+                                   "patchouli:text"] + ["patchouli:crafting"] * 8),
+    # 章5 混沌金的副要内容（2 页配方 + 1 页轮换栈）
+    "prison_chaosgold_extra": (3, ["patchouli:crafting", "patchouli:crafting",
+                                   "patchouli:spotlight"]),
+    # 章6 崩乱合金的内容（5 页 + 15 件锻造配方 = 8 页）
+    "prison_chaosalloy": (13, ["patchouli:text", "patchouli:crafting", "patchouli:text",
+                               "patchouli:text", "patchouli:crafting"]
+                              + ["patchouli:smithing"] * 8),
 }
 _R9_RECIPE_REFS = set()
 _R9_ITEM_REFS = set()
@@ -8635,7 +8743,9 @@ _r9_no_model = sorted(_i for _i in _R9_ITEM_REFS
 _bgn10r9_checked += 2
 if _r9_no_model:
     _bgn10r9_bad("bgn10r9-book", "两族条目里的图标没有物品模型（客户端紫黑格）：%s" % _r9_no_model[:5])
-if len(_R9_ITEM_REFS) < 20:
+# ⚠ 1.7 大轮：新 6 章的图标引用 = 币串 / 币 / 11 件混沌金建材 = 13 件（旧两族是 33 件）。
+#   阈值跟着改成 12：仍然抓得到"图标表被清空 / 扫描根搬走"的假绿。
+if len(_R9_ITEM_REFS) < 12:
     _bgn10r9_bad("bgn10r9-book", "两族条目里的图标引用只有 %d 件（反空转守护）" % len(_R9_ITEM_REFS))
 
 # ---------- ② 语言键：条目名 + 页键（zh/en 都要有，且 en 不许等于 zh）----------
@@ -8663,17 +8773,21 @@ for _k in _r9_lang_keys:
     if str(zh[_k]) == str(en[_k]):
         _bgn10r9_bad("bgn10r9-lang", "英文与中文逐字相同（没翻译）：%s" % _k)
 
-# ---------- ③ 成就：两族 8 条 ----------
-# ⛔ 旧口径（原文留档）：两条链首的 parent 都写 `bettergold:treasure/any_core_material`；
-#   作者 2026-10-18「两族不在贵金范畴」⇒ 现行 = `bettergold:root`（`bg-n10fix` ⑨）。
+# ---------- ③ 成就：金之牢狱线 10 条（1.7 大轮 bgbig）----------
+# ⛔ 旧口径（原文留档、已作废）：两族 8 条 ——
+#     treasure/chaos_coin(root) / chaosgold/ingot / weapon / armor /
+#     chaosalloy/ingot(root) / chaosalloy/supply / weapon / armor
+#   作者 2026-10-24 毙掉 `treasure/chaos_coin` 与 `metal/chaosalloy/supply`，并新增 4 条。
 _R9_ADV = {
-    "treasure/chaos_coin": ("bettergold:root", "task"),
-    "metal/chaosgold/ingot": ("bettergold:treasure/chaos_coin", "task"),
+    "treasure/golden_prison": ("bettergold:root", "task"),
+    "metal/chaosgold/dance": ("bettergold:treasure/golden_prison", "task"),
+    "metal/chaosgold/craft": ("bettergold:metal/chaosgold/dance", "task"),
+    "metal/chaosgold/enchant": ("bettergold:metal/chaosgold/dance", "task"),
+    "metal/chaosgold/ingot": ("bettergold:metal/chaosgold/dance", "task"),
     "metal/chaosgold/weapon": ("bettergold:metal/chaosgold/ingot", "task"),
     "metal/chaosgold/armor": ("bettergold:metal/chaosgold/weapon", "challenge"),
-    "metal/chaosalloy/ingot": ("bettergold:root", "task"),
-    "metal/chaosalloy/supply": ("bettergold:metal/chaosalloy/ingot", "task"),
-    "metal/chaosalloy/weapon": ("bettergold:metal/chaosalloy/supply", "task"),
+    "metal/chaosalloy/ingot": ("bettergold:metal/chaosgold/ingot", "task"),
+    "metal/chaosalloy/weapon": ("bettergold:metal/chaosalloy/ingot", "task"),
     "metal/chaosalloy/armor": ("bettergold:metal/chaosalloy/weapon", "challenge"),
 }
 for _ap, (_apar, _aframe) in _R9_ADV.items():
@@ -8692,7 +8806,9 @@ for _ap, (_apar, _aframe) in _R9_ADV.items():
     _bgn10r9_checked += 1
     if not all(t for t in _atr):
         _bgn10r9_bad("bgn10r9-adv", "%s 有判据没有 conditions" % _ap)
-# 「获得即解锁」：两族 8 条的判据触发类型必须全部是 inventory_changed
+# 「获得即解锁」：金之牢狱线 10 条的判据触发类型只许是 inventory_changed
+#   + **红中黄室那一格**的 `minecraft:location`（1.21.1 没有 enter_structure trigger）。
+#   ⚠ 旧口径（两族 8 条、清一色 inventory_changed）原文留档、已作废。
 _r9_triggers = set()
 for _ap in _R9_ADV:
     _af = _ADV / (_ap + ".json")
@@ -8700,9 +8816,9 @@ for _ap in _R9_ADV:
         _r9_triggers.update(c.get("trigger")
                             for c in (json.loads(_af.read_text(encoding="utf-8")).get("criteria") or {}).values())
 _bgn10r9_checked += 1
-if _r9_triggers != {"minecraft:inventory_changed"}:
+if _r9_triggers != {"minecraft:inventory_changed", "minecraft:location"}:
     _bgn10r9_bad("bgn10r9-adv",
-                 "两族 8 条的触发类型不是清一色 inventory_changed（「获得即解锁」）：%s" % sorted(_r9_triggers))
+                 "金之牢狱线的触发类型不是「inventory_changed + location」：%s" % sorted(_r9_triggers))
 # 武器成就的刀判据 = 单个标签字符串（bg-fix3 §二 的安全范式）
 for _m in ("chaosgold", "chaosalloy"):
     _af = _ADV / "metal" / _m / "weapon.json"
@@ -8732,8 +8848,9 @@ for _ap in _R9_ADV:
         if _tr:
             _r9_adv_keys.append(_tr)
 _bgn10r9_checked += 2
-if len(_r9_adv_keys) != 16:
-    _bgn10r9_bad("bgn10r9-lang", "两族成就的语言键不是 16 条（8 条 × 2）：%d" % len(_r9_adv_keys))
+# ⚠ 旧期望原文留档（两族 8 条 × 2 = 16）；1.7 大轮起 10 条 × 2 = **20**。
+if len(_r9_adv_keys) != 20:
+    _bgn10r9_bad("bgn10r9-lang", "金之牢狱线成就的语言键不是 20 条（10 条 × 2）：%d" % len(_r9_adv_keys))
 for _k in _r9_adv_keys:
     _bgn10r9_checked += 2
     if _k not in zh or _k not in en:
@@ -9124,11 +9241,14 @@ _RG_METAL_CELL = "item:" + _RG_INGOT
 #     crossbow: ("crossbow.json", ["#&#", "~$~", " # "], {#: stick, &: iron_ingot, ~: string, $: tripwire_hook})
 #   ⇒ 现行口径见下表（`_RG_VANILLA` 里那两条**保留**，只作旧形状的来源留档）。
 # 逐格（行, 列）：
-#   盾牌   —— 3×3 除左下 (2,0) / 右下 (2,2) 外全填 7 格，中心 (1,1) = 苹果 ⇒ **6 锭 + 1 苹果**
-#             （派单「7 锭 + 1 苹果 = 8 格，两角空」在 9 格里算术不成立，按位置描述落；见 §29 ⑨-4）
+#   盾牌   —— **1.7 大轮第 A1 条（2026-10-24）：7 个混沌金锭、不要苹果**
+#             ⇒ 3×3 除左下 (2,0) / 右下 (2,2) 外全填 7 格，**中心 (1,1) 也是锭**。
+#             ⚠ 旧口径原文留档（`gpt` 轮第 ⑨-4 条，已作废、不删）：
+#               `("shield", ["XXX", "XAX", " X "], {"X": 锭, "A": 苹果})` ⇒ **6 锭 + 1 苹果**
+#               （派单「7 锭 + 1 苹果 = 8 格，两角空」在 9 格里算术不成立，按位置描述落；见 §29 ⑨-4）
 #   弩     —— 上排 3 格 + 下排中间 (2,1) = 混沌金锭（共 4）；中 (1,1) = 绊线钩；左 (1,0) / 右 (1,2) = 线
 _RG_REWRITTEN = {
-    "shield": (["XXX", "XAX", " X "], {"X": {"item": _RG_INGOT}, "A": {"item": "minecraft:apple"}}),
+    "shield": (["XXX", "XXX", " X "], {"X": {"item": _RG_INGOT}}),
     "crossbow": (["XXX", "L$R", " X "], {"X": {"item": _RG_INGOT},
                                          "L": {"item": "minecraft:string"},
                                          "R": {"item": "minecraft:string"},
@@ -9431,41 +9551,46 @@ except SystemExit:
 except Exception as _e:                           # noqa: BLE001
     _bgn10rg_bad("bgn10rg-generator", "生成器加载失败：" + repr(_e))
 
-# ---------- ⑤ 手册：gear_chaosgold 的 15 页（3 文案 + 8 页配方 + 3 图标 + 1 附魔书配方） ----------
-#   ⚠ 旧值 13（6 页配方 / 11 件）**原文留档、已作废**：`_RG_BOOK_PAGES = 13`。
-_RG_BOOK_PAGES = 15
+# ---------- ⑤ 手册：混沌金 15 件配方图集（1.7 大轮起搬进「金铸的牢狱」第 4 章） ----------
+# ⚠ **旧口径原文留档、已作废**（`bgbig` 之前的 `gear_chaosgold` 15 页 = 3 文案 + 8 页配方 +
+#   3 图标 + 1 附魔书配方；更早的 13 页 = 6 页配方 / 11 件，`_RG_BOOK_PAGES = 13`）：
+#   那个条目已作废、不再产出，配方图集原样搬进 `prison_chaosgold_main`（3 页 + 8 页配方）。
+_RG_BOOK_PAGES = 12                       # prison_chaosgold_main：4 页 + 8 页配方
 _bgn10rg_checked += 5
 for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
-    _ep = _d / "entries" / "gear_chaosgold.json"
+    _ep = _d / "entries" / "prison_chaosgold_main.json"
     if not _ep.is_file():
-        _bgn10rg_bad("bgn10rg-handbook", _tag + " 缺 entries/gear_chaosgold.json")
+        _bgn10rg_bad("bgn10rg-handbook", _tag + " 缺 entries/prison_chaosgold_main.json")
         continue
     _ej = json.loads(_ep.read_text(encoding="utf-8"))
     _pages = _ej.get("pages") or []
     if len(_pages) != _RG_BOOK_PAGES:
         _bgn10rg_bad("bgn10rg-handbook",
-                     _tag + " 的 gear_chaosgold 页数不是 " + str(_RG_BOOK_PAGES)
+                     _tag + " 的 prison_chaosgold_main 页数不是 " + str(_RG_BOOK_PAGES)
                      + "（实际 " + str(len(_pages)) + "）")
         continue
     _types = [p.get("type") for p in _pages]
-    _want_types = (["patchouli:text"] * 3 + ["patchouli:crafting"] * 8
-                   + ["patchouli:spotlight"] * 3 + ["patchouli:crafting"])
+    _want_types = (["patchouli:text", "patchouli:smelting", "patchouli:crafting", "patchouli:text"]
+                   + ["patchouli:crafting"] * 8)
     if _types != _want_types:
         _bgn10rg_bad("bgn10rg-handbook",
                      _tag + " 的页型序列不对：" + repr(_types))
-    # 配方页（第 4~11 页）必须**恰好**是这 15 件、顺序 = _RG_GEAR_ALL、每页最多 2 条
+    # 配方页（第 5~12 页）必须**恰好**是这 15 件、顺序 = §八 FORGE_ORDER + 乐事刀、每页最多 2 条
     _refs = []
-    for _pg in _pages[3:11]:
+    for _pg in _pages[4:12]:
         _on_page = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
         _bgn10rg_checked += 1
         if len(_on_page) > 2:
             _bgn10rg_bad("bgn10rg-handbook",
                          _tag + " 有配方页塞了 " + str(len(_on_page)) + " 条（Patchouli 上限 2）")
         _refs.extend(_on_page)
-    _want_refs = [_RG_NS + ":chaosgold_" + _g for _g in _RG_GEAR_ALL]
+    _want_refs = ["bettergold:chaosgold_" + _g
+                  for _g in ("sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
+                             "shovel", "hoe", "shield", "helmet", "chestplate",
+                             "leggings", "boots", "knife")]
     if _refs != _want_refs:
         _bgn10rg_bad("bgn10rg-handbook",
-                     _tag + " 的 15 件配方引用与 _RG_GEAR_ALL 不一致：" + repr(_refs))
+                     _tag + " 的 15 件配方引用与「贵金装备章节」顺序不一致：" + repr(_refs))
     # 死链：每条引用都要真的落在 data/bettergold/recipe/
     _dead = [_r for _r in _refs
              if not (_RC_DATA / (_r.split(":", 1)[1] + ".json")).is_file()]
@@ -9474,12 +9599,12 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
         _bgn10rg_bad("bgn10rg-handbook", _tag + " 的配方页有死链：" + repr(_dead))
 # zh / en 结构必须相同
 _bgn10rg_checked += 1
-_zh_ep = _ZH_BOOK / "entries" / "gear_chaosgold.json"
-_en_ep = _EN_BOOK / "entries" / "gear_chaosgold.json"
+_zh_ep = _ZH_BOOK / "entries" / "prison_chaosgold_main.json"
+_en_ep = _EN_BOOK / "entries" / "prison_chaosgold_main.json"
 if _zh_ep.is_file() and _en_ep.is_file():
     if (json.loads(_zh_ep.read_text(encoding="utf-8")).get("pages")
             != json.loads(_en_ep.read_text(encoding="utf-8")).get("pages")):
-        _bgn10rg_bad("bgn10rg-handbook", "gear_chaosgold 的 zh / en 页列表不一致")
+        _bgn10rg_bad("bgn10rg-handbook", "prison_chaosgold_main 的 zh / en 页列表不一致")
 
 # ---------- ⑥ 文案口径 + 文档 ----------
 _bgn10rg_checked += 4
@@ -9489,13 +9614,13 @@ try:
 except Exception as _e:                           # noqa: BLE001
     _rg_zh_lang = {}
     _bgn10rg_bad("bgn10rg-lang", "读不了 zh_cn.json：" + repr(_e))
-_rg_text = _rg_zh_lang.get("bettergold.handbook.page.gear_chaosgold_1_right", "")
-for _needle, _why in (("工作台", "新口径必须说清是「工作台」合成"),
-                      ("11 件", "新口径必须写清 11 件（不是 14 件）"),
-                      ("4 件", "新口径必须写清剩下 4 件没有工作台配方")):
+# ⚠ 旧 key / 旧 needle 原文留档（已作废）：`gear_chaosgold_1_right` + 「11 件」「4 件」。
+#   1.7 大轮起，混沌金装备正文搬进「金铸的牢狱」第 4 章第 2 页左（作者本轮给的新文案）。
+_rg_text = _rg_zh_lang.get("bettergold.handbook.page.prison_chaosgold_main_2_left", "")
+for _needle, _why in (("工作台", "新口径必须说清是「工作台」合成"),):
     if _needle not in _rg_text:
         _bgn10rg_bad("bgn10rg-lang",
-                     "手册「混沌金装备」正文没提「" + _needle + "」：" + _why)
+                     "手册「混沌金主要内容」正文没提「" + _needle + "」：" + _why)
 if "只展示物品" in _rg_text:
     _bgn10rg_bad("bgn10rg-lang",
                  "手册正文仍是旧口径（「只展示物品，不展示配方」）—— 现在已经有配方页了")
@@ -9943,9 +10068,11 @@ if _rc2_recipe_code.count("new ItemStack(Items.GLASS_BOTTLE)") != 1:
 # ---------- ⑤ 手册：4 件新配方各有引用；乐事刀那一页**单独一条**（不占第二个槽） ----------
 _bgn10rc2_checked += 6
 for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
-    _ep = _d / "entries" / "gear_chaosgold.json"
+    # ⚠ 旧目标 `gear_chaosgold.json` 原文留档（已作废）：1.7 大轮起配方图集在
+    #   `prison_chaosgold_main.json`（金铸的牢狱第 4 章）。
+    _ep = _d / "entries" / "prison_chaosgold_main.json"
     if not _ep.is_file():
-        _bgn10rc2_bad("bgn10rc2-handbook", _tag + " 缺 entries/gear_chaosgold.json")
+        _bgn10rc2_bad("bgn10rc2-handbook", _tag + " 缺 entries/prison_chaosgold_main.json")
         continue
     _pages = json.loads(_ep.read_text(encoding="utf-8")).get("pages") or []
     _all_refs = []
@@ -9974,16 +10101,15 @@ try:
 except Exception as _e:                                    # noqa: BLE001
     _rc2_zh_lang = {}
     _bgn10rc2_bad("bgn10rc2-lang", "读不了 zh_cn.json：" + repr(_e))
-_rc2_text = _rc2_zh_lang.get("bettergold.handbook.page.gear_chaosgold_1_right", "")
-for _needle, _why in (("15 件", "新口径必须写清 15 件（11 + 补的 4）"),
-                      ("原创形状", "三叉戟必须写明是原创形状"),
-                      ("待作者确认", "三叉戟的原创形状必须标注待作者确认"),
-                      ("乐事", "乐事刀那条必须提到（它挂 FD 条件）")):
-    if _needle not in _rc2_text:
-        _bgn10rc2_bad("bgn10rc2-lang", "手册「混沌金装备」正文没有「" + _needle + "」：" + _why)
+# ⚠ 旧 key / 旧 needle 原文留档（已作废）：`gear_chaosgold_1_right` +「15 件」「原创形状」
+#   「待作者确认」「乐事」。作者本轮给的新文案（逐字落 `prison_chaosgold_main_2_left`）
+#   不再讲这些实现细节 ⇒ 旧正向 needle 不再适用；负向（旧口径不许复现）保留。
+_rc2_text = _rc2_zh_lang.get("bettergold.handbook.page.prison_chaosgold_main_2_left", "")
 if "暂时没有工作台配方" in _rc2_text:
     _bgn10rc2_bad("bgn10rc2-lang",
                   "手册正文仍是旧口径（「暂时没有工作台配方」）—— 4 件已经补齐了")
+if not _rc2_text.strip():
+    _bgn10rc2_bad("bgn10rc2-lang", "手册「混沌金主要内容」正文为空（作者逐字文案没落进去）")
 
 # ---------- ⑦ 文档侧：本轮口径 + 旧口径标注 + 「第三个不动」都要落档 ----------
 _RC2_DOC = REPO / "docs" / "1.7-\u6df7\u6c8c\u91d1\u4e0e\u5d29\u4e71\u5408\u91d1-\u9700\u6c42\u7acb\u6863.md"
@@ -10376,25 +10502,31 @@ try:
 except Exception as _e:                                   # noqa: BLE001
     _bgn10up_bad("bgn10up-generator", "生成器加载失败：" + repr(_e))
 
-# ---------- 手册：chaos_materials 18 页 + 两条新配方**各自单独一页** + 无死链 ----------
+# ---------- 手册：上游两条搬进「金铸的牢狱」第 4 章（1 页 2 配方）+ 无死链 ----------
+# ⚠ 旧目标 `chaos_materials.json`（18 页，第 5/6 页各自单独一页）原文留档、已作废：
+#   1.7 大轮起旧章不产出，上游两条改成 `prison_chaosgold_main` 第 2 页（上 = 烧炼 / 下 = 9 粒 → 锭），
+#   仍然满足「每页 ≤2 个配方」。
 _bgn10up_checked += 4
 for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
-    _ep = _d / "entries" / "chaos_materials.json"
+    _ep = _d / "entries" / "prison_chaosgold_main.json"
     if not _ep.is_file():
-        _bgn10up_bad("bgn10up-handbook", _tag + " 缺 entries/chaos_materials.json")
+        _bgn10up_bad("bgn10up-handbook", _tag + " 缺 entries/prison_chaosgold_main.json")
         continue
     _pages = json.loads(_ep.read_text(encoding="utf-8")).get("pages") or []
     _bgn10up_checked += 1
-    if len(_pages) != 18:
-        _bgn10up_bad("bgn10up-handbook", _tag + " 的 chaos_materials 不是 18 页（实际 " + str(len(_pages)) + "）")
+    if len(_pages) != 12:
+        _bgn10up_bad("bgn10up-handbook", _tag + " 的 prison_chaosgold_main 不是 12 页（实际 " + str(len(_pages)) + "）")
         continue
-    # 第 5 / 6 页（下标 4 / 5）= 本轮两条，顺序固定
-    _bgn10up_checked += 3
-    _p5, _p6 = _pages[4], _pages[5]
-    if (_p5.get("type"), _p5.get("recipe"), _p5.get("recipe2")) != ("patchouli:crafting", "bettergold:chaos_coin_from_string", None):
-        _bgn10up_bad("bgn10up-handbook", _tag + " 第 5 页不是「币串 → 3 币」的单配方页：" + repr(_p5))
-    if (_p6.get("type"), _p6.get("recipe"), _p6.get("recipe2")) != ("patchouli:smelting", "bettergold:chaos_coin_smelting", None):
-        _bgn10up_bad("bgn10up-handbook", _tag + " 第 6 页不是「币 → 粒」的单配方页：" + repr(_p6))
+    # 第 2 / 3 页（下标 1 / 2）= 上「币 →（烧炼）→ 粒」/ 下「9 粒 → 1 锭」
+    #   ⚠ 两种配方类型（smelting / crafting）不能同页 ⇒ 拆成相邻两页（PATCHOULI 结构上限）。
+    _bgn10up_checked += 2
+    _p2, _p3 = _pages[1], _pages[2]
+    if (_p2.get("type"), _p2.get("recipe"), _p2.get("recipe2")) != (
+            "patchouli:smelting", "bettergold:chaos_coin_smelting", None):
+        _bgn10up_bad("bgn10up-handbook", _tag + " 第 2 页不是「币 → 粒」熔炉页：" + repr(_p2))
+    if (_p3.get("type"), _p3.get("recipe"), _p3.get("recipe2")) != (
+            "patchouli:crafting", "bettergold:chaosgold_ingot_from_nugget", None):
+        _bgn10up_bad("bgn10up-handbook", _tag + " 第 3 页不是「9 粒 → 1 锭」工作台页：" + repr(_p3))
     # 每页配方数 ≤ 2（Patchouli 的结构上限）+ 引用不许死链
     for _pg in _pages:
         _on = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
@@ -10406,47 +10538,39 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
                 _bgn10up_bad("bgn10up-handbook", _tag + " 配方页死链：" + _r)
 _bgn10up_checked += 1
 if _ZH_BOOK.is_dir() and _EN_BOOK.is_dir():
-    _zp = _ZH_BOOK / "entries" / "chaos_materials.json"
-    _epn = _EN_BOOK / "entries" / "chaos_materials.json"
+    _zp = _ZH_BOOK / "entries" / "prison_chaosgold_main.json"
+    _epn = _EN_BOOK / "entries" / "prison_chaosgold_main.json"
     if _zp.is_file() and _epn.is_file() and (json.loads(_zp.read_text(encoding="utf-8")).get("pages")
                                              != json.loads(_epn.read_text(encoding="utf-8")).get("pages")):
-        _bgn10up_bad("bgn10up-handbook", "chaos_materials 的 zh / en 页列表不一致")
+        _bgn10up_bad("bgn10up-handbook", "prison_chaosgold_main 的 zh / en 页列表不一致")
 
-# ---------- 文案：旧的「实现说明（关系未定）」必须已被作者原话替换 ----------
-_bgn10up_checked += 8
+# ---------- 文案：旧口径不许复现（新章文案是作者本轮逐字给的，见 §30） ----------
+# ⚠ 旧 key / 旧 needle 原文留档（已作废）：`chaos_materials_2_right` / `chaos_materials_1_left`
+#   + 「混沌金币串合成分解出的三个」「3 个混沌金币」「第 3 屏」「9 个混沌金粒」+
+#   `chaos_materials_upstream_string` / `_upstream_smelt`。旧章不产出后这些键不再存在，
+#   正向 needle 跟着作废；保留"旧口径不许复现"的负向。
+_bgn10up_checked += 4
 _up_zh = zh
 _up_en = en
-_up_2r = str(_up_zh.get("bettergold.handbook.page.chaos_materials_2_right", ""))
-_up_1l = str(_up_zh.get("bettergold.handbook.page.chaos_materials_1_left", ""))
-if "关系作者还没有说明" in _up_2r or "两件不同的物品" in _up_2r:
-    _bgn10up_bad("bgn10up-lang", "手册「混沌金币」页仍是旧口径（「两件不同物品 / 关系未定」）")
-for _needle, _why in (("混沌金币串合成分解出的三个", "没把作者原话收进「币」那一页"),
-                      ("3 个混沌金币", "没说清 1 个币串给 3 个币"),
-                      ("第 3 屏", "没有指向新的上游那一屏")):
-    if _needle not in _up_2r:
-        _bgn10up_bad("bgn10up-lang", "手册「混沌金币」页缺「" + _needle + "」：" + _why)
-for _needle, _why in (("混沌金币串", "材料链正文没提币串"),
-                      ("烧炼", "材料链正文没提烧炼"),
-                      ("9 个混沌金粒", "材料链正文没提 9 粒 → 1 锭")):
-    if _needle not in _up_1l:
-        _bgn10up_bad("bgn10up-lang", "手册材料链正文缺「" + _needle + "」：" + _why)
-for _k in ("bettergold.handbook.page.chaos_materials_upstream_string",
-           "bettergold.handbook.page.chaos_materials_upstream_smelt"):
-    _bgn10up_checked += 1
-    if _k not in _up_zh or _k not in _up_en:
-        _bgn10up_bad("bgn10up-lang", "新页正文缺中文或英文：" + _k)
-    elif not str(_up_zh[_k]).strip() or str(_up_zh[_k]) == str(_up_en[_k]):
-        _bgn10up_bad("bgn10up-lang", "新页正文空值或中英逐字相同：" + _k)
-_up_en2r = str(_up_en.get("bettergold.handbook.page.chaos_materials_2_right", ""))
-if "has not been stated by the author" in _up_en2r:
-    _bgn10up_bad("bgn10up-lang", "英文「混沌金币」页仍是旧口径（未说明上下游）")
+_up_1l = str(_up_zh.get("bettergold.handbook.page.prison_coin_anvil_1_left", ""))
+_up_en1l = str(_up_en.get("bettergold.handbook.page.prison_coin_anvil_1_left", ""))
+for _bad in ("关系作者还没有说明", "两件不同的物品"):
+    if _bad in _up_1l:
+        _bgn10up_bad("bgn10up-lang", "手册「混沌金币与万坚金砧」页仍是旧口径：" + _bad)
+if not _up_1l.strip() or not _up_en1l.strip() or _up_1l == _up_en1l:
+    _bgn10up_bad("bgn10up-lang",
+                 "prison_coin_anvil_1_left 的中/英文缺失、为空或逐字相同")
 
 # ---------- 手册生成器：这两页是**生成器**写的（不是手改产物）----------
 _up_hb_src = _up_strip_py_comments(
     (REPO / "tools" / "asset-generator" / "generate_handbook_data.py").read_text(encoding="utf-8"))
+# ⚠ 旧 needle 原文留档（已作废）：`crafting_page("chaos_coin_from_string"` /
+#   `smelting_page("chaos_coin_smelting"`（旧章 `chaos_materials` 的两页）。
+#   1.7 大轮起，上游两条改成 `prison_chaosgold_main` 的「熔炉页 + 工作台页」相邻两页。
 _bgn10up_checked += 2
-for _needle, _why in (('crafting_page("chaos_coin_from_string"', "手册生成器里没有「币串 → 3 币」那一页"),
-                      ('smelting_page("chaos_coin_smelting"', "手册生成器里没有「币 → 粒」那一页")):
+for _needle, _why in (('smelting_page("chaos_coin_smelting")', "手册生成器里没有「币 → 粒」熔炉页"),
+                      ('crafting_page("chaosgold_ingot_from_nugget")',
+                       "手册生成器里没有「9 粒 → 1 锭」工作台页")):
     if _needle not in _up_hb_src:
         _bgn10up_bad("bgn10up-handbook-gen", _why + "：缺 " + _needle + "（去注释源码里）")
 
@@ -10703,16 +10827,22 @@ try:
                    "核心材料不是 8 项（实际 " + str(len(_bgfix_adv.CORE_MATERIALS)) + "）")
 except Exception as _e:                                    # noqa: BLE001
     _bgfix_bad("bgn10fix-adv", "成就生成器加载失败：" + repr(_e))
-for _adv_name in ("treasure/chaos_coin", "metal/chaosalloy/ingot"):
-    _bgn10fix_checked += 1
-    _adv_path = _ADV / (_adv_name + ".json")
-    if not _adv_path.is_file():
-        _bgfix_bad("bgn10fix-adv", "缺成就 " + _adv_name)
-        continue
+# ⚠ 旧口径原文留档（已作废）：`treasure/chaos_coin` 与 `metal/chaosalloy/ingot`
+#   两条的 parent 都曾是 `bettergold:root`（作者 2026-10-18「两族不在贵金范畴」）。
+#   1.7 大轮（bgbig）起：`treasure/chaos_coin` **被作者毙掉**（文件必须不存在）；
+#   崩乱合金锭改为挂在**混沌金锭**之下（「以混沌金锭为基」）。
+_bgn10fix_checked += 2
+if (_ADV / "treasure" / "chaos_coin.json").is_file():
+    _bgfix_bad("bgn10fix-adv", "treasure/chaos_coin 已作废，产物里不许再存在")
+_adv_path = _ADV / "metal" / "chaosalloy" / "ingot.json"
+if not _adv_path.is_file():
+    _bgfix_bad("bgn10fix-adv", "缺成就 metal/chaosalloy/ingot")
+else:
     _adv_obj = json.loads(_adv_path.read_text(encoding="utf-8"))
-    if _adv_obj.get("parent") != "bettergold:root":
+    if _adv_obj.get("parent") != "bettergold:metal/chaosgold/ingot":
         _bgfix_bad("bgn10fix-adv",
-                   _adv_name + " 的 parent 不是 bettergold:root：" + repr(_adv_obj.get("parent")))
+                   "metal/chaosalloy/ingot 的 parent 不是 bettergold:metal/chaosgold/ingot："
+                   + repr(_adv_obj.get("parent")))
 
 # ---------- ⑩ 区间值：区间随机 + 三个触发点 ----------
 _bgn10fix_checked += 8
@@ -11303,13 +11433,40 @@ else:
     if not _vs_body:
         _gpt_bad("gpt6-voodoo-magic", "找不到 voodooSettleSource 方法体")
     else:
+        # ⚠ 1.7 大轮第 A3 条**就地改口径**：结算类型从原版 minecraft:magic 换成自带
+        #   bettergold:voodoo_burst（并显式登记进 #minecraft:bypasses_armor）。
+        #   旧 needle 原文留档（已作废、不删）：
+        #     ("DamageTypes.MAGIC", "结算伤害类型不是 minecraft:magic")
+        #     ("new net.minecraft.world.damagesource.DamageSource(holder, null, owner)",
+        #      "结算伤害源没有带 owner（new DamageSource(holder, null, owner)）")
         for _needle, _why in (
-                ("DamageTypes.MAGIC", "结算伤害类型不是 minecraft:magic"),
-                ("new net.minecraft.world.damagesource.DamageSource(holder, null, owner)",
-                 "结算伤害源没有带 owner（new DamageSource(holder, null, owner)）")):
+                ("ModDamageTypes.VOODOO_BURST", "结算伤害类型不是自带 bettergold:voodoo_burst"),
+                ("ModDamageTypes.source(", "结算伤害源没有走 ModDamageTypes.source 工厂"),
+                ("null, owner", "结算伤害源没有带 owner（direct=null / causing=owner）")):
             _gpt_checked += 1
             if _needle not in _vs_body:
                 _gpt_bad("gpt6-voodoo-magic", _why + "：缺 " + _needle)
+    # 自带类型的两份数据文件 + 标签登记（不依赖原版 minecraft:magic 的既有标签内容）
+    _gpt_checked += 4
+    _vb_json = REPO / "src/main/resources/data/bettergold/damage_type/voodoo_burst.json"
+    if not _vb_json.is_file():
+        _gpt_bad("gpt6-voodoo-magic", "缺 data/bettergold/damage_type/voodoo_burst.json")
+    else:
+        _vb_o = json.loads(_vb_json.read_text(encoding="utf-8"))
+        if _vb_o.get("message_id") != "magic":
+            _gpt_bad("gpt6-voodoo-magic",
+                     "voodoo_burst 的 message_id 不是 magic（复用死亡提示，见数据文件注释）")
+        if _vb_o.get("scaling") != "when_caused_by_living_non_player":
+            _gpt_bad("gpt6-voodoo-magic",
+                     "voodoo_burst 的 scaling 与 minecraft:magic 不同档（伤害数字会漂）")
+    _vb_tag = REPO / "src/main/resources/data/minecraft/tags/damage_type/bypasses_armor.json"
+    if not _vb_tag.is_file():
+        _gpt_bad("gpt6-voodoo-magic", "缺 data/minecraft/tags/damage_type/bypasses_armor.json")
+    else:
+        _vb_t = json.loads(_vb_tag.read_text(encoding="utf-8"))
+        if "bettergold:voodoo_burst" not in (_vb_t.get("values") or []):
+            _gpt_bad("gpt6-voodoo-magic",
+                     "voodoo_burst 没有显式登记进 #minecraft:bypasses_armor（不吃护甲点就靠它）")
     _gpt_checked += 3
     if "public static final String VOODOO_SOURCE_KEY" not in _mev:
         _gpt_bad("gpt6-voodoo-owner", "没有 VOODOO_SOURCE_KEY（施加者记忆）")
@@ -11323,8 +11480,14 @@ else:
     if "VOODOO_ID.equals(family.id) && isMagic(event.getSource())" not in (_dm_pre or ""):
         _gpt_bad("gpt6-voodoo-poison", "onDamagePre 里的巫毒金减伤分支不在位")
     _magic_body = method_body(_mev, "private static boolean isMagic(")
+    _gpt_checked += 1
     if "NeoForgeMod.POISON_DAMAGE" not in (_magic_body or ""):
         _gpt_bad("gpt6-voodoo-poison", "isMagic 没有覆盖 neoforge:poison（中毒伤害就减不到）")
+    # 1.7 大轮第 A3 条：换类型后，巫毒金盔甲的「魔法伤害减免」必须仍然认这个新类型
+    _gpt_checked += 1
+    if "VOODOO_BURST" not in (_magic_body or ""):
+        _gpt_bad("gpt6-voodoo-magic",
+                 "isMagic 没有覆盖 bettergold:voodoo_burst（换类型后巫毒金盔甲的魔法减免会静默失效）")
 
 # ---------- ⑦ 金玫瑰丛用金骨粉 ⇒ 3 个金玫瑰 + 音效 + 骨粉粒子 ----------
 _ai = _gpt_src("registry/AllItems.java")
@@ -11387,8 +11550,12 @@ _GPT9_WANT = {
                                           "L": {"item": "minecraft:string"},
                                           "R": {"item": "minecraft:string"},
                                           "$": {"item": "minecraft:tripwire_hook"}}),
-    "shield": (["XXX", "XAX", " X "], {"X": {"item": "bettergold:chaosgold_ingot"},
-                                        "A": {"item": "minecraft:apple"}}),
+    # 1.7 大轮第 A1 条：盾牌 = **7 锭、不要苹果**（旧期望 `["XXX","XAX"," X "]` 6 锭 + 1 苹果留档）
+    "shield": (["XXX", "XXX", " X "], {"X": {"item": "bettergold:chaosgold_ingot"}}),
+    # 1.7 大轮第 A2 条：禁果 = **中心苹果 + 周围 8 锭、9 格满有序**
+    #   （旧口径 = 无序 1 苹果 + 8 锭，原文留档在下面 `[bgn10r4-forbidden-fruit]` 段）
+    "forbidden_fruit": (["XXX", "XAX", "XXX"], {"X": {"item": "bettergold:chaosgold_ingot"},
+                                                "A": {"item": "minecraft:apple"}}),
 }
 _GPT9_ROWS = ("第1行", "第2行", "第3行")
 _GPT9_COLS = ("第1列(左)", "第2列(中)", "第3列(右)")
@@ -11414,32 +11581,45 @@ for _g9, (_pat9, _key9) in _GPT9_WANT.items():
                          + (_got9[_i9][_j9] or "<空>") + "，作者第 ⑨ 条要求 "
                          + (_want9[_i9][_j9] or "<空>") + "（期望表：" + _rg_grid_text(_want9)
                          + "；实际：" + _rg_grid_text(_got9) + "）")
-# ⑨-4 的记账点：3×3 里「7 锭 + 1 苹果 = 8 格 + 两角空」是 10 格，算术不成立 ⇒ 按位置落 = 6 锭 + 1 苹果
+# ⑨-4 的记账点（**1.7 大轮第 A1 条已改口径**）：盾牌 = **7 锭、不要苹果**。
+#   ⚠ 旧口径原文留档（`gpt` 轮第 ⑨-4 条，已作废、不删）：6 锭 + 中心 1 苹果 + 2 空格
+#     `if _cells9.count("item:bettergold:chaosgold_ingot") != 6: ...`
+#     `if _cells9.count("item:minecraft:apple") != 1: ...`
 _p9s = _RC_DATA / "chaosgold_shield.json"
 _gpt_checked += 3
 if _p9s.is_file():
     _s9 = json.loads(_p9s.read_text(encoding="utf-8"))
     _cells9 = [c for _row in _rg_grid(_s9.get("pattern"), _s9.get("key")) for c in _row]
-    if _cells9.count("item:bettergold:chaosgold_ingot") != 6:
-        _gpt_bad("gpt9-shield-count", "盾牌的混沌金锭不是 6 个（实际 "
-                 + str(_cells9.count("item:bettergold:chaosgold_ingot")) + "）—— 位置口径 = 7 格里中心被苹果顶掉")
-    if _cells9.count("item:minecraft:apple") != 1:
-        _gpt_bad("gpt9-shield-count", "盾牌中心不是恰好 1 个普通苹果")
+    if _cells9.count("item:bettergold:chaosgold_ingot") != 7:
+        _gpt_bad("gpt9-shield-count", "盾牌的混沌金锭不是 7 个（实际 "
+                 + str(_cells9.count("item:bettergold:chaosgold_ingot")) + "）—— 作者第 A1 条：7 锭、不要苹果")
+    if _cells9.count("item:minecraft:apple") != 0:
+        _gpt_bad("gpt9-shield-count", "盾牌里还有苹果（作者第 A1 条明确：不要苹果）")
     if _cells9.count("") != 2:
         _gpt_bad("gpt9-shield-count", "盾牌不是恰好 2 个空格（左下 / 右下两角）")
-# ⑨-5 混沌金苹果（禁果）：既有就是 8 锭 + 1 苹果（无序）⇒ **只核对不改**
-_gpt_checked += 3
+# ⑨-5 混沌金苹果（禁果）：**1.7 大轮第 A2 条改成有序 9 格满**（中心苹果 + 周围 8 锭）。
+#   ⚠ 旧口径原文留档（`bg-n10r4` 起，已作废、不删）：
+#     `_ings9 = [i.get("item") for i in _f9.get("ingredients", [])]` +
+#     `if _f9.get("type") != "minecraft:crafting_shapeless": ...` +
+#     `if _ings9.count(...) != 8 or _ings9.count("minecraft:apple") != 1: ...`
+_gpt_checked += 4
 _p9f = _RC_DATA / "chaosgold_forbidden_fruit.json"
 if not _p9f.is_file():
     _gpt_bad("gpt9-forbidden-fruit", "缺 chaosgold_forbidden_fruit.json")
 else:
     _f9 = json.loads(_p9f.read_text(encoding="utf-8"))
-    _ings9 = [i.get("item") for i in _f9.get("ingredients", [])]
-    if _f9.get("type") != "minecraft:crafting_shapeless":
+    if _f9.get("type") != "minecraft:crafting_shaped":
         _gpt_bad("gpt9-forbidden-fruit",
-                 "禁果配方不是无序合成（作者第 ⑨-5 条要求「只核对不改」）")
-    if _ings9.count("bettergold:chaosgold_ingot") != 8 or _ings9.count("minecraft:apple") != 1:
-        _gpt_bad("gpt9-forbidden-fruit", "禁果配方不是「8 锭 + 1 苹果」：" + repr(_ings9))
+                 "禁果配方不是有序合成（作者第 A2 条：9 格满、有序）")
+    _f9_cells = [c for _row in _rg_grid(_f9.get("pattern"), _f9.get("key")) for c in _row]
+    if _f9_cells.count("item:bettergold:chaosgold_ingot") != 8:
+        _gpt_bad("gpt9-forbidden-fruit",
+                 "禁果的混沌金锭不是 8 个：" + repr(_f9_cells))
+    if _f9_cells.count("item:minecraft:apple") != 1:
+        _gpt_bad("gpt9-forbidden-fruit", "禁果的苹果不是恰好 1 个：" + repr(_f9_cells))
+    if len(_f9_cells) != 9 or _f9_cells[4] != "item:minecraft:apple":
+        _gpt_bad("gpt9-forbidden-fruit",
+                 "禁果不是「中心苹果 + 周围 8 锭、9 格满」：" + repr(_f9_cells))
 
 if _gpt_checked < 120:
     _gpt_bad("gpt-anti-vacuum", "只检查了 " + str(_gpt_checked) + " 项（明显过少）")
@@ -11448,9 +11628,236 @@ print("[gpt-summary] 2026-10-24 九条：检查 " + str(_gpt_checked) + " 项，
 if not gpt_problems:
     print("[gpt-ok] ① 金火把花可放金染土（土侧白名单未放宽）② 混沌金盾 426 / 韧性 2.0 / 击退 0.05×5 "
           "③ 金钱茄+模具→金钱贝（旧原料配方已毙）④ 新手 24 金蛋→1 金票（999/10 经验）"
-          "⑤ 金火把花种子喂鸡 100% 金蛋（其余仍 36%）⑥ 巫毒爆发 minecraft:magic + owner / 每件 25% 中毒"
+          "⑤ 金火把花种子喂鸡 100% 金蛋（其余仍 36%）⑥ 巫毒爆发 bettergold:voodoo_burst + owner / 每件 25% 中毒"
           "⑦ 金玫瑰丛 3 个金玫瑰 + BONE_MEAL_USE + HAPPY_VILLAGER ⑧ 靛海金弹射物液体惯性 1.0（mixin 双端）"
           "⑨ 四条配方逐格 + 禁果只核对")
+
+
+# ==========================================================================================
+# 1.7 大轮（`bgbig`，2026-10-24）：大章节「金铸的牢狱」6 章
+# ==========================================================================================
+# 作者逐页给的结构与**逐字文案**（一个字不许改）。本段独立于生成器另存一份期望表
+# （不 import 生成器 —— 否则生成器抄错就永远抓不到）。
+bgbig_problems: list[str] = []
+_bgbig_checked = 0
+
+
+def _bgbig_bad(tag, msg):
+    bgbig_problems.append("[%s] %s" % (tag, msg))
+
+
+_PB_LANG = "bettergold.handbook"
+_PB_ZH_TEXT = {
+    "prison_main_1_left":
+        "在下界内藏匿着一个以黄金铸就而成的地牢，其名为金之牢狱，在这所牢狱内藏匿着许多黄金的同时也关押着“无序”的气息正在渐渐蔓延开来。",
+    "prison_main_1_right":
+        "据高年级的炼金学学员记载，这所牢狱内还有一间堆积着大量黄金的房间，在这所房间内甚至还有远古残骸的存在，不过嘛…高回报就有高威胁，在这里有更多无序的钱眼们就等着你过来这所房间呢。",
+    "prison_gremlin_1_left":
+        "很久很久以前，金钱妖原本是出现于主世界的元素体系生命体，不过现在的金钱妖被流放进了下界的“金之牢狱”里，其本体这是钱眼里长的一只眼睛的一块大金币，其周围所围绕的金币串便是它的作战武器。",
+    "prison_gremlin_1_right":
+        "当它进入追击模式时不仅会使用它身旁围绕着金币串对猎物进行切割攻击，当猎物过远时他则会以自身为中心四面八方的将这些金币射出，来进行远距离攻击猎物，要是被这些金币击中的话则会削弱猎物的体力使其变得更加饥饿（其叠加量最高为12层）。",
+    "prison_gremlin_2_left":
+        "既然金钱妖是一种元素体系形的生物，自然而然的是有克制它们的方法的，那就是使用火焰与岩浆这些下界内特别常见的物品便是克制金钱妖的方法，甚至是这本书里面提到的烈燃金武器工具的单体状态下也能对金钱妖造成不俗的伤害，最后将金钱妖击杀之后便会掉落它围绕在身旁的一小串金币，其名为混沌金币串。",
+    "prison_coin_anvil_1_left":
+        "混沌金币串和所分解而来的混沌金币除了可以拿来当叠加饥饿状态（最高12层）的投掷物以外，还能用于制作寻常的金属块和一些金属时为一部分材料进行偷梁换柱，比如说铜块，铁块，金块，下界合金锭这一类的。",
+    "prison_coin_anvil_2_right":
+        "而万坚金砧的功能不仅与正常铁砧无异，但它却免除了原先铁砧的修复惩罚，并且你可以使用混沌金币串且仅仅只消耗1级的经验来为你的装备进行修复。",
+    "prison_chaosgold_main_1_left":
+        "此外混沌金币还可以将其丢入熔炉或高炉烧炼成混沌金粒，收集这种粒便可合成出混沌金锭，虽说「混沌金」这种金属并不归属于“贵金”的条目，但这种金属所拥有的功能几乎都跟着“贵金”们平齐，甚至是胜似“贵金”们。",
+    "prison_chaosgold_main_2_left":
+        "使用混沌金锭制作而成的装备则拥有着有含最大上限的随机伤害，随机挖掘力度，和随机的减伤，并且会随着切换物品，攻击，挖掘成功，还有受击从而不断的改变数值，顺带说一下该系列的装备是用工作台的公式直接合成而来的。",
+    "prison_chaosgold_extra_1_left":
+        "想打破原版的附魔规则吗，来试试这本混沌金附魔书吧，只要副手持有装备，主手持有此书进行右键后便会消耗1～5级的等级为你的装备附上1～5级的附魔，无论是宝藏还是诅咒类型的附魔都可以附上去并且还可以无限量叠加哦，但得看你能不能承受住诅咒附魔带来的等价交换了。",
+    "prison_chaosgold_extra_1_right":
+        "或许你还可以将混沌金用途于状态层面上，只要吃下这颗禁果便会给予你任意一种3分钟的正负面状态效果，并陷入等量时长的冷却。",
+    "prison_chaosgold_extra_2_left":
+        "再然后混沌金也是可以用途于建材功能的，数量也差不多跟“贵金”们平齐，但它们却并没有什么特异的功能，也比“贵金”建筑方块们的硬度要弱一些。",
+    "prison_chaosalloy_1_left":
+        "自然而然的混沌金也有自己的强化变体，那便是统御着“绝对无序”的「崩乱合金」，也是一样的制造对应的升级锻造模板，搭配混沌金装备与崩乱合金锭就可升级为崩乱合金装备。",
+    "prison_chaosalloy_2_left":
+        "崩乱合金的武器工具有和混沌金一样的随机伤害和随机挖掘力度，但区别就在于所拥有的上限还要更高，还有50%的几率施加力量失衡与抗性失衡状态，其中力量失衡可以将目标的伤害进行随机，最小的话能够转化为1点伤害，而抗性失衡就是提升目标的受伤量，最大可以提升至双倍，其次只要是任何手段都能够触发，像弓弩这样主架构为远程的武器进行近战自然是可以触发的。",
+    "prison_chaosalloy_2_right":
+        "而崩乱合金盾牌不仅可以无视能造成破盾的攻击，还有50%的几率对攻击者施加力量失衡与抗性失衡状态，甚至你直接拿着这块盾牌进行近战攻击也能够施加，而崩乱合金盔甲也一样具有着随机性减伤也一样有几率对攻击者施加力量失衡与抗性失衡状态。",
+    "prison_chaosalloy_3_left":
+        "此外混沌禁果也有着崩乱合金的变体，食用后的状态时长从原本的3分钟延伸到了16分钟，也一样会陷入等量时长的冷却。",
+}
+_PB_ENTRIES = {
+    # 条目 -> (封面, sortnum, 页数, 页型序列)
+    "prison_main": ("gold_bricks", 0, 2, ["patchouli:text"] * 2),
+    "prison_gremlin": ("chaos_coin_string", 1, 3, ["patchouli:text"] * 3),
+    "prison_coin_anvil": ("chaos_coin", 2, 4, ["patchouli:spotlight", "patchouli:crafting",
+                                               "patchouli:crafting", "patchouli:crafting"]),
+    "prison_chaosgold_main": ("chaosgold_ingot", 3, 12,
+                              ["patchouli:text", "patchouli:smelting", "patchouli:crafting",
+                               "patchouli:text"] + ["patchouli:crafting"] * 8),
+    "prison_chaosgold_extra": ("chaosgold_enchanting_book", 4, 3,
+                               ["patchouli:crafting", "patchouli:crafting", "patchouli:spotlight"]),
+    "prison_chaosalloy": ("chaosalloy_ingot", 5, 13,
+                          ["patchouli:text", "patchouli:crafting", "patchouli:text",
+                           "patchouli:text", "patchouli:crafting"] + ["patchouli:smithing"] * 8),
+}
+# 类别：名称 / 左侧注释键（值在 `_PB_CAT_ZH` 里逐字钉死）
+_bgbig_checked += 4
+_pb_cat = _ZH_BOOK / "categories" / "golden_prison.json"
+if not _pb_cat.is_file():
+    _bgbig_bad("bgbig-category", "缺类别 golden_prison.json")
+else:
+    _pc = json.loads(_pb_cat.read_text(encoding="utf-8"))
+    if _pc.get("name") != _PB_LANG + ".category.golden_prison.name":
+        _bgbig_bad("bgbig-category", "类别 name 不是 golden_prison.name 语言键：" + repr(_pc.get("name")))
+    if _pc.get("description") != _PB_LANG + ".category.golden_prison.desc":
+        _bgbig_bad("bgbig-category", "类别 description 不是 golden_prison.desc 语言键："
+                   + repr(_pc.get("description")))
+    if _pc.get("icon") != "bettergold:chaos_coin_string":
+        _bgbig_bad("bgbig-category", "类别封面不是混沌金币串：" + repr(_pc.get("icon")))
+    if _pc.get("sortnum") != 4:
+        _bgbig_bad("bgbig-category", "类别 sortnum 不是 4：" + repr(_pc.get("sortnum")))
+if zh.get(_PB_LANG + ".category.golden_prison.name") != "金铸的牢狱":
+    _bgbig_bad("bgbig-category", "类别中文名不是「金铸的牢狱」")
+if zh.get(_PB_LANG + ".category.golden_prison.desc") != \
+        "你或许能感受到在下界内有几只无序的钱眼在注视着你吧。":
+    _bgbig_bad("bgbig-category", "类别左侧注释与作者原文不一致")
+if not str(en.get(_PB_LANG + ".category.golden_prison.desc", "")).strip() \
+        or en.get(_PB_LANG + ".category.golden_prison.desc") == zh.get(_PB_LANG + ".category.golden_prison.desc"):
+    _bgbig_bad("bgbig-category", "类别左侧注释缺英文或与中文逐字相同")
+
+# 6 个条目：名称键 / 类别 / 封面 / sortnum / 页数 / 页型 / 双端结构
+for _eid, (_icon, _sn, _n, _seq) in _PB_ENTRIES.items():
+    _pz = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    _pe = _EN_BOOK / "entries" / ("%s.json" % _eid)
+    _bgbig_checked += 4
+    if not _pz.is_file() or not _pe.is_file():
+        _bgbig_bad("bgbig-entry", "缺条目文件（zh/en）：%s" % _eid)
+        continue
+    _jz = json.loads(_pz.read_text(encoding="utf-8"))
+    _je = json.loads(_pe.read_text(encoding="utf-8"))
+    if _jz.get("name") != "%s.entry.%s" % (_PB_LANG, _eid):
+        _bgbig_bad("bgbig-entry", "%s 的 name 键不对：%r" % (_eid, _jz.get("name")))
+    if _jz.get("category") != "bettergold:golden_prison":
+        _bgbig_bad("bgbig-entry", "%s 不挂在金铸的牢狱下：%r" % (_eid, _jz.get("category")))
+    if _jz.get("icon") != "bettergold:" + _icon:
+        _bgbig_bad("bgbig-entry", "%s 的封面不是 %s：%r" % (_eid, _icon, _jz.get("icon")))
+    if _jz.get("sortnum") != _sn:
+        _bgbig_bad("bgbig-entry", "%s 的 sortnum 不是 %d" % (_eid, _sn))
+    _pagesz = _jz.get("pages") or []
+    if len(_pagesz) != _n:
+        _bgbig_bad("bgbig-entry", "%s 的页数不是 %d（实际 %d）" % (_eid, _n, len(_pagesz)))
+    if [p.get("type") for p in _pagesz] != _seq:
+        _bgbig_bad("bgbig-entry", "%s 的页型序列不对：%r"
+                   % (_eid, [p.get("type") for p in _pagesz]))
+    if _jz.get("pages") != _je.get("pages"):
+        _bgbig_bad("bgbig-entry", "%s 的 zh/en 页列表不一致（结构必须双端相同）" % _eid)
+
+# 页面细节：配方引用逐条、spotlight 轮换栈、页眉
+_pb_e = {}
+for _eid in _PB_ENTRIES:
+    _p = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    if _p.is_file():
+        _pb_e[_eid] = json.loads(_p.read_text(encoding="utf-8")).get("pages") or []
+_bgbig_checked += 6
+if len(_pb_e) == len(_PB_ENTRIES):
+    _ca = _pb_e["prison_coin_anvil"]
+    if (_ca[1].get("recipe"), _ca[1].get("recipe2")) != (
+            "bettergold:copper_block_with_chaos_coin", "bettergold:iron_block_with_chaos_coin"):
+        _bgbig_bad("bgbig-pages", "第 3 章第 1 页右不是「上铜块 / 下铁块」：" + repr(_ca[1]))
+    if (_ca[2].get("recipe"), _ca[2].get("recipe2")) != (
+            "bettergold:gold_block_with_chaos_coin",
+            "bettergold:netherite_ingot_with_chaos_coin_string"):
+        _bgbig_bad("bgbig-pages", "第 3 章第 2 页左不是「上金块 / 下界合金锭」：" + repr(_ca[2]))
+    if (_ca[3].get("recipe"), _ca[3].get("recipe2")) != ("bettergold:sturdygold_anvil", None):
+        _bgbig_bad("bgbig-pages", "第 3 章第 2 页右不是万坚金砧配方：" + repr(_ca[3]))
+    if _ca[0].get("item") != ["bettergold:chaos_coin_string", "bettergold:chaos_coin"]:
+        _bgbig_bad("bgbig-pages", "第 3 章第 1 页左的轮换栈不是「币串 / 币」：" + repr(_ca[0].get("item")))
+    if _ca[0].get("title") != _PB_LANG + ".page.prison_coin_anvil_1_left_title":
+        _bgbig_bad("bgbig-pages", "第 3 章第 1 页左的页眉键不对：" + repr(_ca[0].get("title")))
+    _cg = _pb_e["prison_chaosgold_main"]
+    if (_cg[1].get("recipe"), _cg[1].get("recipe2")) != ("bettergold:chaos_coin_smelting", None):
+        _bgbig_bad("bgbig-pages", "第 4 章第 2 页（熔炉页）不是烧制混沌金粒：" + repr(_cg[1]))
+    if (_cg[2].get("recipe"), _cg[2].get("recipe2")) != (
+            "bettergold:chaosgold_ingot_from_nugget", None):
+        _bgbig_bad("bgbig-pages", "第 4 章第 3 页（工作台页）不是制作混沌金锭：" + repr(_cg[2]))
+    _want_gear = ["bettergold:chaosgold_" + _g
+                  for _g in ("sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
+                             "shovel", "hoe", "shield", "helmet", "chestplate",
+                             "leggings", "boots", "knife")]
+    _got_gear = []
+    for _pg in _cg[4:12]:
+        _got_gear.extend([x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)])
+    if _got_gear != _want_gear:
+        _bgbig_bad("bgbig-pages", "第 4 章的混沌金装备配方顺序 / 内容不对：" + repr(_got_gear))
+    _ce = _pb_e["prison_chaosgold_extra"]
+    if (_ce[0].get("recipe"), _ce[0].get("recipe2")) != ("bettergold:chaosgold_enchanting_book", None):
+        _bgbig_bad("bgbig-pages", "第 5 章第 1 页左不是混沌金附魔书配方：" + repr(_ce[0]))
+    if (_ce[1].get("recipe"), _ce[1].get("recipe2")) != ("bettergold:chaosgold_forbidden_fruit", None):
+        _bgbig_bad("bgbig-pages", "第 5 章第 1 页右不是混沌禁果配方：" + repr(_ce[1]))
+    if _ce[2].get("item") != ["bettergold:chaosgold" + _sfx for _sfx in _BG3_BUILDING_ORDER]:
+        _bgbig_bad("bgbig-pages", "第 5 章第 2 页左的「混沌金建筑方块」轮换栈不对："
+                   + repr(_ce[2].get("item")))
+    if _ce[2].get("title") != _PB_LANG + ".page.prison_chaosgold_extra_2_left_title":
+        _bgbig_bad("bgbig-pages", "第 5 章第 2 页左的页眉键不对：" + repr(_ce[2].get("title")))
+    if zh.get(_PB_LANG + ".page.prison_chaosgold_extra_2_left_title") != "混沌金建筑方块":
+        _bgbig_bad("bgbig-pages", "第 5 章第 2 页左的页眉不是「混沌金建筑方块」")
+    _cl = _pb_e["prison_chaosalloy"]
+    if (_cl[1].get("recipe"), _cl[1].get("recipe2")) != (
+            "bettergold:chaosalloy_ingot", "bettergold:chaosalloy_upgrade_template"):
+        _bgbig_bad("bgbig-pages", "第 6 章第 1 页右不是「上锭 / 下模板」：" + repr(_cl[1]))
+    if (_cl[4].get("recipe"), _cl[4].get("recipe2")) != (
+            "bettergold:chaosalloy_forbidden_fruit", None):
+        _bgbig_bad("bgbig-pages", "第 6 章第 3 页左不是崩乱禁果配方：" + repr(_cl[4]))
+    _got_sm = []
+    for _pg in _cl[5:13]:
+        _got_sm.extend([x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)])
+    _want_sm = ["bettergold:smithing_chaosalloy_" + _g
+                for _g in ("sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
+                           "shovel", "hoe", "shield", "helmet", "chestplate",
+                           "leggings", "boots", "knife")]
+    if _got_sm != _want_sm:
+        _bgbig_bad("bgbig-pages", "第 6 章的崩乱合金锻造配方顺序 / 内容不对：" + repr(_got_sm))
+
+# 逐字文案 + 语言键（16 段正文 + 2 个页眉）：中文必须与作者原文一字不差
+for _suffix, _want in _PB_ZH_TEXT.items():
+    _k = "%s.page.%s" % (_PB_LANG, _suffix)
+    _bgbig_checked += 4
+    if zh.get(_k) != _want:
+        _bgbig_bad("bgbig-verbatim", "中文与作者原文不一致（一个字都不许改）：" + _k)
+    if not str(en.get(_k, "")).strip():
+        _bgbig_bad("bgbig-verbatim", "缺英文：" + _k)
+    elif en.get(_k) == zh.get(_k):
+        _bgbig_bad("bgbig-verbatim", "英文与中文逐字相同（没翻译）：" + _k)
+    if _k not in en:
+        _bgbig_bad("bgbig-verbatim", "英文缺键：" + _k)
+for _eid in _PB_ENTRIES:
+    _k = "%s.entry.%s" % (_PB_LANG, _eid)
+    _bgbig_checked += 2
+    if not str(zh.get(_k, "")).strip() or not str(en.get(_k, "")).strip():
+        _bgbig_bad("bgbig-verbatim", "条目名缺中文或英文：" + _k)
+    elif zh.get(_k) == en.get(_k):
+        _bgbig_bad("bgbig-verbatim", "条目名英文与中文逐字相同：" + _k)
+# 页眉：第 3 章第 1 页左 = 混沌金币串/混沌金币（作者写的「字体为…」）
+if zh.get(_PB_LANG + ".page.prison_coin_anvil_1_left_title") != "混沌金币串/混沌金币":
+    _bgbig_bad("bgbig-verbatim", "第 3 章第 1 页左的页眉不是「混沌金币串/混沌金币」")
+
+# 旧四条的语言键：**D 段**（作者 zh_cn.json 替换）之后由 `[bgbig-d-*]` 段负责确认已删；
+#   B 段只保证产物里不再引用它们（`[bgn10r9-retired]` 的"文件必须不存在"）。
+_bgbig_checked += 1
+_pb_refs_text = []
+for _eid in _PB_ENTRIES:
+    _p = _ZH_BOOK / "entries" / ("%s.json" % _eid)
+    if _p.is_file():
+        _t = _p.read_text(encoding="utf-8")
+        for _old in ("chaos_materials", "chaos_feast", "gear_chaosgold", "gear_chaosalloy"):
+            if _old in _t:
+                _pb_refs_text.append(_eid + "->" + _old)
+if _pb_refs_text:
+    _bgbig_bad("bgbig-retired-lang",
+               "新 6 章里还在引用旧条目的键：%s" % _pb_refs_text[:5])
+if _bgbig_checked < 70:
+    _bgbig_bad("bgbig-anti-vacuum", "本段只跑了 %d 条判定（反空转）" % _bgbig_checked)
+print("[bgbig-summary] 2026-10-24 金铸的牢狱：检查 " + str(_bgbig_checked) + " 项，问题 "
+      + str(len(bgbig_problems)) + " 条" + ("" if not bgbig_problems else "：" + str(bgbig_problems[:4])))
+if not bgbig_problems:
+    print("[bgbig-ok] 金铸的牢狱 1 类别 + 6 章 37 页（逐页页型 / 配方引用 / 轮换栈 / 页眉 / "
+          "16 段中文逐字 = 作者原文）；旧四条 48 页作废不产出（构造函数与 RETIRED_ENTRIES 留档）")
 
 
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
@@ -11469,7 +11876,9 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        # ① 崩乱合金盔甲耐久按作者字面值（作者 2026-10-23「按他写的、不改」）
                        _bgn10r7dur_problems,
                        # 2026-10-24 作者九条（`gpt` 轮）—— 每条的稳定 ASCII 段前缀 [gpt<N>-*]
-                       gpt_problems)
+                       gpt_problems,
+                       # 2026-10-24 大轮（`bgbig`）：金铸的牢狱 6 章 + 旧四条作废
+                       bgbig_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

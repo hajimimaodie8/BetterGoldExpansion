@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:metal/chaosgold/dance",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaosgold_enchanting_book",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosgold_enchant.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosgold_enchant.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:chaosgold_enchanting_book"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

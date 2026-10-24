@@ -1,21 +1,31 @@
 {
-  "name": "bettergold.handbook.entry.gear_chaosalloy",
-  "category": "bettergold:gear_upgrade",
-  "icon": "bettergold:chaosalloy_sword",
-  "sortnum": 10,
+  "name": "bettergold.handbook.entry.prison_chaosalloy",
+  "category": "bettergold:golden_prison",
+  "icon": "bettergold:chaosalloy_ingot",
+  "sortnum": 5,
   "read_by_default": true,
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "bettergold.handbook.page.gear_chaosalloy_1_left"
+      "text": "bettergold.handbook.page.prison_chaosalloy_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosalloy_ingot",
+      "recipe2": "bettergold:chaosalloy_upgrade_template"
     },
     {
       "type": "patchouli:text",
-      "text": "bettergold.handbook.page.gear_chaosalloy_1_right"
+      "text": "bettergold.handbook.page.prison_chaosalloy_2_left"
     },
     {
       "type": "patchouli:text",
-      "text": "bettergold.handbook.page.gear_chaosalloy_2_left"
+      "text": "bettergold.handbook.page.prison_chaosalloy_2_right"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosalloy_forbidden_fruit",
+      "text": "bettergold.handbook.page.prison_chaosalloy_3_left"
     },
     {
       "type": "patchouli:smithing",
@@ -40,21 +50,21 @@
     {
       "type": "patchouli:smithing",
       "recipe": "bettergold:smithing_chaosalloy_hoe",
-      "recipe2": "bettergold:smithing_chaosalloy_knife"
+      "recipe2": "bettergold:smithing_chaosalloy_shield"
     },
     {
       "type": "patchouli:smithing",
-      "recipe": "bettergold:smithing_chaosalloy_shield",
-      "recipe2": "bettergold:smithing_chaosalloy_helmet"
+      "recipe": "bettergold:smithing_chaosalloy_helmet",
+      "recipe2": "bettergold:smithing_chaosalloy_chestplate"
     },
     {
       "type": "patchouli:smithing",
-      "recipe": "bettergold:smithing_chaosalloy_chestplate",
-      "recipe2": "bettergold:smithing_chaosalloy_leggings"
+      "recipe": "bettergold:smithing_chaosalloy_leggings",
+      "recipe2": "bettergold:smithing_chaosalloy_boots"
     },
     {
       "type": "patchouli:smithing",
-      "recipe": "bettergold:smithing_chaosalloy_boots"
+      "recipe": "bettergold:smithing_chaosalloy_knife"
     }
   ]
 }

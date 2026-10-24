@@ -1,0 +1,13 @@
+[2410月2026 21:46:41.238] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS probe_player :: class=com.hjmmd_8.bettergold.probe.CProbe$ProbePlayer isFakePlayer=false dimension=minecraft:the_nether
+[2410月2026 21:46:42.485] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS award_dance :: 与金共舞：获得混沌金币串
+[2410月2026 21:46:42.485] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS award_enchant :: 赋予无序之咒：获得混沌金附魔书
+[2410月2026 21:46:42.485] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS award_craft :: 金工细作：获得铜块（含混沌金币配方产物之一）
+[2410月2026 21:46:42.485] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS award_torchflower :: 黄金火焰！：种子 + 花（组间 AND）
+[2410月2026 21:46:42.485] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS award_refined_oil :: 膏状的油将升华为精炼的油：获得高精度炼金油
+[2410月2026 21:46:42.677] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS award_golden_prison :: 红中黄室：进入金之牢狱（location+structures）:: found=BlockPos{x=-400, y=0, z=-176} piece=BlockPos{x=-400, y=31, z=-176} dimension=minecraft:the_nether
+[2410月2026 21:46:42.677] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS removed_chaos_coin :: 「获得混沌金币」成就已毙（注册表查不到）
+[2410月2026 21:46:42.677] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS removed_chaosalloy_supply :: 「崩乱合金模板」成就已毙（注册表查不到）
+[2410月2026 21:46:42.677] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS chaosalloy_parent_is_chaosgold_ingot :: 崩乱合金锭的 parent = Optional[bettergold:metal/chaosgold/ingot]
+[2410月2026 21:46:42.682] [Server thread/INFO] [CProbe/]: [bgbig-c2] PASS adv_count_63 :: 本模组注册表成就数 = 63（总注册表含原版：1680）
+[2410月2026 21:46:42.689] [Server thread/INFO] [CProbe/]: [bgbig-c2] SUMMARY pass=11 fail=0
+[2410月2026 21:46:42.689] [Server thread/INFO] [CProbe/]: [bgbig-c2] halting server (once)

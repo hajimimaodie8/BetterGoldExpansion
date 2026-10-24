@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:root",
+  "display": {
+    "icon": {
+      "id": "bettergold:gold_bricks",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.golden_prison.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.golden_prison.description"
+    }
+  },
+  "criteria": {
+    "entered": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "location": {
+            "structures": "bettergold:golden_prison"
+          }
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "entered"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -45,8 +45,15 @@
 | 重锤 | 上 = 混沌金块、下 = 木棍（2 行，列位照抄原版上排中 / 下排中） | 1 块 + 1 棍 |
 | 三叉戟 | 中 = 木棍；上 (0,1)、右 (1,2)、右上 (0,2)、左下 (2,0) = 混沌金锭 | 4 锭 + 1 棍 |
 | 弩 | 上排 3 格 + 下排中间 1 格 = 混沌金锭；中 = 绊线钩；左 / 右 = 线 | 4 锭 + 2 线 + 1 钩 |
-| 盾牌 | 3×3 除左下 / 右下两角外全填，中心 = 普通苹果 | **6 锭** + 1 苹果（⚠ 派单写"7 锭 + 1 苹果 = 8 格，两角空"：3×3 只有 9 格，8 + 2 空 = 10 格算术不成立；按位置落 = 6 + 1，见 §29） |
-| 混沌金苹果（禁果） | **只核对不改**：既有 `chaosgold_forbidden_fruit.json` = 无序 1 苹果 + 8 混沌金锭，材料数与"围一圈"一致（无序本就不限摆法） | 8 锭 + 1 苹果 |
+| 盾牌 | **7 个混沌金锭**（作者 2026-10-24 第 A1 条：**不要苹果**） | 7 锭 + 2 空 |
+| 混沌金苹果（禁果） | **中心 1 个普通苹果 + 周围 8 个混沌金锭**，**9 格满、有序**（作者 2026-10-24 第 A2 条） | 8 锭 + 1 苹果 |
+
+> ⚠ **1.7 大轮（2026-10-24，`bgbig`）就地更正**（上面那两行是现行口径；旧口径原文留档在下面，不删）：
+> - 盾牌旧口径（`bg-n10rc2` → `gpt` 轮第 ⑨-4 条）：3×3 除左下 / 右下两角外全填、中心 = 普通苹果 ⇒ **6 锭 + 1 苹果**
+>   （当时派单写"7 锭 + 1 苹果 = 8 格，两角空"，3×3 里算术不成立）。作者本轮改成**纯 7 锭、无苹果**
+>   ⇒ 仍用那 7 个格子（除左下 / 右下两角外全填），中心那格由苹果换成混沌金锭。
+> - 禁果旧口径（`bg-n10r4` 起）：**无序** `crafting_shapeless` 1 苹果 + 8 混沌金锭（材料数对、"围一圈"不限摆法）。
+>   作者本轮改成**有序 9 格满**：中心苹果、周围 8 锭 ⇒ `["XXX", "XAX", "XXX"]`。
 
 ⚠ **`bg-n10rg` 的 4 件"停下报告"已被 `bg-n10rc2` 关闭**（作者 2026-10-18「第一个可以考虑」）：
 旧口径的 4 条理由**原文留在**下面的 `EXCLUDED` 注释里（那 4 条判定当时是对的，裁定只是换了答案）。
@@ -200,22 +207,22 @@ EXTRA: dict[str, dict] = {
     },
     # ⚠ 旧形状（原文留档，未删）：shield = 原版 `["WoW", "WWW", " W "]`
     #   （`W` 木板 tag ×6 / `o` 铁锭 → 混沌金锭）。
-    #   作者 2026-10-24 第 ⑨-4 条改成：3×3 **除左下、右下两角**外全是混沌金锭 + **中间放一个普通苹果**。
-    #   ⚠ 逐格落位（行, 列）：上排 3 格 (0,0)(0,1)(0,2)、中排左右 (1,0)(1,2)、下排中间 (2,1)
-    #     = **6 锭**；中心 (1,1) = 苹果；左下 (2,0) / 右下 (2,2) = 空。
-    #   ⚠ 派单同时写了「7 锭 + 1 苹果 = 8 格，两角空」—— 3×3 只有 9 格，8 + 2 空 = 10 格**算术不成立**；
-    #     苹果占中心就必然顶掉一格锭 ⇒ 按**位置描述**（除两角外全锭、中心苹果）落 = **6 锭 + 1 苹果**。
-    #     已在 `docs/1.7-...md` §29 ⑨-4 记账（这是本轮唯一的"需求自相矛盾"点）。
+    #   1.7 `gpt` 轮第 ⑨-4 条曾改成：3×3 **除左下、右下两角**外全填 + **中心放一个普通苹果**
+    #   ⇒ **6 锭 + 1 苹果**（旧期望原文留档：pattern `["XXX", "XAX", " X "]` + key
+    #     `X → 混沌金锭 / A → 苹果`；见 `docs/1.7-...md` §29 ⑨-4）。
+    #   ★ 1.7 大轮（2026-10-24，`bgbig`）作者第 A1 条：**盾牌 = 7 个混沌金锭，不要苹果**。
+    #   ⚠ 逐格落位（行, 列）：上排 3 格 (0,0)(0,1)(0,2)、中排 3 格 (1,0)(1,1)(1,2)、下排中间 (2,1)
+    #     = **7 锭**；左下 (2,0) / 右下 (2,2) = 空。中心 (1,1) 由苹果换成锭。
     "shield": {
         "source": "data/minecraft/recipe/shield.json（格位照抄原版 7 格：除下排两角外全填）",
-        "pattern": ["XXX", "XAX", " X "],
-        "key": {"X": {"item": INGOT}, "A": {"item": "minecraft:apple"}},
+        "pattern": ["XXX", "XXX", " X "],
+        "key": {"X": {"item": INGOT}},
         "subs": {},
         "condition": None,
         "original_shape": True,
-        "note": "作者 2026-10-24 第 ⑨-4 条：3×3 除左下 / 右下两角外全填（7 格），中心 = 普通苹果"
-                "⇒ 混沌金锭 6 + 苹果 1。旧形状原文留档：pattern `[\"WoW\", \"WWW\", \" W \"]`"
-                "（W 木板 tag ×6、o 铁锭）。",
+        "note": "作者 2026-10-24 第 A1 条：盾牌 = 7 个混沌金锭（3×3 除左下 / 右下两角外全填，"
+                "中心也是锭、不要苹果）。旧口径原文留档：第 ⑨-4 条曾为 `[\"XXX\", \"XAX\", \" X \"]`"
+                "（6 锭 + 中心 1 苹果）；再早的旧形状 `[\"WoW\", \"WWW\", \" W \"]`（W 木板 tag ×6、o 铁锭）。",
     },
     "knife": {
         "source": "data/farmersdelight/recipe/golden_knife.json",
@@ -236,9 +243,9 @@ SHAPE_EXPECT = {
     "mace": {BLOCK: 1, STICK: 1},
     "trident": {INGOT: 4, STICK: 1},
     "crossbow": {INGOT: 4, STRING: 2, TRIPWIRE: 1},
-    # 盾牌：3×3 除左下/右下两角外 7 格 = 6 锭 + 中心 1 苹果（派单写"7 锭 + 1 苹果"，
-    #   3×3 里算术不成立，按位置描述落；见 §29 ⑨-4 的记账）
-    "shield": {INGOT: 6, "minecraft:apple": 1},
+    # 盾牌（1.7 大轮第 A1 条）：3×3 除左下/右下两角外 7 格 = **7 锭**
+    #   ⚠ 旧口径原文留档（`gpt` 轮第 ⑨-4 条）：这里曾是 `{INGOT: 6, "minecraft:apple": 1}`。
+    "shield": {INGOT: 7},
 }
 
 # 生成顺序（= 手册配方页顺序；稳定 ASCII，别随意重排）
@@ -334,6 +341,61 @@ def upstream_recipes() -> dict[str, dict]:
 
 def upstream_targets() -> list[tuple[str, dict]]:
     return list(upstream_recipes().items())
+
+
+# ---------------------------------------------------------------------------------------
+# 1.7 大轮（2026-10-24，`bgbig`）第 A2 条：**混沌禁果的配方改成有序 9 格满**
+#
+# 旧口径（原文留档，未删）：`chaosgold_forbidden_fruit.json` 是**手写**的
+#   `minecraft:crafting_shapeless`（`ingredients` = 1 苹果 + 8 混沌金锭，顺序不限）。
+# 作者本轮原话：「**中心 1 个苹果 + 周围 8 个混沌金锭（9 格满、有序）**」
+#   ⇒ 改成 `crafting_shaped`：`["XXX", "XAX", "XXX"]`，X = 混沌金锭、A = 普通苹果。
+# 本脚本从此**接管这条配方**（它也有了唯一真源）；`chaosalloy_forbidden_fruit` 不归这里，
+# 仍由 `generate_chaosalloy_recipes.py` 生成。
+# ---------------------------------------------------------------------------------------
+FRUIT_FILE = "chaosgold_forbidden_fruit.json"
+FRUIT_ID = NS + ":chaosgold_forbidden_fruit"
+
+
+def fruit_recipe() -> dict:
+    """混沌禁果：中心 1 苹果 + 周围 8 混沌金锭（有序、9 格满）。"""
+    return {
+        "type": "minecraft:crafting_shaped",
+        "category": "misc",
+        "pattern": ["XXX", "XAX", "XXX"],
+        "key": {"X": {"item": INGOT}, "A": {"item": "minecraft:apple"}},
+        "result": {"id": FRUIT_ID, "count": 1},
+    }
+
+
+def check_fruit(obj: dict) -> list[str]:
+    """禁果配方**逐格**自检（位置错必须能红，计数相等不算数）。"""
+    bad: list[str] = []
+    if obj.get("type") != "minecraft:crafting_shaped":
+        bad.append(f"{FRUIT_FILE} 不是 crafting_shaped（作者第 A2 条：有序、9 格满）")
+    if obj.get("pattern") != ["XXX", "XAX", "XXX"]:
+        bad.append(f"{FRUIT_FILE} 的 pattern 不是 3×3 满格：{obj.get('pattern')!r}")
+    if obj.get("key") != {"X": {"item": INGOT}, "A": {"item": "minecraft:apple"}}:
+        bad.append(f"{FRUIT_FILE} 的 key 不是恰好 X=混沌金锭 / A=苹果：{obj.get('key')!r}")
+    if obj.get("result") != {"id": FRUIT_ID, "count": 1}:
+        bad.append(f"{FRUIT_FILE} 的产物不是 {FRUIT_ID} ×1：{obj.get('result')!r}")
+    # 逐格：3×3 必须正好 8 个锭 + 1 个苹果（中心），没有空格
+    rows = obj.get("pattern") or []
+    key = obj.get("key") or {}
+    cells = []
+    for r in range(3):
+        for c in range(3):
+            ch = rows[r][c] if r < len(rows) and c < len(str(rows[r])) else " "
+            cells.append("" if ch == " " else (key.get(ch) or {}).get("item"))
+    if cells.count(INGOT) != 8:
+        bad.append(f"{FRUIT_FILE} 的混沌金锭不是 8 个：{cells!r}")
+    if cells.count("minecraft:apple") != 1:
+        bad.append(f"{FRUIT_FILE} 的苹果不是 1 个：{cells!r}")
+    if cells[4] != "minecraft:apple":
+        bad.append(f"{FRUIT_FILE} 的中心（第2行第2列）不是苹果：{cells[4]!r}")
+    if any(c is None for c in cells):
+        bad.append(f"{FRUIT_FILE} 有空格或解析不出的格子：{cells!r}")
+    return bad
 
 
 def _raw_smelting_anchor() -> dict:
@@ -568,18 +630,22 @@ def main() -> None:
     #   由 `generate_metal_recipes.py` 产出 ⇒ 这里**只核对**，不写盘（见 `check_upstream`）。
     up = upstream_targets()
     up_bad = check_upstream(up)
+    # ★ 1.7 大轮第 A2 条：禁果改成有序 9 格满，从此由本脚本生成（唯一真源）
+    fruit = fruit_recipe()
+    fruit_bad = check_fruit(fruit)
     written = 0
-    for name, obj in files + up:
+    for name, obj in files + up + [(FRUIT_FILE, fruit)]:
         text = json.dumps(obj, ensure_ascii=False, indent=2) + "\n"
         json.loads(text)                      # 合法 JSON（不合法这里就抛）
         if args.apply:
             (RECIPES / name).write_text(text, encoding="utf-8", newline="\n")
             written += 1
-    print(f"{'已写入' if args.apply else '演练'}: {written or (len(files) + len(up))} 条混沌金配方"
-          f"（工作台 {len(GEAR)} 件 + 上游 {len(up)} 条；不生成 {len(EXCLUDED)} 件：{sorted(EXCLUDED)}）")
+    print(f"{'已写入' if args.apply else '演练'}: {written or (len(files) + len(up) + 1)} 条混沌金配方"
+          f"（工作台 {len(GEAR)} 件 + 上游 {len(up)} 条 + 禁果 1 条；不生成 {len(EXCLUDED)} 件：{sorted(EXCLUDED)}）")
     print(f"配方自检失败: {len(bad)} {bad[:4]}")
     print(f"上游自检失败: {len(up_bad)} {up_bad[:4]}")
-    if bad or up_bad:
+    print(f"禁果自检失败: {len(fruit_bad)} {fruit_bad[:4]}")
+    if bad or up_bad or fruit_bad:
         raise SystemExit(1)
 
 

@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:root",
+  "parent": "bettergold:metal/chaosgold/ingot",
   "display": {
     "icon": {
       "id": "bettergold:chaosalloy_ingot",

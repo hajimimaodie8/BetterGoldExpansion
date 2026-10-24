@@ -1,0 +1,33 @@
+{
+  "name": "bettergold.handbook.entry.prison_coin_anvil",
+  "category": "bettergold:golden_prison",
+  "icon": "bettergold:chaos_coin",
+  "sortnum": 2,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": [
+        "bettergold:chaos_coin_string",
+        "bettergold:chaos_coin"
+      ],
+      "text": "bettergold.handbook.page.prison_coin_anvil_1_left",
+      "title": "bettergold.handbook.page.prison_coin_anvil_1_left_title"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:copper_block_with_chaos_coin",
+      "recipe2": "bettergold:iron_block_with_chaos_coin"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:gold_block_with_chaos_coin",
+      "recipe2": "bettergold:netherite_ingot_with_chaos_coin_string"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:sturdygold_anvil",
+      "text": "bettergold.handbook.page.prison_coin_anvil_2_right"
+    }
+  ]
+}

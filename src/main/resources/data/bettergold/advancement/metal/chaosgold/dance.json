@@ -1,0 +1,33 @@
+{
+  "parent": "bettergold:treasure/golden_prison",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaos_coin_string",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosgold_dance.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosgold_dance.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:chaos_coin_string"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -1,0 +1,37 @@
+[bgbig-c] armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[bgbig-c] CHECK book_registered PASS :: books=1
+[bgbig-c] CHECK book_contents_no_error PASS :: errored=false / null
+[bgbig-c] readout categories=5 [alchemy_start, gear_upgrade, golden_feast, golden_prison, merchant_antiques]
+[bgbig-c] CHECK book_categories_five PASS :: categories=[alchemy_start, gear_upgrade, golden_feast, golden_prison, merchant_antiques]
+[bgbig-c] readout entries=26 pages=229
+[bgbig-c] CHECK book_entries_26 PASS :: entries=26
+[bgbig-c] CHECK book_pages_229 PASS :: pages=229
+[bgbig-c] CHECK old_four_chapters_gone PASS :: ???????????? BookContents ??
+[bgbig-c] readout entry=prison_main pages=2 types=[patchouli:text, patchouli:text]
+[bgbig-c] CHECK entry_prison_main_shape PASS :: pages=2?????? 2??types=[patchouli:text, patchouli:text]
+[bgbig-c] readout entry=prison_gremlin pages=3 types=[patchouli:text, patchouli:text, patchouli:text]
+[bgbig-c] CHECK entry_prison_gremlin_shape PASS :: pages=3?????? 3??types=[patchouli:text, patchouli:text, patchouli:text]
+[bgbig-c] readout entry=prison_coin_anvil pages=4 types=[patchouli:spotlight, patchouli:crafting, patchouli:crafting, patchouli:crafting]
+[bgbig-c] CHECK entry_prison_coin_anvil_shape PASS :: pages=4?????? 4??types=[patchouli:spotlight, patchouli:crafting, patchouli:crafting, patchouli:crafting]
+[bgbig-c] readout entry=prison_chaosgold_main pages=12 types=[patchouli:text, patchouli:smelting, patchouli:crafting, patchouli:text, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting]
+[bgbig-c] CHECK entry_prison_chaosgold_main_shape PASS :: pages=12?????? 12??types=[patchouli:text, patchouli:smelting, patchouli:crafting, patchouli:text, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting]
+[bgbig-c] readout entry=prison_chaosgold_extra pages=3 types=[patchouli:crafting, patchouli:crafting, patchouli:spotlight]
+[bgbig-c] CHECK entry_prison_chaosgold_extra_shape PASS :: pages=3?????? 3??types=[patchouli:crafting, patchouli:crafting, patchouli:spotlight]
+[bgbig-c] readout entry=prison_chaosalloy pages=13 types=[patchouli:text, patchouli:crafting, patchouli:text, patchouli:text, patchouli:crafting, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing]
+[bgbig-c] CHECK entry_prison_chaosalloy_shape PASS :: pages=13?????? 13??types=[patchouli:text, patchouli:crafting, patchouli:text, patchouli:text, patchouli:crafting, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing, patchouli:smithing]
+[bgbig-c] CHECK six_entries_shape_ok PASS :: 6 ????? / ?????????????
+[bgbig-c] readout spotlight prison_coin_anvil#1 stacks=2 empty=0
+[bgbig-c] readout spotlight prison_chaosgold_extra#3 stacks=11 empty=0
+[bgbig-c] readout recipe_refs=42 missing=[]
+[bgbig-c] readout text_keys=16 title_keys=2 unresolved={}
+[bgbig-c] readout spotlight_pages=2 empty_stacks=0
+[bgbig-c] readout stack_sizes={prison_coin_anvil#1=2, prison_chaosgold_extra#3=11}
+[bgbig-c] CHECK recipes_resolved PASS :: refs=42 missing=[]
+[bgbig-c] CHECK spotlight_stacks_non_empty PASS :: spotlight_pages=2 empty_stacks=0
+[bgbig-c] CHECK spotlight_stack_sizes PASS :: stack_sizes={prison_coin_anvil#1=2, prison_chaosgold_extra#3=11}
+[bgbig-c] CHECK texts_translated PASS :: text=16 title=2 unresolved={}
+[bgbig-c] CHECK icons_resolved PASS :: missing=[]
+[bgbig-c] CHECK entry_names_translated PASS :: raw_names=0
+[bgbig-c] readout book_recipe_refs=226 missing=[]
+[bgbig-c] CHECK book_recipe_refs_all_resolved PASS :: refs=226
+[bgbig-c] SUMMARY pass=20 fail=0 ticks=60

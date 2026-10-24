@@ -1,0 +1,62 @@
+{
+  "probe": "bgbig-c-v1",
+  "pass": 11,
+  "fail": 0,
+  "rows": [
+    {
+      "name": "probe_player",
+      "ok": true,
+      "detail": "class=com.hjmmd_8.bettergold.probe.CProbe$ProbePlayer isFakePlayer=false dimension=minecraft:the_nether"
+    },
+    {
+      "name": "award_dance",
+      "ok": true,
+      "detail": "与金共舞：获得混沌金币串"
+    },
+    {
+      "name": "award_enchant",
+      "ok": true,
+      "detail": "赋予无序之咒：获得混沌金附魔书"
+    },
+    {
+      "name": "award_craft",
+      "ok": true,
+      "detail": "金工细作：获得铜块（含混沌金币配方产物之一）"
+    },
+    {
+      "name": "award_torchflower",
+      "ok": true,
+      "detail": "黄金火焰！：种子 + 花（组间 AND）"
+    },
+    {
+      "name": "award_refined_oil",
+      "ok": true,
+      "detail": "膏状的油将升华为精炼的油：获得高精度炼金油"
+    },
+    {
+      "name": "award_golden_prison",
+      "ok": true,
+      "detail": "红中黄室：进入金之牢狱（location+structures）:: found=BlockPos{x=-400, y=0, z=-176} piece=BlockPos{x=-400, y=31, z=-176} dimension=minecraft:the_nether"
+    },
+    {
+      "name": "removed_chaos_coin",
+      "ok": true,
+      "detail": "「获得混沌金币」成就已毙（注册表查不到）"
+    },
+    {
+      "name": "removed_chaosalloy_supply",
+      "ok": true,
+      "detail": "「崩乱合金模板」成就已毙（注册表查不到）"
+    },
+    {
+      "name": "chaosalloy_parent_is_chaosgold_ingot",
+      "ok": true,
+      "detail": "崩乱合金锭的 parent = Optional[bettergold:metal/chaosgold/ingot]"
+    },
+    {
+      "name": "adv_count_63",
+      "ok": true,
+      "detail": "本模组注册表成就数 = 63（总注册表含原版：1680）"
+    }
+  ]
+}

@@ -1,0 +1,503 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.hjmmd_8.bettergold.entity.ModDamageTypes;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.material.VoodooAccumulator;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 1.7 大轮 A3 的 A 级探针：巫毒爆发的**真实伤害类型 / 护甲对照 / 抗性对照**。
+ *
+ * <p>只做一件事：用真 {@code ServerPlayer}（{@code ProbePlayer extends ServerPlayer}，
+ * 哑连接、不入世界）和真僵尸，量「穿满物理护甲 ⇒ 爆发伤害不被护甲点减免」+
+ * 「抗性提升 ⇒ 魔法抗性生效」+ 打印 {@code DamageType} 的 registry id。</p>
+ *
+ * <p>开关文件：{@code run/bgbig-probe.enabled}；收尾 {@code halt(false)} 只调一次；
+ * forceload 双向归零。整块在收尾时删除（源码副本留在 {@code probe/bgbig/}）。</p>
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class VoodooProbe {
+
+    private static final String TAG = "[bgbig-a3]";
+    private static final Path OUT = Path.of("probe", "bgbig");
+    private static final Path SWITCH = Path.of("bgbig-probe.enabled");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+    private static final int TICK_WAIT = 25;
+    private static final BlockPos POS = new BlockPos(970, 121, 974);
+    private static final int FORCE_RADIUS = 1;
+
+    private static int passes;
+    private static int fails;
+    private static int phase;
+    private static int tick;
+    private static boolean halted;
+    private static boolean done;
+    private static ServerLevel level;
+    private static long forcedBefore = -1;
+
+    private static final List<Map<String, Object>> ROWS = new ArrayList<>();
+    private static final Map<Integer, Float> PRE = new LinkedHashMap<>();
+    private static final Map<Integer, String> PRE_TYPE = new LinkedHashMap<>();
+    private static final Map<Integer, Boolean> PRE_BYPASS = new LinkedHashMap<>();
+    private static final Map<Integer, String> PRE_OWNER = new LinkedHashMap<>();
+
+    private static ServerPlayer player;
+    private static Zombie zBare;
+    private static Zombie zArmored;
+    private static Zombie attacker;
+    private static int settleBareHp;
+    private static int settleArmoredHp;
+
+    private VoodooProbe() {
+    }
+
+    // ==================== 读数捕获 ====================
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIncoming(LivingIncomingDamageEvent event) {
+        if (phase > 0 && !event.getEntity().level().isClientSide()) {
+            PRE.remove(event.getEntity().getId());
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onPre(LivingDamageEvent.Pre event) {
+        if (phase <= 0) {
+            return;
+        }
+        int id = event.getEntity().getId();
+        var src = event.getSource();
+        PRE.put(id, event.getNewDamage());
+        PRE_TYPE.put(id, src.typeHolder().unwrapKey().map(k -> k.location().toString()).orElse("?"));
+        PRE_BYPASS.put(id, src.is(DamageTypeTags.BYPASSES_ARMOR));
+        Entity owner = src.getEntity();
+        PRE_OWNER.put(id, owner == null ? "<无>" : owner.getType() + "/" + owner.getUUID());
+    }
+
+    // ==================== 生命周期 ====================
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!Files.isRegularFile(SWITCH)) {
+            LOG.info("{} switch {} absent -> skipped", TAG, SWITCH.toAbsolutePath());
+            return;
+        }
+        if (done) {
+            return;
+        }
+        done = true;
+        try {
+            setup(event.getServer());
+            phase = 1;
+            tick = 0;
+        } catch (Throwable t) {
+            LOG.error("{} setup failed", TAG, t);
+            row("probe_setup", false, String.valueOf(t));
+            finish(event.getServer());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (phase == 0 || halted) {
+            return;
+        }
+        if (++tick < TICK_WAIT) {
+            return;
+        }
+        tick = 0;
+        if (phase == 1) {
+            phase = 2;
+            try {
+                runMain(event.getServer());
+            } catch (Throwable t) {
+                LOG.error("{} main phase failed", TAG, t);
+                row("probe_main", false, String.valueOf(t));
+            }
+            return;
+        }
+        try {
+            runLate(event.getServer());
+        } catch (Throwable t) {
+            LOG.error("{} late phase failed", TAG, t);
+            row("probe_late", false, String.valueOf(t));
+        }
+        finish(event.getServer());
+    }
+
+    private static void finish(MinecraftServer server) {
+        if (halted) {
+            return;
+        }
+        halted = true;
+        try {
+            // forceload 双向归零
+            unforce();
+            Map<String, Object> root = new LinkedHashMap<>();
+            root.put("probe", "bgbig-a3-v1");
+            root.put("pass", passes);
+            root.put("fail", fails);
+            root.put("forcedNow", level == null ? -1 : level.getForcedChunks().size());
+            root.put("rows", ROWS);
+            Files.createDirectories(OUT);
+            Files.writeString(OUT.resolve("report.json"), GSON.toJson(root), StandardCharsets.UTF_8);
+            LOG.info("{} SUMMARY pass={} fail={} forcedNow={}", TAG, passes, fails,
+                    level == null ? -1 : level.getForcedChunks().size());
+        } catch (Exception e) {
+            LOG.error("{} report write failed", TAG, e);
+        } finally {
+            LOG.info("{} halting server (once)", TAG);
+            server.halt(false);
+        }
+    }
+
+    // ==================== 工具 ====================
+
+    private static final Logger LOG = LoggerFactory.getLogger("VoodooProbe");
+
+    private static void row(String name, boolean ok, String detail) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("name", name);
+        m.put("ok", ok);
+        m.put("detail", detail);
+        ROWS.add(m);
+        if (ok) {
+            passes++;
+            LOG.info("{} PASS {} :: {}", TAG, name, detail);
+        } else {
+            fails++;
+            LOG.error("{} FAIL {} :: {}", TAG, name, detail);
+        }
+    }
+
+    private static String fmt(float v) {
+        return String.format(java.util.Locale.ROOT, "%.4f", v);
+    }
+
+    private static void force() {
+        int cx = POS.getX() >> 4;
+        int cz = POS.getZ() >> 4;
+        for (int dx = -FORCE_RADIUS; dx <= FORCE_RADIUS; dx++) {
+            for (int dz = -FORCE_RADIUS; dz <= FORCE_RADIUS; dz++) {
+                level.setChunkForced(cx + dx, cz + dz, true);
+            }
+        }
+    }
+
+    private static void unforce() {
+        if (level == null) {
+            return;
+        }
+        int cx = POS.getX() >> 4;
+        int cz = POS.getZ() >> 4;
+        for (int dx = -FORCE_RADIUS; dx <= FORCE_RADIUS; dx++) {
+            for (int dz = -FORCE_RADIUS; dz <= FORCE_RADIUS; dz++) {
+                level.setChunkForced(cx + dx, cz + dz, false);
+            }
+        }
+    }
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        forcedBefore = level.getForcedChunks().size();
+        force();
+        // 清一块 7×3×7 的空地 + 石头地板
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                for (int dy = 0; dy <= 2; dy++) {
+                    level.setBlockAndUpdate(POS.offset(dx, dy, dz),
+                            net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                }
+                level.setBlockAndUpdate(POS.offset(dx, -1, dz),
+                        net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+            }
+        }
+        // 真 ServerPlayer（不入世界、不 tick；哑连接让 send() 变成 no-op）
+        GameProfile profile = new GameProfile(
+                UUID.nameUUIDFromBytes("bgbig:a3-probe".getBytes(StandardCharsets.UTF_8)), "bgbig-a3-probe");
+        player = new ProbePlayer(server, level, profile);
+        player.moveTo(POS.getX() + 0.5D, POS.getY(), POS.getZ() + 0.5D, 0.0F, 0.0F);
+        clearSpawnInvuln(player);
+        try {
+            player.connection = new ServerGamePacketListenerImpl(
+                    server, new DummyConnection(), player, CommonListenerCookie.createInitial(profile, false));
+        } catch (Throwable t) {
+            LOG.warn("{} dummy connection failed: {}", TAG, String.valueOf(t));
+        }
+        row("probe_player", player.getClass().getName().contains("ProbePlayer"),
+                "class=" + player.getClass().getName() + " isFakePlayer=" + player.isFakePlayer()
+                        + " maxHealth=" + player.getMaxHealth());
+        // 施加者（真僵尸，在世界里）—— 让 settle 的 owner 能被 level.getEntities().get(uuid) 找到
+        attacker = EntityType.ZOMBIE.create(level);
+        if (attacker != null) {
+            attacker.moveTo(POS.getX() + 0.5D, POS.getY(), POS.getZ() - 1.5D, 0.0F, 0.0F);
+            attacker.setNoAi(true);
+            attacker.setInvulnerable(true);
+            level.addFreshEntity(attacker);
+        }
+        // 两只受试僵尸：一只裸、一只穿满钻石（护甲点 20 / 韧性 8）
+        zBare = EntityType.ZOMBIE.create(level);
+        zArmored = EntityType.ZOMBIE.create(level);
+        if (zBare != null && zArmored != null) {
+            zBare.moveTo(POS.getX() + 1.5D, POS.getY(), POS.getZ() + 1.5D, 0.0F, 0.0F);
+            zArmored.moveTo(POS.getX() - 1.5D, POS.getY(), POS.getZ() + 1.5D, 0.0F, 0.0F);
+            zBare.setNoAi(true);
+            zArmored.setNoAi(true);
+            wearFullDiamond(zArmored, false);
+            level.addFreshEntity(zBare);
+            level.addFreshEntity(zArmored);
+            row("zombie_armor", zArmored.getItemBySlot(EquipmentSlot.CHEST).is(Items.DIAMOND_CHESTPLATE),
+                    "受试2 armor=" + zArmored.getArmorValue() + " toughness="
+                            + zArmored.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS));
+        }
+        LOG.info("{} setup ok forcedBefore={} forcedAfter={}", TAG, forcedBefore, level.getForcedChunks().size());
+    }
+
+    private static void wearFullDiamond(LivingEntity e, boolean protection4) {
+        ItemStack[] stacks = {
+                new ItemStack(Items.DIAMOND_HELMET), new ItemStack(Items.DIAMOND_CHESTPLATE),
+                new ItemStack(Items.DIAMOND_LEGGINGS), new ItemStack(Items.DIAMOND_BOOTS)};
+        EquipmentSlot[] slots = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+        var ench = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                .getHolderOrThrow(Enchantments.PROTECTION);
+        for (int i = 0; i < 4; i++) {
+            if (protection4) {
+                stacks[i].enchant(ench, 4);
+            }
+            e.setItemSlot(slots[i], stacks[i]);
+        }
+    }
+
+    /** 一次真实 hurt：重置血量 / 无敌时间，返回「实际掉血」。 */
+    private static float hit(ServerPlayer p, DamageSource src, float raw) {
+        p.setHealth(p.getMaxHealth());
+        p.setAbsorptionAmount(0.0F);
+        p.invulnerableTime = 0;
+        clearSpawnInvuln(p);
+        refreshEquipment(p);
+        PRE.remove(p.getId());
+        PRE_TYPE.remove(p.getId());
+        PRE_BYPASS.remove(p.getId());
+        PRE_OWNER.remove(p.getId());
+        boolean ok = p.hurt(src, raw);
+        float pre = PRE.getOrDefault(p.getId(), -1.0F);
+        float delta = p.getMaxHealth() - p.getHealth();
+        LOG.info("{} hit raw={} ok={} incomingPre={} delta={} type={} bypassArmor={}",
+                TAG, raw, ok, fmt(pre), fmt(delta), PRE_TYPE.get(p.getId()), PRE_BYPASS.get(p.getId()));
+        return delta;
+    }
+
+    /**
+     * 玩家不 tick ⇒ 装备属性（护甲点 / 韧性）不会自动汇总。
+     * {@code LivingEntity#detectEquipmentUpdates()} 是 private，反射调一次把「穿上的护甲」真正算进属性。
+     */
+    private static void refreshEquipment(ServerPlayer p) {
+        try {
+            java.lang.reflect.Method m = LivingEntity.class.getDeclaredMethod("detectEquipmentUpdates");
+            m.setAccessible(true);
+            m.invoke(p);
+        } catch (Throwable t) {
+            LOG.warn("{} detectEquipmentUpdates failed: {}", TAG, String.valueOf(t));
+        }
+    }
+
+    /** {@code ServerPlayer#spawnInvulnerableTime} 是 private（且只在 tick 里递减）；探针玩家不 tick ⇒ 反射清零。 */
+    private static void clearSpawnInvuln(ServerPlayer p) {
+        try {
+            java.lang.reflect.Field f = ServerPlayer.class.getDeclaredField("spawnInvulnerableTime");
+            f.setAccessible(true);
+            f.setInt(p, 0);
+        } catch (Throwable t) {
+            LOG.warn("{} spawnInvulnerableTime reset failed: {}", TAG, String.valueOf(t));
+        }
+    }
+
+    private static void clearArmor(ServerPlayer p) {
+        for (EquipmentSlot s : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST,
+                EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            p.setItemSlot(s, ItemStack.EMPTY);
+        }
+    }
+
+    private static void wearVoodoo(ServerPlayer p) {
+        MetalFamily vd = MetalFamily.byId("voodoogold");
+        if (vd == null) {
+            return;
+        }
+        p.setItemSlot(EquipmentSlot.HEAD, new ItemStack(vd.helmet.get()));
+        p.setItemSlot(EquipmentSlot.CHEST, new ItemStack(vd.chestplate.get()));
+        p.setItemSlot(EquipmentSlot.LEGS, new ItemStack(vd.leggings.get()));
+        p.setItemSlot(EquipmentSlot.FEET, new ItemStack(vd.boots.get()));
+    }
+
+    private static DamageSource burstSource(LivingEntity owner) {
+        return ModDamageTypes.source(level, ModDamageTypes.VOODOO_BURST, null, owner);
+    }
+
+    private static void runMain(MinecraftServer server) {
+        final float raw = 10.0F;
+        // ① 裸玩家
+        clearArmor(player);
+        player.removeAllEffects();
+        float bare = hit(player, burstSource(attacker), raw);
+        String type = PRE_TYPE.get(player.getId());
+        boolean bypass = Boolean.TRUE.equals(PRE_BYPASS.get(player.getId()));
+        String ownerStr = PRE_OWNER.get(player.getId());
+        row("a3_damage_type_is_voodoo_burst", "bettergold:voodoo_burst".equals(type),
+                "实际 DamageType registry id=" + type + "（bypasses_armor=" + bypass
+                        + "，owner=" + ownerStr + "）");
+        row("a3_bypasses_armor_flag", bypass, "BYPASSES_ARMOR=" + bypass);
+        row("a3_owner_is_applier", ownerStr != null && ownerStr.contains(attacker.getUUID().toString()),
+                "owner=" + ownerStr + " 期望含施加者 UUID " + attacker.getUUID());
+
+        // ② 穿满物理护甲（钻石，无附魔）= 纯护甲点 20 / 韧性 8
+        wearFullDiamond(player, false);
+        float armored = hit(player, burstSource(attacker), raw);
+        float ratioArmor = bare > 0 ? armored / bare : -1.0F;
+        row("a3_full_physical_armor_no_reduction", bare > 0 && Math.abs(armored - bare) < 0.02F,
+                "裸=" + fmt(bare) + " 穿满钻石=" + fmt(armored) + " 比值=" + fmt(ratioArmor)
+                        + "（armor=" + player.getArmorValue() + "；期望 1.0000）");
+
+        // ③ 魔法抗性（抗性提升 I = 20%）⇒ 应生效
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 0, false, false));
+        float resistant = hit(player, burstSource(attacker), raw);
+        float ratioRes = armored > 0 ? resistant / armored : -1.0F;
+        row("a3_magic_resistance_applies", Math.abs(ratioRes - 0.8F) < 0.02F,
+                "穿甲+抗性I=" + fmt(resistant) + " / 穿甲=" + fmt(armored) + " 比值=" + fmt(ratioRes)
+                        + "（期望 0.8000 = 抗性提升 I 的 20%）");
+        player.removeAllEffects();
+
+        // ④ 对照：附魔保护 IV（原版 minecraft:magic 也会吃这一层；本轮**不**绕过它）
+        wearFullDiamond(player, true);
+        float prot = hit(player, burstSource(attacker), raw);
+        row("a3_protection_enchant_still_applies", prot < armored - 0.01F,
+                "穿保护IV=" + fmt(prot) + " / 无附魔=" + fmt(armored) + "（原版魔法伤害同样吃保护附魔，如实记录）");
+        clearArmor(player);
+
+        // ⑤ 对照：巫毒金 4 件 = 每件 25% 魔法减免 ⇒ 100%
+        wearVoodoo(player);
+        float voodoo = hit(player, burstSource(attacker), raw);
+        row("a3_voodoo_armor_magic_resist", voodoo <= 0.01F,
+                "穿满巫毒金=" + fmt(voodoo) + "（期望 0 = 4×25% 魔法减免仍认新类型）");
+        clearArmor(player);
+
+        // ⑥ 真正走 onVoodooExpired：两只僵尸各累积 10 点，等比结算 = 10×0.36 + 1 = 4.6
+        startSettle(zBare);
+        startSettle(zArmored);
+        zBare.setHealth(zBare.getMaxHealth());
+        zArmored.setHealth(zArmored.getMaxHealth());
+    }
+
+    private static void startSettle(Zombie z) {
+        if (z == null) {
+            return;
+        }
+        VoodooAccumulator.clear(z.getUUID());
+        VoodooAccumulator.accumulate(z, 10.0F);
+        z.getPersistentData().putUUID(
+                com.hjmmd_8.bettergold.material.MetalEvents.VOODOO_SOURCE_KEY, attacker.getUUID());
+        z.addEffect(new MobEffectInstance(AllEffects.VOODOO, 4, 0, false, false));
+        LOG.info("{} settle armed id={} hp={} armor={}", TAG, z.getId(), z.getHealth(), z.getArmorValue());
+    }
+
+    private static void runLate(MinecraftServer server) {
+        // ⑦ 真结算读数：血量掉幅必须与「裸 / 穿甲」无关（= 不吃护甲点）
+        float d1 = zBare == null ? -1.0F : zBare.getMaxHealth() - zBare.getHealth();
+        float d2 = zArmored == null ? -1.0F : zArmored.getMaxHealth() - zArmored.getHealth();
+        String t1 = zBare == null ? "?" : String.valueOf(PRE_TYPE.get(zBare.getId()));
+        String t2 = zArmored == null ? "?" : String.valueOf(PRE_TYPE.get(zArmored.getId()));
+        row("a3_real_settle_unarmored", Math.abs(d1 - 4.6F) < 0.15F,
+                "裸僵尸掉血=" + fmt(d1) + "（期望 10×0.36+1=4.6，type=" + t1 + "）");
+        row("a3_real_settle_armored_no_reduction", Math.abs(d2 - d1) < 0.05F && Math.abs(d2 - 4.6F) < 0.15F,
+                "穿钻甲僵尸掉血=" + fmt(d2) + " / 裸=" + fmt(d1) + "（armor="
+                        + (zArmored == null ? -1 : zArmored.getArmorValue()) + "；type=" + t2 + "）");
+        row("a3_real_settle_type", "bettergold:voodoo_burst".equals(t1) && "bettergold:voodoo_burst".equals(t2),
+                "两只僵尸的实际结算类型 = " + t1 + " / " + t2);
+        // 清理受试实体
+        if (zBare != null) {
+            zBare.discard();
+        }
+        if (zArmored != null) {
+            zArmored.discard();
+        }
+        if (attacker != null) {
+            attacker.discard();
+        }
+    }
+
+    // ==================== 真 ServerPlayer 子类 + 哑连接 ====================
+
+    static final class ProbePlayer extends ServerPlayer {
+        ProbePlayer(MinecraftServer srv, ServerLevel lvl, GameProfile profile) {
+            super(srv, lvl, profile, net.minecraft.server.level.ClientInformation.createDefault());
+        }
+    }
+
+    static final class DummyConnection extends Connection {
+        DummyConnection() {
+            super(PacketFlow.SERVERBOUND);
+        }
+
+        @Override
+        public void send(Packet<?> packet) {
+        }
+
+        @Override
+        public void send(Packet<?> packet, net.minecraft.network.PacketSendListener listener) {
+        }
+
+        @Override
+        public void send(Packet<?> packet, net.minecraft.network.PacketSendListener listener, boolean flush) {
+        }
+
+        @Override
+        public boolean isMemoryConnection() {
+            return false;
+        }
+    }
+}

@@ -1,0 +1,46 @@
+{
+  "parent": "bettergold:metal/chaosgold/dance",
+  "display": {
+    "icon": {
+      "id": "bettergold:chaos_coin",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.chaosgold_craft.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.chaosgold_craft.description"
+    }
+  },
+  "criteria": {
+    "have": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:copper_block",
+              "minecraft:iron_block",
+              "minecraft:gold_block",
+              "minecraft:netherite_ingot",
+              "bettergold:raw_flamegold",
+              "bettergold:raw_voodoogold",
+              "bettergold:raw_thundergold",
+              "bettergold:raw_indigoseagold",
+              "bettergold:raw_illusiongold",
+              "bettergold:raw_thornsgold",
+              "bettergold:raw_echogold",
+              "bettergold:raw_sturdygold"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

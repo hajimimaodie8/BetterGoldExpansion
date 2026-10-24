@@ -1,0 +1,46 @@
+{
+  "parent": "bettergold:agriculture/gold_infused_dirt",
+  "display": {
+    "icon": {
+      "id": "bettergold:golden_torchflower",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.bettergold.golden_torchflower.title"
+    },
+    "description": {
+      "translate": "advancements.bettergold.golden_torchflower.description"
+    }
+  },
+  "criteria": {
+    "have_seeds": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_torchflower_seeds"
+          }
+        ]
+      }
+    },
+    "have_flower": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "bettergold:golden_torchflower"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have_seeds"
+    ],
+    [
+      "have_flower"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

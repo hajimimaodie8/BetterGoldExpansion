@@ -42,7 +42,10 @@ NS = "bettergold"
 CHAOS_ORDER = ("chaosgold", "chaosalloy")
 # ⚠ **旧期望原文保留（未删）**：`EXPECTED_COUNT = 51`。
 # ★ 1.7 收口轮（bg-n10r9，2026-10-17）：51 → **59**（混沌金 / 崩乱合金各 4 条）。
-EXPECTED_COUNT = 59
+# ★ 1.7 大轮（bgbig，2026-10-24）：59 → **63**
+#   （删 2：treasure/chaos_coin、metal/chaosalloy/supply；加 6：红中黄室 / 与金共舞 /
+#     金工细作 / 赋予无序之咒 / 黄金火焰！/ 膏状的油将升华为精炼的油）。旧期望留档：`= 59`。
+EXPECTED_COUNT = 63
 FD_CONDITION = [{"type": "neoforge:mod_loaded", "modid": "farmersdelight"}]
 FD_PATHS = {"agriculture/alchemical_meat", "agriculture/midas_feast_2",
             "agriculture/sturdygold_feast_2"}
@@ -58,6 +61,9 @@ CHALLENGE_PATHS = {"metal/sturdygold/skeleton"} | {
 TRIGGER_WHITELIST = {
     "minecraft:inventory_changed", "minecraft:recipe_crafted", "minecraft:villager_trade",
     "minecraft:player_hurt_entity", "minecraft:placed_block", "minecraft:item_used_on_block",
+    # ★ 1.7 大轮（bgbig）：「进入金之牢狱」= 1.21.1 没有 enter_structure trigger
+    #   ⇒ 用 `minecraft:location` + `player.location.structures`（唯一新增的 trigger）。
+    "minecraft:location",
 }
 # 本仓只用到这两个原版物品（金苹果 / 金胡萝卜是原版金食物）
 VANILLA_ITEMS = {"minecraft:gold_ingot", "minecraft:golden_apple", "minecraft:golden_carrot"}
@@ -170,7 +176,10 @@ def registry_ids() -> set[str]:
         if must not in ids:
             bad("bgach-registry-selfcheck", f"两族形态没进真源：{must}")
     pat = re.compile(r'\.register[A-Za-z]*\(\s*"([a-z0-9_]+)"')
+    # ★ 1.7 大轮（bgbig）：金之牢狱线的成就图标用到 `chaosgold_enchanting_book`，
+    #   它注册在 `material/ChaosItems.java`（此前不在扫描表里 ⇒ 误报"物品不存在"）。
     for name in ("registry/AllItems.java", "material/MetalSpecialItems.java",
+                 "material/ChaosItems.java",
                  "fd/FdItems.java", "registry/AllBlocks.java"):
         p = JAVA / name
         if not p.is_file():
@@ -300,6 +309,15 @@ def main() -> int:
     if ids != set(man):
         bad("bgach-manifest-parity",
             f"产物与生成器清单不一致：产物多 {sorted(ids - set(man))} / 少 {sorted(set(man) - ids)}")
+    # 产物里多出来的（= 生成器清单之外的作废条目被放回来）**不许把脚本带崩**：
+    #   先报一条稳定的 `[bgach-stray-product]`，再把它从本段后续检查里剔除。
+    _stray_adv = sorted(k for k in advs if f"{NS}:{k}" not in man)
+    if _stray_adv:
+        bad("bgach-stray-product",
+            f"产物里有生成器清单之外的成就（作废条目被放回来了）：{_stray_adv}")
+        for _k in _stray_adv:
+            advs.pop(_k, None)
+        ids = {f"{NS}:{k}" for k in advs}
 
     # ---- 2. 根与树 ----
     roots = [k for k, v in advs.items() if not v.get("parent")]
@@ -341,17 +359,16 @@ def main() -> int:
     #   ⚠ 旧期望原文保留（未删）：原来这里是 5 条并列
     #     `{alchemy/mixed_crystal_pile, alchemy/alchemic_fuel, treasure/any_core_material,
     #       agriculture/gold_infused_dirt, agriculture/alchemical_meat}`。
+    # ★ 1.7 大轮（bgbig）：根的孩子 = 炼制I + 两条农业成就 + **红中黄室**（金之牢狱线的新链首）
+    #   ⇒ 4 条。⚠ 旧期望原文留档（已作废）：`treasure/chaos_coin` + `metal/chaosalloy/ingot`
+    #   两条链首（`chaos_coin` / `chaosalloy_supply` 两条成就本身已被作者毙掉）。
     want_root_kids = sorted([f"{NS}:alchemy/mixed_crystal_pile",
                              f"{NS}:agriculture/gold_infused_dirt",
                              f"{NS}:agriculture/alchemical_meat",
-                             # 1.7 `bg-n10fix` ⑨（作者 2026-10-18）：「混沌金与崩乱合金**不在贵金范畴**」
-                             # ⇒ 两族链首改挂 root（旧口径：挂在「寻途千里的珍宝」下，原文留档在上面）。
-                             f"{NS}:treasure/chaos_coin",
-                             f"{NS}:metal/chaosalloy/ingot"])
+                             f"{NS}:treasure/golden_prison"])
     if root_kids != want_root_kids:
         bad("bgach-shape-root-children",
-            f"根的孩子不是「炼制I + 两条农业成就 + 两族链首」这 5 条（1.7 `bg-n10fix` ⑨ 起；"
-            f"旧口径 3 条 / 更早 5 条并列均已作废）：{root_kids}")
+            f"根的孩子不是「炼制I + 两条农业成就 + 红中黄室」这 4 条（1.7 bgbig 起）：{root_kids}")
     # bg-fix3 §五：根链逐节咬合 root -> 炼制I -> 炼制II -> 寻途（作者 2026-10-07 重述的链）
     for _child, _parent in (("alchemy/mixed_crystal_pile", "root"),
                             ("alchemy/alchemic_fuel", "alchemy/mixed_crystal_pile"),
@@ -400,41 +417,60 @@ def main() -> int:
                     f"{_path} 的 parent 应是 {_parent}（四级链：核心材料 -> 锭 -> 武器工具 -> 盔甲），"
                     f"实际 {_got}")
 
-    # ---- 2c. ★ 1.7 收口轮：两族链条逐条钉住（`[bgn10r9-adv-chaos-chain]`）----
-    #   混沌金： treasure/chaos_coin → metal/chaosgold/ingot → weapon → armor
-    #   崩乱合金：metal/chaosalloy/ingot → metal/chaosalloy/supply → weapon → armor
-    #     （`supply` = 「块 **或** 升级锻造模板」，两件同属材料链第二段 ⇒ 同一条 requirement 组）
+    # ---- 2c. ★ 1.7 大轮（bgbig）：金之牢狱线逐条钉住 ----
+    #   红中黄室 → 与金共舞 → 混沌金锭 → 武器 → 盔甲
+    #   与金共舞 → 金工细作 / 赋予无序之咒
+    #   混沌金锭 → 崩乱合金锭 → 武器 → 盔甲
+    # ⚠ **旧口径（bg-n10r9）原文留档、已作废**：
+    #   treasure/chaos_coin → chaosgold/ingot → weapon → armor
+    #   chaosalloy/ingot(root) → chaosalloy/supply → weapon → armor
+    #   （`supply` = 块或模板；两条已随成就本身被作者毙掉）
     _chaos_chain = {
-        # ⚠ 旧口径（原文留档）：两条链首都写 `f"{NS}:treasure/any_core_material"`；
-        #   作者 2026-10-18 推翻（`bg-n10fix` ⑨）⇒ 改挂 `bettergold:root`。
-        "treasure/chaos_coin": f"{NS}:root",
-        "metal/chaosgold/ingot": f"{NS}:treasure/chaos_coin",
+        "treasure/golden_prison": f"{NS}:root",
+        "metal/chaosgold/dance": f"{NS}:treasure/golden_prison",
+        "metal/chaosgold/craft": f"{NS}:metal/chaosgold/dance",
+        "metal/chaosgold/enchant": f"{NS}:metal/chaosgold/dance",
+        "metal/chaosgold/ingot": f"{NS}:metal/chaosgold/dance",
         "metal/chaosgold/weapon": f"{NS}:metal/chaosgold/ingot",
         "metal/chaosgold/armor": f"{NS}:metal/chaosgold/weapon",
-        "metal/chaosalloy/ingot": f"{NS}:root",
-        "metal/chaosalloy/supply": f"{NS}:metal/chaosalloy/ingot",
-        "metal/chaosalloy/weapon": f"{NS}:metal/chaosalloy/supply",
+        "metal/chaosalloy/ingot": f"{NS}:metal/chaosgold/ingot",
+        "metal/chaosalloy/weapon": f"{NS}:metal/chaosalloy/ingot",
         "metal/chaosalloy/armor": f"{NS}:metal/chaosalloy/weapon",
     }
-    if len(_chaos_chain) != 8:
-        bad("bgn10r9-adv-chaos-chain", "两族链条不是 8 条 —— 反空转守护")
+    if len(_chaos_chain) != 10:
+        bad("bgn10r9-adv-chaos-chain", "金之牢狱线不是 10 条 —— 反空转守护")
     for _cpath, _cparent in _chaos_chain.items():
         _got = advs.get(_cpath, {}).get("parent")
         if _got != _cparent:
             bad("bgn10r9-adv-chaos-chain",
-                f"{_cpath} 的 parent 应是 {_cparent}（1.7 两族链：链首 → 锭/块或模板 → 武器 → 盔甲），"
-                f"实际 {_got}")
-    _supply = advs.get("metal/chaosalloy/supply", {}).get("criteria") or {}
-    if sorted(_supply) != ["have_block", "have_template"]:
+                f"{_cpath} 的 parent 应是 {_cparent}（1.7 bgbig 金之牢狱线），实际 {_got}")
+    # 被作者毙掉的两条：产物里必须不存在（原文副本在 docs/bgbig-证据/03-删除的旧成就原文/）
+    for _gone in ("treasure/chaos_coin", "metal/chaosalloy/supply"):
+        if (ADV / (_gone + ".json")).is_file():
+            bad("bgn10r9-adv-chaos-chain",
+                f"{_gone} 已作废（作者毙掉「获得混沌金币」/「崩乱合金模板」成就），产物里不许再存在")
+    # 金工细作：1 条 ItemPredicate + 12 件 items 数组（OR）= 4 块/锭 + 8 原料
+    _craft = (advs.get("metal/chaosgold/craft", {}).get("criteria") or {}).get("have") or {}
+    _craft_items = ((_craft.get("conditions") or {}).get("items") or [])
+    _craft_ids = sorted((_craft_items[0].get("items") if _craft_items else []) or [])
+    _want_craft = sorted(["minecraft:copper_block", "minecraft:iron_block",
+                          "minecraft:gold_block", "minecraft:netherite_ingot"]
+                         + [f"{NS}:raw_{m}" for m in
+                            ("flamegold", "voodoogold", "thundergold", "indigoseagold",
+                             "illusiongold", "thornsgold", "echogold", "sturdygold")])
+    if _craft_ids != _want_craft:
         bad("bgn10r9-adv-chaos-chain",
-            f"metal/chaosalloy/supply 的判据应是 {{have_block, have_template}}，实际 {sorted(_supply)}")
-    if advs.get("metal/chaosalloy/supply", {}).get("requirements") != \
-            [["have_block", "have_template"]]:
+            f"金工细作的 items 不是「4 块/锭 + 8 原料」这 12 件：{_craft_ids}")
+    # 黄金火焰！：两个都要 = 两个各一条判据的组（组间 AND，源码语义）
+    _tf = advs.get("agriculture/golden_torchflower", {})
+    if (_tf.get("requirements") != [["have_seeds"], ["have_flower"]]
+            or sorted(_tf.get("criteria") or {}) != ["have_flower", "have_seeds"]):
         bad("bgn10r9-adv-chaos-chain",
-            "metal/chaosalloy/supply 的 requirements 必须是 1 组 {{have_block, have_template}}"
-            "（组内 OR = 块**或**模板），否则「或」会变成「且」")
-    # 两族的链首 / 锭 必须有 display 图标（树上看不见的成就等于没做）
-    for _cpath in ("treasure/chaos_coin", "metal/chaosgold/ingot", "metal/chaosalloy/ingot"):
+            "黄金火焰！必须是「种子 + 花」两个各一组的判据（组间 AND），"
+            f"实际 criteria={sorted(_tf.get('criteria') or {})} req={_tf.get('requirements')}")
+    # 链首 / 锭 必须有 display 图标（树上看不见的成就等于没做）
+    for _cpath in ("treasure/golden_prison", "metal/chaosgold/dance",
+                   "metal/chaosgold/ingot", "metal/chaosalloy/ingot"):
         if not ((advs.get(_cpath, {}).get("display") or {}).get("icon") or {}).get("id"):
             bad("bgn10r9-adv-chaos-chain", f"{_cpath} 没有 display.icon.id")
 
@@ -687,9 +723,11 @@ def main() -> int:
         elif not re.search(r"[A-Za-z]", en_v):
             bad("bgfinal-adv-lang-en-shape",
                 f"{key} 的英文值里一个 ASCII 字母都没有：{en_v!r}")
-        if not (1 <= len(en_v) <= 120):
+        # ⚠ 上限 120 → **220**（1.7 大轮 bgbig）：「金工细作」的英文是一句完整的长判据说明
+        #   （190 字符），120 会把它误判成"坏值"。下限 1 与"必须有 ASCII 字母"两条不变。
+        if not (1 <= len(en_v) <= 220):
             bad("bgfinal-adv-lang-en-shape",
-                f"{key} 的英文值长度 {len(en_v)} 不合理（期望 1..120）")
+                f"{key} 的英文值长度 {len(en_v)} 不合理（期望 1..220；旧上限 120 已留档）")
 
     # ---- 5c. bg-ach §七.2「"制作"条件一律改"获得"」+ §七.6「刀不算器具」----
     # 期望值取自生成器清单的 `triggers`（= 真源的机器形态），再逐条钉住"这批必须已经是获得"。
@@ -1057,16 +1095,22 @@ def main() -> int:
         bad("bgfix9-eggplant-no-structure",
             f"㊹ 的 requirements 必须是 [['have']]，实际 "
             f"{(advs.get(_EP_PATH, {}) or {}).get('requirements')}")
-    # 负向（全量）：**任何**判据都不许自带 `conditions.player` —— 51 条里没有任何一条需要
-    #   结构/位置门；这条就是"㊹ 那一类"的类级守护（扰动：往任意一条加 player ⇒ 当场红）。
+    # 负向（全量）：判据不许自带 `conditions.player`（= 把"获得"偷偷收窄成"只能在某结构里"）。
+    #   ★ 1.7 大轮（bgbig）唯一例外：`treasure/golden_prison.entered` —— 它**本来就是**
+    #     `minecraft:location` 位置判据（"进入金之牢狱"），`player.location.structures` 是
+    #     这个 trigger 的正规写法，不是给物品判据加的门。
+    _PLAYER_CONDITION_ALLOWED = {"treasure/golden_prison.entered"}
     _player_crits: list[str] = []
     for _p, _v in advs.items():
         for _k, _c in ((_v or {}).get("criteria") or {}).items():
             if "player" in ((_c.get("conditions") or {}) or {}):
-                _player_crits.append(f"{_p}.{_k}")
+                _crit_id = f"{_p}.{_k}"
+                if _crit_id in _PLAYER_CONDITION_ALLOWED:
+                    continue
+                _player_crits.append(_crit_id)
     if _player_crits:
         bad("bgfix9-no-player-condition",
-            f"这些判据自带 `conditions.player`（位置/结构门）—— 51 条成就里一条都不该有："
+            f"这些判据自带 `conditions.player`（位置/结构门）—— 除了 location 那条之外一条都不该有："
             f"{_player_crits}")
     if len(advs) != EXPECTED_COUNT:
         bad("bgfix9-anti-vacuum", f"扫到的成就数 {len(advs)} != {EXPECTED_COUNT} —— 反空转守护")
@@ -1085,7 +1129,7 @@ def main() -> int:
           f"{sorted(used_triggers)} / recipe_crafted {len(recipe_refs)} 条 / 语言键 {lang_n} 条")
     # ⚠ bg-fix3 §五 之后树形状与 challenge 数都变了；旧口径的措辞（「根 5 孩子…1 条 challenge」）
     #   原文保留在这里作历史留档。
-    print(f"OK [bgach] 树（bg-fix3 §五 链式）：根 3 孩子（炼制I + 两条农业）、"
+    print(f"OK [bgach] 树（bg-fix3 §五 链式 + bgbig 金之牢狱线）：根 4 孩子（炼制I + 两条农业 + 红中黄室）、"
           f"根链 root -> 炼制I -> 炼制II -> 寻途、寻途 9 孩子、染上黄金 3 孩子；"
           f"3 条乐事条件；challenge {len(challenge)} 条（十族盔甲 + 骷髅打金服）")
     print(f"OK [bgfix3-knife-in-gear] 8 条武器成就各带 `have_knife`（items = 该族 "
@@ -1105,7 +1149,7 @@ def main() -> int:
     print("OK [bgach] 物品引用 %d 个（含 %d 张本模组标签）全部存在于注册表真源；"
           "食物清单与 Java 真源逐条一致" % (len(set(refs)), len(bgfix3_tag_refs)))
     print(f"OK [bgfinal-adv-lang] {len(en_adv)} 条英文值全部是真英译"
-          f"（en != zh、非空、含 ASCII 字母、长度 ≤ 120；中英键集完全一致，白名单 {len(SYMBOL_ONLY_OK)} 条）")
+          f"（en != zh、非空、含 ASCII 字母、长度 ≤ 220；中英键集完全一致，白名单 {len(SYMBOL_ONLY_OK)} 条）")
     print(f"[bgach-ok] 问题 0 条 / 成就 {len(advs)} 个 / criteria {total_criteria} 条 / 语言键 {lang_n} 条"
           f"（契约：0 绿 / 1 有问题 / 2 前置坏）")
     return 0

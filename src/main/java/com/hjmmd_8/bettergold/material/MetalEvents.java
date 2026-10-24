@@ -55,11 +55,15 @@ public final class MetalEvents {
      *
      * <p><b>1.7 作者 2026-10-24 第 ⑥ 条</b>（「爆发伤害改魔法伤害」）：<b>读源码（1.4 起）</b>那条一直是
      * {@code entity.damageSources().magic()}（= {@code minecraft:magic}），<b>本来就是魔法</b>——
-     * 本轮真正补的是<b>伤害源要能带 owner</b>：旧口径的 {@code magic()} 没有攻击者
-     * ⇒ 死亡提示 / 击杀归属都算"环境伤害"。现在按「谁最后给的巫毒」找回施加者，用
-     * {@code new DamageSource(MAGIC, null, owner)} 结算（{@code getEntity() = owner}，
-     * 类型仍是 {@code minecraft:magic}）；找不到施加者（自然生成 / 已卸载）时<b>原样</b>退回
-     * {@code damageSources().magic()}。</p>
+     * 上一轮补的是<b>伤害源要能带 owner</b>：旧口径的 {@code magic()} 没有攻击者
+     * ⇒ 死亡提示 / 击杀归属都算"环境伤害"。现在按「谁最后给的巫毒」找回施加者，把 owner 带上。</p>
+     *
+     * <p><b>⚠ 1.7 大轮（2026-10-24）第 A3 条：类型再换一次。</b>作者实测「上一轮之后仍当物理」⇒
+     * 不再用原版 {@code minecraft:magic}，改用<b>自带 damage type</b>
+     * {@code bettergold:voodoo_burst}（{@code ModDamageTypes.VOODOO_BURST}，JSON
+     * {@code data/bettergold/damage_type/voodoo_burst.json}，
+     * 并在 {@code data/minecraft/tags/damage_type/bypasses_armor.json} 里**显式**登记
+     * {@code bypasses_armor}）。旧口径原文留档在 {@link #voodooSettleSource} 的 javadoc 里。</p>
      *
      * <p>注意：字面公式下「窗口内一次伤害都没挨到」也会结算 {@code 等级 × 每级固定伤害} 点
      * （旧实现是提取值为 0 就直接返回）。这是作者定稿公式的必然结果，已在 1.5 规格文档里写明。</p>
@@ -91,20 +95,28 @@ public final class MetalEvents {
      *
      * <p>⚠ 旧口径（1.4–1.7.0，原文留档）：{@code entity.hurt(entity.damageSources().magic(), ...)}
      * —— 类型对，但<b>没有 owner</b>（击杀归属 / 死亡提示都算环境）。</p>
+     *
+     * <p>⚠ <b>上一轮（`gpt` 轮）口径，原文留档、已被本轮取代</b>：类型用原版
+     * {@code minecraft:magic}（{@code registryOrThrow(...).getHolderOrThrow(DamageTypes.MAGIC)}
+     * + {@code new DamageSource(holder, null, owner)}）。作者实测「仍当物理」⇒ 1.7 大轮第 A3 条
+     * 换成<b>自带类型</b> {@link com.hjmmd_8.bettergold.entity.ModDamageTypes#VOODOO_BURST}
+     * （{@code bettergold:voodoo_burst}），并在
+     * {@code data/minecraft/tags/damage_type/bypasses_armor.json} 里**显式**登记
+     * {@code bypasses_armor} ⇒ 不吃护甲点这件事不再依赖原版标签的既有内容。</p>
+     *
+     * <p>owner 找不到时<b>仍然用同一个自带类型</b>（不能退回 {@code damageSources().magic()}，
+     * 否则「结算伤害的类型」会有两种，观感又回到旧口径）。</p>
      */
     private static net.minecraft.world.damagesource.DamageSource voodooSettleSource(LivingEntity entity) {
         if (!(entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            // 客户端 / 非服务端：没有注册表访问也无所谓结算（结算只在服务端发生）
             return entity.damageSources().magic();
         }
         LivingEntity owner = voodooApplier(serverLevel, entity);
-        if (owner == null) {
-            return entity.damageSources().magic();
-        }
-        var holder = serverLevel.registryAccess()
-                .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
         // direct = null（不是弹射物/实体本身），causing = 施加者 ⇒ getEntity() = 施加者
-        return new net.minecraft.world.damagesource.DamageSource(holder, null, owner);
+        // owner == null 时 causing 也是 null（= 环境伤害），类型不变 —— 恒为 bettergold:voodoo_burst
+        return com.hjmmd_8.bettergold.entity.ModDamageTypes.source(
+                serverLevel, com.hjmmd_8.bettergold.entity.ModDamageTypes.VOODOO_BURST, null, owner);
     }
 
     /**
@@ -1805,6 +1817,10 @@ public final class MetalEvents {
     private static boolean isMagic(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
                 || source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC)
+                // ★ 1.7 大轮第 A3 条：巫毒爆发改用自带类型 bettergold:voodoo_burst，
+                //   它必须仍然算「魔法伤害」—— 否则巫毒金盔甲的「每件 25% 魔法伤害减免」会在
+                //   改类型的那一刻静默失效（旧口径只认 minecraft:magic / indirect_magic）。
+                || source.is(com.hjmmd_8.bettergold.entity.ModDamageTypes.VOODOO_BURST)
                 // NeoForge 把中毒从 magic 拆成了独立的 neoforge:poison，必须单独判定
                 || source.is(net.neoforged.neoforge.common.NeoForgeMod.POISON_DAMAGE);
     }

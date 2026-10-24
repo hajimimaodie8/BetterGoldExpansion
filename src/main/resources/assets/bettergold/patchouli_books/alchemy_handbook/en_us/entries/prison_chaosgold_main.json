@@ -1,0 +1,64 @@
+{
+  "name": "bettergold.handbook.entry.prison_chaosgold_main",
+  "category": "bettergold:golden_prison",
+  "icon": "bettergold:chaosgold_ingot",
+  "sortnum": 3,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.prison_chaosgold_main_1_left"
+    },
+    {
+      "type": "patchouli:smelting",
+      "recipe": "bettergold:chaos_coin_smelting"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_ingot_from_nugget"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.prison_chaosgold_main_2_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_sword",
+      "recipe2": "bettergold:chaosgold_mace"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_trident",
+      "recipe2": "bettergold:chaosgold_bow"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_crossbow",
+      "recipe2": "bettergold:chaosgold_axe"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_pickaxe",
+      "recipe2": "bettergold:chaosgold_shovel"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_hoe",
+      "recipe2": "bettergold:chaosgold_shield"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_helmet",
+      "recipe2": "bettergold:chaosgold_chestplate"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_leggings",
+      "recipe2": "bettergold:chaosgold_boots"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:chaosgold_knife"
+    }
+  ]
+}

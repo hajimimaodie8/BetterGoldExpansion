@@ -1,0 +1,11 @@
+bgbig 扰动矩阵（判据 = exit + 命中期望 tag；逐字节复原 + SHA256）
+
+A1-shield-7-ingots           HIT        exit=1 hit=True                          restored=True
+A2-fruit-center-apple        HIT        exit=1 hit=True                          restored=True
+A3-voodoo-burst-type         HIT        exit=1 hit=True                          restored=True
+B1-prison-verbatim           HIT        exit=1 hit=True                          restored=True
+B2-old-chapter-product-back  HIT        exit=1 hit=True                          restored=True
+C1-torchflower-and           HIT        exit=1 hit=True                          restored=True
+C2-retired-advancement-back  HIT        exit=1 hit=True                          restored=True
+D1-lang-sha                  HIT        exit=1 hit=True                          restored=True
+Z-comment-only-still-green   HIT        exit=0 hit=True                          restored=True

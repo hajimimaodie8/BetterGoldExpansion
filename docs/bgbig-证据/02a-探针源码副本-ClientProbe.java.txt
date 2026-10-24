@@ -1,0 +1,346 @@
+package com.hjmmd_8.bettergold.probe.bgbig;
+
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+import vazkii.patchouli.client.book.BookContents;
+import vazkii.patchouli.client.book.BookEntry;
+import vazkii.patchouli.client.book.BookPage;
+import vazkii.patchouli.common.book.Book;
+import vazkii.patchouli.common.book.BookRegistry;
+
+/**
+ * 1.7 大轮 B 段的**临时客户端探针**：读 Patchouli 真正加载出来的 `BookContents`。
+ *
+ * <p>红线 5：进世界后第 2 tick 断言世界名（必须 = 本轮自造的 ASCII 探针世界 `bgbigprobe`，
+ * 且**负向排除**作者存档名），名字不对立刻停手。</p>
+ *
+ * <p>收尾整块删除；源码副本留在 `probe/bgbig/`。</p>
+ */
+@EventBusSubscriber(modid = "bettergold", value = Dist.CLIENT)
+public final class ClientProbe {
+
+    private static final String TAG = "[bgbig-c]";
+    private static final String BOOK_ID = "bettergold:alchemy_handbook";
+    private static final String P = "patchouli:";
+    private static final String[] E = {"prison_main", "prison_gremlin", "prison_coin_anvil",
+            "prison_chaosgold_main", "prison_chaosgold_extra", "prison_chaosalloy"};
+    private static final int[] E_PAGES = {2, 3, 4, 12, 3, 13};
+    // `BookContents#categories` 是 Map：探针里按**字母序**收集后比较（sortnum 顺序由数据侧关卡钉）
+    private static final String[] CATS = {"alchemy_start", "gear_upgrade", "golden_feast",
+            "golden_prison", "merchant_antiques"};
+    private static final String[][] E_SEQ = {
+            {P + "text", P + "text"},
+            {P + "text", P + "text", P + "text"},
+            {P + "spotlight", P + "crafting", P + "crafting", P + "crafting"},
+            {P + "text", P + "smelting", P + "crafting", P + "text",
+             P + "crafting", P + "crafting", P + "crafting", P + "crafting",
+             P + "crafting", P + "crafting", P + "crafting", P + "crafting"},
+            {P + "crafting", P + "crafting", P + "spotlight"},
+            {P + "text", P + "crafting", P + "text", P + "text", P + "crafting",
+             P + "smithing", P + "smithing", P + "smithing", P + "smithing",
+             P + "smithing", P + "smithing", P + "smithing", P + "smithing"},
+    };
+
+    private static boolean armed;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static boolean done;
+
+    private ClientProbe() {
+    }
+
+    private static boolean enabled() {
+        return Files.exists(FMLPaths.GAMEDIR.get().resolve("bgbig-client-probe.enabled"));
+    }
+
+    private static void log(String msg) {
+        System.out.println(TAG + " " + msg);
+    }
+
+    private static void check(String id, boolean ok, String detail) {
+        if (ok) {
+            pass++;
+        } else {
+            fail++;
+        }
+        log("CHECK " + id + " " + (ok ? "PASS" : "FAIL") + " :: " + detail);
+    }
+
+    @SubscribeEvent
+    public static void onTick(ClientTickEvent.Post event) {
+        if (done) {
+            return;
+        }
+        if (!armed) {
+            if (!enabled()) {
+                return;
+            }
+            armed = true;
+            log("armed=true gamedir=" + FMLPaths.GAMEDIR.get());
+        }
+        tick++;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.getSingleplayerServer() == null) {
+            return;
+        }
+        if (tick == 2) {
+            String name = mc.getSingleplayerServer().getWorldData().getLevelName();
+            boolean ok = "world".equals(name) && !name.contains("\u65b0\u7684\u4e16\u754c");
+            log("readout levelName=" + name);
+            check("probe_world_guard", ok, "levelName=" + name + "（期望 world，且不得是作者存档）");
+            if (!ok) {
+                log("ABORT: wrong world, stopping probe");
+                done = true;
+                mc.stop();
+            }
+            return;
+        }
+        if (tick < 60) {
+            return;
+        }
+        try {
+            run(mc);
+        } catch (Throwable t) {
+            log("FAIL run threw " + t);
+            check("probe_run", false, String.valueOf(t));
+        }
+        done = true;
+        mc.stop();
+    }
+
+    private static void run(Minecraft mc) {
+        Map<ResourceLocation, Book> books = BookRegistry.INSTANCE.books;
+        Book book = books.get(ResourceLocation.parse(BOOK_ID));
+        check("book_registered", book != null, "books=" + books.size());
+        if (book == null) {
+            summary();
+            return;
+        }
+        BookContents c = book.getContents();
+        check("book_contents_no_error", c != null && !c.isErrored(),
+                "errored=" + (c == null ? "null" : c.isErrored() + " / " + c.getException()));
+        if (c == null) {
+            summary();
+            return;
+        }
+
+        List<String> cats = new ArrayList<>();
+        for (var cat : c.categories.values()) {
+            cats.add(cat.getId().getPath());
+        }
+        java.util.Collections.sort(cats);
+        log("readout categories=" + c.categories.size() + " " + cats);
+        check("book_categories_five", c.categories.size() == 5 && cats.equals(List.of(CATS)),
+                "categories=" + cats);
+
+        int pages = 0;
+        for (BookEntry e : c.entries.values()) {
+            pages += e.getPages().size();
+        }
+        log("readout entries=" + c.entries.size() + " pages=" + pages);
+        check("book_entries_26", c.entries.size() == 26, "entries=" + c.entries.size());
+        check("book_pages_229", pages == 229, "pages=" + pages);
+        boolean oldGone = true;
+        for (String old : new String[]{"chaos_materials", "chaos_feast",
+                "gear_chaosgold", "gear_chaosalloy"}) {
+            if (c.entries.containsKey(ResourceLocation.parse("bettergold:" + old))) {
+                oldGone = false;
+            }
+        }
+        check("old_four_chapters_gone", oldGone, "旧四条必须不在 BookContents 里");
+
+        boolean structureOk = true;
+        for (int i = 0; i < E.length; i++) {
+            BookEntry e = c.entries.get(ResourceLocation.parse("bettergold:" + E[i]));
+            if (e == null) {
+                check("entry_" + E[i], false, "缺条目");
+                structureOk = false;
+                continue;
+            }
+            List<BookPage> pgs = e.getPages();
+            boolean ok = pgs.size() == E_PAGES[i];
+            List<String> got = new ArrayList<>();
+            for (BookPage p : pgs) {
+                JsonObject so = p.sourceObject;
+                got.add(so != null && so.has("type") ? so.get("type").getAsString() : "?");
+            }
+            ok = ok && got.equals(List.of(E_SEQ[i]));
+            log("readout entry=" + E[i] + " pages=" + pgs.size() + " types=" + got);
+            check("entry_" + E[i] + "_shape", ok,
+                    "pages=" + pgs.size() + "（期望 " + E_PAGES[i] + "）types=" + got);
+            structureOk = structureOk && ok;
+        }
+        check("six_entries_shape_ok", structureOk, "6 章页数 / 页型序列逐页一致");
+
+        // ---- 配方引用 / spotlight 栈 / 文本键：对着活注册表 ----
+        Map<String, String> unresolved = new LinkedHashMap<>();
+        List<String> missingRecipes = new ArrayList<>();
+        List<String> missingItems = new ArrayList<>();
+        int recipeRefs = 0;
+        int textKeys = 0;
+        int titleKeys = 0;
+        int spotlightPages = 0;
+        int emptyStacks = 0;
+        Map<String, Integer> stackSizes = new LinkedHashMap<>();
+        for (String id : E) {
+            BookEntry e = c.entries.get(ResourceLocation.parse("bettergold:" + id));
+            if (e == null) {
+                continue;
+            }
+            int idx = 0;
+            for (BookPage p : e.getPages()) {
+                idx++;
+                JsonObject so = p.sourceObject;
+                if (so == null) {
+                    continue;
+                }
+                for (String k : new String[]{"text", "title"}) {
+                    if (so.has(k) && so.get(k).isJsonPrimitive()) {
+                        String key = so.get(k).getAsString();
+                        if ("title".equals(k)) {
+                            titleKeys++;
+                        } else {
+                            textKeys++;
+                        }
+                        String tr = p.i18n(key);
+                        if (tr == null || tr.isEmpty() || tr.equals(key)) {
+                            unresolved.put(key, String.valueOf(tr));
+                        }
+                    }
+                }
+                for (String k : new String[]{"recipe", "recipe2"}) {
+                    if (so.has(k) && so.get(k).isJsonPrimitive()) {
+                        String rid = so.get(k).getAsString();
+                        recipeRefs++;
+                        if (mc.level.getRecipeManager().byKey(ResourceLocation.parse(rid)).isEmpty()) {
+                            missingRecipes.add(rid);
+                        }
+                    }
+                }
+                if (so.has("item")) {
+                    spotlightPages++;
+                    JsonElement it = so.get("item");
+                    List<String> list = new ArrayList<>();
+                    if (it.isJsonArray()) {
+                        JsonArray arr = it.getAsJsonArray();
+                        for (JsonElement one : arr) {
+                            list.add(one.getAsString());
+                        }
+                    } else {
+                        list.add(it.getAsString());
+                    }
+                    for (String iid : list) {
+                        var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(iid));
+                        if (item == Items.AIR) {
+                            missingItems.add(iid);
+                        }
+                    }
+                    stackSizes.put(id + "#" + idx, list.size());
+                }
+                if (p.getClass().getSimpleName().equals("PageSpotlight")) {
+                    Object st = fieldOf(p, "stacks");
+                    if (st instanceof ItemStack[] arr2) {
+                        int empty = 0;
+                        for (ItemStack s : arr2) {
+                            if (s == null || s.isEmpty()) {
+                                empty++;
+                            }
+                        }
+                        emptyStacks += empty;
+                        log("readout spotlight " + id + "#" + idx + " stacks=" + arr2.length
+                                + " empty=" + empty);
+                    }
+                }
+            }
+        }
+        log("readout recipe_refs=" + recipeRefs + " missing=" + missingRecipes);
+        log("readout text_keys=" + textKeys + " title_keys=" + titleKeys + " unresolved=" + unresolved);
+        log("readout spotlight_pages=" + spotlightPages + " empty_stacks=" + emptyStacks);
+        log("readout stack_sizes=" + stackSizes);
+        check("recipes_resolved", recipeRefs == 42 && missingRecipes.isEmpty(),
+                "refs=" + recipeRefs + " missing=" + missingRecipes);
+        check("spotlight_stacks_non_empty", spotlightPages == 2 && emptyStacks == 0,
+                "spotlight_pages=" + spotlightPages + " empty_stacks=" + emptyStacks);
+        check("spotlight_stack_sizes",
+                Integer.valueOf(2).equals(stackSizes.get("prison_coin_anvil#1"))
+                        && Integer.valueOf(11).equals(stackSizes.get("prison_chaosgold_extra#3")),
+                "stack_sizes=" + stackSizes);
+        check("texts_translated", textKeys == 16 && titleKeys == 2 && unresolved.isEmpty(),
+                "text=" + textKeys + " title=" + titleKeys + " unresolved=" + unresolved);
+        check("icons_resolved", missingItems.isEmpty(), "missing=" + missingItems);
+
+        int rawNames = 0;
+        for (BookEntry e : c.entries.values()) {
+            if (e.getName().getString().contains("bettergold.handbook")) {
+                rawNames++;
+            }
+        }
+        check("entry_names_translated", rawNames == 0, "raw_names=" + rawNames);
+
+        int allRefs = 0;
+        List<String> allMissing = new ArrayList<>();
+        for (BookEntry e : c.entries.values()) {
+            for (BookPage p : e.getPages()) {
+                JsonObject so = p.sourceObject;
+                if (so == null) {
+                    continue;
+                }
+                for (String k : new String[]{"recipe", "recipe2"}) {
+                    if (so.has(k) && so.get(k).isJsonPrimitive()) {
+                        allRefs++;
+                        String rid = so.get(k).getAsString();
+                        if (mc.level.getRecipeManager().byKey(ResourceLocation.parse(rid)).isEmpty()) {
+                            allMissing.add(rid);
+                        }
+                    }
+                }
+            }
+        }
+        log("readout book_recipe_refs=" + allRefs + " missing=" + allMissing);
+        check("book_recipe_refs_all_resolved", allMissing.isEmpty(), "refs=" + allRefs);
+
+        summary();
+    }
+
+    private static void summary() {
+        log("SUMMARY pass=" + pass + " fail=" + fail + " ticks=" + tick);
+    }
+
+    private static Object fieldOf(Object target, String name) {
+        Class<?> k = target.getClass();
+        while (k != null) {
+            try {
+                Field f = k.getDeclaredField(name);
+                f.setAccessible(true);
+                return f.get(target);
+            } catch (NoSuchFieldException ex) {
+                k = k.getSuperclass();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+        return null;
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "bettergold.handbook.entry.prison_main",
+  "category": "bettergold:golden_prison",
+  "icon": "bettergold:gold_bricks",
+  "sortnum": 0,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.prison_main_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.prison_main_1_right"
+    }
+  ]
+}

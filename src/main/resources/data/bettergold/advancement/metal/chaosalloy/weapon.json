@@ -1,5 +1,5 @@
 {
-  "parent": "bettergold:metal/chaosalloy/supply",
+  "parent": "bettergold:metal/chaosalloy/ingot",
   "display": {
     "icon": {
       "id": "bettergold:chaosalloy_sword",

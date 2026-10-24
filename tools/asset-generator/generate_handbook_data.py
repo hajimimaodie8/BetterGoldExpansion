@@ -86,6 +86,11 @@ CATEGORIES = [
     ("gear_upgrade", "sturdygold_sword", 1),         # 装备的强化（§八 改名，id 未动）
     ("golden_feast", "sturdygold_apple", 2),         # 金灿的盛宴
     ("merchant_antiques", "gold_exchange_counter", 3),  # 商人与古董
+    # ★★ 1.7 大轮（2026-10-24，`bgbig`）：作者新给的**大章节「金铸的牢狱」**
+    #    （封面 = 混沌金币串；左侧注释原文 = 语言键 `category.golden_prison.desc` 的值）。
+    #    ⚠ 它**取代**上一轮的四条混沌金/崩乱合金章节（`chaos_materials` / `chaos_feast` /
+    #    `gear_chaosgold` / `gear_chaosalloy`）—— 作者原话「这意味着你之前设的那些章节可以直接毙掉了」。
+    ("golden_prison", "chaos_coin_string", 4),       # 金铸的牢狱
 ]
 
 # Placeholder food / merchant / antique spotlights -- existing items only, no invented content.
@@ -1120,6 +1125,146 @@ def entry_gear_chaosalloy():
 CHAOS_ENTRIES = [entry_chaos_materials, entry_chaos_feast,
                  entry_gear_chaosgold, entry_gear_chaosalloy]
 
+# --------------------------------------------------------------------------------------
+# ★★ 1.7 大轮（2026-10-24，`bgbig`）：大章节「金铸的牢狱」= 1 个新类别 + 6 个条目
+# --------------------------------------------------------------------------------------
+#
+# 作者原话（父代理转述，逐字）：
+#   「**这意味着你之前设的那些章节可以直接毙掉了**」
+#   ⇒ 上一轮的四条混沌金 / 崩乱合金章节（`chaos_materials` / `chaos_feast` /
+#     `gear_chaosgold` / `gear_chaosalloy`）**作废、不再产出**；它们的构造函数**原样保留**
+#     在下面（一行没删），并进 `RETIRED_ENTRIES` —— 旧文本 / 旧页型 / 旧配方引用都还能从这里查到。
+#     ⚠ 生成器仍然只写**语言键**；文案（中 / 英）由一次性脚本追加进两份语言文件。
+#     ⚠ 旧章节的**语言键**在作者本轮给的 `zh_cn.json` 里已经被删掉（26 个键：4 条目 +
+#       22 个 page 键，见 docs 的 D 段记账）⇒ 关卡按"产物里不许再引用它们"守。
+#
+# 页面形状（作者逐页给的，**一个字不许改**）：
+#   章1 金之牢狱主体       封面 = 金砖块            2 页（1左 / 1右，纯文案）
+#   章2 金钱妖的记事       封面 = 混沌金币串        3 页（1左 / 1右 / 2左，纯文案）
+#   章3 混沌金币与万坚金砧 封面 = 混沌金币          4 页（1左 轮换栈+文案 / 1右 2 配方 /
+#                                                    2左 2 配方 / 2右 1 配方+文案）
+#   章4 混沌金的主要内容   封面 = 混沌金锭          12 页（1左 文案 / 1右 = **熔炉页 + 工作台页**
+#                                                    两页（两种配方类型不能同页）/ 2左 文案 /
+#                                                    2右~ 15 件工作台配方 = 8 页）
+#   章5 混沌金的副要内容   封面 = 混沌金附魔书      3 页（1左 配方+文案 / 1右 配方+文案 /
+#                                                    2左 轮换栈+文案）
+#   章6 崩乱合金的内容     封面 = 崩乱合金锭        13 页（1左 文案 / 1右 2 配方 / 2左 文案 /
+#                                                    2右 文案 / 3左 配方+文案 /
+#                                                    3右~ 15 件锻造配方 = 8 页）
+#
+# ⚠ 配方页**每页 ≤ 2 个**（Patchouli 的 `PageDoubleRecipe` 只有 recipe / recipe2 两个槽）；
+# ⚠ `PageSpotlight` **只有一个图标槽** ⇒ "多图标 / 来回切换"一律用**轮换栈**（传 list）。
+PRISON_CATEGORY = "golden_prison"
+
+# 混沌金装备图集的顺序 = 「既有"贵金装备"章节」的 `FORGE_ORDER`，**乐事刀补在最后**（15 件）。
+# ⚠ 刀放最后（不是插在盾牌之前）：这样最后一页只有它一条配方、不占 `recipe2` 槽
+#   （`[bgn10rc2-handbook]` 的既有口径：乐事刀那一页单独一条）。
+# ⚠ 这张表不在本文件另写一份：直接用 §八 的 `FORGE_ORDER` + `knife`。
+PRISON_GEAR_ORDER = FORGE_ORDER + ["knife"]
+assert len(PRISON_GEAR_ORDER) == 15, "金铸的牢狱的装备图集不是 15 件"
+
+
+def entry_prison_main():
+    """第一章 · 金之牢狱主体（封面 = 金砖块）。2 页纯文案。"""
+    eid = "prison_main"
+    pages = [text_page(_ph(eid, "1_left")), text_page(_ph(eid, "1_right"))]
+    return entry(eid, PRISON_CATEGORY, "gold_bricks", 0, pages)
+
+
+def entry_prison_gremlin():
+    """第二章 · 金钱妖的记事（封面 = 混沌金币串）。3 页纯文案。"""
+    eid = "prison_gremlin"
+    pages = [text_page(_ph(eid, _l)) for _l in ("1_left", "1_right", "2_left")]
+    return entry(eid, PRISON_CATEGORY, "chaos_coin_string", 1, pages)
+
+
+def entry_prison_coin_anvil():
+    """第三章 · 混沌金币与万坚金砧（封面 = 混沌金币）。4 页。"""
+    eid = "prison_coin_anvil"
+    pages = [
+        # 1 左：中上边 = 混沌金币串 / 混沌金币**来回切换**（轮换栈，单个 spotlight 只能一个图标）
+        spotlight_page(["bettergold:chaos_coin_string", "bettergold:chaos_coin"],
+                       _ph(eid, "1_left"), _pht(eid, "1_left")),
+        # 1 右：上 = 铜块偷梁换柱 / 下 = 铁块偷梁换柱（一页 2 个配方 = Patchouli 上限）
+        crafting_page("copper_block_with_chaos_coin", "iron_block_with_chaos_coin"),
+        # 2 左：上 = 金块 / 下 = 下界合金锭
+        crafting_page("gold_block_with_chaos_coin", "netherite_ingot_with_chaos_coin_string"),
+        # 2 右：上 = 万坚金砧配方 + 正文
+        crafting_page("sturdygold_anvil", None, None, _ph(eid, "2_right")),
+    ]
+    return entry(eid, PRISON_CATEGORY, "chaos_coin", 2, pages)
+
+
+def entry_prison_chaosgold_main():
+    """第四章 · 混沌金的主要内容（封面 = 混沌金锭）。11 页 = 3 + 8 页配方（15 件）。"""
+    eid = "prison_chaosgold_main"
+    pages = [
+        text_page(_ph(eid, "1_left")),
+        # 1 右：上 = 烧制混沌金粒 / 下 = 制作混沌金锭。
+        # ⚠ **门禁项（Patchouli 结构上限）**：这两条是**不同配方类型**
+        #   （`minecraft:smelting` vs `minecraft:crafting_shaped`），而 Patchouli 的
+        #   `PageDoubleRecipe` 每个页型只认**一种** recipe class（`PageCrafting` →
+        #   `CraftingRecipe`、`PageSmelting` → `SmeltingRecipe`）⇒ **一页放不下两种类型**。
+        #   落法 = 拆成相邻两页（上 = 熔炉页、下 = 工作台页），配方一条不少、顺序不变；
+        #   记账在 `docs/1.7-...md` §30。
+        smelting_page("chaos_coin_smelting"),
+        crafting_page("chaosgold_ingot_from_nugget"),
+        text_page(_ph(eid, "2_left")),
+    ]
+    # 2 右 起：混沌金装备系列配方图集（15 件 = 7 页 × 2 + 1 页单条；顺序 = §八 FORGE_ORDER + 刀）
+    for _i in range(0, len(PRISON_GEAR_ORDER), 2):
+        _a = PRISON_GEAR_ORDER[_i]
+        _b = PRISON_GEAR_ORDER[_i + 1] if _i + 1 < len(PRISON_GEAR_ORDER) else None
+        pages.append(crafting_page("chaosgold_%s" % _a,
+                                   ("chaosgold_%s" % _b) if _b else None))
+    return entry(eid, PRISON_CATEGORY, "chaosgold_ingot", 3, pages)
+
+
+def entry_prison_chaosgold_extra():
+    """第五章 · 混沌金的副要内容（封面 = 混沌金附魔书）。3 页。"""
+    eid = "prison_chaosgold_extra"
+    pages = [
+        # 1 左：上 = 混沌金附魔书配方 + 正文
+        crafting_page("chaosgold_enchanting_book", None, None, _ph(eid, "1_left")),
+        # 1 右：上 = 混沌禁果配方 + 正文
+        crafting_page("chaosgold_forbidden_fruit", None, None, _ph(eid, "1_right")),
+        # 2 左：中上边 = 「混沌金建筑方块」轮换栈（11 件建材，随时间不断变换）+ 正文
+        spotlight_page(building_forms("chaosgold"), _ph(eid, "2_left"), _pht(eid, "2_left")),
+    ]
+    return entry(eid, PRISON_CATEGORY, "chaosgold_enchanting_book", 4, pages)
+
+
+def entry_prison_chaosalloy():
+    """第六章 · 崩乱合金的内容（封面 = 崩乱合金锭）。13 页 = 5 + 8 页锻造（15 件）。"""
+    eid = "prison_chaosalloy"
+    pages = [
+        text_page(_ph(eid, "1_left")),
+        # 1 右：上 = 崩乱合金（锭）/ 下 = 崩乱合金升级模板
+        crafting_page("chaosalloy_ingot", "chaosalloy_upgrade_template"),
+        text_page(_ph(eid, "2_left")),
+        text_page(_ph(eid, "2_right")),
+        # 3 左：上 = 崩乱禁果配方 + 正文
+        crafting_page("chaosalloy_forbidden_fruit", None, None, _ph(eid, "3_left")),
+    ]
+    # 3 右 起：崩乱合金装备的锻造配方（15 件 = 8 页；顺序与既有"贵金装备"章节一致）
+    for _i in range(0, len(PRISON_GEAR_ORDER), 2):
+        _a = PRISON_GEAR_ORDER[_i]
+        _b = PRISON_GEAR_ORDER[_i + 1] if _i + 1 < len(PRISON_GEAR_ORDER) else None
+        pages.append(smithing_page("smithing_chaosalloy_%s" % _a,
+                                   ("smithing_chaosalloy_%s" % _b) if _b else None))
+    return entry(eid, PRISON_CATEGORY, "chaosalloy_ingot", 5, pages)
+
+
+PRISON_ENTRIES = [entry_prison_main, entry_prison_gremlin, entry_prison_coin_anvil,
+                  entry_prison_chaosgold_main, entry_prison_chaosgold_extra,
+                  entry_prison_chaosalloy]
+
+# ⚠ 旧的四条 1.7 混沌金 / 崩乱合金章节：**本轮作废、不再产出**（作者 2026-10-24
+#   「这意味着你之前设的那些章节可以直接毙掉了」）。构造函数原样保留在上面，
+#   由本行进 `RETIRED_ENTRIES`，`main()` 里照常自证页数（18 / 4 / 15 / 11）。
+#   这行必须写在四个构造函数定义之后（列表字面量在定义时求值）。
+RETIRED_ENTRIES = RETIRED_ENTRIES + list(CHAOS_ENTRIES)
+
 # ⛔ **bg-book §十（作者 2026-10-07 21:03）**：第一轮骨架留下的最后一个占位条目
 #    `entry_golden_feast`（「金灿的盛宴」类别下的旧占位，7 页 = 1 文案 + 6 spotlight）
 #    **本轮也作废** —— 作者原话「你之前添加的那个也一样直接毙掉吧」。
@@ -1172,8 +1317,12 @@ def main():
                 os.path.join(ASSET_DIR, lang, "categories", "%s.json" % name),
                 category(name, icon, sortnum),
             )
+        # ★ 1.7 大轮（`bgbig`）：`CHAOS_ENTRIES` 已作废（旧四条不再产出），换成
+        #   `PRISON_ENTRIES`（金铸的牢狱 6 章）。旧写法原文留档（⚠ 这一行故意不再写出
+        #   那个精确子串，否则关卡会把它当成"又写回旧四条"）：
+        #     for builder in (... + FEAST_ENTRIES + 旧CHAOS_ENTRIES 列表):
         for builder in (ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES + MERCHANT_ENTRIES + FEAST_ENTRIES
-                        + CHAOS_ENTRIES):
+                        + PRISON_ENTRIES):
             data = builder()
             write_json(
                 os.path.join(ASSET_DIR, lang, "entries", "%s.json" % data["name"].rsplit(".", 1)[-1]),
@@ -1185,15 +1334,16 @@ def main():
     gear_pages = sum(len(b()["pages"]) for b in GEAR_ENTRIES)
     merchant_pages = sum(len(b()["pages"]) for b in MERCHANT_ENTRIES)
     feast_pages = sum(len(b()["pages"]) for b in FEAST_ENTRIES)
-    chaos_pages = sum(len(b()["pages"]) for b in CHAOS_ENTRIES)
+    chaos_pages = sum(len(b()["pages"]) for b in CHAOS_ENTRIES)      # 旧四条（只用于留档自证）
+    prison_pages = sum(len(b()["pages"]) for b in PRISON_ENTRIES)    # 金铸的牢狱 6 章
     retired_pages = sum(len(b()["pages"]) for b in RETIRED_ENTRIES)
     print(
         "handbook written: 1 book (data/) + %d categories + %d entries + %d pages x2 languages "
         "(assets/) -> %s + %s"
         % (len(CATEGORIES),
            len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES) + len(MERCHANT_ENTRIES)
-           + len(FEAST_ENTRIES) + len(CHAOS_ENTRIES),
-           pages + chapter_pages + gear_pages + merchant_pages + feast_pages + chaos_pages,
+           + len(FEAST_ENTRIES) + len(PRISON_ENTRIES),
+           pages + chapter_pages + gear_pages + merchant_pages + feast_pages + prison_pages,
            BOOK_DIR, ASSET_DIR)
     )
     print(
@@ -1232,25 +1382,31 @@ def main():
            len(entry_golden_feast_fd_sturdy()["pages"]))
     )
     print(
-        "  1.7 chaos chapters (bg-n10r9): %d entries / %d pages "
-        "(materials=%d, feast=%d, gear_chaosgold=%d, gear_chaosalloy=%d; "
-        "混沌金无 raw / 无升级模板 / 无锻造配方 => 装备章 15 件走工作台配方（8 页）+ 轮换图标表；"
-        "崩乱合金无建材 => 材料 3 页)"
-        % (len(CHAOS_ENTRIES), chaos_pages,
-           len(entry_chaos_materials()["pages"]),
-           len(entry_chaos_feast()["pages"]),
-           len(entry_gear_chaosgold()["pages"]),
-           len(entry_gear_chaosalloy()["pages"]))
+        "  ★ 1.7 金铸的牢狱 (bgbig): %d entries / %d pages "
+        "(main=%d, gremlin=%d, coin_anvil=%d, chaosgold_main=%d, chaosgold_extra=%d, "
+        "chaosalloy=%d; 配方页 <=2/页；多图标一律轮换栈)"
+        % (len(PRISON_ENTRIES), prison_pages,
+           len(entry_prison_main()["pages"]),
+           len(entry_prison_gremlin()["pages"]),
+           len(entry_prison_coin_anvil()["pages"]),
+           len(entry_prison_chaosgold_main()["pages"]),
+           len(entry_prison_chaosgold_extra()["pages"]),
+           len(entry_prison_chaosalloy()["pages"]))
     )
     print(
         "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位 + bg-fix3 §三 两个骨架条目 "
-        "+ §十 最后一个骨架占位 golden_feast，不写盘): "        "tools=%d + armor=%d + merchant=%d + antiques=%d + metal_tour=%d + upgrade_templates=%d "
-        "+ golden_feast=%d = %d"
+        "+ §十 最后一个骨架占位 golden_feast + bgbig 旧四条混沌金章节，不写盘): "
+        "tools=%d + armor=%d + merchant=%d + antiques=%d + metal_tour=%d + upgrade_templates=%d "
+        "+ golden_feast=%d + chaos_materials=%d + chaos_feast=%d + gear_chaosgold=%d "
+        "+ gear_chaosalloy=%d = %d"
         % (len(entry_tools_per_family()["pages"]), len(entry_armor_per_family()["pages"]),
            len(entry_merchant()["pages"]), len(entry_antiques()["pages"]),
            len(entry_metal_tour()["pages"]), len(entry_upgrade_templates()["pages"]),
-           len(entry_golden_feast()["pages"]), retired_pages)
+           len(entry_golden_feast()["pages"]), len(entry_chaos_materials()["pages"]),
+           len(entry_chaos_feast()["pages"]), len(entry_gear_chaosgold()["pages"]),
+           len(entry_gear_chaosalloy()["pages"]), retired_pages)
     )
+    print("  (旧四条混沌金章节页数留档: %d pages —— 已作废、不写盘)" % chaos_pages)
 
 
 if __name__ == "__main__":

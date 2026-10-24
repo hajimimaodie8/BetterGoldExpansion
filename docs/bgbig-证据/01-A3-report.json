@@ -1,0 +1,68 @@
+{
+  "probe": "bgbig-a3-v1",
+  "pass": 12,
+  "fail": 0,
+  "forcedNow": 0,
+  "rows": [
+    {
+      "name": "probe_player",
+      "ok": true,
+      "detail": "class=com.hjmmd_8.bettergold.probe.VoodooProbe$ProbePlayer isFakePlayer=false maxHealth=20.0"
+    },
+    {
+      "name": "zombie_armor",
+      "ok": true,
+      "detail": "受试2 armor=2 toughness=0.0"
+    },
+    {
+      "name": "a3_damage_type_is_voodoo_burst",
+      "ok": true,
+      "detail": "实际 DamageType registry id=bettergold:voodoo_burst（bypasses_armor=true，owner=entity.minecraft.zombie/969717c7-a65c-4621-ad98-e880f146be75）"
+    },
+    {
+      "name": "a3_bypasses_armor_flag",
+      "ok": true,
+      "detail": "BYPASSES_ARMOR=true"
+    },
+    {
+      "name": "a3_owner_is_applier",
+      "ok": true,
+      "detail": "owner=entity.minecraft.zombie/969717c7-a65c-4621-ad98-e880f146be75 期望含施加者 UUID 969717c7-a65c-4621-ad98-e880f146be75"
+    },
+    {
+      "name": "a3_full_physical_armor_no_reduction",
+      "ok": true,
+      "detail": "裸=6.0000 穿满钻石=6.0000 比值=1.0000（armor=20；期望 1.0000）"
+    },
+    {
+      "name": "a3_magic_resistance_applies",
+      "ok": true,
+      "detail": "穿甲+抗性I=4.8000 / 穿甲=6.0000 比值=0.8000（期望 0.8000 = 抗性提升 I 的 20%）"
+    },
+    {
+      "name": "a3_protection_enchant_still_applies",
+      "ok": true,
+      "detail": "穿保护IV=2.1600 / 无附魔=6.0000（原版魔法伤害同样吃保护附魔，如实记录）"
+    },
+    {
+      "name": "a3_voodoo_armor_magic_resist",
+      "ok": true,
+      "detail": "穿满巫毒金=0.0000（期望 0 = 4×25% 魔法减免仍认新类型）"
+    },
+    {
+      "name": "a3_real_settle_unarmored",
+      "ok": true,
+      "detail": "裸僵尸掉血=4.6000（期望 10×0.36+1=4.6，type=bettergold:voodoo_burst）"
+    },
+    {
+      "name": "a3_real_settle_armored_no_reduction",
+      "ok": true,
+      "detail": "穿钻甲僵尸掉血=4.6000 / 裸=4.6000（armor=22；type=bettergold:voodoo_burst）"
+    },
+    {
+      "name": "a3_real_settle_type",
+      "ok": true,
+      "detail": "两只僵尸的实际结算类型 = bettergold:voodoo_burst / bettergold:voodoo_burst"
+    }
+  ]
+}

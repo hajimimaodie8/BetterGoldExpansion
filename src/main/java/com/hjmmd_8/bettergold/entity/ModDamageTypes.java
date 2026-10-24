@@ -31,6 +31,23 @@ public final class ModDamageTypes {
     /** 混沌金币弹射物（显式难度表 2/4/6） */
     public static final ResourceKey<DamageType> CHAOS_COIN = key("chaos_coin");
 
+    /**
+     * 巫毒爆发（效果自然到期时的结算伤害）。
+     *
+     * <p><b>1.7 大轮（2026-10-24，`bgbig`）第 A3 条</b>：作者再次强调「巫毒爆发必须是魔法伤害
+     * （不再是物理伤害）」。旧口径用的是原版 {@code minecraft:magic}（它本身就在
+     * {@code #minecraft:bypasses_armor} 里，理论上不吃护甲点）；本轮改成<b>自带 damage type</b>
+     * {@code bettergold:voodoo_burst}，并在
+     * {@code data/minecraft/tags/damage_type/bypasses_armor.json} 里显式登记
+     * ⇒ 不依赖原版标签的既有内容，也不会被别的数据包对 {@code minecraft:magic} 的改动波及。</p>
+     *
+     * <p>JSON 落点：{@code data/bettergold/damage_type/voodoo_burst.json}；
+     * {@code message_id = "magic"} ⇒ 死亡提示复用原版 {@code death.attack.magic}，不新增语言键；
+     * {@code scaling = "when_caused_by_living_non_player"} 与 {@code minecraft:magic} 逐字同档
+     * （伤害数字与旧口径一致，只有类型 id 变了）。</p>
+     */
+    public static final ResourceKey<DamageType> VOODOO_BURST = key("voodoo_burst");
+
     private static ResourceKey<DamageType> key(String path) {
         return ResourceKey.create(Registries.DAMAGE_TYPE,
                 ResourceLocation.fromNamespaceAndPath(bettergold.MODID, path));

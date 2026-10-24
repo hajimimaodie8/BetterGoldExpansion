@@ -3,15 +3,12 @@
   "category": "equipment",
   "pattern": [
     "XXX",
-    "XAX",
+    "XXX",
     " X "
   ],
   "key": {
     "X": {
       "item": "bettergold:chaosgold_ingot"
-    },
-    "A": {
-      "item": "minecraft:apple"
     }
   },
   "result": {

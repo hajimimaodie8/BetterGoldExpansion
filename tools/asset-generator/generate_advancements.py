@@ -268,6 +268,22 @@ def c_plant_crop(block: str) -> dict:
     }
 
 
+def c_location_structure(structure: str) -> dict:
+    """「**进入某个结构**」的判据（1.7 大轮 `bgbig` 新增）。
+
+    ⚠ **1.21.1 没有「进入结构」这种 trigger**（原版 25 个 trigger 里没有 `enter_structure`；
+    只有 `minecraft:location` / `minecraft:location_check` 这类**位置**判据）。
+    ⇒ 以源码为准，用 `minecraft:location`（= `PlayerTrigger`，`ServerPlayer#tick` 每 tick 触发一次）
+    + `conditions.player.location.structures`（`LocationPredicate.structures`，
+    `HolderSet<Structure>` 接受单个结构 id）⇒ 玩家站进金之牢狱的结构范围时解锁。
+    记账：`docs/1.7-...md` §30。
+    """
+    return {
+        "trigger": "minecraft:location",
+        "conditions": {"player": {"location": {"structures": structure}}},
+    }
+
+
 # ---------------------------------------------------------------- 51 条表（真源）
 def build() -> list[dict]:
     A: list[dict] = []
@@ -443,65 +459,72 @@ def build() -> list[dict]:
                 f"{base}/weapon", {"hit": c_skeletons(gear("sturdygold"))}, [["hit"]],
                 frame="challenge")
 
-    # ---- §3.3b 1.7 收口轮（bg-n10r9）：混沌金 / 崩乱合金两条链（8 条）----
-    # 形状与八族**同构**：核心材料 → 锭 → 武器工具 → 盔甲（末两级的 parent 与 frame 照 bg-fix3 §五：
-    #   **盔甲挂在武器之下**、**frame = challenge**）。
-    # 两处**由素材事实决定**的差异（立档 §1 / §3 的缺口表，不是口味）：
-    #   ① 混沌金**没有 raw、没有升级锻造模板** ⇒ 链首 = **混沌金币**（= 该族 `coreItem`），
-    #      挂在「寻途千里的珍宝」下，与八族的 8 个核心材料节点**完全同构**；
-    #   ② 崩乱合金**没有核心材料**（没有 raw、没有 coreItem 之外的"原料"）⇒ 链首 = **锭**，
-    #      直接挂「寻途千里的珍宝」下；第二级 = 「块 **或** 升级锻造模板」
-    #      （两件同属"材料链的第二段"⇒ **同一条 requirement 组 = 组内 OR**）。
-    # ⚠ 两族的武器成就都**含乐事刀**，落法与八族**逐字同构**（bg-fix3 §二 的安全范式）：
-    #   判据 = 裸 id 列表（10 件恒存在）+ 该族刀具标签 `#bettergold:<族>_knives`
-    #   （标签文件无条件存在、条目 `required:false` ⇒ 没装乐事时不报错、不丢文件）。
-    #   ⇒ **不新建** `#bettergold:<族>_gear` 标签：全仓没有第二份"族 × 器具"标签，
-    #     而"物品恒存在"的 10 件写裸 id 本来就不会引起解析失败（`c_inv` 的既有形态）。
-    # ⚠ 标题 / 简介：**作者没有给过这两族的成就文案** ⇒ 本轮是**实现说明**（描述句逐字写判据），
-    #   已记进 `docs/1.7-...md` §7 待作者补清单与 §18（不许假装是作者原话）。
-    CHAOS_LINES = [
-        # (族, 中文族名, 链首标题, 链首简介)
-        ("chaosgold", "混沌金", "混沌的起点", "获得一枚混沌金币"),
-        ("chaosalloy", "崩乱合金", "崩乱的开端", "获得一个崩乱合金锭"),
-    ]
-    for metal, zh_name, head_title, head_desc in CHAOS_LINES:
-        base = f"metal/{metal}"
-        if metal == "chaosgold":
-            # ① 混沌金：金币（链首）→ 锭 → 武器 → 盔甲
-            # ⛔ 旧口径（原文保留）：链首挂在「寻途千里的珍宝」`treasure/any_core_material` 下。
-            #    作者 2026-10-18 推翻（`bg-n10fix` ⑨：「混沌金与崩乱合金**不在贵金范畴**」）⇒ 改挂 `root`。
-            add("treasure/chaos_coin", "chaos_coin", head_title, head_desc,
-                f"{NS}:chaos_coin", "root",
-                {"have": c_inv([f"{NS}:chaos_coin"])}, [["have"]])
-            add(f"{base}/ingot", "chaosgold_ingot", "混沌金，到手", "获得一个混沌金锭",
-                f"{NS}:chaosgold_ingot", "treasure/chaos_coin",
-                {"have": c_inv([f"{NS}:chaosgold_ingot"])}, [["have"]])
-            weapon_parent = f"{base}/ingot"
-        else:
-            # ② 崩乱合金：锭（链首）→（块 或 模板）→ 武器 → 盔甲
-            # ⛔ 旧口径（原文保留）：链首挂在「寻途千里的珍宝」下；作者 2026-10-18 推翻 ⇒ 改挂 `root`。
-            add(f"{base}/ingot", "chaosalloy_ingot", head_title, head_desc,
-                f"{NS}:chaosalloy_ingot", "root",
-                {"have": c_inv([f"{NS}:chaosalloy_ingot"])}, [["have"]])
-            add(f"{base}/supply", "chaosalloy_supply", "崩乱的结构",
-                "获得崩乱合金块或崩乱合金升级锻造模板", f"{NS}:chaosalloy_upgrade_template",
-                f"{base}/ingot",
-                {"have_block": c_inv([f"{NS}:chaosalloy_block"]),
-                 "have_template": c_inv([f"{NS}:chaosalloy_upgrade_template"])},
-                [["have_block", "have_template"]])
-            weapon_parent = f"{base}/supply"
-        add(f"{base}/weapon", f"{metal}_weapon",
-            "混沌的锋芒" if metal == "chaosgold" else "崩乱的锋刃",
-            f"获得任意一种{zh_name}武器工具", f"{NS}:{metal}_sword", weapon_parent,
-            {"have": c_inv([gear(metal)]),
-             "have_knife": c_inv_tag(f"{NS}:{metal}_knives")},
-            [["have", "have_knife"]])
-        add(f"{base}/armor", f"{metal}_armor",
-            "混沌的庇护" if metal == "chaosgold" else "崩乱的庇护",
-            f"获得一整套{zh_name}盔甲", f"{NS}:{metal}_chestplate", f"{base}/weapon",
-            {f"armor_{s}": c_inv([f"{NS}:{metal}_{s}"]) for s in ARMOR_SUFFIX},
-            [[f"armor_{s}"] for s in ARMOR_SUFFIX],
-            frame="challenge")
+    # ---- §3.3b 1.7 大轮（bgbig，2026-10-24）：「金之牢狱」线 + 旧两族链的挂点重排 ----
+    #
+    # ⛔ **旧口径（bg-n10r9，2026-10-17 的 8 条）原文留档、已作废**（旧 JSON 收尾已删、
+    #   原文副本在 `docs/bgbig-证据/`）：
+    #     treasure/chaos_coin   「混沌的起点 / 获得一枚混沌金币」        parent = root
+    #     metal/chaosgold/ingot 「混沌金，到手 / 获得一个混沌金锭」       parent = treasure/chaos_coin
+    #     metal/chaosalloy/ingot「崩乱的开端 / 获得一个崩乱合金锭」       parent = root
+    #     metal/chaosalloy/supply「崩乱的结构 / 获得崩乱合金块或升级模板」 parent = metal/chaosalloy/ingot
+    #   ⇒ 作者本轮：**「获得混沌金币」与「崩乱合金模板」两条成就毙掉**；
+    #     新链 = 红中黄室 → 与金共舞 → 混沌金锭 → 武器 → 盔甲；
+    #     以混沌金锭为基 ⇒ 崩乱合金锭 → 武器 → 盔甲。
+    #
+    # ⚠ 「进入金之牢狱」：1.21.1 **没有**「进入结构」这种 trigger ⇒ 用 `minecraft:location`
+    #   + `player.location.structures`（见 `c_location_structure` 的注释与 §30 记账）。
+    add("treasure/golden_prison", "golden_prison", "红中黄室", "进入金之牢狱",
+        f"{NS}:gold_bricks", "root",
+        {"entered": c_location_structure(f"{NS}:golden_prison")}, [["entered"]])
+    add("metal/chaosgold/dance", "chaosgold_dance", "与金共舞", "获得混沌金币串",
+        f"{NS}:chaos_coin_string", "treasure/golden_prison",
+        {"have": c_inv([f"{NS}:chaos_coin_string"])}, [["have"]])
+    # 金工细作：任意一个「含混沌金币 / 混沌金币串配方的金属块」**或**「含混沌金块 + 高精度炼金油
+    #   配方的贵金原料」⇒ 1 条 ItemPredicate + items 数组 = **OR**（与 `any_core_material` 同构）。
+    add("metal/chaosgold/craft", "chaosgold_craft", "金工细作",
+        "制作出任意一个含\"混沌金币/混沌金币串\"配方的铜块/铁块/金块/下界合金锭，"
+        "或含\"混沌金块 + 高精度炼金油\"配方的贵金原料",
+        f"{NS}:chaos_coin", "metal/chaosgold/dance",
+        {"have": c_inv([[
+            "minecraft:copper_block", "minecraft:iron_block", "minecraft:gold_block",
+            "minecraft:netherite_ingot", *RAW_MATERIALS]])}, [["have"]])
+    # 赋予无序之咒：前置未指定 ⇒ 挂「与金共舞」（记账 §30）。
+    add("metal/chaosgold/enchant", "chaosgold_enchant", "赋予无序之咒",
+        "投入这份魔咒溢出的混沌怀抱吧",
+        f"{NS}:chaosgold_enchanting_book", "metal/chaosgold/dance",
+        {"have": c_inv([f"{NS}:chaosgold_enchanting_book"])}, [["have"]])
+
+    # 混沌金链（既有 3 条，只换挂点）：与金共舞 → 锭 → 武器 → 盔甲
+    # ★ 1.7 大轮：作者本轮的 zh_cn.json 把这 6 条既有链的**标题**改了 ⇒ 生成器的中文标题
+    #   以作者文件为准（旧标题原文留档：「混沌金，到手」/「混沌的锋芒」/「混沌的庇护」/
+    #   「崩乱的开端」/「崩乱的锋刃」/「崩乱的庇护」）。
+    add("metal/chaosgold/ingot", "chaosgold_ingot", "格格不入之金属", "获得一个混沌金锭",
+        f"{NS}:chaosgold_ingot", "metal/chaosgold/dance",
+        {"have": c_inv([f"{NS}:chaosgold_ingot"])}, [["have"]])
+    add("metal/chaosgold/weapon", "chaosgold_weapon", "随性的锋芒",
+        "获得任意一种混沌金武器工具", f"{NS}:chaosgold_sword", "metal/chaosgold/ingot",
+        {"have": c_inv([gear("chaosgold")]),
+         "have_knife": c_inv_tag(f"{NS}:chaosgold_knives")},
+        [["have", "have_knife"]])
+    add("metal/chaosgold/armor", "chaosgold_armor", "失衡的庇护",
+        "获得一整套混沌金盔甲", f"{NS}:chaosgold_chestplate", "metal/chaosgold/weapon",
+        {f"armor_{s}": c_inv([f"{NS}:chaosgold_{s}"]) for s in ARMOR_SUFFIX},
+        [[f"armor_{s}"] for s in ARMOR_SUFFIX],
+        frame="challenge")
+    # 崩乱合金链：以混沌金锭为基 ⇒ 锭 → 武器 → 盔甲（「块 / 模板」那条已毙）
+    add("metal/chaosalloy/ingot", "chaosalloy_ingot", "展开崩坏的开端", "获得一个崩乱合金锭",
+        f"{NS}:chaosalloy_ingot", "metal/chaosgold/ingot",
+        {"have": c_inv([f"{NS}:chaosalloy_ingot"])}, [["have"]])
+    add("metal/chaosalloy/weapon", "chaosalloy_weapon", "催拉苦朽之刃",
+        "获得任意一种崩乱合金武器工具", f"{NS}:chaosalloy_sword", "metal/chaosalloy/ingot",
+        {"have": c_inv([gear("chaosalloy")]),
+         "have_knife": c_inv_tag(f"{NS}:chaosalloy_knives")},
+        [["have", "have_knife"]])
+    add("metal/chaosalloy/armor", "chaosalloy_armor", "暴乱裹身",
+        "获得一整套崩乱合金盔甲", f"{NS}:chaosalloy_chestplate", "metal/chaosalloy/weapon",
+        {f"armor_{s}": c_inv([f"{NS}:chaosalloy_{s}"]) for s in ARMOR_SUFFIX},
+        [[f"armor_{s}"] for s in ARMOR_SUFFIX],
+        frame="challenge")
 
     # ---- §3.4 商人线（4）
     add("merchant/gold_ticket", "gift_gold_ticket", "奢华一票", "获得礼品金票",
@@ -550,6 +573,20 @@ def build() -> list[dict]:
     add("agriculture/golden_egg", "golden_egg", "好大的金蛋～",
         "使用金种子喂给鸡从而获取金蛋", f"{NS}:golden_egg", farm,
         {"have": c_inv([f"{NS}:golden_egg"])}, [["have"]])
+    # ★ 1.7 大轮（bgbig）：黄金火焰！= **获得金火把花种子 和 金火把花**（两个都要）。
+    #   ⚠ requirements 的组语义以源码为准：**组内 OR、组间 AND**
+    #   （`AdvancementRequirements#test`；本文件多处注释同口径）。
+    #   派单写的是"requirements 组内 AND"——按源码**不成立**；要"两个都要"必须写成
+    #   **两个各含一条判据的组**（组间 AND）⇒ 落法如下。记账 §30。
+    add("agriculture/golden_torchflower", "golden_torchflower", "黄金火焰！",
+        "获得金火把花种子 和 金火把花", f"{NS}:golden_torchflower", farm,
+        {"have_seeds": c_inv([f"{NS}:golden_torchflower_seeds"]),
+         "have_flower": c_inv([f"{NS}:golden_torchflower"])},
+        [["have_seeds"], ["have_flower"]])
+    add("agriculture/refined_oil", "refined_oil", "膏状的油将升华为精炼的油",
+        "可塑性更强的燃油，使我造出来的“贵金”原料翻倍",
+        f"{NS}:refined_alchemic_oil", "agriculture/golden_torchflower",
+        {"have": c_inv([f"{NS}:refined_alchemic_oil"])}, [["have"]])
     add("agriculture/plant_gold_crop", "plant_gold_crop", "开垦我的金色土地",
         "为金染土进行耕地，并种植任意一种金作物", f"{NS}:golden_wheat", farm,
         {
@@ -712,19 +749,30 @@ EN: dict[str, tuple[str, str]] = {  # advancement key -> (title, description)
                       "Obtain all Farmer's Delight golden foods."),
     "sturdygold_feast_2": ("Gilding Evolution II",
                            "Obtain all Farmer's Delight Sturdygold foods."),
-    # ---- 1.7 收口轮（bg-n10r9，2026-10-17）：混沌金 / 崩乱合金 8 条 ----
-    # ⚠ 中文标题 / 简介**不是作者原话**（作者没给这两族的成就文案）⇒ 是按判据写的**实现说明**；
-    #   英文与中文同一口径（真英译、不新造译名：Chaosgold / Chaosalloy / Chaos Coin 均沿用
-    #   `lang/en_us.json` 里已交付的物品译名）。记账见 `docs/1.7-...md` §7 / §18。
-    "chaos_coin": ("Where Chaos Begins", "Obtain a Chaos Coin."),
-    "chaosgold_ingot": ("Chaosgold in Hand", "Obtain a Chaosgold Ingot."),
-    "chaosgold_weapon": ("The Edge of Chaos", "Obtain any kind of Chaosgold weapon or tool."),
-    "chaosgold_armor": ("Shelter of Chaos", "Obtain a full set of Chaosgold armor."),
-    "chaosalloy_ingot": ("The Start of Collapse", "Obtain a Chaosalloy Ingot."),
-    "chaosalloy_supply": ("Structure of Collapse",
-                          "Obtain a Chaosalloy Block or its upgrade smithing template."),
-    "chaosalloy_weapon": ("Blade of Collapse", "Obtain any kind of Chaosalloy weapon or tool."),
-    "chaosalloy_armor": ("Shelter of Collapse", "Obtain a full set of Chaosalloy armor."),
+    # ---- 1.7 大轮（bgbig，2026-10-24）：金之牢狱线 + 旧链的英译同步 ----
+    # ⚠ 旧的 `chaos_coin` / `chaosalloy_supply` 两条**已随成就本身作废**（原文留档，未删）：
+    #     "chaos_coin": ("Where Chaos Begins", "Obtain a Chaos Coin."),
+    #     "chaosalloy_supply": ("Structure of Collapse",
+    #                           "Obtain a Chaosalloy Block or its upgrade smithing template."),
+    # ⚠ 六条既有链的**中文标题**已被作者本轮的 zh_cn.json 改掉（D 段替换），英文跟着改语义：
+    "golden_prison": ("Red Among Gold: The Golden Chamber", "Enter the Golden Prison."),
+    "chaosgold_dance": ("Dance With Gold", "Obtain a Chaos Coin String."),
+    "chaosgold_craft": ("Golden Craftsmanship",
+                        "Craft any copper, iron or gold block, or a netherite ingot, with a Chaos Coin / "
+                        "Chaos Coin String recipe, or a noble-gold raw material with the Chaosgold Block + "
+                        "Refined Alchemic Oil recipe."),
+    "chaosgold_enchant": ("Bestow the Curse of Disorder",
+                          "Step into the chaotic embrace overflowing from this curse."),
+    "golden_torchflower": ("Golden Flame!", "Obtain Golden Torchflower Seeds and a Golden Torchflower."),
+    "refined_oil": ("From Paste to Refined Oil",
+                    "A more malleable fuel that doubles the \"noble gold\" raw materials I make."),
+    "chaosgold_ingot": ("The Metal That Fits Nowhere", "Obtain a Chaosgold Ingot."),
+    "chaosgold_weapon": ("A Whimsical Edge", "Obtain any kind of Chaosgold weapon or tool."),
+    "chaosgold_armor": ("Shelter of Imbalance", "Obtain a full set of Chaosgold armor."),
+    "chaosalloy_ingot": ("The Beginning of Unfolding Collapse", "Obtain a Chaosalloy Ingot."),
+    "chaosalloy_weapon": ("The Blade That Crumbles the Withered",
+                          "Obtain any kind of Chaosalloy weapon or tool."),
+    "chaosalloy_armor": ("Wrapped in Riot", "Obtain a full set of Chaosalloy armor."),
 }
 
 
@@ -870,13 +918,16 @@ def main() -> int:
     A = build()
     # 1.7 收口轮（bg-n10r9）：51 → **59**（两族各 4 条：链首 / 锭（崩乱合金是块或模板）/ 武器 / 盔甲）。
     #   ⚠ 旧期望原文保留：`assert len(A) == 51`。
-    assert len(A) == 59, f"成就条数不是 59（实际 {len(A)}）"
+    # ★ 1.7 大轮（bgbig，2026-10-24）：59 → **63**（删 2：treasure/chaos_coin、
+    #   metal/chaosalloy/supply；加 6：红中黄室 / 与金共舞 / 金工细作 / 赋予无序之咒 /
+    #   黄金火焰！/ 膏状的油将升华为精炼的油）。旧期望原文留档：`== 59`。
+    assert len(A) == 63, f"成就条数不是 63（实际 {len(A)}）"
     ids = [a["path"] for a in A]
-    # ⚠ 旧期望原文保留：`== 51`。
-    assert len(set(ids)) == 59, "有重复的成就路径"
+    # ⚠ 旧期望原文保留：`== 51` / `== 59`。
+    assert len(set(ids)) == 63, "有重复的成就路径"
     keys = [a["key"] for a in A]
-    # ⚠ 旧期望原文保留：`== 51`。
-    assert len(set(keys)) == 59, "有重复的语言键"
+    # ⚠ 旧期望原文保留：`== 51` / `== 59`。
+    assert len(set(keys)) == 63, "有重复的语言键"
     for a in A:
         if a["path"] != "root":
             assert a["parent"] in ids, f"{a['path']} 的 parent {a['parent']} 不在表里"
@@ -959,7 +1010,8 @@ def main() -> int:
     if "--lang" in sys.argv:
         entries = lang_entries(A)
         # 1.7 收口轮：102 → **118**（59 成就 × 2）。⚠ 旧期望原文保留：`== 102`。
-        assert len(entries) == 118, f"语言键条数不是 118（{len(entries)}）"
+        # ★ 1.7 大轮：59 → 63 成就 ⇒ **126**。旧期望原文留档：`== 118`。
+        assert len(entries) == 126, f"语言键条数不是 126（{len(entries)}）"
         for lang, idx in (("zh_cn", 1), ("en_us", 2)):
             _append_lang(LANG / f"{lang}.json", [(k, (zh, en)[idx - 1])
                                                  for k, zh, en in entries])

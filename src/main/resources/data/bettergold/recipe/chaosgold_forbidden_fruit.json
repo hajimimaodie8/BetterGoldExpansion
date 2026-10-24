@@ -1,34 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    {
-      "item": "minecraft:apple"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    },
-    {
-      "item": "bettergold:chaosgold_ingot"
-    }
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "XXX",
+    "XAX",
+    "XXX"
   ],
+  "key": {
+    "X": {
+      "item": "bettergold:chaosgold_ingot"
+    },
+    "A": {
+      "item": "minecraft:apple"
+    }
+  },
   "result": {
     "id": "bettergold:chaosgold_forbidden_fruit",
     "count": 1
