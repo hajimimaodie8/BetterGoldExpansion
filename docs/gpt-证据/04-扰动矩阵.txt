@@ -1,0 +1,55 @@
+gpt 轮扰动矩阵（2026-10-24；关卡 = tools/asset-generator/validate_metal_data.py）
+判据：exit=1 且命中期望 tag = 命中；exit=0 = 关卡漏了；exit=2 = 用例坏了（不算命中）
+
+[HIT] ①金火把花-去掉金染土那一支
+   文件=src/main/java/com/hjmmd_8/bettergold/block/GoldenTorchflowerBlock.java
+   变更='state.is(AllBlocks.GOLD_INFUSED_DIRT.get())' -> 'false'
+   关卡 exit=1；期望 tag=gpt1-torchflower-dirt；tag 命中=True
+   复原 SHA256=DD68360DFBBE150465DDD011BA2302A55FFD1CA99AA0177D4873CF73C0714382（改前 DD68360DFBBE150465DDD011BA2302A55FFD1CA99AA0177D4873CF73C0714382）/ 一致
+[HIT] ②混沌金-韧性改回旧值 3.0
+   文件=src/main/java/com/hjmmd_8/bettergold/material/AllMetals.java
+   变更='spec.armorToughness = 2.0F' -> 'spec.armorToughness = 3.0F'
+   关卡 exit=1；期望 tag=gpt2-chaosgold-values；tag 命中=True
+   复原 SHA256=0478C274BD3D1672F895C4771F6CD8232ABD8134FE02A9426D2911ED8B4F2F39（改前 0478C274BD3D1672F895C4771F6CD8232ABD8134FE02A9426D2911ED8B4F2F39）/ 一致
+[HIT] ③金钱茄模具配方-类型改成金锭版
+   文件=src/main/resources/data/bettergold/recipe/golden_cowrie_from_mold_money_eggplant.json
+   变更='"bettergold:golden_cowrie_mold_money_eggplant"' -> '"bettergold:golden_cowrie_mold"'
+   关卡 exit=1；期望 tag=gpt3-cowrie-mold-eggplant；tag 命中=True
+   复原 SHA256=D9EEAE1BDDFFE6E5E9CBD8B16527B29243337F7FFF3A1787C910D60EBA81A5D8（改前 D9EEAE1BDDFFE6E5E9CBD8B16527B29243337F7FFF3A1787C910D60EBA81A5D8）/ 一致
+[HIT] ④新手交易-24 改成 23
+   文件=src/main/java/com/hjmmd_8/bettergold/event/VillageTrades.java
+   变更='AllItems.GOLDEN_EGG.get(), 24' -> 'AllItems.GOLDEN_EGG.get(), 23'
+   关卡 exit=1；期望 tag=gpt4-gold-trader-egg；tag 命中=True
+   复原 SHA256=167F11FAB5F8E631D4D5EC27092CD7B26F1008ED8F43E6AD9BA014F1F0A9ADC3（改前 167F11FAB5F8E631D4D5EC27092CD7B26F1008ED8F43E6AD9BA014F1F0A9ADC3）/ 一致
+[HIT] ⑤金火把花种子-100% 改成 50%
+   文件=src/main/java/com/hjmmd_8/bettergold/event/ModEvents.java
+   变更='GOLDEN_TORCHFLOWER_SEED_EGG_CHANCE = 1.0F' -> 'GOLDEN_TORCHFLOWER_SEED_EGG_CHANCE = 0.5F'
+   关卡 exit=1；期望 tag=gpt5-chicken-golden-egg；tag 命中=True
+   复原 SHA256=FF45D8DEAA5DDE67FFAF0FCA6126E34C1615180A579645252828A4F0773B4E14（改前 FF45D8DEAA5DDE67FFAF0FCA6126E34C1615180A579645252828A4F0773B4E14）/ 一致
+[HIT] ⑥巫毒结算-退回无 owner 的 magic()
+   文件=src/main/java/com/hjmmd_8/bettergold/material/MetalEvents.java
+   变更='entity.hurt(voodooSettleSource(entity), (float) damage)' -> 'entity.hurt(entity.damageSources().magic(), (float) damage)'
+   关卡 exit=1；期望 tag=gpt6-voodoo-magic；tag 命中=True
+   复原 SHA256=CF78C63A5BD81ED473E5BEB45A05BDA94C44516E93543FD2001D248E0D788A29（改前 CF78C63A5BD81ED473E5BEB45A05BDA94C44516E93543FD2001D248E0D788A29）/ 一致
+[HIT] ⑦金玫瑰产量-3 改成 2
+   文件=src/main/java/com/hjmmd_8/bettergold/registry/AllItems.java
+   变更='GOLDEN_ROSE_PRODUCE = 3' -> 'GOLDEN_ROSE_PRODUCE = 2'
+   关卡 exit=1；期望 tag=gpt7-golden-rose-bonemeal；tag 命中=True
+   复原 SHA256=7EEE53B75738CD013CE5EE4292B837EAC02E43CE604ACBE1EC8BBF022FB5DB22（改前 7EEE53B75738CD013CE5EE4292B837EAC02E43CE604ACBE1EC8BBF022FB5DB22）/ 一致
+[HIT] ⑧mixin 登记-从 mixins 列表摘掉
+   文件=src/main/resources/bettergold.mixins.json
+   变更=',\n    "AbstractArrowWaterInertiaMixin"' -> ''
+   关卡 exit=1；期望 tag=gpt8-indigosea-water-inertia；tag 命中=True
+   复原 SHA256=FB89F4CA7FA21745BEED8F73DA3259ED8FDC58B5733FDAAAE063D2165A4C26BD（改前 FB89F4CA7FA21745BEED8F73DA3259ED8FDC58B5733FDAAAE063D2165A4C26BD）/ 一致
+[HIT] ⑨盾牌配方-中心苹果换成锭
+   文件=src/main/resources/data/bettergold/recipe/chaosgold_shield.json
+   变更='"XAX"' -> '"XXX"'
+   关卡 exit=1；期望 tag=gpt9-shape；tag 命中=True
+   复原 SHA256=89C6F2974953DD78E6467866E6EBF286113C4BBBDDD2D17D660388F1A6539E15（改前 89C6F2974953DD78E6467866E6EBF286113C4BBBDDD2D17D660388F1A6539E15）/ 一致
+[HIT] 反向对照-只改注释（必须仍绿）
+   文件=src/main/java/com/hjmmd_8/bettergold/block/GoldenTorchflowerBlock.java
+   变更='public class GoldenTorchflowerBlock extends FlowerBlock {' -> '// gpt 扰动：只加这一行注释（不改任何代码）\npublic class GoldenTorchflowerBloc'
+   关卡 exit=0；期望 tag=None；tag 命中=False
+   复原 SHA256=DD68360DFBBE150465DDD011BA2302A55FFD1CA99AA0177D4873CF73C0714382（改前 DD68360DFBBE150465DDD011BA2302A55FFD1CA99AA0177D4873CF73C0714382）/ 一致
+
+矩阵：10 用例 / 10 命中 / 复原 10/10 逐字节一致

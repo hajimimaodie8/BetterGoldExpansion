@@ -468,6 +468,14 @@ public final class MetalFamily {
      */
     public final boolean shieldBreakImmune;
 
+    /**
+     * 本族盾牌「自带」的击退抗性（= {@link Spec#shieldKnockbackResistance} 的只读快照）。
+     *
+     * <p>1.7 作者 2026-10-24 第 ② 条起：混沌金 = <b>0.05</b>，其余八族 = 0.10（默认）。
+     * 挂载点见 {@code MetalFamily} 构造器里盾牌注册那一行。</p>
+     */
+    public final double shieldKnockbackResistance;
+
     // ==================== bg-fix（2026-10-05）：特殊金属判据 ====================
 
     /**
@@ -1045,6 +1053,8 @@ public final class MetalFamily {
         //   （Spec 默认 true，没有任何一族把它关掉）。`specialWeaponMetal` 仍然保留它的旧用途：
         //   「格挡反给攻击者 buff」，那是**另一件事**，不要合并。
         this.shieldBreakImmune = spec.shieldBreakImmune;
+        // 1.7 第 ② 条：盾牌自带的击退抗性逐族可声明（默认 0.10；混沌金 0.05）
+        this.shieldKnockbackResistance = spec.shieldKnockbackResistance;
 
         // ---------- 材料链 ----------
         // ⚠ 1.7 bg-n10 轮1 后半：锭与块是**必备形态**（恒定注册），其余按 Spec.forms(...) 的声明注册；
@@ -1175,7 +1185,8 @@ public final class MetalFamily {
                 //   `if (!this.level().isClientSide)` 内，`LivingEntity.java:2457,2482`）。
                 //   决定击退的是服务端 —— 那里实测生效（真实位移比值 0.9000）。
                 //   细节见 MetalWeapons#shieldKnockbackModifiers 的注释与 docs/1.5-规格.md §16.2。
-                props().durability(spec.shieldDurability).attributes(MetalWeapons.shieldKnockbackModifiers()),
+                props().durability(spec.shieldDurability)
+                        .attributes(MetalWeapons.shieldKnockbackModifiers(spec.shieldKnockbackResistance)),
                 spec.enchantmentValue, spec.specialWeaponMetal, spec.shieldBreakImmune));
 
         // ---------- 建材 ----------
@@ -1579,6 +1590,19 @@ public final class MetalFamily {
         public boolean specialWeaponMetal = false;
         /** 本族盾牌耐久（规格 12.2：万坚金 3072 / 其余 2048） */
         public int shieldDurability = 2048;
+        /**
+         * 本族盾牌「自带」的击退抗性（<b>每件</b>，{@code ADD_VALUE}；主 / 副手各挂一份、共用一个 id）：
+         * 默认 <b>0.10</b>（= 10%，bg-15w 续工轮的既有口径，八族一个字节不改）。
+         *
+         * <p><b>1.7 作者 2026-10-24 第 ② 条</b>：混沌金盾牌改成 <b>0.05</b>（= 5%），与它四件盔甲的
+         * 5% 同一档；其余族仍然 0.10。</p>
+         *
+         * <p>⚠ 与盔甲侧的 {@link #armorKnockbackResistance} <b>是两件事</b>：那条喂
+         * {@code ArmorMaterial#knockbackResistance}（原版 {@code ArmorItem} 每件挂一个
+         * {@code minecraft:armor.<部位>} 修饰符），这条喂盾牌物品自己的属性表
+         * （{@code MetalWeapons#shieldKnockbackModifiers(double)}）。不合并不改数。</p>
+         */
+        public double shieldKnockbackResistance = 0.10D;
         /**
          * 本族盾牌是否免疫原版「破盾」。
          *

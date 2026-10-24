@@ -871,7 +871,15 @@ public class ModEvents {
         }
 
         // --- 金蛋：用金麦种子或金钱茄种子喂鸡，36% 概率获得 ---
-        boolean isSeed = held.is(AllItems.GOLDEN_WHEAT_SEEDS.get()) || held.is(AllItems.GOLDEN_EGGPLANT_SEEDS.get());
+        // ⚠ 上面这句是 1.4 起的旧口径，原文保留不删。1.7 作者 2026-10-24 第 ⑤ 条追加：
+        //   **金火把花种子**（原版 `#minecraft:chicken_food` 标签里的一员 ⇒ 原版喂食行为会真的"吃"）
+        //   喂鸡 ⇒ **100% 产 1 个金蛋**（三档种子两条路径、掉落实体形状与下蛋同构 —— 见下）。
+        final float GOLDEN_TORCHFLOWER_SEED_EGG_CHANCE = 1.0F;
+        final float LEGACY_GOLDEN_SEED_EGG_CHANCE = 0.36F;
+        boolean isTorchflowerSeed = held.is(AllItems.GOLDEN_TORCHFLOWER_SEEDS.get());
+        boolean isSeed = held.is(AllItems.GOLDEN_WHEAT_SEEDS.get())
+                || held.is(AllItems.GOLDEN_EGGPLANT_SEEDS.get())
+                || isTorchflowerSeed;
         if (isSeed && target.getType() == EntityType.CHICKEN) {
             if (!player.getAbilities().instabuild) {
                 held.shrink(1);
@@ -880,7 +888,9 @@ public class ModEvents {
             event.getLevel().playSound(null, target.blockPosition(), net.minecraft.sounds.SoundEvents.GENERIC_EAT,
                     net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 1.0F);
             // 36% 概率产下金蛋实体（模拟原版鸡下蛋：掉落物）
-            if (event.getLevel().random.nextFloat() < 0.36F) {
+            // 1.7 第 ⑤ 条：金火把花种子 = **100%**（其它两种金种子仍是 36%，一个字没动）
+            float chance = isTorchflowerSeed ? GOLDEN_TORCHFLOWER_SEED_EGG_CHANCE : LEGACY_GOLDEN_SEED_EGG_CHANCE;
+            if (event.getLevel().random.nextFloat() < chance) {
                 ItemEntity egg = new ItemEntity(event.getLevel(),
                         target.getX(), target.getY(), target.getZ(),
                         new ItemStack(AllItems.GOLDEN_EGG.get()));

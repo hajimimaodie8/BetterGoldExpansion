@@ -856,7 +856,10 @@ def entry_golden_feast_crops():
         spotlight_page(FEAST_WHEAT_ROTATION, _ph(eid, "3_left"), _pht(eid, "3_left")),
         crafting_page("golden_bread", "golden_wheat_block"),      # 「上边放…下边放…」= 一页两槽
         spotlight_page("bettergold:golden_eggplant", _ph(eid, "4_left")),
-        crafting_page("raw_sturdygold_eggplant"),                 # 万坚金原料的金钱茄变体版
+        # 1.7 作者 2026-10-24 第 ③ 条：旧页是 `crafting_page("raw_sturdygold_eggplant")`
+        #   （万坚金原料的金钱茄变体，**原文留档、配方已删**），换成金钱茄的新用途：
+        #   金钱茄 + 金钱贝模具 → 1 金钱贝（模具耐久 −1）。
+        crafting_page("golden_cowrie_from_mold_money_eggplant"),
         spotlight_page("bettergold:golden_bone_meal", _ph(eid, "5_left")),
         crafting_page("golden_bone_meal"),
     ]

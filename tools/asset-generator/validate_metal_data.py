@@ -3573,24 +3573,38 @@ else:
 #  永远走不到，手册 §八 写的「全套巫毒金 ⇒ 免疫中毒」**从未实现**。
 #  现行形状：两条各自 `if (x != null && wornPieces(...) >= 4)`，方法体里**只许有 1 处 `return;`**
 #  （tickCount / 客户端那道早退）⇒ 任何一处改回 `< 4 ⇒ return` 都会当场红。
+#
+# ⚠ **1.7 作者 2026-10-24 第 ⑥ 条把这条整体改口径**（旧期望原文留档、未删）：
+#   「去掉『全套免疫中毒』⇒ 每穿一件免疫 25% 中毒伤害（四件 = 100%）」。
+#   ⇒ `onLivingTick` 里**只剩结雷金一条** `wornPieces` 判定（1 处），且**不许**再出现
+#     `removeEffect(MobEffects.POISON)`；中毒减伤改在 `onDamagePre` 的巫毒金分支（`isMagic` 覆盖
+#     `neoforge:poison`）。旧断言原文留档：
+#       _bg8_guards = re.findall(r"wornPieces\(entity, \w+\)[^;\n]*", _bg8_living_tick)
+#       if len(_bg8_guards) != 2: ... "（结雷金 / 巫毒金各一处；实际 %d）"
+#       for _needle in ("if (family != null && wornPieces(entity, family) >= 4)",
+#                       "if (voodooFamily != null && wornPieces(entity, voodooFamily) >= 4)"): ...
 _bg8_living_tick = method_body(_bgfix_mev, "public static void onLivingTick(")
 if not _bg8_living_tick:
     _bgbook8_bad("bgbook8-voodoo-poison-independent", "找不到 onLivingTick 方法体（反空转守护）")
 else:
     _bg8_guards = re.findall(r"wornPieces\(entity, \w+\)[^;\n]*", _bg8_living_tick)
-    if len(_bg8_guards) != 2:
+    if len(_bg8_guards) != 1:
         _bgbook8_bad("bgbook8-voodoo-poison-independent",
-                     "onLivingTick 里的 wornPieces 判定不是 2 处（结雷金 / 巫毒金各一处；实际 %d）：%s"
+                     "onLivingTick 里的 wornPieces 判定不是 1 处（1.7 第 ⑥ 条起只剩结雷金一条；实际 %d）：%s"
                      % (len(_bg8_guards), _bg8_guards))
     for _g in _bg8_guards:
         if ">= 4" not in _g:
             _bgbook8_bad("bgbook8-voodoo-poison-independent",
                          "整套类免疫用了早退形状（%r）—— 旧 bug 正是「结雷金 < 4 ⇒ return」"
-                         "把巫毒那条中毒免疫挡在后面；两条必须各判各的（if (x != null && ... >= 4)）" % _g)
-    for _needle in ("if (family != null && wornPieces(entity, family) >= 4)",
-                    "if (voodooFamily != null && wornPieces(entity, voodooFamily) >= 4)"):
-        if _needle not in _bg8_living_tick:
-            _bgbook8_bad("bgbook8-voodoo-poison-independent", "守卫不在位：%s" % _needle)
+                         "把后面的判定挡住；必须各判各的（if (x != null && ... >= 4)）" % _g)
+    if "if (family != null && wornPieces(entity, family) >= 4)" not in _bg8_living_tick:
+        _bgbook8_bad("bgbook8-voodoo-poison-independent",
+                     "结雷金守卫不在位：if (family != null && wornPieces(entity, family) >= 4)")
+    # 负向（第 ⑥ 条）：不再整块移除中毒效果（那会退化成"全套免疫"、1~3 件时看不出减伤）
+    if "removeEffect(net.minecraft.world.effect.MobEffects.POISON)" in _bg8_living_tick:
+        _bgbook8_bad("gpt6-voodoo-no-full-immunity",
+                     "onLivingTick 里还在 removeEffect(MobEffects.POISON) —— 第 ⑥ 条已改成"
+                     "「每件 25% 中毒伤害减免」，不是移除效果本身")
     if _bg8_living_tick.count("return;") != 1:
         _bgbook8_bad("bgbook8-voodoo-poison-independent",
                      "onLivingTick 里的 return; 不是恰好 1 处（只许 tickCount / 客户端那道早退）：%d"
@@ -4432,10 +4446,14 @@ _BG10_SPOTLIGHT_EXPECT = {
     "golden_feast_fd_sturdy": [None] * 10,
 }
 # 配方（逐页；None = 该页不是配方页；tuple = recipe / recipe2）
+# ⚠ 1.7 作者 2026-10-24 第 ③ 条：`golden_feast_crops` 的第 8 页（1-based 页号 8 = 索引 7）
+#   从 `("raw_sturdygold_eggplant",)` 换成 `("golden_cowrie_from_mold_money_eggplant",)`
+#   —— 旧期望原文留档（未删）：`("golden_bread", "golden_wheat_block"), None, ("raw_sturdygold_eggplant",), None,`
 _BG10_RECIPE_EXPECT = {
     "golden_feast_crops": [
         None, ("gold_infused_dirt",), None, ("golden_wheat_seeds",), None,
-        ("golden_bread", "golden_wheat_block"), None, ("raw_sturdygold_eggplant",), None,
+        ("golden_bread", "golden_wheat_block"), None,
+        ("golden_cowrie_from_mold_money_eggplant",), None,
         ("golden_bone_meal",)],
     "golden_feast_foods": [
         ("golden_chocolate_bar",), None, ("golden_ice_cream",), ("golden_sugar_cane_stick",), None,
@@ -6651,7 +6669,9 @@ else:
         "spec.armorDefense = new int[] { 2, 3, 5, 2 }": "护甲值（靴2/腿3/胸5/头2）",
         "spec.armorDurability = new int[] { 246, 240, 264, 200 }": "耐久（靴246/腿240/胸264/头200）",
         "spec.armorEnchantmentValue = 24": "盔甲附魔能力 24",
-        "spec.armorToughness = 3.0F": "盔甲韧性 3",
+        # ⚠ 1.7 作者 2026-10-24 第 ② 条：韧性 3.0 → **2.0**（每件）。旧期望原文留档（未删）：
+        #   "spec.armorToughness = 3.0F": "盔甲韧性 3",
+        "spec.armorToughness = 2.0F": "盔甲韧性 2（每件）",
     }
     for _lit, _why in _r4_need.items():
         if _lit not in _cg_txt:
@@ -9096,6 +9116,25 @@ _RG_VANILLA = {
 _RG_SUBST = ("item:minecraft:gold_ingot", "item:minecraft:iron_ingot")
 _RG_METAL_CELL = "item:" + _RG_INGOT
 
+# ---------------------------------------------------------------------------------------
+# 1.7 作者 2026-10-24 第 ⑨ 条（`gpt` 轮）：**盾牌 / 弩 的形状被逐格重写**（不再是"原版同格换金属"）
+# ---------------------------------------------------------------------------------------
+# ⚠ 旧期望原文留档（未删）：这两件原来走 `_RG_VANILLA` 的「原版同格换金属」——
+#     shield  : ("shield.json", ["WoW", "WWW", " W "], {"W": tag:planks, "o": iron_ingot})
+#     crossbow: ("crossbow.json", ["#&#", "~$~", " # "], {#: stick, &: iron_ingot, ~: string, $: tripwire_hook})
+#   ⇒ 现行口径见下表（`_RG_VANILLA` 里那两条**保留**，只作旧形状的来源留档）。
+# 逐格（行, 列）：
+#   盾牌   —— 3×3 除左下 (2,0) / 右下 (2,2) 外全填 7 格，中心 (1,1) = 苹果 ⇒ **6 锭 + 1 苹果**
+#             （派单「7 锭 + 1 苹果 = 8 格，两角空」在 9 格里算术不成立，按位置描述落；见 §29 ⑨-4）
+#   弩     —— 上排 3 格 + 下排中间 (2,1) = 混沌金锭（共 4）；中 (1,1) = 绊线钩；左 (1,0) / 右 (1,2) = 线
+_RG_REWRITTEN = {
+    "shield": (["XXX", "XAX", " X "], {"X": {"item": _RG_INGOT}, "A": {"item": "minecraft:apple"}}),
+    "crossbow": (["XXX", "L$R", " X "], {"X": {"item": _RG_INGOT},
+                                         "L": {"item": "minecraft:string"},
+                                         "R": {"item": "minecraft:string"},
+                                         "$": {"item": "minecraft:tripwire_hook"}}),
+}
+
 
 def _rg_key_cell(ing) -> str:
     """把 key 里的一条解析成 "item:<id>" / "tag:<id>" / "<缺失>" / "<形状不认识>"。"""
@@ -9123,7 +9162,10 @@ def _rg_grid(pattern, key) -> list[list[str]]:
 
 
 def _rg_want_grid(gear: str) -> list[list[str]]:
-    """原版那张表 → 期望的 3×3（金属格已替换成混沌金锭）。"""
+    """期望的 3×3（金属格已替换成混沌金锭）。
+    1.7 第 ⑨ 条改过的两件（shield / crossbow）直接读 `_RG_REWRITTEN`，其余读原版那张表。"""
+    if gear in _RG_REWRITTEN:
+        return _rg_grid(_RG_REWRITTEN[gear][0], _RG_REWRITTEN[gear][1])
     _src, pattern, key = _RG_VANILLA[gear]
     want = [["" for _ in range(3)] for _ in range(3)]
     for i in range(min(3, len(pattern))):
@@ -9182,12 +9224,16 @@ for _gear in _RG_GEAR:
         for _j in range(3):
             _bgn10rg_checked += 1
             if _got[_i][_j] != _want[_i][_j]:
+                # 1.7 第 ⑨ 条改过的两件用「作者逐格给的新形状」措辞，其余仍是「原版同格换金属」
+                _origin = ("作者 2026-10-24 第 ⑨ 条逐格给的新形状"
+                           if _gear in _RG_REWRITTEN
+                           else "原版 " + _RG_VANILLA[_gear][0] + " 同格换成混沌金锭后")
                 _bgn10rg_bad("bgn10rg-gear-cell",
                              _name + " 的「" + _RG_ROWS[_i] + _RG_COLS[_j] + "」是 "
-                             + (_got[_i][_j] or "<空>") + "，原版同格换成混沌金锭后应为 "
+                             + (_got[_i][_j] or "<空>") + "，" + _origin + "应为 "
                              + (_want[_i][_j] or "<空>")
-                             + "（原版 " + _RG_VANILLA[_gear][0] + "；期望表： "
-                             + _rg_grid_text(_want) + "；实际： " + _rg_grid_text(_got) + "）")
+                             + "（期望表： " + _rg_grid_text(_want) + "；实际： "
+                             + _rg_grid_text(_got) + "）")
     # 产物：id + 数量 1（「换数量」这一格也要能单独变红）
     _res = _obj.get("result") or {}
     _bgn10rg_checked += 2
@@ -9231,10 +9277,19 @@ for _p in sorted(_RC_DATA.glob("*.json")):
     if str(_o.get("type") or "").startswith(_RG_NS + ":raw_sturdygold"):
         _rg_bases.append((_p, _o))
 _bgn10rg_checked += 1
-if len(_rg_bases) != 9:
+# ⚠ 1.7 作者 2026-10-24 第 ③ 条（`gpt` 轮）：「万坚金金钱茄变体」的原料配方被**毙掉** ⇒ 9 → **8**。
+#   旧期望原文留档（未删）：`if len(_rg_bases) != 9: ... "（8 族 + 万坚金金钱茄变体）"`。
+#   现在的成员 = 恰好 8 族；「金钱茄变体」那两条（base + doubled）**必须不存在**（下面有负向断言）。
+if len(_rg_bases) != 8:
     _bgn10rg_bad("bgn10rg-doubled-set",
-                 "「贵金原料合成」的基础配方不是 9 条（8 族 + 万坚金金钱茄变体），实际 "
+                 "「贵金原料合成」的基础配方不是 8 条（8 族；万坚金金钱茄变体已被第 ③ 条毙掉），实际 "
                  + str(len(_rg_bases)) + "：" + repr([p.stem for p, _ in _rg_bases]))
+# 负向：被毙掉的两条**不许复活**（旧文件/旧期望原文见 `generate_metal_recipes.py` 的注释块）
+for _dead in ("raw_sturdygold_eggplant.json", "raw_sturdygold_eggplant_doubled.json"):
+    _bgn10rg_checked += 1
+    if (_RC_DATA / _dead).is_file():
+        _bgn10rg_bad("gpt3-eggplant-raw-removed",
+                     _dead + " 还在：作者 2026-10-24 第 ③ 条已毙掉「万坚金原料的金钱茄配方」")
 for _p, _base in _rg_bases:
     _dname = _p.stem + "_doubled"
     _dp = _RC_DATA / (_dname + ".json")
@@ -9607,13 +9662,17 @@ _RC2_STICK = "item:minecraft:stick"
 _RC2_FD_CONDITION = [{"type": "neoforge:mod_loaded", "modid": "farmersdelight"}]
 
 # 期望的 3×3（**逐格**；金属格已替换成混沌金材料）—— 本段独立抄的一份
+# ⚠ 1.7 作者 2026-10-24 第 ⑨ 条（`gpt` 轮）：mace 与 trident 的形状被逐格重写。
+#   旧期望原文留档（未删）：
+#     "mace": ([" # ", " I "], {"#": _RC2_BLOCK, "I": "item:minecraft:breeze_rod"}),
+#     "trident": (["XXX", " X ", " # "], {"X": _RC2_INGOT, "#": _RC2_STICK}),
 _RC2_WANT = {
     # 原版 bow.json 逐字：`#` 棍 / `X` 线 ⇒ **棍那一格换成混沌金锭**（3 锭 + 3 线）
     "bow": ([" #X", "# X", " #X"], {"#": _RC2_INGOT, "X": "item:minecraft:string"}),
-    # 原版 mace.json 逐字：`#` 重核 / `I` 微风棒 ⇒ **重核那一格换成混沌金块**（1 块 + 1 微风棒）
-    "mace": ([" # ", " I "], {"#": _RC2_BLOCK, "I": "item:minecraft:breeze_rod"}),
-    # ⚠ 原版**没有**三叉戟配方 ⇒ 这条是**原创形状**（上排 3 锭 + 中列再 1 锭 + 底部 1 棍）
-    "trident": (["XXX", " X ", " # "], {"X": _RC2_INGOT, "#": _RC2_STICK}),
+    # 作者 2026-10-24 第 ⑨-1 条：上 = 混沌金块、下 = 木棍（2 行，列位照抄原版上排中 / 下排中）
+    "mace": ([" B ", " S "], {"B": _RC2_BLOCK, "S": _RC2_STICK}),
+    # 作者 2026-10-24 第 ⑨-2 条：中 (1,1) = 木棍；上 (0,1)、右 (1,2)、右上 (0,2)、左下 (2,0) = 混沌金锭
+    "trident": ([" XX", " SX", "X  "], {"X": _RC2_INGOT, "S": _RC2_STICK}),
     # 乐事 farmersdelight:golden_knife 逐字：`m` 金锭 / `s` 棍 ⇒ 1 混沌金锭 + 1 棍
     "knife": (["m", "s"], {"m": _RC2_INGOT, "s": _RC2_STICK}),
 }
@@ -9749,6 +9808,15 @@ if _mace_obj_path.is_file():
     if _mo_cells.count(_RC2_INGOT) != 0:
         _bgn10rc2_bad("bgn10rc2-mace-block",
                       "chaosgold_mace 里写了混沌金锭 —— §21 的口径是重核 → **块**")
+    # 1.7 第 ⑨-1 条：下排必须是**木棍**（原来那格是微风棒），且恰好 1 个
+    _bgn10rc2_checked += 2
+    if _mo_cells.count(_RC2_STICK) != 1:
+        _bgn10rc2_bad("gpt9-mace-stick",
+                      "chaosgold_mace 的木棍不是恰好 1 个（实际 " + str(_mo_cells.count(_RC2_STICK))
+                      + "）—— 作者 2026-10-24 第 ⑨-1 条：上 = 块、下 = 棍")
+    if _mo_cells.count("item:minecraft:breeze_rod") != 0:
+        _bgn10rc2_bad("gpt9-mace-stick",
+                      "chaosgold_mace 里还留着原版微风棒 —— 第 ⑨-1 条已把它换成木棍")
 
 # 三叉戟：⚠ 原版没有配方 ⇒ **原创形状**；格数与结构一起钉（4 锭 + 1 棍）
 _bgn10rc2_checked += 3
@@ -9762,8 +9830,10 @@ if _tri_obj_path.is_file():
     if _to_cells.count(_RC2_STICK) != 1:
         _bgn10rc2_bad("bgn10rc2-trident",
                       "chaosgold_trident 的木棍不是 1 个（实际 " + str(_to_cells.count(_RC2_STICK)) + "）")
-    if _RC2_WANT["trident"][0] != ["XXX", " X ", " # "]:
-        _bgn10rc2_bad("bgn10rc2-trident", "本段期望表里的三叉戟形状被改了（应为原创的 XXX /  X  /  # ）")
+    if _RC2_WANT["trident"][0] != [" XX", " SX", "X  "]:
+        _bgn10rc2_bad("bgn10rc2-trident",
+                      "本段期望表里的三叉戟形状被改了（应为作者 2026-10-24 第 ⑨-2 条逐格给的 "
+                      " XX /  SX / X  三行）")
 
 # 乐事刀：⚠ 必须挂 `neoforge:mod_loaded(farmersdelight)`（没装乐事 ⇒ 这条配方根本不产出）
 _bgn10rc2_checked += 3
@@ -9791,8 +9861,10 @@ for _g in ("sword", "axe", "pickaxe", "shovel", "hoe", "helmet", "chestplate", "
         _bgn10rc2_bad("bgn10rc2-cond-scope",
                       "chaosgold_" + _g + ".json 带了 neoforge:conditions —— 只有乐事刀该挂")
 
-# ---------- ③ 来源保真：bow / mace / knife 的 pattern 与图例必须与来源逐字同形 ----------
-for _g in ("bow", "mace", "knife"):
+# ---------- ③ 来源保真：bow / knife 的 pattern 与图例必须与来源逐字同形 ----------
+# ⚠ 1.7 第 ⑨ 条起 **mace 不再与来源同形**（作者把"下 = 微风棒"改成"下 = 木棍"）
+#   ⇒ 从本循环移除（旧循环原文留档：`for _g in ("bow", "mace", "knife"):`）。
+for _g in ("bow", "knife"):
     _bgn10rc2_checked += 2
     _sp, _sk = _RC2_SOURCE[_g]
     _wp, _wk = _RC2_WANT[_g]
@@ -11036,6 +11108,351 @@ if not _bgsnd_problems:
           "「金桥」zip 未提供 ⇒ 未接入")
 
 
+# ==========================================================================================
+# gpt（2026-10-24）：作者九条改动 —— 每条一个稳定 ASCII 段前缀 `[gpt<N>-*]`
+# ==========================================================================================
+# 口径：
+#   · 正向 needle 一律跑在 **strip_comments() 之后**的源码上（注释里写一句不算数）；
+#   · 失败文案里**不出现裸百分号**（只用于格式化）；
+#   · 反空转：本段尾部断言「实际检查 N 项」，N 过小 ⇒ 红。
+gpt_problems: list[str] = []
+_gpt_checked = 0
+
+
+def _gpt_bad(tag: str, msg: str) -> None:
+    gpt_problems.append("[{}] {}".format(tag, msg))
+
+
+def _gpt_src(rel: str) -> str:
+    p = JAVA / rel
+    if not p.is_file():
+        _gpt_bad("gpt-src", "缺 " + rel)
+        return ""
+    return strip_comments(p.read_text(encoding="utf-8"))
+
+
+# ---------- ① 金火把花（成熟方块）能放在金染土上 ----------
+_flower = _gpt_src("block/GoldenTorchflowerBlock.java")
+_gpt_checked += 5
+if _flower:
+    _body = method_body(_flower, "protected boolean mayPlaceOn(")
+    if not _body:
+        _gpt_bad("gpt1-torchflower-dirt", "找不到 GoldenTorchflowerBlock#mayPlaceOn 方法体")
+    else:
+        for _needle, _why in (
+                ("state.is(AllBlocks.GOLD_INFUSED_DIRT.get())", "mayPlaceOn 里没有金染土那一支"),
+                ("instanceof GoldInfusedFarmlandBlock", "金染耕地那一支被弄丢了（既有正向回归）"),
+                ("super.mayPlaceOn", "原版判据被弄丢了（普通土上的花会全掉）")):
+            _gpt_checked += 1
+            if _needle not in _body:
+                _gpt_bad("gpt1-torchflower-dirt", _why + "：缺 " + _needle)
+    _gpt_checked += 1
+    if "import com.hjmmd_8.bettergold.registry.AllBlocks;" not in _flower:
+        _gpt_bad("gpt1-torchflower-dirt", "GoldenTorchflowerBlock 没 import AllBlocks（编译都过不去）")
+# 负向：金染土那一侧的白名单**不许**顺带放行金火把花（走 mayPlaceOn 这条路，不动土侧）
+_dirt = _gpt_src("block/GoldInfusedDirtBlock.java")
+_gpt_checked += 1
+if _dirt and "GOLDEN_TORCHFLOWER" in _dirt:
+    _gpt_bad("gpt1-dirt-whitelist-scope",
+             "金染土 canSustainPlant 白名单里出现了金火把花 —— 本轮走 mayPlaceOn，"
+             "放行土侧会顺带影响所有走 canSustainPlant 的路径（超出作者要求）")
+
+# ---------- ② 混沌金：盾 426 / 韧性每件 2.0 / 击退每件 0.05（4 甲 + 盾） ----------
+_allmetals = _gpt_src("material/AllMetals.java")
+_mf = _gpt_src("material/MetalFamily.java")
+_mw = _gpt_src("material/MetalWeapons.java")
+_gpt_checked += 6
+_cg_body = ""
+if _allmetals:
+    _m = re.search(r"private static MetalFamily registerChaosgold\(\) \{(.*?)\n    \}", _allmetals, re.S)
+    _cg_body = _m.group(1) if _m else ""
+if not _cg_body:
+    _gpt_bad("gpt2-chaosgold-values", "解析不到 AllMetals.registerChaosgold()（反空转守护）")
+else:
+    for _needle, _why in (
+            ("spec.armorToughness = 2.0F", "盔甲韧性不是每件 2.0"),
+            ("spec.armorKnockbackResistance = 0.05F", "盔甲击退抗性不是每件 0.05"),
+            ("spec.shieldDurability = 426", "盾牌耐久不是 426"),
+            ("spec.shieldKnockbackResistance = 0.05D", "盾牌击退抗性不是 0.05")):
+        _gpt_checked += 1
+        if _needle not in _cg_body:
+            _gpt_bad("gpt2-chaosgold-values", _why + "：缺 " + _needle)
+# 寄存器：盾牌属性表必须读**族上的**数（不是无参常量）——否则每族只能同一个值
+_gpt_checked += 2
+if "MetalWeapons.shieldKnockbackModifiers(spec.shieldKnockbackResistance)" not in _mf:
+    _gpt_bad("gpt2-chaosgold-shield", "盾牌注册没有把 spec.shieldKnockbackResistance 传进去")
+if _mf.count("public final double shieldKnockbackResistance;") != 1:
+    _gpt_bad("gpt2-chaosgold-shield", "MetalFamily 没有恰好 1 个 shieldKnockbackResistance 只读快照字段")
+# 属性操作必须是 ADD_VALUE（不是 MULTIPLY），且盾牌带的是 0.05 的入参重载
+_gpt_checked += 2
+if _mw:
+    _i = _mw.find("shieldKnockbackModifiers(double amount)")
+    if _i < 0:
+        _gpt_bad("gpt2-chaosgold-shield", "MetalWeapons 缺 shieldKnockbackModifiers(double amount) 重载")
+    else:
+        _seg = _mw[_i:_i + 900]
+        if "AttributeModifier.Operation.ADD_VALUE" not in _seg:
+            _gpt_bad("gpt2-chaosgold-shield", "盾牌击退抗性不是 ADD_VALUE（百分比要用加值，不是乘值）")
+    if "SHIELD_KNOCKBACK_RESISTANCE_ID" not in _seg:
+        _gpt_bad("gpt2-chaosgold-shield", "盾牌击退抗性的 id 被换了（主/副手共用那个 id 是既有口径）")
+
+# ---------- ③ 毙掉「万坚金原料的金钱茄配方」→ 金钱茄 + 金钱贝模具 → 金钱贝 ----------
+_gpt_checked += 4
+_r3 = _RC_DATA / "golden_cowrie_from_mold_money_eggplant.json"
+if not _r3.is_file():
+    _gpt_bad("gpt3-cowrie-mold-eggplant", "缺配方 golden_cowrie_from_mold_money_eggplant.json")
+else:
+    _o3 = json.loads(_r3.read_text(encoding="utf-8"))
+    if _o3.get("type") != "bettergold:golden_cowrie_mold_money_eggplant":
+        _gpt_bad("gpt3-cowrie-mold-eggplant", "新配方的 type 不是金钱茄版模具序列化器："
+                 + repr(_o3.get("type")))
+    _bad_keys = sorted(set(_o3) - {"type"})
+    if _bad_keys:
+        _gpt_bad("gpt3-cowrie-mold-eggplant",
+                 "新配方只该有 type（材料由 Java 侧的配方类钉住），多出：" + repr(_bad_keys))
+_ar = _gpt_src("registry/AllRecipes.java")
+_gpt_checked += 3
+if _ar:
+    if '"golden_cowrie_mold_money_eggplant"' not in _ar:
+        _gpt_bad("gpt3-cowrie-mold-eggplant", "AllRecipes 没注册 golden_cowrie_mold_money_eggplant")
+    if "new GoldenCowrieMoldRecipe(cat, AllItems.GOLDEN_EGGPLANT.get())" not in _ar:
+        _gpt_bad("gpt3-cowrie-mold-eggplant",
+                 "金钱茄版没有把 GOLDEN_EGGPLANT 作为兑换物传进去")
+    if '"golden_cowrie_mold"' not in _ar:
+        _gpt_bad("gpt3-cowrie-mold-eggplant", "既有的金锭版序列化器 golden_cowrie_mold 被删了（回归）")
+_gcm = _gpt_src("recipe/GoldenCowrieMoldRecipe.java")
+_gpt_checked += 4
+if _gcm:
+    if _gcm.count("stack.is(this.catalyst)") != 1:
+        _gpt_bad("gpt3-cowrie-mold-eggplant",
+                 "GoldenCowrieMoldRecipe#matches 不是恰好 1 处 stack.is(this.catalyst)")
+    if "Ingredient.of(this.catalyst)" not in _gcm:
+        _gpt_bad("gpt3-cowrie-mold-eggplant", "GoldenCowrieMoldRecipe#getIngredients 没按兑换物给")
+    if "worn.setDamageValue(worn.getDamageValue() + 1)" not in _gcm:
+        _gpt_bad("gpt3-cowrie-mold-eggplant", "模具耐久 −1 的既有语义被改了（必须按同类范式消耗）")
+    if "new ItemStack(AllItems.GOLDEN_COWRIE.get())" not in _gcm:
+        _gpt_bad("gpt3-cowrie-mold-eggplant", "产物不是 1 个金钱贝")
+# 手册那一页也必须跟着换（旧的 raw_sturdygold_eggplant 页会指向已删配方）
+_hb = REPO / "src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/zh_cn/entries/golden_feast_crops.json"
+_gpt_checked += 2
+if _hb.is_file():
+    _hbt = _hb.read_text(encoding="utf-8")
+    if "bettergold:golden_cowrie_from_mold_money_eggplant" not in _hbt:
+        _gpt_bad("gpt3-handbook-page", "手册 golden_feast_crops 没有引用新配方")
+    if "raw_sturdygold_eggplant" in _hbt:
+        _gpt_bad("gpt3-handbook-page", "手册还在引用已删的 raw_sturdygold_eggplant")
+
+# ---------- ④ 易金商人「新手」层：24 金蛋 → 1 礼品金票（经验 10 / maxUses 一致） ----------
+_vt = _gpt_src("event/VillageTrades.java")
+_gpt_checked += 5
+if not _vt:
+    pass
+else:
+    _egg = ('new BasicItemListing(new ItemStack(AllItems.GOLDEN_EGG.get(), 24),\n'
+            '                new ItemStack(AllItems.GIFT_GOLD_TICKET.get()), MAX_USES, 10, 0.05F)')
+    if _egg not in _vt:
+        _gpt_bad("gpt4-gold-trader-egg", "没有找到「24 金蛋 → 1 礼品金票 / MAX_USES / 10 经验」那条交易")
+    _i1 = _vt.find("trades.get(1).add")
+    # ⚠ 锚点必须是**代码**（`trades.get(2).add`）：`strip_comments` 之后 `// ---- 学徒 ----` 已经不在串里
+    _i2 = _vt.find("trades.get(2).add")
+    _ie = _vt.find("AllItems.GOLDEN_EGG.get(), 24")
+    if not (_i1 >= 0 and _i2 > _i1 and _i1 < _ie < _i2):
+        _gpt_bad("gpt4-gold-trader-egg", "金蛋那条交易不在「新手（trades.get(1)）」段里")
+    if _vt.count("AllItems.GOLDEN_EGG.get(), 24") != 1:
+        _gpt_bad("gpt4-gold-trader-egg", "「24 金蛋」那条不是恰好 1 处")
+    if "private static final int MAX_USES = 999;" not in _vt:
+        _gpt_bad("gpt4-gold-trader-egg", "MAX_USES 不是文件统一的 999（作者要求与同类同一上限）")
+
+# ---------- ⑤ 金火把花种子喂鸡 ⇒ 100% 一个金蛋 ----------
+_me = _gpt_src("event/ModEvents.java")
+_gpt_checked += 5
+if not _me:
+    pass
+else:
+    _i = _me.find("GOLDEN_TORCHFLOWER_SEED_EGG_CHANCE")
+    _seg = _me[_i:_i + 1600] if _i >= 0 else ""
+    for _needle, _why in (
+            ("AllItems.GOLDEN_TORCHFLOWER_SEEDS.get()", "喂食判据里没有金火把花种子"),
+            ("GOLDEN_TORCHFLOWER_SEED_EGG_CHANCE = 1.0F", "金火把花种子的产蛋概率不是 100%"),
+            ("LEGACY_GOLDEN_SEED_EGG_CHANCE = 0.36F", "其它两种金种子被顺手改成了 100%（旧口径应保留 0.36）"),
+            ("new ItemStack(AllItems.GOLDEN_EGG.get())", "产出的不是金蛋物品"),
+            ("EntityType.CHICKEN", "喂食路径没限定鸡")):
+        _gpt_checked += 1
+        if _needle not in _seg:
+            _gpt_bad("gpt5-chicken-golden-egg", _why + "：缺 " + _needle)
+    _gpt_checked += 1
+    if "float chance = isTorchflowerSeed ? GOLDEN_TORCHFLOWER_SEED_EGG_CHANCE" not in _seg:
+        _gpt_bad("gpt5-chicken-golden-egg", "概率没有按种子分流（金火把花 100% / 其余 36%）")
+# 文档性断言：种子在原版 chicken_food 标签里（需求的前提；缺了要报，不是本轮改的）
+_cf = _DATA / "minecraft" / "tags" / "item" / "chicken_food.json"
+_gpt_checked += 1
+if not _cf.is_file() or "golden_torchflower_seeds" not in _cf.read_text(encoding="utf-8"):
+    _gpt_bad("gpt5-chicken-golden-egg",
+             "金火把花种子不在原版 #minecraft:chicken_food 标签里（需求前提，供对照）")
+
+# ---------- ⑥ 巫毒：爆发 = 魔法 + owner；不再全套免疫；每件 25% 中毒伤害 ----------
+_gpt_checked += 6
+_mev = _gpt_src("material/MetalEvents.java")
+if not _mev:
+    pass
+else:
+    _vt_body = method_body(_mev, "public static void onVoodooExpired(")
+    if "voodooSettleSource(entity)" not in (_vt_body or ""):
+        _gpt_bad("gpt6-voodoo-magic", "巫毒结算没有走 voodooSettleSource（伤害源形状没改）")
+    _vs_body = method_body(_mev, "private static net.minecraft.world.damagesource.DamageSource voodooSettleSource(")
+    if not _vs_body:
+        _gpt_bad("gpt6-voodoo-magic", "找不到 voodooSettleSource 方法体")
+    else:
+        for _needle, _why in (
+                ("DamageTypes.MAGIC", "结算伤害类型不是 minecraft:magic"),
+                ("new net.minecraft.world.damagesource.DamageSource(holder, null, owner)",
+                 "结算伤害源没有带 owner（new DamageSource(holder, null, owner)）")):
+            _gpt_checked += 1
+            if _needle not in _vs_body:
+                _gpt_bad("gpt6-voodoo-magic", _why + "：缺 " + _needle)
+    _gpt_checked += 3
+    if "public static final String VOODOO_SOURCE_KEY" not in _mev:
+        _gpt_bad("gpt6-voodoo-owner", "没有 VOODOO_SOURCE_KEY（施加者记忆）")
+    if "voodooApplier(" not in _mev:
+        _gpt_bad("gpt6-voodoo-owner", "没有 voodooApplier 解析施加者")
+    if "stackVoodoo(target, attacker)" not in _mev:
+        _gpt_bad("gpt6-voodoo-owner", "武器命中挂巫毒时没把 attacker 记成 owner")
+    # 每件 25%：巫毒金那一支仍在 onDamagePre，且 isMagic 覆盖 neoforge:poison
+    _dm_pre = method_body(_mev, "public static void onDamagePre(")
+    _gpt_checked += 2
+    if "VOODOO_ID.equals(family.id) && isMagic(event.getSource())" not in (_dm_pre or ""):
+        _gpt_bad("gpt6-voodoo-poison", "onDamagePre 里的巫毒金减伤分支不在位")
+    _magic_body = method_body(_mev, "private static boolean isMagic(")
+    if "NeoForgeMod.POISON_DAMAGE" not in (_magic_body or ""):
+        _gpt_bad("gpt6-voodoo-poison", "isMagic 没有覆盖 neoforge:poison（中毒伤害就减不到）")
+
+# ---------- ⑦ 金玫瑰丛用金骨粉 ⇒ 3 个金玫瑰 + 音效 + 骨粉粒子 ----------
+_ai = _gpt_src("registry/AllItems.java")
+_gpt_checked += 5
+if not _ai:
+    pass
+else:
+    _i = _ai.find("GOLDEN_ROSE_PRODUCE")
+    _seg = _ai[_i:_i + 2600] if _i >= 0 else ""
+    for _needle, _why in (
+            ("GOLDEN_ROSE_BUSH.get()", "金骨粉没有识别金玫瑰丛"),
+            ("GOLDEN_ROSE_PRODUCE = 3", "产量不是 3（普通 1 个的 3 倍）"),
+            ("AllBlocks.GOLDEN_ROSE_BUSH_ITEM.get(), GOLDEN_ROSE_PRODUCE", "掉落的不是 3 个金玫瑰物品"),
+            ("ParticleTypes.HAPPY_VILLAGER", "没有骨粉粒子（HAPPY_VILLAGER）"),
+            ("SoundEvents.BONE_MEAL_USE", "没有播 BONE_MEAL_USE 音效")):
+        _gpt_checked += 1
+        if _needle not in _seg:
+            _gpt_bad("gpt7-golden-rose-bonemeal", _why + "：缺 " + _needle)
+    _gpt_checked += 1
+    if "serverLevel.sendParticles(" not in _seg:
+        _gpt_bad("gpt7-golden-rose-bonemeal", "粒子不是服务端显式 sendParticles（A 级抓不到就会漏证据）")
+
+# ---------- ⑧ 靛海金远程弹射物液体惯性 = 1.0（mixin） ----------
+_mx = JAVA / "mixin" / "AbstractArrowWaterInertiaMixin.java"
+_gpt_checked += 6
+if not _mx.is_file():
+    _gpt_bad("gpt8-indigosea-water-inertia", "缺 mixin/AbstractArrowWaterInertiaMixin.java")
+else:
+    _mxt = strip_comments(_mx.read_text(encoding="utf-8"))
+    for _needle, _why in (
+            ('method = "getWaterInertia()F"', "注入点不是 1.21.1 的 getWaterInertia()F"),
+            ("return 1.0F;", "不是把液体惯性设成 1.0"),
+            ('INDIGOSEAGOLD_ID = "indigoseagold"', "没有限定靛海金这一族"),
+            ("getWeaponItem()", "判据不是弹射物自己记录的发射武器")):
+        _gpt_checked += 1
+        if _needle not in _mxt:
+            _gpt_bad("gpt8-indigosea-water-inertia", _why + "：缺 " + _needle)
+    _gpt_checked += 1
+    if "setWaterInertia" in _mxt:
+        _gpt_bad("gpt8-indigosea-water-inertia",
+                 "写了 setWaterInertia —— 1.21.1 没有这个 API（那是 1.21.2+ 的）")
+_mixcfg = REPO / "src/main/resources/bettergold.mixins.json"
+_gpt_checked += 2
+if _mixcfg.is_file():
+    _cfg = json.loads(_mixcfg.read_text(encoding="utf-8"))
+    if "AbstractArrowWaterInertiaMixin" not in (_cfg.get("mixins") or []):
+        _gpt_bad("gpt8-indigosea-water-inertia",
+                 "mixin 没登记在 bettergold.mixins.json 的 mixins 列表（写成 common 会被静默忽略）")
+    if "AbstractArrowWaterInertiaMixin" in (_cfg.get("client") or []):
+        _gpt_bad("gpt8-indigosea-water-inertia", "弹射物惯性改动被放进了 client 列表（服务端也要生效）")
+
+# ---------- ⑨ 混沌金四条配方逐格 + 苹果只核对 ----------
+# 独立于生成器的 3×3 期望表（**逐格**；位置错必须能被抓住，计数相等不算数）
+_GPT9_WANT = {
+    "mace": ([" B ", " S "], {"B": {"item": "bettergold:chaosgold_block"},
+                              "S": {"item": "minecraft:stick"}}),
+    "trident": ([" XX", " SX", "X  "], {"X": {"item": "bettergold:chaosgold_ingot"},
+                                         "S": {"item": "minecraft:stick"}}),
+    "crossbow": (["XXX", "L$R", " X "], {"X": {"item": "bettergold:chaosgold_ingot"},
+                                          "L": {"item": "minecraft:string"},
+                                          "R": {"item": "minecraft:string"},
+                                          "$": {"item": "minecraft:tripwire_hook"}}),
+    "shield": (["XXX", "XAX", " X "], {"X": {"item": "bettergold:chaosgold_ingot"},
+                                        "A": {"item": "minecraft:apple"}}),
+}
+_GPT9_ROWS = ("第1行", "第2行", "第3行")
+_GPT9_COLS = ("第1列(左)", "第2列(中)", "第3列(右)")
+for _g9, (_pat9, _key9) in _GPT9_WANT.items():
+    _p9 = _RC_DATA / ("chaosgold_" + _g9 + ".json")
+    _gpt_checked += 3
+    if not _p9.is_file():
+        _gpt_bad("gpt9-shape", "缺 chaosgold_" + _g9 + ".json")
+        continue
+    _o9 = json.loads(_p9.read_text(encoding="utf-8"))
+    if _o9.get("type") != "minecraft:crafting_shaped":
+        _gpt_bad("gpt9-shape", "chaosgold_" + _g9 + " 不是 crafting_shaped")
+    if _o9.get("result", {}).get("count") != 1:
+        _gpt_bad("gpt9-shape", "chaosgold_" + _g9 + " 的产物数量不是 1")
+    _got9 = _rg_grid(_o9.get("pattern"), _o9.get("key"))
+    _want9 = _rg_grid(_pat9, _key9)
+    for _i9 in range(3):
+        for _j9 in range(3):
+            _gpt_checked += 1
+            if _got9[_i9][_j9] != _want9[_i9][_j9]:
+                _gpt_bad("gpt9-shape",
+                         "chaosgold_" + _g9 + " 的「" + _GPT9_ROWS[_i9] + _GPT9_COLS[_j9] + "」是 "
+                         + (_got9[_i9][_j9] or "<空>") + "，作者第 ⑨ 条要求 "
+                         + (_want9[_i9][_j9] or "<空>") + "（期望表：" + _rg_grid_text(_want9)
+                         + "；实际：" + _rg_grid_text(_got9) + "）")
+# ⑨-4 的记账点：3×3 里「7 锭 + 1 苹果 = 8 格 + 两角空」是 10 格，算术不成立 ⇒ 按位置落 = 6 锭 + 1 苹果
+_p9s = _RC_DATA / "chaosgold_shield.json"
+_gpt_checked += 3
+if _p9s.is_file():
+    _s9 = json.loads(_p9s.read_text(encoding="utf-8"))
+    _cells9 = [c for _row in _rg_grid(_s9.get("pattern"), _s9.get("key")) for c in _row]
+    if _cells9.count("item:bettergold:chaosgold_ingot") != 6:
+        _gpt_bad("gpt9-shield-count", "盾牌的混沌金锭不是 6 个（实际 "
+                 + str(_cells9.count("item:bettergold:chaosgold_ingot")) + "）—— 位置口径 = 7 格里中心被苹果顶掉")
+    if _cells9.count("item:minecraft:apple") != 1:
+        _gpt_bad("gpt9-shield-count", "盾牌中心不是恰好 1 个普通苹果")
+    if _cells9.count("") != 2:
+        _gpt_bad("gpt9-shield-count", "盾牌不是恰好 2 个空格（左下 / 右下两角）")
+# ⑨-5 混沌金苹果（禁果）：既有就是 8 锭 + 1 苹果（无序）⇒ **只核对不改**
+_gpt_checked += 3
+_p9f = _RC_DATA / "chaosgold_forbidden_fruit.json"
+if not _p9f.is_file():
+    _gpt_bad("gpt9-forbidden-fruit", "缺 chaosgold_forbidden_fruit.json")
+else:
+    _f9 = json.loads(_p9f.read_text(encoding="utf-8"))
+    _ings9 = [i.get("item") for i in _f9.get("ingredients", [])]
+    if _f9.get("type") != "minecraft:crafting_shapeless":
+        _gpt_bad("gpt9-forbidden-fruit",
+                 "禁果配方不是无序合成（作者第 ⑨-5 条要求「只核对不改」）")
+    if _ings9.count("bettergold:chaosgold_ingot") != 8 or _ings9.count("minecraft:apple") != 1:
+        _gpt_bad("gpt9-forbidden-fruit", "禁果配方不是「8 锭 + 1 苹果」：" + repr(_ings9))
+
+if _gpt_checked < 120:
+    _gpt_bad("gpt-anti-vacuum", "只检查了 " + str(_gpt_checked) + " 项（明显过少）")
+print("[gpt-summary] 2026-10-24 九条：检查 " + str(_gpt_checked) + " 项，问题 "
+      + str(len(gpt_problems)) + " 条" + ("" if not gpt_problems else "：" + str(gpt_problems[:4])))
+if not gpt_problems:
+    print("[gpt-ok] ① 金火把花可放金染土（土侧白名单未放宽）② 混沌金盾 426 / 韧性 2.0 / 击退 0.05×5 "
+          "③ 金钱茄+模具→金钱贝（旧原料配方已毙）④ 新手 24 金蛋→1 金票（999/10 经验）"
+          "⑤ 金火把花种子喂鸡 100% 金蛋（其余仍 36%）⑥ 巫毒爆发 minecraft:magic + owner / 每件 25% 中毒"
+          "⑦ 金玫瑰丛 3 个金玫瑰 + BONE_MEAL_USE + HAPPY_VILLAGER ⑧ 靛海金弹射物液体惯性 1.0（mixin 双端）"
+          "⑨ 四条配方逐格 + 禁果只核对")
+
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -11050,7 +11467,9 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bgn10up_problems, bgn10fix_problems, bgn10anvil_problems,
                        bgn10err_problems, bgn10fix2_problems, _bgsnd_problems,
                        # ① 崩乱合金盔甲耐久按作者字面值（作者 2026-10-23「按他写的、不改」）
-                       _bgn10r7dur_problems)
+                       _bgn10r7dur_problems,
+                       # 2026-10-24 作者九条（`gpt` 轮）—— 每条的稳定 ASCII 段前缀 [gpt<N>-*]
+                       gpt_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

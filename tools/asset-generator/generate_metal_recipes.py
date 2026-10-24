@@ -123,6 +123,29 @@ DOUBLED_OIL = "bettergold:refined_alchemic_oil"
 DOUBLED_COUNT = 2
 DOUBLED_SUFFIX = "_doubled"
 
+# ---------------------------------------------------------------------------------------
+# 1.7 作者 2026-10-24 第 ③ 条（`gpt` 轮）：**毙掉「万坚金原料的金钱茄配方」**
+# ---------------------------------------------------------------------------------------
+# 作者原话：「毙掉『万坚金原料的金钱茄配方』，换成 金钱茄 + 金钱贝模具 → 金钱贝」。
+#
+# 被删掉的是下面两个文件（**旧文件原文留档，不静默删**；两份都只有 `type`/`catalyst`/`count` 三个字段）：
+#   src/main/resources/data/bettergold/recipe/raw_sturdygold_eggplant.json
+#       {
+#         "type": "bettergold:raw_sturdygold_eggplant"
+#       }
+#   src/main/resources/data/bettergold/recipe/raw_sturdygold_eggplant_doubled.json
+#       {
+#         "type": "bettergold:raw_sturdygold_eggplant",
+#         "catalyst": "bettergold:refined_alchemic_oil",
+#         "count": 2
+#       }
+# ⚠ 它们的**序列化器**（`bettergold:raw_sturdygold_eggplant`，`AllRecipes#RAW_STURDYGOLD_EGGPLANT_RECIPE`）
+#   仍然注册、类也仍然在 —— 只删数据文件（作者要毙的是"配方"，不是"代码能力"）。
+#   本脚本不再产出它们：`doubled_raw_targets()` 是**数据驱动扫描**，基础版没了 ⇒ 双倍版也不会被重建
+#   （所以这两个文件是"删掉就真的消失"，不会在下一次 --apply 里复活）。
+#   `docs/1.7-...md` §29 ③ 记了这件事；新配方（`golden_cowrie_from_mold_money_eggplant.json`）不在本脚本里
+#   （它属于"模具 → 金钱贝"那一族，落点在 `GoldenCowrieMoldRecipe` + `AllRecipes`）。
+
 
 def _is_raw_craft(obj: dict) -> bool:
     """这条配方是不是「贵金原料合成」那一种（两个序列化器都算）"""

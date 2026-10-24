@@ -37,6 +37,17 @@
 | **三叉戟** | 原版**没有合成配方**（溺尸掉落 / 试炼密室） | **原创形状**（不是原版形状！见 `EXTRA` 的 `note`），**待作者确认** |
 | **乐事小刀** | 不是原版：`farmersdelight:golden_knife` = `"m" / "s"`（1 锭 + 1 棍） | **工作台** + `neoforge:mod_loaded(farmersdelight)` 条件（没装乐事 ⇒ 不产出） |
 
+1.7 作者 2026-10-24 第 ⑨ 条（`gpt` 轮）：**四件形状逐格重写**（上表那四行的形状描述随之作废，
+旧形状原文留档在 `EXTRA[...]["note"]` 与 `VANILLA["shield"/"crossbow"]` 的注释里）
+------------------------------------------------------------------------------------------
+| 件 | 新形状（逐格） | 格数 |
+|---|---|---|
+| 重锤 | 上 = 混沌金块、下 = 木棍（2 行，列位照抄原版上排中 / 下排中） | 1 块 + 1 棍 |
+| 三叉戟 | 中 = 木棍；上 (0,1)、右 (1,2)、右上 (0,2)、左下 (2,0) = 混沌金锭 | 4 锭 + 1 棍 |
+| 弩 | 上排 3 格 + 下排中间 1 格 = 混沌金锭；中 = 绊线钩；左 / 右 = 线 | 4 锭 + 2 线 + 1 钩 |
+| 盾牌 | 3×3 除左下 / 右下两角外全填，中心 = 普通苹果 | **6 锭** + 1 苹果（⚠ 派单写"7 锭 + 1 苹果 = 8 格，两角空"：3×3 只有 9 格，8 + 2 空 = 10 格算术不成立；按位置落 = 6 + 1，见 §29） |
+| 混沌金苹果（禁果） | **只核对不改**：既有 `chaosgold_forbidden_fruit.json` = 无序 1 苹果 + 8 混沌金锭，材料数与"围一圈"一致（无序本就不限摆法） | 8 锭 + 1 苹果 |
+
 ⚠ **`bg-n10rg` 的 4 件"停下报告"已被 `bg-n10rc2` 关闭**（作者 2026-10-18「第一个可以考虑」）：
 旧口径的 4 条理由**原文留在**下面的 `EXCLUDED` 注释里（那 4 条判定当时是对的，裁定只是换了答案）。
 
@@ -104,9 +115,13 @@ VANILLA: dict[str, tuple[str, list[str], dict[str, dict]]] = {
     "boots": ("golden_boots.json", ["X X", "X X"], {
         "X": {"item": "minecraft:gold_ingot"}}),
     # 原版盾牌：6 木板（tag）+ 1 铁锭 ⇒ 只换铁锭那一格
+    # ⚠ 1.7 作者 2026-10-24 第 ⑨-4 条之后**不再走这张表**（形状改由 `EXTRA["shield"]` 逐格给出）；
+    #   本条原文留档 = 旧形状 `["WoW", "WWW", " W "]` 的来源。
     "shield": ("shield.json", ["WoW", "WWW", " W "], {
         "W": {"tag": PLANKS}, "o": {"item": "minecraft:iron_ingot"}}),
     # 原版弩：2 棍 + 1 铁锭 + 1 线 + 3 绊线钩 ⇒ 只换铁锭那一格
+    # ⚠ 1.7 作者 2026-10-24 第 ⑨-3 条之后**不再走这张表**（形状改由 `EXTRA["crossbow"]` 逐格给出）；
+    #   本条原文留档 = 旧形状 `["#&#", "~$~", " # "]` 的来源。
     "crossbow": ("crossbow.json", ["#&#", "~$~", " # "], {
         "#": {"item": STICK}, "&": {"item": "minecraft:iron_ingot"},
         "~": {"item": STRING}, "$": {"item": TRIPWIRE}}),
@@ -138,23 +153,69 @@ EXTRA: dict[str, dict] = {
         "original_shape": False,
         "note": "原版形状逐字；金属格 = 棍那一格（3 锭 + 3 线）",
     },
+    # -----------------------------------------------------------------------------------
+    # 1.7 作者 2026-10-24 第 ⑨ 条（`gpt` 轮）：**四条配方逐格改**（旧形状原文留档在每条 note 里）
+    #
+    # ⚠ 旧形状（原文留档，未删）：mace = 原版 `[" # ", " I "]`（# 重核 → 混沌金块、I 微风棒）
+    #   ⇒ 作者「上 = 混沌金块，下 = 木棍」：把**微风棒那一格换成木棍**（"下" = 原版下排中间）。
     "mace": {
-        "source": "data/minecraft/recipe/mace.json",
-        "pattern": [" # ", " I "],
-        "key": {"#": {"item": HEAVY_CORE}, "I": {"item": BREEZE_ROD}},
-        "subs": {"#": BLOCK},                     # 重核 → 混沌金块（⚠ 是块，不是锭）
-        "condition": None,
-        "original_shape": False,
-        "note": "原版形状逐字；金属格 = 重核那一格 → 混沌金块（1 块 + 1 微风棒）",
-    },
-    "trident": {
-        "source": "（原版没有 trident.json —— 本形状是原创）",
-        "pattern": ["XXX", " X ", " # "],
-        "key": {"X": {"item": INGOT}, "#": {"item": STICK}},
-        "subs": {},                               # 表里本来就写着混沌金锭，没有替换
+        "source": "data/minecraft/recipe/mace.json（列位照抄：上排中 / 下排中）",
+        "pattern": [" B ", " S "],
+        "key": {"B": {"item": BLOCK}, "S": {"item": STICK}},
+        "subs": {},
         "condition": None,
         "original_shape": True,
-        "note": "原创形状（不是原版形状，原版没有三叉戟配方）：上排 3 锭 + 中列再 1 锭 + 底部 1 棍",
+        "note": "作者 2026-10-24 第 ⑨-1 条：上 = 混沌金块（原版重核那一格）、下 = 木棍（原版微风棒那一格）；"
+                "2 行、列位照抄原版。旧形状原文留档：pattern `[\" # \", \" I \"]` + key "
+                "`# → 混沌金块 / I → 微风棒`。",
+    },
+    # ⚠ 旧形状（原文留档，未删）：trident = 原创 `["XXX", " X ", " # "]`（上排 3 锭 + 中列 1 锭 + 底部 1 棍）。
+    #   作者 2026-10-24 第 ⑨-2 条改成：中 = 木棍；上、右、右上、左下 = 混沌金锭（4 锭 + 1 棍）。
+    #   逐格落位（行, 列）：上 (0,1) / 右上 (0,2) / 中 (1,1)=棍 / 右 (1,2) / 左下 (2,0)。
+    "trident": {
+        "source": "（原版没有 trident.json —— 形状由作者 2026-10-24 第 ⑨-2 条逐格给出）",
+        "pattern": [" XX", " SX", "X  "],
+        "key": {"X": {"item": INGOT}, "S": {"item": STICK}},
+        "subs": {},
+        "condition": None,
+        "original_shape": True,
+        "note": "作者 2026-10-24 第 ⑨-2 条：中 = 木棍；上 (0,1)、右 (1,2)、右上 (0,2)、左下 (2,0) = 混沌金锭"
+                "（4 锭 + 1 棍）。旧形状原文留档：pattern `[\"XXX\", \" X \", \" # \"]`。",
+    },
+    # ⚠ 旧形状（原文留档，未删）：crossbow = 原版 `["#&#", "~$~", " # "]`
+    #   （`#` 棍 ×3 / `&` 铁锭 → 混沌金锭 / `~` 线 ×2 / `$` 绊线钩）。
+    #   作者 2026-10-24 第 ⑨-3 条改成：中 = 绊线钩；左、右 = 线；**最上面一排 3 格** + **最下面中间 1 格**
+    #   = 混沌金锭（4 锭 + 2 线 + 1 钩）。
+    "crossbow": {
+        "source": "data/minecraft/recipe/crossbow.json（列位照抄，金属格按第 ⑨-3 条重排）",
+        "pattern": ["XXX", "L$R", " X "],
+        "key": {"X": {"item": INGOT}, "L": {"item": STRING}, "R": {"item": STRING},
+                "$": {"item": TRIPWIRE}},
+        "subs": {},
+        "condition": None,
+        "original_shape": True,
+        "note": "作者 2026-10-24 第 ⑨-3 条：上排 3 格 + 下排中间 1 格 = 混沌金锭（共 4）；"
+                "中 = 绊线钩；左 / 右 = 线（各 1）。旧形状原文留档：pattern `[\"#&#\", \"~$~\", \" # \"]`"
+                "（# 棍 ×3、& 铁锭、~ 线 ×2、$ 绊线钩）。",
+    },
+    # ⚠ 旧形状（原文留档，未删）：shield = 原版 `["WoW", "WWW", " W "]`
+    #   （`W` 木板 tag ×6 / `o` 铁锭 → 混沌金锭）。
+    #   作者 2026-10-24 第 ⑨-4 条改成：3×3 **除左下、右下两角**外全是混沌金锭 + **中间放一个普通苹果**。
+    #   ⚠ 逐格落位（行, 列）：上排 3 格 (0,0)(0,1)(0,2)、中排左右 (1,0)(1,2)、下排中间 (2,1)
+    #     = **6 锭**；中心 (1,1) = 苹果；左下 (2,0) / 右下 (2,2) = 空。
+    #   ⚠ 派单同时写了「7 锭 + 1 苹果 = 8 格，两角空」—— 3×3 只有 9 格，8 + 2 空 = 10 格**算术不成立**；
+    #     苹果占中心就必然顶掉一格锭 ⇒ 按**位置描述**（除两角外全锭、中心苹果）落 = **6 锭 + 1 苹果**。
+    #     已在 `docs/1.7-...md` §29 ⑨-4 记账（这是本轮唯一的"需求自相矛盾"点）。
+    "shield": {
+        "source": "data/minecraft/recipe/shield.json（格位照抄原版 7 格：除下排两角外全填）",
+        "pattern": ["XXX", "XAX", " X "],
+        "key": {"X": {"item": INGOT}, "A": {"item": "minecraft:apple"}},
+        "subs": {},
+        "condition": None,
+        "original_shape": True,
+        "note": "作者 2026-10-24 第 ⑨-4 条：3×3 除左下 / 右下两角外全填（7 格），中心 = 普通苹果"
+                "⇒ 混沌金锭 6 + 苹果 1。旧形状原文留档：pattern `[\"WoW\", \"WWW\", \" W \"]`"
+                "（W 木板 tag ×6、o 铁锭）。",
     },
     "knife": {
         "source": "data/farmersdelight/recipe/golden_knife.json",
@@ -165,6 +226,19 @@ EXTRA: dict[str, dict] = {
         "original_shape": False,
         "note": "乐事 golden_knife 逐字 + mod_loaded(farmersdelight) 条件（1 锭 + 1 棍）",
     },
+}
+
+# 不参与 `VANILLA` 替换的四件（见 `EXTRA`）；1.7 第 ⑨ 条把其中 4 件的形状**逐格**重写了。
+SHAPE_EXPECT = {
+    # 件 -> {物品 id: 格数}（作者 2026-10-24 第 ⑨ 条给的数；**独立于 pattern/key 的硬数字**）
+    #   ⚠ 这里是"计数"，位置由 `validate_metal_data.py` 的 `[gpt9-*]` 段**逐格**钉住
+    #     （作者提醒：只比计数抓不到位置错）。
+    "mace": {BLOCK: 1, STICK: 1},
+    "trident": {INGOT: 4, STICK: 1},
+    "crossbow": {INGOT: 4, STRING: 2, TRIPWIRE: 1},
+    # 盾牌：3×3 除左下/右下两角外 7 格 = 6 锭 + 中心 1 苹果（派单写"7 锭 + 1 苹果"，
+    #   3×3 里算术不成立，按位置描述落；见 §29 ⑨-4 的记账）
+    "shield": {INGOT: 6, "minecraft:apple": 1},
 }
 
 # 生成顺序（= 手册配方页顺序；稳定 ASCII，别随意重排）
@@ -466,6 +540,20 @@ def check(files: list[tuple[str, dict]]) -> list[str]:
                 bad.append(f"{name} 的 neoforge:conditions 不是恰好 mod_loaded(farmersdelight)：{conds}")
         elif conds is not None:
             bad.append(f"{name} 不该带 neoforge:conditions（只有乐事刀要挂）：{conds}")
+        # ⑧ 1.7 第 ⑨ 条：四条改过的配方**逐项计数**必须等于作者给的数（位置由关卡逐格钉）
+        want_counts = SHAPE_EXPECT.get(gear)
+        if want_counts is not None:
+            got_counts: dict[str, int] = {}
+            for ch, ing in obj_key.items():
+                per = sum(row.count(ch) for row in obj.get("pattern") or [])
+                item_id = ing.get("item")
+                if item_id is None:
+                    bad.append(f"{name} 的图例 {ch} 不是具体物品（第 ⑨ 条的四件都逐格点名）：{ing!r}")
+                    continue
+                got_counts[item_id] = got_counts.get(item_id, 0) + per
+            got_counts = {k: v for k, v in got_counts.items() if v}
+            if got_counts != want_counts:
+                bad.append(f"{name} 的逐项计数 {got_counts} ≠ 作者第 ⑨ 条给的 {want_counts}")
     return bad
 
 

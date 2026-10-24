@@ -53,6 +53,14 @@ public final class MetalEvents {
      * 1.5 作者 2026-09-30 拍板「字面运算顺序：先乘除、后加减」，因此是
      * {@code 总量 × 36% + 等级}，而不是 {@code (总量 + 等级) × 36%}。</p>
      *
+     * <p><b>1.7 作者 2026-10-24 第 ⑥ 条</b>（「爆发伤害改魔法伤害」）：<b>读源码（1.4 起）</b>那条一直是
+     * {@code entity.damageSources().magic()}（= {@code minecraft:magic}），<b>本来就是魔法</b>——
+     * 本轮真正补的是<b>伤害源要能带 owner</b>：旧口径的 {@code magic()} 没有攻击者
+     * ⇒ 死亡提示 / 击杀归属都算"环境伤害"。现在按「谁最后给的巫毒」找回施加者，用
+     * {@code new DamageSource(MAGIC, null, owner)} 结算（{@code getEntity() = owner}，
+     * 类型仍是 {@code minecraft:magic}）；找不到施加者（自然生成 / 已卸载）时<b>原样</b>退回
+     * {@code damageSources().magic()}。</p>
+     *
      * <p>注意：字面公式下「窗口内一次伤害都没挨到」也会结算 {@code 等级 × 每级固定伤害} 点
      * （旧实现是提取值为 0 就直接返回）。这是作者定稿公式的必然结果，已在 1.5 规格文档里写明。</p>
      */
@@ -72,10 +80,31 @@ public final class MetalEvents {
         }
         VoodooAccumulator.beginSettle(id);
         try {
-            entity.hurt(entity.damageSources().magic(), (float) damage);
+            entity.hurt(voodooSettleSource(entity), (float) damage);
         } finally {
             VoodooAccumulator.endSettle(id);
         }
+    }
+
+    /**
+     * 巫毒结算用的伤害源：<b>类型恒 {@code minecraft:magic}</b>；能找到施加者时把 owner 带上。
+     *
+     * <p>⚠ 旧口径（1.4–1.7.0，原文留档）：{@code entity.hurt(entity.damageSources().magic(), ...)}
+     * —— 类型对，但<b>没有 owner</b>（击杀归属 / 死亡提示都算环境）。</p>
+     */
+    private static net.minecraft.world.damagesource.DamageSource voodooSettleSource(LivingEntity entity) {
+        if (!(entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            return entity.damageSources().magic();
+        }
+        LivingEntity owner = voodooApplier(serverLevel, entity);
+        if (owner == null) {
+            return entity.damageSources().magic();
+        }
+        var holder = serverLevel.registryAccess()
+                .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
+        // direct = null（不是弹射物/实体本身），causing = 施加者 ⇒ getEntity() = 施加者
+        return new net.minecraft.world.damagesource.DamageSource(holder, null, owner);
     }
 
     /**
@@ -986,6 +1015,12 @@ public final class MetalEvents {
     public static final int VOODOO_TICKS = 6 * 20;
 
     /**
+     * 巫毒结算时「施加者是谁」记在<b>目标</b>的持久数据里（1.7 第 ⑥ 条：伤害源带 owner）。
+     * 与 {@link #PARASITE_SOURCE_KEY} 同构、键不同（两种 buff 互不覆盖）。
+     */
+    public static final String VOODOO_SOURCE_KEY = "bettergold_voodoo_source";
+
+    /**
      * 巫毒（窗口语义 + 累积伤害模型）：<b>第一次命中</b>挂上 6 秒（{@value #VOODOO_TICKS} tick）等级 1；
      * <b>之后每次命中只把等级 +1，剩余时长完全不被动过</b>——不重置回 120、也不加长
      * （既不是 剩余+120，也不是 max(剩余,120)）。窗口从第一次挂上起自然倒计时。
@@ -1007,12 +1042,37 @@ public final class MetalEvents {
      * 所以累积值在等级上升时被正确地保留下来，窗口是连续的。</p>
      */
     private static void stackVoodoo(net.minecraft.world.entity.LivingEntity target) {
+        stackVoodoo(target, null);
+    }
+
+    /**
+     * 同上，并记下<b>施加者</b>（1.7 作者 2026-10-24 第 ⑥ 条：结算伤害源要能带 owner）。
+     *
+     * <p>记录位置与寄生同构（{@link #markParasiteSource}）：放在<b>目标</b>的持久数据里，
+     * 每次命中覆盖为最新施加者；窗口结算时按 UUID 找回（已死 / 已卸载 ⇒ 当没有）。</p>
+     */
+    private static void stackVoodoo(net.minecraft.world.entity.LivingEntity target,
+            net.minecraft.world.entity.LivingEntity owner) {
         var effect = com.hjmmd_8.bettergold.registry.AllEffects.VOODOO;
         var current = target.getEffect(effect);
         int amplifier = current == null ? 0 : Math.min(current.getAmplifier() + 1, 254);
         // 已有该效果 → 原样保留它此刻的剩余时长；没有 → 才给满 6 秒
         int duration = current == null ? VOODOO_TICKS : current.getDuration();
         target.addEffect(new net.minecraft.world.effect.MobEffectInstance(effect, duration, amplifier));
+        if (owner != null && owner != target && !target.level().isClientSide()) {
+            target.getPersistentData().putUUID(VOODOO_SOURCE_KEY, owner.getUUID());
+        }
+    }
+
+    /** 巫毒结算时按 UUID 找回施加者（已死 / 已卸载 / 换维度一律当没有） */
+    private static net.minecraft.world.entity.LivingEntity voodooApplier(
+            net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LivingEntity target) {
+        var data = target.getPersistentData();
+        if (!data.hasUUID(VOODOO_SOURCE_KEY)) {
+            return null;
+        }
+        var entity = level.getEntities().get(data.getUUID(VOODOO_SOURCE_KEY));
+        return entity instanceof net.minecraft.world.entity.LivingEntity living && living.isAlive() ? living : null;
     }
 
     /** 叠加 1 级效果（已有则等级 +1，无上限，上限只受效果等级上限 255 限制） */
@@ -1225,7 +1285,8 @@ public final class MetalEvents {
         } else if (family.thunderStrike) { // 结雷金：落雷 + 3×3 + 颤栗
             thunderStrike(attacker, target);
         } else if (family == MetalFamily.byId("voodoogold")) { // 巫毒金：1 级 6 秒巫毒，可叠加
-            stackVoodoo(target);
+            // 1.7 第 ⑥ 条：记下施加者 ⇒ 结算伤害源能带 owner（类型不变，仍是 minecraft:magic）
+            stackVoodoo(target, attacker);
         } else if (family.sedimentOnAttack) { // 靛海金：每次命中叠加 1 级沉淀，16 秒，叠加无上限
             stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.SEDIMENT,
                     MetalFamily.SEDIMENT_TICKS);
@@ -1773,6 +1834,10 @@ public final class MetalEvents {
                 continue;
             }
             boolean applies = (FLAME_ID.equals(family.id) && isFire(event.getSource()))
+                    // 巫毒金：**每件 25% 魔法伤害减免**，而 {@link #isMagic} 显式覆盖
+                    // {@code neoforge:poison}（NeoForge 把中毒从 magic 拆出去的那个类型）
+                    // ⇒ 1.7 第 ⑥ 条要的「每单件免疫 25% 中毒伤害 / 四件 100%」就落在这一支，
+                    //   不需要（也不许）再写第二个 0.25 分支 —— 两个分支会在 2 件时叠成 100%。
                     || (VOODOO_ID.equals(family.id) && isMagic(event.getSource()))
                     || (family.suffocationResist && isSuffocation(event.getSource()))
                     // 1.6（bg-16）：树棘金盔甲减「仙人掌」伤害 / 幽咆金盔甲减「监守者声波」伤害
@@ -1930,7 +1995,8 @@ public final class MetalEvents {
                 stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.HIGH_BURN,
                         MetalFamily.HIGH_BURN_TICKS);   // 1.5 修正②：36 秒 → 16 秒
             } else if (VOODOO_ID.equals(family.id)) {
-                stackVoodoo(attacker);
+                // 反制：巫毒盔甲把 voodoo 还给攻击者；owner = 穿戴者（= 这次反制的发起方）
+                stackVoodoo(attacker, wearer);
             } else if (THUNDER_ID.equals(family.id)) {
                 stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE,
                         MetalFamily.TREMBLE_TICKS);
@@ -1968,6 +2034,14 @@ public final class MetalEvents {
      *   <li>② <b>巫毒金</b>穿满四件：完全免疫中毒。</li>
      * </ul>
      *
+     * <p>⚠ <b>上面的 ② 是 1.6 的旧口径，原文保留不删</b>：作者 2026-10-24 第 ⑥ 条把它改掉了 ——
+     * 「去掉『全套免疫中毒』⇒ 改成<b>每穿一件免疫 25% 中毒伤害</b>（4 件 = 100%，数学自洽）」。
+     * 落地口径：<b>不再移除 {@code MobEffects.POISON} 这个效果本身</b>（中毒照常挂、照常显示粒子），
+     * 而是<b>按件数减免中毒伤害</b>——它落在 {@link #onDamagePre} 的巫毒金那一支
+     * （{@code isMagic} 覆盖 {@code neoforge:poison}，见 {@link #isMagic}），每件 25%、四件 100%
+     * ⇒ 实测 1/2/3/4 件 = 75% / 50% / 25% / 0%（`docs/gpt-证据/` 的 A 级读数）。
+     * 所以本方法现在<b>只剩结雷金那一条</b>；旧的巫毒金分支原文留档在下面注释里。</p>
+     *
      * <p>⚠ <b>被本轮（bg-book §八）修掉的旧口径 —— 原文保留、未删</b>：巫毒那条判定原来
      * <b>写在结雷金的早退之后</b>，形状是</p>
      *
@@ -1986,6 +2060,11 @@ public final class MetalEvents {
      * 手册 §八 写的「全套巫毒金 ⇒ 免疫中毒」因此<b>从未实现</b>（A 级正负对照见
      * {@code docs/bgbook8-证据/}）。两条效果本来<b>互不依赖</b>，修法就是各判各的
      * （最小改动：把「<code>&lt; 4 ⇒ return</code>」改成对结雷金那一组加条件，不重构别的）。</p>
+     *
+     * <p>⚠ 1.7 第 ⑥ 条的旧代码原文留档（巫毒金那一半，整块已删）：
+     * {@code var voodooFamily = MetalFamily.byId(VOODOO_ID);
+     * if (voodooFamily != null && wornPieces(entity, voodooFamily) >= 4)
+     * entity.removeEffect(net.minecraft.world.effect.MobEffects.POISON);}</p>
      */
     @SubscribeEvent
     public static void onLivingTick(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
@@ -1999,12 +2078,9 @@ public final class MetalEvents {
             entity.removeEffect(net.minecraft.world.effect.MobEffects.WEAKNESS);
             entity.removeEffect(com.hjmmd_8.bettergold.registry.AllEffects.TREMBLE);
         }
-        // ② 巫毒金穿满四件：完全免疫中毒（**独立判定**——
-        //    ⚠ 不许再把它挂在①的早退之后，那会让"只穿满巫毒金"静默失效，见上面的旧口径块）
-        var voodooFamily = MetalFamily.byId(VOODOO_ID);
-        if (voodooFamily != null && wornPieces(entity, voodooFamily) >= 4) {
-            entity.removeEffect(net.minecraft.world.effect.MobEffects.POISON);
-        }
+        // ② 巫毒金：**不再在这里移除中毒**（1.7 第 ⑥ 条）—— 改成按件数减免中毒伤害，见 onDamagePre。
+        //    ⚠ 别把「全套免疫中毒」加回来：作者明确要「每单件 25%、四件 100%」的伤害减免，
+        //      而不是"把效果本身删掉"（那样 1~3 件时一点减伤都看不见）。
     }
 
     // ==================== 烈燃金器具：挖掘自动熔炼 ====================

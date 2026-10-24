@@ -1,5 +1,7 @@
 package com.hjmmd_8.bettergold.block;
 
+import com.hjmmd_8.bettergold.registry.AllBlocks;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -39,6 +41,9 @@ import net.minecraft.world.item.component.SuspiciousStewEffects;
  * ⇒ 不覆写的话，作物长成的花会在下一次邻接更新的 {@code canSurvive} 里<b>当场掉落</b>
  * （不报错、静默消失）。这里取「原版判据 ∪ 金染耕地」：既保住"花可以像普通花一样种在土上"
  * 的原版行为，也让金染耕地上长出来的那一朵站得住。</p>
+ *
+ * <p>⚠ <b>上面那句「∪ 金染耕地」是 1.7 轮5 的旧口径，原文保留不删</b>：作者 2026-10-24 第 ① 条
+ * 追加了<b>金染土</b>⇒ 现行是「原版判据 ∪ 金染耕地 ∪ 金染土」（见下面 {@link #mayPlaceOn}）。</p>
  */
 public class GoldenTorchflowerBlock extends FlowerBlock {
 
@@ -65,10 +70,30 @@ public class GoldenTorchflowerBlock extends FlowerBlock {
         super(net.minecraft.world.effect.MobEffects.ABSORPTION, STEW_TICKS / 20.0F, properties);
     }
 
-    /** 原版 {@code BushBlock} 的判据 ∪ 金染耕地（理由见类注释末段） */
+    /**
+     * 原版 {@code BushBlock} 的判据 ∪ 金染耕地 ∪ <b>金染土</b>（理由见类注释末段）。
+     *
+     * <p><b>1.7 作者 2026-10-24 第 ① 条（{@code gpt} 轮）</b>：「长成的金火把花能放在<b>金染土</b>上」
+     * —— 旧口径只有「原版判据 ∪ 金染耕地」，金染土上放不上去（{@code canSustainPlant} 对花方块返回
+     * {@code TriState.DEFAULT} ⇒ 回落到这里的 {@code mayPlaceOn}，而金染土不在 {@code #minecraft:dirt}
+     * 里、也不是 {@code FarmBlock} ⇒ 拒）。现行口径 = 再并上 {@code gold_infused_dirt} 这一件方块。</p>
+     *
+     * <p>⚠ <b>没有动金染土那一侧的白名单</b>（{@link GoldInfusedDirtBlock#canSustainPlant} 仍然只放行
+     * 金玫瑰丛）：本方法属于「花自己愿意长在哪」，与「土愿意养什么」是两个方向；
+     * 在那里放行金火把花会顺带影响所有走 {@code canSustainPlant} 的路径，范围更大、没有必要。</p>
+     *
+     * <p>⚠ <b>负向保持</b>：普通耕地 / 普通土 / 石头仍然不可（{@code super.mayPlaceOn} 的原版判据 ∪
+     * 上述两块，没有别的入口）；金染耕地仍然可（既有那条一个字节没动）。
+     * <b>花盆</b>不受影响：{@code FlowerPotBlock} 走的是
+     * {@code FlowerPotBlock#addPlant} 的白名单（{@code AllBlocks#POTTED_GOLDEN_TORCHFLOWER}），
+     * 与本方法无关。</p>
+     */
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getBlock() instanceof GoldInfusedFarmlandBlock || super.mayPlaceOn(state, level, pos);
+        // 1.7 第 ① 条：金染土（gold_infused_dirt）也允许
+        return state.is(AllBlocks.GOLD_INFUSED_DIRT.get())
+                || state.getBlock() instanceof GoldInfusedFarmlandBlock
+                || super.mayPlaceOn(state, level, pos);
     }
 
     /** 显式暴露一次，便于探针 / 关卡读"这个方块声明了多少亮度"（返回 15，见类注释） */

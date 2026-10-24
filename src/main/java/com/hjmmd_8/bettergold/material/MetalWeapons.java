@@ -648,9 +648,21 @@ public final class MetalWeapons {
      * 真正决定击退的是服务端，那里是生效的。</p>
      */
     public static net.minecraft.world.item.component.ItemAttributeModifiers shieldKnockbackModifiers() {
+        return shieldKnockbackModifiers(SHIELD_KNOCKBACK_RESISTANCE);
+    }
+
+    /**
+     * 同上，但击退抗性由调用方给（1.7 作者 2026-10-24 第 ② 条）：混沌金盾牌 = <b>0.05</b>（5%），
+     * 其余八族仍走无参版本（= {@link #SHIELD_KNOCKBACK_RESISTANCE} 0.10）。
+     *
+     * <p><b>为什么不是改常量</b>：那个 0.10 是八族共用的既有口径（A 级实测 0.9000 位移比），
+     * 改常量会一次性改掉 9 族的盾牌；这里只把「这一族的数」从 {@code Spec} 传进来，
+     * 一个 id、两个槽位（MAINHAND / OFFHAND）的形状<b>一个字都没动</b>。</p>
+     */
+    public static net.minecraft.world.item.component.ItemAttributeModifiers shieldKnockbackModifiers(double amount) {
         net.minecraft.world.entity.ai.attributes.AttributeModifier modifier =
                 new net.minecraft.world.entity.ai.attributes.AttributeModifier(
-                        SHIELD_KNOCKBACK_RESISTANCE_ID, SHIELD_KNOCKBACK_RESISTANCE,
+                        SHIELD_KNOCKBACK_RESISTANCE_ID, amount,
                         net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE);
         return net.minecraft.world.item.component.ItemAttributeModifiers.builder()
                 .add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, modifier,

@@ -186,7 +186,9 @@ public final class AllMetals {
      *   <li><b>coreItem = 混沌金币</b>（{@code chaos_coin}）：立档 §2.2 可执行口径第 2 条给的默认
      *       —— 没有 raw 时用金币当"材料链最前面那件"。</li>
      *   <li>盔甲数值走 {@code Spec} 默认（作者说"照抄"，立档 D8：护甲 5·8·10·5 / 韧性 6 /
-     *       击退 15% / 附魔 24）；单件即猪灵中立由 {@link MetalFamily.MetalArmorItem} 自动继承。</li>
+     *       击退 15% / 附魔 24）；单件即猪灵中立由 {@link MetalFamily.MetalArmorItem} 自动继承。
+     *       <br>⚠ <b>这是轮1/轮4 的旧口径，原文保留不删</b>：作者 2026-10-24 第 ② 条改成
+     *       <b>韧性每件 2.0 / 击退抗性每件 0.05</b>，盾牌 <b>426 耐久 + 0.05</b>（见 {@code registerChaosgold()}）。</li>
      * </ul>
      */
     public static final MetalFamily CHAOSGOLD = registerChaosgold();
@@ -267,8 +269,13 @@ public final class AllMetals {
         spec.armorDefense = new int[] { 2, 3, 5, 2 };        // 靴 / 腿 / 胸 / 头
         spec.armorDurability = new int[] { 246, 240, 264, 200 };   // 靴 / 腿 / 胸 / 头
         spec.armorEnchantmentValue = 24;
-        spec.armorToughness = 3.0F;
-        // 击退抗性作者没给 ⇒ 走 `Spec` 默认 15%（立档 D8 的"照抄默认"口径，已在规格里记账）。
+        // 1.7 作者 2026-10-24 第 ② 条：盔甲韧性**每件 2.0**（旧口径 3.0，原文留档在下一行注释）
+        //   旧口径：spec.armorToughness = 3.0F;   // 立档 §2.5「盔甲韧性 3」
+        spec.armorToughness = 2.0F;
+        // 击退抗性：作者 2026-10-24 第 ② 条 = **每件 5%**（= 0.05，ADD_VALUE）。
+        //   ⚠ 旧口径（原文留档，未删）：击退抗性作者没给 ⇒ 走 `Spec` 默认 15%（立档 D8 的"照抄默认"口径）
+        //   ⇒ 四件 = 60%。现行 = 四件各 0.05（20%）+ 盾牌 0.05，与作者「都 5%」的字面一致。
+        spec.armorKnockbackResistance = 0.05F;
         // 减伤：单件 0%..6%（区间值、乒乓、触发点 = 受到伤害），四件之和 = 0%..24%
         //   —— 通道 `Channel.ARMOR` 在轮3 就预留好了，这里是它的**第一个消费者**（接线在 MetalEvents#onDamagePre）。
         // ⚠ `chaosRange(...)` 是 **Spec 的 void 方法**（不是 builder 链）⇒ 必须像上面伤害那批一样**独立成句**。
@@ -282,6 +289,13 @@ public final class AllMetals {
         spec.miningSpeed = 12.0F;
         // 盾牌：作者没点名混沌金盾的"格挡反 buff"⇒ 不调用 specialWeaponMetal（工作值，轮4 可一句话改）。
         // 免疫破盾走 Spec 默认（shieldBreakImmune = true，七套金属一致）。
+        // ---------- 1.7 作者 2026-10-24 第 ② 条：盾牌耐久 426 / 自带击退抗性 5% ----------
+        //   ⚠ 旧口径（原文留档，未删）：盾牌耐久走 `Spec` 默认 2048（`SPEC` 的「万坚金 3072 / 其余 2048」
+        //   两档），击退抗性走 `MetalWeapons.SHIELD_KNOCKBACK_RESISTANCE` = 0.10。
+        //   现行 = `Item.Properties#durability(426)`（与作者给混沌金器具的 426 同一档）
+        //   + 盾牌物品属性表里的 KNOCKBACK_RESISTANCE 0.05（ADD_VALUE、主/副手共用一个 id）。
+        spec.shieldDurability = 426;
+        spec.shieldKnockbackResistance = 0.05D;
         return MetalFamily.register(spec);
     }
 

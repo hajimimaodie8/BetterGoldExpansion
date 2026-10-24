@@ -206,15 +206,50 @@ public class AllItems {
             () -> new net.minecraft.world.item.ItemNameBlockItem(AllBlocks.GOLDEN_TORCHFLOWER_CROP.get(),
                     new Item.Properties()));
 
-    /** 金骨粉（金作物专属骨粉：一点就熟 + 骨粉音效，只催熟金作物） */
+    /**
+     * 金骨粉（金作物专属骨粉：一点就熟 + 骨粉音效，只催熟金作物）。
+     *
+     * <p><b>1.7 作者 2026-10-24 第 ⑦ 条</b>：对<b>金玫瑰丛</b>（{@code golden_rose_bush}）使用时
+     * ⇒ 产出 <b>3 个金玫瑰</b>（普通采集是 1 个，这里 3 倍）+ {@code BONE_MEAL_USE} 音效 +
+     * {@code HAPPY_VILLAGER} 粒子；其余行为（金作物一点就熟）<b>一个字没动</b>。</p>
+     *
+     * <p>落法记账（「掉落物」还是「给到背包」：按<b>既有同类实现</b> = 掉落物 —— 金作物那条走
+     * {@code levelEvent(2005)} 的骨粉语义、金蛋那条（{@code ModEvents}）也是掉 {@code ItemEntity}）
+     * ⇒ 这里在<b>点击位置</b>掉一个数量 3 的 {@code bettergold:golden_rose_bush} 物品实体。
+     * ⚠ <b>不消耗/不破坏花丛本身</b>（骨粉不砍作物），也不做"上下半块"判定（点哪半块都行）。</p>
+     */
     public static final DeferredItem<net.minecraft.world.item.BoneMealItem> GOLDEN_BONE_MEAL =
             ITEMS.register("golden_bone_meal", () -> new net.minecraft.world.item.BoneMealItem(
                     new Item.Properties()) {
+                /** 金玫瑰丛被金骨粉催出的一次产量（普通采集 = 1 ⇒ 3 倍 = 3） */
+                private static final int GOLDEN_ROSE_PRODUCE = 3;
+
                 @Override
                 public net.minecraft.world.InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
                     Level level = context.getLevel();
                     BlockPos pos = context.getClickedPos();
                     BlockState state = level.getBlockState(pos);
+                    // ---------- 1.7 第 ⑦ 条：金玫瑰丛 ⇒ 3 个金玫瑰 + 音效 + 骨粉粒子 ----------
+                    if (state.is(AllBlocks.GOLDEN_ROSE_BUSH.get()) && level instanceof ServerLevel serverLevel) {
+                        // 掉落物（数量 3 的一叠）：与金蛋那条喂食路径 / 金作物催熟同一种"产出"形状
+                        var drops = new net.minecraft.world.entity.item.ItemEntity(serverLevel,
+                                pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
+                                new ItemStack(AllBlocks.GOLDEN_ROSE_BUSH_ITEM.get(), GOLDEN_ROSE_PRODUCE));
+                        drops.setDefaultPickUpDelay();
+                        serverLevel.addFreshEntity(drops);
+                        // 骨粉粒子（照原版 bonemeal 的 HAPPY_VILLAGER；显式 sendParticles，不依赖 levelEvent 的分支）
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER,
+                                pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
+                                15, 0.5D, 0.5D, 0.5D, 0.0D);
+                        // 音效（作者点名 BONE_MEAL_USE）
+                        serverLevel.playSound(null, pos, net.minecraft.sounds.SoundEvents.BONE_MEAL_USE,
+                                net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+                        var player = context.getPlayer();
+                        if (player == null || !player.getAbilities().instabuild) {
+                            context.getItemInHand().shrink(1);
+                        }
+                        return net.minecraft.world.InteractionResult.SUCCESS;
+                    }
                     // 只作用于金作物（金胡萝卜 / 金钱茄）
                     if (state.getBlock() instanceof GoldCropBlock crop) {
                         if (crop.isValidBonemealTarget(level, pos, state)) {

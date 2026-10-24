@@ -1,0 +1,65 @@
+gpt 轮收尾核对（2026-10-24）
+=====================================================================================
+
+【1】探针清理（整块删除 + grep 零命中 + 开关文件删除）
+  删除目录：src\main\java\com\hjmmd_8\bettergold\probe\（GptProbe.java 整块）
+  grep 结果：`Select-String -Path src\main\java\**\*.java -Pattern "GptProbe|gpt-probe"` = 0 命中
+  开关文件：run\gpt-probe.enabled = 不存在（False）
+  备份文件：run\server.properties.gpt.bak = 已删除
+  留档：docs\gpt-证据\02-探针源码副本-GptProbe.java.txt（47,606 B；SHA256 见下）
+  探针根目录：probe\gpt\（GptProbe.java.txt 唯一真源 + gpt_run.py + perturb.py + 三次修正脚本 + §29 副本）
+
+【2】run\ 独占与复原
+  跑前：Get-CimInstance Win32_Process -Filter "Name='java.exe'" 里含 runServer/runClient/devlaunch = 0
+  跑后：同上 = 0（**没有杀任何进程**）
+  server.properties：改前 SHA256 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+                     改后 SHA256 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4（一致）
+  世界：只用 run\world（服务器默认 level-name）；**没有打开 / 没有写入** run\saves\新的世界
+  forceload：A 级读数 forcedNow=0（4 个临时区块 setChunkForced(...,false) 全部撤销）
+  halt：`event.getServer().halt(false)` 只调 1 次（探针 finally 块里 halted 布尔守卫）
+
+【3】不能碰的东西（一字节未动）
+  · 原始 zip（E:\mc\mc资料\*.zip）：未打开、未解压、未改名
+  · 作者存档 run\saves\新的世界：未打开、未写入（本轮没有任何 saves\ 下的文件变化）
+  · xlsx / 作者贴图 / 既有 72 张 1.7 贴图：未改（validate_bg17_textures.py checked=630 problems=0）
+  · 未 commit、未 push（HEAD 仍是 89fb049；工作树只有本轮的 M / D / ??）
+
+【4】行数 / 删除行
+  docs\1.7-混沌金与崩乱合金-需求立档.md：391,809 B / 4,148 行 → 416,385 B / 4,428 行
+      = **新增 280 行 / 删除 0 行**（§29 是新增节，§28 原文未删；git diff --numstat = `280 0`）
+  mcmod_experience\ex\03-验证与证据.md：188,338 B → 191,953 B（**追加 §3.39 / §3.40，删除 0 行**）
+  mcmod_experience\mcmod_experience.md：98,691 B → 100,519 B（附录 D **追加 1 行**，删除 0 行）
+  代码侧删除行 = 两类：① 作者点名毙掉的两个旧配方 JSON（3 + 5 行）；
+  ② 被新形状 / 新口径替换的字面（`chaosgold_{mace,trident,crossbow,shield}.json` 的旧 pattern/key、
+  巫毒 `onLivingTick` 里那一段守卫、`generate_*` 与 `validate_*` 里被就地更新的旧期望串）。
+
+【5】git status（本轮全部改动，未提交）
+  M  docs\1.7-混沌金与崩乱合金-需求立档.md
+  M  src/main/java/.../block/GoldenTorchflowerBlock.java
+  M  src/main/java/.../event/ModEvents.java
+  M  src/main/java/.../event/VillageTrades.java
+  M  src/main/java/.../material/AllMetals.java
+  M  src/main/java/.../material/MetalEvents.java
+  M  src/main/java/.../material/MetalFamily.java
+  M  src/main/java/.../material/MetalWeapons.java
+  M  src/main/java/.../recipe/GoldenCowrieMoldRecipe.java
+  M  src/main/java/.../registry/AllItems.java
+  M  src/main/java/.../registry/AllRecipes.java
+  M  src/main/resources/assets/bettergold/patchouli_books/alchemy_handbook/{en_us,zh_cn}/entries/golden_feast_crops.json
+  M  src/main/resources/bettergold.mixins.json
+  M  src/main/resources/data/bettergold/recipe/chaosgold_{crossbow,mace,shield,trident}.json
+  D  src/main/resources/data/bettergold/recipe/raw_sturdygold_eggplant{,_doubled}.json
+  M  tools/asset-generator/generate_chaosgold_recipes.py
+  M  tools/asset-generator/generate_handbook_data.py
+  M  tools/asset-generator/generate_metal_recipes.py
+  M  tools/asset-generator/validate_metal_data.py
+  ?? src/main/java/.../mixin/AbstractArrowWaterInertiaMixin.java
+  ?? src/main/resources/data/bettergold/recipe/golden_cowrie_from_mold_money_eggplant.json
+  ?? docs/gpt-证据/（9 份证据）
+  ?? probe/gpt/（探针真源与脚本）
+
+【6】关键 SHA256（自证）
+  server.properties 基线/复原点：A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  探针副本（装进 src 跑测的那一份）：FC1C9536EA67CF8E377D1C09F0F1DF9E1F819C96B9F36980213C6B035FC81F88
+  docs\gpt-证据\02-探针源码副本-GptProbe.java.txt：与 probe\gpt\GptProbe.java.txt 逐字节相同（SHA256 都是 FC1C9536…C81F88，已实测相等）
+  （= 最后一次跑测装进 src 的那一份，跑完 src 里的副本已删）

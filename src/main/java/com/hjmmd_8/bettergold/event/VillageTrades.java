@@ -19,7 +19,8 @@ import java.util.List;
  *
  * 等级：新手 1 / 学徒 2 / 老手 3。交易次数上限按作者要求"能拉多大拉多大"（999）。
  * - 新手：6 绿宝石 → 1 金锭（5 经验）；45 金钱贝 → 1 礼品金票（20 经验）；
- *         6 巫毒羽毛 → 1 礼品金票（10 经验，1.4 新增）
+ *         6 巫毒羽毛 → 1 礼品金票（10 经验，1.4 新增）；
+ *         24 金蛋 → 1 礼品金票（10 经验，1.7 作者 2026-10-24 第 ④ 条新增）
  * - 学徒：3 礼品金票 → 万宝礼物盒；4 礼品金票 → 珍品古董盒
  * - 老手：5 礼品金票 → 金雕礼品盒；6 礼品金票 → 金享珍味盒
  *
@@ -52,6 +53,11 @@ public class VillageTrades {
                 new ItemStack(AllItems.GIFT_GOLD_TICKET.get()), MAX_USES, 20, 0.05F));
         // 1.4 新增：6 巫毒羽毛 → 1 礼品金票（10 经验）
         trades.get(1).add(new BasicItemListing(new ItemStack(MetalSpecialItems.VOODOO_FEATHER.get(), 6),
+                new ItemStack(AllItems.GIFT_GOLD_TICKET.get()), MAX_USES, 10, 0.05F));
+        // 1.7 作者 2026-10-24 第 ④ 条：**24 个金蛋 → 1 张礼品金票**（新手档 / 经验 10）
+        //   · 交易量 = 本文件既有的统一上限 MAX_USES（999）—— 作者原话「与既有同类交易同一上限」；
+        //   · 经验 10 = 与上面那条「6 巫毒羽毛 → 1 礼品金票」同档（作者本轮点名 10）。
+        trades.get(1).add(new BasicItemListing(new ItemStack(AllItems.GOLDEN_EGG.get(), 24),
                 new ItemStack(AllItems.GIFT_GOLD_TICKET.get()), MAX_USES, 10, 0.05F));
 
         // ---- 学徒 ----

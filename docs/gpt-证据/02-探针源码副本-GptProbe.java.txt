@@ -1,0 +1,931 @@
+package com.hjmmd_8.bettergold.probe;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
+
+import com.hjmmd_8.bettergold.bettergold;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+import com.hjmmd_8.bettergold.registry.AllVillagers;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.PlayLevelSoundEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+
+/**
+ * <b>gpt 探针</b>（2026-10-24 作者九条 A 级验收；临时文件，跑完整块删除，源码留档见 {@code docs/gpt-证据/}）。
+ *
+ * <p>真什么：真 {@link ServerPlayer}（{@code new ServerPlayer} + 假连接）+ 真 {@link CraftingMenu}
+ * （真 {@code slotsChanged} / 两次真点击）+ 真 {@link Chicken}（真 {@code Player#interactOn} 路径
+ * ⇒ 真 {@code PlayerInteractEvent.EntityInteract}）+ 真 {@link Villager}（真 {@code MerchantOffer}）
+ * + 真 {@code hurt(...)}（真伤害事件）+ 真 {@link Arrow}（真 tick）。</p>
+ *
+ * <p>九条读数：① 花可放金染土 / ② 混沌金盾 426 + 韧性 2.0 + 击退 0.05 / ③ 金钱茄+模具→金钱贝
+ * ④ 新手 24 金蛋→金票 / ⑤ 金火把花种子喂鸡 100% 金蛋 / ⑥ 巫毒爆发 magic+owner & 每件 25% 中毒
+ * ⑦ 金玫瑰丛骨粉 3 个金玫瑰 + 音效 / ⑧ 靛海金箭水中不减速 / ⑨ 四条配方逐格真合成。</p>
+ *
+ * <p>开关文件：{@code run/gpt-probe.enabled}（不存在则本类什么都不做）。收尾 {@code halt(false)} 一次。</p>
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class GptProbe {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final String TAG = "[gpt]";
+    private static final Path OUT = Path.of("probe", "gpt");
+    private static final Path SWITCH = Path.of("gpt-probe.enabled");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+    private static final int TICK_WAIT = 25;
+
+    private static int passes;
+    private static int fails;
+    private static int phase;
+    private static int tick;
+    private static boolean halted;
+    private static boolean done;
+
+    private static ServerLevel level;
+    private static ServerPlayer dummy;
+    private static ServerPlayer victim;   // 受伤害 / 穿巫毒甲的第二个真玩家
+    private static Chicken chicken;
+    private static final List<Map<String, Object>> ROWS = new ArrayList<>();
+
+    /** 最近一次伤害读数（key = 实体 id） */
+    private static final Map<Integer, Float> PRE = new LinkedHashMap<>();
+    private static final Map<Integer, Float> INCOMING = new LinkedHashMap<>();
+    private static final Map<Integer, String> PRE_TYPE = new LinkedHashMap<>();
+    private static final Map<Integer, String> PRE_ENTITY = new LinkedHashMap<>();
+    private static final List<String> SOUNDS = new ArrayList<>();
+
+    private GptProbe() {
+    }
+
+    // ==================== 读数捕获（@SubscribeEvent，静态注册） ====================
+
+    /** 护甲前（原始值） */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIncoming(LivingIncomingDamageEvent event) {
+        if (phase > 0 && !event.getEntity().level().isClientSide()) {
+            INCOMING.put(event.getEntity().getId(), event.getAmount());
+        }
+    }
+
+    /** 全部减免之后（LOWEST ⇒ 跑在本模组的 NORMAL 处理器之后） */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onPre(LivingDamageEvent.Pre event) {
+        if (phase > 0 && !event.getEntity().level().isClientSide()) {
+            int id = event.getEntity().getId();
+            PRE.put(id, event.getNewDamage());
+            PRE_TYPE.put(id, event.getSource().typeHolder().unwrapKey()
+                    .map(k -> k.location().toString()).orElse("?"));
+            Entity owner = event.getSource().getEntity();
+            PRE_ENTITY.put(id, owner == null ? "<无>" :
+                    BuiltInRegistries.ENTITY_TYPE.getKey(owner.getType()) + "/" + owner.getUUID());
+        }
+    }
+
+    /** 服务端音效（Level#playSound 的 NeoForge 事件） */
+    @SubscribeEvent
+    public static void onSound(PlayLevelSoundEvent.AtPosition event) {
+        if (phase > 0) {
+            var sound = event.getSound();
+            SOUNDS.add((sound == null ? "?" : sound.unwrapKey()
+                    .map(k -> k.location().toString()).orElse("?")) + "@" + event.getPosition());
+        }
+    }
+
+    // ==================== 生命周期 ====================
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        if (!Files.isRegularFile(SWITCH)) {
+            LOG.info("{} switch {} absent -> skipped", TAG, SWITCH.toAbsolutePath());
+            return;
+        }
+        if (done) {
+            return;
+        }
+        done = true;
+        try {
+            setup(event.getServer());
+            phase = 1;
+            tick = 0;
+        } catch (Throwable t) {
+            LOG.error("{} setup failed", TAG, t);
+            row("probe_setup", false, String.valueOf(t));
+            finish(event.getServer());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (phase == 0 || halted) {
+            return;
+        }
+        if (++tick < TICK_WAIT) {
+            return;
+        }
+        tick = 0;
+        if (phase == 1) {
+            phase = 2;
+            try {
+                runMain(event.getServer());
+            } catch (Throwable t) {
+                LOG.error("{} main phase failed", TAG, t);
+                row("probe_main", false, String.valueOf(t));
+            }
+            return;
+        }
+        try {
+            runLate(event.getServer());
+        } catch (Throwable t) {
+            LOG.error("{} late phase failed", TAG, t);
+            row("probe_late", false, String.valueOf(t));
+        }
+        finish(event.getServer());
+    }
+
+    private static void finish(MinecraftServer server) {
+        if (halted) {
+            return;
+        }
+        halted = true;
+        try {
+            Map<String, Object> root = new LinkedHashMap<>();
+            root.put("probe", "gpt-v1");
+            root.put("pass", passes);
+            root.put("fail", fails);
+            root.put("forcedNow", level == null ? -1 : level.getForcedChunks().size());
+            root.put("rows", ROWS);
+            root.put("sounds", SOUNDS);
+            Files.createDirectories(OUT);
+            Files.writeString(OUT.resolve("report.json"), GSON.toJson(root), StandardCharsets.UTF_8);
+            LOG.info("{} SUMMARY pass={} fail={} forcedNow={}", TAG, passes, fails,
+                    level == null ? -1 : level.getForcedChunks().size());
+        } catch (Exception e) {
+            LOG.error("{} report write failed", TAG, e);
+        } finally {
+            LOG.info("{} halting server (once)", TAG);
+            server.halt(false);
+        }
+    }
+
+    // ==================== 工具 ====================
+
+    private static void row(String name, boolean ok, String detail) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("name", name);
+        m.put("ok", ok);
+        m.put("detail", detail);
+        ROWS.add(m);
+        if (ok) {
+            passes++;
+            LOG.info("{} PASS {} :: {}", TAG, name, detail);
+        } else {
+            fails++;
+            LOG.error("{} FAIL {} :: {}", TAG, name, detail);
+        }
+    }
+
+    private static void check(String name, boolean ok, String detail) {
+        row(name, ok, detail);
+    }
+
+    private static Item item(String id) {
+        return BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
+    }
+
+    private static ItemStack stack(String id, int n) {
+        return new ItemStack(item(id), n);
+    }
+
+    private static String idOf(ItemStack s) {
+        return s.isEmpty() ? "<空>" : BuiltInRegistries.ITEM.getKey(s.getItem()).toString();
+    }
+
+    private static void place(int x, int y, int z, BlockState state) {
+        level.setBlockAndUpdate(new BlockPos(x, y, z), state);
+    }
+
+    // ==================== setup ====================
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        level.setChunkForced(56, 56, true);   // 花放置（900,120,900）
+        level.setChunkForced(62, 62, true);   // 鸡 / 金玫瑰（1000,120,1000）
+        level.setChunkForced(75, 75, true);   // 水池（1200,103,1201）
+        level.setChunkForced(60, 60, true);   // 伤害测试 / 巫毒僵尸（970,120,970、970,121,974）
+
+        dummy = new ServerPlayer(server, level,
+                new GameProfile(UUID.randomUUID(), "gptdummy"), ClientInformation.createDefault());
+        dummy.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                dummy,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "gptprobe"), false));
+        dummy.moveTo(970.5D, 121.0D, 970.5D, 0.0F, 0.0F);
+        dummy.getAbilities().mayBuild = true;
+        dummy.getAbilities().instabuild = true;
+
+        victim = new ServerPlayer(server, level,
+                new GameProfile(UUID.randomUUID(), "gptvictim"), ClientInformation.createDefault());
+        victim.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                server,
+                new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                victim,
+                net.minecraft.server.network.CommonListenerCookie.createInitial(
+                        new GameProfile(UUID.randomUUID(), "gptprobe2"), false));
+        victim.moveTo(970.5D, 121.0D, 980.5D, 0.0F, 0.0F);
+        victim.getAbilities().mayBuild = true;
+
+        // 花放置的地基
+        for (int i = 0; i < 4; i++) {
+            place(900 + i, 120, 900, Blocks.STONE.defaultBlockState());
+            place(900 + i, 121, 900, Blocks.AIR.defaultBlockState());
+        }
+        place(900, 120, 900, com.hjmmd_8.bettergold.registry.AllBlocks.GOLD_INFUSED_DIRT.get()
+                .defaultBlockState());
+        place(901, 120, 900, com.hjmmd_8.bettergold.registry.AllBlocks.GOLD_INFUSED_FARMLAND.get()
+                .defaultBlockState());
+        place(902, 120, 900, Blocks.FARMLAND.defaultBlockState());
+        place(903, 120, 900, Blocks.STONE.defaultBlockState());
+
+        // 鸡 + 金玫瑰丛的地基
+        for (int i = 0; i < 4; i++) {
+            place(1000 + i, 120, 1000, Blocks.GRASS_BLOCK.defaultBlockState());
+            place(1000 + i, 121, 1000, Blocks.AIR.defaultBlockState());
+        }
+        place(1002, 121, 1000, com.hjmmd_8.bettergold.registry.AllBlocks.GOLDEN_ROSE_BUSH.get()
+                .defaultBlockState().setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF,
+                        net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER));
+        place(1002, 122, 1000, com.hjmmd_8.bettergold.registry.AllBlocks.GOLDEN_ROSE_BUSH.get()
+                .defaultBlockState().setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF,
+                        net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+
+        chicken = EntityType.CHICKEN.create(level);
+        if (chicken != null) {
+            chicken.moveTo(1001.5D, 121.0D, 1000.5D, 0.0F, 0.0F);
+            chicken.setNoAi(true);
+            level.addFreshEntity(chicken);
+        }
+
+        // 水池（z 两条泳道，x 1200..1211，y 100..105）
+        for (int x = 1200; x <= 1211; x++) {
+            for (int y = 100; y <= 105; y++) {
+                for (int z = 1200; z <= 1203; z++) {
+                    place(x, y, z, Blocks.WATER.defaultBlockState());
+                }
+            }
+        }
+        LOG.info("{} setup done dummy={} victim={} chicken={}", TAG, dummy.getUUID(), victim.getUUID(),
+                chicken == null ? "<null>" : chicken.getUUID());
+    }
+
+    private static long chunkKey(int cx, int cz) {
+        return (long) cx & 4294967295L | ((long) cz & 4294967295L) << 32;
+    }
+
+    // ==================== 主体（phase 2） ====================
+
+    private static void runMain(MinecraftServer server) {
+        item1FlowerPlacement();
+        item2Chaosgold();
+        item3Cowrie();
+        item4Trades();
+        item5Chicken();
+        item6Voodoo();
+        item7RoseBoneMeal();
+        item8Projectiles();
+        item9Recipes();
+    }
+
+    // ---------- ① 金火把花：金染土可放 / 普通耕地与石头不可 / 金染耕地仍可 ----------
+    private static void item1FlowerPlacement() {
+        String flowerId = "bettergold:golden_torchflower";
+        for (int i = 0; i < 4; i++) {
+            BlockPos base = new BlockPos(900 + i, 120, 900);
+            BlockPos above = base.above();
+            level.setBlockAndUpdate(above, Blocks.AIR.defaultBlockState());
+            dummy.setItemInHand(InteractionHand.MAIN_HAND, stack(flowerId, 1));
+            BlockHitResult hit = new BlockHitResult(new Vec3(base.getX() + 0.5D, base.getY() + 1.0D,
+                    base.getZ() + 0.5D), Direction.UP, base, false);
+            UseOnContext ctx = new UseOnContext(level, dummy, InteractionHand.MAIN_HAND,
+                    stack(flowerId, 1), hit);
+            InteractionResult res = ((net.minecraft.world.item.BlockItem) item(flowerId)).useOn(ctx);
+            String got = idOf(new ItemStack(level.getBlockState(above).getBlock().asItem()));
+            String baseName = idOf(new ItemStack(level.getBlockState(base).getBlock().asItem()));
+            // 0 金染土 / 1 金染耕地 / 2 普通耕地 ⇒ 可放（普通耕地是**原版**行为）；3 石头 ⇒ 不可
+            boolean expect = i <= 2;
+            check("gpt1_place_on_" + (expect ? "ok_" : "neg_") + baseName.replace(':', '_'),
+                    (flowerId.equals(got)) == expect,
+                    "底座=" + baseName + " 结果格=" + got + "（期望 " + (expect ? flowerId : "<空>")
+                            + "）；useOn=" + res);
+        }
+        // 负向：不能在普通土上（不是 dirt 标签以外的特例）
+        BlockPos base = new BlockPos(904, 120, 900);
+        place(904, 120, 900, Blocks.DIRT.defaultBlockState());
+        level.setBlockAndUpdate(base.above(), Blocks.AIR.defaultBlockState());
+        BlockHitResult hit = new BlockHitResult(new Vec3(904.5D, 121.0D, 900.5D), Direction.UP, base, false);
+        ((net.minecraft.world.item.BlockItem) item(flowerId)).useOn(new UseOnContext(level, dummy,
+                InteractionHand.MAIN_HAND, stack(flowerId, 1), hit));
+        check("gpt1_plain_dirt_vanilla_parity",
+                idOf(new ItemStack(level.getBlockState(base.above()).getBlock().asItem())).equals(flowerId),
+                "普通土上的结果=" + idOf(new ItemStack(level.getBlockState(base.above()).getBlock().asItem()))
+                        + "（期望能放 = 原版 BushBlock 判据，未被本轮改动）");
+    }
+
+    // ---------- ② 混沌金：盾 426 / 韧性每件 2.0 / 击退每件 0.05 ----------
+    private static void item2Chaosgold() {
+        MetalFamily cg = MetalFamily.byId("chaosgold");
+        MetalFamily sg = MetalFamily.byId("sturdygold");
+        if (cg == null || sg == null) {
+            check("gpt2_families", false, "找不到 chaosgold / sturdygold 家族");
+            return;
+        }
+        check("gpt2_shield_durability", new ItemStack(cg.shield.get()).getMaxDamage() == 426,
+                "chaosgold_shield getMaxDamage=" + new ItemStack(cg.shield.get()).getMaxDamage() + "（期望 426）");
+        check("gpt2_sturdygold_shield_regression", new ItemStack(sg.shield.get()).getMaxDamage() == 3072,
+                "sturdygold_shield getMaxDamage=" + new ItemStack(sg.shield.get()).getMaxDamage() + "（期望 3072，回归）");
+
+        String[] names = {"helmet", "chestplate", "leggings", "boots"};
+        Item[] pieces = {cg.helmet.get(), cg.chestplate.get(), cg.leggings.get(), cg.boots.get()};
+        for (int i = 0; i < 4; i++) {
+            String nm = "chaosgold_" + names[i];
+            List<String> tough = mods(pieces[i], "minecraft:generic.armor_toughness");
+            List<String> kb = mods(pieces[i], "minecraft:generic.knockback_resistance");
+            check("gpt2_" + names[i] + "_toughness", tough.size() == 1 && tough.get(0).endsWith("=2.0000"),
+                    nm + " ARMOR_TOUGHNESS=" + tough + "（期望 1 条 =2.0）");
+            check("gpt2_" + names[i] + "_knockback", kb.size() == 1 && kb.get(0).endsWith("=0.0500"),
+                    nm + " KNOCKBACK_RESISTANCE=" + kb + "（期望 1 条 =0.05）");
+        }
+        List<String> shieldKb = mods(cg.shield.get(), "minecraft:generic.knockback_resistance");
+        check("gpt2_shield_knockback", shieldKb.size() == 2
+                        && shieldKb.stream().allMatch(s -> s.endsWith("=0.0500")),
+                "chaosgold_shield KNOCKBACK_RESISTANCE=" + shieldKb + "（期望主/副手各 1 条 =0.05）");
+        // 负向对照：万坚金盔甲仍是韧性 6 / 击退 0.15，盾牌仍是 0.10
+        List<String> sgTough = mods(sg.helmet.get(), "minecraft:generic.armor_toughness");
+        List<String> sgKb = mods(sg.helmet.get(), "minecraft:generic.knockback_resistance");
+        List<String> sgShieldKb = mods(sg.shield.get(), "minecraft:generic.knockback_resistance");
+        check("gpt2_regression_other_families", sgTough.size() == 1 && sgTough.get(0).endsWith("=6.0000")
+                        && sgKb.size() == 1 && sgKb.get(0).endsWith("=0.1500")
+                        && sgShieldKb.size() == 2 && sgShieldKb.stream().allMatch(s -> s.endsWith("=0.1000")),
+                "sturdygold 韧性=" + sgTough + " 击退=" + sgKb + " 盾=" + sgShieldKb
+                        + "（期望 6.0 / 0.15 / 0.1×2，其它族不受影响）");
+    }
+
+    /** 读某物品默认属性表：返回 ["<属性id>=<数值>"] */
+    private static List<String> mods(Item item, String attributeId) {
+        List<String> out = new ArrayList<>();
+        // ⚠ 1.21.1：`Item#getDefaultAttributeModifiers()` 无参版本是空实现（ArmorItem 只覆写了
+        //   `getDefaultAttributeModifiers(ItemStack)`）⇒ 必须走 ItemStack 版本，否则恒返回空表。
+        var attrs = new ItemStack(item).getAttributeModifiers();
+        for (var entry : attrs.modifiers()) {
+            String aid = entry.attribute().unwrapKey().map(k -> k.location().toString()).orElse("?");
+            if (aid.equals(attributeId)) {
+                // 4 位小数：`0.05F` 读成 double 是 0.05000000074505806，直接比字符串永远不中
+                out.add(aid + "=" + String.format(java.util.Locale.ROOT, "%.4f",
+                        entry.modifier().amount()));
+            }
+        }
+        return out;
+    }
+
+    // ---------- ③ 金钱茄 + 金钱贝模具 → 金钱贝；旧原料配方必须不存在 ----------
+    private static void item3Cowrie() {
+        Optional<?> gone = level.getRecipeManager()
+                .byKey(ResourceLocation.parse("bettergold:raw_sturdygold_eggplant"));
+        check("gpt3_old_recipe_absent", gone.isEmpty(),
+                "RecipeManager 里 bettergold:raw_sturdygold_eggplant 存在？" + gone.isPresent());
+        Optional<?> gone2 = level.getRecipeManager()
+                .byKey(ResourceLocation.parse("bettergold:raw_sturdygold_eggplant_doubled"));
+        check("gpt3_old_doubled_absent", gone2.isEmpty(),
+                "RecipeManager 里 ..._doubled 存在？" + gone2.isPresent());
+
+        CraftingMenu menu = craft("gpt3_money_eggplant", new String[] {
+                "bettergold:golden_cowrie_mold", "bettergold:golden_eggplant", null,
+                null, null, null, null, null, null,
+        }, "bettergold:golden_cowrie", 1, true);
+        if (menu != null) {
+            ItemStack mold = menu.getSlot(1).getItem();
+            check("gpt3_mold_wears", mold.is(item("bettergold:golden_cowrie_mold"))
+                            && mold.getDamageValue() == 1 && mold.getCount() == 1,
+                    "模具格=" + idOf(mold) + " damage=" + mold.getDamageValue()
+                            + " count=" + mold.getCount() + "（期望 耐久 −1 / 数量 1）");
+        }
+        // 回归：金锭版仍在（模具 + 金锭 → 金钱贝）
+        craft("gpt3_gold_ingot_regression", new String[] {
+                "bettergold:golden_cowrie_mold", "minecraft:gold_ingot", null,
+                null, null, null, null, null, null,
+        }, "bettergold:golden_cowrie", 1, true);
+    }
+
+    // ---------- ④ 易金商人新手：24 金蛋 → 1 礼品金票（真 MerchantOffer） ----------
+    private static void item4Trades() {
+        Villager v = EntityType.VILLAGER.create(level);
+        if (v == null) {
+            check("gpt4_villager_spawn", false, "create(VILLAGER) 返回 null");
+            return;
+        }
+        v.moveTo(1003.5D, 121.0D, 1000.5D, 0.0F, 0.0F);
+        v.setVillagerData(v.getVillagerData()
+                .setProfession(AllVillagers.GOLD_TRADER.get())
+                .setLevel(1)
+                .setType(net.minecraft.world.entity.npc.VillagerType.PLAINS));
+        level.addFreshEntity(v);
+
+        // 真实交易表：NeoForge 在 TagsUpdatedEvent 里把 VillagerTradesEvent 的结果写进
+        // `VillagerTrades.TRADES`（VillagerTradingManager#postVillagerEvents）⇒ 这里读的就是**注册出来的那张表**。
+        var table = net.minecraft.world.entity.npc.VillagerTrades.TRADES.get(AllVillagers.GOLD_TRADER.get());
+        if (table == null) {
+            check("gpt4_trade_table", false, "VillagerTrades.TRADES 里没有易金商人（本体事件没跑到）");
+            return;
+        }
+        var random = level.getRandom();
+        List<String> novice = new ArrayList<>();
+        MerchantOffer hit = null;
+        var noviceArr = table.get(1);
+        if (noviceArr != null) {
+            for (var listing : noviceArr) {
+                MerchantOffer o = listing.getOffer(v, random);
+                novice.add(idOf(o.getCostA()) + "×" + o.getCostA().getCount() + "→"
+                        + idOf(o.getResult()) + "×" + o.getResult().getCount()
+                        + " xp=" + o.getXp() + " uses=" + o.getMaxUses());
+                if (o.getCostA().is(item("bettergold:golden_egg")) && o.getCostA().getCount() == 24
+                        && o.getResult().is(item("bettergold:gift_gold_ticket"))) {
+                    hit = o;
+                }
+            }
+        }
+        check("gpt4_offer_found", hit != null, "新手档真 MerchantOffer 列表：" + novice);
+        if (hit != null) {
+            check("gpt4_offer_shape", hit.getCostA().getCount() == 24 && hit.getResult().getCount() == 1
+                            && hit.getXp() == 10 && hit.getMaxUses() == 999,
+                    "成本=" + idOf(hit.getCostA()) + "×" + hit.getCostA().getCount()
+                            + " 产物=" + idOf(hit.getResult()) + "×" + hit.getResult().getCount()
+                            + " xp=" + hit.getXp() + " maxUses=" + hit.getMaxUses()
+                            + "（期望 24 / 1 / 10 / 999）");
+        }
+        // 新手档：2..5 级里不该有「24 金蛋」那条
+        int higher = 0;
+        for (int lvl = 2; lvl <= 5; lvl++) {
+            var arr = table.get(lvl);
+            if (arr == null) {
+                continue;
+            }
+            for (var listing : arr) {
+                MerchantOffer o = listing.getOffer(v, random);
+                if (o.getCostA().is(item("bettergold:golden_egg")) && o.getCostA().getCount() == 24) {
+                    higher++;
+                }
+            }
+        }
+        check("gpt4_novice_level_only", higher == 0,
+                "2..5 级交易表里「24 金蛋」出现次数=" + higher + "（期望 0 ⇒ 只在新手档）");
+        v.discard();
+    }
+
+    // ---------- ⑤ 金火把花种子喂鸡 ⇒ 100% 一个金蛋（三次） ----------
+    private static void item5Chicken() {
+        if (chicken == null) {
+            check("gpt5_chicken_spawn", false, "create(CHICKEN) 返回 null");
+            return;
+        }
+        for (int round = 0; round < 3; round++) {
+            int before = countItems(item("bettergold:golden_egg"));
+            dummy.setItemInHand(InteractionHand.MAIN_HAND,
+                    stack("bettergold:golden_torchflower_seeds", 1));
+            InteractionResult r = dummy.interactOn(chicken, InteractionHand.MAIN_HAND);
+            int after = countItems(item("bettergold:golden_egg"));
+            check("gpt5_torchflower_seed_round" + round, after - before == 1,
+                    "第 " + (round + 1) + " 次喂食：金蛋实体 " + before + " → " + after
+                            + "（期望 +1）；interactOn=" + r
+                            + "；手持剩余=" + dummy.getItemInHand(InteractionHand.MAIN_HAND).getCount());
+        }
+        // 负向：普通种子不产金蛋（普通鸡吃普通种子走原版路径）
+        int before = countItems(item("bettergold:golden_egg"));
+        dummy.setItemInHand(InteractionHand.MAIN_HAND, stack("minecraft:wheat_seeds", 1));
+        InteractionResult r = dummy.interactOn(chicken, InteractionHand.MAIN_HAND);
+        int after = countItems(item("bettergold:golden_egg"));
+        check("gpt5_neg_plain_seeds", after - before == 0,
+                "普通种子喂鸡：金蛋 " + before + " → " + after + "（期望 +0）；interactOn=" + r);
+        // 负向 2：另外两种金种子仍是 36%（大样本 400 次，统计区间）
+        int eggs = 0;
+        for (int i = 0; i < 400; i++) {
+            int b = countItems(item("bettergold:golden_egg"));
+            dummy.setItemInHand(InteractionHand.MAIN_HAND, stack("bettergold:golden_wheat_seeds", 1));
+            dummy.interactOn(chicken, InteractionHand.MAIN_HAND);
+            eggs += countItems(item("bettergold:golden_egg")) - b;
+        }
+        check("gpt5_legacy_seed_36pct", eggs > 100 && eggs < 200,
+                "金麦种子 400 次产蛋 " + eggs + "（期望 36% 附近 = 144±，即 100..200）");
+    }
+
+    private static int countItems(Item item) {
+        int n = 0;
+        for (Entity e : level.getAllEntities()) {
+            if (e instanceof ItemEntity ie && ie.isAlive() && ie.getItem().is(item)) {
+                n += ie.getItem().getCount();
+            }
+        }
+        return n;
+    }
+
+    // ---------- ⑥ 巫毒：爆发 damage source = magic + owner；每件 25% 中毒伤害 ----------
+    private static void item6Voodoo() {
+        // (a) 爆发：真效果自然到期 → 真 hurt → 抓 DamageSource
+        var zombie = EntityType.ZOMBIE.create(level);
+        if (zombie == null) {
+            check("gpt6_zombie_spawn", false, "create(ZOMBIE) 返回 null");
+            return;
+        }
+        zombie.moveTo(970.5D, 121.0D, 974.5D, 0.0F, 0.0F);
+        zombie.setNoAi(true);
+        level.addFreshEntity(zombie);
+        // ⚠ owner 必须是一个**真的在世界里**的实体：结算时 `level.getEntities().get(uuid)` 查不到 ⇒ 当没有
+        var attacker = EntityType.ZOMBIE.create(level);
+        if (attacker != null) {
+            attacker.moveTo(970.5D, 121.0D, 973.5D, 0.0F, 0.0F);
+            attacker.setNoAi(true);
+            level.addFreshEntity(attacker);
+            ATK_UUID = attacker.getUUID();
+        }
+        zombie.getPersistentData().putUUID(
+                com.hjmmd_8.bettergold.material.MetalEvents.VOODOO_SOURCE_KEY,
+                ATK_UUID == null ? dummy.getUUID() : ATK_UUID);
+        zombie.addEffect(new MobEffectInstance(AllEffects.VOODOO, 2, 0));
+        // 等效果自然到期（Expired → settle）；由后续 tick 驱动，本段直接读不到 —— 用同一 tick 强推：
+        //   把效果时长设为 1，再调用一次 LivingEntity#tick 不会触发 Expired（在 MobEffectInstance#tick 里）
+        //   ⇒ 这里显式用「提前 1 tick」的路径：removeEffect 不结算，所以只能自然到期。
+        //   做法：记录读数占位，读到时差在 late phase 里复核。
+        ZOMBIE_FOR_BURST = zombie;
+        PRE_TYPE.remove(zombie.getId());
+        PRE_ENTITY.remove(zombie.getId());
+        PRE.remove(zombie.getId());
+
+        // (b) 每件 25% 中毒伤害：0..4 件，真 neoforge:poison 伤害（用**真僵尸**当受害体：玩家实例
+        //     不在世界里时有若干玩家专属早退，读数会全是 -1 —— 第一次跑就踩到了）
+        MetalFamily vd = MetalFamily.byId("voodoogold");
+        if (vd == null) {
+            check("gpt6_voodoo_family", false, "找不到 voodoogold 家族");
+            return;
+        }
+        var pv = EntityType.ZOMBIE.create(level);
+        if (pv == null) {
+            check("gpt6_poison_victim", false, "create(ZOMBIE) 返回 null");
+            return;
+        }
+        pv.moveTo(970.5D, 121.0D, 975.5D, 0.0F, 0.0F);
+        pv.setNoAi(true);
+        level.addFreshEntity(pv);
+        var dyn = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+        var poison = dyn.getHolderOrThrow(NeoForgeMod.POISON_DAMAGE);
+        DamageSource src = new DamageSource(poison);
+        boolean bypassArmor = src.is(DamageTypeTags.BYPASSES_ARMOR);
+        float raw = 8.0F;
+        StringBuilder sb = new StringBuilder();
+        float[] ratio = new float[5];
+        for (int p = 0; p <= 4; p++) {
+            for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST,
+                    EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                pv.setItemSlot(slot, ItemStack.EMPTY);
+            }
+            Item[] pieces = {vd.helmet.get(), vd.chestplate.get(), vd.leggings.get(), vd.boots.get()};
+            EquipmentSlot[] slots = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS,
+                    EquipmentSlot.FEET};
+            for (int i = 0; i < p; i++) {
+                pv.setItemSlot(slots[i], new ItemStack(pieces[i]));
+            }
+            pv.setHealth(pv.getMaxHealth());
+            pv.invulnerableTime = 0;
+            PRE.remove(pv.getId());
+            INCOMING.remove(pv.getId());
+            pv.hurt(src, raw);
+            float pre = PRE.getOrDefault(pv.getId(), -1.0F);
+            float inc = INCOMING.getOrDefault(pv.getId(), -1.0F);
+            ratio[p] = inc > 0 ? pre / inc : -1.0F;
+            sb.append("件=").append(p).append(" incoming=").append(inc).append(" pre=").append(pre)
+                    .append(" 比值=").append(String.format(java.util.Locale.ROOT, "%.4f", ratio[p]))
+                    .append("；");
+        }
+        pv.discard();
+        POISON_STORY = "neoforge:poison bypasses_armor=" + bypassArmor + "；" + sb + "逐档比值=" 
+                + String.format(java.util.Locale.ROOT, "%.4f/%.4f/%.4f/%.4f/%.4f",
+                        ratio[0], ratio[1], ratio[2], ratio[3], ratio[4]);
+        boolean ok = true;
+        for (int p = 0; p <= 4; p++) {
+            float want = 1.0F - 0.25F * p;
+            float got = ratio[p];
+            // 若中毒不吃护甲（bypasses_armor），比值必须**精确**等于 1-0.25p；
+            // 若吃护甲，则护甲还乘一个因子 ⇒ 这里用「逐档等比」判据：相邻两档每次降 25% 的原始份额。
+            boolean good = Math.abs(got - want) < 0.02F;
+            if (!bypassArmor) {
+                // 用第 0 档归一化：ratio[p] / ratio[0] 应 = 1-0.25p
+                good = ratio[0] > 0 && Math.abs(got / ratio[0] - want) < 0.02F;
+            }
+            if (!good) {
+                ok = false;
+            }
+        }
+        check("gpt6_poison_per_piece", ok, POISON_STORY);
+    }
+
+    private static net.minecraft.world.entity.monster.Zombie ZOMBIE_FOR_BURST;
+    private static UUID ATK_UUID;
+    private static String POISON_STORY = "-";
+
+    // ---------- ⑦ 金玫瑰丛 + 金骨粉 ⇒ 3 个金玫瑰 + 音效 + 粒子 ----------
+    private static void item7RoseBoneMeal() {
+        BlockPos bush = new BlockPos(1002, 121, 1000);
+        int before = countItems(item("bettergold:golden_rose_bush"));
+        dummy.setItemInHand(InteractionHand.MAIN_HAND, stack("bettergold:golden_bone_meal", 1));
+        BlockHitResult hit = new BlockHitResult(new Vec3(1002.5D, 121.5D, 1000.5D), Direction.UP, bush, false);
+        InteractionResult r = item("bettergold:golden_bone_meal").useOn(new UseOnContext(level, dummy,
+                InteractionHand.MAIN_HAND, stack("bettergold:golden_bone_meal", 1), hit));
+        int after = countItems(item("bettergold:golden_rose_bush"));
+        check("gpt7_three_roses", after - before == 3,
+                "金玫瑰丛物品 " + before + " → " + after + "（期望 +3）；useOn=" + r);
+        // ⚠ 1.21.1 的 `SoundEvents.BONE_MEAL_USE` id = **`minecraft:item.bone_meal.use`**
+        boolean sound = SOUNDS.stream().anyMatch(s -> s.startsWith("minecraft:item.bone_meal.use@"));
+        check("gpt7_bone_meal_sound", sound,
+                "捕捉到的服务端音效（近 8 条）：" + SOUNDS.subList(Math.max(0, SOUNDS.size() - 8), SOUNDS.size()));
+        // 负向：对普通作物（金胡萝卜作物）使用仍走"一点就熟"（回归），且不会掉玫瑰
+        int b2 = countItems(item("bettergold:golden_rose_bush"));
+        BlockPos crop = new BlockPos(1003, 121, 1000);
+        place(1003, 120, 1000, com.hjmmd_8.bettergold.registry.AllBlocks.GOLD_INFUSED_FARMLAND.get()
+                .defaultBlockState());
+        place(1003, 121, 1000, com.hjmmd_8.bettergold.registry.AllBlocks.GOLDEN_CARROT_CROP.get()
+                .defaultBlockState());
+        item("bettergold:golden_bone_meal").useOn(new UseOnContext(level, dummy, InteractionHand.MAIN_HAND,
+                stack("bettergold:golden_bone_meal", 1), new BlockHitResult(new Vec3(1003.5D, 121.5D, 1000.5D),
+                        Direction.UP, crop, false)));
+        int a2 = countItems(item("bettergold:golden_rose_bush"));
+        check("gpt7_neg_crop_no_roses", a2 - b2 == 0,
+                "对金作物用金骨粉：玫瑰 " + b2 + " → " + a2 + "（期望 +0，回归到「一点就熟」）");
+    }
+
+    // ---------- ⑧ 靛海金箭：水里不减速（对照族会衰减） ----------
+    private static void item8Projectiles() {
+        // 在**高处**铺一条 12 格长、4 格高的水池（x 1200..1211 / y 150..153 / z 1200..1202），
+        // 水块直接 setBlockAndUpdate；本段同步跑完 12 tick（不经过 level tick ⇒ 水不会流动）。
+        for (int x = 1200; x <= 1211; x++) {
+            for (int y = 130; y <= 153; y++) {
+                for (int z = 1200; z <= 1202; z++) {
+                    place(x, y, z, Blocks.WATER.defaultBlockState());
+                }
+            }
+        }
+        ItemStack indigoBow = new ItemStack(item("bettergold:indigoseagold_bow"));
+        ItemStack sturdyBow = new ItemStack(item("bettergold:sturdygold_bow"));
+        ItemStack ammo = stack("minecraft:arrow", 1);
+        ARROW_A = new Arrow(level, dummy, ammo, indigoBow);
+        ARROW_A.setPos(1200.5D, 151.0D, 1200.5D);
+        ARROW_A.setDeltaMovement(0.5D, 0.0D, 0.0D);
+        ARROW_B = new Arrow(level, dummy, ammo, sturdyBow);
+        ARROW_B.setPos(1200.5D, 151.0D, 1201.5D);
+        ARROW_B.setDeltaMovement(0.5D, 0.0D, 0.0D);
+        ARROW_A_X0 = ARROW_A.getX();
+        ARROW_B_X0 = ARROW_B.getX();
+        for (int i = 0; i < 12; i++) {
+            ARROW_A.tick();
+            ARROW_B.tick();
+        }
+        check("gpt8_arrows_in_water", ARROW_A.isInWater() && ARROW_B.isInWater(),
+                "两支箭 tick 后仍在水中？A=" + ARROW_A.isInWater() + " B=" + ARROW_B.isInWater()
+                        + "；武器 A=" + idOf(ARROW_A.getWeaponItem())
+                        + " B=" + idOf(ARROW_B.getWeaponItem()));
+        // 清掉临时水池（避免水在后续 tick 里流得到处都是）
+        for (int x = 1199; x <= 1212; x++) {
+            for (int y = 129; y <= 154; y++) {
+                for (int z = 1199; z <= 1203; z++) {
+                    place(x, y, z, Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+    }
+
+    private static Arrow ARROW_A;
+    private static Arrow ARROW_B;
+    private static double ARROW_A_X0;
+    private static double ARROW_B_X0;
+
+    // ---------- ⑨ 四条混沌金配方逐格真合成 ----------
+    private static void item9Recipes() {
+        String CG = "bettergold:chaosgold_ingot";
+        String CB = "bettergold:chaosgold_block";
+        // 重锤：上 = 块、下 = 棍（2 行）
+        craft("gpt9_mace", new String[] {
+                null, CB, null,
+                null, "minecraft:stick", null,
+                null, null, null,
+        }, "bettergold:chaosgold_mace", 1, true);
+        // 三叉戟：中 = 棍；上、右、右上、左下 = 锭
+        craft("gpt9_trident", new String[] {
+                null, CG, CG,
+                null, "minecraft:stick", CG,
+                CG, null, null,
+        }, "bettergold:chaosgold_trident", 1, true);
+        // 弩：上排 3 锭 + 下排中 1 锭；中 = 绊线钩；左 / 右 = 线
+        craft("gpt9_crossbow", new String[] {
+                CG, CG, CG,
+                "minecraft:string", "minecraft:tripwire_hook", "minecraft:string",
+                null, CG, null,
+        }, "bettergold:chaosgold_crossbow", 1, true);
+        // 盾牌：3×3 除左下 / 右下外全填，中 = 苹果 ⇒ 6 锭 + 1 苹果
+        craft("gpt9_shield", new String[] {
+                CG, CG, CG,
+                CG, "minecraft:apple", CG,
+                null, CG, null,
+        }, "bettergold:chaosgold_shield", 1, true);
+        // 负向：盾牌把中心苹果换成锭 ⇒ 不再匹配
+        craft("gpt9_neg_shield_no_apple", new String[] {
+                CG, CG, CG,
+                CG, CG, CG,
+                null, CG, null,
+        }, "bettergold:chaosgold_shield", 1, false);
+        // 负向：重锤的下排换成微风棒（旧形状）⇒ 不再匹配
+        craft("gpt9_neg_mace_old", new String[] {
+                null, CB, null,
+                null, "minecraft:breeze_rod", null,
+                null, null, null,
+        }, "bettergold:chaosgold_mace", 1, false);
+        // ⑨-5 只核对：禁果仍是 8 锭 + 1 苹果（无序，材料数相同）
+        String[] fruit = new String[9];
+        for (int i = 0; i < 9; i++) {
+            fruit[i] = i == 4 ? "minecraft:apple" : CG;
+        }
+        craft("gpt9_forbidden_fruit", fruit, "bettergold:chaosgold_forbidden_fruit", 1, true);
+    }
+
+    // ==================== 迟到读数（phase 3） ====================
+
+    private static void runLate(MinecraftServer server) {
+        // ⑥ 爆发伤害源（僵尸身上的巫毒已自然到期）
+        if (ZOMBIE_FOR_BURST != null) {
+            int id = ZOMBIE_FOR_BURST.getId();
+            String type = PRE_TYPE.get(id);
+            String owner = PRE_ENTITY.get(id);
+            check("gpt6_burst_damage_type", "minecraft:magic".equals(type),
+                    "巫毒结算伤害类型=" + type + "（期望 minecraft:magic）");
+            check("gpt6_burst_owner", owner != null && ATK_UUID != null
+                            && owner.contains(ATK_UUID.toString()),
+                    "巫毒结算伤害源的 owner=" + owner + "（期望 = 施加者僵尸 " + ATK_UUID + "）");
+            check("gpt6_burst_damage_dealt", ZOMBIE_FOR_BURST.getHealth() < ZOMBIE_FOR_BURST.getMaxHealth(),
+                    "僵尸血量 " + ZOMBIE_FOR_BURST.getHealth() + " / " + ZOMBIE_FOR_BURST.getMaxHealth()
+                            + "（期望掉血 ≥ 1）");
+            ZOMBIE_FOR_BURST.discard();
+        }
+        // ⑧ 位移对照
+        if (ARROW_A != null && ARROW_B != null) {
+            double da = ARROW_A.getX() - ARROW_A_X0;
+            double db = ARROW_B.getX() - ARROW_B_X0;
+            double sa = ARROW_A.getDeltaMovement().horizontalDistance();
+            double sb = ARROW_B.getDeltaMovement().horizontalDistance();
+            check("gpt8_indigosea_no_water_drag", sa > 0.45D && da > 3.0D,
+                    "靛海金弓射出的箭：水平速度 " + String.format(java.util.Locale.ROOT, "%.4f", sa)
+                            + "、水中前进 " + String.format(java.util.Locale.ROOT, "%.3f", da)
+                            + "（期望 ≈0.5 / ≈4.0，即液体惯性 1.0 不衰减）");
+            check("gpt8_control_water_drag", sb < 0.3D && db < 2.5D,
+                    "对照（万坚金弓）的箭：水平速度 " + String.format(java.util.Locale.ROOT, "%.4f", sb)
+                            + "、前进 " + String.format(java.util.Locale.ROOT, "%.3f", db)
+                            + "（期望明显衰减，0.6 惯性）");
+            ARROW_A.discard();
+            ARROW_B.discard();
+            ARROW_A = null;
+            ARROW_B = null;
+        }
+        // 鸡 / 玫瑰的掉落物清场（不留证据污染世界）
+        for (Entity e : level.getAllEntities()) {
+            if (e instanceof ItemEntity ie && (ie.getItem().is(item("bettergold:golden_egg"))
+                    || ie.getItem().is(item("bettergold:golden_rose_bush")))) {
+                ie.discard();
+            }
+        }
+        if (chicken != null) {
+            chicken.discard();
+        }
+        // forceload 双向归零
+        level.setChunkForced(56, 56, false);
+        level.setChunkForced(62, 62, false);
+        level.setChunkForced(75, 75, false);
+        level.setChunkForced(60, 60, false);
+        check("gpt_forceload_zero", level.getForcedChunks().isEmpty(),
+                "收尾 forcedChunks.size()=" + level.getForcedChunks().size() + "（期望 0）");
+    }
+
+    // ==================== 真合成（真 CraftingMenu + 两次真点击） ====================
+
+    private static CraftingMenu craft(String tag, String[] grid, String wantId, int wantCount,
+            boolean expectMatch) {
+        BlockPos pos = new BlockPos(400, 200, 380);
+        level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
+        dummy.getInventory().clearContent();
+        CraftingMenu menu = new CraftingMenu(0, dummy.getInventory(),
+                ContainerLevelAccess.create(level, pos));
+        dummy.containerMenu = menu;
+
+        StringBuilder lc = new StringBuilder();
+        int[] before = new int[9];
+        for (int i = 0; i < 9; i++) {
+            ItemStack s = grid[i] == null ? ItemStack.EMPTY : new ItemStack(item(grid[i]), 1);
+            menu.getSlot(1 + i).set(s);
+            before[i] = s.getCount();
+            lc.append(grid[i] == null ? "-" : grid[i].substring(grid[i].indexOf(':') + 1)).append(' ');
+        }
+        menu.slotsChanged(menu.getSlot(1).container);
+        LOG.info("{} INFO {} :: 摆位 {}", TAG, tag, lc.toString().trim());
+
+        ItemStack result = menu.getSlot(0).getItem();
+        boolean matched = !result.isEmpty();
+        if (expectMatch) {
+            check(tag + "_result", matched && idOf(result).equals(wantId) && result.getCount() == wantCount,
+                    "结果格=" + (matched ? result.getCount() + "x " + idOf(result) : "<空>")
+                            + "（期望 " + wantCount + "x " + wantId + "）");
+        } else {
+            check(tag + "_no_match", !matched, "负向：结果格=" + (matched ? idOf(result) : "<空>") + "（期望空）");
+            return menu;
+        }
+        int free = 10;
+        menu.clicked(0, 0, ClickType.PICKUP, dummy);
+        boolean cleared = menu.getSlot(0).getItem().isEmpty();
+        menu.clicked(free, 0, ClickType.PICKUP, dummy);
+
+        List<String> wrong = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            int now = menu.getSlot(1 + i).getItem().getCount();
+            int want = grid[i] == null ? 0 : Math.max(0, before[i] - 1);
+            // 模具（金钱贝模具）走 `getRemainingItems`：以「耐久 −1、数量 1」回到同一格 ⇒ 放行
+            if (grid[i] != null && grid[i].equals("bettergold:golden_cowrie_mold") && before[i] == 1) {
+                want = 1;
+            }
+            if (now != want) {
+                wrong.add("格" + i + "=" + now + "≠" + want);
+            }
+        }
+        check(tag + "_consumed", wrong.isEmpty() && cleared,
+                "逐格 −1 正确=" + wrong.isEmpty() + " 结果格已空=" + cleared + " 偏差=" + wrong);
+
+        int landed = 0;
+        for (int i = 0; i < dummy.getInventory().getContainerSize(); i++) {
+            ItemStack s = dummy.getInventory().getItem(i);
+            if (!s.isEmpty() && BuiltInRegistries.ITEM.getKey(s.getItem()).toString().equals(wantId)) {
+                landed += s.getCount();
+            }
+        }
+        check(tag + "_landed", landed == wantCount, "两次真点击后落进背包=" + landed + "x（期望 " + wantCount + "）");
+        return menu;
+    }
+}

@@ -26,6 +26,23 @@ public class AllRecipes {
                     () -> new SimpleCraftingRecipeSerializer<>(GoldenCowrieMoldRecipe::new));
 
     /**
+     * 金钱贝模具配方（<b>金钱茄</b>版，1.7 作者 2026-10-24 第 ③ 条）：模具 + 金钱茄 → 1 金钱贝，模具耐久 -1。
+     *
+     * <p>与上面那条<b>同一个配方类</b>，只换「兑换物」这一件 ⇒ 消耗语义（模具 −1 耐久、耗尽消失、
+     * 金钱茄被消耗 1 个、产物恒 1）逐字复用，没有第二份实现。</p>
+     *
+     * <p>⚠ 归属说明（本轮唯一的判断点）：派单原话把它写成「{@code chaos_eggplant}（金钱茄）」，
+     * 但全仓<b>没有</b> {@code chaos_eggplant} 这个物品（grep = 0）；本项目的「金钱茄」是
+     * <b>{@code bettergold:golden_eggplant}</b>（{@code AllItems#GOLDEN_EGGPLANT} 的注释就叫「金钱茄」，
+     * 而且被替换掉的旧配方 {@code raw_sturdygold_eggplant} 用的兑换物正是它）⇒ 按<b>中文名</b>取
+     * {@code golden_eggplant}。见 {@code docs/1.7-...md} §29 ③。</p>
+     */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GoldenCowrieMoldRecipe>> GOLDEN_COWRIE_MOLD_MONEY_EGGPLANT_RECIPE =
+            RECIPE_SERIALIZERS.register("golden_cowrie_mold_money_eggplant",
+                    () -> new SimpleCraftingRecipeSerializer<>(
+                            cat -> new GoldenCowrieMoldRecipe(cat, AllItems.GOLDEN_EGGPLANT.get())));
+
+    /**
      * 原料配方（金钱贝版，{@code variant = 0}）：炼金燃油合成后返还玻璃瓶。
      *
      * <p>1.5 起兑换物与产物都是<b>数据驱动</b>的：JSON 可以写 {@code "exchange"} / {@code "result"}

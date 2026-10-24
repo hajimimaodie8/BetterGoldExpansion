@@ -1,0 +1,8 @@
+gpt 轮：构建（2026-10-24）
+
+gradlew build --console=plain
+  exit = 0
+  BUILD SUCCESSFUL in 6s
+  4 actionable tasks: 1 executed, 1 from cache, 2 up-to-date
+
+（判读口径：看 BUILD SUCCESSFUL / exit，不看 PowerShell 的 NativeCommandError；stderr 单独重定向到 build\\gpt_build.err）

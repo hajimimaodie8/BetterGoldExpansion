@@ -2,18 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "pattern": [
-    "#&#",
-    "~$~",
-    " # "
+    "XXX",
+    "L$R",
+    " X "
   ],
   "key": {
-    "#": {
-      "item": "minecraft:stick"
-    },
-    "&": {
+    "X": {
       "item": "bettergold:chaosgold_ingot"
     },
-    "~": {
+    "L": {
+      "item": "minecraft:string"
+    },
+    "R": {
       "item": "minecraft:string"
     },
     "$": {

@@ -2,15 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "pattern": [
-    "XXX",
-    " X ",
-    " # "
+    " XX",
+    " SX",
+    "X  "
   ],
   "key": {
     "X": {
       "item": "bettergold:chaosgold_ingot"
     },
-    "#": {
+    "S": {
       "item": "minecraft:stick"
     }
   },

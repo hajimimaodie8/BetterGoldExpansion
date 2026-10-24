@@ -1,0 +1,74 @@
+gpt 轮 A 级读数（2026-10-24 作者九条；真服务端 gradlew runServer + 真 ServerPlayer + 真 CraftingMenu
+                 + 真 Chicken/真 Player#interactOn + 真 Villager/MerchantOffer + 真 hurt(...) + 真 Arrow.tick）
+来源：run/logs/latest.log（UTF-8，探针原始行见 00-探针原始行.txt）；JSON 原样：01-A级-report.json
+世界：run/world（服务器 level-name=world，**不是**作者存档 run/saves/新的世界；探针只 forceload 4 个区块并双向归零）
+
+【总结】SUMMARY pass=62 fail=0 forcedNow=0
+
+PASS gpt1_place_on_ok_bettergold_gold_infused_dirt :: 底座=bettergold:gold_infused_dirt 结果格=bettergold:golden_torchflower（期望 bettergold:golden_torchflower）；useOn=CONSUME
+PASS gpt1_place_on_ok_<空> :: 底座=<空> 结果格=bettergold:golden_torchflower（期望 bettergold:golden_torchflower）；useOn=CONSUME
+PASS gpt1_place_on_ok_minecraft_farmland :: 底座=minecraft:farmland 结果格=bettergold:golden_torchflower（期望 bettergold:golden_torchflower）；useOn=CONSUME
+PASS gpt1_place_on_neg_minecraft_stone :: 底座=minecraft:stone 结果格=<空>（期望 <空>）；useOn=FAIL
+PASS gpt1_plain_dirt_vanilla_parity :: 普通土上的结果=bettergold:golden_torchflower（期望能放 = 原版 BushBlock 判据，未被本轮改动）
+PASS gpt2_shield_durability :: chaosgold_shield getMaxDamage=426（期望 426）
+PASS gpt2_sturdygold_shield_regression :: sturdygold_shield getMaxDamage=3072（期望 3072，回归）
+PASS gpt2_helmet_toughness :: chaosgold_helmet ARMOR_TOUGHNESS=[minecraft:generic.armor_toughness=2.0000]（期望 1 条 =2.0）
+PASS gpt2_helmet_knockback :: chaosgold_helmet KNOCKBACK_RESISTANCE=[minecraft:generic.knockback_resistance=0.0500]（期望 1 条 =0.05）
+PASS gpt2_chestplate_toughness :: chaosgold_chestplate ARMOR_TOUGHNESS=[minecraft:generic.armor_toughness=2.0000]（期望 1 条 =2.0）
+PASS gpt2_chestplate_knockback :: chaosgold_chestplate KNOCKBACK_RESISTANCE=[minecraft:generic.knockback_resistance=0.0500]（期望 1 条 =0.05）
+PASS gpt2_leggings_toughness :: chaosgold_leggings ARMOR_TOUGHNESS=[minecraft:generic.armor_toughness=2.0000]（期望 1 条 =2.0）
+PASS gpt2_leggings_knockback :: chaosgold_leggings KNOCKBACK_RESISTANCE=[minecraft:generic.knockback_resistance=0.0500]（期望 1 条 =0.05）
+PASS gpt2_boots_toughness :: chaosgold_boots ARMOR_TOUGHNESS=[minecraft:generic.armor_toughness=2.0000]（期望 1 条 =2.0）
+PASS gpt2_boots_knockback :: chaosgold_boots KNOCKBACK_RESISTANCE=[minecraft:generic.knockback_resistance=0.0500]（期望 1 条 =0.05）
+PASS gpt2_shield_knockback :: chaosgold_shield KNOCKBACK_RESISTANCE=[minecraft:generic.knockback_resistance=0.0500, minecraft:generic.knockback_resistance=0.0500]（期望主/副手各 1 条 =0.05）
+PASS gpt2_regression_other_families :: sturdygold 韧性=[minecraft:generic.armor_toughness=6.0000] 击退=[minecraft:generic.knockback_resistance=0.1500] 盾=[minecraft:generic.knockback_resistance=0.1000, minecraft:generic.knockback_resistance=0.1000]（期望 6.0 / 0.15 / 0.1×2，其它族不受影响）
+PASS gpt3_old_recipe_absent :: RecipeManager 里 bettergold:raw_sturdygold_eggplant 存在？false
+PASS gpt3_old_doubled_absent :: RecipeManager 里 ..._doubled 存在？false
+PASS gpt3_money_eggplant_result :: 结果格=1x bettergold:golden_cowrie（期望 1x bettergold:golden_cowrie）
+PASS gpt3_money_eggplant_consumed :: 逐格 −1 正确=true 结果格已空=true 偏差=[]
+PASS gpt3_money_eggplant_landed :: 两次真点击后落进背包=1x（期望 1）
+PASS gpt3_mold_wears :: 模具格=bettergold:golden_cowrie_mold damage=1 count=1（期望 耐久 −1 / 数量 1）
+PASS gpt3_gold_ingot_regression_result :: 结果格=1x bettergold:golden_cowrie（期望 1x bettergold:golden_cowrie）
+PASS gpt3_gold_ingot_regression_consumed :: 逐格 −1 正确=true 结果格已空=true 偏差=[]
+PASS gpt3_gold_ingot_regression_landed :: 两次真点击后落进背包=1x（期望 1）
+PASS gpt4_offer_found :: 新手档真 MerchantOffer 列表：[minecraft:emerald×6→minecraft:gold_ingot×1 xp=5 uses=999, bettergold:golden_cowrie×45→bettergold:gift_gold_ticket×1 xp=20 uses=999, bettergold:voodoo_feather×6→bettergold:gift_gold_ticket×1 xp=10 uses=999, bettergold:golden_egg×24→bettergold:gift_gold_ticket×1 xp=10 uses=999]
+PASS gpt4_offer_shape :: 成本=bettergold:golden_egg×24 产物=bettergold:gift_gold_ticket×1 xp=10 maxUses=999（期望 24 / 1 / 10 / 999）
+PASS gpt4_novice_level_only :: 2..5 级交易表里「24 金蛋」出现次数=0（期望 0 ⇒ 只在新手档）
+PASS gpt5_torchflower_seed_round0 :: 第 1 次喂食：金蛋实体 0 → 1（期望 +1）；interactOn=PASS；手持剩余=1
+PASS gpt5_torchflower_seed_round1 :: 第 2 次喂食：金蛋实体 1 → 2（期望 +1）；interactOn=PASS；手持剩余=1
+PASS gpt5_torchflower_seed_round2 :: 第 3 次喂食：金蛋实体 2 → 3（期望 +1）；interactOn=PASS；手持剩余=1
+PASS gpt5_neg_plain_seeds :: 普通种子喂鸡：金蛋 3 → 3（期望 +0）；interactOn=SUCCESS
+PASS gpt5_legacy_seed_36pct :: 金麦种子 400 次产蛋 148（期望 36% 附近 = 144±，即 100..200）
+PASS gpt6_poison_per_piece :: neoforge:poison bypasses_armor=true；件=0 incoming=8.0 pre=8.0 比值=1.0000；件=1 incoming=8.0 pre=6.0 比值=0.7500；件=2 incoming=8.0 pre=4.0 比值=0.5000；件=3 incoming=8.0 pre=2.0 比值=0.2500；件=4 incoming=8.0 pre=0.0 比值=0.0000；逐档比值=1.0000/0.7500/0.5000/0.2500/0.0000
+PASS gpt7_three_roses :: 金玫瑰丛物品 0 → 3（期望 +3）；useOn=SUCCESS
+PASS gpt7_bone_meal_sound :: 捕捉到的服务端音效（近 8 条）：[minecraft:entity.generic.eat@(1001.5, 121.5, 1000.5), minecraft:entity.generic.eat@(1001.5, 121.5, 1000.5), minecraft:entity.zombie.hurt@(970.5, 121.0, 975.5), minecraft:entity.zombie.hurt@(970.5, 121.0, 975.5), minecraft:entity.zombie.hurt@(970.5, 121.0, 975.5), minecraft:entity.zombie.hurt@(970.5, 121.0, 975.5), minecraft:entity.zombie.hurt@(970.5, 121.0, 975.5), minecraft:item.bone_meal.use@(1002.5, 121.5, 1000.5)]
+PASS gpt7_neg_crop_no_roses :: 对金作物用金骨粉：玫瑰 3 → 3（期望 +0，回归到「一点就熟」）
+PASS gpt8_arrows_in_water :: 两支箭 tick 后仍在水中？A=true B=true；武器 A=bettergold:indigoseagold_bow B=bettergold:sturdygold_bow
+PASS gpt9_mace_result :: 结果格=1x bettergold:chaosgold_mace（期望 1x bettergold:chaosgold_mace）
+PASS gpt9_mace_consumed :: 逐格 −1 正确=true 结果格已空=true 偏差=[]
+PASS gpt9_mace_landed :: 两次真点击后落进背包=1x（期望 1）
+PASS gpt9_trident_result :: 结果格=1x bettergold:chaosgold_trident（期望 1x bettergold:chaosgold_trident）
+PASS gpt9_trident_consumed :: 逐格 −1 正确=true 结果格已空=true 偏差=[]
+PASS gpt9_trident_landed :: 两次真点击后落进背包=1x（期望 1）
+PASS gpt9_crossbow_result :: 结果格=1x bettergold:chaosgold_crossbow（期望 1x bettergold:chaosgold_crossbow）
+PASS gpt9_crossbow_consumed :: 逐格 −1 正确=true 结果格已空=true 偏差=[]
+PASS gpt9_crossbow_landed :: 两次真点击后落进背包=1x（期望 1）
+PASS gpt9_shield_result :: 结果格=1x bettergold:chaosgold_shield（期望 1x bettergold:chaosgold_shield）
+PASS gpt9_shield_consumed :: 逐格 −1 正确=true 结果格已空=true 偏差=[]
+PASS gpt9_shield_landed :: 两次真点击后落进背包=1x（期望 1）
+PASS gpt9_neg_shield_no_apple_no_match :: 负向：结果格=<空>（期望空）
+PASS gpt9_neg_mace_old_no_match :: 负向：结果格=<空>（期望空）
+PASS gpt9_forbidden_fruit_result :: 结果格=1x bettergold:chaosgold_forbidden_fruit（期望 1x bettergold:chaosgold_forbidden_fruit）
+PASS gpt9_forbidden_fruit_consumed :: 逐格 −1 正确=true 结果格已空=true 偏差=[]
+PASS gpt9_forbidden_fruit_landed :: 两次真点击后落进背包=1x（期望 1）
+PASS gpt6_burst_damage_type :: 巫毒结算伤害类型=minecraft:magic（期望 minecraft:magic）
+PASS gpt6_burst_owner :: 巫毒结算伤害源的 owner=minecraft:zombie/8c8fb5b8-4ae9-4eea-a355-e094d75c06a7（期望 = 施加者僵尸 8c8fb5b8-4ae9-4eea-a355-e094d75c06a7）
+PASS gpt6_burst_damage_dealt :: 僵尸血量 19.0 / 20.0（期望掉血 ≥ 1）
+PASS gpt8_indigosea_no_water_drag :: 靛海金弓射出的箭：水平速度 0.5000、水中前进 6.000（期望 ≈0.5 / ≈4.0，即液体惯性 1.0 不衰减）
+PASS gpt8_control_water_drag :: 对照（万坚金弓）的箭：水平速度 0.0011、前进 1.247（期望明显衰减，0.6 惯性）
+PASS gpt_forceload_zero :: 收尾 forcedChunks.size()=0（期望 0）
+
+【⑧ 位移对照（同一构建、同一水池、同一 tick 数）】
+  gpt8_arrows_in_water :: 两支箭 tick 后仍在水中？A=true B=true；武器 A=bettergold:indigoseagold_bow B=bettergold:sturdygold_bow
+  gpt8_indigosea_no_water_drag :: 靛海金弓射出的箭：水平速度 0.5000、水中前进 6.000（期望 ≈0.5 / ≈4.0，即液体惯性 1.0 不衰减）
+  gpt8_control_water_drag :: 对照（万坚金弓）的箭：水平速度 0.0011、前进 1.247（期望明显衰减，0.6 惯性）
