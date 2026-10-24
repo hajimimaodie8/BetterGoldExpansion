@@ -1,0 +1,15 @@
+# 扰动矩阵（第十四轮 size 5 → 4）
+
+| 用例 | 改动 | 期望 | 实测 exit | 命中 / 计数行 | 复原 |
+|---|---|---|---|---|---|
+| P1 | structure JSON 的 size: 4 -> 5（回退上一轮值） | 红 | **1** | `[bgp] NG [bgp-worldgen] main.size = 5 != 4（第十四轮 2026-10-24：size 5 → 4）` | OK |
+| P2 | structure JSON 的 size: 4 -> 3（越界另一档） | 红 | **1** | `[bgp] NG [bgp-worldgen] main.size = 3 != 4（第十四轮 2026-10-24：size 5 → 4）` | OK |
+| P3 | 关卡 MAX_DEPTH: 4 -> 5（模拟深度脱钩） | 红 | **1** | `[bgp] NG [bgp-worldgen] MAX_DEPTH=5 != EXPECT_STRUCT_COMMON["size"]=4（模拟深度必须等于结构 size）` | OK |
+| P4 | 只加一行注释（validate_golden_prison.py） | 绿 | **0** | `[bgp-ok] problems=0 checked=16635 templates=26` | OK |
+
+复原后 SHA256（应与改前逐字节相同）：
+
+- `src\main\resources\data\bettergold\worldgen\structure\golden_prison.json` = `46BCD71FFC418EC524535DFD8E641DFE36274E94FF2E8F76313B7C7FA7E96670`
+- `tools\asset-generator\validate_golden_prison.py` = `C511C0C56C505A5CFAD007C952077BF56623B550BEC5A4F4CFE361C79D222DE5`
+
+结论：4 个用例，失败 0 个。

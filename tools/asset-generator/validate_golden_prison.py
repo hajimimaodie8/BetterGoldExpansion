@@ -253,10 +253,12 @@ EXPECT_STRUCT_MAIN = {'biomes': '#bettergold:golden_prison/no_basalt',
 EXPECT_STRUCT_COMMON = {
 # ★ 第七轮：size 6 → 5（落单口只出现在距中心 114 格的口上；见 §13.2）。
 #   旧期望原文留档（第一~六轮）：'size': 6
+# ★★ 第十四轮（2026-10-24，作者选定）：size 5 → 4（出入口 25→64 / 落单口 77→36 / 被裁 5→0；A 级读数见 docs §19）。
+#   旧期望原文留档（第一~十三轮）：'size': 5（第七轮起；第一~六轮 = 6）
 # ★★ 第九轮（2026-10-22）：type `minecraft:jigsaw` → `bettergold:golden_prison`
 #   （jigsaw 装配感知不到空域 ⇒ 出入口搬不出去；理由与源码依据见 §15）。
 #   旧期望原文留档（第一~八轮）：'type': 'minecraft:jigsaw'
-    'type': 'bettergold:golden_prison', 'step': 'underground_decoration', 'size': 5,
+    'type': 'bettergold:golden_prison', 'step': 'underground_decoration', 'size': 4,
     'use_expansion_hack': False, 'spawn_overrides': {}, 'start_pool': POOL + 'start',
 }
 # 旧口径原文留档（第六/七轮）：
@@ -612,8 +614,9 @@ DIRV = {'north': (0, 0, -1), 'south': (0, 0, 1), 'east': (1, 0, 0), 'west': (-1,
 OPP = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}
 # 可走格：空气 / 结构空位 / jigsaw（jigsaw 的 final_state=air 在放置时变成空气）
 PASS = (AIR, VOID, 'minecraft:jigsaw')
-MAX_DEPTH = 5          # = structure json 的 size（[bgp-worldgen] 另有一条断言钉它）
+MAX_DEPTH = 4          # = structure json 的 size（[bgp-worldgen] 另有一条断言钉它）
                        # 旧值 6（第一~六轮）留档：第七轮 6 → 5 修落单口，见 §13.2
+                       # 旧值 5（第七~十三轮）留档：第十四轮 2026-10-24 5 → 4（docs §19）
 # 空气地板值（回归用；口径与实测见 docs\金之牢狱-生成预览.md §阶段 B）
 # ⚠ 作者原口径是「整 bbox 空气 >= 60%% / 行走层 >= 80%%」——按作者自己 20 件的几何**达不到**：
 #   外壳普遍 2~3 格厚、牢房内部还有栅栏/金堆/箱笼，实测整 bbox 22.00%%~44.67%%、
@@ -2345,6 +2348,17 @@ def check_worldgen():
             ng(code, '%s max_distance_from_center=%r + 地形适应 padding %d > 128 ⇒ 结构会加载失败'
                % (kind, md, pad))
         ok()
+        # ---- size：第十四轮（2026-10-24，作者选定）5 → 4（旧值 5 留档在上面的注释）
+        if st.get('size') != EXPECT_STRUCT_COMMON['size']:
+            ng(code, '%s.size = %r != %r（第十四轮 2026-10-24：size 5 → 4）'
+               % (kind, st.get('size'), EXPECT_STRUCT_COMMON['size']))
+        ok()
+        # ---- MAX_DEPTH（静态拼件模拟）必须与真 size 同步，否则关卡会「按旧 size 验新品」
+        if MAX_DEPTH != EXPECT_STRUCT_COMMON['size']:
+            ng(code, 'MAX_DEPTH=%d != EXPECT_STRUCT_COMMON["size"]=%d（模拟深度必须等于结构 size）'
+               % (MAX_DEPTH, EXPECT_STRUCT_COMMON['size']))
+        ok()
+
     # ---- 唯一一套：start_pool 指向 start（宝藏房唯一性另见 [bgp-treasure-unique]）
     if structs['main'].get('start_pool') != POOL + 'start':
         ng('bgp-worldgen', 'start_pool=%r != %r' % (structs['main'].get('start_pool'), POOL + 'start'))
