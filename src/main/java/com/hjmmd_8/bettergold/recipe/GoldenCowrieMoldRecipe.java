@@ -28,6 +28,18 @@ public class GoldenCowrieMoldRecipe extends CustomRecipe {
 
     /** 兑换物（与模具搭配的那一件）：默认金锭；金钱茄版 = {@code bettergold:golden_eggplant} */
     private final net.minecraft.world.item.Item catalyst;
+    /**
+     * 变体（0 = 金锭版「{@code bettergold:golden_cowrie_mold}」，1 = 金钱茄版
+     * 「{@code bettergold:golden_cowrie_mold_money_eggplant}」）。
+     *
+     * <p>★★ 1.7 `bg18`（2026-10-25，P2-c）：它**只**用于 {@link #getSerializer()} ——
+     * 而这一步正是 JEI 里「第二条配方显示金锭」的根因：两张配方共用一个配方类，
+     * 但 {@code getSerializer()} 原先恒返回金锭版那个序列化器；客户端同步时按
+     * {@code recipe.getSerializer()} 的 StreamCodec 反序列化，而
+     * {@code SimpleCraftingRecipeSerializer} 的 StreamCodec **只带 category**、走的是
+     * 「金锭版那个工厂」⇒ 客户端重建出的实例 catalyst = 金锭（JEI 的 ingredient 就画成金锭）。</p>
+     */
+    private final int variant;
 
     public GoldenCowrieMoldRecipe(CraftingBookCategory category) {
         this(category, Items.GOLD_INGOT);
@@ -36,6 +48,14 @@ public class GoldenCowrieMoldRecipe extends CustomRecipe {
     public GoldenCowrieMoldRecipe(CraftingBookCategory category, net.minecraft.world.item.Item catalyst) {
         super(category);
         this.catalyst = catalyst;
+        // ⚠ 判据 = 「兑换物是不是金锭」：金锭 ⇒ 0（老序列化器），其余 ⇒ 1（金钱茄序列化器）。
+        //   两个注册用的工厂一个走单参构造（金锭）、一个走双参构造（金钱茄）⇒ 双向都对得上。
+        this.variant = catalyst == Items.GOLD_INGOT ? 0 : 1;
+    }
+
+    /** 变体（探针 / 调试用）：0 = 金锭版，1 = 金钱茄版 */
+    public int variant() {
+        return this.variant;
     }
 
     /** 兑换物（探针 / 调试用） */
@@ -115,6 +135,11 @@ public class GoldenCowrieMoldRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return AllRecipes.GOLDEN_COWRIE_MOLD_RECIPE.get();
+        // ★ 1.7 `bg18`（P2-c）：必须**按变体**返回自己的序列化器，否则客户端的反序列化走错工厂、
+        //   重建出的 catalyst 退回金锭（JEI 里「金钱茄那条配方」就会画成金锭）。
+        //   ⚠ 旧口径原文留档（未删）：`return AllRecipes.GOLDEN_COWRIE_MOLD_RECIPE.get();`
+        return this.variant == 1
+                ? AllRecipes.GOLDEN_COWRIE_MOLD_MONEY_EGGPLANT_RECIPE.get()
+                : AllRecipes.GOLDEN_COWRIE_MOLD_RECIPE.get();
     }
 }

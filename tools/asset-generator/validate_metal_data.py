@@ -1714,17 +1714,21 @@ if _missing_skeleton:
 # ⚠ **旧期望原文保留（未删）**：右端只有前五项（合计 20 条）。
 # ★ 1.7 收口轮：+ `_BGN10R9_ENTRY_NAMES`（4 条）⇒ 24。
 # ★ 1.7 大轮（`bgbig`）：旧四条作废 ⇒ 条目数 = 20 + **6**（金铸的牢狱）= **26**。
+# ★ 1.7 `bg18`（2026-10-25）：炼金的起步 第 6 章「高阶的『贵金』提取」⇒ **+1 条目** = **27**。
+#   ⚠ 旧期望原文留档（未删）：上面那行是「= 26」；下面的元组原来到 `_PRISON_ENTRY_NAMES` 为止。
+_BG18_ENTRY_NAMES = ["refined_extraction"]
 if len(_entries_now) != (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
                          + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES)
-                         + len(_BG10_ENTRY_NAMES) + len(_PRISON_ENTRY_NAMES)):
+                         + len(_BG10_ENTRY_NAMES) + len(_PRISON_ENTRY_NAMES)
+                         + len(_BG18_ENTRY_NAMES)):
     _bgbook_bad("bgbook-entry-count",
                 "条目数应为 %d（骨架 %d + §六 章节 3 + §八 强化 9 + §九 商人与古董 3 + "
-                "§十 金灿的盛宴 5 + 金铸的牢狱 6；"
+                "§十 金灿的盛宴 5 + 金铸的牢狱 6 + bg18 高阶的「贵金」提取 1；"
                 "bg-fix3 §三 作废 2 条骨架条目、§十 作废最后 1 条骨架条目、"
                 "bgbig 作废旧四条混沌金章节），实际 %d"
                 % (len(_SKELETON_ENTRIES) + len(_BG2_ENTRY_NAMES)
                    + len(_BG8_ENTRY_NAMES) + len(_BG9_ENTRY_NAMES) + len(_BG10_ENTRY_NAMES)
-                   + len(_PRISON_ENTRY_NAMES),
+                   + len(_PRISON_ENTRY_NAMES) + len(_BG18_ENTRY_NAMES),
                    len(_SKELETON_ENTRIES), len(_entries_now)))
 _valid_categories = {"bettergold:%s" % c[0] for c in _EXPECT_CATEGORIES}
 _total_pages = 0
@@ -2011,7 +2015,9 @@ else:
                      "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 22 段 = 2 + 9 + 2 + 9、"
                      "总字数 >= 600；反空转守护）"
                      % (len(_bg2_texts), sum(len(_t) for _t in _bg2_texts)))
-    _zh_values = set(zh.values())
+    # ★ 2026-10-25（P2-b）：手册值里的 `%` 现写作 `%%`（原版 `I18n.get` 零参 format）
+    #   ⇒ 比对前把**存储侧**的 `%%` 还原成 `%`（快照仍是作者原文，一个字没改）。
+    _zh_values = {_z.replace("%%", "%") for _z in zh.values()}
     _bg2_missing_texts = [_t for _t in _bg2_texts if _t not in _zh_values]
     if _bg2_missing_texts:
         _bgbook2_bad("bgbook2-texts-verbatim",
@@ -3577,7 +3583,9 @@ else:
             _k = "bettergold.handbook.page.gear_%s_%s" % (_chap, _label)
             _v = _BG8_AUTHOR_REPLACED.get(_k, _texts.get(_label, ""))
             _bg8_texts.append(_v)
-            if zh.get(_k) != _v:
+            # ★ 2026-10-25（P2-b）：手册值里的 `%` 必须写成 `%%`（原版 `I18n.get` 零参 format）
+            #   ⇒ 与**作者原文**比对前先把 `%%` 还原成 `%`（快照里仍是作者原文，一个字没改）。
+            if str(zh.get(_k, "")).replace("%%", "%") != _v:
                 _bgbook8_bad("bgbook8-texts-verbatim",
                              "快照里的逐字文案没有按原样落在 %s 里（首 30 字：%s）" % (_k, _v[:30]))
         _nk = "bettergold.handbook.entry.gear_%s" % _chap
@@ -3590,7 +3598,8 @@ else:
         _bgbook8_bad("bgbook8-texts-verbatim",
                      "从冻结快照解析到 %d 段逐字文案 / 共 %d 字（应 27 段 = 3 + 8×3、总字数 >= 1000；"
                      "反空转守护）" % (len(_bg8_texts), sum(len(_t) for _t in _bg8_texts)))
-    _bg8_missing_texts = [_t for _t in _bg8_texts if _t not in set(zh.values())]
+    _bg8_missing_texts = [_t for _t in _bg8_texts
+                          if _t not in {_z.replace("%%", "%") for _z in zh.values()}]
     if _bg8_missing_texts:
         _bgbook8_bad("bgbook8-texts-verbatim",
                      "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
@@ -4137,7 +4146,8 @@ else:
     if len(_bg9_titles) != 3 or _bg9_titles != [u"古董武器工具", u"下界合金古董武器", u"下界合金古董工具"]:
         _bgbook9_bad("bgbook9-texts-verbatim",
                      "从冻结快照解析到的页眉不是那三条「上边字体『…』」：%r" % (_bg9_titles,))
-    _bg9_missing_texts = [_t for _t in _bg9_texts if _t not in set(zh.values())]
+    _bg9_missing_texts = [_t for _t in _bg9_texts
+                          if _t not in {_z.replace("%%", "%") for _z in zh.values()}]
     if _bg9_missing_texts:
         _bgbook9_bad("bgbook9-texts-verbatim",
                      "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
@@ -4641,7 +4651,8 @@ if _bg10_prose_seen != 49 or sum(len(_t) for _t in _bg10_texts) < 2000:
 if _bg10_titles != [u"可种植的金作物", u"金麦相关"]:
     _bgbook10_bad("bgbook10-texts-verbatim",
                   "从冻结快照解析到的页眉不是那两条「字体名为『…』」：%r" % (_bg10_titles,))
-_bg10_missing = [_t for _t in _bg10_texts if _t not in set(zh.values())]
+_bg10_missing = [_t for _t in _bg10_texts
+                 if _t not in {_z.replace("%%", "%") for _z in zh.values()}]
 if _bg10_missing:
     _bgbook10_bad("bgbook10-texts-verbatim",
                   "冻结快照里的逐字文案没有原样出现在 zh_cn.json 里（%d/%d 段缺失，首条：%s）"
@@ -5955,10 +5966,28 @@ print(f"bgfix9（金玫瑰丛 × 金染土）问题: {len(bgfix9_problems)} {bgf
 _BGFIX10_EN_BEFORE_SHA = "B39CF06901319D9BAEDD4E202DC1EF14F78596DEAEF3580D958D575927E83A36"
 _BGFIX10_EN_AFTER_SHA = "7A7156E8D83C03BE9916D10A78AA8951FEF66F69F760AFADA2DB16E5433F1E57"
 _BGFIX10_ZH_SHA = "695FA5A5347E1165F431A204D8CA6F1965D9D136DA0F4D560F299E8B3C972810"
-_BGFIX10_UNTOUCHED_SHA = "68A5441020CB829DD2ED9EC435E627461AFF1EEFE567213B7528E21889588E1C"
-_BGFIX10_UNTOUCHED_N = 715
+# ★ 1.7 `bg18`（2026-10-25，P2-b）：`_BG18_PERCENT_ESCAPED` 的 8 条从"未变动子集"退出
+#   （其中 6 条原本在子集里）⇒ 715 → **709** 键，子集 SHA 随之重算。
+#   旧值原文留档（未删）：
+#     _BGFIX10_UNTOUCHED_SHA = "68A5441020CB829DD2ED9EC435E627461AFF1EEFE567213B7528E21889588E1C"
+#     _BGFIX10_UNTOUCHED_N = 715
+_BGFIX10_UNTOUCHED_SHA = "8137B3B52D62EA75C841566B105E4FD9D462B196BAC0AFBB9B53A5F3CF6A1532"
+_BGFIX10_UNTOUCHED_N = 709
 # ★ bgfix11（2026-10-11）：本轮修的键（**退出**"未变动子集"；断言见本节 ⑥）
 _BGFIX11_FIXED = ("bettergold.handbook.page.knowledge_1_summary",)
+# ★ 1.7 `bg18`（2026-10-25，P2-b）：手册值里的裸 `%` 必须转义成 `%%`（原版 `I18n.get` 零参
+#   `String.format` 会把它变成 `Format error: …`）⇒ 这 8 条**值确实变了**，从"未变动子集"里退出。
+#   ⚠ 它们不是"被篡改"：渲染出来的仍然是作者原文（`%%` → `%`）。
+_BG18_PERCENT_ESCAPED = (
+    "bettergold.handbook.page.gear_indigoseagold_1_left",
+    "bettergold.handbook.page.gear_indigoseagold_2_left",
+    "bettergold.handbook.page.gear_voodoogold_1_left",
+    "bettergold.handbook.page.gear_illusiongold_1_left",
+    "bettergold.handbook.page.gear_illusiongold_1_right",
+    "bettergold.handbook.page.gear_illusiongold_2_left",
+    "bettergold.handbook.page.prison_chaosalloy_2_left",
+    "bettergold.handbook.page.prison_chaosalloy_2_right",
+)
 _BGFIX11_EN_AFTER_SHA = "07AA2FA07EDD8942FA8CD8BFA441EFEA8BB2740E1532BB1D60143FF27097768F"
 # 20 个作废键（作者 2026-10-11 从 zh 里删掉 ⇒ en 跟着删；两侧都不许再出现）
 _BGFIX10_REMOVED = (
@@ -6060,7 +6089,8 @@ for _bg10_k, _bg10_v in en.items():
 
 # ---------- ③ 未变动的键**逐字未变**（冻结基线）----------
 # ⚠ bgfix11：`_BGFIX11_FIXED` 里的键**也**排除（本轮被修 ⇒ 它不该再被当成"未变动"）→ 715 键
-_bg10_excl = set(_BGFIX10_REMOVED) | set(_BGFIX10_CHANGED) | set(_BGFIX11_FIXED)
+_bg10_excl = (set(_BGFIX10_REMOVED) | set(_BGFIX10_CHANGED) | set(_BGFIX11_FIXED)
+              | set(_BG18_PERCENT_ESCAPED))
 
 # ⚠ **1.7（bg-n10 轮1 后半）就地标注 —— 旧口径原文保留、不放宽**：
 #   旧写法把"未变动子集"定义成**现文件里除排除集之外的全部键**（`[k for k in en if k not in _bg10_excl]`），
@@ -6101,7 +6131,7 @@ if len(_bg10_untouched) != _BGFIX10_UNTOUCHED_N:
 if _bg10_hash.upper() != _BGFIX10_UNTOUCHED_SHA:
     _bgfix10_bad("bgfix10-lang-untouched-frozen",
                  "未变动子集的规范化 SHA256 = %s（冻结基线 %s）—— 有人动了本轮不该动的键"
-                 "（要动就显式改这个常量并在 §31 记账）" % (_bg10_hash.upper()[:32], _BGFIX10_UNTOUCHED_SHA[:32]))
+                 "（要动就显式改这个常量并在 §31 记账）" % (_bg10_hash.upper(), _BGFIX10_UNTOUCHED_SHA))
 if len(_bg10_untouched) < 700:
     _bgfix10_bad("bgfix10-lang-untouched-frozen",
                  "反空转守护：参与比对的键只有 %d 个（< 700）" % len(_bg10_untouched))
@@ -6278,14 +6308,14 @@ else:
 #     zh A54365AC96AE7B2E684CD2323ED0D455… / en 7E2360921393049FD9DCD56DF161A70D…
 # ★ 1.7 大轮 D 段（作者替换 zh_cn.json + 补 B/C 新键）：zh 850 键 / SHA 换成本轮最终值。
 #   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
-_BGN10_ZH_AFTER_SHA = "B8384693249D9B83EA0C44D8DCD6D06D8E926952ED8513D5399F931A3C716275"
+_BGN10_ZH_AFTER_SHA = "2584FBB1A7D1C4B3B6786E101301788307B5FAB46CF06D5526163990BAEEB043"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
 # 旧期望原文留档（bg-n10up 轮）：_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 #   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
-_BGN10_EN_AFTER_SHA = "E60A0BC201B18A0FE76736E9C2E0DC1480C173E7310752AE1B97AD0BD8565A16"
+_BGN10_EN_AFTER_SHA = "823E1A3CE5F3764D503DA5C152BF0BCF54BB9A9A1C30968EDC8315100B1762E7"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6300,7 +6330,11 @@ _BGN10_EN_AFTER_SHA = "E60A0BC201B18A0FE76736E9C2E0DC1480C173E7310752AE1B97AD0BD
 #   ⇒ 116 + 34 = **150**。旧期望原文留档：`_BGN10_NEW_LANG_KEYS = 142`。
 # ★ D 段（作者替换 zh）：旧四条手册章节的 22 条键随作者文件一起消失 ⇒ 150 − 22 = **128**。
 #   旧期望原文留档：`_BGN10_NEW_LANG_KEYS = 150`。
-_BGN10_NEW_LANG_KEYS = 128    # zh/en 各 128 条（相对冻结副本的净新增）
+# ★ 1.7 `bg18`（2026-10-25）：+ **5** 条（炼金的起步 第 6 章：1 条目名 + 4 页正文键）⇒ 128 → **133**。
+#   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 128`。
+_BGN10_NEW_LANG_KEYS = 133    # zh/en 各 133 条（相对冻结副本的净新增）
+# 旧值留档（原文保留，不删）：bgbig 的 zh B8384693… / en E60A0BC2…（`_BGN10_*_AFTER_SHA` 上一版）
+
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
 # _BGN10_ZH_AFTER_SHA = "7D2F9DE0D2BE3D7A84D3D81411861F8EF00D4273AF884AE8F1E7DF21DFB606BD"
 # _BGN10_EN_AFTER_SHA = "22B350564878D89A413952A563CF8BACEF8302F44CD0B9E17E9C07F3CC4EF696"
@@ -6329,6 +6363,9 @@ else:
         "bettergold.handbook.page.gear_voodoogold_1_left",
         "bettergold.handbook.page.gear_voodoogold_2_left",
     }
+    # ★ 1.7 `bg18`（P2-b）：另外 6 条（靛海金 2 + 幻惑金 3 + 崩乱合金 1）本轮被**转义**过
+    #   （裸 `%` → `%%`）⇒ 值必然与作者那份不同，但渲染结果不变。旧集合原文留档在上面（未删）。
+    _BG11_AUTHOR_CHANGED |= set(_BG18_PERCENT_ESCAPED)
     _bg11_zh_changed = sorted(k for k, v in _bg11_frozen_zh.items()
                               if k in zh and str(zh[k]) != str(v)
                               and k not in _BG11_AUTHOR_CHANGED)
@@ -7975,6 +8012,12 @@ _r8_tex_map = (
      "textures/gui/container/sturdygold_anvil_coin_ghost.png"),
 )
 for _src_name, _dst_rel in _r8_tex_map:
+    if _dst_rel == "textures/gui/container/sturdygold_anvil.png":
+        # ★ 1.7 bg18 P5（2026-10-25，第七次贴图授权）：作者在**第二个**更新包里给了新版 GUI
+        #   （256×256、688 个像素变化、alpha 掩码不变；认亲见 docs/bg18-证据/05-P5-认亲）。
+        #   ⇒ 这一张的「作者原件」不再是 `新约10\万坚金砧 gui.png`，改由下面单独一段按第二关归档件比对。
+        #   ⚠ 旧口径原文留档（未删）：GUI 由本循环按第一版 `新约10\万坚金砧 gui.png` 比对。
+        continue
     _bgn10r8_checked += 2
     _src = _R8_ARCHIVE / _src_name
     _dst = _R8_ASSETS / _dst_rel
@@ -7982,6 +8025,16 @@ for _src_name, _dst_rel in _r8_tex_map:
         _bgn10r8_bad("bgn10r8-assets", "缺贴图 " + _dst_rel)
     elif _r8_sha256(_src) != _r8_sha256(_dst):
         _bgn10r8_bad("bgn10r8-assets", "贴图不是作者原件的字节原样：" + _dst_rel)
+
+# ★ bg18 P5：万坚金砧 GUI 的**现行**作者原件 = 第二关包 `1792547527281.png`
+_bgn10r8_checked += 2
+_b18_gui_arch = (REPO / "docs" / "1.7贴图更新包第二关-素材清单" / "1792547527281.png")
+_b18_gui_dst = _R8_ASSETS / "textures/gui/container/sturdygold_anvil.png"
+if not _b18_gui_arch.is_file():
+    _bgn10r8_bad("bgn10r8-assets",
+                 "缺第二关归档件 docs/1.7贴图更新包第二关-素材清单/1792547527281.png")
+elif _r8_sha256(_b18_gui_arch) != _r8_sha256(_b18_gui_dst):
+    _bgn10r8_bad("bgn10r8-assets", "万坚金砧 GUI 不是第二关作者原件的字节原样")
 
 # ---------- ⑤ MenuType + Menu（本仓第一个 GUI 的注册链） ----------
 _r8_menus_path = _R8_JAVA / "registry" / "AllMenus.java"
@@ -8473,9 +8526,16 @@ _ANVIL_GUI_PNG = (REPO / "src" / "main" / "resources" / "assets" / "bettergold"
 _ANVIL_ERR_PNG = (REPO / "src" / "main" / "resources" / "assets" / "bettergold"
                   / "textures" / "gui" / "sprites" / "container" / "sturdygold_anvil" / "error.png")
 # 作者 GUI 贴图（256x256，作者原件，一像素不许改）+ 本轮新增的变体精灵（值 = 2026-10-18 实测）
-_ANVIL_GUI_SHA = "24a277b99da860b9c012a1a68d3994648fca5466407be4eb61e70e6ba0e5625c"
-_ANVIL_ERR_SHA = "dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989"
-_ANVIL_ERR_BYTES = 414
+# ★ 1.7 bg18 P5（2026-10-25）：作者第二个更新包**同时换了这两张**（GUI + 它那块 28×21 的精灵）
+#   ⇒ 三个值按新包更新；像素规则（507 作者像素 + 81 红叉 / 红叉掩码 / 无灰）**一字未改**，
+#   实测新图依然满足（见 docs/bg18-证据/05-P5-认亲）。
+# ⚠ 旧口径原文留档（未删）：
+#   _ANVIL_GUI_SHA = "24a277b99da860b9c012a1a68d3994648fca5466407be4eb61e70e6ba0e5625c"
+#   _ANVIL_ERR_SHA = "dcbac5908d8fec564db718860a3b39623e7ffebea6f19c2fb705ac0bcad1a989"
+#   _ANVIL_ERR_BYTES = 414
+_ANVIL_GUI_SHA = "debe8cfc08707bb71d534dbd11876f83c2b5fdd1bf7009626d08f1812ad454b2"
+_ANVIL_ERR_SHA = "b0c8aa737917bc39058a5b402b92bca294e90586b0e663be5daa05a7d14c21c3"
+_ANVIL_ERR_BYTES = 636   # ★ bg18 P5：第二关新精灵 636 B（旧 414 B 原文留档见上一行注释）
 _ANVIL_ERR_SRC_XY = (99, 45)        # 作者 256x256 里被"搬运"的那个矩形的左上角
 _ANVIL_RED = {(0x96, 0x23, 0x00, 0xFF), (0xBA, 0x37, 0x0F, 0xFF)}   # 原版精灵里红叉的两个红
 _ANVIL_GREY = {(0xC6, 0xC6, 0xC6, 0xFF), (0x8B, 0x8B, 0x8B, 0xFF)}   # 原版灰底 + 灰箭头（不许搬）
@@ -8687,8 +8747,11 @@ _R9_ENTRIES = {
                               "patchouli:crafting", "patchouli:crafting"]),
     # 章4 混沌金的主要内容（4 页 + 15 件工作台配方 = 8 页）
     #   ⚠ 「烧制（smelting）+ 制作（crafting）」两种配方类型不能同页 ⇒ 拆成相邻两页。
-    "prison_chaosgold_main": (12, ["patchouli:text", "patchouli:smelting", "patchouli:crafting",
-                                   "patchouli:text"] + ["patchouli:crafting"] * 8),
+    #   ★ 2026-10-25（P2-a）：两段文案先并到第 1 跨页，熔炉 / 工作台两页挪到**第 2 跨页**（下标 2/3）。
+    #     旧期望原文留档（未删）：
+    #       ["patchouli:text", "patchouli:smelting", "patchouli:crafting", "patchouli:text"] + 8×crafting
+    "prison_chaosgold_main": (12, ["patchouli:text", "patchouli:text", "patchouli:smelting",
+                                   "patchouli:crafting"] + ["patchouli:crafting"] * 8),
     # 章5 混沌金的副要内容（2 页配方 + 1 页轮换栈）
     "prison_chaosgold_extra": (3, ["patchouli:crafting", "patchouli:crafting",
                                    "patchouli:spotlight"]),
@@ -9390,9 +9453,16 @@ _rg_bases = []
 for _p in sorted(_RC_DATA.glob("*.json")):
     if _p.stem.endswith("_doubled"):
         continue
+    # ★ 1.7 `bg18`（2026-10-25）：第三种形状（`raw_<族>_chaosgold.json`，`chaos_block: true`）
+    #   **不是"基础版"** ⇒ 不参与"每条基础版都必须有双倍版"的不变量，也不许被当成 base 去派生。
+    #   旧口径原文留档（未删）：上面只有 `if _p.stem.endswith("_doubled"): continue` 这一句。
+    if _p.stem.endswith("_chaosgold"):
+        continue
     try:
         _o = json.loads(_p.read_text(encoding="utf-8"))
     except Exception:                             # noqa: BLE001  别的形状坏了不归本段管
+        continue
+    if _o.get("chaos_block"):
         continue
     if str(_o.get("type") or "").startswith(_RG_NS + ":raw_sturdygold"):
         _rg_bases.append((_p, _o))
@@ -9464,11 +9534,13 @@ else:
     _rg_code = strip_comments(_rg_src_path.read_text(encoding="utf-8"))
     # (a) 剩余物按**催化剂那一格**返瓶：matches 与 getRemainingItems 各一次 ⇒ 恰好 2 处
     #     ⚠ 这一条就是「高阶炼金油那格也返瓶」的证明：写死 ALCHEMIC_FUEL 时这里会掉到 1 处
+    #     ★ 1.7 `bg18`（2026-10-25）：`matches` 多了一条「混沌金块 9 格」分支，它也按催化剂那一格判
+    #       ⇒ **2 → 3 处**。旧期望原文留档（未删）：上面那句「恰好 2 处」与 `!= 2`。
     _n_cat = _rg_code.count("stack.is(this.catalyst)")
-    if _n_cat != 2:
+    if _n_cat != 3:
         _bgn10rg_bad("bgn10rg-bottle",
-                     "去注释后的 RawSturdygoldRecipe 里 stack.is(this.catalyst) 不是 2 处（实际 "
-                     + str(_n_cat) + "）—— 匹配与返还玻璃瓶必须都按催化剂那一格判")
+                     "去注释后的 RawSturdygoldRecipe 里 stack.is(this.catalyst) 不是 3 处（实际 "
+                     + str(_n_cat) + "）—— 两种形状的匹配 + 返还玻璃瓶都必须按催化剂那一格判")
     if "stack.is(AllItems.ALCHEMIC_FUEL.get())" in _rg_code:
         _bgn10rg_bad("bgn10rg-bottle",
                      "去注释后的源码里仍在按 ALCHEMIC_FUEL 判格（高阶炼金油那格就不会返瓶）")
@@ -9480,10 +9552,15 @@ else:
                      "去注释后的源码里 new ItemStack(this.result, this.count) 不是 2 处"
                      "（assemble / getResultItem 都要带数量，否则结果格仍显示 1）")
     # (c) 两个字段都进了 Codec 与 StreamCodec（少一个就是「服务端 2、客户端 1」）
+    #     ★ 1.7 `bg18`：`StreamCodec.composite` 只到 6 个分量，本轮加 `chaosBlock` 之后改成显式
+    #       `StreamCodec.of` 逐字段写/读 ⇒ 旧 needle 的两个方法引用（原文留档、未删）：
+    #         "RawSturdygoldRecipe::catalyst" / "RawSturdygoldRecipe::count"
+    #       换成下面两条**逐字段** needle。（codec 侧两条不变。）
     for _needle, _why in (('optionalFieldOf("catalyst")', "catalyst 没进 Codec"),
                           ('optionalFieldOf("count", 1)', "count 没进 Codec（缺省必须是 1）"),
-                          ("RawSturdygoldRecipe::catalyst", "catalyst 没进 StreamCodec"),
-                          ("RawSturdygoldRecipe::count", "count 没进 StreamCodec")):
+                          ("itemCodec.encode(buf, r.catalyst)", "catalyst 没进 StreamCodec"),
+                          ("ByteBufCodecs.VAR_INT.encode(buf, r.count)", "count 没进 StreamCodec"),
+                          ("ByteBufCodecs.BOOL.encode(buf, r.chaosBlock)", "chaosBlock 没进 StreamCodec")):
         if _needle not in _rg_code:
             _bgn10rg_bad("bgn10rg-bottle", _why + "：缺 " + _needle)
     # (d) 缺省催化剂仍必须是炼金燃油（老 JSON 一字不改仍按老语义）
@@ -9570,7 +9647,10 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
                      + "（实际 " + str(len(_pages)) + "）")
         continue
     _types = [p.get("type") for p in _pages]
-    _want_types = (["patchouli:text", "patchouli:smelting", "patchouli:crafting", "patchouli:text"]
+    # ★ 2026-10-25（P2-a）：paragraphs 先并到第 1 跨页，熔炉/工作台挪到第 2 跨页。
+    #   旧期望原文留档（未删）：["patchouli:text", "patchouli:smelting", "patchouli:crafting",
+    #                            "patchouli:text"] + ["patchouli:crafting"] * 8
+    _want_types = (["patchouli:text", "patchouli:text", "patchouli:smelting", "patchouli:crafting"]
                    + ["patchouli:crafting"] * 8)
     if _types != _want_types:
         _bgn10rg_bad("bgn10rg-handbook",
@@ -9648,9 +9728,13 @@ print("1.7 bg-n10rg（混沌金工作台配方 + 双倍贵金原料）问题: "
       + str(len(bgn10rg_problems)) + " " + str(bgn10rg_problems[:4])
       + "（本段判定 " + str(_bgn10rg_checked) + " 项）")
 if not bgn10rg_problems:
+    # ⚠ 1.7 `bg18`：双倍版是 **8 条**（8 族）；`stack.is(this.catalyst)` 现在是 **3 处**
+    #   （`matches` 两条形状 + `getRemainingItems`）。旧文案原文留档（未删）：
+    #   「/ 9 条双倍贵金原料（…）/ 返还玻璃瓶按催化剂那一格判（去注释源码 2 处）」。
     print("[bgn10rg-ok] 混沌金 15 件工作台配方逐格照原版（前 11 件金属格 = 混沌金锭；后 4 件见 "
-          "[bgn10rc2-*]）/ 9 条双倍贵金原料（催化剂 = 高阶炼金油、数量 2、与基础版逐字段同形且基础版未被改）/ "
-          "返还玻璃瓶按催化剂那一格判（去注释源码 2 处）/ 手册 gear_chaosgold 15 页 15 条配方无死链")
+          "[bgn10rc2-*]）/ 8 条双倍贵金原料（催化剂 = 高阶炼金油、数量 2、与基础版逐字段同形且基础版未被改）/ "
+          "返还玻璃瓶按催化剂那一格判（去注释源码 3 处：两种形状的 matches + getRemainingItems）/ "
+          "手册 gear_chaosgold 15 页 15 条配方无死链")
 
 # ==========================================================================================
 # 1.7 bg-n10d（2026-10-18，裁定 #13）：金火把花种子 = 原版种子那 4 条标签
@@ -10519,14 +10603,16 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
         continue
     # 第 2 / 3 页（下标 1 / 2）= 上「币 →（烧炼）→ 粒」/ 下「9 粒 → 1 锭」
     #   ⚠ 两种配方类型（smelting / crafting）不能同页 ⇒ 拆成相邻两页（PATCHOULI 结构上限）。
+    #   ★ 2026-10-25（P2-a）：这两页从下标 1 / 2 挪到 **2 / 3**（同一跨页）。
+    #     旧期望原文留档（未删）：`_p2, _p3 = _pages[1], _pages[2]`（当时不同屏）。
     _bgn10up_checked += 2
-    _p2, _p3 = _pages[1], _pages[2]
+    _p2, _p3 = _pages[2], _pages[3]
     if (_p2.get("type"), _p2.get("recipe"), _p2.get("recipe2")) != (
             "patchouli:smelting", "bettergold:chaos_coin_smelting", None):
-        _bgn10up_bad("bgn10up-handbook", _tag + " 第 2 页不是「币 → 粒」熔炉页：" + repr(_p2))
+        _bgn10up_bad("bgn10up-handbook", _tag + " 第 3 页不是「币 → 粒」熔炉页：" + repr(_p2))
     if (_p3.get("type"), _p3.get("recipe"), _p3.get("recipe2")) != (
             "patchouli:crafting", "bettergold:chaosgold_ingot_from_nugget", None):
-        _bgn10up_bad("bgn10up-handbook", _tag + " 第 3 页不是「9 粒 → 1 锭」工作台页：" + repr(_p3))
+        _bgn10up_bad("bgn10up-handbook", _tag + " 第 4 页不是「9 粒 → 1 锭」工作台页：" + repr(_p3))
     # 每页配方数 ≤ 2（Patchouli 的结构上限）+ 引用不许死链
     for _pg in _pages:
         _on = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
@@ -11688,8 +11774,12 @@ _PB_ENTRIES = {
     "prison_coin_anvil": ("chaos_coin", 2, 4, ["patchouli:spotlight", "patchouli:crafting",
                                                "patchouli:crafting", "patchouli:crafting"]),
     "prison_chaosgold_main": ("chaosgold_ingot", 3, 12,
-                              ["patchouli:text", "patchouli:smelting", "patchouli:crafting",
-                               "patchouli:text"] + ["patchouli:crafting"] * 8),
+                              # ★ 2026-10-25（P2-a）：两段文案并到第 1 跨页，熔炉页 / 工作台页
+                              #   挪到**第 2 跨页**（下标 2 / 3）。旧序列原文留档（未删）：
+                              #     ["patchouli:text", "patchouli:smelting", "patchouli:crafting",
+                              #      "patchouli:text"] + ["patchouli:crafting"] * 8
+                              ["patchouli:text", "patchouli:text", "patchouli:smelting",
+                               "patchouli:crafting"] + ["patchouli:crafting"] * 8),
     "prison_chaosgold_extra": ("chaosgold_enchanting_book", 4, 3,
                                ["patchouli:crafting", "patchouli:crafting", "patchouli:spotlight"]),
     "prison_chaosalloy": ("chaosalloy_ingot", 5, 13,
@@ -11771,11 +11861,23 @@ if len(_pb_e) == len(_PB_ENTRIES):
     if _ca[0].get("title") != _PB_LANG + ".page.prison_coin_anvil_1_left_title":
         _bgbig_bad("bgbig-pages", "第 3 章第 1 页左的页眉键不对：" + repr(_ca[0].get("title")))
     _cg = _pb_e["prison_chaosgold_main"]
-    if (_cg[1].get("recipe"), _cg[1].get("recipe2")) != ("bettergold:chaos_coin_smelting", None):
-        _bgbig_bad("bgbig-pages", "第 4 章第 2 页（熔炉页）不是烧制混沌金粒：" + repr(_cg[1]))
-    if (_cg[2].get("recipe"), _cg[2].get("recipe2")) != (
+    # ★ 2026-10-25（P2-a）：熔炉页 / 工作台页从下标 1 / 2 挪到 **2 / 3** ⇒ 落在**同一跨页**。
+    #   旧期望原文留档（未删）：`_cg[1]` = 烧制、`_cg[2]` = 制作（当时**不同屏**，就是作者报的 bug）。
+    if (_cg[2].get("recipe"), _cg[2].get("recipe2")) != ("bettergold:chaos_coin_smelting", None):
+        _bgbig_bad("bgbig-pages", "第 4 章第 3 页（熔炉页）不是烧制混沌金粒：" + repr(_cg[2]))
+    if (_cg[3].get("recipe"), _cg[3].get("recipe2")) != (
             "bettergold:chaosgold_ingot_from_nugget", None):
-        _bgbig_bad("bgbig-pages", "第 4 章第 3 页（工作台页）不是制作混沌金锭：" + repr(_cg[2]))
+        _bgbig_bad("bgbig-pages", "第 4 章第 4 页（工作台页）不是制作混沌金锭：" + repr(_cg[3]))
+    # P2-a 的 A 级可判据：两页**下标相邻且 (偶, 奇)** ⇒ 同一屏（Patchouli 一屏 = 下标 2k / 2k+1）
+    _sm_i = [i for i, _p_ in enumerate(_cg) if _p_.get("type") == "patchouli:smelting"]
+    _cr_i = [i for i, _p_ in enumerate(_cg)
+             if _p_.get("type") == "patchouli:crafting"
+             and _p_.get("recipe") == "bettergold:chaosgold_ingot_from_nugget"]
+    _bgbig_checked += 3
+    if len(_sm_i) != 1 or len(_cr_i) != 1 or _cr_i[0] - _sm_i[0] != 1 or _sm_i[0] % 2 != 0:
+        _bgbig_bad("bgbig-spread", "「混沌金粒（烧制）」与「混沌金锭（合成）」不在同一跨页："
+                   "smelting 下标 %r / crafting 下标 %r（要求 相邻 且 前者为偶数下标）"
+                   % (_sm_i, _cr_i))
     _want_gear = ["bettergold:chaosgold_" + _g
                   for _g in ("sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
                              "shovel", "hoe", "shield", "helmet", "chestplate",
@@ -11818,7 +11920,8 @@ if len(_pb_e) == len(_PB_ENTRIES):
 for _suffix, _want in _PB_ZH_TEXT.items():
     _k = "%s.page.%s" % (_PB_LANG, _suffix)
     _bgbig_checked += 4
-    if zh.get(_k) != _want:
+    # ★ 2026-10-25（P2-b）：手册值里的 `%` 现写作 `%%` ⇒ 比对前把存储侧还原（作者原文不变）。
+    if str(zh.get(_k, "")).replace("%%", "%") != _want:
         _bgbig_bad("bgbig-verbatim", "中文与作者原文不一致（一个字都不许改）：" + _k)
     if not str(en.get(_k, "")).strip():
         _bgbig_bad("bgbig-verbatim", "缺英文：" + _k)
@@ -11860,6 +11963,277 @@ if not bgbig_problems:
           "16 段中文逐字 = 作者原文）；旧四条 48 页作废不产出（构造函数与 RETIRED_ENTRIES 留档）")
 
 
+# ==========================================================================================
+# ★★ 1.7 `bg18`（2026-10-25）：P1 新章节「高阶的「贵金」提取」（炼金的起步 第 6 章）
+# ==========================================================================================
+# 期望值**独立另存一份**（不 import 生成器 —— 否则生成器抄错就永远抓不到）。
+bg18_problems: list[str] = []
+_bg18_checked = 0
+
+
+def _bg18_bad(tag, msg):
+    bg18_problems.append("[%s] %s" % (tag, msg))
+
+
+_BG18_ENTRY = "refined_extraction"
+_BG18_ZH_TEXT = {
+    "refined_extraction_1_left":
+        "想要让你获取“贵金”的效率更高吗，或许你可以为火把花种子镀上黄金制成金火把花种子，"
+        "最后栽在金染耕地上长成金火把花，然后在酿造台上以炼金燃油为基，以金火把花为引就可酿造成高精度炼金油。",
+    "refined_extraction_1_right":
+        "用这种方式炼制出来的“贵金”原料制作出来会比之前的炼金燃油翻了一倍，"
+        "以方便于量产更多种类或更多数量的“贵金”。",
+    "refined_extraction_2_left":
+        "或许你在想着从之前金钱妖获得的混沌金相关物可以掺入一些金属或是金属块里充数，"
+        "既然它们并不属于“贵金”的条目，那就干脆让它们改头换面成为一个真正的“贵金”吧。",
+    "refined_extraction_2_right":
+        "只需要把那两个金块换成一个混沌金块就能以将近一半的基础材料炼制成“贵金”原料了，"
+        "不过此方法却需要依赖上高精度炼金油为基。",
+}
+
+_bg18_checked += 4
+_bg18_zp = _ZH_BOOK / "entries" / (_BG18_ENTRY + ".json")
+_bg18_ep = _EN_BOOK / "entries" / (_BG18_ENTRY + ".json")
+if not _bg18_zp.is_file() or not _bg18_ep.is_file():
+    _bg18_bad("bg18-entry", "缺条目文件（zh/en）：" + _BG18_ENTRY)
+else:
+    _b18z = json.loads(_bg18_zp.read_text(encoding="utf-8"))
+    _b18e = json.loads(_bg18_ep.read_text(encoding="utf-8"))
+    if _b18z.get("name") != "bettergold.handbook.entry." + _BG18_ENTRY:
+        _bg18_bad("bg18-entry", "条目 name 键不对：" + repr(_b18z.get("name")))
+    if _b18z.get("category") != "bettergold:alchemy_start":
+        _bg18_bad("bg18-entry", "章节不在「炼金的起步」类别下：" + repr(_b18z.get("category")))
+    if _b18z.get("icon") != "bettergold:refined_alchemic_oil":
+        _bg18_bad("bg18-entry", "封面不是高精度炼金油：" + repr(_b18z.get("icon")))
+    if _b18z.get("sortnum") != 5:
+        _bg18_bad("bg18-entry", "sortnum 不是 5：" + repr(_b18z.get("sortnum")))
+    _b18pages = _b18z.get("pages") or []
+    if len(_b18pages) != 4:
+        _bg18_bad("bg18-entry", "本条目不是 4 页（实际 %d）" % len(_b18pages))
+    if [p_.get("type") for p_ in _b18pages] != ["patchouli:text", "patchouli:crafting",
+                                                "patchouli:text", "patchouli:crafting"]:
+        _bg18_bad("bg18-entry", "页型序列不对：" + repr([p_.get("type") for p_ in _b18pages]))
+    if _b18z.get("pages") != _b18e.get("pages"):
+        _bg18_bad("bg18-entry", "zh/en 页列表不一致")
+    _bg18_checked += 4
+    if len(_b18pages) == 4:
+        # 第 1 页右 = 「拥有高精度炼金油的万坚金原料配方」（双倍版）；第 2 页右 = 混沌金块 9 格版
+        if (_b18pages[1].get("recipe"), _b18pages[1].get("recipe2")) != (
+                "bettergold:raw_sturdygold_doubled", None):
+            _bg18_bad("bg18-pages", "第 1 页右不是「拥有高精度炼金油的原料配方」：" + repr(_b18pages[1]))
+        if (_b18pages[3].get("recipe"), _b18pages[3].get("recipe2")) != (
+                "bettergold:raw_sturdygold_chaosgold", None):
+            _bg18_bad("bg18-pages", "第 2 页右不是「高精度炼金油 + 混沌金块 的原料配方」："
+                       + repr(_b18pages[3]))
+        if "recipe2" in _b18pages[1] or "recipe2" in _b18pages[3]:
+            _bg18_bad("bg18-pages", "配方页写了 recipe2（本轮每页只有 1 条配方）")
+        for _idx, _side in ((1, "1_right"), (3, "2_right")):
+            if _b18pages[_idx].get("text") != "bettergold.handbook.page." + _BG18_ENTRY + "_" + _side:
+                _bg18_bad("bg18-pages", "第 %d 页的正文键不对：%r" % (_idx, _b18pages[_idx].get("text")))
+        # 两条配方**必须真的存在**（死链检查：收集产物里写的值，不拿期望表自比）
+        for _rid in (str(_b18pages[1].get("recipe") or ""), str(_b18pages[3].get("recipe") or "")):
+            _bg18_checked += 1
+            _rp = _RC_DATA / (_rid.split(":", 1)[-1] + ".json")
+            if not _rid.startswith("bettergold:") or not _rp.is_file():
+                _bg18_bad("bg18-deadlink", "手册页引用的配方不存在：" + repr(_rid))
+
+# 逐字文案（作者原文，一个字不许改）+ 英文非空且不是中文
+for _suffix, _want in _BG18_ZH_TEXT.items():
+    _k = "bettergold.handbook.page." + _suffix
+    _bg18_checked += 3
+    if zh.get(_k) != _want:
+        _bg18_bad("bg18-verbatim", "中文与作者原文不一致（一个字都不许改）：" + _k)
+    if not str(en.get(_k, "")).strip():
+        _bg18_bad("bg18-verbatim", "缺英文：" + _k)
+    elif en.get(_k) == zh.get(_k):
+        _bg18_bad("bg18-verbatim", "英文与中文逐字相同（没翻译）：" + _k)
+_bg18_checked += 2
+if zh.get("bettergold.handbook.entry." + _BG18_ENTRY) != "高阶的「贵金」提取":
+    _bg18_bad("bg18-verbatim", "条目名不是「高阶的「贵金」提取」")
+if not str(en.get("bettergold.handbook.entry." + _BG18_ENTRY, "")).strip() \
+        or en.get("bettergold.handbook.entry." + _BG18_ENTRY) == zh.get("bettergold.handbook.entry." + _BG18_ENTRY):
+    _bg18_bad("bg18-verbatim", "条目名缺英文或与中文相同")
+
+# ---------------- P2-b：手册正文**全量**不许出现裸 `%` ----------------
+# 根因（读源码）：`net/minecraft/client/resources/language/I18n.java:23-30` 的值走
+#   `String.format(s, parameters)`；Patchouli 用 `I18n.get(key)`（零参）⇒ 值里 `50%` 直接抛
+#   `IllegalFormatException` ⇒ 页面上印 `Format error: <值>`。
+#   ⇒ 手册面的 `%` 必须写成 `%%`（零参 format 下渲染回一个 `%`，语义不变）。
+_BG18_BARE_PERCENT = re.compile(r"(?<!%)%(?!%)")
+_b18_vals = 0
+for _dict, _side in ((zh, "zh_cn"), (en, "en_us")):
+    for _k, _v in _dict.items():
+        if not _k.startswith("bettergold.handbook.") or not isinstance(_v, str):
+            continue
+        _b18_vals += 1
+        if _BG18_BARE_PERCENT.search(_v):
+            _bg18_bad("bg18-percent", "%s 的手册值里有裸 %%（会被 format 成 Format error）：%s"
+                      % (_side, _k))
+_bg18_checked += 1
+if _b18_vals < 300:
+    _bg18_bad("bg18-percent-anti-vacuum", "只扫到 %d 条手册值（反空转）" % _b18_vals)
+# 正向：作者报的那两页（崩乱合金武器 / 盾牌）必须**确实**是 `%%`
+for _k in ("bettergold.handbook.page.prison_chaosalloy_2_left",
+           "bettergold.handbook.page.prison_chaosalloy_2_right"):
+    _bg18_checked += 2
+    if "50%%" not in str(zh.get(_k, "")):
+        _bg18_bad("bg18-percent", "中文没有把 50%% 转义成 50%%%%：" + _k)
+    if "50%%" not in str(en.get(_k, "")):
+        _bg18_bad("bg18-percent", "英文没有把 50%% 转义成 50%%%%：" + _k)
+
+# ---------------- P2-c：JEI 里「金钱贝」第二条配方必须是**金钱茄**，不是金锭 ----------------
+# 根因（读源码 Chain）：两张配方共用 `GoldenCowrieMoldRecipe`，但 `getSerializer()` 原先恒返回
+#   金锭版序列化器 ⇒ 客户端按它反序列化（`SimpleCraftingRecipeSerializer` 的 StreamCodec 只带
+#   category、走金锭版工厂）⇒ 客户端实例 catalyst = 金锭 ⇒ JEI 的 ingredient 画成金锭。
+_b18_mold_src = JAVA / "recipe" / "GoldenCowrieMoldRecipe.java"
+_b18_all_recipes = JAVA / "registry" / "AllRecipes.java"
+_bg18_checked += 6
+if not _b18_mold_src.is_file() or not _b18_all_recipes.is_file():
+    _bg18_bad("bg18-cowrie-mold", "缺 GoldenCowrieMoldRecipe.java / AllRecipes.java")
+else:
+    _b18_mold = strip_comments(_b18_mold_src.read_text(encoding="utf-8"))
+    _b18_recipes = strip_comments(_b18_all_recipes.read_text(encoding="utf-8"))
+    if "return this.variant == 1" not in _b18_mold:
+        _bg18_bad("bg18-cowrie-mold", "getSerializer() 没有按变体分支（旧 bug 会复活）")
+    if "AllRecipes.GOLDEN_COWRIE_MOLD_MONEY_EGGPLANT_RECIPE.get()" not in _b18_mold:
+        _bg18_bad("bg18-cowrie-mold", "金钱茄版没有把自己的序列化器返回给客户端")
+    if 'register("golden_cowrie_mold_money_eggplant"' not in _b18_recipes:
+        _bg18_bad("bg18-cowrie-mold", "序列化器 golden_cowrie_mold_money_eggplant 没注册")
+    if "new GoldenCowrieMoldRecipe(cat, AllItems.GOLDEN_EGGPLANT.get())" not in _b18_recipes:
+        _bg18_bad("bg18-cowrie-mold", "金钱茄版的工厂没把兑换物设成 GOLDEN_EGGPLANT")
+    if "Ingredient.of(this.catalyst)" not in _b18_mold:
+        _bg18_bad("bg18-cowrie-mold", "getIngredients() 不是按 this.catalyst 出 ingredient")
+    # 模具耐久 −1 语义仍是同一个类（不许另起一份实现）
+    if "worn.setDamageValue(worn.getDamageValue() + 1)" not in _b18_mold:
+        _bg18_bad("bg18-cowrie-mold", "模具耐久 −1 的唯一实现不见了")
+
+# ---------------- P3：音咆不许噬主（施加者站在自己音咆范围内不掉血） ----------------
+_b18_events = JAVA / "material" / "MetalEvents.java"
+_bg18_checked += 5
+if not _b18_events.is_file():
+    _bg18_bad("bg18-echo-roar", "缺 MetalEvents.java")
+else:
+    _b18_ev = strip_comments(_b18_events.read_text(encoding="utf-8"))
+    if _b18_ev.count("markEchoRoarSource(") < 3:      # 1 处定义 + 2 处调用
+        _bg18_bad("bg18-echo-roar", "markEchoRoarSource 的定义/两处调用不全（武器命中 + 盔甲反制）")
+    if "ECHO_ROAR_SOURCE_KEY" not in _b18_ev:
+        _bg18_bad("bg18-echo-roar", "没有记施加者的持久数据键")
+    # 结算里必须显式跳过施加者（`victim == caster` ⇒ continue）
+    if "victim == caster" not in _b18_ev:
+        _bg18_bad("bg18-echo-roar", "echoRoarTick 没有排除施加者（噬主 bug 会复活）")
+    # 伤害派发点仍然只有一处（不许另开一路）
+    if _b18_ev.count("victim.hurt(sonicBoomSource(serverLevel), level)") != 1:
+        _bg18_bad("bg18-echo-roar", "音咆的伤害派发点不是恰好 1 处")
+    # 寄生与音咆共用同一个「按 UUID 找回施加者」的实现
+    if _b18_ev.count("storedApplier(") < 3:
+        _bg18_bad("bg18-echo-roar", "storedApplier 不是「一处实现 + 两处调用」")
+
+# ---------------- P4：万坚金（贵金）原料配方 = 作者给的 9 格图，**逐格**（含每行每列） ----------------
+# 作者原话：「输出的『核心材料』和『原料』是由多个核心材料之间进行轮换的」⇒ 每个有 raw 的族一条。
+# ⚠ 记账：仓库里**只有 8 个** `raw_<族>` 物品（chaosgold / chaosalloy 没有 raw，见 `metal_forms`），
+#   所以是 **8 条**而不是 9 条 —— 第 9 条要么需要新物品 `raw_chaosgold`（无贴图，作者禁止自己画），
+#   要么要复活作者 2026-10-24 明确「毙掉」的金钱茄原料配方；两条都不做，见 `docs/1.7-...md` §31。
+_B18_CHAOS_MATRIX = [
+    ["bettergold:mixed_crystal_pile", "minecraft:redstone", "minecraft:netherite_scrap"],
+    ["minecraft:netherite_scrap", "minecraft:gold_ingot", "minecraft:gold_ingot"],
+    ["bettergold:chaosgold_block", "bettergold:refined_alchemic_oil", "EXCHANGE"],
+]
+_B18_CHAOS_FAMILIES = ["flamegold", "sturdygold", "thornsgold", "echogold",
+                       "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+_B18_CORE = {
+    "flamegold": "bettergold:blazing_rod", "sturdygold": "bettergold:golden_cowrie",
+    "thornsgold": "bettergold:glittering_vine", "echogold": "bettergold:bundled_echo_shard",
+    "indigoseagold": "bettergold:indigo_ocean_heart", "voodoogold": "bettergold:voodoo_feather",
+    "thundergold": "bettergold:amethyst_energy_dust", "illusiongold": "bettergold:chorus_cherry_branch",
+}
+_b18_seen = sorted(p_.stem for p_ in _RC_DATA.glob("raw_*_chaosgold.json"))
+_bg18_checked += 2
+if _b18_seen != sorted("raw_%s_chaosgold" % f_ for f_ in _B18_CHAOS_FAMILIES):
+    _bg18_bad("bg18-grid", "9 格形状的配方集合不对（应恰好 8 族各一条）：" + repr(_b18_seen))
+for _fam in _B18_CHAOS_FAMILIES:
+    _p = _RC_DATA / ("raw_%s_chaosgold.json" % _fam)
+    _bg18_checked += 6
+    if not _p.is_file():
+        _bg18_bad("bg18-grid", "缺 raw_%s_chaosgold.json" % _fam)
+        continue
+    _o = json.loads(_p.read_text(encoding="utf-8"))
+    if _o.get("type") != "bettergold:raw_sturdygold":
+        _bg18_bad("bg18-grid", "%s 的 type 不对：%r" % (_p.name, _o.get("type")))
+    if _o.get("chaos_block") is not True:
+        _bg18_bad("bg18-grid", "%s 没写 chaos_block: true" % _p.name)
+    if _o.get("catalyst") != "bettergold:refined_alchemic_oil":
+        _bg18_bad("bg18-grid", "%s 的催化剂不是高精度炼金油：%r" % (_p.name, _o.get("catalyst")))
+    if _o.get("count") != 2:
+        _bg18_bad("bg18-grid", "%s 的 count 不是 2：%r" % (_p.name, _o.get("count")))
+    if _o.get("exchange") != _B18_CORE[_fam]:
+        _bg18_bad("bg18-grid", "%s 的核心材料不是 %s：%r"
+                  % (_p.name, _B18_CORE[_fam], _o.get("exchange")))
+    if _o.get("result") != "bettergold:raw_%s" % _fam:
+        _bg18_bad("bg18-grid", "%s 的产物不是 raw_%s：%r" % (_p.name, _fam, _o.get("result")))
+
+# 展示面（JEI / 手册九宫格）= Java `getIngredients()` 的 chaosBlock 分支，**顺序逐格**
+_b18_mold_src2 = JAVA / "recipe" / "RawSturdygoldRecipe.java"
+_bg18_checked += 2
+if not _b18_mold_src2.is_file():
+    _bg18_bad("bg18-grid", "缺 RawSturdygoldRecipe.java")
+else:
+    _b18_rc = strip_comments(_b18_mold_src2.read_text(encoding="utf-8"))
+    _b18_i = _b18_rc.find("return NonNullList.of(Ingredient.EMPTY,")
+    _b18_grid_lines = []
+    if _b18_i >= 0:
+        _b18_blk = _b18_rc[_b18_i:_b18_rc.find("return NonNullList.of(", _b18_i + 10)]
+        # 只取 chaosBlock 分支里的 9 个 `Ingredient.of(...)`（按出现顺序 = 九宫格顺序）
+        _b18_grid_lines = re.findall(r"Ingredient\.of\(([^()]*(?:\(\))?)\)", _b18_blk)
+    if len(_b18_grid_lines) != 9:
+        _bg18_bad("bg18-grid", "getIngredients() 的 chaosBlock 分支不是 9 格（实际 %d）"
+                  % len(_b18_grid_lines))
+    else:
+        _want_cells = [c_ for row in _B18_CHAOS_MATRIX for c_ in row]
+        _got_cells = []
+        for _ln in _b18_grid_lines:
+            _arg = _ln.strip()
+            if _arg == "AllItems.MIXED_CRYSTAL_PILE.get()":
+                _got_cells.append("bettergold:mixed_crystal_pile")
+            elif _arg == "Items.REDSTONE":
+                _got_cells.append("minecraft:redstone")
+            elif _arg == "Items.NETHERITE_SCRAP":
+                _got_cells.append("minecraft:netherite_scrap")
+            elif _arg == "Items.GOLD_INGOT":
+                _got_cells.append("minecraft:gold_ingot")
+            elif _arg == "chaosGoldBlockItem()":
+                _got_cells.append("bettergold:chaosgold_block")
+            elif _arg == "this.catalyst":
+                _got_cells.append("bettergold:refined_alchemic_oil")
+            elif _arg == "this.exchange":
+                _got_cells.append("EXCHANGE")
+            else:
+                _got_cells.append("?" + _arg)
+        # 逐格：第 N 行第 M 列（行优先），**列**也单独报（不只计数）
+        for _i, (_w, _g) in enumerate(zip(_want_cells, _got_cells)):
+            _bg18_checked += 1
+            if _w != _g:
+                _bg18_bad("bg18-grid", "九宫格第 %d 行第 %d 列不对：期望 %s，实际 %s"
+                          % (_i // 3 + 1, _i % 3 + 1, _w, _g))
+        for _c in range(3):
+            _bg18_checked += 1
+            _wc = [_want_cells[_c], _want_cells[_c + 3], _want_cells[_c + 6]]
+            _gc = [_got_cells[_c], _got_cells[_c + 3], _got_cells[_c + 6]]
+            if _wc != _gc:
+                _bg18_bad("bg18-grid", "九宫格第 %d 列整列不对：期望 %r，实际 %r" % (_c + 1, _wc, _gc))
+
+if _bg18_checked < 20:
+    _bg18_bad("bg18-anti-vacuum", "本段只跑了 %d 条判定" % _bg18_checked)
+print("[bg18-summary] 2026-10-25 高阶的「贵金」提取：检查 " + str(_bg18_checked) + " 项，问题 "
+      + str(len(bg18_problems)) + " 条"
+      + ("" if not bg18_problems else "：" + str(bg18_problems[:4])))
+if not bg18_problems:
+    print("[bg18-ok] P1 1 条目 / 4 页（text / 配方+正文 / text / 配方+正文）/ 封面 = 高精度炼金油 / "
+          "4 段中文 = 作者原文 / 两条配方引用都在盘上；"
+          "P2-a 熔炉页与工作台页同跨页（下标 2/3）；P2-b 手册值裸 %% = 0；"
+          "P2-c 金钱茄版返回自己的序列化器；P3 音咆排除施加者；"
+          "P4 8 条 9 格原料配方逐格（含每列）== 作者图")
+
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -11878,7 +12252,9 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        # 2026-10-24 作者九条（`gpt` 轮）—— 每条的稳定 ASCII 段前缀 [gpt<N>-*]
                        gpt_problems,
                        # 2026-10-24 大轮（`bgbig`）：金铸的牢狱 6 章 + 旧四条作废
-                       bgbig_problems)
+                       bgbig_problems,
+                       # 2026-10-25 bg18：P1 新章节（炼金的起步 第 6 章）
+                       bg18_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

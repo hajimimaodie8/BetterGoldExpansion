@@ -1,0 +1,25 @@
+﻿[bg17tex-auth6] ok mob_effect/tremble.png sha256=2f912961e4ed5a4337a6f81b911575b169e97172a81e7ee194653ba5fd9ce768
+[bg18tex-auth] ok block/flamegold_block.png sha256=69c3932960c92db156c548e5df601833e90b2797d442de58586de23c75b8d12f
+[bg18tex-auth] ok block/flamegold_bricks.png sha256=07fc4dd08e8a915e9b72bc03c38659a53d294f2a8219daae4a8bad12269081f3
+[bg18tex-auth] ok block/flamegold_pillar.png sha256=cce4d39ab696300be4f2ce86f8c00ec06ef5658f07da6326f09878fc19c9ce37
+[bg18tex-auth] ok gui/container/sturdygold_anvil.png sha256=debe8cfc08707bb71d534dbd11876f83c2b5fdd1bf7009626d08f1812ad454b2
+[bg18tex-auth] ok gui/sprites/container/sturdygold_anvil/error.png sha256=b0c8aa737917bc39058a5b402b92bca294e90586b0e663be5daa05a7d14c21c3
+[bg18tex-auth] ok item/flamegold_ingot.png sha256=616c80b5118025433768c3c24ecc90b80d876bfb0c4147d7db23b55902a932de
+[bg18tex-auth] ok item/flamegold_upgrade_template.png sha256=5e7c5d1ed9704bc06fd01e15ad8094fa39959dcee10876a80ca3ffad74d3cf36
+[bg18tex-auth] ok item/golden_chocolate_cookie.png sha256=ec099054be279213e289378d4aa25c9b2927ed252b13a404bbe726f9ff4fbbd3
+[bg18tex-auth] ok item/sturdygold_chocolate_cookie.png sha256=fe1814285bb8859526859c9851a5fbd7a0bc55d2203d8ac9a7764c3571a58973
+[bg18tex-auth] ok trims/color_palettes/chaosgold.png sha256=25e9d4b7ff72814e970ddeca4601e2adfb0ab17b4fb249e838e9c9e13671b8e4
+[bg16-authorized-blank-texture] ok item/golden_trident_blank.png
+[bgfinal3-indigosea-sha] ok trims/color_palettes/indigoseagold.png
+[bgfinal3-indigosea-not-quartz] ok coloured 8 of 8 px
+[bg17tex-model-ref] ok 64 of 64 replaced textures still referenced by model json
+[bg17tex-needle-src] ok armour layer convention present on stripped source (stripped bytes 39910)
+[bg18tex-needle-model] ok 7 of 7（三张方块 + 锭 + 模板 + 两张曲奇）
+[bg18tex-needle-gui] ok 主面板 + 错误图标两处引用都在（去注释源码）
+[bg18tex-needle-trim] ok asset_name=chaosgold -> color_palettes/chaosgold.png
+[bg17tex-auth] ok 72 of 72
+[bg17tex-untouched] ok 544 of 543
+[bg17tex-auth6] ok 1 of 1（第五次授权之外、作者 #12 另批的那一张）
+[bg18tex-auth7] ok 10 of 10（第七次授权：1.7 贴图更新包第二关）
+[bg17tex-summary] checked=633 authorized=72 untouched=544 modelrefs=64 auth7=10 problems=0
+[bg17tex-ok] all invariants hold

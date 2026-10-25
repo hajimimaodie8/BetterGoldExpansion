@@ -124,6 +124,72 @@ DOUBLED_COUNT = 2
 DOUBLED_SUFFIX = "_doubled"
 
 # ---------------------------------------------------------------------------------------
+# ★ 1.7 `bg18`（2026-10-25）：作者给的**新 9 格图**「混沌金块 + 高精度炼金油」
+# ---------------------------------------------------------------------------------------
+# 作者原话：「输出的『核心材料』和『原料』是由多个核心材料之间进行轮换的」
+#   ⇒ **每个有 raw 的族各一条**（核心材料 ↔ 产出的原料一一对应），形状逐格 = 作者那张图：
+#       [混合晶石堆] [红石粉]       [下界合金碎片]
+#       [下界合金碎片] [金锭]       [金锭]
+#       [混沌金块]   [高精度炼金油] [核心材料]
+#   ⚠ 作者图上写的「混合金石堆」= 本仓既有的 **`bettergold:mixed_crystal_pile`（混合晶石堆）**，
+#     全仓没有第二个同名物品（`item.bettergold.mixed_crystal_pile` 是唯一一条）；
+#     按**中文名近义 + 唯一性**取它，记账在 `docs/1.7-...md` §31。
+#   ⚠ 作者图上没写产物数量：本形状的催化剂就是「高精度炼金油」（= 双倍油）⇒ 沿用同一条语义 **count = 2**，
+#     记账同上（作者一句话可改 1）。
+#
+# 为什么是**新增第三种形状**而不是改基础那条：P1 手册同时要展示
+#   ① 「拥有高精度炼金油的原料配方」（= 老形状 + 高精度油 ⇒ `_doubled`，已经是 2 个）
+#   ② 「拥有高精度炼金油 + 混沌金块 的原料配方」（= 本形状）
+# ⇒ 两条都得在。旧形状原文留档见 `RawSturdygoldRecipe` 的类注释（一个字没删）。
+CHAOS_SUFFIX = "_chaosgold"
+CHAOS_BLOCK_FIELD = "chaos_block"
+
+
+def chaos_raw_targets() -> list[tuple[str, dict, dict]]:
+    """[(新形状文件名, 新形状 JSON, 基础版 JSON)] —— 每个「贵金原料」族一条"""
+    out = []
+    for base in raw_craft_bases():
+        base_obj = json.loads(base.read_text(encoding="utf-8"))
+        metal = base.stem[len("raw_"):]
+        obj = {
+            "type": RAW_RECIPE_TYPE,
+            "exchange": base_obj.get("exchange", "bettergold:golden_cowrie"),
+            "result": base_obj.get("result", "bettergold:raw_sturdygold"),
+            RAW_CATALYST_FIELD: DOUBLED_OIL,
+            RAW_COUNT_FIELD: DOUBLED_COUNT,
+            CHAOS_BLOCK_FIELD: True,
+        }
+        assert obj["result"] == "bettergold:raw_%s" % metal, obj
+        out.append((base.stem + CHAOS_SUFFIX + ".json", obj, base_obj))
+    return out
+
+
+def check_chaos(targets: list[tuple[str, dict, dict]]) -> list[str]:
+    """新形状的四个不变量（每条都能单独变红）"""
+    bad: list[str] = []
+    if len(targets) != 8:
+        bad.append("新 9 格形状的配方不是 8 条（每个有 raw 的族一条）：%d" % len(targets))
+    rows = set()
+    for name, obj, base_obj in targets:
+        if obj.get(CHAOS_BLOCK_FIELD) is not True:
+            bad.append("%s 的 chaos_block 不是 true" % name)
+        if obj.get(RAW_CATALYST_FIELD) != DOUBLED_OIL:
+            bad.append("%s 的 catalyst 不是 %s" % (name, DOUBLED_OIL))
+        if obj.get(RAW_COUNT_FIELD) != DOUBLED_COUNT:
+            bad.append("%s 的 count 不是 %d" % (name, DOUBLED_COUNT))
+        if obj.get("type") != RAW_RECIPE_TYPE:
+            bad.append("%s 的 type 不是 %s" % (name, RAW_RECIPE_TYPE))
+        # 兑换物 / 产物必须与基础版**同义**（基础版允许省字段 ⇒ 按缺省回落比较）
+        if obj.get("exchange") != base_obj.get("exchange", "bettergold:golden_cowrie"):
+            bad.append("%s 的 exchange 与基础版不同" % name)
+        if obj.get("result") != base_obj.get("result", "bettergold:raw_sturdygold"):
+            bad.append("%s 的 result 与基础版不同" % name)
+        rows.add(tuple(sorted(obj)))
+    if len(rows) > 1:
+        bad.append("8 条新形状配方的字段集不一致：%r" % (sorted(rows)[:2],))
+    return bad
+
+# ---------------------------------------------------------------------------------------
 # 1.7 作者 2026-10-24 第 ③ 条（`gpt` 轮）：**毙掉「万坚金原料的金钱茄配方」**
 # ---------------------------------------------------------------------------------------
 # 作者原话：「毙掉『万坚金原料的金钱茄配方』，换成 金钱茄 + 金钱贝模具 → 金钱贝」。
@@ -154,14 +220,20 @@ def _is_raw_craft(obj: dict) -> bool:
 
 
 def raw_craft_bases() -> list[Path]:
-    """recipe 目录里所有「贵金原料合成」的基础配方（**数据驱动**，不写死文件名）"""
+    """recipe 目录里所有「贵金原料合成」的**基础**配方（**数据驱动**，不写死文件名）
+
+    ⚠ 1.7 `bg18`：第三种形状（`raw_<族>_chaosgold.json`，`chaos_block: true`）**不是基础版**，
+    必须排除在外 —— 否则下一次 `--apply` 会给它们再派生一层 `_chaosgold_doubled`。
+    """
     out = []
     for p in sorted(RECIPES.glob("*.json")):
-        if p.stem.endswith(DOUBLED_SUFFIX):
+        if p.stem.endswith(DOUBLED_SUFFIX) or p.stem.endswith(CHAOS_SUFFIX):
             continue
         try:
             obj = json.loads(p.read_text(encoding="utf-8"))
         except Exception:                     # noqa: BLE001  别的形状坏了不归本脚本管
+            continue
+        if obj.get(CHAOS_BLOCK_FIELD):
             continue
         if _is_raw_craft(obj):
             out.append(p)
@@ -403,7 +475,21 @@ def main() -> None:
           f"（催化剂 {DOUBLED_OIL}、数量 {DOUBLED_COUNT}）")
     print(f"双倍贵金原料自检失败: {len(doubled_bad)} {doubled_bad[:4]}")
 
-    if chain_bad or raw_bad or doubled_bad:
+    # ★ 1.7 `bg18`：第三种形状「混沌金块 + 高精度炼金油」（作者 2026-10-25 的 9 格图）
+    chaos = chaos_raw_targets()
+    chaos_bad = check_chaos(chaos)
+    chaos_written = 0
+    for name, obj, _base in chaos:
+        text = json.dumps(obj, ensure_ascii=False, indent=2) + "\n"
+        json.loads(text)                      # 合法 JSON
+        if args.apply:
+            (RECIPES / name).write_text(text, encoding="utf-8", newline="\n")
+            chaos_written += 1
+    print(f"{'已写入' if args.apply else '演练'}: {chaos_written or len(chaos)} 条「混沌金块 + 高精度炼金油」"
+          f"9 格原料配方（catalyst {DOUBLED_OIL} / count {DOUBLED_COUNT} / chaos_block true）")
+    print(f"混沌金块 9 格原料配方自检失败: {len(chaos_bad)} {chaos_bad[:4]}")
+
+    if chain_bad or raw_bad or doubled_bad or chaos_bad:
         raise SystemExit(1)
 
 

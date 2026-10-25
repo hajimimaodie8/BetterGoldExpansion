@@ -521,6 +521,16 @@ public final class MetalEvents {
     public static final String PARASITE_SOURCE_KEY = "bettergold_parasite_source";
     /** 幽咆每秒结算的冷却键（挂在**受损者**身上，避免同一实体被同一块建材/同一次结算反复打） */
     private static final String ECHO_ROAR_TICK_KEY = "bettergold_echo_roar_tick";
+    /**
+     * 音咆「施加者是谁」记在**目标**的持久数据里（1.7 `bg18` P3：结算是 3×3×3 范围伤害，
+     * 不排除施加者就会**噬主**）。
+     *
+     * <p>⚠ 记账（P3 先查路径再改）：旧实现的伤害派发点是
+     * {@link #echoRoarTick} 里对 {@code AABB(pos).inflate(1)} 内**全部** LivingEntity 的
+     * {@code victim.hurt(sonicBoomSource(...), level)} —— 这是**范围 AOE 波及**（不是反伤）：
+     * 施加者只要站在目标的 3×3×3 里就会挨自己这一发。修法 = 只排除「本次 buff 的施加者」。</p>
+     */
+    public static final String ECHO_ROAR_SOURCE_KEY = "bettergold_echo_roar_source";
 
     /**
      * 通用的「同一实体每 {@code cooldown} tick 最多一次」节流（放实体持久数据里，跟着实体生灭）。
@@ -715,12 +725,33 @@ public final class MetalEvents {
     /** 寄生结算时按 UUID 找回施加者（已死 / 已卸载 / 换维度一律当没有） */
     private static net.minecraft.world.entity.LivingEntity parasiteApplier(
             net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LivingEntity target) {
+        return storedApplier(level, target, PARASITE_SOURCE_KEY);
+    }
+
+    /**
+     * 按 UUID 从**目标的持久数据**里找回「施加者」（寄生 / 音咆共用这一处查表）。
+     * 已死 / 已卸载 / 换维度一律当没有（返回 {@code null} ⇒ 调用方按"没有施加者"处理）。
+     */
+    private static net.minecraft.world.entity.LivingEntity storedApplier(
+            net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LivingEntity target,
+            String key) {
         var data = target.getPersistentData();
-        if (!data.hasUUID(PARASITE_SOURCE_KEY)) {
+        if (!data.hasUUID(key)) {
             return null;
         }
-        var entity = level.getEntities().get(data.getUUID(PARASITE_SOURCE_KEY));
+        var entity = level.getEntities().get(data.getUUID(key));
         return entity instanceof net.minecraft.world.entity.LivingEntity living && living.isAlive() ? living : null;
+    }
+
+    /**
+     * 命中时把「音咆是谁施加的」记到目标身上（P3：结算时排除施加者自己；每次命中覆盖为最新施加者）。
+     */
+    public static void markEchoRoarSource(net.minecraft.world.entity.LivingEntity target,
+            net.minecraft.world.entity.LivingEntity caster) {
+        if (target.level().isClientSide() || caster == null || caster == target) {
+            return;
+        }
+        target.getPersistentData().putUUID(ECHO_ROAR_SOURCE_KEY, caster.getUUID());
     }
 
     /**
@@ -759,11 +790,18 @@ public final class MetalEvents {
                 center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;
         var area = new net.minecraft.world.phys.AABB(pos).inflate(MetalFamily.ECHO_ROAR_RADIUS);
+        // ★ 1.7 `bg18`（P3，2026-10-25）：**不许噬主** —— 记在目标持久数据里的施加者要排除掉。
+        //   旧口径原文留档（未删）：循环体里**没有**任何 `victim == caster` 判断 ⇒ 施加者站在
+        //   目标 3×3×3 内时会被自己这一发声波打到（作者报的"波及使用者"）。
+        var caster = storedApplier(serverLevel, entity, ECHO_ROAR_SOURCE_KEY);
         // bg-fix2 第 2 条（2026-10-06）：判据从「有目标挨打（hitAny）」改成「本次确实对着候选受害者判定过」，
         // 与 sonicContact 逐字同构 —— 音效不再被 hurt 的返回值挡住（创造模式 / 免疫 / 无敌帧差额 0）。
         // ⚠ 旧变量名 hitAny 与旧判据（原文保留在 playSonicBoomSound 的 javadoc 里）。
         boolean sawVictim = false;
         for (var victim : serverLevel.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, area)) {
+            if (victim == caster) {
+                continue;                       // P3：施加者自己不吃自己这一发声波
+            }
             if (contactThrottled(victim, ECHO_ROAR_TICK_KEY, MetalFamily.Spec.DEFAULT_CONTACT_COOLDOWN)) {
                 continue;
             }
@@ -1312,6 +1350,8 @@ public final class MetalEvents {
         } else if (family.echoRoarOnAttack) { // 1.6 幽咆金：叠 1 级 6 秒音咆（内部 id echo_roar）
             stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.ECHO_ROAR,
                     MetalFamily.ECHO_ROAR_TICKS);
+            // ★ 1.7 `bg18`（P3）：记下施加者 ⇒ 每秒的 3×3×3 声波结算里排除他（不许噬主）
+            markEchoRoarSource(target, attacker);
         } else if (family.imbalanceOnAttack) {
             // ---------- 1.7 bg-n10r7（轮7）崩乱合金：50% 概率随机挂 16 秒「力量失衡」或「抗性失衡」 ----------
             // 作者原话（立档 §2.10）：「攻击时 50% 概率随机挂 16 秒力量失衡或抗性失衡（近战与远程都可）」。
@@ -2028,6 +2068,8 @@ public final class MetalEvents {
             } else if (family.echoRoarReflect) {   // 1.6 幽咆金：给攻击者叠 1 级幽咆
                 stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.ECHO_ROAR,
                         MetalFamily.ECHO_ROAR_TICKS);
+                // ★ 1.7 `bg18`（P3）：这次音咆的施加者 = 穿戴者（反制方）⇒ 结算时排除他
+                markEchoRoarSource(attacker, wearer);
             } else if (family.imbalanceReflect) {
                 // 1.7（bg-n10r7）崩乱合金盔甲：每件 10%（配置项）、四件 40% ⇒ 给攻击者随机挂一个失衡
                 //（50/50 选「力量失衡 / 抗性失衡」，与器具命中同一个入口 ImbalanceEffects#applyRandom）

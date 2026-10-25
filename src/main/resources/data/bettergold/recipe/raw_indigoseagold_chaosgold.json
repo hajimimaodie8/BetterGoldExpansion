@@ -1,0 +1,8 @@
+{
+  "type": "bettergold:raw_sturdygold",
+  "exchange": "bettergold:indigo_ocean_heart",
+  "result": "bettergold:raw_indigoseagold",
+  "catalyst": "bettergold:refined_alchemic_oil",
+  "count": 2,
+  "chaos_block": true
+}

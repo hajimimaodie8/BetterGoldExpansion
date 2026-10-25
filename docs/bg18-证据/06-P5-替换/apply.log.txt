@@ -1,0 +1,15 @@
+﻿[zip] sha256=f593d52dbce6d0322555a6ff4212f5db45a7a4a34c46d4332a19e1dd2ccb3172 bytes=9202 (只读)
+[before] textures=617 -> textures_before.tsv
+  1792547527281.png            -> gui/container/sturdygold_anvil.png             old=24a277b99da860b9 new=debe8cfc08707bb7 
+  1792547604001.png            -> gui/sprites/container/sturdygold_anvil/error.png old=dcbac5908d8fec56 new=b0c8aa737917bc39 
+  1792829920491.png            -> block/flamegold_bricks.png                     old=c590410b4c419325 new=07fc4dd08e8a915e 
+  1792829936399.png            -> block/flamegold_pillar.png                     old=3140f403f8fe39ce new=cce4d39ab696300b 
+  1792829981886.png            -> block/flamegold_block.png                      old=5b808d633bb85fa7 new=69c3932960c92db1 
+  1792829997817.png            -> item/flamegold_ingot.png                       old=2db942543746951a new=616c80b511802543 
+  1792830024159.png            -> item/flamegold_upgrade_template.png            old=505964c6a7f304c2 new=5e7c5d1ed9704bc0 
+  万坚金巧克力曲奇.png                 -> item/sturdygold_chocolate_cookie.png           old=d74e24d31fa93d01 new=fe1814285bb88595 
+  新的混沌金纹饰色卡.png                -> trims/color_palettes/chaosgold.png             old=75587687ca69f5f2 new=25e9d4b7ff72814e 
+  金巧克力曲奇.png                   -> item/golden_chocolate_cookie.png               old=5c1ac52bc09e54c3 new=ec099054be279213 
+[认亲表] docs\bg18-证据\06-P5-替换\认亲表.tsv rows=10
+[after] textures=617 changed=10 missing=0 added=0
+[zip-after] bytes=9202 sha256=f593d52dbce6d0322555a6ff4212f5db45a7a4a34c46d4332a19e1dd2ccb3172 same=True

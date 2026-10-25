@@ -10,16 +10,16 @@
       "text": "bettergold.handbook.page.prison_chaosgold_main_1_left"
     },
     {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.prison_chaosgold_main_2_left"
+    },
+    {
       "type": "patchouli:smelting",
       "recipe": "bettergold:chaos_coin_smelting"
     },
     {
       "type": "patchouli:crafting",
       "recipe": "bettergold:chaosgold_ingot_from_nugget"
-    },
-    {
-      "type": "patchouli:text",
-      "text": "bettergold.handbook.page.prison_chaosgold_main_2_left"
     },
     {
       "type": "patchouli:crafting",

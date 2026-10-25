@@ -1,0 +1,48 @@
+﻿[bg18b-s] PASS cowrie_two_instances :: gold_ingot_recipe=GoldenCowrieMoldRecipe money_eggplant_recipe=GoldenCowrieMoldRecipe
+[bg18b-s] PASS cowrie_catalyst_gold_ingot :: catalyst=minecraft:gold_ingot
+[bg18b-s] PASS cowrie_catalyst_money_eggplant :: catalyst=bettergold:golden_eggplant
+[bg18b-s] PASS cowrie_variants :: variant=0/1
+[bg18b-s] PASS cowrie_serializers_differ :: serializer0=bettergold:golden_cowrie_mold serializer1=bettergold:golden_cowrie_mold_money_eggplant
+[bg18b-s] PASS cowrie_craft_gold_ingot_result :: result=1x bettergold:golden_cowrie (expected 1x bettergold:golden_cowrie)
+[bg18b-s] PASS cowrie_craft_gold_ingot_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS cowrie_craft_gold_ingot_landed :: landed=1 (expected 1)
+[bg18b-s] PASS cowrie_craft_money_eggplant_result :: result=1x bettergold:golden_cowrie (expected 1x bettergold:golden_cowrie)
+[bg18b-s] PASS cowrie_craft_money_eggplant_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS cowrie_craft_money_eggplant_landed :: landed=1 (expected 1)
+[bg18b-s] PASS grid_craft_echogold_result :: result=2x bettergold:raw_echogold (expected 2x bettergold:raw_echogold)
+[bg18b-s] PASS grid_craft_echogold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_echogold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_craft_flamegold_result :: result=2x bettergold:raw_flamegold (expected 2x bettergold:raw_flamegold)
+[bg18b-s] PASS grid_craft_flamegold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_flamegold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_craft_illusiongold_result :: result=2x bettergold:raw_illusiongold (expected 2x bettergold:raw_illusiongold)
+[bg18b-s] PASS grid_craft_illusiongold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_illusiongold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_craft_indigoseagold_result :: result=2x bettergold:raw_indigoseagold (expected 2x bettergold:raw_indigoseagold)
+[bg18b-s] PASS grid_craft_indigoseagold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_indigoseagold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_craft_sturdygold_result :: result=2x bettergold:raw_sturdygold (expected 2x bettergold:raw_sturdygold)
+[bg18b-s] PASS grid_craft_sturdygold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_sturdygold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_craft_thornsgold_result :: result=2x bettergold:raw_thornsgold (expected 2x bettergold:raw_thornsgold)
+[bg18b-s] PASS grid_craft_thornsgold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_thornsgold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_craft_thundergold_result :: result=2x bettergold:raw_thundergold (expected 2x bettergold:raw_thundergold)
+[bg18b-s] PASS grid_craft_thundergold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_thundergold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_craft_voodoogold_result :: result=2x bettergold:raw_voodoogold (expected 2x bettergold:raw_voodoogold)
+[bg18b-s] PASS grid_craft_voodoogold_consumed :: all slots consumed as expected; resultCleared=true
+[bg18b-s] PASS grid_craft_voodoogold_landed :: landed=2 (expected 2)
+[bg18b-s] PASS grid_recipes_eight :: loaded=8/8
+[bg18b-s] readout caster_added entities=0
+[bg18b-s] readout echoA caster=20.0 victim=20.0 bystander=20.0 entities=0
+[bg18b-s] readout evalA caster=20.0 victimA=19.0 bystander=19.0 entities=3
+[bg18b-s] PASS echo_entities_visible :: entities_in_3x3x3=3 (caster + victimA + bystander)
+[bg18b-s] PASS echo_caster_unhurt :: caster 20.0 -> 20.0 (expected unchanged; source was recorded)
+[bg18b-s] PASS echo_victim_hurt :: victim 20.0 -> 19.0
+[bg18b-s] PASS echo_bystander_hurt :: bystander 20.0 -> 19.0
+[bg18b-s] readout evalB caster=17.0 (no source recorded -> must be hurt)
+[bg18b-s] PASS echo_control_without_mark_caster_hurt :: caster 20.0 -> 17.0 (expected hurt: negative control)
+[bg18b-s] forcedNow=0
+[bg18b-s] PASS forceload_zero :: forcedNow=0
+[bg18b-s] SUMMARY pass=42 fail=0 forcedNow=0

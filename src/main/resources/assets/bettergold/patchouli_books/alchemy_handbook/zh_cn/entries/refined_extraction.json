@@ -1,0 +1,27 @@
+{
+  "name": "bettergold.handbook.entry.refined_extraction",
+  "category": "bettergold:alchemy_start",
+  "icon": "bettergold:refined_alchemic_oil",
+  "sortnum": 5,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.refined_extraction_1_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:raw_sturdygold_doubled",
+      "text": "bettergold.handbook.page.refined_extraction_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.refined_extraction_2_left"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "bettergold:raw_sturdygold_chaosgold",
+      "text": "bettergold.handbook.page.refined_extraction_2_right"
+    }
+  ]
+}

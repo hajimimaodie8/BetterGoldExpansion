@@ -1,0 +1,8 @@
+{
+  "type": "bettergold:raw_sturdygold",
+  "exchange": "bettergold:voodoo_feather",
+  "result": "bettergold:raw_voodoogold",
+  "catalyst": "bettergold:refined_alchemic_oil",
+  "count": 2,
+  "chaos_block": true
+}

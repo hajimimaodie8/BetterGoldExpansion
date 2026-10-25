@@ -1,0 +1,18 @@
+﻿[P0 baseline] want=0 got=0 PASS
+[P1 authorized-overwritten] want=1 got=1 needle=bg18tex-auth PASS
+[P2 untouched-1byte] want=1 got=1 needle=bg17tex-untouched-fail PASS
+[P3 auth-table-row-deleted] want=1 got=1 needle=bg18tex-manifest-fail PASS
+[P4 authorized-reverted-to-old] want=1 got=1 needle=bg18tex-revert PASS
+[P5 comment-only-edit] want=0 got=0 needle=- PASS
+[P6 gui-needle-in-comment-only] want=1 got=1 needle=bg18tex-needle-gui-fail PASS
+[P7 baseline-after-restore] want=0 got=0 PASS
+
+[restore-sha]
+  src\main\java\com\hjmmd_8\bettergold\client\SturdygoldAnvilScreen.java  ffc19716f5a5217779a3fe3efce3a59a40f17dd3ee275c725ad2cdd916868595  same
+  src\main\resources\assets\bettergold\textures\block\flamegold_bricks.png  07fc4dd08e8a915e9b72bc03c38659a53d294f2a8219daae4a8bad12269081f3  same
+  src\main\resources\assets\bettergold\textures\block\sturdygold_bricks.png  846bf1cb03b56ab3443759f667442e1ffd2bfd5036aa50879e42144a9ec3f526  same
+  src\main\resources\assets\bettergold\textures\item\flamegold_ingot.png  616c80b5118025433768c3c24ecc90b80d876bfb0c4147d7db23b55902a932de  same
+  tools\asset-generator\bg18tex_auth.tsv  bebd5af8addd81393be154c7ec075ca5f5b3c0e739f1da5b6429cf3a49006bb0  same
+  tools\asset-generator\validate_bg17_textures.py  4294edb163025951ee671646aeaf374e5957039105dbc322da3cafc8d46d0837  same
+
+SUMMARY cases=8 pass=8 fail=0

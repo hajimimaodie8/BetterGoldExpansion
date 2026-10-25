@@ -1200,16 +1200,23 @@ def entry_prison_chaosgold_main():
     eid = "prison_chaosgold_main"
     pages = [
         text_page(_ph(eid, "1_left")),
-        # 1 右：上 = 烧制混沌金粒 / 下 = 制作混沌金锭。
+        # ★ 2026-10-25（P2-a）：两段文案**先并到第一个跨页**（1 左 / 1 右），
+        #   把「烧制 + 制作」这一对挪到**第二个跨页**（第 3 / 第 4 页）。
+        #   根因：Patchouli 的书是**左右对开**，一屏 = 下标 (2k, 2k+1)；旧顺序把熔炉页放在
+        #   下标 1（第 1 屏右页）、工作台页放在下标 2（第 2 屏左页）⇒ **翻书时永远不同屏**，
+        #   这正是作者报的"两种配方不能同框"。
+        #   ⚠ 旧顺序原文留档（未删）：`text 1_left, smelting, crafting, text 2_left`。
+        text_page(_ph(eid, "2_left")),
+        # 第 3 页（第 2 屏左）：上 = 烧制混沌金粒
         # ⚠ **门禁项（Patchouli 结构上限）**：这两条是**不同配方类型**
         #   （`minecraft:smelting` vs `minecraft:crafting_shaped`），而 Patchouli 的
         #   `PageDoubleRecipe` 每个页型只认**一种** recipe class（`PageCrafting` →
         #   `CraftingRecipe`、`PageSmelting` → `SmeltingRecipe`）⇒ **一页放不下两种类型**。
-        #   落法 = 拆成相邻两页（上 = 熔炉页、下 = 工作台页），配方一条不少、顺序不变；
-        #   记账在 `docs/1.7-...md` §30。
+        #   落法 = **相邻两页 + 同一跨页**（左 = 熔炉页、右 = 工作台页），配方一条不少、顺序不变；
+        #   记账在 `docs/1.7-...md` §31（旧记 §30 的"拆成相邻两页"已被 P2-a 取代）。
         smelting_page("chaos_coin_smelting"),
+        # 第 4 页（第 2 屏右）：下 = 制作混沌金锭
         crafting_page("chaosgold_ingot_from_nugget"),
-        text_page(_ph(eid, "2_left")),
     ]
     # 2 右 起：混沌金装备系列配方图集（15 件 = 7 页 × 2 + 1 页单条；顺序 = §八 FORGE_ORDER + 刀）
     for _i in range(0, len(PRISON_GEAR_ORDER), 2):
@@ -1275,6 +1282,49 @@ RETIRED_ENTRIES = RETIRED_ENTRIES + list(CHAOS_ENTRIES)
 RETIRED_ENTRIES = RETIRED_ENTRIES + [entry_golden_feast]
 
 
+# --------------------------------------------------------------------------------------
+# ★★ 1.7 `bg18`（2026-10-25）：「炼金的起步」第 6 章 ——「高阶的「贵金」提取」
+# --------------------------------------------------------------------------------------
+#
+# 作者本轮（P1）给的**逐字文案**（一个字不许改）与**页型指令**（括号里的照做）：
+#
+#   第 1 页左（text）：效率更高的路线 —— 金火把花种子 → 金火把花 →（酿造台，炼金燃油为基 +
+#                      金火把花为引）→ 高精度炼金油。
+#   第 1 页右（**上边放**「拥有高精度炼金油的万坚金原料配方」+ 下方正文）：
+#                      「……比之前的炼金燃油翻了一倍……」 ⇒ 上边那条 = `raw_sturdygold_doubled`
+#                      （老形状 + `catalyst = refined_alchemic_oil` + `count = 2`，1.7 `bg-n10rg` 已有）。
+#   第 2 页左（text）：混沌金相关物「改头换面成为一个真正的『贵金』」。
+#   第 2 页右（**上边放**「拥有高精度炼金油 + 混沌金块 的万坚金（原料）配方」+ 下方正文）：
+#                      ⇒ 上边那条 = `raw_sturdygold_chaosgold`（P4 的 9 格形状；`chaos_block: true`）。
+#
+# ⚠ 配方页 ≤ 2/页 ✓（两页各只有 1 条配方；正文挂在 `PageDoubleRecipe extends PageWithText` 的
+#   `text` 槽上，与 §十 既有做法一致）。
+# ⚠ 类别 = `alchemy_start`（炼金的起步）；封面 = **高精度炼金油**（`refined_alchemic_oil`）；
+#   sortnum = 5（该类别里 aux=2 / core=3 / knowledge=4 之后）。
+# ⚠ 这一章 **1 条目 / 4 页**。
+REFINED_ENTRY_ID = "refined_extraction"
+
+
+def entry_refined_extraction():
+    """「炼金的起步」第 6 章 · 高阶的「贵金」提取（封面 = 高精度炼金油）。4 页。"""
+    eid = REFINED_ENTRY_ID
+    pages = [
+        # 1 左：纯文案（作者那一格写的是 text）
+        text_page(_ph(eid, "1_left")),
+        # 1 右：上边 = 「拥有高精度炼金油的万坚金原料配方」（双倍版），下方 = 正文
+        crafting_page("raw_sturdygold_doubled", None, None, _ph(eid, "1_right")),
+        # 2 左：纯文案
+        text_page(_ph(eid, "2_left")),
+        # 2 右：上边 = 「拥有高精度炼金油 + 混沌金块 的万坚金原料配方」，下方 = 正文
+        crafting_page("raw_sturdygold_chaosgold", None, None, _ph(eid, "2_right")),
+    ]
+    return entry(eid, "alchemy_start", "refined_alchemic_oil", 5, pages)
+
+
+REFINED_ENTRIES = [entry_refined_extraction]
+
+
+
 BOOK = {
     "name": "%s.name" % LANG,
     "subtitle": "%s.subtitle" % LANG,
@@ -1322,7 +1372,7 @@ def main():
         #   那个精确子串，否则关卡会把它当成"又写回旧四条"）：
         #     for builder in (... + FEAST_ENTRIES + 旧CHAOS_ENTRIES 列表):
         for builder in (ENTRIES + CHAPTER_ENTRIES + GEAR_ENTRIES + MERCHANT_ENTRIES + FEAST_ENTRIES
-                        + PRISON_ENTRIES):
+                        + PRISON_ENTRIES + REFINED_ENTRIES):
             data = builder()
             write_json(
                 os.path.join(ASSET_DIR, lang, "entries", "%s.json" % data["name"].rsplit(".", 1)[-1]),
@@ -1336,14 +1386,16 @@ def main():
     feast_pages = sum(len(b()["pages"]) for b in FEAST_ENTRIES)
     chaos_pages = sum(len(b()["pages"]) for b in CHAOS_ENTRIES)      # 旧四条（只用于留档自证）
     prison_pages = sum(len(b()["pages"]) for b in PRISON_ENTRIES)    # 金铸的牢狱 6 章
+    refined_pages = sum(len(b()["pages"]) for b in REFINED_ENTRIES)  # 1.7 bg18 高阶的「贵金」提取
     retired_pages = sum(len(b()["pages"]) for b in RETIRED_ENTRIES)
     print(
         "handbook written: 1 book (data/) + %d categories + %d entries + %d pages x2 languages "
         "(assets/) -> %s + %s"
         % (len(CATEGORIES),
            len(ENTRIES) + len(CHAPTER_ENTRIES) + len(GEAR_ENTRIES) + len(MERCHANT_ENTRIES)
-           + len(FEAST_ENTRIES) + len(PRISON_ENTRIES),
-           pages + chapter_pages + gear_pages + merchant_pages + feast_pages + prison_pages,
+           + len(FEAST_ENTRIES) + len(PRISON_ENTRIES) + len(REFINED_ENTRIES),
+           pages + chapter_pages + gear_pages + merchant_pages + feast_pages + prison_pages
+           + refined_pages,
            BOOK_DIR, ASSET_DIR)
     )
     print(
@@ -1393,6 +1445,12 @@ def main():
            len(entry_prison_chaosgold_extra()["pages"]),
            len(entry_prison_chaosalloy()["pages"]))
     )
+    print(
+        "  ★ 1.7 bg18 高阶的「贵金」提取 (炼金的起步 第6章): %d entries / %d pages "
+        "(1_left=text, 1_right=双倍原料配方(%s)+正文, 2_left=text, "
+        "2_right=混沌金块9格原料配方(%s)+正文; 配方页 <=2/页)"
+        % (len(REFINED_ENTRIES), refined_pages,
+           "raw_sturdygold_doubled", "raw_sturdygold_chaosgold"))
     print(
         "  RETIRED (§八 两个装备条目 + §九 两个商人与古董旧占位 + bg-fix3 §三 两个骨架条目 "
         "+ §十 最后一个骨架占位 golden_feast + bgbig 旧四条混沌金章节，不写盘): "

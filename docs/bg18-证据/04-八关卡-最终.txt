@@ -1,0 +1,26 @@
+﻿=== validate_metal_assets.py exit=0
+
+[bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+[bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+=== validate_metal_data.py exit=0
+[bg18-ok] P1 1 条目 / 4 页（text / 配方+正文 / text / 配方+正文）/ 封面 = 高精度炼金油 / 4 段中文 = 作者原文 / 两条配方引用都在盘上；P2-a 熔炉页与工作台页同跨页（下标 2/3）；
+P2-b 手册值裸 %% = 0；P2-c 金钱茄版返回自己的序列化器；P3 音咆排除施加者；P4 8 条 9 格原料配方逐格（含每列）== 作者图
+[bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+=== validate_advancements.py exit=0
+[bgach-ok] 问题 0 条 / 成就 63 个 / criteria 146 条 / 语言键 126 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+=== validate_trim_assets.py exit=0
+[bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0）
+[bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+=== validate_bg17_textures.py exit=0
+[bg17tex-summary] checked=630 authorized=72 untouched=553 modelrefs=64 problems=0
+[bg17tex-ok] all invariants hold
+=== validate_golden_prison.py exit=0
+[bgp-ok] problems=0 checked=16635 templates=26
+=== check_jar_clean.py exit=0
+[jar-clean-anti-vacuum] 实际检查了 2891 项（jar 内条目数；必须 > 0）
+[jar-clean-ok] 产物 jar 干净（条目 2891；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+=== check_forced_chunks.py exit=0
+[chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+[chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+
+
