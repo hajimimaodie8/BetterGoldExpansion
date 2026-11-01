@@ -10,16 +10,13 @@
       "text": "bettergold.handbook.page.prison_chaosgold_main_1_left"
     },
     {
+      "type": "bettergold:double_recipe",
+      "recipe": "bettergold:chaos_coin_smelting",
+      "recipe2": "bettergold:chaosgold_ingot_from_nugget"
+    },
+    {
       "type": "patchouli:text",
       "text": "bettergold.handbook.page.prison_chaosgold_main_2_left"
-    },
-    {
-      "type": "patchouli:smelting",
-      "recipe": "bettergold:chaos_coin_smelting"
-    },
-    {
-      "type": "patchouli:crafting",
-      "recipe": "bettergold:chaosgold_ingot_from_nugget"
     },
     {
       "type": "patchouli:crafting",
@@ -55,10 +52,6 @@
       "type": "patchouli:crafting",
       "recipe": "bettergold:chaosgold_leggings",
       "recipe2": "bettergold:chaosgold_boots"
-    },
-    {
-      "type": "patchouli:crafting",
-      "recipe": "bettergold:chaosgold_knife"
     }
   ]
 }

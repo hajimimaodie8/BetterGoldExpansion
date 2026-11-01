@@ -1,0 +1,34 @@
+bg20（P4）轮：八关卡（判据 = exit + 关键计数行）
+
+validate_metal_assets.py  exit=0
+    [bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+    [bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_metal_data.py  exit=0
+    [bg20-summary] 2026-10-26 P4 手册「混沌金的主要内容」重做：检查 43 项，问题 0 条
+    [bg20-ok] 自定义页型 bettergold:double_recipe（extends PageDoubleRecipe，按 recipe 实际类分派画法；pageTypes 注册在客户端 setup、守卫在触碰之前；隔离白名单恰好 2 个文件）+ 第 4 章 10 页 = [text, double_recipe(上 chaos_coin_smelting / 下 chaosgold_ingot_from_nugget), text, crafting×7 = 14 件]
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_advancements.py  exit=0
+    [bgach-ok] 问题 0 条 / 成就 63 个 / criteria 157 条 / 语言键 126 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_trim_assets.py  exit=0
+    [bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0）
+    [bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+validate_bg17_textures.py  exit=0
+    [bg17tex-summary] checked=643 authorized=72 untouched=544 modelrefs=64 auth7=10 problems=0
+    [bg17tex-ok] all invariants hold
+
+validate_golden_prison.py  exit=0
+    [bgp-counter] checked=16635
+    [bgp-ok] problems=0 checked=16635 templates=26
+
+check_jar_clean.py  exit=0
+    [jar-clean-anti-vacuum] 实际检查了 2896 项（jar 内条目数；必须 > 0）
+    [jar-clean-ok] 产物 jar 干净（条目 2896；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+check_forced_chunks.py  exit=0
+    [chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+    [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+

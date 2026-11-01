@@ -1,0 +1,302 @@
+package com.hjmmd_8.bettergold.probe.bg20;
+
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.JsonObject;
+
+import com.hjmmd_8.bettergold.patchouli.HandbookPageTypes;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+import vazkii.patchouli.client.book.BookContents;
+import vazkii.patchouli.client.book.BookEntry;
+import vazkii.patchouli.client.book.BookPage;
+import vazkii.patchouli.client.book.ClientBookRegistry;
+import vazkii.patchouli.common.book.Book;
+import vazkii.patchouli.common.book.BookRegistry;
+
+/**
+ * 1.7 `bg20`（P4）的**临时客户端探针**：读 Patchouli **真加载出来的** {@code BookContents}，
+ * 验证「第 1 屏右页 = 自定义页型 {@code bettergold:double_recipe}（上币 → 粒 / 下 9 粒 → 1 锭）」
+ * 与「第 2 屏右起 14 件装备配方、逐页 2 条」。
+ *
+ * <p>红线 5：进世界后第 2 tick 断言世界名（必须 = 本轮自造的 ASCII 探针世界
+ * {@code bg20probe} 的 LevelName，且**负向排除**作者存档名），名字不对立刻停手。</p>
+ *
+ * <p>收尾整块删除；源码副本留在 {@code probe/bg20/}。</p>
+ */
+@EventBusSubscriber(modid = "bettergold", value = Dist.CLIENT)
+public final class ClientProbe {
+
+    private static final String TAG = "[bg20-c]";
+    private static final String BOOK_ID = "bettergold:alchemy_handbook";
+    private static final String ENTRY = "bettergold:prison_chaosgold_main";
+    private static final String P = "patchouli:";
+    private static final String DOUBLE = "bettergold:double_recipe";
+    /** 14 件（= 八族「贵金装备」那张 FORGE_ORDER），本文件**独立写一遍**，不从生成器读 */
+    private static final String[] GEAR = {"sword", "mace", "trident", "bow", "crossbow", "axe",
+            "pickaxe", "shovel", "hoe", "shield", "helmet", "chestplate", "leggings", "boots"};
+
+    private static boolean armed;
+    private static int tick;
+    private static int pass;
+    private static int fail;
+    private static boolean done;
+
+    private ClientProbe() {
+    }
+
+    private static boolean enabled() {
+        return Files.exists(FMLPaths.GAMEDIR.get().resolve("bg20-client-probe.enabled"));
+    }
+
+    private static void log(String msg) {
+        System.out.println(TAG + " " + msg);
+    }
+
+    private static void check(String id, boolean ok, String detail) {
+        if (ok) {
+            pass++;
+        } else {
+            fail++;
+        }
+        log("CHECK " + id + " " + (ok ? "PASS" : "FAIL") + " :: " + detail);
+    }
+
+    @SubscribeEvent
+    public static void onTick(ClientTickEvent.Post event) {
+        if (done) {
+            return;
+        }
+        if (!armed) {
+            if (!enabled()) {
+                return;
+            }
+            armed = true;
+            log("armed=true gamedir=" + FMLPaths.GAMEDIR.get());
+        }
+        tick++;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.getSingleplayerServer() == null) {
+            return;
+        }
+        if (tick == 2) {
+            String name = mc.getSingleplayerServer().getWorldData().getLevelName();
+            boolean ok = "world".equals(name) && !name.contains("\u65b0\u7684\u4e16\u754c");
+            log("readout levelName=" + name);
+            check("probe_world_guard", ok, "levelName=" + name + "（期望 world，且不得是作者存档）");
+            if (!ok) {
+                log("ABORT: wrong world, stopping probe");
+                done = true;
+                mc.stop();
+            }
+            return;
+        }
+        if (tick < 60) {
+            return;
+        }
+        try {
+            run(mc);
+        } catch (Throwable t) {
+            log("FAIL run threw " + t);
+            check("probe_run", false, String.valueOf(t));
+        }
+        done = true;
+        mc.stop();
+    }
+
+    private static void run(Minecraft mc) {
+        // ---- ① 页型真的注册进 Patchouli 的表里（不是"代码里写了"就算） ----
+        Object cls = ClientBookRegistry.INSTANCE.pageTypes.get(ResourceLocation.parse(DOUBLE));
+        check("page_type_registered", cls != null,
+                "pageTypes[" + DOUBLE + "]=" + (cls == null ? "null" : ((Class<?>) cls).getName()));
+        if (cls != null) {
+            check("page_type_is_our_class",
+                    ((Class<?>) cls).getName().equals(
+                            HandbookPageTypes.DoubleRecipePage.class.getName()),
+                    "类是 " + ((Class<?>) cls).getName());
+        }
+
+        Book book = BookRegistry.INSTANCE.books.get(ResourceLocation.parse(BOOK_ID));
+        check("book_registered", book != null, "books=" + BookRegistry.INSTANCE.books.size());
+        if (book == null) {
+            summary();
+            return;
+        }
+        BookContents c = book.getContents();
+        check("book_contents_no_error", c != null && !c.isErrored(),
+                "errored=" + (c == null ? "null" : c.isErrored() + " / " + c.getException()));
+        if (c == null) {
+            summary();
+            return;
+        }
+
+        int pages = 0;
+        for (BookEntry e : c.entries.values()) {
+            pages += e.getPages().size();
+        }
+        log("readout entries=" + c.entries.size() + " pages=" + pages);
+        check("book_totals", c.entries.size() == 27 && pages == 231,
+                "entries=" + c.entries.size() + " pages=" + pages + "（期望 27 / 231）");
+
+        BookEntry e = c.entries.get(ResourceLocation.parse(ENTRY));
+        check("chapter4_present", e != null, "entry=" + ENTRY);
+        if (e == null) {
+            summary();
+            return;
+        }
+        List<BookPage> pgs = e.getPages();
+
+        // ---- ② 页数 / 页型序列（作者要的页序） ----
+        List<String> types = new ArrayList<>();
+        List<String> classes = new ArrayList<>();
+        for (BookPage p : pgs) {
+            JsonObject so = p.sourceObject;
+            types.add(so != null && so.has("type") ? so.get("type").getAsString() : "?");
+            classes.add(p.getClass().getSimpleName());
+        }
+        log("readout chapter4 pages=" + pgs.size() + " types=" + types);
+        log("readout chapter4 classes=" + classes);
+        List<String> want = new ArrayList<>(List.of(P + "text", DOUBLE, P + "text"));
+        for (int i = 0; i < 7; i++) {
+            want.add(P + "crafting");
+        }
+        check("chapter4_pages_10", pgs.size() == 10, "pages=" + pgs.size());
+        check("chapter4_types", types.equals(want), "types=" + types + " want=" + want);
+        check("chapter4_no_template_fallback", !classes.contains("PageTemplate"),
+                "classes=" + classes);
+
+        // ---- ③ 自定义页：对象存在、两条 recipe id 正确、两条是**不同 recipe class** ----
+        if (pgs.size() > 1) {
+            BookPage second = pgs.get(1);
+            check("double_recipe_object",
+                    second instanceof HandbookPageTypes.DoubleRecipePage,
+                    "page[1].class=" + second.getClass().getName());
+            if (second instanceof HandbookPageTypes.DoubleRecipePage dr) {
+                log("readout double_recipe ids=" + dr.topRecipeId() + " / " + dr.bottomRecipeId());
+                check("double_recipe_ids",
+                        String.valueOf(dr.topRecipeId()).equals("bettergold:chaos_coin_smelting")
+                                && String.valueOf(dr.bottomRecipeId())
+                                .equals("bettergold:chaosgold_ingot_from_nugget"),
+                        "recipe=" + dr.topRecipeId() + " recipe2=" + dr.bottomRecipeId());
+                Object top = dr.topRecipe();
+                Object bottom = dr.bottomRecipe();
+                log("readout double_recipe loaded=" + top + " / " + bottom);
+                check("double_recipe_both_loaded", top != null && bottom != null,
+                        "top=" + top + " bottom=" + bottom);
+                check("double_recipe_two_recipe_classes",
+                        top instanceof SmeltingRecipe && bottom instanceof CraftingRecipe,
+                        "上=" + (top == null ? "null" : top.getClass().getSimpleName())
+                                + "（期望 SmeltingRecipe） / 下="
+                                + (bottom == null ? "null" : bottom.getClass().getSimpleName())
+                                + "（期望 CraftingRecipe）");
+            }
+        }
+
+        // ---- ④ 14 件装备配方：逐页 2 条、一件不少、每条都真能解析 ----
+        List<String> gear = new ArrayList<>();
+        int badPair = 0;
+        for (int i = 3; i < pgs.size(); i++) {
+            JsonObject so = pgs.get(i).sourceObject;
+            List<String> on = new ArrayList<>();
+            for (String k : new String[]{"recipe", "recipe2"}) {
+                if (so != null && so.has(k) && so.get(k).isJsonPrimitive()) {
+                    on.add(so.get(k).getAsString());
+                }
+            }
+            if (on.size() != 2) {
+                badPair++;
+                log("readout gear_page_bad idx=" + i + " refs=" + on);
+            }
+            gear.addAll(on);
+        }
+        List<String> wantGear = new ArrayList<>();
+        for (String g : GEAR) {
+            wantGear.add("bettergold:chaosgold_" + g);
+        }
+        log("readout gear_refs=" + gear);
+        check("gear_pages_two_each", badPair == 0, "不符页数=" + badPair);
+        check("gear_14_in_order", gear.equals(wantGear),
+                "got=" + gear + " want=" + wantGear);
+        List<String> missing = new ArrayList<>();
+        for (String rid : gear) {
+            if (mc.level.getRecipeManager().byKey(ResourceLocation.parse(rid)).isEmpty()) {
+                missing.add(rid);
+            }
+        }
+        check("gear_recipes_resolved", missing.isEmpty(), "missing=" + missing);
+
+        // ---- ⑤ 两段中文仍然逐字（语言键能被 i18n 解析、且不是原键名） ----
+        JsonObject so0 = pgs.get(0).sourceObject;
+        JsonObject so2 = pgs.get(2).sourceObject;
+        String k0 = so0 == null ? "" : so0.get("text").getAsString();
+        String k2 = so2 == null ? "" : so2.get("text").getAsString();
+        String t0 = pgs.get(0).i18n(k0);
+        String t2 = pgs.get(2).i18n(k2);
+        check("texts_resolved",
+                t0 != null && !t0.equals(k0) && t2 != null && !t2.equals(k2),
+                "k0=" + k0 + " k2=" + k2);
+        check("text1_is_author_verbatim",
+                t0 != null && t0.startsWith("此外混沌金币还可以将其丢入熔炉或高炉烧炼成混沌金粒"),
+                "text0.head=" + (t0 == null ? "null" : t0.substring(0, Math.min(30, t0.length()))));
+        check("text2_is_author_verbatim",
+                t2 != null && t2.startsWith("使用混沌金锭制作而成的装备则拥有着有含最大上限的随机伤害"),
+                "text2.head=" + (t2 == null ? "null" : t2.substring(0, Math.min(30, t2.length()))));
+
+        // ---- ⑥ 全书的配方引用不许有死链（防止自定义页型把别处弄坏） ----
+        int allRefs = 0;
+        List<String> allMissing = new ArrayList<>();
+        for (BookEntry be : c.entries.values()) {
+            for (BookPage p : be.getPages()) {
+                JsonObject so = p.sourceObject;
+                if (so == null) {
+                    continue;
+                }
+                for (String k : new String[]{"recipe", "recipe2"}) {
+                    if (so.has(k) && so.get(k).isJsonPrimitive()) {
+                        allRefs++;
+                        String rid = so.get(k).getAsString();
+                        if (mc.level.getRecipeManager().byKey(ResourceLocation.parse(rid)).isEmpty()) {
+                            allMissing.add(rid);
+                        }
+                    }
+                }
+            }
+        }
+        log("readout book_recipe_refs=" + allRefs + " missing=" + allMissing);
+        check("book_recipe_refs_all_resolved", allMissing.isEmpty(), "refs=" + allRefs);
+
+        summary();
+    }
+
+    private static void summary() {
+        log("SUMMARY pass=" + pass + " fail=" + fail + " ticks=" + tick);
+    }
+
+    private static Object fieldOf(Object target, String name) {
+        Class<?> k = target.getClass();
+        while (k != null) {
+            try {
+                Field f = k.getDeclaredField(name);
+                f.setAccessible(true);
+                return f.get(target);
+            } catch (NoSuchFieldException ex) {
+                k = k.getSuperclass();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+        return null;
+    }
+}

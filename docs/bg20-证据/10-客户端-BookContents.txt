@@ -1,0 +1,29 @@
+[bg20-c] armed=true gamedir=E:\mc\mcmod\bettergold-template-1.21.1\run
+[bg20-c] CHECK page_type_registered PASS :: pageTypes[bettergold:double_recipe]=com.hjmmd_8.bettergold.patchouli.HandbookPageTypes$DoubleRecipePage
+[bg20-c] CHECK page_type_is_our_class PASS :: ???? com.hjmmd_8.bettergold.patchouli.HandbookPageTypes$DoubleRecipePage
+[bg20-c] CHECK book_registered PASS :: books=1
+[bg20-c] CHECK book_contents_no_error PASS :: errored=false / null
+[bg20-c] readout entries=27 pages=231
+[bg20-c] CHECK book_totals PASS :: entries=27 pages=231?????? 27 / 231??
+[bg20-c] CHECK chapter4_present PASS :: entry=bettergold:prison_chaosgold_main
+[bg20-c] readout chapter4 pages=10 types=[patchouli:text, bettergold:double_recipe, patchouli:text, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting]
+[bg20-c] readout chapter4 classes=[PageText, DoubleRecipePage, PageText, PageCrafting, PageCrafting, PageCrafting, PageCrafting, PageCrafting, PageCrafting, PageCrafting]
+[bg20-c] CHECK chapter4_pages_10 PASS :: pages=10
+[bg20-c] CHECK chapter4_types PASS :: types=[patchouli:text, bettergold:double_recipe, patchouli:text, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting] want=[patchouli:text, bettergold:double_recipe, patchouli:text, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting, patchouli:crafting]
+[bg20-c] CHECK chapter4_no_template_fallback PASS :: classes=[PageText, DoubleRecipePage, PageText, PageCrafting, PageCrafting, PageCrafting, PageCrafting, PageCrafting, PageCrafting, PageCrafting]
+[bg20-c] CHECK double_recipe_object PASS :: page[1].class=com.hjmmd_8.bettergold.patchouli.HandbookPageTypes$DoubleRecipePage
+[bg20-c] readout double_recipe ids=bettergold:chaos_coin_smelting / bettergold:chaosgold_ingot_from_nugget
+[bg20-c] CHECK double_recipe_ids PASS :: recipe=bettergold:chaos_coin_smelting recipe2=bettergold:chaosgold_ingot_from_nugget
+[bg20-c] readout double_recipe loaded=net.minecraft.world.item.crafting.SmeltingRecipe@4ea0719e / net.minecraft.world.item.crafting.ShapedRecipe@42ec40dc
+[bg20-c] CHECK double_recipe_both_loaded PASS :: top=net.minecraft.world.item.crafting.SmeltingRecipe@4ea0719e bottom=net.minecraft.world.item.crafting.ShapedRecipe@42ec40dc
+[bg20-c] CHECK double_recipe_two_recipe_classes PASS :: ??=SmeltingRecipe?????? SmeltingRecipe?? / ??=ShapedRecipe?????? CraftingRecipe??
+[bg20-c] readout gear_refs=[bettergold:chaosgold_sword, bettergold:chaosgold_mace, bettergold:chaosgold_trident, bettergold:chaosgold_bow, bettergold:chaosgold_crossbow, bettergold:chaosgold_axe, bettergold:chaosgold_pickaxe, bettergold:chaosgold_shovel, bettergold:chaosgold_hoe, bettergold:chaosgold_shield, bettergold:chaosgold_helmet, bettergold:chaosgold_chestplate, bettergold:chaosgold_leggings, bettergold:chaosgold_boots]
+[bg20-c] CHECK gear_pages_two_each PASS :: ???????=0
+[bg20-c] CHECK gear_14_in_order PASS :: got=[bettergold:chaosgold_sword, bettergold:chaosgold_mace, bettergold:chaosgold_trident, bettergold:chaosgold_bow, bettergold:chaosgold_crossbow, bettergold:chaosgold_axe, bettergold:chaosgold_pickaxe, bettergold:chaosgold_shovel, bettergold:chaosgold_hoe, bettergold:chaosgold_shield, bettergold:chaosgold_helmet, bettergold:chaosgold_chestplate, bettergold:chaosgold_leggings, bettergold:chaosgold_boots] want=[bettergold:chaosgold_sword, bettergold:chaosgold_mace, bettergold:chaosgold_trident, bettergold:chaosgold_bow, bettergold:chaosgold_crossbow, bettergold:chaosgold_axe, bettergold:chaosgold_pickaxe, bettergold:chaosgold_shovel, bettergold:chaosgold_hoe, bettergold:chaosgold_shield, bettergold:chaosgold_helmet, bettergold:chaosgold_chestplate, bettergold:chaosgold_leggings, bettergold:chaosgold_boots]
+[bg20-c] CHECK gear_recipes_resolved PASS :: missing=[]
+[bg20-c] CHECK texts_resolved PASS :: k0=bettergold.handbook.page.prison_chaosgold_main_1_left k2=bettergold.handbook.page.prison_chaosgold_main_2_left
+[bg20-c] CHECK text1_is_author_verbatim PASS :: text0.head=???????????????????????????????????????????????
+[bg20-c] CHECK text2_is_author_verbatim PASS :: text2.head=???????????????????????????��???????????????????
+[bg20-c] readout book_recipe_refs=227 missing=[]
+[bg20-c] CHECK book_recipe_refs_all_resolved PASS :: refs=227
+[bg20-c] SUMMARY pass=20 fail=0 ticks=60

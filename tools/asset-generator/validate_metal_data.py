@@ -1410,7 +1410,11 @@ if re.search(r"localRuntime\s+\"maven\.modrinth:patchouli", _gradle_txt):
 if "patchouli_version=" not in (REPO / "gradle.properties").read_text(encoding="utf-8"):
     _bgbook_bad("bgbook-gradle-version", "gradle.properties 里没有 patchouli_version（版本号必须只有一处真源）")
 
-# ---------- 3) 类加载隔离：全仓只有 patchouli/PatchouliCompat.java 能引用 Patchouli 的类型 ----------
+# ---------- 3) 类加载隔离：全仓只有 patchouli/ 下这两个文件能引用 Patchouli 的类型 ----------
+# ⚠ 旧口径原文留档（未删）：白名单曾是**恰好一个**文件（`PatchouliCompat.java`）。
+#   ★ 1.7 `bg20`（P4）要自定义页型 `bettergold:double_recipe`，它的页面类必须
+#   `extends PageDoubleRecipe`（类声明就要解析 Patchouli 的类型）⇒ 新增
+#   `patchouli/HandbookPageTypes.java`，白名单**恰好**扩成这两个文件（多一个少一个都红）。
 _ref_files = []
 for _p in sorted(JAVA.rglob("*.java")):
     if "probe" in _p.parts:  # 探针（临时验证代码）不算生产代码；收尾整块删除
@@ -1418,9 +1422,10 @@ for _p in sorted(JAVA.rglob("*.java")):
     _txt = strip_comments(_p.read_text(encoding="utf-8"))
     if "vazkii.patchouli" in _txt or "vazkii/patchouli" in _txt:
         _ref_files.append(_p)
-if [p.name for p in _ref_files] != ["PatchouliCompat.java"]:
+if [p.name for p in _ref_files] != ["HandbookPageTypes.java", "PatchouliCompat.java"]:
     _bgbook_bad("bgbook-isolation-single-file",
-                "引用 vazkii.patchouli 的生产代码文件必须**只有** patchouli/PatchouliCompat.java，实际 "
+                "引用 vazkii.patchouli 的生产代码文件必须**恰好**是 patchouli/HandbookPageTypes.java 与 "
+                "patchouli/PatchouliCompat.java，实际 "
                 + str([str(p.relative_to(REPO)) for p in _ref_files]))
 _compat_path = JAVA / "patchouli" / "PatchouliCompat.java"
 _compat_code = strip_comments(_compat_path.read_text(encoding="utf-8")) if _compat_path.is_file() else ""
@@ -1553,7 +1558,12 @@ _KNOWN_PAGE_TYPES = {"patchouli:text", "patchouli:crafting", "patchouli:smithing
                      "patchouli:smelting", "patchouli:blasting", "patchouli:smoking", "patchouli:campfire",
                      "patchouli:stonecutting", "patchouli:image", "patchouli:empty", "patchouli:link",
                      "patchouli:relations", "patchouli:entity", "patchouli:quest", "patchouli:multiblock",
-                     "patchouli:template"}
+                     "patchouli:template",
+                     # ★ 1.7 `bg20`（P4）：**本模组自己的**页型（一页上 / 下各一条配方，两条可以
+                     #   是不同 recipe class）。类与注册见 `patchouli/HandbookPageTypes.java`。
+                     #   ⚠ 这张白名单只管"是不是我们认识的页型名"；写错名字 Patchouli **不会报错**
+                     #   （`LexiconPageAdapter` 查不到就静默回落 `PageTemplate`）⇒ A 级探针还要再验一次。
+                     "bettergold:double_recipe"}
 # ⛔ **bg-book §八（2026-10-06）作废并删除了下面两个条目**（§8.1「删除手册四类里的『装备的升级』
 #    类别（整个类别）」）⇒ 它们**不再是产物**，而是"必须不存在"（见下面的负向断言）。
 #    ⚠ 旧期望**原文保留在这里**（未删）：`_EXPECT_TOOL_PAGES = 1 + len(ALL_METALS) * 3`（= 25）、
@@ -8757,13 +8767,21 @@ _R9_ENTRIES = {
     # 章3 混沌金币与万坚金砧（轮换栈 + 3 页配方）
     "prison_coin_anvil": (4, ["patchouli:spotlight", "patchouli:crafting",
                               "patchouli:crafting", "patchouli:crafting"]),
-    # 章4 混沌金的主要内容（4 页 + 15 件工作台配方 = 8 页）
-    #   ⚠ 「烧制（smelting）+ 制作（crafting）」两种配方类型不能同页 ⇒ 拆成相邻两页。
-    #   ★ 2026-10-25（P2-a）：两段文案先并到第 1 跨页，熔炉 / 工作台两页挪到**第 2 跨页**（下标 2/3）。
-    #     旧期望原文留档（未删）：
-    #       ["patchouli:text", "patchouli:smelting", "patchouli:crafting", "patchouli:text"] + 8×crafting
-    "prison_chaosgold_main": (12, ["patchouli:text", "patchouli:text", "patchouli:smelting",
-                                   "patchouli:crafting"] + ["patchouli:crafting"] * 8),
+    # 章4 混沌金的主要内容（3 页 + 14 件工作台配方 = 7 页 ⇒ **10 页**）
+    #   ★ 1.7 `bg20`（P4，作者 2026-10-26 逐字要求）：第 1 屏右页换成**自定义页型**
+    #     `bettergold:double_recipe` —— 上 = 混沌金粒（烧制 `chaos_coin_smelting`）、
+    #     下 = 混沌金锭（合成 `chaosgold_ingot_from_nugget`），两条**不同 recipe class 同页**；
+    #     两段文案回到「1 左 / 2 左」（1 右 让给那条自定义页），后面接 **14 件**装备配方
+    #     （`FORGE_ORDER` 原样、7 页 × 2 条正好铺满）。
+    #   ⚠ 旧期望原文留档（未删、已作废）：
+    #     P2-a（12 页）：["patchouli:text", "patchouli:text", "patchouli:smelting",
+    #                    "patchouli:crafting"] + ["patchouli:crafting"] * 8
+    #     更早（12 页）：["patchouli:text", "patchouli:smelting", "patchouli:crafting",
+    #                    "patchouli:text"] + ["patchouli:crafting"] * 8
+    #     （当时「两种 recipe class 不能同页」是 Patchouli 的结构上限，只能在既有页型里折中；
+    #       自定义页型落地后这条限制不存在了。）
+    "prison_chaosgold_main": (10, ["patchouli:text", "bettergold:double_recipe", "patchouli:text"]
+                              + ["patchouli:crafting"] * 7),
     # 章5 混沌金的副要内容（2 页配方 + 1 页轮换栈）
     "prison_chaosgold_extra": (3, ["patchouli:crafting", "patchouli:crafting",
                                    "patchouli:spotlight"]),
@@ -9647,7 +9665,9 @@ except Exception as _e:                           # noqa: BLE001
 # ⚠ **旧口径原文留档、已作废**（`bgbig` 之前的 `gear_chaosgold` 15 页 = 3 文案 + 8 页配方 +
 #   3 图标 + 1 附魔书配方；更早的 13 页 = 6 页配方 / 11 件，`_RG_BOOK_PAGES = 13`）：
 #   那个条目已作废、不再产出，配方图集原样搬进 `prison_chaosgold_main`（3 页 + 8 页配方）。
-_RG_BOOK_PAGES = 12                       # prison_chaosgold_main：4 页 + 8 页配方
+_RG_BOOK_PAGES = 10                       # prison_chaosgold_main：3 页 + 7 页配方（14 件）
+# ⚠ 旧值原文留档（未删）：`_RG_BOOK_PAGES = 12`（4 页 + 8 页配方 = 15 件）；本次
+#   `bg20`（P4）把 1 右 换成自定义页型、装备页收成 14 件 ⇒ 10 页。
 _bgn10rg_checked += 5
 for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
     _ep = _d / "entries" / "prison_chaosgold_main.json"
@@ -9662,30 +9682,39 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
                      + "（实际 " + str(len(_pages)) + "）")
         continue
     _types = [p.get("type") for p in _pages]
-    # ★ 2026-10-25（P2-a）：paragraphs 先并到第 1 跨页，熔炉/工作台挪到第 2 跨页。
-    #   旧期望原文留档（未删）：["patchouli:text", "patchouli:smelting", "patchouli:crafting",
-    #                            "patchouli:text"] + ["patchouli:crafting"] * 8
-    _want_types = (["patchouli:text", "patchouli:text", "patchouli:smelting", "patchouli:crafting"]
-                   + ["patchouli:crafting"] * 8)
+    # ★ 1.7 `bg20`（P4）：第 1 屏右页 = 自定义页型 `bettergold:double_recipe`（上粒 / 下锭）。
+    #   ⚠ 旧期望原文留档（未删、已作废）：
+    #     P2-a：["patchouli:text", "patchouli:text", "patchouli:smelting", "patchouli:crafting"]
+    #           + ["patchouli:crafting"] * 8
+    #     更早：["patchouli:text", "patchouli:smelting", "patchouli:crafting", "patchouli:text"]
+    #           + ["patchouli:crafting"] * 8
+    _want_types = (["patchouli:text", "bettergold:double_recipe", "patchouli:text"]
+                   + ["patchouli:crafting"] * 7)
     if _types != _want_types:
         _bgn10rg_bad("bgn10rg-handbook",
                      _tag + " 的页型序列不对：" + repr(_types))
-    # 配方页（第 5~12 页）必须**恰好**是这 15 件、顺序 = §八 FORGE_ORDER + 乐事刀、每页最多 2 条
+    # 配方页（第 4~10 页，下标 3..9）必须**恰好**是这 14 件、顺序 = §八 FORGE_ORDER、每页 2 条
+    #   ⚠ 旧口径（未删、已作废）：`for _pg in _pages[4:12]` + 15 件（末尾多一件乐事刀、
+    #     那页只占 `recipe` 一个槽）。
     _refs = []
-    for _pg in _pages[4:12]:
+    for _pg in _pages[3:10]:
         _on_page = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
         _bgn10rg_checked += 1
         if len(_on_page) > 2:
             _bgn10rg_bad("bgn10rg-handbook",
                          _tag + " 有配方页塞了 " + str(len(_on_page)) + " 条（Patchouli 上限 2）")
+        if len(_on_page) != 2:
+            _bgn10rg_bad("bgn10rg-handbook",
+                         _tag + " 第 " + str(len(_refs) // 2 + 4) + " 页不是恰好 2 条配方（实际 "
+                         + str(len(_on_page)) + "）—— 14 件必须 7 页铺满、不留空槽")
         _refs.extend(_on_page)
     _want_refs = ["bettergold:chaosgold_" + _g
                   for _g in ("sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
                              "shovel", "hoe", "shield", "helmet", "chestplate",
-                             "leggings", "boots", "knife")]
+                             "leggings", "boots")]
     if _refs != _want_refs:
         _bgn10rg_bad("bgn10rg-handbook",
-                     _tag + " 的 15 件配方引用与「贵金装备章节」顺序不一致：" + repr(_refs))
+                     _tag + " 的 14 件配方引用与「贵金装备章节」顺序不一致：" + repr(_refs))
     # 死链：每条引用都要真的落在 data/bettergold/recipe/
     _dead = [_r for _r in _refs
              if not (_RC_DATA / (_r.split(":", 1)[1] + ".json")).is_file()]
@@ -10177,7 +10206,11 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
     _all_refs = []
     for _pg in _pages:
         _all_refs.extend([x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)])
-    for _g in _RC2_GEAR:
+    # ⚠ `bg20`（P4）起本章只放 **14 件装备**（`FORGE_ORDER`，7 页 × 2 条铺满）⇒ 乐事刀
+    #   **不再单独占一页**。旧口径原文留档（未删、已作废）：
+    #     for _g in _RC2_GEAR（含 "knife"）: 每件都必须在配方页里出现；
+    #     且 `chaosgold_knife` 恰好 1 页、那页**只有它一条**（不占 recipe2 槽）。
+    for _g in ("bow", "mace", "trident"):
         _bgn10rc2_checked += 1
         if "bettergold:chaosgold_" + _g not in _all_refs:
             _bgn10rc2_bad("bgn10rc2-handbook",
@@ -10185,12 +10218,13 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
     _knife_pages = [_pg for _pg in _pages if _pg.get("recipe") == "bettergold:chaosgold_knife"
                     or _pg.get("recipe2") == "bettergold:chaosgold_knife"]
     _bgn10rc2_checked += 2
-    if len(_knife_pages) != 1:
+    if len(_knife_pages) != 0:
         _bgn10rc2_bad("bgn10rc2-handbook",
-                      _tag + " 手册里 chaosgold_knife 出现了 " + str(len(_knife_pages)) + " 次（应恰好 1 页）")
-    elif _knife_pages[0].get("recipe2") is not None:
+                      _tag + " 手册里 chaosgold_knife 又占了 " + str(len(_knife_pages))
+                      + " 页（P4 起本章只放 14 件装备、7 页 × 2 条铺满）")
+    if not (_RC_DATA / "chaosgold_knife.json").is_file():
         _bgn10rc2_bad("bgn10rc2-handbook",
-                      _tag + " 的乐事刀那一页还占了 recipe2 槽（当页只有它一条配方）")
+                      _tag + " 乐事刀的配方数据不见了（「手册不放页」不等于「配方不存在」）")
 
 # ---------- ⑥ 文案口径：手册正文必须换成"15 件 / 4 件已补"，旧口径不许复现 ----------
 _bgn10rc2_checked += 5
@@ -10613,21 +10647,23 @@ for _d, _tag in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
         continue
     _pages = json.loads(_ep.read_text(encoding="utf-8")).get("pages") or []
     _bgn10up_checked += 1
-    if len(_pages) != 12:
-        _bgn10up_bad("bgn10up-handbook", _tag + " 的 prison_chaosgold_main 不是 12 页（实际 " + str(len(_pages)) + "）")
+    if len(_pages) != 10:
+        _bgn10up_bad("bgn10up-handbook", _tag + " 的 prison_chaosgold_main 不是 10 页（实际 " + str(len(_pages)) + "）")
         continue
-    # 第 2 / 3 页（下标 1 / 2）= 上「币 →（烧炼）→ 粒」/ 下「9 粒 → 1 锭」
-    #   ⚠ 两种配方类型（smelting / crafting）不能同页 ⇒ 拆成相邻两页（PATCHOULI 结构上限）。
-    #   ★ 2026-10-25（P2-a）：这两页从下标 1 / 2 挪到 **2 / 3**（同一跨页）。
-    #     旧期望原文留档（未删）：`_p2, _p3 = _pages[1], _pages[2]`（当时不同屏）。
+    # 第 1 屏右页（下标 1）= **自定义页型**：上「币 →（烧炼）→ 粒」/ 下「9 粒 → 1 锭」
+    #   ★ 1.7 `bg20`（P4）：上下两条**同一页**，而且两条是**不同的 recipe class**
+    #     （`minecraft:smelting` vs `minecraft:crafting_shaped`）—— 这正是自定义页型的用途。
+    #   ⚠ 旧期望原文留档（未删、已作废）：
+    #     `_p2, _p3 = _pages[1], _pages[2]`：熔炉页 + 工作台页「相邻两页」（当时不同屏）；
+    #     P2-a 又改成 `_pages[2], _pages[3]`（同一跨页）—— 两种类型仍然**不能同页**。
     _bgn10up_checked += 2
-    _p2, _p3 = _pages[2], _pages[3]
-    if (_p2.get("type"), _p2.get("recipe"), _p2.get("recipe2")) != (
-            "patchouli:smelting", "bettergold:chaos_coin_smelting", None):
-        _bgn10up_bad("bgn10up-handbook", _tag + " 第 3 页不是「币 → 粒」熔炉页：" + repr(_p2))
-    if (_p3.get("type"), _p3.get("recipe"), _p3.get("recipe2")) != (
-            "patchouli:crafting", "bettergold:chaosgold_ingot_from_nugget", None):
-        _bgn10up_bad("bgn10up-handbook", _tag + " 第 4 页不是「9 粒 → 1 锭」工作台页：" + repr(_p3))
+    _pup = _pages[1]
+    if (_pup.get("type"), _pup.get("recipe"), _pup.get("recipe2")) != (
+            "bettergold:double_recipe", "bettergold:chaos_coin_smelting",
+            "bettergold:chaosgold_ingot_from_nugget"):
+        _bgn10up_bad("bgn10up-handbook",
+                     _tag + " 第 1 屏右页不是「上 = 币 → 粒 / 下 = 9 粒 → 1 锭」的自定义页："
+                     + repr(_pup))
     # 每页配方数 ≤ 2（Patchouli 的结构上限）+ 引用不许死链
     for _pg in _pages:
         _on = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
@@ -10665,13 +10701,16 @@ if not _up_1l.strip() or not _up_en1l.strip() or _up_1l == _up_en1l:
 # ---------- 手册生成器：这两页是**生成器**写的（不是手改产物）----------
 _up_hb_src = _up_strip_py_comments(
     (REPO / "tools" / "asset-generator" / "generate_handbook_data.py").read_text(encoding="utf-8"))
-# ⚠ 旧 needle 原文留档（已作废）：`crafting_page("chaos_coin_from_string"` /
-#   `smelting_page("chaos_coin_smelting"`（旧章 `chaos_materials` 的两页）。
-#   1.7 大轮起，上游两条改成 `prison_chaosgold_main` 的「熔炉页 + 工作台页」相邻两页。
+# ⚠ 旧 needle 原文留档（已作废）：`smelting_page("chaos_coin_smelting"` /
+#   `crafting_page("chaosgold_ingot_from_nugget"`（旧章 `chaos_materials` 的两页；
+#   1.7 大轮起变成 `prison_chaosgold_main` 的「熔炉页 + 工作台页」相邻两页）。
+#   ★ `bg20`（P4）：两者合成**一页**自定义页型 ⇒ needle 换成下面两条。
 _bgn10up_checked += 2
-for _needle, _why in (('smelting_page("chaos_coin_smelting")', "手册生成器里没有「币 → 粒」熔炉页"),
-                      ('crafting_page("chaosgold_ingot_from_nugget")',
-                       "手册生成器里没有「9 粒 → 1 锭」工作台页")):
+for _needle, _why in (
+        ('double_recipe_page("chaos_coin_smelting", "chaosgold_ingot_from_nugget")',
+         "手册生成器里没有「上 = 币 → 粒 / 下 = 9 粒 → 1 锭」的自定义页"),
+        ('"type": "bettergold:double_recipe"',
+         "手册生成器里没有产出 `bettergold:double_recipe` 页型（页型 id 写错 = 静默回落 PageTemplate）")):
     if _needle not in _up_hb_src:
         _bgn10up_bad("bgn10up-handbook-gen", _why + "：缺 " + _needle + "（去注释源码里）")
 
@@ -11788,13 +11827,17 @@ _PB_ENTRIES = {
     "prison_gremlin": ("chaos_coin_string", 1, 3, ["patchouli:text"] * 3),
     "prison_coin_anvil": ("chaos_coin", 2, 4, ["patchouli:spotlight", "patchouli:crafting",
                                                "patchouli:crafting", "patchouli:crafting"]),
-    "prison_chaosgold_main": ("chaosgold_ingot", 3, 12,
-                              # ★ 2026-10-25（P2-a）：两段文案并到第 1 跨页，熔炉页 / 工作台页
-                              #   挪到**第 2 跨页**（下标 2 / 3）。旧序列原文留档（未删）：
-                              #     ["patchouli:text", "patchouli:smelting", "patchouli:crafting",
-                              #      "patchouli:text"] + ["patchouli:crafting"] * 8
-                              ["patchouli:text", "patchouli:text", "patchouli:smelting",
-                               "patchouli:crafting"] + ["patchouli:crafting"] * 8),
+    "prison_chaosgold_main": ("chaosgold_ingot", 3, 10,
+                              # ★ 1.7 `bg20`（P4，作者 2026-10-26）：第 1 屏右页 = 自定义页型
+                              #   `bettergold:double_recipe`（上 = 混沌金粒 / 下 = 混沌金锭），
+                              #   后面接 14 件装备配方（7 页 × 2 条）。
+                              #   ⚠ 旧序列原文留档（未删、已作废）：
+                              #     P2-a：["patchouli:text", "patchouli:text", "patchouli:smelting",
+                              #            "patchouli:crafting"] + ["patchouli:crafting"] * 8   （12 页）
+                              #     更早：["patchouli:text", "patchouli:smelting", "patchouli:crafting",
+                              #            "patchouli:text"] + ["patchouli:crafting"] * 8
+                              ["patchouli:text", "bettergold:double_recipe", "patchouli:text"]
+                              + ["patchouli:crafting"] * 7),
     "prison_chaosgold_extra": ("chaosgold_enchanting_book", 4, 3,
                                ["patchouli:crafting", "patchouli:crafting", "patchouli:spotlight"]),
     "prison_chaosalloy": ("chaosalloy_ingot", 5, 13,
@@ -11876,30 +11919,34 @@ if len(_pb_e) == len(_PB_ENTRIES):
     if _ca[0].get("title") != _PB_LANG + ".page.prison_coin_anvil_1_left_title":
         _bgbig_bad("bgbig-pages", "第 3 章第 1 页左的页眉键不对：" + repr(_ca[0].get("title")))
     _cg = _pb_e["prison_chaosgold_main"]
-    # ★ 2026-10-25（P2-a）：熔炉页 / 工作台页从下标 1 / 2 挪到 **2 / 3** ⇒ 落在**同一跨页**。
-    #   旧期望原文留档（未删）：`_cg[1]` = 烧制、`_cg[2]` = 制作（当时**不同屏**，就是作者报的 bug）。
-    if (_cg[2].get("recipe"), _cg[2].get("recipe2")) != ("bettergold:chaos_coin_smelting", None):
-        _bgbig_bad("bgbig-pages", "第 4 章第 3 页（熔炉页）不是烧制混沌金粒：" + repr(_cg[2]))
-    if (_cg[3].get("recipe"), _cg[3].get("recipe2")) != (
-            "bettergold:chaosgold_ingot_from_nugget", None):
-        _bgbig_bad("bgbig-pages", "第 4 章第 4 页（工作台页）不是制作混沌金锭：" + repr(_cg[3]))
-    # P2-a 的 A 级可判据：两页**下标相邻且 (偶, 奇)** ⇒ 同一屏（Patchouli 一屏 = 下标 2k / 2k+1）
-    _sm_i = [i for i, _p_ in enumerate(_cg) if _p_.get("type") == "patchouli:smelting"]
-    _cr_i = [i for i, _p_ in enumerate(_cg)
-             if _p_.get("type") == "patchouli:crafting"
-             and _p_.get("recipe") == "bettergold:chaosgold_ingot_from_nugget"]
+    # ★ 1.7 `bg20`（P4）：第 1 屏右页（下标 1）是**自定义页型**，上 = 烧制混沌金粒、下 = 制作混沌金锭，
+    #   两条**同页**（两种 recipe class）。作者要的就是「第一页右侧的上边放下边放」。
+    #   ⚠ 旧期望原文留档（未删、已作废）：
+    #     `_cg[1]` = 烧制、`_cg[2]` = 制作；P2-a 又改成 `_cg[2]` / `_cg[3]`（同一跨页），
+    #     当时只能是「两种页型相邻两页」。
+    if (_cg[1].get("type"), _cg[1].get("recipe"), _cg[1].get("recipe2")) != (
+            "bettergold:double_recipe", "bettergold:chaos_coin_smelting",
+            "bettergold:chaosgold_ingot_from_nugget"):
+        _bgbig_bad("bgbig-pages",
+                   "第 4 章第 1 屏右页不是「上 = 烧制混沌金粒 / 下 = 制作混沌金锭」的自定义页："
+                   + repr(_cg[1]))
+    _dup_i = [i for i, _p_ in enumerate(_cg) if _p_.get("type") == "bettergold:double_recipe"]
     _bgbig_checked += 3
-    if len(_sm_i) != 1 or len(_cr_i) != 1 or _cr_i[0] - _sm_i[0] != 1 or _sm_i[0] % 2 != 0:
-        _bgbig_bad("bgbig-spread", "「混沌金粒（烧制）」与「混沌金锭（合成）」不在同一跨页："
-                   "smelting 下标 %r / crafting 下标 %r（要求 相邻 且 前者为偶数下标）"
-                   % (_sm_i, _cr_i))
+    if _dup_i != [1]:
+        _bgbig_bad("bgbig-spread",
+                   "第 4 章的 double_recipe 页不是恰好 1 页、或不在下标 1（第 1 屏**右**页）："
+                   + repr(_dup_i))
     _want_gear = ["bettergold:chaosgold_" + _g
                   for _g in ("sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
                              "shovel", "hoe", "shield", "helmet", "chestplate",
-                             "leggings", "boots", "knife")]
+                             "leggings", "boots")]
     _got_gear = []
-    for _pg in _cg[4:12]:
-        _got_gear.extend([x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)])
+    for _pg in _cg[3:10]:
+        _on = [x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)]
+        if len(_on) != 2:
+            _bgbig_bad("bgbig-pages",
+                       "第 4 章有装备配方页不是恰好 2 条（14 件必须 7 页铺满）：" + repr(_pg))
+        _got_gear.extend(_on)
     if _got_gear != _want_gear:
         _bgbig_bad("bgbig-pages", "第 4 章的混沌金装备配方顺序 / 内容不对：" + repr(_got_gear))
     _ce = _pb_e["prison_chaosgold_extra"]
@@ -11974,8 +12021,9 @@ if _bgbig_checked < 70:
 print("[bgbig-summary] 2026-10-24 金铸的牢狱：检查 " + str(_bgbig_checked) + " 项，问题 "
       + str(len(bgbig_problems)) + " 条" + ("" if not bgbig_problems else "：" + str(bgbig_problems[:4])))
 if not bgbig_problems:
-    print("[bgbig-ok] 金铸的牢狱 1 类别 + 6 章 37 页（逐页页型 / 配方引用 / 轮换栈 / 页眉 / "
-          "16 段中文逐字 = 作者原文）；旧四条 48 页作废不产出（构造函数与 RETIRED_ENTRIES 留档）")
+    print("[bgbig-ok] 金铸的牢狱 1 类别 + 6 章 35 页（逐页页型 / 配方引用 / 轮换栈 / 页眉 / "
+          "16 段中文逐字 = 作者原文）；旧四条 48 页作废不产出（构造函数与 RETIRED_ENTRIES 留档）"
+          "；第 4 章 = 10 页（1 左文案 / 1 右 bettergold:double_recipe 上粒下锭 / 2 左文案 / 14 件 × 7 页）")
 
 
 # ==========================================================================================
@@ -12469,6 +12517,221 @@ if not bg19_problems:
           "R5 混沌金耐久 靴220/腿246/胸264/头200；R6 音波击退抗性 = 精确反推 + tick 末清零")
 
 
+# ==========================================================================================
+# ★★ 1.7 `bg20`（P4，2026-10-26）：手册「金之牢狱 · 混沌金的主要内容」**重做**
+# ==========================================================================================
+# 作者原话（原文，一个字不许改）：
+#   「金之牢狱的混沌金的主要内容篇章还得再重做：在该篇章的**第一页右侧的上边**放上**混沌金粒的配方**，
+#     **下边**放上**混沌金锭的配方**；然后**第二页左侧**才是放**他们的装备介绍**，**后面的页面**并衔接着
+#     **混沌金装备的配方**」
+#
+# 落点 = **自定义页型** `bettergold:double_recipe`（一页上下各一条配方、两条可以是不同 recipe class）。
+# 本段只跑**静态**判定；A 级（客户端真加载 BookContents）由 `probe/bg20` 的探针出。
+#   ⚠ 本段的 tag 用 `bg20-*` 而不是 `bg19-*`：`bg19-*` 已被上一轮（R1..R6 效果 / 耐久 / 音波）
+#     整段占用，复用会污染那一段的反空转计数。
+#   ① 页型在 Java 侧真的注册了 + 页面类真的继承 `PageDoubleRecipeRegistry` 的基类；
+#   ② 注册入口被客户端 setup 调到，且**守卫在第一次触碰 Patchouli 类型之前**；
+#   ③ 生成器里第 1 屏右页用的就是这个页型、两条 recipe id 与两条配方文件的 type 对得上；
+#   ④ 隔离白名单**恰好**两个文件；
+#   ⑤ 产物页序 = [text, bettergold:double_recipe, text, crafting × 7]、14 件装备一件不少。
+bg20_problems: list[str] = []
+_bg20_checked = 0
+
+# 14 件装备的期望顺序 = 八族「贵金装备」章节那张 `FORGE_ORDER`（本段**独立写一遍**，
+# 不从生成器 import —— 否则生成器抄错就永远抓不到）。
+_BG20_GEAR_ORDER = ("sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
+                    "shovel", "hoe", "shield", "helmet", "chestplate", "leggings", "boots")
+
+
+def _bg20_bad(tag: str, msg: str) -> None:
+    bg20_problems.append("[%s] %s" % (tag, msg))
+
+
+_bg20_pt_path = JAVA / "patchouli" / "HandbookPageTypes.java"
+_bg20_pt = strip_comments(_bg20_pt_path.read_text(encoding="utf-8")) if _bg20_pt_path.is_file() else ""
+_bg20_checked += 1
+if not _bg20_pt:
+    _bg20_bad("bg20-page-type", "反空转守护：找不到 patchouli/HandbookPageTypes.java")
+else:
+    _bg20_checked += 9
+    if "extends PageDoubleRecipe<" not in _bg20_pt:
+        _bg20_bad("bg20-page-type", "页面类没有继承 PageDoubleRecipe（那就不是「一页两条」的页型）")
+    if "pageTypes.put(DOUBLE_RECIPE, DoubleRecipePage.class)" not in _bg20_pt:
+        _bg20_bad("bg20-page-type", "没有把 bettergold:double_recipe 真的登记进 pageTypes")
+    if 'PAGE_PATH = "double_recipe"' not in _bg20_pt:
+        _bg20_bad("bg20-page-type", "页型 path 不是 double_recipe")
+    if "protected Recipe<?> loadRecipe(" not in _bg20_pt:
+        _bg20_bad("bg20-page-type", "没有覆写 loadRecipe（不按 RecipeType 过滤才是本页型存在的根）")
+    if "recipeType" in _bg20_pt:
+        _bg20_bad("bg20-page-type",
+                  "页面类里出现了 recipeType 过滤 ⇒ 又变回「一个页型只收一种 recipe class」")
+    for _n in ("recipe instanceof CraftingRecipe", "recipe instanceof SmeltingRecipe"):
+        if _n not in _bg20_pt:
+            _bg20_bad("bg20-page-type", "drawRecipe 没有按 recipe 的实际类分派：缺 " + _n)
+    if "protected int getRecipeHeight()" not in _bg20_pt:
+        _bg20_bad("bg20-page-type", "没有给 getRecipeHeight（上下两格的间距全靠它）")
+    if "protected ItemStack getRecipeOutput(" not in _bg20_pt:
+        _bg20_bad("bg20-page-type", "没有实现 getRecipeOutput（页眉会用空串）")
+    # 守卫顺序：register() 里 isLoaded() 必须**早于**第一次触碰 Patchouli 类型
+    _reg_at = _bg20_pt.find("public static void register()")
+    _cls_at = _bg20_pt.find("public static final class DoubleRecipePage")
+    if _reg_at < 0 or _cls_at < 0 or _cls_at < _reg_at:
+        _bg20_bad("bg20-page-type", "register() 与页面类的先后位置不对（守卫来不及早退）")
+    else:
+        _reg = _bg20_pt[_reg_at:_cls_at]
+        _guard = _reg.find("HandbookModule.isLoaded()")
+        _touch = _reg.find("ClientBookRegistry")
+        if _guard < 0:
+            _bg20_bad("bg20-page-type", "register() 里没有 HandbookModule.isLoaded() 早退守卫")
+        elif _touch < 0 or _guard > _touch:
+            _bg20_bad("bg20-page-type",
+                      "守卫出现在第一次触碰 Patchouli 类型之后（没装 Patchouli 时会炸在类解析上）")
+
+# 入口点：客户端 setup 调到它，且 bettergoldClient 自己**不得**引用 Patchouli 类型
+_bg20_checked += 3
+_cs20 = strip_comments((JAVA / "bettergoldClient.java").read_text(encoding="utf-8"))
+if "HandbookPageTypes::register" not in _cs20:
+    _bg20_bad("bg20-client-entry", "客户端 setup 没有调用 HandbookPageTypes::register（页型永远不注册）")
+if "event.enqueueWork(com.hjmmd_8.bettergold.patchouli.HandbookPageTypes::register)" not in _cs20:
+    _bg20_bad("bg20-client-entry",
+              "注册没有走 enqueueWork（主线程上 put，避免和 Patchouli 的 pageTypes 并发写）")
+if "vazkii" in _cs20:
+    _bg20_bad("bg20-client-entry", "客户端入口点自己引用了 Patchouli 类型（破坏了单点隔离）")
+
+# 页面类只许出现在 HandbookPageTypes.java 一处（否则等于又开了第二个入口）
+_bg20_checked += 1
+_bg20_other = []
+for _p in sorted(JAVA.rglob("*.java")):
+    if "probe" in _p.parts or _p.name == "HandbookPageTypes.java":
+        continue
+    if "DoubleRecipePage" in strip_comments(_p.read_text(encoding="utf-8")):
+        _bg20_other.append(_p.name)
+if _bg20_other:
+    _bg20_bad("bg20-page-type", "页面类被别的文件引用了（入口必须唯一）：" + str(_bg20_other))
+
+# 隔离白名单：**恰好**两个文件（这里独立重推一遍，不复用 bgbook 那一段的结果）
+_bg20_checked += 2
+_bg20_names = sorted(
+    p.name for p in JAVA.rglob("*.java")
+    if "probe" not in p.parts and "vazkii.patchouli" in strip_comments(p.read_text(encoding="utf-8")))
+if _bg20_names != ["HandbookPageTypes.java", "PatchouliCompat.java"]:
+    _bg20_bad("bg20-isolation", "引用 Patchouli 的文件不是恰好这两个：" + str(_bg20_names))
+
+# 生成器：第 1 屏右页就是这个页型、两条 recipe 按作者口径（上粒 / 下锭）
+_bg20_checked += 8
+try:
+    _bg20_pages = _HB.entry_prison_chaosgold_main()["pages"]
+except Exception as _e:                                   # noqa: BLE001
+    _bg20_pages = []
+    _bg20_bad("bg20-generator", "生成器的 entry_prison_chaosgold_main 跑不起来：" + repr(_e))
+if len(_bg20_pages) != 10:
+    _bg20_bad("bg20-generator", "第 4 章不是 10 页（实际 %d）" % len(_bg20_pages))
+else:
+    if [p.get("type") for p in _bg20_pages] != (["patchouli:text", "bettergold:double_recipe",
+                                                 "patchouli:text"] + ["patchouli:crafting"] * 7):
+        _bg20_bad("bg20-generator",
+                  "第 4 章页型序列不对：" + repr([p.get("type") for p in _bg20_pages]))
+    if _bg20_pages[0].get("text") != "%s.page.prison_chaosgold_main_1_left" % _PB_LANG:
+        _bg20_bad("bg20-generator", "第 1 页左不是那段正文（1_left）")
+    if _bg20_pages[2].get("text") != "%s.page.prison_chaosgold_main_2_left" % _PB_LANG:
+        _bg20_bad("bg20-generator", "第 2 页左不是装备介绍那段正文（2_left）")
+    if _bg20_pages[1].get("recipe") != "bettergold:chaos_coin_smelting":
+        _bg20_bad("bg20-generator",
+                  "自定义页的**上边**不是混沌金粒（chaos_coin_smelting）：" + repr(_bg20_pages[1]))
+    if _bg20_pages[1].get("recipe2") != "bettergold:chaosgold_ingot_from_nugget":
+        _bg20_bad("bg20-generator",
+                  "自定义页的**下边**不是混沌金锭（chaosgold_ingot_from_nugget）：" + repr(_bg20_pages[1]))
+    _bg20_gear = []
+    for _pg in _bg20_pages[3:]:
+        _bg20_gear.extend([x for x in (_pg.get("recipe"), _pg.get("recipe2")) if isinstance(x, str)])
+    _bg20_want = ["bettergold:chaosgold_" + _g for _g in _BG20_GEAR_ORDER]
+    if _bg20_gear != _bg20_want:
+        _bg20_bad("bg20-generator", "14 件装备配方顺序不对：" + repr(_bg20_gear))
+    if len(_bg20_gear) != 14:
+        _bg20_bad("bg20-generator", "装备配方不是 14 条（实际 %d）" % len(_bg20_gear))
+
+# 生成器源码（去注释）：旧的两页写法不许回来
+_bg20_checked += 4
+_bg20_hb = _up_strip_py_comments(
+    (REPO / "tools" / "asset-generator" / "generate_handbook_data.py").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ('double_recipe_page("chaos_coin_smelting", "chaosgold_ingot_from_nugget")',
+         "生成器里没有那张自定义页（上粒 / 下锭）"),
+        ('"type": "bettergold:double_recipe"', "生成器没有产出 bettergold:double_recipe 页型"),
+        ("PRISON_CHAOSGOLD_CRAFT_ORDER = list(FORGE_ORDER)",
+         "装备配方件清单不是「八族贵金装备那张 FORGE_ORDER」的 14 件")):
+    if _needle not in _bg20_hb:
+        _bg20_bad("bg20-generator", _why + "：缺 " + _needle)
+if 'smelting_page("chaos_coin_smelting")' in _bg20_hb:
+    _bg20_bad("bg20-generator", "旧的「单独一页熔炉页」写法又回来了（作者要的是同页上下）")
+
+# 两条配方的真实类型：上面那条必须是 smelting、下面那条必须是工作台（页型靠这个证「两条不同类型」）
+_bg20_checked += 4
+for _rid, _rtype in (("chaos_coin_smelting", "minecraft:smelting"),
+                     ("chaosgold_ingot_from_nugget", "minecraft:crafting_shaped")):
+    _rf = _RC_DATA / (_rid + ".json")
+    if not _rf.is_file():
+        _bg20_bad("bg20-recipes", "缺配方文件 data/bettergold/recipe/%s.json" % _rid)
+        continue
+    _rj = json.loads(_rf.read_text(encoding="utf-8"))
+    if _rj.get("type") != _rtype:
+        _bg20_bad("bg20-recipes",
+                  "%s 的 type 不是 %s（实际 %r）" % (_rid, _rtype, _rj.get("type")))
+
+# 产物（zh / en 各一份）：页数 / 页序 / 两段文案键
+_bg20_checked += 4
+for _d, _tag20 in ((_ZH_BOOK, "zh"), (_EN_BOOK, "en")):
+    _f20 = _d / "entries" / "prison_chaosgold_main.json"
+    if not _f20.is_file():
+        _bg20_bad("bg20-book", _tag20 + " 缺 entries/prison_chaosgold_main.json")
+        continue
+    _jp = json.loads(_f20.read_text(encoding="utf-8")).get("pages") or []
+    if len(_jp) != 10:
+        _bg20_bad("bg20-book", _tag20 + " 的第 4 章不是 10 页（实际 %d）" % len(_jp))
+    elif _jp[1].get("type") != "bettergold:double_recipe":
+        _bg20_bad("bg20-book", _tag20 + " 第 1 屏右页不是 bettergold:double_recipe：" + repr(_jp[1]))
+    elif (_jp[1].get("recipe"), _jp[1].get("recipe2")) != (
+            "bettergold:chaos_coin_smelting", "bettergold:chaosgold_ingot_from_nugget"):
+        _bg20_bad("bg20-book", _tag20 + " 自定义页的两条 recipe 不对：" + repr(_jp[1]))
+
+# 文档：§33 必须落档（本轮口径 + 旧口径标注）
+_bg20_checked += 3
+_bg20_doc = REPO / "docs" / "1.7-\u6df7\u6c8c\u91d1\u4e0e\u5d29\u4e71\u5408\u91d1-\u9700\u6c42\u7acb\u6863.md"
+if not _bg20_doc.is_file():
+    _bg20_bad("bg20-doc", "缺 docs/1.7-混沌金与崩乱合金-需求立档.md")
+else:
+    _bg20_doc_txt = _bg20_doc.read_text(encoding="utf-8")
+    for _needle, _why in (("bg20", "立档里没有本轮标记（bg20）"),
+                          ("double_recipe", "立档里没写自定义页型 bettergold:double_recipe"),
+                          ("第一页右侧的上边", "没把作者 P4 原话逐字收进立档")):
+        if _needle not in _bg20_doc_txt:
+            _bg20_bad("bg20-doc", _why + "：缺「" + _needle + "」")
+
+# 记账项必须落档：14 件的口径 + 乐事刀不再占页 + 旧页序留档
+_bg20_checked += 4
+if "14 件" not in _bg20_doc_txt:
+    _bg20_bad("bg20-doc", "立档没写「14 件」这条口径")
+if "chaosgold_knife" not in _bg20_doc_txt:
+    _bg20_bad("bg20-doc", "立档没记账「乐事刀不再单独占一页」（作者口径的副作用）")
+if "旧页序" not in _bg20_doc_txt:
+    _bg20_bad("bg20-doc", "立档没有「旧页序原文留档」这一节")
+# 生成器里 15 件那张表必须**还在**（第 6 章崩乱合金还在用它，不许被本次收窄顺手删掉）
+if "PRISON_GEAR_ORDER = FORGE_ORDER + [\"knife\"]" not in _bg20_hb:
+    _bg20_bad("bg20-generator",
+              "生成器的 PRISON_GEAR_ORDER（15 件，第 6 章崩乱合金在用）被动了")
+
+if _bg20_checked < 40:
+    _bg20_bad("bg20-anti-vacuum", "本段只跑了 %d 条判定（反空转）" % _bg20_checked)
+print("[bg20-summary] 2026-10-26 P4 手册「混沌金的主要内容」重做：检查 " + str(_bg20_checked)
+      + " 项，问题 " + str(len(bg20_problems)) + " 条"
+      + ("" if not bg20_problems else "：" + str(bg20_problems[:4])))
+if not bg20_problems:
+    print("[bg20-ok] 自定义页型 bettergold:double_recipe（extends PageDoubleRecipe，按 recipe 实际类"
+          "分派画法；pageTypes 注册在客户端 setup、守卫在触碰之前；隔离白名单恰好 2 个文件）+ "
+          "第 4 章 10 页 = [text, double_recipe(上 chaos_coin_smelting / 下 chaosgold_ingot_from_nugget), "
+          "text, crafting×7 = 14 件]")
+
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -12489,7 +12752,9 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        # 2026-10-24 大轮（`bgbig`）：金铸的牢狱 6 章 + 旧四条作废
                        bgbig_problems,
                        # 2026-10-25 bg18：P1 新章节（炼金的起步 第 6 章）
-                       bg19_problems)
+                       bg19_problems,
+                       # 2026-10-26 bg20（P4）：手册「混沌金的主要内容」重做 + 自定义页型
+                       bg20_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

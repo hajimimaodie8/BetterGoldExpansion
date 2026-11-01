@@ -1,0 +1,23 @@
+bg20 扰动（≥2 用例 + 逐字节复原 + SHA256）
+
+baseline: generator SHA256 = 59050724232014F5DCD0530E1F8426ED2923056A82490DCE695AB52B21539880
+baseline: 手册树摘要      = 56C3EB56EF3C51753FD9CEA6F2152D63DAC2640AA00E10B29335E5A93E6FA306
+baseline: validate_metal_data.py exit = 0
+
+A page_type_name_wrong: generator exit=0 / validate exit=1（期望 1）
+    [bgbig-summary] 2026-10-24 金铸的牢狱：检查 114 项，问题 3 条：["[bgbig-entry] prison_chaosgold_main 的页型序列不对：['patchouli:text', 'bettergold:double_recpe', 'patchouli:text', 'patchouli:crafting', 'patchouli:crafting
+    [bg20-summary] 2026-10-26 P4 手册「混沌金的主要内容」重做：检查 43 项，问题 4 条：["[bg20-generator] 第 4 章页型序列不对：['patchouli:text', 'bettergold:double_recpe', 'patchouli:text', 'patchouli:crafting', 'patchouli:crafting', 'p
+    [bg-data-fail] 问题合计 14 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    复原: generator SHA256 = 59050724232014F5DCD0530E1F8426ED2923056A82490DCE695AB52B21539880 == base? True / 手册树 == base? True / 关卡 exit=0 / 重生成 exit=0
+
+B recipe1_doubled: generator exit=0 / validate exit=1（期望 1）
+    [bgbig-summary] 2026-10-24 金铸的牢狱：检查 114 项，问题 1 条：["[bgbig-pages] 第 4 章第 1 屏右页不是「上 = 烧制混沌金粒 / 下 = 制作混沌金锭」的自定义页：{'type': 'bettergold:double_recipe', 'recipe': 'bettergold:raw_sturdygold_doubled', 'recip
+    [bg20-summary] 2026-10-26 P4 手册「混沌金的主要内容」重做：检查 43 项，问题 4 条：["[bg20-generator] 自定义页的**上边**不是混沌金粒（chaos_coin_smelting）：{'type': 'bettergold:double_recipe', 'recipe': 'bettergold:raw_sturdygold_doubled',
+    [bg-data-fail] 问题合计 8 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    复原: generator SHA256 = 59050724232014F5DCD0530E1F8426ED2923056A82490DCE695AB52B21539880 == base? True / 手册树 == base? True / 关卡 exit=0 / 重生成 exit=0
+
+C comment_only: generator exit=0 / validate exit=0（期望 0）
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    复原: generator SHA256 = 59050724232014F5DCD0530E1F8426ED2923056A82490DCE695AB52B21539880 == base? True / 手册树 == base? True / 关卡 exit=0 / 重生成 exit=0
+
+结论: 全部用例按预期 + 逐字节复原干净

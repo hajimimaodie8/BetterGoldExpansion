@@ -160,6 +160,40 @@ def crafting_page(recipe_a, recipe_b=None, title_key=None, text_key=None):
     return page
 
 
+def double_recipe_page(recipe_top, recipe_bottom=None, title_key=None, text_key=None):
+    """★ 1.7 `bg19`（P4）**自定义页型** `bettergold:double_recipe`：一页里**上 / 下各一条配方**，
+    而且两条**可以是不同 recipe class**（本仓唯一用处：上 = `minecraft:smelting` 的烧制、下 =
+    `minecraft:crafting_shaped` 的合成）。
+
+    <h2>为什么必须自定义（取证，不是偷懒）</h2>
+    读 `run/mods/Patchouli-1.21.1-93-NEOFORGE.jar` 的字节码（无 sources，`javap -p -c`）：
+    `PageCrafting` 走 `PageDoubleRecipeRegistry<Recipe<?>>`（构造器把 `RecipeType.CRAFTING` 写死）、
+    `PageSmelting` 走 `PageSimpleProcessingRecipe<SmeltingRecipe>`（同样写死），
+    `PageDoubleRecipeRegistry#loadRecipe` 里那句 `holder.value().getType() == recipeType`
+    就是「**一个页型只收一种 recipe class**」的根 ⇒ 既有页型上**不可能**同页放 smelting + crafting。
+    而 `PageDoubleRecipe#render` 本来就天然是「上 / 下」两格（recipe1 在 `(getX(), getY())`、
+    recipe2 在 `(getX(), getY() + getRecipeHeight() - 10)`）⇒ 自定义页型只要**按 recipe 的实际类**
+    分派画法就够（实现见 `patchouli/HandbookPageTypes.java`）。
+
+    <h2>字段名与既有页型**逐字相同**</h2>
+    `recipe` / `recipe2` / `title` / `text` 四个键照 `PageDoubleRecipe` 家族抄
+    （`recipeId` / `recipe2Id` 的改名靠 `@SerializedName`，我们继承那两个字段 ⇒ 继承同一套映射）。
+    ⚠ 这个版本的 Patchouli **没有 Codec / StreamCodec**：页面由客户端 GSON 反射反序列化
+    （`ClientBookRegistry$LexiconPageAdapter`），书内容全在客户端 assets 里 ⇒ 不需要网络同步。
+
+    ⚠ `text` 在本页型上**画不出来**（`PageDoubleRecipe#getTextHeight()` 恒 ≥ 156 ⇒
+    `shouldRenderText()` 为假）—— 键可以写，但等于留档，别指望它显示。
+    """
+    page = {"type": "bettergold:double_recipe", "recipe": "bettergold:%s" % recipe_top}
+    if recipe_bottom:
+        page["recipe2"] = "bettergold:%s" % recipe_bottom
+    if title_key:
+        page["title"] = title_key
+    if text_key:
+        page["text"] = text_key
+    return page
+
+
 def smelting_page(recipe_a, recipe_b=None, title_key=None, text_key=None):
     """熔炉页。字段形状与 ``crafting_page`` **逐字相同**（同属 ``PageDoubleRecipe`` 家族：
     只有 ``recipe`` / ``recipe2`` 两个槽 + ``title`` / ``text``）。
@@ -1163,6 +1197,16 @@ PRISON_CATEGORY = "golden_prison"
 PRISON_GEAR_ORDER = FORGE_ORDER + ["knife"]
 assert len(PRISON_GEAR_ORDER) == 15, "金铸的牢狱的装备图集不是 15 件"
 
+# ★★ 1.7 `bg19`（P4）：第 4 章「混沌金的主要内容」后面接的**装备配方** = 八族「贵金装备」那张
+#   `FORGE_ORDER` 的 **14 件原样**（剑 重锤 三叉戟 弓 弩 斧 镐 锹 锄 盾 头盔 胸甲 护腿 靴子），
+#   **不含乐事刀** ⇒ 14 件 = **7 页 × 2 条**正好铺满（作者 P4：后面的页面"衔接着混沌金装备的配方"）。
+#   ⚠ 旧口径（未删、已作废）：这一章用的是 `PRISON_GEAR_ORDER`（15 件 = 8 页，最后一页只有 1 条）。
+#   `PRISON_GEAR_ORDER` 本身**一行没动** —— 第 6 章崩乱合金的 15 件锻造配方还在用它。
+PRISON_CHAOSGOLD_CRAFT_ORDER = list(FORGE_ORDER)
+assert len(PRISON_CHAOSGOLD_CRAFT_ORDER) == 14, "混沌金装备配方不是 14 件"
+assert PRISON_CHAOSGOLD_CRAFT_ORDER == FORGE_ORDER, "混沌金装备配方顺序必须与「贵金装备」章节一致"
+assert len(PRISON_CHAOSGOLD_CRAFT_ORDER) % 2 == 0, "14 件必须能被 2 整除（每页 2 条、不许留空槽）"
+
 
 def entry_prison_main():
     """第一章 · 金之牢狱主体（封面 = 金砖块）。2 页纯文案。"""
@@ -1196,32 +1240,45 @@ def entry_prison_coin_anvil():
 
 
 def entry_prison_chaosgold_main():
-    """第四章 · 混沌金的主要内容（封面 = 混沌金锭）。11 页 = 3 + 8 页配方（15 件）。"""
+    """第四章 · 混沌金的主要内容（封面 = 混沌金锭）。10 页 = 3 + 7 页配方（14 件，每页 2 条）。
+
+    ★★ 1.7 `bg19`（P4，作者 2026-10-26 逐字要求）——**页序按作者重排**：
+
+        第 1 页左（text）          正文（`prison_chaosgold_main_1_left`，原文一字未改）
+        第 1 页右（**自定义页**）    **上边** = 混沌金粒的配方（烧制 `chaos_coin_smelting`）
+                                    **下边** = 混沌金锭的配方（合成 `chaosgold_ingot_from_nugget`）
+                                    ⇒ 页型 `bettergold:double_recipe`（一页两条、两种 recipe class）
+        第 2 页左（text）          装备介绍（`prison_chaosgold_main_2_left`，原文一字未改）
+        第 2 页右 起（crafting×7）  **14 件**混沌金装备的工作台配方，每页 2 条（= 7 页正好铺满）
+
+    ⚠ **旧页序原文留档（未删、已作废）**：
+        P2-a（2026-10-25）：`text 1_left, text 2_left, smelting(下标2), crafting(下标3), + 8 页 crafting`
+        = 12 页（两段文案并到第 1 跨页、熔炉页 / 工作台页挪到第 2 跨页的**相邻两页**）；
+        在那之前：`text 1_left, smelting, crafting, text 2_left, + 8 页 crafting`。
+    为什么现在能一页放下：见 `double_recipe_page()` 的注释（自定义页型把「一个页型只收一种
+    recipe class」这条 Patchouli 结构上限绕开了），所以不再需要「相邻两页」这种妥协。
+
+    ⚠ **件数 15 → 14**：作者 P4 的口径是「**混沌金装备**」，= 八族「贵金装备」章节那张
+    `FORGE_ORDER` 的 14 件（剑 重锤 三叉戟 弓 弩 斧 镐 锹 锄 盾 头盔 胸甲 护腿 靴子）；
+    14 件 ⇒ **7 页 × 2 条正好铺满**，不再出现「最后一页只放 1 条」的 `recipe2` 空槽。
+    旧口径（未删）：`PRISON_GEAR_ORDER` = `FORGE_ORDER + ["knife"]` = **15 件 = 8 页**
+    （乐事刀补在最后、单独一页 1 条）—— 乐事刀的配方仍在数据里（`chaosgold_knife`），
+    只是本章不再给它单独一页；`PRISON_GEAR_ORDER` 本身**未动**（第 6 章崩乱合金还在用 15 件锻造）。
+    """
     eid = "prison_chaosgold_main"
     pages = [
+        # 1 左：正文（作者原文，一字不许改）
         text_page(_ph(eid, "1_left")),
-        # ★ 2026-10-25（P2-a）：两段文案**先并到第一个跨页**（1 左 / 1 右），
-        #   把「烧制 + 制作」这一对挪到**第二个跨页**（第 3 / 第 4 页）。
-        #   根因：Patchouli 的书是**左右对开**，一屏 = 下标 (2k, 2k+1)；旧顺序把熔炉页放在
-        #   下标 1（第 1 屏右页）、工作台页放在下标 2（第 2 屏左页）⇒ **翻书时永远不同屏**，
-        #   这正是作者报的"两种配方不能同框"。
-        #   ⚠ 旧顺序原文留档（未删）：`text 1_left, smelting, crafting, text 2_left`。
+        # 1 右：★ 自定义页型 —— 上 = 烧制混沌金粒 / 下 = 制作混沌金锭
+        double_recipe_page("chaos_coin_smelting", "chaosgold_ingot_from_nugget"),
+        # 2 左：装备介绍正文（作者原文，一字不许改）
         text_page(_ph(eid, "2_left")),
-        # 第 3 页（第 2 屏左）：上 = 烧制混沌金粒
-        # ⚠ **门禁项（Patchouli 结构上限）**：这两条是**不同配方类型**
-        #   （`minecraft:smelting` vs `minecraft:crafting_shaped`），而 Patchouli 的
-        #   `PageDoubleRecipe` 每个页型只认**一种** recipe class（`PageCrafting` →
-        #   `CraftingRecipe`、`PageSmelting` → `SmeltingRecipe`）⇒ **一页放不下两种类型**。
-        #   落法 = **相邻两页 + 同一跨页**（左 = 熔炉页、右 = 工作台页），配方一条不少、顺序不变；
-        #   记账在 `docs/1.7-...md` §31（旧记 §30 的"拆成相邻两页"已被 P2-a 取代）。
-        smelting_page("chaos_coin_smelting"),
-        # 第 4 页（第 2 屏右）：下 = 制作混沌金锭
-        crafting_page("chaosgold_ingot_from_nugget"),
     ]
-    # 2 右 起：混沌金装备系列配方图集（15 件 = 7 页 × 2 + 1 页单条；顺序 = §八 FORGE_ORDER + 刀）
-    for _i in range(0, len(PRISON_GEAR_ORDER), 2):
-        _a = PRISON_GEAR_ORDER[_i]
-        _b = PRISON_GEAR_ORDER[_i + 1] if _i + 1 < len(PRISON_GEAR_ORDER) else None
+    # 2 右 起：混沌金装备的工作台配方图集（14 件 = 7 页 × 2；顺序 = §八 FORGE_ORDER）
+    for _i in range(0, len(PRISON_CHAOSGOLD_CRAFT_ORDER), 2):
+        _a = PRISON_CHAOSGOLD_CRAFT_ORDER[_i]
+        _b = (PRISON_CHAOSGOLD_CRAFT_ORDER[_i + 1]
+              if _i + 1 < len(PRISON_CHAOSGOLD_CRAFT_ORDER) else None)
         pages.append(crafting_page("chaosgold_%s" % _a,
                                    ("chaosgold_%s" % _b) if _b else None))
     return entry(eid, PRISON_CATEGORY, "chaosgold_ingot", 3, pages)

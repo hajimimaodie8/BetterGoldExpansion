@@ -148,6 +148,14 @@ public class bettergoldClient {
         // 不登记的话照搬原版的模型 override 永远取不到值（见 client/MetalWeaponItemProperties 的类注释）。
         event.enqueueWork(com.hjmmd_8.bettergold.client.MetalWeaponItemProperties::register);
 
+        // ★ 1.7 `bg19`（P4）：手册的自定义页型 `bettergold:double_recipe`
+        //   （一页上下各一条配方、两条可以是不同 recipe class —— 作者要的「上粒 / 下锭」）。
+        // ⚠ 走 `enqueueWork`：主线程上执行，和 Patchouli 自己 `ClientBookRegistry#addPageTypes` 的
+        //   `pageTypes`（普通 HashMap）不会并发写；且一定早于**首次资源加载**（书内容在那之后才读）。
+        // ⚠ 本行只加载我们的 `HandbookPageTypes`（不解析 Patchouli 的类型）——
+        //   没装 Patchouli 时它在方法体内早退，页型不注册（口径 B）。
+        event.enqueueWork(com.hjmmd_8.bettergold.patchouli.HandbookPageTypes::register);
+
         // 注册透明渲染层：带透明像素的方块若不注册 cutout，透明区域会被 solid 渲染成黑色
         event.enqueueWork(() -> {
             RenderType cutout = RenderType.cutout();
