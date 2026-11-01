@@ -32,6 +32,12 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  *   <li>安抚（soothe）：目标暂时失去 AI；原始 NoAI / 目标由 {@code material.SootheState} 保存并还原，
  *       不叠加、时长取 max（新约 1.5 幻惑金）。</li>
  * </ul>
+ *
+ * <p><b>1.7 <code>bg19</code> 第 R1 条（作者：「贵金和崩乱合金所挂的 buff 不会被牛奶清除」）</b>：
+ * 上面 8 个八族效果 + {@link #POWER_IMBALANCE} / {@link #RESISTANCE_IMBALANCE}（混沌/崩乱两族）
+ * <b>全部</b>改由 {@link BetterGoldMobEffect} 注册 —— 它在 {@code fillEffectCures} 里摘掉
+ * {@code EffectCures.MILK}，于是牛奶清不掉它们。⚠ <b>以后新增任何本模组效果也必须用这个基类</b>，
+ * 否则会静默回到"能被牛奶清"的旧行为（关卡 {@code [bg19-milk-immunity]} 逐个 id 钉住这一点）。</p>
  */
 public class AllEffects {
 
@@ -49,7 +55,7 @@ public class AllEffects {
 
     /** 抗寒性：免疫冰冻伤害 */
     public static final DeferredHolder<MobEffect, MobEffect> COLD_RESISTANCE =
-            EFFECTS.register("cold_resistance", () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x55C8E8) {
+            EFFECTS.register("cold_resistance", () -> new BetterGoldMobEffect(MobEffectCategory.BENEFICIAL, 0x55C8E8) {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     // 实际免伤在伤害事件里判断，这里不需要每 tick 逻辑
@@ -105,7 +111,7 @@ public class AllEffects {
      * 唯一真源仍是 {@link #shiftedDamage} 一处。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> HIGH_BURN =
-            EFFECTS.register("high_burn", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFF7A18) {
+            EFFECTS.register("high_burn", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0xFF7A18) {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
@@ -133,7 +139,7 @@ public class AllEffects {
      * （累积在 {@code VoodooAccumulator}，结算在 {@code MetalEvents#onVoodooExpired}）。
      */
     public static final DeferredHolder<MobEffect, MobEffect> VOODOO =
-            EFFECTS.register("voodoo", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x7B3FA0) {
+            EFFECTS.register("voodoo", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x7B3FA0) {
                 // 纯标记型效果：不掉血、不加属性，只在结束时按累积伤害结算
             });
 
@@ -143,7 +149,7 @@ public class AllEffects {
      * 不会作用到实体上 —— 这一点是实测踩出来的）。
      */
     public static final DeferredHolder<MobEffect, MobEffect> TREMBLE =
-            EFFECTS.register("tremble", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x9B59F6) {
+            EFFECTS.register("tremble", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x9B59F6) {
                 {
                     this.addAttributeModifier(Attributes.ATTACK_DAMAGE,
                             ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "tremble_damage"),
@@ -180,7 +186,7 @@ public class AllEffects {
      * </ul>
      */
     public static final DeferredHolder<MobEffect, MobEffect> SEDIMENT =
-            EFFECTS.register("sediment", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x4B0082) {
+            EFFECTS.register("sediment", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x4B0082) {
                 {
                     this.addAttributeModifier(Attributes.MOVEMENT_SPEED,
                             ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "sediment_speed"),
@@ -218,7 +224,7 @@ public class AllEffects {
      * 只保证 AI 仍是关的、<b>不覆盖</b>已保存的原始状态。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> SOOTHE =
-            EFFECTS.register("soothe", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xC8A2E8) {
+            EFFECTS.register("soothe", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0xC8A2E8) {
                 @Override
                 public void onEffectStarted(LivingEntity entity, int amplifier) {
                     com.hjmmd_8.bettergold.material.SootheState.begin(entity);
@@ -241,7 +247,7 @@ public class AllEffects {
      * 与 {@link #HIGH_BURN} / {@link #SEDIMENT} 的分工一致。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> PARASITE =
-            EFFECTS.register("parasite", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x5E8C31) {
+            EFFECTS.register("parasite", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x5E8C31) {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     com.hjmmd_8.bettergold.material.MetalEvents.parasiteTick(entity, amplifier);
@@ -277,7 +283,7 @@ public class AllEffects {
      * 「不改文件名、不改贴图」这条<b>仍然有效</b>（贴图 = {@code textures/mob_effect/echo_roar.png}）。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> ECHO_ROAR =
-            EFFECTS.register("echo_roar", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x1B6B7A) {
+            EFFECTS.register("echo_roar", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x1B6B7A) {
                 @Override
                 public boolean applyEffectTick(LivingEntity entity, int amplifier) {
                     com.hjmmd_8.bettergold.material.MetalEvents.echoRoarTick(entity, amplifier);
@@ -307,7 +313,7 @@ public class AllEffects {
      * </ul>
      */
     public static final DeferredHolder<MobEffect, MobEffect> POWER_IMBALANCE =
-            EFFECTS.register("power_imbalance", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xC2410C) {
+            EFFECTS.register("power_imbalance", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0xC2410C) {
                 // 纯标记型效果：伤害改写只在 ImbalanceEffects 的伤害事件里做（每 tick 无逻辑）
             });
 
@@ -319,7 +325,7 @@ public class AllEffects {
      * <b>无等级</b>，同 {@link #POWER_IMBALANCE}。</p>
      */
     public static final DeferredHolder<MobEffect, MobEffect> RESISTANCE_IMBALANCE =
-            EFFECTS.register("resistance_imbalance", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x0F766E) {
+            EFFECTS.register("resistance_imbalance", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x0F766E) {
                 // 纯标记型效果：×2 只在 ImbalanceEffects 的伤害事件里做
             });
 

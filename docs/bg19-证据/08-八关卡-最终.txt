@@ -1,0 +1,215 @@
+===== validate_metal_assets.py  exit=0
+检查 JSON: 712 个
+解析失败: 0
+贴图缺失: 0
+专属材料缺件: 0
+武器贴图/模型缺件: 0 []
+胚底贴图/模型问题: 0 []
+盾牌/三叉戟实体贴图尺寸不符: 0 []
+三叉戟三模型结构问题: 0 []
+mixin 接线问题: 0 []
+flamegold    item=29  block=10  armor=2
+voodoogold   item=29  block=10  armor=2
+thundergold  item=29  block=10  armor=2
+indigoseagold item=29  block=10  armor=2
+illusiongold item=29  block=10  armor=2
+thornsgold   item=29  block=10  armor=2
+echogold     item=29  block=10  armor=2
+chaosgold    item=29  block=10  armor=2
+chaosalloy   item=25  block=1   armor=2
+bg-16 授权贴图（golden_trident_blank）问题: 0 []
+bgfinal3 授权色卡（靛海金纹饰）问题: 0 []
+bgn10d 授权贴图（第六张 tremble）问题: 0 []
+形态子集资产（9 族 × 15 形态）问题: 0 []
+[bg-assets-anti-vacuum] 实际检查了 712 项（blockstates / models 里名字含金属的 JSON；必须 > 0）
+[bg-assets-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+===== validate_metal_data.py  exit=0
+ []（本段判定 96 条）
+[bgn10r8-ok] 万坚金砧：配方 9 格 / 硬度 -1 与抗爆 3600000 / 不进 #minecraft:anvil / 四向 blockstate + 几何逐字原版 / MenuType+Screen 双端注册 / 每币 maxDamage/4 / 全仓 0 处修复惩罚与互斥重写 / min(16%,1%×格数)×当前血量 全部通过
+1.7 万坚金砧贴图/GUI 重做（bg-n10anvil）问题: 0 []（本段判定 85 条）
+[bgn10anvil-ok] 模型 21 个面 → 槽/uv/rotation 逐项 == 投影表（ew=前后 / ns=左右，按 alpha IoU 1.0000 判）/ 5 张源 PNG SHA256 未改 / Screen 三处文字 == 原版 + 输入框与三个精灵全抄 / 红条·装饰·幽灵图标反向断言 0 命中
+1.7 万坚金砧「无法锻造时的灰矩形」（bg-n10err）问题: 0 []（本段判定 22 条）
+[bgn10err-ok] 灰 = 原版 error 精灵自带（#C6C6C6 428 / #8B8B8B 79 / 红叉 81，alpha 全 255）；新精灵 = 作者 (99,45)-(126,65) 28x21 原样搬运 + 原版 81 个红叉像素（507+81=588，零新颜色）；作者 PNG SHA 未变；Screen 指向新精灵，fill( 仅花费底色一处
+1.7 轮9（两族进手册 38 页 / 两族进成就 8 条 / 创造页 / 中英语言键）问题: 0 []（本段判定 216 条）
+[bgn10r9-ok] 两族 4 条目 38 页（页型序列 / 39 条配方引用 / 33 件图标模型全部存在）/ 两族 8 条成就（parent 链 + challenge 两条 + 清一色 inventory_changed + 刀走标签）/ METAL_ORDER 含两族且材料前缀仍是 21 件 / 20+16 条中英键全部就位
+1.7 轮R（bg-n10rc 四类配方逐格）问题: 0 []（本段判定 76 条）
+[bgn10rc-ok] 四类配方逐格一致：充数 3 条（4/6/8 + 1 币 → 块）/ 崩乱合金模板 9 格 / 混沌金附魔书 9 格（青金石主对角、币串副对角）/ 万坚金砧 9 格；生成器自检 0 条
+1.7 bg-n10rg（混沌金工作台配方 + 双倍贵金原料）问题: 0 []（本段判定 285 项）
+[bgn10rg-ok] 混沌金 15 件工作台配方逐格照原版（前 11 件金属格 = 混沌金锭；后 4 件见 [bgn10rc2-*]）/ 8 条双倍贵金原料（催化剂 = 高阶炼金油、数量 2、与基础版逐字段同形且基础版未被改）/ 返还玻璃瓶按催化剂那一格判（去注释源码 3 处：两种形状的 matches + getRemainingItems）/ 手册 gear_chaosgold 15 页 15 条配方无死链
+1.7 bg-n10d（#13 金火把花种子 4 条原版标签）问题: 0 []（本段判定 23 条）
+[bgn10d-seed-tags-ok] 4 张原版种子标签各含金火把花种子、replace 不是 true、没有别的本模组物品混入、种子也没有出现在这 4 张之外
+1.7 bg-n10rc2（4 件补齐 + 返瓶扩到物品级）问题: 0 []（本段判定 149 项）
+[bgn10rc2-ok] 弓/重锤/三叉戟/乐事刀 4 条配方逐格钉住（三叉戟 = 原创形状待确认 + 乐事刀挂 mod_loaded(farmersdelight)）/ 其余 14 条无条件 / 高阶炼金油的物品级 remainder 恰好 1 处且与配方层按配方互斥（GLASS_BOTTLE 合计 2 处 = 不双返）/ 手册 15 页 15 条引用
+1.7 bg-n10up（混沌金锭上游：币串 → 3 币 / 币 →（熔炉 + 高炉）→ 粒 / 9 粒 → 1 锭）问题: 0 []（本段判定 107 项）
+[bgn10up-ok] 币串 → 3 币（shapeless，消耗 1 个）/ 币 →（smelting，与 8 条 raw_*_smelting 同档 1.0 xp 200 tick misc）+（blasting，与 8 条 raw_*_blasting 同档 1.0 xp 100 tick misc；`bg-n10fix` ① 作者 2026-10-18 推翻旧口径）→ 粒 / 9 粒 → 1 锭逐格（NNN 满格）与它的逆 1 锭 → 9 粒都原样 / 反向：无币串产线、无第二种金币来源、无烟熏营火（高炉恰好 1 条）/ 手册 18 页（两条各 1 页）无死链
+1.7 bg-n10fix（作者试玩 10 条：高炉 / 火把花黑底 / 炖菜 / 附魔书 / 建材硬度 / 禁果 / 金钱妖 / 弹幕 / 金币投掷 / 区间随机）问题: 0 []（本段判定 82 项）
+[bgn10fix-ok] ① 熔炉 + 高炉（高炉 100 tick / xp 1.0）/ ② 4 个模型 cutout + 三层链 + 贴图透明 / ③ 炖菜 absorption III 320 tick / ④ 书 16 堆叠 + 主手书副手装备 + 附魔台音效 + 创造免经验 / ⑤ 建材 55×2/3 与 8×2/3 + needs_iron_tool 且不在 diamond / ⑥ 两个禁果 alwaysEdible / ⑦ 悬浮 0.4 + IDLE 八枚硬币 0→360° / ⑧ 三格外才打 / ⑨ 金币可投掷（3 点 / 320 tick / 冷却 10）+ 不进寻途 / ⑩ 区间随机含两端 + 三个触发点（2000 次采样 4..8 均值 6）
+1.7 bg-n10fix2（作者又报 4 条：金币穿同类 / 模具数量 / 两个失衡 / 两把新刀）问题: 0 []（本段判定 47 项）
+[bgn10fix2-ok] ① 金币对 MoneyGremlin 直接穿过（不伤害 / 不饥饿 / 不 discard）/ ② 模具掉率 16%×(1+抢夺)、数量恒 1（金币串不动）/ ③ 力量 ×(1−r) 与抗性 ×(1+r)，r = nextInt(50)+1 每次重取、无等级 / ④ 两把新刀最终值 2.5..6.5 与 6.5..13、攻速 2.0；既有 8 族刀也改最终值 6.5（工具提示仍是 7.5）/ 2.2，物品层读数逐项与改前相同
+[bgsnd-summary] 金钱妖音效 / 字幕：检查 36 项，问题 0 条
+[bgsnd-ok] 3 个 sound event（ambient/hurt/death）都有 subtitle + 真实 OggS 文件；僵尸音效 0 处残留；playStepSound 空实现；中英字幕键集一致；「金桥」zip 未提供 ⇒ 未接入
+[gpt-summary] 2026-10-24 九条：检查 165 项，问题 0 条
+[gpt-ok] ① 金火把花可放金染土（土侧白名单未放宽）② 混沌金盾 426 / 韧性 2.0 / 击退 0.05×5 ③ 金钱茄+模具→金钱贝（旧原料配方已毙）④ 新手 24 金蛋→1 金票（999/10 经验）⑤ 金火把花种子喂鸡 100% 金蛋（其余仍 36%）⑥ 巫毒爆发 bettergold:voodoo_burst + owner / 每件 25% 中毒⑦ 金玫瑰丛 3 个金玫瑰 + BONE_MEAL_USE + HAPPY_VILLAGER ⑧ 靛海金弹射物液体惯性 1.0（mixin 双端）⑨ 四条配方逐格 + 禁果只核对
+[bgbig-summary] 2026-10-24 金铸的牢狱：检查 114 项，问题 0 条
+[bgbig-ok] 金铸的牢狱 1 类别 + 6 章 37 页（逐页页型 / 配方引用 / 轮换栈 / 页眉 / 16 段中文逐字 = 作者原文）；旧四条 48 页作废不产出（构造函数与 RETIRED_ENTRIES 留档）
+[bg18-summary] 2026-10-25 高阶的「贵金」提取：检查 104 项，问题 0 条
+[bg18-ok] P1 1 条目 / 4 页（text / 配方+正文 / text / 配方+正文）/ 封面 = 高精度炼金油 / 4 段中文 = 作者原文 / 两条配方引用都在盘上；P2-a 熔炉页与工作台页同跨页（下标 2/3）；P2-b 手册值裸 %% = 0；P2-c 金钱茄版返回自己的序列化器；P3 音咆排除施加者；P4 8 条 9 格原料配方逐格（含每列）== 作者图
+[bg19-summary] 2026-11-01 bg19：检查 69 项，问题 0 条
+[bg19-ok] R1 10 个本模组效果全部走 BetterGoldMobEffect（摘掉 EffectCures.MILK，不动 totem）；R2 树棘金 berryResist 与 cactusResist 并列、认 sweet_berry_bush 类型；R3 混沌金 0..6/全套 0..24 + 崩乱合金 4..10/全套 16..40（四件求和一处实现）；R5 混沌金耐久 靴220/腿246/胸264/头200；R6 音波击退抗性 = 精确反推 + tick 末清零
+[bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+--stderr--
+E:\mc\mcmod\bettergold-template-1.21.1\tools\asset-generator\validate_metal_data.py:10785: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  _px = list(_im.getdata())
+
+===== validate_advancements.py  exit=0
+OK [bgach] 63 个成就 / 157 条 criteria / 触发类型 ['minecraft:inventory_changed', 'minecraft:item_used_on_block', 'minecraft:location', 'minecraft:placed_block', 'minecraft:player_hurt_entity', 'minecraft:recipe_crafted', 'minecraft:villager_trade'] / recipe_crafted 12 条 / 语言键 126 条
+OK [bgach] 树（bg-fix3 §五 链式 + bgbig 金之牢狱线）：根 4 孩子（炼制I + 两条农业 + 红中黄室）、根链 root -> 炼制I -> 炼制II -> 寻途、寻途 9 孩子、染上黄金 3 孩子；3 条乐事条件；challenge 11 条（十族盔甲 + 骷髅打金服）
+OK [bgfix3-knife-in-gear] 8 条武器成就各带 `have_knife`（items = 该族 `#bettergold:<族>_knives` 标签，标签条目一律 required:false）⇒ 装了乐事时小刀计入
+OK [bgfix3-root-obtain] root 判据 = inventory_changed + `#bettergold:handbook`；全仓 recipe_crafted = 0 条
+OK [bgfix4-antique-knife-in-gear] 2 条古董成就各带 `have_knife`（items = 单个标签字符串，标签条目 required:false）⇒ 装了乐事时屠刀/断骸刀计入；`have` 那 5 件裸 id 原路径保留
+OK [bgfix9-inv-one-predicate] 「任意」类 15 条成就 / 24 条判据全部是**恰好 1 条谓词**（OR ⇔ items.size()==1）；「所有 / 一整套」类 14 条全部是「每件一条判据 + 各自一组」（组间 AND）；谓词 138 条 / 数组形态 14 个；全 63 条无 `conditions.player`（位置/结构门）
+OK [bgfix9-raw-metal-shape] ㊽ treasure/any_raw_metal.have = 1 条谓词 + 8 项原料数组（拿取/合成任一即解锁）；[bgfix9-eggplant-no-structure] ㊹ agriculture/eggplant_seeds.have = 获得金钱茄种子（无结构门）
+OK [bgach] 物品引用 143 个（含 13 张本模组标签）全部存在于注册表真源；食物清单与 Java 真源逐条一致
+OK [bgfinal-adv-lang] 126 条英文值全部是真英译（en != zh、非空、含 ASCII 字母、长度 ≤ 220；中英键集完全一致，白名单 0 条）
+[bgach-ok] 问题 0 条 / 成就 63 个 / criteria 157 条 / 语言键 126 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+===== validate_trim_assets.py  exit=0
+= True
+     源贴图 = ['trims/items/helmet_trim', 'trims/items/chestplate_trim', 'trims/items/leggings_trim', 'trims/items/boots_trim']
+     palette_key = ['trims/color_palettes/trim_palette']
+     11 条置换，我方全在 = True
+     sturdygold         -> bettergold:trims/color_palettes/sturdygold
+     unwanted_antique   -> bettergold:trims/color_palettes/unwanted_antique
+     flamegold          -> bettergold:trims/color_palettes/flamegold
+     voodoogold         -> bettergold:trims/color_palettes/voodoogold
+     thundergold        -> bettergold:trims/color_palettes/thundergold
+     indigoseagold      -> bettergold:trims/color_palettes/indigoseagold
+     illusiongold       -> bettergold:trims/color_palettes/illusiongold
+     thornsgold         -> bettergold:trims/color_palettes/thornsgold
+     echogold           -> bettergold:trims/color_palettes/echogold
+     chaosgold          -> bettergold:trims/color_palettes/chaosgold
+     chaosalloy         -> bettergold:trims/color_palettes/chaosalloy
+     注意：SpriteSourceList.load 用的是 resourceManager.getResourceStack（同名文件**拼接**），
+     所以本文件是**追加**到原版 blocks.json 的源列表上，不会覆盖原版 14 个材质。
+
+== 4. 原版盔甲物品模型的 overrides（trim_type → 哪个模型） ==
+  trim_type 0.1 -> minecraft:item/netherite_chestplate_quartz_trim
+  trim_type 0.2 -> minecraft:item/netherite_chestplate_iron_trim
+  trim_type 0.3 -> minecraft:item/netherite_chestplate_netherite_darker_trim
+  trim_type 0.4 -> minecraft:item/netherite_chestplate_redstone_trim
+  trim_type 0.5 -> minecraft:item/netherite_chestplate_copper_trim
+  trim_type 0.6 -> minecraft:item/netherite_chestplate_gold_trim
+  trim_type 0.7 -> minecraft:item/netherite_chestplate_emerald_trim
+  trim_type 0.8 -> minecraft:item/netherite_chestplate_diamond_trim
+  trim_type 0.9 -> minecraft:item/netherite_chestplate_lapis_trim
+  trim_type 1.0 -> minecraft:item/netherite_chestplate_amethyst_trim
+  netherite_chestplate_quartz_trim.json textures = {'layer0': 'minecraft:item/netherite_chestplate', 'layer1': 'minecraft:trims/items/chestplate_trim_quartz'}
+  => 修复前我方六个金属的 item_model_index 全是 0.1，谓词值 0.1 命中的就是 quartz 那一行，
+     最终画的是 minecraft:trims/items/chestplate_trim_quartz（quartz 色卡 = 白灰阶）⇒ 「纹饰都是白色」。
+
+== 5. 我方盔甲物品模型（JSON 里没有 trim overlay，这是原样；overlay 由客户端 ArmorTrimItemModels 运行期补） ==
+  6 套 × 4 件 = 24 个模型全部只有 {parent: minecraft:item/generated, textures:{layer0}}，
+  没有 overrides / 没有 layer1（对照原版 netherite_chestplate.json）⇒ 修之前自家盔甲连纹饰都不画。
+  修法：client/ArmorTrimItemModels.java 在 ModelEvent.ModifyBakingResult 里给**所有**带纹饰槽位的
+  盔甲物品模型套一层包装，按纹饰材质的 asset_name 现算「原模型四边形 + 纹饰精灵」那一层；
+  这样原版 25 件与自家 24 件一起生效，也不需要复制/覆盖原版模型 JSON。
+
+== 6. 修正①：小刀必须进 #farmersdelight:tools/knives（附魔类别标签全靠它） ==
+  data/farmersdelight/tags/item/tools/knives.json: 12 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife', 'bettergold:chaosgold_knife', 'bettergold:chaosalloy_knife']
+  data/c/tags/item/tools/knife.json: 12 把 -> ['bettergold:sturdygold_knife', 'bettergold:antique_knife', 'bettergold:netherite_antique_knife', 'bettergold:flamegold_knife', 'bettergold:voodoogold_knife', 'bettergold:thundergold_knife', 'bettergold:indigoseagold_knife', 'bettergold:illusiongold_knife', 'bettergold:thornsgold_knife', 'bettergold:echogold_knife', 'bettergold:chaosgold_knife', 'bettergold:chaosalloy_knife']
+  FD jar 里 data/minecraft/tags/item/enchantable/{bow,crossbow,trident,mace,sword,sharp_weapon,
+  weapon,fire_aspect,durability,mining,mining_loot,vanishing}.json 都靠它拼出来；
+  1.5 的靛海金刀 / 幻惑金刀原先不在这个标签里 ⇒ 只有那两把不能附魔。
+
+[写出] E:\mc\mcmod\bettergold-template-1.21.1\build\p15fix-asset-audit.txt
+[bgfinal3-anti-vacuum] 实际检查了 76 项（trim_material 11 + 色卡 11 + 图集置换 + 我方盔甲模型；必须 > 0）
+OK [bgfinal3] 9 张色卡：靛海金 = 作者原件（8×1 / 8 像素 / 非 quartz），其余 8 张各是自己的彩色渐变
+[bgfinal3-ok] 问题 0 条 / 检查 76 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+
+===== validate_bg17_textures.py  exit=0
+[bg17tex-auth6] ok mob_effect/tremble.png sha256=2f912961e4ed5a4337a6f81b911575b169e97172a81e7ee194653ba5fd9ce768
+[bg18tex-auth] ok block/flamegold_block.png sha256=69c3932960c92db156c548e5df601833e90b2797d442de58586de23c75b8d12f
+[bg18tex-auth] ok block/flamegold_bricks.png sha256=07fc4dd08e8a915e9b72bc03c38659a53d294f2a8219daae4a8bad12269081f3
+[bg18tex-auth] ok block/flamegold_pillar.png sha256=cce4d39ab696300be4f2ce86f8c00ec06ef5658f07da6326f09878fc19c9ce37
+[bg18tex-auth] ok gui/container/sturdygold_anvil.png sha256=debe8cfc08707bb71d534dbd11876f83c2b5fdd1bf7009626d08f1812ad454b2
+[bg18tex-auth] ok gui/sprites/container/sturdygold_anvil/error.png sha256=b0c8aa737917bc39058a5b402b92bca294e90586b0e663be5daa05a7d14c21c3
+[bg18tex-auth] ok item/flamegold_ingot.png sha256=616c80b5118025433768c3c24ecc90b80d876bfb0c4147d7db23b55902a932de
+[bg18tex-auth] ok item/flamegold_upgrade_template.png sha256=5e7c5d1ed9704bc06fd01e15ad8094fa39959dcee10876a80ca3ffad74d3cf36
+[bg18tex-auth] ok item/golden_chocolate_cookie.png sha256=ec099054be279213e289378d4aa25c9b2927ed252b13a404bbe726f9ff4fbbd3
+[bg18tex-auth] ok item/sturdygold_chocolate_cookie.png sha256=fe1814285bb8859526859c9851a5fbd7a0bc55d2203d8ac9a7764c3571a58973
+[bg18tex-auth] ok trims/color_palettes/chaosgold.png sha256=25e9d4b7ff72814e970ddeca4601e2adfb0ab17b4fb249e838e9c9e13671b8e4
+[bg18tex-manifest] ok 10 rows match code anchors
+[bg16-authorized-blank-texture] ok item/golden_trident_blank.png
+[bgfinal3-indigosea-sha] ok trims/color_palettes/indigoseagold.png
+[bgfinal3-indigosea-not-quartz] ok coloured 8 of 8 px
+[bg17tex-model-ref] ok 64 of 64 replaced textures still referenced by model json
+[bg17tex-needle-src] ok armour layer convention present on stripped source (stripped bytes 40803)
+[bg18tex-needle-model] ok 7 of 7（三张方块 + 锭 + 模板 + 两张曲奇）
+[bg18tex-needle-gui] ok 主面板 + 错误图标两处引用都在（去注释源码）
+[bg18tex-needle-trim] ok asset_name=chaosgold -> color_palettes/chaosgold.png
+[bg17tex-auth] ok 72 of 72
+[bg17tex-untouched] ok 544 of 544
+[bg17tex-auth6] ok 1 of 1（第五次授权之外、作者 #12 另批的那一张）
+[bg18tex-auth7] ok 10 of 10（第七次授权：1.7 贴图更新包第二关）
+[bg17tex-summary] checked=643 authorized=72 untouched=544 modelrefs=64 auth7=10 problems=0
+[bg17tex-ok] all invariants hold
+
+===== validate_golden_prison.py  exit=0
+ell_large_mirror(none) -> 3:cell_small_c(none) -> 3:cross_slot_3_b(none) -> 3:lane(ccw90) -> 4:cell_medium_c(none) -> 4:exit(cw180) -> 4:lane(cw180) -> 4:cell_small_b(none) -> 4:cross_b(ccw90) -> 4:cell_small_b(ccw90) -> 4:cell_medium_fertile(ccw90) -> 5:exit(none) -> 5:exit(cw180) -> 5:exit(cw90) -> 5:exit(ccw90) -> 5:exit(none) -> 5:exit(ccw90) -> 5:exit(cw90)
+[bgp-connect] 虚拟拼接 seed22：22 件 / 出入口 7 / 深度 0..5 / 洪泛覆盖 26301 格 / 接线 21 条全通
+[bgp-connect]   0:treasure(none) -> 1:cross_slot_1_b(none) -> 2:cell_large_mirror(cw180) -> 2:cross_slot_2_b(none) -> 2:cell_small_c(cw90) -> 3:exit(none) -> 3:cross_b(cw180) -> 3:cell_medium_b(none) -> 3:cross_slot_3_a(none) -> 3:lane(ccw90) -> 4:exit(cw180) -> 4:exit(cw90) -> 4:lane(cw90) -> 4:lane(none) -> 4:cell_large_c(none) -> 4:cell_medium_b(none) -> 4:cell_medium_a(cw90) -> 4:cell_large_c(cw90) -> 5:exit(cw180) -> 5:exit(none) -> 5:exit(ccw90) -> 5:exit(cw90)
+[bgp-connect] 虚拟拼接 seed33：24 件 / 出入口 8 / 深度 0..5 / 洪泛覆盖 26545 格 / 接线 23 条全通
+[bgp-connect]   0:treasure(none) -> 1:cross_slot_1_b(none) -> 2:cell_medium_fertile(cw180) -> 2:cross_slot_2_b(none) -> 2:cell_medium_a(cw90) -> 3:lane(none) -> 3:cell_large_b(cw180) -> 3:cell_large_fertile(none) -> 3:cross_slot_3_a(none) -> 3:lane(cw90) -> 4:cell_large_b(none) -> 4:lane(cw180) -> 4:exit(none) -> 4:cell_medium_fertile(none) -> 4:cell_small_a(none) -> 4:cell_small_fertile(cw90) -> 4:cross_a(cw90) -> 5:exit(none) -> 5:exit(cw180) -> 5:exit(none) -> 5:exit(ccw90) -> 5:exit(cw90) -> 5:exit(none) -> 5:exit(cw180)
+[bgp-connect] 5 组汇总：最多 42 件 / 出入口合计 45 个（前两组=最长纯走廊链，后三组=忠实洗牌）
+[bgp-gate] attach pairs (socket x child x rotation) = 1356
+[bgp-exit-parent] 静态证明：lane 件的口 target=room，exit.name=lane ⇒ 出入口接不到过道上（canAttach 只看父口 target == 子件 name）
+[bgp-exit-parent] room.fallback=bettergold:golden_prison/exit / lane.fallback=bettergold:golden_prison/exit / lane.elements 零 exit / exit.nbt name=lane target=empty / lane 口 target=room / fallback 取父口 pool
+[bgp-pool-reach] cross_slot_1 fallback 链 = cross_slot_1 -> exit
+[bgp-pool-reach] cross_slot_2 fallback 链 = cross_slot_2 -> exit
+[bgp-pool-reach] cross_slot_3 fallback 链 = cross_slot_3 -> exit
+[bgp-pool-reach] lane  fallback 链 = lane -> exit
+[bgp-pool-reach] room  fallback 链 = room -> exit
+[bgp-pool-reach] room 池：总权重 64、丰饶 30（46.9%）⇒ P(3 连至少一个丰饶) = 0.8501
+[bgp-cross3] 三槽固定前缀：treasure→cross_slot_1→cross_slot_2→cross_slot_3→room；每池 A/B 2:1 ⇒ 每座**恰好 3 个四面道**（样式随机）；bent 链最远边 92 ≤ 116（直线三连 121 会被裁）
+[bgp-entity] 实体 12 个（treasure 2 / cross_b 2 / exit 2，全部 glow_item_frame + chaos_coin）；方块实体 140 个（spawner 105 / chest 35）
+[bgp-entity] 源码 needle：entities/block_entities/blockPos 三个关键分支都在（去注释后）
+[bgp-shaft] exit = 5x8x5（第八轮回退）：门楼 8 层 130 格（含 1 jigsaw）+ 结构空位 26 格（逐层 {7: 12, 6: 11, 5: 3}，整格省略）；y>7 无方块；展示框 2 个；金栅栏 9 格
+[bgp-exit-chain] A：5 座 / 33 出入口 / 可达 33 / moved 0 / orphansInWorld 15（基线 <= 15）
+[bgp-exit-chain] B：3 座 / 28 出入口 / 可达 28 / moved 0 / orphansInWorld 5（基线 <= 5）
+[bgp-exit-chain] ✓ 合计 61/61 可达（逐座逐口；moved=0）
+[bgp-biome-tag] 原版 jar 对穿：is_nether = ['minecraft:nether_wastes', 'minecraft:soul_sand_valley', 'minecraft:crimson_forest', 'minecraft:warped_forest', 'minecraft:basalt_deltas']
+[bgp-worldgen] 唯一一套结构：biomes=#bettergold:golden_prison/no_basalt / bury / max=116；salt=19710101；玄武岩那一套文件（structure+structure_set）**不存在**；标签 members=4
+[bgp-rate] 原版 jar 对穿：nether_complexes placement={'type': 'minecraft:random_spread', 'salt': 30084232, 'separation': 4, 'spacing': 27}（spread_type 缺省=linear）
+[bgp-rate] 我们的 placement={'type': 'minecraft:random_spread', 'spacing': 27, 'separation': 4, 'salt': 19710101, 'spread_type': 'linear'} salt=19710101（要塞 salt=30084232，故意不同）
+[bgp-rate] 只剩一套 structure_set：salt=19710101（玄武岩那一套已按作者要求删除）
+[bgp-treasure-unique] 只剩一套 structure：start_pool='bettergold:golden_prison/start'；玄武岩那一套文件不存在
+[bgp-treasure-unique] 7 池：start.elements=1 指向 treasure；非 start 引用=0；fallback 链 5 条无一落到 treasure；worldgen JSON 9 个文件、treasure 引用共 1 次（只 start.json）
+[bgp-counter] checked=16635
+[bgp-ok] problems=0 checked=16635 templates=26
+
+===== check_jar_clean.py  exit=0
+build/libs jars:
+  bettergold-1.5.0.jar  (1089906 bytes)
+  bettergold-1.6.0.jar  (1603238 bytes)
+  bettergold-1.7.0.jar  (1901478 bytes)
+
+产物 bettergold-1.7.0.jar（来自 gradle.properties 的 mod_version）存在 = True
+  ⚠ build/libs 里有 3 个 jar（旧版本的 jar 会留在这里）——只核对上面这一个；跑 `gradlew clean` 可在干净树里复核
+jar 内 *Probe* 路径 = 0 []
+jar 内含 'halt' 字节的 class = 0 []
+jar 内含 'BG-PROBE' 常量的 class = 0 []
+jar 内文件总数 = 2892
+[jar-clean-anti-vacuum] 实际检查了 2892 项（jar 内条目数；必须 > 0）
+[jar-clean-ok] 产物 jar 干净（条目 2892；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+
+===== check_forced_chunks.py  exit=0
+chunks.dat top-level keys = ['data', 'DataVersion']
+chunks.dat data keys      = ['Forced']
+data.Forced               = []
+data.Forced length        = 0
+chunks.dat 侧 forceload 为 0 = True
+[chunks-forced-anti-vacuum] 实际检查了 1 项（data 段键 1 + Forced 列表项 0；必须 > 0）
+[chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）
+

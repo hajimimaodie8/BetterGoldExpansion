@@ -1,0 +1,58 @@
+bg19 服务端探针（第 4 次跑 = 最终读数；前三次的失败读数见 05-探针迭代记录.txt）
+[bg19-s] readout setup levelName=bg19probe forced=1 warden=2000, 120, 2008 playerDist=10.000
+[bg19-s] readout r1_before active=11 parasiteCures=[EffectCure[protected_by_totem]]
+[bg19-s] PASS r1_cures_exclude_milk :: cures=[EffectCure[protected_by_totem]]
+[bg19-s] PASS r1_kept_cold_resistance :: duration=600
+[bg19-s] PASS r1_kept_high_burn :: duration=600
+[bg19-s] PASS r1_kept_voodoo :: duration=600
+[bg19-s] PASS r1_kept_tremble :: duration=600
+[bg19-s] PASS r1_kept_sediment :: duration=600
+[bg19-s] PASS r1_kept_soothe :: duration=600
+[bg19-s] PASS r1_kept_parasite :: duration=600
+[bg19-s] PASS r1_kept_echo_roar :: duration=600
+[bg19-s] PASS r1_kept_power_imbalance :: duration=600
+[bg19-s] PASS r1_kept_resistance_imbalance :: duration=600
+[bg19-s] PASS r1_all_ten_kept :: kept=10/10
+[bg19-s] PASS r1_vanilla_speed_cleared :: speed_present=false
+[bg19-s] readout r5_durability helmet=200 chest=264 legs=246 boots=220
+[bg19-s] PASS r5_durability :: helmet=200 chest=264 legs=246 boots=220 (expected 200/264/246/220)
+[bg19-s] readout r3_chaosgold perPiece=[0.000..6.000] set=1.000 .. 24.000
+[bg19-s] readout r3_chaosgold_pieces helm=0.000..6.000 chest=0.000..6.000 legs=0.000..6.000 boots=0.000..6.000
+[bg19-s] PASS r3_chaosgold_per_piece :: each piece in [0.0..6.0]: helm=0.000..6.000 chest=0.000..6.000 legs=0.000..6.000 boots=0.000..6.000
+[bg19-s] PASS r3_chaosgold_full_set :: full set observed [1.0..24.0] expected [0.0..24.0] (bounds strictly inside; ends within 2.0 by sampling)
+[bg19-s] readout r3_chaosalloy perPiece=[4.000..10.000] set=17.000 .. 40.000
+[bg19-s] readout r3_chaosalloy_pieces helm=4.000..10.000 chest=4.000..10.000 legs=4.000..10.000 boots=4.000..10.000
+[bg19-s] PASS r3_chaosalloy_per_piece :: each piece in [4.0..10.0]: helm=4.000..10.000 chest=4.000..10.000 legs=4.000..10.000 boots=4.000..10.000
+[bg19-s] PASS r3_chaosalloy_full_set :: full set observed [17.0..40.0] expected [16.0..40.0] (bounds strictly inside; ends within 2.0 by sampling)
+[bg19-s] readout r2_pieces_0 before=1.0 after=1.0 ratio=1.0 want=1.0
+[bg19-s] PASS r2_pieces_0_damage_ratio :: n=0 before=1.0 after=1.0 ratio=1.0 want=1.0
+[bg19-s] readout r2_pieces_1 before=1.0 after=0.75 ratio=0.75 want=0.75
+[bg19-s] PASS r2_pieces_1_damage_ratio :: n=1 before=1.0 after=0.75 ratio=0.75 want=0.75
+[bg19-s] readout r2_pieces_2 before=1.0 after=0.5 ratio=0.5 want=0.5
+[bg19-s] PASS r2_pieces_2_damage_ratio :: n=2 before=1.0 after=0.5 ratio=0.5 want=0.5
+[bg19-s] readout r2_pieces_3 before=1.0 after=0.25 ratio=0.25 want=0.25
+[bg19-s] PASS r2_pieces_3_damage_ratio :: n=3 before=1.0 after=0.25 ratio=0.25 want=0.25
+[bg19-s] readout r2_pieces_4 before=1.0 after=0.0 ratio=0.0 want=0.0
+[bg19-s] PASS r2_pieces_4_damage_ratio :: n=4 before=1.0 after=0.0 ratio=0.0 want=0.0
+[bg19-s] PASS r2_pieces_4_zero :: after=0.0
+[bg19-s] readout r6_pieces_0 hp=20.0 -> 14.0 delta=(2.9000,0.0010,0.0000) horiz=2.899995
+[bg19-s] readout r6_pieces_1 hp=20.0 -> 15.5 delta=(2.1750,0.0007,0.0000) horiz=2.174996
+[bg19-s] PASS r6_pieces_1_knockback_ratio :: n=1 horiz=2.174996254488751 base=2.899995005985001 ratio=0.7500000000000001 want=0.75
+[bg19-s] readout r6_pieces_2 hp=20.0 -> 17.0 delta=(1.4500,0.0005,0.0000) horiz=1.449998
+[bg19-s] PASS r6_pieces_2_knockback_ratio :: n=2 horiz=1.4499975029925005 base=2.899995005985001 ratio=0.5 want=0.5
+[bg19-s] readout r6_pieces_3 hp=20.0 -> 18.5 delta=(0.7250,0.0002,0.0000) horiz=0.724999
+[bg19-s] PASS r6_pieces_3_knockback_ratio :: n=3 horiz=0.7249987514962503 base=2.899995005985001 ratio=0.25 want=0.25
+[bg19-s] readout r6_pieces_4 hp=20.0 -> 20.0 delta=(0.0000,0.0000,0.0000) horiz=0.000000
+[bg19-s] PASS r6_pieces_4_knockback_ratio :: n=4 horiz=0.0 base=2.899995005985001 ratio=0.0 want=0.0
+[bg19-s] PASS r6_base_nonzero :: base_horiz=2.899995005985001
+[bg19-s] PASS r6_pieces_4_zero :: n=4 horiz=0.0
+[bg19-s] PASS r7_doubled_result :: result=2x bettergold:raw_flamegold want 2x bettergold:raw_flamegold
+[bg19-s] PASS r7_doubled_no_advancement :: crafted=true advancement_done=false (must be false)
+[bg19-s] PASS r7_chaosgold_result :: result=2x bettergold:raw_flamegold want 2x bettergold:raw_flamegold
+[bg19-s] PASS r7_chaosgold_advancement :: crafted=true advancement_done=true (must be true)
+[bg19-s] PASS r7_copper_result :: result=1x minecraft:copper_block want 1x minecraft:copper_block
+[bg19-s] PASS r7_copper_advancement :: crafted=true advancement_done=true (must be true)
+[bg19-s] PASS sonic_knockback_cleared :: leftover_modifier=false (tick-end cleanup)
+[bg19-s] forcedNow=0
+[bg19-s] PASS forceload_zero :: forcedNow=0
+[bg19-s] SUMMARY pass=38 fail=0 forcedNow=0

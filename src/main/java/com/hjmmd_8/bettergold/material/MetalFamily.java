@@ -408,6 +408,18 @@ public final class MetalFamily {
     public final boolean cactusResist;
     /** 盔甲：每件 25% 监守者声波伤害减免（幽咆金） */
     public final boolean sonicResist;
+    /**
+     * 盔甲：<b>每件 25% 甜浆果丛伤害减免、全套 100%</b>（树棘金，1.7 {@code bg19} 第 R2 条）。
+     *
+     * <p>与 {@link #cactusResist} / {@link #sonicResist} <b>同一套实现</b>（{@code MetalEvents#onDamagePre}
+     * 里那条 {@code 1 − 0.25 × 件数}）——这里只是多一个"哪一种伤害"的开关，不是第二份公式。</p>
+     *
+     * <p>伤害源 = {@code minecraft:sweet_berry_bush}（{@code SweetBerryBushBlock#entityInside} 的
+     * {@code level.damageSources().sweetBerryBush()}）。⚠ 它在
+     * {@code #minecraft:no_knockback} 里（原版 {@code data/minecraft/tags/damage_type/no_knockback.json}
+     * 明列 {@code minecraft:sweet_berry_bush}）⇒ 这条伤害本身不带击退，与本条数值无关。</p>
+     */
+    public final boolean berryResist;
     /** 盔甲：每件 25% 几率给攻击者叠寄生（树棘金） */
     public final boolean parasiteReflect;
     /** 盔甲：每件 25% 几率给攻击者叠幽咆（幽咆金） */
@@ -1039,6 +1051,7 @@ public final class MetalFamily {
         this.echoRoarOnAttack = spec.echoRoarOnAttack;
         this.cactusResist = spec.cactusResist;
         this.sonicResist = spec.sonicResist;
+        this.berryResist = spec.berryResist;
         this.parasiteReflect = spec.parasiteReflect;
         this.echoRoarReflect = spec.echoRoarReflect;
         this.imbalanceOnAttack = spec.imbalanceOnAttack;
@@ -1557,6 +1570,8 @@ public final class MetalFamily {
         public boolean cactusResist = false;
         /** 盔甲：每件 25% 监守者声波伤害减免、全套 100%（幽咆金） */
         public boolean sonicResist = false;
+        /** 盔甲：每件 25% 甜浆果丛伤害减免、全套 100%（树棘金，1.7 {@code bg19} R2） */
+        public boolean berryResist = false;
         /** 盔甲：每件 25% 几率给攻击者叠 1 级寄生、全套 100%（树棘金） */
         public boolean parasiteReflect = false;
         /** 盔甲：每件 25% 几率给攻击者叠 1 级幽咆、全套 100%（幽咆金） */
@@ -2061,6 +2076,17 @@ public final class MetalFamily {
         /** 盔甲：每件 25% 监守者声波伤害减免、全套 100%（幽咆金） */
         public Spec sonicResist() {
             this.sonicResist = true;
+            return this;
+        }
+
+        /**
+         * 盔甲：<b>每件 25% 甜浆果丛伤害减免、全套 100%</b>（树棘金，1.7 {@code bg19} 第 R2 条）。
+         *
+         * <p>⚠ 与 {@link #cactusResist()} <b>并列</b>，不是替换：树棘金<b>两条都吃</b>
+         * （仙人掌照旧 25%/件，甜浆果丛新增 25%/件），两者是不同伤害类型、不会互相叠加成 100% 以外的值。</p>
+         */
+        public Spec berryResist() {
+            this.berryResist = true;
             return this;
         }
 

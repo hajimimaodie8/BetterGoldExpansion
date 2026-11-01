@@ -1,0 +1,30 @@
+run/saves 清单（本轮只读；未打开、未由本模组存盘）
+文件数 28 / 合计 18883726 B
+        48  新的世界\DIM-1\data\neoforge_data_attachments.dat
+        90  新的世界\DIM-1\data\raids.dat
+        48  新的世界\DIM1\data\neoforge_data_attachments.dat
+        90  新的世界\DIM1\data\raids_end.dat
+      4753  新的世界\advancements\380df991-f603-344c-a090-369bad2a924a.json
+        59  新的世界\data\chunks.dat
+        48  新的世界\data\neoforge_data_attachments.dat
+        90  新的世界\data\raids.dat
+       548  新的世界\data\random_sequences.dat
+    180224  新的世界\entities\r.-1.-1.mca
+    180224  新的世界\entities\r.-1.0.mca
+    319488  新的世界\entities\r.0.-1.mca
+    307200  新的世界\entities\r.0.0.mca
+      8269  新的世界\icon.png
+      2993  新的世界\level.dat
+      2993  新的世界\level.dat_old
+      1394  新的世界\playerdata\380df991-f603-344c-a090-369bad2a924a.dat
+      1394  新的世界\playerdata\380df991-f603-344c-a090-369bad2a924a.dat_old
+         0  新的世界\poi\r.-1.-1.mca
+     20480  新的世界\poi\r.-1.0.mca
+     24576  新的世界\poi\r.0.-1.mca
+     36864  新的世界\poi\r.0.0.mca
+   4161536  新的世界\region\r.-1.-1.mca
+   3403776  新的世界\region\r.-1.0.mca
+   5382144  新的世界\region\r.0.-1.mca
+   4841472  新的世界\region\r.0.0.mca
+       469  新的世界\serverconfig\readme.txt
+      2456  新的世界\stats\380df991-f603-344c-a090-369bad2a924a.json

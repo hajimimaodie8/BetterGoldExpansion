@@ -3200,10 +3200,15 @@ if _hidden_files:
 #   ⚠ 旧期望原文保留（未删）：`if len(_rc_files) != 1 or _rc_files[0] != "root.json":`
 #     `_bgfix2_bad("bgfix2-adv-recipe-crafted-root-only", "recipe_crafted 只许留在 root"
 #     "（手册物品是条件注册，见 §14.3）；实际 = %s")`。
-if _rc_files:
+# ★ 1.7 `bg19` R7-a（2026-11-01）：**只有「金工细作」一条**该用 `recipe_crafted`
+#   （它必须按配方 id 判，才分得出 `raw_<族>_doubled` / `raw_<族>_chaosgold` 两个变体）。
+#   ⚠ 旧判据（bg-fix3 §四 之后"一条都不剩"）原文留档、未删：
+#     `if _rc_files: _bgfix2_bad("bgfix2-adv-recipe-crafted-root-only", "recipe_crafted 在 bg-fix3 §四 之后应**一条都不剩**…")`
+if _rc_files != ["craft.json"]:
     _bgfix2_bad("bgfix2-adv-recipe-crafted-root-only",
-                "recipe_crafted 在 bg-fix3 §四 之后应**一条都不剩**（root 也改成 inventory_changed 了；"
-                "旧口径是「只许留在 root」）；实际 = %s" % _rc_files)
+                "带 recipe_crafted 的成就应**恰好只有** metal/chaosgold/craft（bg19 R7-a："
+                "按配方 id 才分得出 doubled / chaosgold 变体；bg-fix3 §四 的「一条都不剩」"
+                "在它身上已作废）；实际 = %s" % _rc_files)
 # 「制作改获得」点名的 9 条（bg-ach §七.2）+ 一个反空转阈值：
 # 51 条里有很多本来就该用别的 trigger（villager_trade / player_hurt_entity / placed_block …），
 # 所以阈值取「≥ 40」只当反空转守护，真正的判据是下面那 9 条逐个用 inventory_changed。
@@ -6297,7 +6302,10 @@ else:
 #   ② 新增 2 条页码键：`..._upstream_string` / `..._upstream_smelt` ⇒ 键数 **111 → 113**。
 #   旧值（bg-n10rc2，原文留档、不删）：
 #     zh 54BBC7A51136E9883B0F46E954554593… / en 2EFA1997FF53366C9FD811836DC29554… / 键数 111
-# 旧期望原文留档（bg-n10up 轮）：_BGN10_ZH_AFTER_SHA = "65C45198982830B343543F1A27D668CF7E125E4CC25C30427E96C3105FC00643"
+# ⚠ 旧期望原文留档（未删）：`_BGN10_ZH_AFTER_SHA = "2584FBB1A7D1C4B3B6786E101301788307B5FAB46CF06D5526163990BAEEB043"`
+#   —— 1.7 `bg19` R7-b（作者 2026-11-01 给的原话）改了**一条手册面之外的语言值**：
+#   `advancements.bettergold.chaosgold_craft.description`（金工细作的简介）⇒ 整份文件 SHA 变了。
+#   这是**作者授权的值改动**（不是漂移），所以显式改锚点并记账（docs 1.7 §32）。
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 # ★ 1.7 大轮（`bgbig`，2026-10-24）：新增「金铸的牢狱」26 条键（2 类别 + 6 条目 + 16 页正文 +
 #   2 页标题）⇒ 键数 838 → **864**、新增键 116 → **142**；两个文件级 SHA 同步换成本轮的值。
@@ -6308,14 +6316,15 @@ else:
 #     zh A54365AC96AE7B2E684CD2323ED0D455… / en 7E2360921393049FD9DCD56DF161A70D…
 # ★ 1.7 大轮 D 段（作者替换 zh_cn.json + 补 B/C 新键）：zh 850 键 / SHA 换成本轮最终值。
 #   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
-_BGN10_ZH_AFTER_SHA = "2584FBB1A7D1C4B3B6786E101301788307B5FAB46CF06D5526163990BAEEB043"
+_BGN10_ZH_AFTER_SHA = "48D11E1B4766C260E721A908788B9E54B02A42D0FC4551F139624982B2575F5B"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
-# 旧期望原文留档（bg-n10up 轮）：_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
+# ⚠ 旧期望原文留档（bg-n10up 轮）：_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
+#   —— 1.7 `bg19` R7-b 同步改了 `en_us.json` 的同一条（金工细作简介的英文）⇒ en SHA 也换成本轮值。
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 #   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
-_BGN10_EN_AFTER_SHA = "823E1A3CE5F3764D503DA5C152BF0BCF54BB9A9A1C30968EDC8315100B1762E7"
+_BGN10_EN_AFTER_SHA = "5D0296288C4E54CD82A48AFDA5020C4CF2833DD043340299BB4A50F1641EC01B"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6776,7 +6785,10 @@ if not _cg_txt:
 else:
     _r4_need = {
         "spec.armorDefense = new int[] { 2, 3, 5, 2 }": "护甲值（靴2/腿3/胸5/头2）",
-        "spec.armorDurability = new int[] { 246, 240, 264, 200 }": "耐久（靴246/腿240/胸264/头200）",
+        # ⚠ 1.7 bg19 第 R5 条（作者 2026-11-01：「混沌金盔甲耐久：护腿 246 / 靴子 220（当初写反了）」）：
+        #   靴 246 → **220**、腿 240 → **246**；头 200 / 胸 264 **不动**。
+        #   旧期望原文留档（未删）："spec.armorDurability = new int[] { 246, 240, 264, 200 }": "耐久（靴246/腿240/胸264/头200）",
+        "spec.armorDurability = new int[] { 220, 246, 264, 200 }": "耐久（靴220/腿246/胸264/头200）",
         "spec.armorEnchantmentValue = 24": "盔甲附魔能力 24",
         # ⚠ 1.7 作者 2026-10-24 第 ② 条：韧性 3.0 → **2.0**（每件）。旧期望原文留档（未删）：
         #   "spec.armorToughness = 3.0F": "盔甲韧性 3",
@@ -8870,7 +8882,8 @@ for _ap, (_apar, _aframe) in _R9_ADV.items():
     if not all(t for t in _atr):
         _bgn10r9_bad("bgn10r9-adv", "%s 有判据没有 conditions" % _ap)
 # 「获得即解锁」：金之牢狱线 10 条的判据触发类型只许是 inventory_changed
-#   + **红中黄室那一格**的 `minecraft:location`（1.21.1 没有 enter_structure trigger）。
+#   + **红中黄室那一格**的 `minecraft:location`（1.21.1 没有 enter_structure trigger）
+#   + **「金工细作」那一格的 `minecraft:recipe_crafted`**（1.7 bg19 R7-a：必须按配方 id 判）。
 #   ⚠ 旧口径（两族 8 条、清一色 inventory_changed）原文留档、已作废。
 _r9_triggers = set()
 for _ap in _R9_ADV:
@@ -8879,9 +8892,11 @@ for _ap in _R9_ADV:
         _r9_triggers.update(c.get("trigger")
                             for c in (json.loads(_af.read_text(encoding="utf-8")).get("criteria") or {}).values())
 _bgn10r9_checked += 1
-if _r9_triggers != {"minecraft:inventory_changed", "minecraft:location"}:
+if _r9_triggers != {"minecraft:inventory_changed", "minecraft:location",
+                    "minecraft:recipe_crafted"}:
     _bgn10r9_bad("bgn10r9-adv",
-                 "金之牢狱线的触发类型不是「inventory_changed + location」：%s" % sorted(_r9_triggers))
+                 "金之牢狱线的触发类型不是「inventory_changed + location + recipe_crafted」：%s"
+                 % sorted(_r9_triggers))
 # 武器成就的刀判据 = 单个标签字符串（bg-fix3 §二 的安全范式）
 for _m in ("chaosgold", "chaosalloy"):
     _af = _ADV / "metal" / _m / "weapon.json"
@@ -12234,6 +12249,226 @@ if not bg18_problems:
           "P4 8 条 9 格原料配方逐格（含每列）== 作者图")
 
 
+# ==========================================================================================
+# ★★★ 1.7 `bg19`（2026-11-01）：R1 牛奶免疫 / R2 甜浆果丛 / R3 区间核对 / R5 耐久 / R6 音波击退
+# ==========================================================================================
+# 期望值**独立另存一份**（不 import 生成器，也不 import 任何 Java 源码里的常量）。
+bg19_problems: list[str] = []
+_bg19_checked = 0
+
+
+def _bg19_bad(tag, msg):
+    bg19_problems.append("[%s] %s" % (tag, msg))
+
+
+# ---------------- R1：本模组自己挂的 10 个效果**牛奶清不掉** ----------------
+# 机制（读源码）：1.21.1 的 `MobEffect` **没有** curativeItems / getCurativeItems /
+#   createCurativeItemList（派单字面那套 API 在 1.21.1 已不存在）。现行唯一真源 =
+#   NeoForge 的 `EffectCure`：`MilkBucketItem#finishUsingItem` 调
+#   `removeEffectsCuredBy(EffectCures.MILK)`，只清 `MobEffectInstance#getCures()` 里含 MILK 的。
+#   `getCures()` 由 `MobEffect#fillEffectCures`（IMobEffectExtension 默认实现）填，默认加
+#   `EffectCures.DEFAULT_CURES = {MILK, PROTECTED_BY_TOTEM}`。
+#   ⇒ 我们的基类摘掉 MILK（只摘 MILK，不动 totem）。
+_BG19_EFFECTS = [
+    "cold_resistance", "high_burn", "voodoo", "tremble", "sediment",
+    "soothe", "parasite", "echo_roar",
+    # 混沌金 / 崩乱合金两族
+    "power_imbalance", "resistance_imbalance",
+]
+_bg19_effects_src = JAVA / "registry" / "AllEffects.java"
+_bg19_base_src = JAVA / "registry" / "BetterGoldMobEffect.java"
+_bg19_registry = JAVA / "registry" / "AllEffects.java"
+_bg19_checked += 4
+if not _bg19_effects_src.is_file() or not _bg19_base_src.is_file():
+    _bg19_bad("bg19-milk-immunity", "缺 AllEffects.java / BetterGoldMobEffect.java")
+else:
+    _ev19 = strip_comments(_bg19_effects_src.read_text(encoding="utf-8"))
+    _base19 = strip_comments(_bg19_base_src.read_text(encoding="utf-8"))
+    # 逐个 id：注册点必须用基类（且**不许**再有裸 `new MobEffect(` —— 静默回到能被牛奶清）
+    for _eid in _BG19_EFFECTS:
+        _bg19_checked += 1
+        _needle = 'EFFECTS.register("%s", () -> new BetterGoldMobEffect(' % _eid
+        if _needle not in _ev19:
+            _bg19_bad("bg19-milk-immunity", "效果没有走 BetterGoldMobEffect（牛奶会清掉它）：" + _eid)
+    _bg19_checked += 2
+    if "new MobEffect(MobEffectCategory." in _ev19:
+        _bg19_bad("bg19-milk-immunity", "AllEffects 里还有裸 new MobEffect(...)（那条效果仍会被牛奶清）")
+    if _ev19.count('EFFECTS.register("') != len(_BG19_EFFECTS):
+        _bg19_bad("bg19-milk-immunity",
+                  "本模组效果个数不是 %d（新增效果必须同步加进本关卡的清单）"
+                  % len(_BG19_EFFECTS))
+    # 基类本体：唯一实现（去掉 MILK，且**不**清空整个集合 ⇒ 不死图腾照旧能清）
+    _bg19_checked += 5
+    if "public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance)" not in _base19:
+        _bg19_bad("bg19-milk-immunity", "基类没有覆写 fillEffectCures（签名不对或没写）")
+    if "cures.remove(EffectCures.MILK)" not in _base19:
+        _bg19_bad("bg19-milk-immunity", "基类没有摘掉 EffectCures.MILK")
+    if "cures.clear()" in _base19:
+        _bg19_bad("bg19-milk-immunity", "基类清空了整个 cures 集合（会连不死图腾一起摘掉）")
+    if "extends MobEffect" not in _base19:
+        _bg19_bad("bg19-milk-immunity", "基类没有继承 MobEffect")
+    # 全仓唯一实现：只许基类这一处 remove(MILK)
+    _bg19_milk_sites = 0
+    for _p19 in JAVA.rglob("*.java"):
+        _bg19_milk_sites += strip_comments(_p19.read_text(encoding="utf-8")).count(
+            "cures.remove(EffectCures.MILK)")
+    _bg19_checked += 1
+    if _bg19_milk_sites != 1:
+        _bg19_bad("bg19-milk-immunity", "remove(MILK) 的实现点不是恰好 1 处（实际 %d）" % _bg19_milk_sites)
+
+# ---------------- R2：树棘金甜浆果丛 每件 25%（全套 100%） ----------------
+# 真源：`SweetBerryBushBlock#entityInside` → `level.damageSources().sweetBerryBush()`
+#   ⇒ 伤害类型 `minecraft:sweet_berry_bush`（**不是** cactus）。实现必须复用既有
+#   `1 − 0.25 × min(件数,4)` 那一条，不许另写公式。
+_bg19_family_src = JAVA / "material" / "MetalFamily.java"
+_bg19_metals_src = JAVA / "material" / "AllMetals.java"
+_bg19_events_src = JAVA / "material" / "MetalEvents.java"
+_bg19_checked += 8
+if not (_bg19_family_src.is_file() and _bg19_metals_src.is_file() and _bg19_events_src.is_file()):
+    _bg19_bad("bg19-berry", "缺 MetalFamily.java / AllMetals.java / MetalEvents.java")
+else:
+    _mf19 = strip_comments(_bg19_family_src.read_text(encoding="utf-8"))
+    _am19 = strip_comments(_bg19_metals_src.read_text(encoding="utf-8"))
+    _ev19b = strip_comments(_bg19_events_src.read_text(encoding="utf-8"))
+    if "public final boolean berryResist;" not in _mf19:
+        _bg19_bad("bg19-berry", "MetalFamily 没有 berryResist 字段")
+    if "this.berryResist = spec.berryResist;" not in _mf19:
+        _bg19_bad("bg19-berry", "Spec -> MetalFamily 的逐字复制漏了 berryResist")
+    if "public boolean berryResist = false;" not in _mf19:
+        _bg19_bad("bg19-berry", "Spec 里没有 berryResist 开关")
+    if "public Spec berryResist()" not in _mf19:
+        _bg19_bad("bg19-berry", "Spec 没有 berryResist() builder")
+    if _am19.count(".berryResist()") != 1:
+        _bg19_bad("bg19-berry", "berryResist() 的调用点不是恰好 1 处（应只有树棘金）")
+    # 树棘金那一段里必须同时有 cactusResist 与 berryResist（并列，不是替换）
+    _i19 = _am19.find('"thornsgold"')
+    _blk19 = _am19[_i19:_i19 + 1200] if _i19 >= 0 else ""
+    _bg19_checked += 2
+    if ".cactusResist()" not in _blk19 or ".berryResist()" not in _blk19:
+        _bg19_bad("bg19-berry", "树棘金没有并列 cactusResist + berryResist")
+    # 伤害类型判定 + 分支：必须用 SWEET_BERRY_BUSH（用 CACTUS 是错的）
+    _bg19_checked += 4
+    if "private static boolean isSweetBerryBush(" not in _ev19b:
+        _bg19_bad("bg19-berry", "MetalEvents 没有 isSweetBerryBush 判定")
+    if "source.is(net.minecraft.world.damagesource.DamageTypes.SWEET_BERRY_BUSH)" not in _ev19b:
+        _bg19_bad("bg19-berry", "isSweetBerryBush 没有认 minecraft:sweet_berry_bush 类型")
+    if "family.berryResist && isSweetBerryBush(event.getSource())" not in _ev19b:
+        _bg19_bad("bg19-berry", "onDamagePre 里没有 berryResist 那条分支")
+    if "1.0F - Math.min(pieces, 4) * 0.25F" not in _ev19b:
+        _bg19_bad("bg19-berry", "既有的 1 − 0.25 × 件数 那条唯一实现不见了")
+
+# ---------------- R3：混沌金 / 崩乱合金的减伤区间**核对**（只核对，不改） ----------------
+# 混沌金：每单件 0..6、全套 0..24（4 × 6）；崩乱合金：每单件 4..10、全套 16..40（4 × 10）。
+_BG19_ARMOR_FORMS = ["HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"]
+_bg19_expected_armor = {"chaosgold": (0.0, 6.0), "chaosalloy": (4.0, 10.0)}
+_bg19_checked += 2
+try:
+    _am19_raw = strip_comments((JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"))
+    _blocks19 = {}
+    for _fam19 in _bg19_expected_armor:
+        _start19 = _am19_raw.find("private static MetalFamily register%s()" % _fam19.capitalize())
+        _bg19_checked += 1
+        if _start19 < 0:
+            _bg19_bad("bg19-chaos-range", "找不到 register%s() 的定义" % _fam19)
+            continue
+        _end19 = _am19_raw.find("private static MetalFamily register", _start19 + 10)
+        _blocks19[_fam19] = _am19_raw[_start19:_end19 if _end19 > 0 else len(_am19_raw)]
+    for _fam19, (_wmin, _wmax) in _bg19_expected_armor.items():
+        _body19 = _blocks19.get(_fam19, "")
+        _got19 = []
+        for _form19 in _BG19_ARMOR_FORMS:
+            _bg19_checked += 1
+            _m19 = re.search(
+                r"spec\.chaosRange\(MetalFamily\.Form\.%s,\s*ChaosRange\.Channel\.ARMOR,\s*"
+                r"([0-9.]+)[Ff]?,\s*([0-9.]+)[Ff]?\)" % _form19, _body19)
+            if not _m19:
+                _bg19_bad("bg19-chaos-range", "%s 的 %s 没有声明 ARMOR 区间" % (_fam19, _form19))
+                _got19.append(None)
+                continue
+            _got19.append((float(_m19.group(1)), float(_m19.group(2))))
+        _bg19_checked += 3
+        if any(_g19 is None for _g19 in _got19):
+            continue
+        if any(_g19 != (_wmin, _wmax) for _g19 in _got19):
+            _bg19_bad("bg19-chaos-range",
+                      "%s 的单件减伤区间不是 %s..%s：%r" % (_fam19, _wmin, _wmax, _got19))
+        # 全套 = 四件之和（叠加逻辑在 MetalEvents#chaosArmorReduction 里「只读」求和）
+        if (_wmin * 4.0, _wmax * 4.0) != (0.0, 24.0) and _fam19 == "chaosgold":
+            _bg19_bad("bg19-chaos-range", "混沌金全套不是 0..24")
+        if (_wmin * 4.0, _wmax * 4.0) != (16.0, 40.0) and _fam19 == "chaosalloy":
+            _bg19_bad("bg19-chaos-range", "崩乱合金全套不是 16..40")
+    # 叠加逻辑本身：4 个槽位求和、且公式只在 ChaosRange 一处
+    _ev19c = strip_comments((JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8"))
+    _bg19_checked += 3
+    _i19c = _ev19c.find("private static float chaosArmorReduction(")
+    _j19c = _ev19c.find("private static void flipChaosArmor(", _i19c)
+    _red19 = _ev19c[_i19c:_j19c] if _i19c >= 0 and _j19c > _i19c else ""
+    if _red19.count("entity.getItemBySlot(slot)") != 1 or "total += percent / 100.0F" not in _red19:
+        _bg19_bad("bg19-chaos-range", "chaosArmorReduction 不是「四件各读当前值后求和」的唯一实现")
+    if _ev19c.count("ChaosRange.current(") < 2:
+        _bg19_bad("bg19-chaos-range", "减伤没有走 ChaosRange.current（区间真源）")
+    if _ev19c.count("event.setNewDamage(event.getNewDamage() * (1.0F - chaosArmorReduction(") != 1:
+        _bg19_bad("bg19-chaos-range", "区间减伤的结算点不是恰好 1 处")
+except Exception as _e19:                                       # 前置坏 ⇒ 记问题（退出码 1），不静默
+    _bg19_bad("bg19-chaos-range", "解析源码时出错：" + type(_e19).__name__)
+
+# ---------------- R5：混沌金盔甲耐久 = 靴 220 / 腿 246 / 胸 264 / 头 200 ----------------
+_bg19_checked += 4
+try:
+    _am19r = strip_comments((JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"))
+    _i19d = _am19r.find('new MetalFamily.Spec("chaosgold"')
+    _blk19d = _am19r[_i19d:_i19d + 4000] if _i19d >= 0 else ""
+    _m19d = re.search(r"spec\.armorDurability = new int\[\] \{ (\d+), (\d+), (\d+), (\d+) \};", _blk19d)
+    if not _m19d:
+        _bg19_bad("bg19-chaosgold-durability", "找不到 chaosgold 的 armorDurability 字面量")
+    else:
+        _dur19 = tuple(int(_m19d.group(_k19)) for _k19 in (1, 2, 3, 4))
+        if _dur19 != (220, 246, 264, 200):
+            _bg19_bad("bg19-chaosgold-durability",
+                      "混沌金四件耐久不是 靴220/腿246/胸264/头200：%r" % (_dur19,))
+    # 头 / 胸**不动**的负向断言（别人顺手改坏要红）+ 旧值仍在注释里（原文留档）
+    if "new int[] { 246, 240, 264, 200 }" not in (JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"):
+        _bg19_bad("bg19-chaosgold-durability", "旧值 { 246, 240, 264, 200 } 没有原文留档")
+    if "spec.armorDurability = new int[] { 1443, 1665, 1776, 1221 }" not in _am19r:
+        _bg19_bad("bg19-chaosgold-durability", "万坚金的耐久被别人改了（本轮不该动它）")
+except Exception as _e19d:
+    _bg19_bad("bg19-chaosgold-durability", "解析源码时出错：" + type(_e19d).__name__)
+
+# ---------------- R6：幽咆金盔甲每件 25% 音波击退抗性（全套 100%） ----------------
+# 真源：`SonicBoom#tick`（反编译后是 `lambda$tick$2`）在 `hurt` 之后**立刻**按
+#   `KNOCKBACK_RESISTANCE` 算 d0/d1 再 `push` ⇒ 音波击退不走 `LivingKnockBackEvent`。
+#   落法 = 那一发音波伤害的 `LivingDamageEvent.Pre` 里挂「本 tick 有效」的瞬态修饰符，tick 末摘掉。
+_bg19_checked += 8
+_ev19d = strip_comments((JAVA / "material" / "MetalEvents.java").read_text(encoding="utf-8"))
+if "SONIC_BOOM_KNOCKBACK_ID" not in _ev19d:
+    _bg19_bad("bg19-sonic-knockback", "没有音波击退抗性的修饰符 id")
+if "public static void onSonicBoomDamageArmsKnockbackResist(" not in _ev19d:
+    _bg19_bad("bg19-sonic-knockback", "没有在音波伤害事件里挂修饰符的入口")
+if "wornPieces(entity, AllMetals.ECHOGOLD)" not in _ev19d:
+    _bg19_bad("bg19-sonic-knockback", "件数不是按幽咆金盔甲算的")
+if "wanted = 1.0D - (1.0D - current) * keep" not in _ev19d:
+    _bg19_bad("bg19-sonic-knockback", "不是精确的 v' = 1 − (1 − v)(1 − 0.25N) 反推")
+if "instance.addTransientModifier(" not in _ev19d:
+    _bg19_bad("bg19-sonic-knockback", "没有用瞬态修饰符（会在存档里留下残值）")
+if "public static void onServerTickClearSonicKnockback(" not in _ev19d:
+    _bg19_bad("bg19-sonic-knockback", "tick 末没有摘掉修饰符（会污染近战击退）")
+if _ev19d.count("instance.removeModifier(SONIC_BOOM_KNOCKBACK_ID)") != 2:
+    _bg19_bad("bg19-sonic-knockback", "摘除点不是恰好 2 处（挂前幂等 + tick 末清零）")
+if "keep = 1.0D - Math.min(pieces, 4) * 0.25D" not in _ev19d:
+    _bg19_bad("bg19-sonic-knockback", "每件 25% 的系数不是 1 − 0.25 × 件数")
+
+if _bg19_checked < 40:
+    _bg19_bad("bg19-anti-vacuum", "本段只跑了 %d 条判定" % _bg19_checked)
+print("[bg19-summary] 2026-11-01 bg19：检查 " + str(_bg19_checked) + " 项，问题 "
+      + str(len(bg19_problems)) + " 条"
+      + ("" if not bg19_problems else "：" + str(bg19_problems[:4])))
+if not bg19_problems:
+    print("[bg19-ok] R1 10 个本模组效果全部走 BetterGoldMobEffect（摘掉 EffectCures.MILK，"
+          "不动 totem）；R2 树棘金 berryResist 与 cactusResist 并列、认 sweet_berry_bush 类型；"
+          "R3 混沌金 0..6/全套 0..24 + 崩乱合金 4..10/全套 16..40（四件求和一处实现）；"
+          "R5 混沌金耐久 靴220/腿246/胸264/头200；R6 音波击退抗性 = 精确反推 + tick 末清零")
+
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -12254,7 +12489,7 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        # 2026-10-24 大轮（`bgbig`）：金铸的牢狱 6 章 + 旧四条作废
                        bgbig_problems,
                        # 2026-10-25 bg18：P1 新章节（炼金的起步 第 6 章）
-                       bg18_problems)
+                       bg19_problems)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

@@ -130,6 +130,9 @@ public final class AllMetals {
                     .contactCactusThorns()
                     .parasiteOnAttack()
                     .cactusResist()
+                    // 1.7 bg19 R2（作者：「树棘金甜浆果丛伤害：每单件 25% 免疫 / 全套 100%」）：
+                    // 与上面的仙人掌减免**并列**（不同伤害类型，共用同一条 1 − 0.25×件数 实现）。
+                    .berryResist()
                     .parasiteReflect()
                     .cactusImmune()
                     .specialWeaponMetal(true, 2048)
@@ -267,7 +270,10 @@ public final class AllMetals {
         //   护甲值 / 耐久：头盔 2/200、胸甲 5/264、护腿 3/240、靴子 2/246。
         // ⚠ 数组顺序是 **靴 / 腿 / 胸 / 头**（与既有 8 族的 armorDefense 同序），别按"头盔在前"填。
         spec.armorDefense = new int[] { 2, 3, 5, 2 };        // 靴 / 腿 / 胸 / 头
-        spec.armorDurability = new int[] { 246, 240, 264, 200 };   // 靴 / 腿 / 胸 / 头
+        // ⚠ 1.7 bg19 第 R5 条（作者原话：「混沌金盔甲耐久：护腿 246 / 靴子 220（当初写反了）」）：
+        //   护腿 240 → **246**、靴子 246 → **220**；头 200 / 胸 264 **一个字节不动**。
+        //   旧值（原文留档，未删）：new int[] { 246, 240, 264, 200 }   // 靴 / 腿 / 胸 / 头
+        spec.armorDurability = new int[] { 220, 246, 264, 200 };   // 靴 / 腿 / 胸 / 头
         spec.armorEnchantmentValue = 24;
         // 1.7 作者 2026-10-24 第 ② 条：盔甲韧性**每件 2.0**（旧口径 3.0，原文留档在下一行注释）
         //   旧口径：spec.armorToughness = 3.0F;   // 立档 §2.5「盔甲韧性 3」

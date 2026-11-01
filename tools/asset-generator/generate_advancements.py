@@ -481,13 +481,42 @@ def build() -> list[dict]:
         {"have": c_inv([f"{NS}:chaos_coin_string"])}, [["have"]])
     # 金工细作：任意一个「含混沌金币 / 混沌金币串配方的金属块」**或**「含混沌金块 + 高精度炼金油
     #   配方的贵金原料」⇒ 1 条 ItemPredicate + items 数组 = **OR**（与 `any_core_material` 同构）。
+    #
+    # ★★ 1.7 `bg19` 第 R7-a 条（2026-11-01 作者复报的真 bug）：
+    #   作者原话：「在**非混沌金块** + 高精度炼金油下制成/获得的某某金原料时会直接弹出金工细作这个进度」。
+    #   **根因（本文件 + 产物 JSON 双向确认）**：旧判据是 `inventory_changed` + `raw_<族>` **物品**
+    #   （`RAW_MATERIALS`）—— `raw_<族>_doubled`（只有高精度油、**没有**混沌金块）与
+    #   `raw_<族>_chaosgold`（含混沌金块）**产物是同一个物品** `bettergold:raw_<族>`
+    #   ⇒ 物品层面的判据**在原理上分不出配方变体**，两种变体都会解锁。
+    #   ⇒ 现行判据 = `minecraft:recipe_crafted` + **逐条 recipe id**（12 条，组内 OR）：
+    #     4 条「偷梁换柱」（铜块 / 铁块 / 金块 / 下界合金锭）+ 8 条 `raw_<族>_chaosgold`。
+    #   ⚠ **明确排除** `raw_<族>_doubled` —— 关卡里有负向断言（它们**不许**出现在本成就的 criteria 里）。
+    #   ⚠ 旧写法原文留档（未删）：
+    #     {"have": c_inv([["minecraft:copper_block", "minecraft:iron_block", "minecraft:gold_block",
+    #                     "minecraft:netherite_ingot", *RAW_MATERIALS]])}, [["have"]]
+    #   ⚠ 与 `bg-fix3 §四` 的「全仓一条 recipe_crafted 都没有」**不再成立**（那一条只对"手册物品在
+    #     没装 Patchouli 时不注册"成立；本轮的 12 条 recipe id 全是**数据驱动配方**，任何环境都存在
+    #     ⇒ `recipe_id` 裸 ResourceLocation 不查注册表，不会引起解析失败）。
+    _R7_COIN_RECIPES = {
+        "craft_copper_block": f"{NS}:copper_block_with_chaos_coin",
+        "craft_iron_block": f"{NS}:iron_block_with_chaos_coin",
+        "craft_gold_block": f"{NS}:gold_block_with_chaos_coin",
+        "craft_netherite_ingot": f"{NS}:netherite_ingot_with_chaos_coin_string",
+    }
+    _R7_RAW_RECIPES = {
+        f"craft_raw_{_m}": f"{NS}:raw_{_m}_chaosgold"
+        for _m in ["flamegold", "voodoogold", "thundergold", "indigoseagold",
+                   "illusiongold", "thornsgold", "echogold", "sturdygold"]
+    }
+    _R7_RECIPES = {**_R7_COIN_RECIPES, **_R7_RAW_RECIPES}
+    # ★ 1.7 bg19 第 R7-b 条：**注释（简介）**改成作者的原文（作者 2026-11-01 给的原话逐字）。
+    #   ⚠ 旧简介原文留档（未删）：「制作出任意一个含"混沌金币/混沌金币串"配方的铜块/铁块/金块/下界合金锭，
+    #     或含"混沌金块 + 高精度炼金油"配方的贵金原料」
     add("metal/chaosgold/craft", "chaosgold_craft", "金工细作",
-        "制作出任意一个含\"混沌金币/混沌金币串\"配方的铜块/铁块/金块/下界合金锭，"
-        "或含\"混沌金块 + 高精度炼金油\"配方的贵金原料",
+        "混沌金系列的物品可用于充数一些金属块和金属，甚至是“贵金”",
         f"{NS}:chaos_coin", "metal/chaosgold/dance",
-        {"have": c_inv([[
-            "minecraft:copper_block", "minecraft:iron_block", "minecraft:gold_block",
-            "minecraft:netherite_ingot", *RAW_MATERIALS]])}, [["have"]])
+        {_n: c_recipe(_rid) for _n, _rid in _R7_RECIPES.items()},
+        [list(_R7_RECIPES.keys())])
     # 赋予无序之咒：前置未指定 ⇒ 挂「与金共舞」（记账 §30）。
     add("metal/chaosgold/enchant", "chaosgold_enchant", "赋予无序之咒",
         "投入这份魔咒溢出的混沌怀抱吧",
@@ -758,9 +787,13 @@ EN: dict[str, tuple[str, str]] = {  # advancement key -> (title, description)
     "golden_prison": ("Red Among Gold: The Golden Chamber", "Enter the Golden Prison."),
     "chaosgold_dance": ("Dance With Gold", "Obtain a Chaos Coin String."),
     "chaosgold_craft": ("Golden Craftsmanship",
-                        "Craft any copper, iron or gold block, or a netherite ingot, with a Chaos Coin / "
-                        "Chaos Coin String recipe, or a noble-gold raw material with the Chaosgold Block + "
-                        "Refined Alchemic Oil recipe."),
+                        # 1.7 bg19 R7-b：中文简介换成作者原文 ⇒ 英文按同义重译。
+                        #   ⚠ 旧英文原文留档（未删）：
+                        #     "Craft any copper, iron or gold block, or a netherite ingot, with a Chaos Coin / "
+                        #     "Chaos Coin String recipe, or a noble-gold raw material with the Chaosgold Block + "
+                        #     "Refined Alchemic Oil recipe."
+                        "Chaos Gold items can be used to pad out some metal blocks and metals — "
+                        "even the “noble golds”."),
     "chaosgold_enchant": ("Bestow the Curse of Disorder",
                           "Step into the chaotic embrace overflowing from this curse."),
     "golden_torchflower": ("Golden Flame!", "Obtain Golden Torchflower Seeds and a Golden Torchflower."),

@@ -1,0 +1,31 @@
+探针世界 run/bg19probe（本轮自建，删前留档）
+文件数 29 / 合计 8634571 B
+        48  DIM-1\data\neoforge_data_attachments.dat
+        89  DIM-1\data\raids.dat
+        48  DIM1\data\neoforge_data_attachments.dat
+        89  DIM1\data\raids_end.dat
+        48  data\neoforge_data_attachments.dat
+        89  data\raids.dat
+     16384  entities\r.-1.-1.mca
+     24576  entities\r.-1.0.mca
+     16384  entities\r.3.3.mca
+      1709  level.dat
+      1707  level.dat_old
+         0  poi\r.-1.-1.mca
+         0  poi\r.-1.0.mca
+         0  poi\r.0.-1.mca
+         0  poi\r.0.0.mca
+         0  poi\r.3.3.mca
+         0  poi\r.3.4.mca
+         0  poi\r.4.3.mca
+         0  poi\r.4.4.mca
+   1159168  region\r.-1.-1.mca
+   1441792  region\r.-1.0.mca
+    651264  region\r.0.-1.mca
+    839680  region\r.0.0.mca
+   1515520  region\r.3.3.mca
+   1032192  region\r.3.4.mca
+   1159168  region\r.4.3.mca
+    774144  region\r.4.4.mca
+       469  serverconfig\readme.txt
+         3  session.lock

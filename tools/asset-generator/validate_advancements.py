@@ -449,18 +449,37 @@ def main() -> int:
         if (ADV / (_gone + ".json")).is_file():
             bad("bgn10r9-adv-chaos-chain",
                 f"{_gone} 已作废（作者毙掉「获得混沌金币」/「崩乱合金模板」成就），产物里不许再存在")
-    # 金工细作：1 条 ItemPredicate + 12 件 items 数组（OR）= 4 块/锭 + 8 原料
-    _craft = (advs.get("metal/chaosgold/craft", {}).get("criteria") or {}).get("have") or {}
-    _craft_items = ((_craft.get("conditions") or {}).get("items") or [])
-    _craft_ids = sorted((_craft_items[0].get("items") if _craft_items else []) or [])
-    _want_craft = sorted(["minecraft:copper_block", "minecraft:iron_block",
-                          "minecraft:gold_block", "minecraft:netherite_ingot"]
-                         + [f"{NS}:raw_{m}" for m in
-                            ("flamegold", "voodoogold", "thundergold", "indigoseagold",
-                             "illusiongold", "thornsgold", "echogold", "sturdygold")])
-    if _craft_ids != _want_craft:
+    # 金工细作：**1.7 bg19 R7-a 起改判据** = `minecraft:recipe_crafted` + **12 条配方 id**（组内 OR）。
+    #   根因（作者复报的真 bug）：旧的 `inventory_changed` + `raw_<族>` 物品**在原理上分不出配方变体**
+    #   （`raw_<族>_doubled` 与 `raw_<族>_chaosgold` 的产物是同一个物品）⇒ 不掺混沌金块也会弹成就。
+    #   ⚠ 旧期望原文留档（未删）：断言 `criteria.have.conditions.items[0].items` 恰好是
+    #     「`minecraft:copper_block`/`iron_block`/`gold_block`/`netherite_ingot` + 8 个 `bettergold:raw_<族>`」这 12 件。
+    _craft = (advs.get("metal/chaosgold/craft", {}).get("criteria") or {})
+    _want_craft_recipes = sorted(
+        [f"{NS}:copper_block_with_chaos_coin", f"{NS}:iron_block_with_chaos_coin",
+         f"{NS}:gold_block_with_chaos_coin", f"{NS}:netherite_ingot_with_chaos_coin_string"]
+        + [f"{NS}:raw_{m}_chaosgold" for m in
+           ("flamegold", "voodoogold", "thundergold", "indigoseagold",
+            "illusiongold", "thornsgold", "echogold", "sturdygold")])
+    _craft_triggers = sorted({c.get("trigger") for c in _craft.values()})
+    if _craft_triggers != ["minecraft:recipe_crafted"]:
         bad("bgn10r9-adv-chaos-chain",
-            f"金工细作的 items 不是「4 块/锭 + 8 原料」这 12 件：{_craft_ids}")
+            f"金工细作的判据不是纯 recipe_crafted（R7-a 之后必须按配方 id 判）：{_craft_triggers}")
+    _craft_recipe_ids = sorted({(c.get("conditions") or {}).get("recipe_id")
+                                for c in _craft.values()})
+    if _craft_recipe_ids != _want_craft_recipes:
+        bad("bgn10r9-adv-chaos-chain",
+            f"金工细作的 recipe_id 不是「4 块/锭 + 8 条 raw_<族>_chaosgold」这 12 条：{_craft_recipe_ids}")
+    # ⚠ **负向断言**（R7-a 的核心）：`raw_<族>_doubled`（只有高精度油、没有混沌金块）**不许**出现在这里。
+    _craft_doubled = sorted(r for r in _craft_recipe_ids if str(r).endswith("_doubled"))
+    if _craft_doubled:
+        bad("bg19-adv-craft-doubled-excluded",
+            f"「金工细作」的 criteria 里混进了 doubled 变体（不掺混沌金块不该弹成就）：{_craft_doubled}")
+    # requirements 必须是**恰好一组**（组内 OR = 12 条任意一条即成）
+    _craft_req = advs.get("metal/chaosgold/craft", {}).get("requirements") or []
+    if len(_craft_req) != 1 or sorted(_craft_req[0]) != sorted(_craft):
+        bad("bgn10r9-adv-chaos-chain",
+            f"金工细作的 requirements 不是「12 条一组（组内 OR）」：{_craft_req}")
     # 黄金火焰！：两个都要 = 两个各一条判据的组（组间 AND，源码语义）
     _tf = advs.get("agriculture/golden_torchflower", {})
     if (_tf.get("requirements") != [["have_seeds"], ["have_flower"]]
@@ -650,13 +669,23 @@ def main() -> int:
     #   随之变成空集。旧口径原文保留（未删）：
     #     「if not recipe_refs: bad("bgach-recipe-anti-vacuum", "一条 recipe_crafted 都没有
     #       （root 至少有一条）")」+ 逐条查 `data/bettergold/recipe/<path>.json` 是否存在。
-    #   现在的判据反过来：**必须是空集**（谁把 recipe_crafted 写回来，这里当场红）。
+    #   那时的判据反过来：**必须是空集**（谁把 recipe_crafted 写回来，这里当场红）。
+    #
+    # ★ 1.7 `bg19` 第 R7-a 条（2026-11-01）：作者复报「不掺混沌金块也弹金工细作」⇒ **只有**
+    #   `metal/chaosgold/craft` 一条该用 `recipe_crafted`（12 条配方 id，逐条判、分得出变体）。
+    #   ⇒ 现行判据 = ① 带 recipe_crafted 的成就**恰好** `["metal/chaosgold/craft"]`；
+    #     ② 那 12 条 recipe id **必须真的存在于盘上**（死链检查：收集产物里写的值，不拿期望表自比）。
+    #   ⚠ 旧判据原文留档（未删）：`if recipe_refs: bad("bgfix3-recipe-crafted-none", …应为 0 条…)`
     recipe_refs = sorted({c["conditions"]["recipe_id"]
                           for v in advs.values() for c in (v.get("criteria") or {}).values()
                           if c.get("trigger") == "minecraft:recipe_crafted"})
-    if recipe_refs:
-        bad("bgfix3-recipe-crafted-none",
-            f"仍有成就用 recipe_crafted（bg-fix3 §四 之后应为 0 条；root 也已改成「获得」）：{recipe_refs}")
+    if not recipe_refs:
+        bad("bg19-adv-recipe-crafted-anti-vacuum",
+            "一条 recipe_crafted 都没有（R7-a 之后金工细作必须按配方 id 判）")
+    for _rid in recipe_refs:
+        _rp = RECIPE / (_rid.split(":", 1)[-1] + ".json")
+        if not str(_rid).startswith(f"{NS}:") or not _rp.is_file():
+            bad("bg19-adv-recipe-deadlink", f"recipe_crafted 引用的配方不存在：{_rid}")
 
     # ---- 8. 食物清单必须等于 Java 真源现算的清单 ----
     derived = {"midas_feast_1": foods["gold"], "sturdygold_feast_1": foods["sturdygold"],
@@ -758,16 +787,19 @@ def main() -> int:
         bad("bgach-craft-to-have-exception",
             f"merchant/gift_box 的判据被动过了（§七.2 的唯一例外必须保持 villager_trade）："
             f"{[c.get('trigger') for c in _giftbox.values()]}")
-    # 图纸里其余还带 recipe_crafted 的，只允许是 root 那一条（范围自描述、防止这条断言空转）
-    # ⛔ bg-fix3 §四：**只允许是 root** 这条已被取代 —— 现在**一条都不许有**（root 也改了）。
-    #   ⚠ 旧期望原文保留（未删）：`if _recipe_left != ["root"]: bad("bgach-recipe-crafted-scope", …)`
+    # 图纸里其余还带 recipe_crafted 的：**1.7 bg19 R7-a 起恰好只许「金工细作」一条**
+    #   （它必须按配方 id 判，才分得出「有没有掺混沌金块」）。
+    # ⛔ bg-fix3 §四 曾要求**一条都不许有**（root 也改了）—— 那条被 R7-a 取代。
+    #   ⚠ 旧期望原文保留（未删）：
+    #     `if _recipe_left != []: bad("bgfix3-recipe-crafted-scope", …应为**空集**…)`
+    #     `if _recipe_left != ["root"]: bad("bgach-recipe-crafted-scope", …)`
     _recipe_left = sorted(k for k, v in advs.items()
                           if "minecraft:recipe_crafted" in [c.get("trigger") for c in
                                                             (v.get("criteria") or {}).values()])
-    if _recipe_left != []:
+    if _recipe_left != ["metal/chaosgold/craft"]:
         bad("bgfix3-recipe-crafted-scope",
-            f"还带 recipe_crafted 的成就应为**空集**（bg-fix3 §四 把 root 也改成了「获得」；"
-            f"旧口径只许 root 一条）：{_recipe_left}")
+            f"还带 recipe_crafted 的成就应**恰好**只有「metal/chaosgold/craft」"
+            f"（1.7 bg19 R7-a：配方 id 才分得出 doubled / chaosgold 变体）：{_recipe_left}")
 
     # ---- 5d. bg-fix3 §二：**乐事小刀必须能触发**「获得任意一种 XX金武器工具」----
     # ⛔ 旧口径（`bg-ach §7.6`，作者 2026-10-05「乐事的刀不会触发有关获得器具的进度」）被作者

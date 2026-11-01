@@ -823,6 +823,18 @@ public final class MetalEvents {
     }
 
     /**
+     * 「甜浆果丛」伤害（1.7 {@code bg19} 第 R2 条，树棘金）。
+     *
+     * <p>真源：{@code SweetBerryBushBlock#entityInside}（源码）在实体移动过且 {@code AGE > 0} 时调
+     * {@code entity.hurt(level.damageSources().sweetBerryBush(), 1.0F)} ⇒ 伤害类型 = <b>{@code minecraft:sweet_berry_bush}</b>。
+     * 它<b>不是</b> {@code cactus}（那是 {@code SweetBerryBushBlock} 里没有的类型），所以必须单独认一个类型，
+     * 把 {@code cactusResist} 那条分支当成"已经覆盖甜浆果"是错的。</p>
+     */
+    private static boolean isSweetBerryBush(net.minecraft.world.damagesource.DamageSource source) {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.SWEET_BERRY_BUSH);
+    }
+
+    /**
      * <b>§3.8 免疫仙人掌 · 物品形式</b>：树棘金系列的掉落物（{@code ItemEntity}）不被仙人掌摧毁。
      *
      * <p>落点 = NeoForge 现成的 {@code EntityInvulnerabilityCheckEvent}（<b>不需要 mixin</b>）：
@@ -1880,6 +1892,10 @@ public final class MetalEvents {
     /**
      * 抗性：每件烈燃金盔甲减免 25% 燃烧伤害，每件巫毒金盔甲减免 25% 魔法伤害，
      * 每件靛海金盔甲减免 25% 窒息 / 溺水伤害（1.5），穿满四件即完全免疫（1 − 4 × 25% = 0）。
+     *
+     * <p>1.6 加的另外两条同构：树棘金 25%/件仙人掌、幽咆金 25%/件监守者声波；
+     * <b>1.7 {@code bg19} R2</b> 再并列一条：树棘金 <b>25%/件甜浆果丛</b>（{@code minecraft:sweet_berry_bush}）。
+     * 这三条都是同一个表达式 {@code 1 − 0.25 × min(件数, 4)}，<b>没有第二份公式</b>。</p>
      */
     @SubscribeEvent
     public static void onDamagePre(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Pre event) {
@@ -1898,7 +1914,11 @@ public final class MetalEvents {
                     || (family.suffocationResist && isSuffocation(event.getSource()))
                     // 1.6（bg-16）：树棘金盔甲减「仙人掌」伤害 / 幽咆金盔甲减「监守者声波」伤害
                     || (family.cactusResist && isCactus(event.getSource()))
-                    || (family.sonicResist && isSonicBoom(event.getSource()));
+                    || (family.sonicResist && isSonicBoom(event.getSource()))
+                    // 1.7 bg19 R2：树棘金盔甲**每件 25% 甜浆果丛伤害减免**（全套 100%）。
+                    // ⚠ 与上面 cactusResist **并列**：`sweet_berry_bush` 与 `cactus` 是两个伤害类型，
+                    //   两个分支各自判类型 ⇒ 同一次伤害只会命中其中一个，不会叠成 50%/件。
+                    || (family.berryResist && isSweetBerryBush(event.getSource()));
             if (applies) {
                 event.setNewDamage(event.getNewDamage() * (1.0F - Math.min(pieces, 4) * 0.25F));
             }
@@ -1918,6 +1938,123 @@ public final class MetalEvents {
                 flipChaosArmor(entity, family);
             }
         }
+    }
+
+    // ==================== 1.7 bg19 R6：幽咆金盔甲的音波击退抗性 ====================
+
+    /**
+     * 音波击退抗性修饰符的 id。<b>一个实体同一时刻只会有一份</b>（"运行期只维护一个总值"那张表里的一格，
+     * 见 {@code docs/1.5-规格.md} §17.8：这种"运行期单值"必须用<b>同一个 id</b>，不能按部位分 id）。
+     */
+    private static final net.minecraft.resources.ResourceLocation SONIC_BOOM_KNOCKBACK_ID =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    com.hjmmd_8.bettergold.bettergold.MODID, "sonic_boom_knockback");
+
+    /**
+     * 本 tick 里"临时挂过音波击退抗性"的实体（每 tick 末在 {@link #onServerTickClearSonicKnockback} 里清空）。
+     * ⚠ 只服务端主线程碰它（伤害事件与 tick 事件都在主线程）。
+     */
+    private static final java.util.Set<net.minecraft.world.entity.LivingEntity> SONIC_KNOCKBACK_ARMED =
+            java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+
+    /**
+     * <b>1.7 {@code bg19} 第 R6 条</b>（作者：「幽咆金盔甲：每单件 25% 监守者音波击退抗性，全套 100%」）。
+     *
+     * <h2>为什么不能挂在 {@code LivingKnockBackEvent} 上（读源码取证）</h2>
+     * <p>原版音波击退<b>不走</b> {@code LivingEntity#knockback(...)}（那条路才发 NeoForge 的
+     * {@code LivingKnockBackEvent}）。真源是 {@code SonicBoom}（{@code net/minecraft/world/entity/ai/behavior/warden/SonicBoom.java}
+     * 的 {@code tick}，反编译后是 {@code lambda$tick$2}）：</p>
+     * <pre>
+     * if (target.hurt(level.damageSources().sonicBoom(owner), 10.0F)) {
+     *     double d1 = 0.5 * (1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+     *     double d0 = 2.5 * (1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+     *     target.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);
+     * }
+     * </pre>
+     * <p>⇒ 音波击退的<b>唯一</b>可调旋钮就是 {@code KNOCKBACK_RESISTANCE} 属性值（{@code push} 走的是位移，
+     * 与事件无关）。</p>
+     *
+     * <h2>落法（不改 mixin、不碰 {@code push}）</h2>
+     * <p>就在 {@code LivingDamageEvent.Pre}（音波伤害这一发）里，给受击者挂一个<b>本 tick 有效</b>的
+     * {@code KNOCKBACK_RESISTANCE} 瞬态修饰符，tick 末再摘掉：</p>
+     * <ul>
+     *   <li>修饰符值按<b>精确公式</b>反推：需求是「击退位移 ×(1 − 0.25N)」，即
+     *       {@code (1 − v') = (1 − v) × (1 − 0.25N)} ⇒ {@code v' = 1 − (1 − v)(1 − 0.25N)}；
+     *       挂上去的量 = {@code v' − v}（{@code ADD_VALUE}）⇒ <b>即使目标本来就有别的击退抗性，
+     *       结果仍精确等于 "×（1 − 0.25N）"</b>，不是"叠加 25N 个点"。</li>
+     *   <li><b>只对音波</b>：{@code SonicBoom} 在 {@code hurt} 之后<b>同一个语句块</b>里立刻读属性并 {@code push}，
+     *       而我们是在那一发 {@code hurt} 的事件里挂的 ⇒ 生效窗口 = 本 tick 剩余时间；tick 末摘掉
+     *       ⇒ 其它击退（近战 / 爆炸 / 活塞…）<b>一个字节都不受影响</b>。</li>
+     *   <li>0 件不挂（一个字节不写）；1/2/3/4 件分别回到 75/50/25/0%。</li>
+     *   <li>伤害被压到 0（4 件）时 {@code hurt} 仍返回 {@code true}（{@code LivingEntity#hurt} 末尾
+     *       {@code flag2 = !flag || amount > 0}）⇒ 原版照样会 {@code push}，所以这条抗性在 4 件时确实要把它压到 0，
+     *       不能指望"没伤害就没击退"。</li>
+     * </ul>
+     *
+     * <p>⚠ 副作用边界（如实记账）：{@code SonicBoom} 用的是 {@code damageSources().sonicBoom(owner)}，
+     * 而本模组自建的音波伤害（幽咆金建材的接触声波 / 音咆 buff）走 {@code sonicBoomSource(level)}，
+     * <b>类型同为 {@code minecraft:sonic_boom}</b> ⇒ 这条抗性对它们同样生效（语义上都是"音波"，
+     * 且那两处本来就用同一个 {@code KNOCKBACK_RESISTANCE} 公式）。</p>
+     */
+    @SubscribeEvent
+    public static void onSonicBoomDamageArmsKnockbackResist(
+            net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Pre event) {
+        if (!isSonicBoom(event.getSource())) {
+            return;
+        }
+        var entity = event.getEntity();
+        int pieces = wornPieces(entity, AllMetals.ECHOGOLD);
+        if (pieces <= 0) {
+            return;
+        }
+        armSonicBoomKnockbackResist(entity, pieces);
+    }
+
+    /**
+     * 给 {@code entity} 挂上"本次音波击退"的{@code KNOCKBACK_RESISTANCE} 瞬态修饰符（幂等：
+     * 先摘旧的再按当前值重算，重复调用不会叠）。
+     */
+    private static void armSonicBoomKnockbackResist(net.minecraft.world.entity.LivingEntity entity, int pieces) {
+        var instance = entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE);
+        if (instance == null) {
+            return;
+        }
+        // 先把本 tick 之前的残留摘掉，再读"目标本来"的抗性值 ⇒ 差值是精确的 v' − v。
+        instance.removeModifier(SONIC_BOOM_KNOCKBACK_ID);
+        double current = net.minecraft.util.Mth.clamp(instance.getValue(), 0.0D, 1.0D);
+        double keep = 1.0D - Math.min(pieces, 4) * 0.25D;      // 0.75 / 0.5 / 0.25 / 0.0
+        double wanted = 1.0D - (1.0D - current) * keep;
+        double delta = wanted - current;
+        if (delta <= 1.0E-9D) {
+            return;
+        }
+        instance.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                SONIC_BOOM_KNOCKBACK_ID, delta,
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
+        SONIC_KNOCKBACK_ARMED.add(entity);
+    }
+
+    /**
+     * tick 末把上面那批瞬态修饰符摘干净（<b>双向归零</b>：挂过几份就摘几份）。
+     *
+     * <p>为什么必须摘：{@code KNOCKBACK_RESISTANCE} 是一个"活"属性 —— 留在身上会让<b>下一次</b>近战击退
+     * 也吃这 25%N，那就违反「只对音波」。摘除点选 {@code ServerTickEvent.Post}（所有实体 tick 都已结束、
+     * 音波那一发 {@code push} 早已执行完）。</p>
+     */
+    @SubscribeEvent
+    public static void onServerTickClearSonicKnockback(
+            net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+        if (SONIC_KNOCKBACK_ARMED.isEmpty()) {
+            return;
+        }
+        for (var entity : SONIC_KNOCKBACK_ARMED) {
+            var instance = entity.getAttribute(
+                    net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE);
+            if (instance != null) {
+                instance.removeModifier(SONIC_BOOM_KNOCKBACK_ID);
+            }
+        }
+        SONIC_KNOCKBACK_ARMED.clear();
     }
 
     /**

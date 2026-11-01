@@ -13,33 +13,93 @@
     }
   },
   "criteria": {
-    "have": {
-      "trigger": "minecraft:inventory_changed",
+    "craft_copper_block": {
+      "trigger": "minecraft:recipe_crafted",
       "conditions": {
-        "items": [
-          {
-            "items": [
-              "minecraft:copper_block",
-              "minecraft:iron_block",
-              "minecraft:gold_block",
-              "minecraft:netherite_ingot",
-              "bettergold:raw_flamegold",
-              "bettergold:raw_voodoogold",
-              "bettergold:raw_thundergold",
-              "bettergold:raw_indigoseagold",
-              "bettergold:raw_illusiongold",
-              "bettergold:raw_thornsgold",
-              "bettergold:raw_echogold",
-              "bettergold:raw_sturdygold"
-            ]
-          }
-        ]
+        "recipe_id": "bettergold:copper_block_with_chaos_coin"
+      }
+    },
+    "craft_iron_block": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:iron_block_with_chaos_coin"
+      }
+    },
+    "craft_gold_block": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:gold_block_with_chaos_coin"
+      }
+    },
+    "craft_netherite_ingot": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:netherite_ingot_with_chaos_coin_string"
+      }
+    },
+    "craft_raw_flamegold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_flamegold_chaosgold"
+      }
+    },
+    "craft_raw_voodoogold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_voodoogold_chaosgold"
+      }
+    },
+    "craft_raw_thundergold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_thundergold_chaosgold"
+      }
+    },
+    "craft_raw_indigoseagold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_indigoseagold_chaosgold"
+      }
+    },
+    "craft_raw_illusiongold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_illusiongold_chaosgold"
+      }
+    },
+    "craft_raw_thornsgold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_thornsgold_chaosgold"
+      }
+    },
+    "craft_raw_echogold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_echogold_chaosgold"
+      }
+    },
+    "craft_raw_sturdygold": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "bettergold:raw_sturdygold_chaosgold"
       }
     }
   },
   "requirements": [
     [
-      "have"
+      "craft_copper_block",
+      "craft_iron_block",
+      "craft_gold_block",
+      "craft_netherite_ingot",
+      "craft_raw_flamegold",
+      "craft_raw_voodoogold",
+      "craft_raw_thundergold",
+      "craft_raw_indigoseagold",
+      "craft_raw_illusiongold",
+      "craft_raw_thornsgold",
+      "craft_raw_echogold",
+      "craft_raw_sturdygold"
     ]
   ],
   "sends_telemetry_event": false

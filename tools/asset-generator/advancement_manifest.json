@@ -611,11 +611,24 @@
       "frame": "task",
       "fd": false,
       "title": "金工细作",
-      "description": "制作出任意一个含\"混沌金币/混沌金币串\"配方的铜块/铁块/金块/下界合金锭，或含\"混沌金块 + 高精度炼金油\"配方的贵金原料",
+      "description": "混沌金系列的物品可用于充数一些金属块和金属，甚至是“贵金”",
       "triggers": [
-        "minecraft:inventory_changed"
+        "minecraft:recipe_crafted"
       ],
-      "recipe_ids": []
+      "recipe_ids": [
+        "bettergold:copper_block_with_chaos_coin",
+        "bettergold:gold_block_with_chaos_coin",
+        "bettergold:iron_block_with_chaos_coin",
+        "bettergold:netherite_ingot_with_chaos_coin_string",
+        "bettergold:raw_echogold_chaosgold",
+        "bettergold:raw_flamegold_chaosgold",
+        "bettergold:raw_illusiongold_chaosgold",
+        "bettergold:raw_indigoseagold_chaosgold",
+        "bettergold:raw_sturdygold_chaosgold",
+        "bettergold:raw_thornsgold_chaosgold",
+        "bettergold:raw_thundergold_chaosgold",
+        "bettergold:raw_voodoogold_chaosgold"
+      ]
     },
     {
       "id": "bettergold:metal/chaosgold/enchant",
