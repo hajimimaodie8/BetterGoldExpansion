@@ -62,6 +62,10 @@ public final class CreativeTabSections {
      *
      * <p>兜底：万一某件物品没有被任何规则命中（规则漏写），它会被追加在末尾而不是被丢掉 ——
      * 「物品一个都不能丢」优先于顺序；真出现这种情况，自检里的逐元素比对会暴露出来。</p>
+     *
+     * <p><b>最后一步是「紧邻钉」</b>：{@link #ADJACENCY_PINS} 的 5 条按声明顺序在<b>已经排好的列表</b>
+     * 上做「取出 → 插到锚点旁」，其余物品的相对次序原样保留（作者 2026-11-05 的 5 条顺序微调）。
+     * 锚点不在本分区时这一条什么都不做，所以同一张表可以同时喂 4 个分区。</p>
      */
     public static List<ItemStack> ordered(List<Slot> slots, List<ItemStack> items) {
         List<ItemStack> out = new ArrayList<>();
@@ -115,7 +119,78 @@ public final class CreativeTabSections {
                 out.add(items.get(i));
             }
         }
+        return applyPins(out);
+    }
+
+    // ==================== 顺序微调：5 条「紧邻钉」（作者 2026-11-05） ====================
+
+    /**
+     * 一条「紧邻钉」：把物品 {@code item} 钉到 {@code anchor} 的<b>紧前面 / 紧后面</b>。
+     *
+     * <p>为什么需要它（而不只是改 {@link #MATERIAL_PREFIX_ORDER}）：本轮 5 条要求里有 3 条的
+     * <b>锚点在另一个段里</b> ——
+     * <ul>
+     *   <li>{@code chaos_coin_string} 要贴到 {@code chaos_coin}（金属段的混沌金核心材料）前面；</li>
+     *   <li>{@code money_gremlin_spawn_egg} 要贴到 {@code chaos_coin_string} 前面；</li>
+     *   <li>{@code sturdygold_anvil} 要贴到 {@code golden_creeper_figurine}（其他建筑方块的杂项表）前面。</li>
+     * </ul>
+     * 段 / 分区归属、注册、id、语言键一个都没动 —— 这里只在**已经排好的列表**上做「取出 → 插到锚点旁」，
+     * 其余物品的相对顺序原样保留（A 级读数用「去掉这 5 件后逐项相等」证明）。</p>
+     *
+     * <p>⚠ <b>声明顺序 = 应用顺序</b>：若 B 的锚点正是 A 自己，A 必须写在 B 前面
+     * （本表里 {@code money_gremlin_spawn_egg} 的锚点是 {@code chaos_coin_string}）。
+     * 关卡 {@code [bg21-creative-pins]} 静态守着这条链序。</p>
+     *
+     * <p>锚点 / 物品不在同一分区时什么都不做（不在这个分区的列表里就找不到，直接跳过）——
+     * 所以同一张表可以同时喂 4 个分区，且<b>永远不会把物品挪出它自己的分区</b>。</p>
+     */
+    public record Pin(String item, String anchor, boolean after) {
+    }
+
+    /**
+     * 创造页顺序的 5 条紧邻关系（作者 2026-11-05 原话，逐条对应；顺序 = 应用顺序）：
+     * <ol>
+     *   <li>「混沌金币串」往后放 ⇒ 放到「混沌金币」的<b>前面</b>；</li>
+     *   <li>「金钱妖刷怪蛋」移到「混沌金币串」的<b>前面</b>；</li>
+     *   <li>「高精度炼金油」放到「炼金燃油」的<b>后面</b>；</li>
+     *   <li>「金骨粉」放到「金质盾牌胚底」的<b>后面</b>；</li>
+     *   <li>「万坚金砧」移到「金雕苦力怕」的<b>前面</b>。</li>
+     * </ol>
+     */
+    public static final List<Pin> ADJACENCY_PINS = List.of(
+            new Pin("chaos_coin_string", "chaos_coin", false),
+            new Pin("money_gremlin_spawn_egg", "chaos_coin_string", false),
+            new Pin("refined_alchemic_oil", "alchemic_fuel", true),
+            new Pin("golden_bone_meal", "golden_shield_blank", true),
+            new Pin("sturdygold_anvil", "golden_creeper_figurine", false));
+
+    /** 按 {@link #ADJACENCY_PINS} 的顺序把物品逐个「取出 → 插到锚点旁」；锚点不在本分区就原样放回（绝不丢物品） */
+    private static List<ItemStack> applyPins(List<ItemStack> base) {
+        List<ItemStack> out = new ArrayList<>(base);
+        for (Pin pin : ADJACENCY_PINS) {
+            int itemIndex = indexOfPath(out, pin.item());
+            if (itemIndex < 0) {
+                continue;
+            }
+            ItemStack moved = out.remove(itemIndex);
+            int anchorIndex = indexOfPath(out, pin.anchor());
+            if (anchorIndex < 0) {
+                out.add(Math.min(itemIndex, out.size()), moved);
+                continue;
+            }
+            out.add(pin.after() ? anchorIndex + 1 : anchorIndex, moved);
+        }
         return out;
+    }
+
+    /** 列表里某个注册名（path 部分）的下标；没有返回 -1 */
+    private static int indexOfPath(List<ItemStack> list, String path) {
+        for (int i = 0; i < list.size(); i++) {
+            if (path.equals(pathOf(list.get(i)))) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /** 由物品 id / 路径判定的小工具 */

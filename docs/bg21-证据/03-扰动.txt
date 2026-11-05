@@ -1,0 +1,16 @@
+BASELINE java=331DA7664D8E9771E23C20C7B281E36BD29CB3A5D430460DADC4FCA10852C69C after=715608EBC6953DACD18CE28BF28CA1C2086C3632A6D217E06FC383D6C5083F90
+BASELINE gate exit=0 hits=[]
+  [bg21-summary] 2026-11-05 创造页 5 件顺序微调：检查 63 项，问题 0 条
+CASE A_pin_reverted         mutated=779F286BDAF5 exit=1 expected_exit=1 hits=['bg21-creative-pins'] hit_expected=True
+   [bg21-summary] 2026-11-05 创造页 5 件顺序微调：检查 63 项，问题 1 条：["紧邻钉表 != 作者 2026-11-05 的 5 条（实际 [('chaos_coin_string', 'chaos_coin', False), ('money_gremlin_spawn_egg', 'chaos_coin_string', False), ('refined_alchemic_oil', 'alchemic_fuel', True), ('golden_bone_meal', 'golden_shield_blank', False), ('sturdygold_anvil', 'golden_creeper_figurine', False)]；期望 [('chaos_coin_string', 'chaos_coin', False), ('money_gremlin_spawn_egg', 'chaos_coin_string', False), ('refined_alchemic_oil', 'alchemic_fuel', True), ('golden_bone_meal', 'golden_shield_blank', True), ('sturdygold_anvil', 'golden_creeper_figurine', False)]；顺序也是契约：声明顺序 = 应用顺序） [bg21-creative-pins]"]
+   restored=True sha=331DA7664D8E9771E23C20C7B281E36BD29CB3A5D430460DADC4FCA10852C69C
+CASE B_snapshot_reordered   mutated=AD39507F7262 exit=1 expected_exit=1 hits=['bg21-creative-order'] hit_expected=True
+   [bg21-summary] 2026-11-05 创造页 5 件顺序微调：检查 63 项，问题 4 条：['改后 快照指纹 != A 级读数（实际 2fa0972075dc58b2bc434813642b736a8b534519ef9b50a9f0adca0f5d6dfe95，期望 40771be25b3ebfa31e53035af018377266c55945a6d7f913a327f500d816493f）== 快照被改过 [bg21-creative-order]', '改后 `refined_alchemic_oil` after `alchemic_fuel` 不紧邻（实际 item 位次 (8, 2)） [bg21-creative-order]', '改后 `golden_bone_meal` after `golden_shield_blank` 不紧邻（实际 item 位次 (9, 3)） [bg21-creative-order]', "其余 408 件的相对顺序变了（首处不同 (4, 'bettergold:golden_mace_blank', 'bettergold:golden_shield_blank')）== 本轮只许动这 5 件 [bg21-creative-order]"]
+   restored=True sha=715608EBC6953DACD18CE28BF28CA1C2086C3632A6D217E06FC383D6C5083F90
+CASE C_comment_only         mutated=49883B7B71F9 exit=0 expected_exit=0 hits=[] hit_expected=True
+   [bg21-summary] 2026-11-05 创造页 5 件顺序微调：检查 63 项，问题 0 条
+   restored=True sha=331DA7664D8E9771E23C20C7B281E36BD29CB3A5D430460DADC4FCA10852C69C
+FINAL java=331DA7664D8E9771E23C20C7B281E36BD29CB3A5D430460DADC4FCA10852C69C (baseline=331DA7664D8E9771E23C20C7B281E36BD29CB3A5D430460DADC4FCA10852C69C) after=715608EBC6953DACD18CE28BF28CA1C2086C3632A6D217E06FC383D6C5083F90 (baseline=715608EBC6953DACD18CE28BF28CA1C2086C3632A6D217E06FC383D6C5083F90)
+FINAL gate exit=0 hits=[]
+  [bg21-summary] 2026-11-05 创造页 5 件顺序微调：检查 63 项，问题 0 条
+SUMMARY cases=3 all_ok=True

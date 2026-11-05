@@ -1,0 +1,25 @@
+bg21 构建（探针删除后重跑，最终树）
+============================================================
+Reusing configuration cache.
+> Task :processTestResources NO-SOURCE
+> Task :jarJar NO-SOURCE
+> Task :processResources UP-TO-DATE
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test NO-SOURCE
+> Task :check UP-TO-DATE
+> Task :jar
+> Task :assemble
+> Task :build
+
+BUILD SUCCESSFUL in 2s
+4 actionable tasks: 1 executed, 3 up-to-date
+Configuration cache entry reused.
+
+[libs]
+bettergold-1.5.0.jar 1089906 B
+bettergold-1.6.0.jar 1603238 B
+bettergold-1.7.0.jar 1909766 B

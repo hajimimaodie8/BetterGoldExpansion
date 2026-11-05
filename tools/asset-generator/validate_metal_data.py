@@ -12732,6 +12732,193 @@ if not bg20_problems:
           "text, crafting×7 = 14 件]")
 
 
+# ==================== bg21（2026-11-05）：创造页 5 件「紧邻」顺序微调 ====================
+# 作者原话（逐条，见 docs/1.7-混沌金与崩乱合金-需求立档.md §34）：
+#   ①「混沌金币串」往后放（别这么靠前）⇒ 放到「混沌金币」的前面
+#   ②「金钱妖刷怪蛋」移到「混沌金币串」的前面
+#   ③「高精度炼金油」放到「炼金燃油」的后面
+#   ④「金骨粉」放到「金质盾牌胚底」的后面
+#   ⑤「万坚金砧」移到「金雕苦力怕」的前面
+# 落点：`CreativeTabSections.ADJACENCY_PINS`（唯一真源 = 一张 5 行的表，声明顺序 = 应用顺序）。
+#   ⚠ 只动**顺序**：分类 / 段 / 分区归属 / 注册 / id / 语言键 / 贴图一个都没动；实现只在
+#   「已经排好的分区列表」上做「取出 → 插到锚点旁」，锚点不在本分区就原样放回（绝不丢物品）。
+# 期望值 = 仓库内冻结快照（A 级客户端读数搬运；两份抬头都写了来源 / 环境 / 指纹）：
+#   `bg21-creative-order-before.txt`（改前 413 件）/ `bg21-creative-order-after.txt`（改后 413 件）。
+# 反空转 + 退出码契约：解析不到表 / 快照缺失 / 件数 != 413 都要红（exit 1），判定数 < 30 也红。
+bg21_problems: list[str] = []
+
+
+def _bg21_bad(tag: str, msg: str) -> None:
+    bg21_problems.append("%s [%s]" % (msg, tag))
+
+
+_BG21_PINS_WANT = [
+    ("chaos_coin_string", "chaos_coin", False),
+    ("money_gremlin_spawn_egg", "chaos_coin_string", False),
+    ("refined_alchemic_oil", "alchemic_fuel", True),
+    ("golden_bone_meal", "golden_shield_blank", True),
+    ("sturdygold_anvil", "golden_creeper_figurine", False),
+]
+_BG21_COUNT = 413
+_BG21_SRC = JAVA / "material" / "CreativeTabSections.java"
+_BG21_BEFORE = REPO / "tools" / "asset-generator" / "bg21-creative-order-before.txt"
+_BG21_AFTER = REPO / "tools" / "asset-generator" / "bg21-creative-order-after.txt"
+# 两个指纹 = 探针打印的 sha256(ids, LF-joined)（A 级读数；静态侧只复算、不再跑客户端）
+_BG21_FP_BEFORE = "c675330145a814b78afb3e722e82a087ca00bcf42ea1a099ca66925bf8022284"
+_BG21_FP_AFTER = "40771be25b3ebfa31e53035af018377266c55945a6d7f913a327f500d816493f"
+_bg21_checked = 0
+
+# ---------- ① Java 侧：5 条紧邻钉逐条对（id + 方向 + 声明顺序） ----------
+_bg21_src = strip_comments(_BG21_SRC.read_text(encoding="utf-8")) if _BG21_SRC.is_file() else ""
+_bg21_pins: list[tuple] = []
+if not _bg21_src:
+    _bg21_bad("bg21-creative-pins", "读不到 %s" % _BG21_SRC)
+else:
+    _bg21_m = re.search(r"ADJACENCY_PINS\s*=\s*List\.of\((.*?)\);", _bg21_src, re.S)
+    if not _bg21_m:
+        _bg21_bad("bg21-creative-pins", "解析不到 `CreativeTabSections.ADJACENCY_PINS`（唯一真源）")
+    else:
+        for _item, _anchor, _dir in re.findall(
+                r'new Pin\("([a-z0-9_]+)",\s*"([a-z0-9_]+)",\s*(true|false)\)', _bg21_m.group(1)):
+            _bg21_pins.append((_item, _anchor, _dir == "true"))
+        _bg21_checked += 1
+        if _bg21_pins != _BG21_PINS_WANT:
+            _bg21_bad("bg21-creative-pins",
+                      "紧邻钉表 != 作者 2026-11-05 的 5 条（实际 %s；期望 %s；"
+                      "顺序也是契约：声明顺序 = 应用顺序）" % (_bg21_pins, _BG21_PINS_WANT))
+        # 链序：B 的锚点正是 A 自己 ⇒ A 必须写在 B 前面（否则 B 会插到 A 的旧位置）
+        for _i, (_item, _anchor, _after) in enumerate(_bg21_pins):
+            for _j, (_item2, _anchor2, _a2) in enumerate(_bg21_pins):
+                _bg21_checked += 1
+                if _anchor == _item2 and _j >= _i:
+                    _bg21_bad("bg21-creative-pins",
+                              "链序不对：`%s` 的锚点 `%s` 自己也有钉，它必须排在前面（实际 %d >= %d）"
+                              % (_item, _anchor, _j, _i))
+        # 被钉的物品不许重复（同一个东西被钉两次 = 规则不可判定）
+        _bg21_items = [p[0] for p in _bg21_pins]
+        _bg21_checked += 1
+        if len(set(_bg21_items)) != len(_bg21_items):
+            _bg21_bad("bg21-creative-pins", "同一件物品被钉了两次：%s" % _bg21_items)
+    # 实现必须真的按锚点定位，且 applyPins 只有一个调用点
+    for _needle, _why in (
+            ("return applyPins(out);", "`ordered(...)` 末尾没有接 `applyPins(out)`（钉表不会被应用）"),
+            ("private static List<ItemStack> applyPins(", "找不到 applyPins 实现"),
+            ("indexOfPath(out, pin.anchor())", "applyPins 没有按锚点定位（实现被换了？）"),
+            ("indexOfPath(out, pin.item())", "applyPins 没有先定位被钉物品")):
+        _bg21_checked += 1
+        if _needle not in _bg21_src:
+            _bg21_bad("bg21-creative-pins", "%s（缺 `%s`）" % (_why, _needle))
+
+# ---------- ② 10 个 id 都是真物品（语言键在 zh/en 都有；方块物品的键前缀是 block.） ----------
+for _p in [p[0] for p in _BG21_PINS_WANT] + [p[1] for p in _BG21_PINS_WANT]:
+    _bg21_checked += 1
+    _keys = ("item.bettergold." + _p, "block.bettergold." + _p)
+    _zh_hit = next((k for k in _keys if k in zh), None)
+    _en_hit = next((k for k in _keys if k in en), None)
+    if _zh_hit is None or _en_hit is None:
+        _bg21_bad("bg21-creative-ids",
+                  "`bettergold:%s` 不是真物品（zh 命中=%s / en 命中=%s）" % (_p, _zh_hit, _en_hit))
+
+
+# ---------- ③ 冻结快照：改后 5 条紧邻成立 + 其余物品相对顺序不变 ----------
+def _bg21_read_order(path: Path, label: str) -> list[str]:
+    ids: list[str] = []
+    if not path.is_file():
+        _bg21_bad("bg21-creative-order", "读不到冻结快照 %s（%s）" % (path, label))
+        return ids
+    seqs: list[int] = []
+    for _ln in path.read_text(encoding="utf-8").splitlines():
+        _s = _ln.strip()
+        if not _s or _s.startswith("#"):
+            continue
+        _m = re.fullmatch(r"(\d+)\s+(bettergold:[a-z0-9_]+)", _s)
+        if not _m:
+            _bg21_bad("bg21-creative-order", "%s 快照行格式不对：%r" % (label, _s))
+            continue
+        seqs.append(int(_m.group(1)))
+        ids.append(_m.group(2))
+    if len(ids) != _BG21_COUNT:
+        _bg21_bad("bg21-creative-order",
+                  "%s 快照不是 %d 件（实际 %d）== 反空转守护" % (label, _BG21_COUNT, len(ids)))
+    elif seqs != list(range(1, _BG21_COUNT + 1)):
+        _bg21_bad("bg21-creative-order", "%s 快照位次不是 1..%d 连续" % (label, _BG21_COUNT))
+    return ids
+
+
+_bg21_before_ids = _bg21_read_order(_BG21_BEFORE, "改前")
+_bg21_after_ids = _bg21_read_order(_BG21_AFTER, "改后")
+_bg21_checked += 2
+
+if _bg21_before_ids and _bg21_after_ids:
+    # 指纹自证（快照被手改会命中）
+    for _ids, _want, _label in ((_bg21_before_ids, _BG21_FP_BEFORE, "改前"),
+                                (_bg21_after_ids, _BG21_FP_AFTER, "改后")):
+        _bg21_checked += 1
+        _got = hashlib.sha256(("\n".join(_ids) + "\n").encode("utf-8")).hexdigest()
+        if _got != _want:
+            _bg21_bad("bg21-creative-order",
+                      "%s 快照指纹 != A 级读数（实际 %s，期望 %s）== 快照被改过" % (_label, _got, _want))
+    # 集合相等（不重不漏）
+    _bg21_checked += 1
+    if sorted(_bg21_before_ids) != sorted(_bg21_after_ids):
+        _bg21_bad("bg21-creative-order", "改前 / 改后不是同一个集合（物品被增删了）")
+    # 改前：这 5 条**都不成立**（作者说的「太靠前 / 位置不对」）
+    # 改后：5 条全部**紧邻**
+    for _item, _anchor, _after in _BG21_PINS_WANT:
+        _item_full = "bettergold:" + _item
+        _anchor_full = "bettergold:" + _anchor
+        _bg21_checked += 2
+        _b = (_bg21_before_ids.index(_item_full), _bg21_before_ids.index(_anchor_full)) \
+            if _item_full in _bg21_before_ids and _anchor_full in _bg21_before_ids else None
+        _a = (_bg21_after_ids.index(_item_full), _bg21_after_ids.index(_anchor_full)) \
+            if _item_full in _bg21_after_ids and _anchor_full in _bg21_after_ids else None
+        _want_adj = lambda pair: pair is not None and (
+            pair[0] + 1 == pair[1] if not _after else pair[1] + 1 == pair[0])
+        if _b is None or _want_adj(_b):
+            _bg21_bad("bg21-creative-order",
+                      "改前快照里 `%s` / `%s` 的位次不对（作者说改前不成立）：%s" % (_item, _anchor, _b))
+        if _a is None or not _want_adj(_a):
+            _bg21_bad("bg21-creative-order",
+                      "改后 `%s` %s `%s` 不紧邻（实际 item 位次 %s）"
+                      % (_item, "after" if _after else "before", _anchor, _a))
+    # 其余物品相对顺序不变：去掉这 5 件后两份序列逐项相等
+    _bg21_moved = ["bettergold:" + p[0] for p in _BG21_PINS_WANT]
+    _bg21_b2 = [x for x in _bg21_before_ids if x not in _bg21_moved]
+    _bg21_a2 = [x for x in _bg21_after_ids if x not in _bg21_moved]
+    _bg21_checked += 1
+    if _bg21_b2 != _bg21_a2:
+        _bg21_first = next(((i + 1, x, y) for i, (x, y) in enumerate(zip(_bg21_b2, _bg21_a2)) if x != y),
+                           ("size", len(_bg21_b2), len(_bg21_a2)))
+        _bg21_bad("bg21-creative-order",
+                  "其余 %d 件的相对顺序变了（首处不同 %s）== 本轮只许动这 5 件"
+                  % (len(_bg21_b2), _bg21_first))
+
+# ---------- ④ 文档侧：本轮口径必须落档（§34） ----------
+_BG21_DOC = REPO / "docs" / "1.7-混沌金与崩乱合金-需求立档.md"
+if not _BG21_DOC.is_file():
+    _bg21_bad("bg21-doc", "缺 docs/1.7-混沌金与崩乱合金-需求立档.md")
+else:
+    _bg21_doc_txt = _BG21_DOC.read_text(encoding="utf-8")
+    for _needle, _why in (
+            ("bg21", "立档里没有本轮标记（bg21）"),
+            ("## 34.", "立档里没有 §34 这一节"),
+            ("紧邻", "没写「5 条紧邻关系」这条口径"),
+            ("ADJACENCY_PINS", "没写唯一真源 = `CreativeTabSections.ADJACENCY_PINS`"),
+            ("旧顺序留档", "没有「旧顺序留档」这一项"),
+            ("408", "没写「其余 408 件相对顺序不变」的读数（413 - 5 = 408）")):
+        _bg21_checked += 1
+        if _needle not in _bg21_doc_txt:
+            _bg21_bad("bg21-doc", "%s（缺「%s」）" % (_why, _needle))
+
+if _bg21_checked < 30:
+    _bg21_bad("bg21-anti-vacuum", "本段只跑了 %d 条判定（反空转：必须 >= 30）" % _bg21_checked)
+print("[bg21-summary] 2026-11-05 创造页 5 件顺序微调：检查 %d 项，问题 %d 条%s"
+      % (_bg21_checked, len(bg21_problems),
+         "" if not bg21_problems else "：" + str(bg21_problems[:4])))
+if not bg21_problems:
+    print("[bg21-ok] ADJACENCY_PINS 5 条（混沌金币串→混沌金币前 / 刷怪蛋→金币串前 / 高精度炼金油→炼金燃油后 / "
+          "金骨粉→金质盾牌胚底后 / 万坚金砧→金雕苦力怕前）+ 改前 413 / 改后 413 件快照（其余 408 件相对顺序逐项相等）")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -12755,6 +12942,9 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
                        bg19_problems,
                        # 2026-10-26 bg20（P4）：手册「混沌金的主要内容」重做 + 自定义页型
                        bg20_problems)
+# 2026-11-05 bg21：创造页 5 件「紧邻」顺序微调
+#   （用元组拼接加进来：上面那行 `bg20_problems)` 原文一个字节没动）
+_EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg21_problems,)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

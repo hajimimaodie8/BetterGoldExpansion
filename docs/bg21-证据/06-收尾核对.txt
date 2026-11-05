@@ -1,0 +1,73 @@
+bg21 收尾核对（2026-11-05，最终树）
+======================================================================
+
+[1] git status --porcelain（不 commit / 不 push）
+ M "docs/1.7-混沌金与崩乱合金-需求立档.md"
+ M src/main/java/com/hjmmd_8/bettergold/material/CreativeTabSections.java
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bg21-证据/"
+?? tools/asset-generator/bg21-creative-order-after.txt
+?? tools/asset-generator/bg21-creative-order-before.txt
+
+[2] 生产代码改动范围：只 CreativeTabSections.java（+4286 B，纯新增 75 行）
+.../bettergold/material/CreativeTabSections.java   | 75 ++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
+（`MATERIAL_PREFIX_ORDER` / `OTHER_BLOCK_ORDER` / `METAL_ORDER` / 任何分类判据：0 改动、0 删除）
+
+[3] 探针 / 开关残留 grep（全部应为 0 命中）
+  findstr Bg21CreativeOrderProbe   -> 0 命中
+  findstr BG-PROBE                 -> 0 命中
+  findstr bg21-client-probe        -> 0 命中
+  说明：`bg21` 在 CreativeTabSections.java 的 javadoc 里出现 1 次 —— 是关卡 tag `[bg21-creative-pins]` 的
+  **说明性引用**（不是探针代码；探针类名 / 开关文件 / BG-PROBE 全 0 命中）
+  probe/bg21 exists: False
+  src/main/java/.../probe/bg21 exists: False
+
+[4] 关键文件 SHA256
+  build.gradle                                                             2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+  run/server.properties                                                    A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  src/main/java/com/hjmmd_8/bettergold/material/CreativeTabSections.java   331DA7664D8E9771E23C20C7B281E36BD29CB3A5D430460DADC4FCA10852C69C
+  tools/asset-generator/validate_metal_data.py                             A18AF7F7373A44C7853D3712401AF6DB269B1FF640476C0BDC35E31A435C286D
+  tools/asset-generator/bg21-creative-order-before.txt                     9F041B373920736ABDD1D506788F84FD447A3D3CBC40A28C56C2AF06D5046ECE
+  tools/asset-generator/bg21-creative-order-after.txt                      715608EBC6953DACD18CE28BF28CA1C2086C3632A6D217E06FC383D6C5083F90
+  build/moddev/clientRunProgramArgs.txt                                    A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB
+  docs/1.7-混沌金与崩乱合金-需求立档.md                                                E64EC43332567C71ED50F172D0EA3BBDF6EA78E9A4D7AEBF1BD9FB63A0C4BD3C
+  （立档最终态 5611 行；相对 HEAD 插入 157 / 删除 0）
+
+[5] 复原判据：build.gradle = 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+    clientRunProgramArgs.txt 规范形态 = A365A5EDF7ABC44C576E5DD3F725A54D46658FCDDC1E3A0257BEC7C0AB2E4BDB（394 B）
+    server.properties 历史目标值 = A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+    validator 的 diff = 190 insertions / 0 deletions（`bg20_problems)` 那一行原文没动；bg21 用元组拼接加入退出码清单）
+
+[6] 产物 jar：条目数 / 探针残留
+  bettergold-1.7.0.jar entries=2897 probe-like=[] halt-classes=0
+
+[7] run/saves 前后文件数（作者存档 = 新的世界；本轮未打开）
+  新的世界         files=29
+  （开工 29 → 收尾 29；mtime 变化来自 12:06:37 起就在跑的别人的 dev 客户端 PID 42896，不是本轮；
+   本轮探针第 2 tick 的存档身份闸门 = levelId=bg21probe / levelName=world / 不含作者存档名）
+
+[8] run/ 独占（本轮自己的 runClient 已退出；开工时就在跑的别人的客户端 PID 42896 收尾时已不在进程表里）
+  本会话从未执行 Stop-Process / taskkill / kill（命令记录可查）；只按 PID 停过自己的 runClient（mc.stop()）。
+  42896 最后一次写作者存档 = 12:21:56；没有它对应的 crash-report（run/crash-reports 最新一份是 2026-10-05）。
+  收尾 tasklist：只剩 47188 / 15300 两个 Gradle daemon（不是游戏进程）。
+
+[9] 本轮删掉的文件（都在 run/ 与 probe/，且已留档到 docs/bg21-证据/）
+  probe/bg21/**（脚本 10 个；探针源码已提前复制到 00-探针源码副本/）
+  run/bg21-client-probe.enabled / run/bg21-phase.txt / run/bg21-order-*.txt / run/logs/quickplay/bg21.json
+  run/saves/bg21probe（84 → 89 文件，删前已记文件数 / mtime）
+  run/run/**（`--quickPlayPath` 相对路径被游戏按 `run/` 再解析一次 ⇒ 游戏把 lastPlayedTime 写回这里；本轮独有）
+  run/config/jei/world/local/bg21probe（JEI 给探针世界建的数据）
+
+[10] 文档：git diff --numstat（插入 157 / 删除 0）
+157	0	"docs/1.7-混沌金与崩乱合金-需求立档.md"
+
+[11] 八关卡（最终树，原件 04-八关卡.txt）
+  validate_metal_assets.py   exit=0  [bg-assets-ok] 问题合计 0 条
+  validate_metal_data.py     exit=0  [bg21-summary] 检查 63 项 / 问题 0 条；[bg-data-ok] 问题合计 0 条
+  validate_advancements.py   exit=0  问题 0 条 / 成就 63 / criteria 157 / 语言键 126
+  validate_trim_assets.py    exit=0  问题 0 条 / 检查 76 项
+  validate_bg17_textures.py  exit=0  checked=643 authorized=72 untouched=544 problems=0
+  validate_golden_prison.py  exit=0  problems=0 checked=16635 templates=26
+  check_jar_clean.py         exit=0  条目 2897 / *Probe* 0 / halt 0
+  check_forced_chunks.py     exit=0  data.Forced 为空
