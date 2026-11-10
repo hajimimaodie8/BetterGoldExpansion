@@ -1,0 +1,73 @@
+bg22 收尾核对（2026-11-10）
+========================================================================
+
+[1] git status --porcelain（不 commit / 不 push）
+M "docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+ M src/main/java/com/hjmmd_8/bettergold/material/MetalEvents.java
+ M tools/asset-generator/validate_metal_data.py
+?? "docs/bg22-\350\257\201\346\215\256/"
+?? "docs/\345\217\221\345\270\203/1.7.0/"
+?? probe/bg22/
+
+[2] git diff --stat
+...234\200\346\261\202\347\253\213\346\241\243.md" | 170 +++++++++++++++++++++
+ .../hjmmd_8/bettergold/material/MetalEvents.java   |  51 +++++++
+ tools/asset-generator/validate_metal_data.py       | 124 +++++++++++++++
+ 3 files changed, 345 insertions(+)
+warning: in the working copy of 'docs/1.7-混沌金与崩乱合金-需求立档.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/main/java/com/hjmmd_8/bettergold/material/MetalEvents.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/asset-generator/validate_metal_data.py', LF will be replaced by CRLF the next time Git touches it
+
+[3] 文档：插入/删除行（删除必须 = 0）
+170	0	"docs/1.7-\346\267\267\346\262\214\351\207\221\344\270\216\345\264\251\344\271\261\345\220\210\351\207\221-\351\234\200\346\261\202\347\253\213\346\241\243.md"
+warning: in the working copy of 'docs/1.7-混沌金与崩乱合金-需求立档.md', LF will be replaced by CRLF the next time Git touches it
+
+[4] 关键文件 SHA256
+  build.gradle                                                               2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+  run/server.properties                                                      A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  src/main/resources/bettergold.mixins.json                                  FB89F4CA7FA21745BEED8F73DA3259ED8FDC58B5733FDAAAE063D2165A4C26BD
+  src/main/java/com/hjmmd_8/bettergold/material/MetalEvents.java             770AA579D08B49967B8A158B043B9AF803DEE165F1169A54861C17AC0AE332C0
+  tools/asset-generator/validate_metal_data.py                               0D1FBDC921155A1DF1C313F1B1AFE3A91906770F0AD09E45E0DB8B2B852259EF
+  docs/1.7-混沌金与崩乱合金-需求立档.md                                                  50B051608F77B76CC582B3E72DE5A2BFD44A4B697E156652C978EBEA0014611A
+  build/libs/bettergold-1.7.0.jar                                            42023F945136B5AEDE3FD596664B436D74532F8BA62A7249EAD70D5526BA0B96
+
+[5] 复原判据（开工基线）
+  build.gradle                         期望 2AAC7860E5B1F03128D42637B9F002C7A44F37E269EE6B7BC9DFBE41AD478C2F
+  run/server.properties                期望 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4 (1440 B)
+  bettergold.mixins.json               期望 FB89F4CA7FA21745BEED8F73DA3259ED8FDC58B5733FDAAAE063D2165A4C26BD (354 B)
+
+[6] 探针残留 grep（src / run / 产物）
+  findstr Bg22Probe      -> 0 命中
+  findstr bg22-probe     -> 0 命中
+  findstr probe.bg22     -> 0 命中
+  findstr BG-PROBE       -> 0 命中
+  probe/bg22 exists: True
+  src/.../probe/bg22 exists: False
+  run/bg22-probe.enabled exists: False
+
+[7] run/ 独占：本轮从来没有别人的 run 进程；本会话从未 Stop-Process / taskkill
+Image Name                     PID Session Name        Session#    Mem Usage
+
+========================= ======== ================ =========== ============
+
+java.exe                     41000 Console                    1    568,104 K
+
+[8] 作者存档 run/saves/新的世界 文件数（开工 29 / 收尾应仍 29；本轮从未打开）
+  新的世界           files=29
+
+[9] run/world forceload（关卡 check_forced_chunks.py 已判过；这里再看一眼）
+  
+
+[10] 证据目录
+  00-A级-改前.txt                             1052 B
+  00-探针源码副本                                <dir>
+  01a-A级-读数-magic假绿.txt                    1044 B
+  02-A级-改后.txt                             1052 B
+  03-扰动.txt                                1563 B
+  04-八关卡.txt                               37732 B
+  05-构建.txt                                1084 B
+  06-服务端日志摘录.txt                           2197 B
+
+[11] 探针目录已删除（删前留档 = 00-探针源码副本/ + 本目录 00/01a/02/03/04/05/06）
+  probe/bg22 exists: False
+  run/probe/bg22 exists: False

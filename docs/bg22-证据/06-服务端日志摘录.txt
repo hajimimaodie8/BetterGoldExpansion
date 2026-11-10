@@ -1,0 +1,16 @@
+[1011月2026 19:03:51.197] [Server thread/INFO] [Bg22Probe/]: [bg22-s] readout setup level=world bush=2000, 120, 2000 forced=1
+[1011月2026 19:03:51.426] [Server thread/ERROR] [Bg22Probe/]: [bg22-s] FAIL berry_thorns4_durability_unchanged :: before=[0,0,0,0] after=[1,1,1,1] hp=20.0
+[1011月2026 19:03:51.426] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS berry_thorns4_health_unchanged :: hp=20.0 (want 20.000)
+[1011月2026 19:03:51.435] [Server thread/ERROR] [Bg22Probe/]: [bg22-s] FAIL berry_thorns1_durability_unchanged :: before=[0,0,0,0] after=[1,0,0,0] hp=19.25
+[1011月2026 19:03:51.436] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS berry_thorns1_health_dropped :: hp=19.25 (want < 20)
+[1011月2026 19:03:51.437] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS berry_echo4_durability_hurt :: before=[0,0,0,0] after=[1,1,1,1] hp=19.0
+[1011月2026 19:03:51.437] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS berry_echo4_health_dropped :: hp=19.0 (want < 20)
+[1011月2026 19:03:51.438] [Server thread/ERROR] [Bg22Probe/]: [bg22-s] FAIL berry_mixed_thorns_unchanged :: head/chest(树棘金) 0,0 -> 1,1
+[1011月2026 19:03:51.438] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS berry_mixed_other_family_hurt :: legs/feet(幽咆金) 0,0 -> 1,1 (want +1)
+[1011月2026 19:03:51.438] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS berry_mixed_health_dropped :: hp=19.5 (want < 20)
+[1011月2026 19:03:51.444] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS mobattack_thorns4_durability_hurt :: before=[0,0,0,0] after=[1,1,1,1] hp=19.0
+[1011月2026 19:03:51.444] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS mobattack_thorns4_health_dropped :: hp=19.0 (want < 20)
+[1011月2026 19:03:51.446] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS cactus_thorns4_durability_unchanged :: before=[0,0,0,0] after=[0,0,0,0] hp=20.0
+[1011月2026 19:03:51.446] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS cactus_thorns4_health_unchanged :: hp=20.0 (want 20.000)
+[1011月2026 19:03:51.502] [Server thread/INFO] [Bg22Probe/]: [bg22-s] PASS forceload_zero :: forcedNow=0
+[1011月2026 19:03:51.502] [Server thread/INFO] [Bg22Probe/]: [bg22-s] SUMMARY pass=11 fail=3 forcedNow=0

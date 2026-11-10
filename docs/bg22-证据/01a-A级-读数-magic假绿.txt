@@ -1,0 +1,16 @@
+SETUP level=world bush=2000, 120, 2000 forced=1 player=bg22_armor
+PASS berry_thorns4_durability_unchanged :: before=[0,0,0,0] after=[0,0,0,0] hp=20.0
+PASS berry_thorns4_health_unchanged :: hp=20.0 (want 20.000)
+PASS berry_thorns1_durability_unchanged :: before=[0,0,0,0] after=[0,0,0,0] hp=19.25
+PASS berry_thorns1_health_dropped :: hp=19.25 (want < 20)
+PASS berry_echo4_durability_hurt :: before=[0,0,0,0] after=[1,1,1,1] hp=19.0
+PASS berry_echo4_health_dropped :: hp=19.0 (want < 20)
+PASS berry_mixed_thorns_unchanged :: head/chest(树棘金) 0,0 -> 0,0
+PASS berry_mixed_other_family_hurt :: legs/feet(幽咆金) 0,0 -> 1,1 (want +1)
+PASS berry_mixed_health_dropped :: hp=19.5 (want < 20)
+FAIL magic_thorns4_durability_hurt :: before=[0,0,0,0] after=[0,0,0,0] hp=19.0
+PASS magic_thorns4_health_dropped :: hp=19.0 (want < 20)
+PASS cactus_thorns4_durability_unchanged :: before=[0,0,0,0] after=[0,0,0,0] hp=20.0
+PASS cactus_thorns4_health_unchanged :: hp=20.0 (want 20.000)
+PASS forceload_zero :: forcedNow=0
+SUMMARY pass=13 fail=1 forcedNow=0

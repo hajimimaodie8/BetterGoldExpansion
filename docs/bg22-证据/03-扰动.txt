@@ -1,0 +1,12 @@
+bg22 扰动矩阵（基线 MetalEvents.java SHA256 = 770AA579D08B49967B8A158B043B9AF803DEE165F1169A54861C17AC0AE332C0）
+
+A_no_subscribe 改什么=no_subscribe  期望=红  exit=1  tags=['bg22-handler']  [bg22-summary] 2026-11-10 树棘金盔甲不因甜浆果丛伤害掉耐久：检查 23 项，问题 1 条：['处理器没有 @SubscribeEvent（不会被事件总线注册） [bg22-handler]']
+    [bg-data-fail] 问题合计 1 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    复原：MetalEvents=770AA579D08B49967B8A158B043B9AF803DEE165F1169A54861C17AC0AE332C0(==基线? True)
+B_predicate_cactus 改什么=predicate_cactus  期望=红  exit=1  tags=['bg22-only-berry', 'bg22-source']  [bg22-summary] 2026-11-10 树棘金盔甲不因甜浆果丛伤害掉耐久：检查 23 项，问题 2 条：['判据不是 isSweetBerryBush（伤害源） [bg22-source]', '甜浆果处理器里混进了仙人掌判据（别的伤害源必须照扣） [bg22-only-berry]']
+    [bg-data-fail] 问题合计 2 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    复原：MetalEvents=770AA579D08B49967B8A158B043B9AF803DEE165F1169A54861C17AC0AE332C0(==基线? True)
+C_comment_only 改什么=comment_only  期望=绿  exit=0  tags=[]  [bg22-summary] 2026-11-10 树棘金盔甲不因甜浆果丛伤害掉耐久：检查 23 项，问题 0 条
+    [bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+    复原：MetalEvents=770AA579D08B49967B8A158B043B9AF803DEE165F1169A54861C17AC0AE332C0(==基线? True)
+SUMMARY cases=3 all_ok=True
