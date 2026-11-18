@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SPS",
+    "SPS"
+  ],
+  "key": {
+    "P": {
+      "item": "bettergold:gold_silk_planks"
+    },
+    "S": {
+      "item": "bettergold:gold_silk_stick"
+    }
+  },
+  "result": {
+    "id": "bettergold:gold_silk_fence_gate",
+    "count": 1
+  }
+}

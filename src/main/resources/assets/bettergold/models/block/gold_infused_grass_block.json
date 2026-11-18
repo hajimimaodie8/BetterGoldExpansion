@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "bettergold:block/gold_infused_grass_block_top",
+    "side": "bettergold:block/gold_infused_grass_block_side",
+    "bottom": "bettergold:block/gold_infused_dirt"
+  }
+}

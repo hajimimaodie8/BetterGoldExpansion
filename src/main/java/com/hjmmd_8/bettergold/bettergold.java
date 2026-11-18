@@ -74,6 +74,8 @@ public class bettergold {
         AllBlocks.BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         AllItems.ITEMS.register(modEventBus);
+        // 1.8（bg25）：专属粒子类型（金丝树叶 12 帧 / 金骨粉与浮现之尘催熟粒子）
+        com.hjmmd_8.bettergold.registry.AllParticles.PARTICLE_TYPES.register(modEventBus);
         // 新约 1.4：三套新金属（烈燃金 / 巫毒金 / 结雷金）通过 MetalFamily 一次性注册
         com.hjmmd_8.bettergold.material.AllMetals.bootstrap();
         // 1.7（bg-n10 轮4）：混沌金专属物品 —— 混沌禁果 + 混沌金附魔书（注册进同一张 AllItems.ITEMS）。

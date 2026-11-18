@@ -61,7 +61,7 @@ public class GoldInfusedDirtBlock extends Block {
     @Override
     public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos,
                                     Direction direction, BlockState plant) {
-        if (plant.is(AllBlocks.GOLDEN_ROSE_BUSH.get())) {
+        if (GoldPlantSupport.isGoldPlant(plant)) {
             return TriState.TRUE;
         }
         return TriState.DEFAULT;

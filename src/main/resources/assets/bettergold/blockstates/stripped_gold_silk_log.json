@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "bettergold:block/stripped_gold_silk_log"
+    },
+    "axis=x": {
+      "model": "bettergold:block/stripped_gold_silk_log",
+      "x": 90,
+      "y": 90
+    },
+    "axis=z": {
+      "model": "bettergold:block/stripped_gold_silk_log",
+      "x": 90
+    }
+  }
+}

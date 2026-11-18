@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button_inventory",
+  "textures": {
+    "texture": "bettergold:block/gold_silk_planks"
+  }
+}

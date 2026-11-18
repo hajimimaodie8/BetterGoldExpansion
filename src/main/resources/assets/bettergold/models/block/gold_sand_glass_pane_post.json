@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_glass_pane_post",
+  "textures": {
+    "edge": "bettergold:block/gold_sand_glass_pane",
+    "pane": "bettergold:block/gold_sand_glass_pane"
+  }
+}

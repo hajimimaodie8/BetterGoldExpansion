@@ -627,14 +627,122 @@ if checked <= 0:
 #   旧形态原文留档（未删）：
 #     `_problem_total = sum(len(_x) for _x in (...) forms_problems))`
 #     `sys.exit(1 if (... or palette_hash_problems or forms_problems) else 0)`
+# ==================== 1.8 阶段 1（bg25）：模型 / 方块状态 / 粒子资产 ====================
+bg25_asset_problems: list[str] = []
+_bg25_asset_checked = 0
+_BG25_ASSETS = ASSETS
+_BG25_BLOCKS = [
+    "gold_infused_grass_block", "gold_infused_dirt_path", "gold_sand",
+    "gold_sand_glass", "gold_sand_glass_pane",
+    "gold_silk_log", "gold_silk_wood", "stripped_gold_silk_log",
+    "stripped_gold_silk_wood", "gold_silk_planks", "gold_silk_stairs",
+    "gold_silk_slab", "gold_silk_fence", "gold_silk_fence_gate",
+    "gold_silk_door", "gold_silk_trapdoor", "gold_silk_button",
+    "gold_silk_pressure_plate", "gold_silk_leaves", "gold_silk_sapling",
+    "gold_short_grass", "gold_tall_grass", "gold_marigold", "gold_tulip",
+]
+
+
+def _bg25a_bad(msg: str) -> None:
+    bg25_asset_problems.append(msg + " [bg25-assets]")
+
+
+for _n in _BG25_BLOCKS:
+    _bg25_asset_checked += 2
+    if not (_BG25_ASSETS / "blockstates" / (_n + ".json")).is_file():
+        _bg25a_bad("缺 blockstates/%s.json" % _n)
+    if not (_BG25_ASSETS / "models" / "item" / (_n + ".json")).is_file():
+        _bg25a_bad("缺 models/item/%s.json" % _n)
+
+# 金沙玻璃：16 个状态 / 16 个模型（1 无连接 + 15 连接）
+_glass_state = _BG25_ASSETS / "blockstates" / "gold_sand_glass.json"
+try:
+    _gs = json.loads(_glass_state.read_text(encoding="utf-8"))
+    _bg25_asset_checked += 2
+    if len(_gs.get("variants", {})) != 16:
+        _bg25a_bad("金沙玻璃 blockstate 不是 16 态（实际 %d）" % len(_gs.get("variants", {})))
+    for _v in _gs.get("variants", {}).values():
+        _bg25_asset_checked += 1
+        _m = _v.get("model", "")
+        if _m.startswith("bettergold:block/"):
+            if not (_BG25_ASSETS / "models" / "block" / (_m.split("/", 1)[1] + ".json")).is_file():
+                _bg25a_bad("金沙玻璃引用了不存在的模型 %s" % _m)
+except Exception as _e:
+    _bg25a_bad("金沙玻璃 blockstate 读不了：%s" % _e)
+
+# 复杂形状的模型个数
+for _kind, _prefix, _count in (
+        ("门", "gold_silk_door_", 8),
+        ("活板门", "gold_silk_trapdoor", 3),
+        ("楼梯", "gold_silk_stairs", 3),
+        ("台阶", "gold_silk_slab", 2),
+        ("栅栏", "gold_silk_fence", 3),
+        ("栅栏门", "gold_silk_fence_gate", 4),
+        ("按钮", "gold_silk_button", 3),
+        ("压力板", "gold_silk_pressure_plate", 2),
+        ("玻璃板", "gold_sand_glass_pane", 5)):
+    _bg25_asset_checked += 1
+    _hits = list((_BG25_ASSETS / "models" / "block").glob(_prefix + "*.json"))
+    if len(_hits) < _count:
+        _bg25a_bad("%s 模型只有 %d 个（期望 >= %d，前缀 %s）" % (_kind, len(_hits), _count, _prefix))
+
+# 粒子定义 / 12 帧 / 贴图
+_bg25_asset_checked += 2
+_particle_leaves = _BG25_ASSETS / "particles" / "gold_silk_leaves.json"
+_particle_growth = _BG25_ASSETS / "particles" / "golden_growth.json"
+for _p in (_particle_leaves, _particle_growth):
+    if not _p.is_file():
+        _bg25a_bad("缺粒子定义 %s" % _p.name)
+if _particle_leaves.is_file():
+    _pl = json.loads(_particle_leaves.read_text(encoding="utf-8"))
+    _bg25_asset_checked += 1
+    if len(_pl.get("textures", [])) != 12:
+        _bg25a_bad("金丝落叶粒子不是 12 帧")
+    for _i in range(12):
+        _bg25_asset_checked += 1
+        if not (_BG25_ASSETS / "textures" / "particle" / ("gold_silk_leaves_%d.png" % _i)).is_file():
+            _bg25a_bad("缺 particle/gold_silk_leaves_%d.png" % _i)
+_bg25_asset_checked += 1
+if not (_BG25_ASSETS / "textures" / "particle" / "golden_growth.png").is_file():
+    _bg25a_bad("缺 particle/golden_growth.png")
+
+# 关键贴图存在 / 尺寸（1:1 已由 data 关卡按认亲表逐字节核对）
+for _rel, _size in (
+        ("textures/block/gold_infused_grass_block_top.png", (16, 16)),
+        ("textures/block/gold_infused_grass_block_side.png", (16, 16)),
+        ("textures/block/gold_sand.png", (16, 16)),
+        ("textures/block/gold_sand_glass.png", (16, 16)),
+        ("textures/block/gold_sand_glass_pane.png", (16, 16)),
+        ("textures/block/gold_silk_door_top.png", (16, 16)),
+        ("textures/block/gold_silk_door_bottom.png", (16, 16)),
+        ("textures/item/gold_silk_door.png", (16, 16)),
+        ("textures/item/el_dorado_dust.png", (16, 16))):
+    _bg25_asset_checked += 2
+    _p = _BG25_ASSETS / _rel
+    if not _p.is_file():
+        _bg25a_bad("缺 %s" % _rel)
+    else:
+        try:
+            from PIL import Image as _Img25
+            if _Img25.open(_p).size != _size:
+                _bg25a_bad("%s 尺寸不是 %s" % (_rel, _size))
+        except Exception as _e:
+            _bg25a_bad("%s 读不了：%s" % (_rel, _e))
+
+if _bg25_asset_checked < 40:
+    _bg25a_bad("本段只跑了 %d 条判定（必须 >= 40）" % _bg25_asset_checked)
+print("[bg25-assets-summary] 1.8 阶段 1 资产：检查 %d 项，问题 %d 条%s"
+      % (_bg25_asset_checked, len(bg25_asset_problems),
+         "" if not bg25_asset_problems else "：" + str(bg25_asset_problems[:6])))
+
 _problem_total = sum(len(_x) for _x in (
     bad_json, missing_tex, missing_special, missing_weapon_assets, missing_blank_assets,
     size_bad, trident_problems, mixin_problems, blank_tex_hash_problems, palette_hash_problems,
-    forms_problems, tremble_tex_problems))
+    forms_problems, tremble_tex_problems, bg25_asset_problems))
 print(f"[bg-assets-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
       f"（契约：0 绿 / 1 有问题 / 2 前置坏）")
 
 sys.exit(1 if (bad_json or missing_tex or missing_special or missing_weapon_assets
                or missing_blank_assets or size_bad or trident_problems or mixin_problems
                or blank_tex_hash_problems or palette_hash_problems or forms_problems
-               or tremble_tex_problems) else 0)
+               or tremble_tex_problems or bg25_asset_problems) else 0)

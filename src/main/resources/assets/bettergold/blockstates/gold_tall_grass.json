@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "bettergold:block/gold_tall_grass_bottom"
+    },
+    "half=upper": {
+      "model": "bettergold:block/gold_tall_grass_top"
+    }
+  }
+}

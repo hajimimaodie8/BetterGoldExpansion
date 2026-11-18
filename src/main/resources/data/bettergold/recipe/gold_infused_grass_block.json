@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "GDG",
+    " G "
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "D": {
+      "item": "minecraft:grass_block"
+    }
+  },
+  "result": {
+    "id": "bettergold:gold_infused_grass_block",
+    "count": 1
+  }
+}

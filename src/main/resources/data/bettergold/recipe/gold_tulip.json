@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " N ",
+    "NTN",
+    " N "
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:gold_nugget"
+    },
+    "T": [
+      {
+        "item": "minecraft:red_tulip"
+      },
+      {
+        "item": "minecraft:orange_tulip"
+      },
+      {
+        "item": "minecraft:white_tulip"
+      },
+      {
+        "item": "minecraft:pink_tulip"
+      }
+    ]
+  },
+  "result": {
+    "id": "bettergold:gold_tulip",
+    "count": 1
+  }
+}

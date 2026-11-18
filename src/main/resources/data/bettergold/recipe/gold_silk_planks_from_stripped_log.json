@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "bettergold:stripped_gold_silk_log"
+    }
+  ],
+  "result": {
+    "id": "bettergold:gold_silk_planks",
+    "count": 4
+  }
+}

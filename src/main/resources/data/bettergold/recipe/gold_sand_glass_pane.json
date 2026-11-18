@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "bettergold:gold_sand_glass"
+    }
+  },
+  "result": {
+    "id": "bettergold:gold_sand_glass_pane",
+    "count": 16
+  }
+}

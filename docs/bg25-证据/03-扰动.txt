@@ -1,0 +1,13 @@
+bg25 扰动矩阵（3 红 + 1 绿）
+
+case	exit	hit	verdict
+drop_rate_wrong	1	hit	ok
+drop_rate_wrong/restore	restored	57572E171B045A99	ok
+creative_order_wrong	1	hit	ok
+creative_order_wrong/restore	restored	1613D5D8AFCA1B59	ok
+texture_sha_wrong	1	hit	ok
+texture_sha_wrong/restore	restored	E0A0EA93F0CE48D0	ok
+comment_only	0/0	no_tag	ok
+comment_only/restore	restored	0411DED5A6825826	ok
+
+SUMMARY cases=8 ok=8 bad=0

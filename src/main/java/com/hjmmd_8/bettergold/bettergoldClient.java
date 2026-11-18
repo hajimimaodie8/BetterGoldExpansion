@@ -136,9 +136,26 @@ public class bettergoldClient {
                 com.hjmmd_8.bettergold.registry.AllMenus.STURDYGOLD_ANVIL.getId());
     }
 
+    /**
+     * 1.8（bg25）：两个专属粒子的 provider。
+     *
+     * <p>都走 {@code registerSpriteSet}（json 定义里的贴图清单在
+     * {@code assets/bettergold/particles/*.json}）：金丝树叶 12 帧、催熟粒子 1 帧。
+     * 事件是 mod 总线、只在客户端派发，所以方法放在本类（{@code @EventBusSubscriber(Dist.CLIENT)}）。</p>
+     */
     @SubscribeEvent
-    static void onClientSetup(FMLClientSetupEvent event) {
-        // Some client setup code
+    static void onRegisterParticleProviders(
+            net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(
+                com.hjmmd_8.bettergold.registry.AllParticles.GOLD_SILK_LEAVES.get(),
+                com.hjmmd_8.bettergold.client.GoldSilkLeafParticle.Provider::new);
+        event.registerSpriteSet(
+                com.hjmmd_8.bettergold.registry.AllParticles.GOLDEN_GROWTH.get(),
+                com.hjmmd_8.bettergold.client.GoldenGrowthParticle.Provider::new);
+    }
+
+    @SubscribeEvent
+    static void onClientSetup(FMLClientSetupEvent event) {        // Some client setup code
         bettergold.LOGGER.info("HELLO FROM CLIENT SETUP");
         bettergold.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
 
@@ -204,6 +221,23 @@ public class bettergoldClient {
             // 根因就是本段开头那句注释：没注册 cutout 的透明方块会被 solid 层画成黑色。
             // 照上面 GOLDEN_*_CROP 三行同形补一行（`TallFlowerBlock` 的上下两半共用同一个 block 实例 ⇒ 一行够）。
             ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLDEN_ROSE_BUSH.get(), cutout);
+
+            // ---------- 1.8（bg25）：金沙玻璃 / 玻璃板 / 金丝树叶 / 金花草 ----------
+            // 玻璃与玻璃板是半透明（素材 alpha 64/191），必须 translucent；否则 solid 会把
+            // 透明像素画成黑块（作者说的「大黑格」正是这一类渲染层问题的典型症状）。
+            RenderType translucent = RenderType.translucent();
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_SAND_GLASS.get(), translucent);
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_SAND_GLASS_PANE.get(), translucent);
+
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_SILK_LEAVES.get(), cutoutMipped);
+            // 花草 / 树苗 / 门 / 活板门：cross 或带镂空的模型必须 cutout
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_SILK_SAPLING.get(), cutout);
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_SHORT_GRASS.get(), cutout);
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_TALL_GRASS.get(), cutout);
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_MARIGOLD.get(), cutout);
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_TULIP.get(), cutout);
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_SILK_DOOR.get(), cutout);
+            ItemBlockRenderTypes.setRenderLayer(AllBlocks.GOLD_SILK_TRAPDOOR.get(), cutout);
         });
     }
 }

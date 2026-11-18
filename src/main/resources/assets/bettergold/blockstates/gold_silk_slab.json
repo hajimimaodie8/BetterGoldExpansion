@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "bettergold:block/gold_silk_slab"
+    },
+    "type=double": {
+      "model": "bettergold:block/gold_silk_planks"
+    },
+    "type=top": {
+      "model": "bettergold:block/gold_silk_slab_top"
+    }
+  }
+}

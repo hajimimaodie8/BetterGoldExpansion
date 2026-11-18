@@ -1,0 +1,551 @@
+package com.hjmmd_8.bettergold.probe.bg25;
+
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.block.GoldSandGlassBlock;
+import com.hjmmd_8.bettergold.registry.AllBlocks;
+import com.hjmmd_8.bettergold.registry.AllItems;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.SuspiciousStewEffects;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 1.8 阶段 1（bg25）A 级探针 —— <b>收尾整块删除</b>。
+ *
+ * <p>全部动作都挂在<b>真 {@link ServerPlayer}</b> 上（`new ServerPlayer` + `addNewPlayer`），
+ * 覆盖作者 §A–§D 的 10 组行为：放草方块 / 金染土→草扩散 / 锹铲土径 / 金骨粉催树 /
+ * 浮现之尘 10 种转换 + 长植物 / 树叶多次采样含时运 / 草丛多次采样含时运 /
+ * 金盏花站上去去反胃 + 两种炖菜 / 金染草方块可放金植物 / 金沙玻璃 16 态连接。</p>
+ *
+ * <p>开关：{@code run/bg25-probe.enabled}；读数：{@code run/probe/bg25/readings.txt}；
+ * forceload 收尾撤销；{@code halt(false)} 只调一次。</p>
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class Bg25Probe {
+
+    private static final String TAG = "[bg25-probe]";
+    private static final Path SWITCH = Path.of("bg25-probe.enabled");
+    private static final Path OUT = Path.of("probe", "bg25", "readings.txt");
+    private static final Logger LOG = LoggerFactory.getLogger("Bg25Probe");
+
+    private static final BlockPos BASE = new BlockPos(2000, 120, 2000);
+    private static final int FORCED_X = BASE.getX() >> 4;
+    private static final int FORCED_Z = BASE.getZ() >> 4;
+
+    private static final List<String> LINES = new ArrayList<>();
+    private static int passes;
+    private static int fails;
+    private static int phase;
+    private static int tick;
+    private static boolean done;
+    private static ServerLevel level;
+    private static ServerPlayer man;
+
+    private Bg25Probe() {
+    }
+
+    private static void check(String id, boolean ok, String detail) {
+        if (ok) {
+            passes++;
+            LINES.add("PASS " + id + " :: " + detail);
+            LOG.info("{} PASS {} :: {}", TAG, id, detail);
+        } else {
+            fails++;
+            LINES.add("FAIL " + id + " :: " + detail);
+            LOG.error("{} FAIL {} :: {}", TAG, id, detail);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (done) {
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        if (phase == 0) {
+            if (!Files.isRegularFile(SWITCH)) {
+                return;
+            }
+            try {
+                setup(server);
+                phase = 1;
+                tick = 0;
+            } catch (Throwable t) {
+                LOG.error("{} setup threw", TAG, t);
+                check("probe_setup", false, String.valueOf(t));
+                finish(server);
+            }
+            return;
+        }
+        if (phase == 1) {
+            if (++tick < 10) {
+                return;
+            }
+            try {
+                runCases();
+            } catch (Throwable t) {
+                LOG.error("{} measure threw", TAG, t);
+                check("probe_measure", false, String.valueOf(t));
+            }
+            phase = 2;
+            tick = 0;
+            return;
+        }
+        if (phase == 2) {
+            if (++tick < 3) {
+                return;
+            }
+            finish(server);
+        }
+    }
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        level.setChunkForced(FORCED_X, FORCED_Z, true);
+        level.getChunk(FORCED_X, FORCED_Z);
+        // 17×5×17 的测试平台：石头在 y-1，y..y+4 全空气（树高 20 另清一块）
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -8; dz <= 8; dz++) {
+                level.setBlockAndUpdate(BASE.offset(dx, -1, dz), Blocks.STONE.defaultBlockState());
+                for (int dy = 0; dy <= 4; dy++) {
+                    level.setBlockAndUpdate(BASE.offset(dx, dy, dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        // 顶光：服务器世界这一块可能在洞里，草扩散 / 骨粉 / 浮现之尘都要求亮度 >= 9。
+        // 在平台上方 4 格放荧石（避开树的清空范围），保证 A 级读数是行为本身而不是光照假阴性。
+        level.setBlockAndUpdate(BASE.above(4), Blocks.GLOWSTONE.defaultBlockState());
+        level.setBlockAndUpdate(BASE.offset(0, 4, -6), Blocks.GLOWSTONE.defaultBlockState());
+        level.setBlockAndUpdate(BASE.offset(4, 4, -3), Blocks.GLOWSTONE.defaultBlockState());
+        man = player(server, "bg25_probe");
+        man.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+        man.setHealth(20.0F);
+        level.addNewPlayer(man);
+        LINES.add("SETUP level=" + levelName(server) + " base=" + BASE.toShortString()
+                + " forced=" + level.getForcedChunks().size()
+                + " player=" + man.getGameProfile().getName());
+        LOG.info("{} setup level={} base={} forced={}", TAG, levelName(server),
+                BASE.toShortString(), level.getForcedChunks().size());
+    }
+
+    private static String levelName(MinecraftServer server) {
+        try {
+            Object data = server.overworld().getLevelData();
+            var m = data.getClass().getMethod("getLevelName");
+            return String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            return "<unreadable:" + t.getClass().getSimpleName() + ">";
+        }
+    }
+
+    private static ServerPlayer player(MinecraftServer server, String name) {
+        GameProfile profile = new GameProfile(
+                UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name);
+        ServerPlayer p = new ServerPlayer(server, server.overworld(), profile,
+                ClientInformation.createDefault());
+        try {
+            p.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                    server,
+                    new net.minecraft.network.Connection(
+                            net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                    p,
+                    net.minecraft.server.network.CommonListenerCookie.createInitial(profile, false));
+        } catch (Throwable t) {
+            LOG.warn("{} dummy connection failed: {}", TAG, String.valueOf(t));
+        }
+        return p;
+    }
+
+    // ==================== 用例 ====================
+
+    private static void runCases() {
+        testPlaceGrassBlock();
+        testDirtToGrassAndSpread();
+        testShovelPath();
+        testBoneMealTree();
+        testDustConversions();
+        testLeavesDrops();
+        testGrassDrops();
+        testFlowerEffects();
+        testGoldPlantsOnGoldGrass();
+        testGlassConnections();
+    }
+
+    private static void testPlaceGrassBlock() {
+        BlockPos below = BASE.offset(-4, 0, -4);
+        level.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
+        BlockPos pos = below.above();
+        level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+        man.setItemInHand(InteractionHand.MAIN_HAND,
+                new ItemStack(AllBlocks.GOLD_INFUSED_GRASS_BLOCK_ITEM.get()));
+        man.getMainHandItem().useOn(context(below, Direction.UP));
+        check("place_gold_grass", level.getBlockState(pos).is(AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get()),
+                "state=" + level.getBlockState(pos));
+    }
+
+    private static void testDirtToGrassAndSpread() {
+        BlockPos source = BASE.offset(-2, 0, -4);
+        level.setBlockAndUpdate(source, Blocks.STONE.defaultBlockState());
+        BlockPos dirt = source.above();
+        level.setBlockAndUpdate(dirt, AllBlocks.GOLD_INFUSED_DIRT.get().defaultBlockState());
+        level.setBlockAndUpdate(dirt.above(), Blocks.AIR.defaultBlockState());
+        // 在土旁边放一块草，让草的 randomTick 去扩散
+        BlockPos grass = dirt.east();
+        level.setBlockAndUpdate(grass, AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get().defaultBlockState());
+        level.setBlockAndUpdate(grass.above(), Blocks.AIR.defaultBlockState());
+        BlockState gs = level.getBlockState(grass);
+        for (int i = 0; i < 2000; i++) {
+            gs.randomTick(level, grass, level.getRandom());
+            if (level.getBlockState(dirt).is(AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get())) {
+                break;
+            }
+        }
+        check("dirt_to_grass", level.getBlockState(dirt).is(AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get()),
+                "adjacent=" + level.getBlockState(dirt));
+        // 反向：草被压住 2000 tick 后回金染土
+        BlockPos covered = BASE.offset(0, 0, -4);
+        level.setBlockAndUpdate(covered, AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get().defaultBlockState());
+        level.setBlockAndUpdate(covered.above(), Blocks.STONE.defaultBlockState());
+        for (int i = 0; i < 2000; i++) {
+            level.getBlockState(covered).randomTick(level, covered, level.getRandom());
+            if (level.getBlockState(covered).is(AllBlocks.GOLD_INFUSED_DIRT.get())) {
+                break;
+            }
+        }
+        check("grass_to_dirt_when_covered",
+                level.getBlockState(covered).is(AllBlocks.GOLD_INFUSED_DIRT.get()),
+                "state=" + level.getBlockState(covered));
+    }
+
+    private static void testShovelPath() {
+        BlockPos below = BASE.offset(2, 0, -4);
+        level.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(below.above(),
+                AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get().defaultBlockState());
+        level.setBlockAndUpdate(below.above(2), Blocks.AIR.defaultBlockState());
+        man.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SHOVEL));
+        man.getMainHandItem().useOn(context(below.above(), Direction.UP));
+        check("shovel_grass_to_path",
+                level.getBlockState(below.above()).is(AllBlocks.GOLD_INFUSED_DIRT_PATH.get()),
+                "state=" + level.getBlockState(below.above()));
+        // 金染土也铲
+        BlockPos dirt = BASE.offset(4, 0, -4);
+        level.setBlockAndUpdate(dirt, AllBlocks.GOLD_INFUSED_DIRT.get().defaultBlockState());
+        level.setBlockAndUpdate(dirt.above(), Blocks.AIR.defaultBlockState());
+        man.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SHOVEL));
+        man.getMainHandItem().useOn(context(dirt, Direction.UP));
+        check("shovel_dirt_to_path",
+                level.getBlockState(dirt).is(AllBlocks.GOLD_INFUSED_DIRT_PATH.get()),
+                "state=" + level.getBlockState(dirt));
+    }
+
+    private static void testBoneMealTree() {
+        BlockPos dirt = BASE.offset(-6, 0, 4);
+        level.setBlockAndUpdate(dirt, AllBlocks.GOLD_INFUSED_DIRT.get().defaultBlockState());
+        // 清 21 格高的空间
+        for (int dy = 1; dy <= 21; dy++) {
+            for (int dx = -5; dx <= 5; dx++) {
+                for (int dz = -5; dz <= 5; dz++) {
+                    level.setBlockAndUpdate(dirt.offset(dx, dy, dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        BlockPos sapling = dirt.above();
+        level.setBlockAndUpdate(sapling, AllBlocks.GOLD_SILK_SAPLING.get().defaultBlockState());
+        man.setItemInHand(InteractionHand.MAIN_HAND,
+                new ItemStack(AllItems.GOLDEN_BONE_MEAL.get()));
+        man.getMainHandItem().useOn(context(sapling, Direction.UP));
+        int logs = 0;
+        int leaves = 0;
+        int vanilla = 0;
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dy = 0; dy <= 22; dy++) {
+                for (int dz = -6; dz <= 6; dz++) {
+                    BlockState s = level.getBlockState(dirt.offset(dx, dy, dz));
+                    if (s.is(AllBlocks.GOLD_SILK_LOG.get())) logs++;
+                    if (s.is(AllBlocks.GOLD_SILK_LEAVES.get())) leaves++;
+                    if (s.is(Blocks.OAK_LOG) || s.is(Blocks.OAK_LEAVES)) vanilla++;
+                }
+            }
+        }
+        check("bone_meal_large_oak_logs", logs >= 5, "logs=" + logs);
+        check("bone_meal_large_oak_leaves", leaves >= 10, "leaves=" + leaves);
+        check("bone_meal_tree_is_gold_silk", vanilla == 0, "vanillaOak=" + vanilla);
+    }
+
+    private static void testDustConversions() {
+        Object[][] cases = new Object[][]{
+                {Blocks.GRASS_BLOCK, AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get()},
+                {Blocks.DIRT, AllBlocks.GOLD_INFUSED_DIRT.get()},
+                {Blocks.PODZOL, AllBlocks.GOLD_INFUSED_DIRT.get()},
+                {Blocks.MYCELIUM, AllBlocks.GOLD_INFUSED_DIRT.get()},
+                {Blocks.COARSE_DIRT, AllBlocks.GOLD_INFUSED_DIRT.get()},
+                {Blocks.ROOTED_DIRT, AllBlocks.GOLD_INFUSED_DIRT.get()},
+                {Blocks.MUD, AllBlocks.GOLD_INFUSED_DIRT.get()},
+                {Blocks.DIRT_PATH, AllBlocks.GOLD_INFUSED_DIRT_PATH.get()},
+                {Blocks.FARMLAND, AllBlocks.GOLD_INFUSED_FARMLAND.get()},
+                {Blocks.SAND, AllBlocks.GOLD_SAND.get()},
+        };
+        int converted = 0;
+        int plants = 0;
+        for (int i = 0; i < cases.length; i++) {
+            Block source = (Block) cases[i][0];
+            Block target = (Block) cases[i][1];
+            BlockPos pos = BASE.offset(0 + (i % 5) * 2, 0, -6 + (i / 5) * 3);
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    level.setBlockAndUpdate(pos.offset(dx, -1, dz), Blocks.STONE.defaultBlockState());
+                    level.setBlockAndUpdate(pos.offset(dx, 0, dz), Blocks.AIR.defaultBlockState());
+                    level.setBlockAndUpdate(pos.offset(dx, 1, dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+            level.setBlockAndUpdate(pos, source.defaultBlockState());
+            man.setItemInHand(InteractionHand.MAIN_HAND,
+                    new ItemStack(AllItems.EL_DORADO_DUST.get()));
+            man.getMainHandItem().useOn(context(pos, Direction.UP));
+            boolean ok = level.getBlockState(pos).is(target);
+            if (ok) converted++;
+            check("dust_convert_" + i + "_" + source.builtInRegistryHolder().key().location().getPath(),
+                    ok, "got=" + level.getBlockState(pos) + " want=" + target);
+            if (i == 0) {
+                for (int dx = -3; dx <= 3; dx++) {
+                    for (int dz = -3; dz <= 3; dz++) {
+                        for (int dy = 0; dy <= 2; dy++) {
+                            BlockState s = level.getBlockState(pos.offset(dx, dy, dz));
+                            if (com.hjmmd_8.bettergold.block.GoldPlantSupport.isGoldPlant(s)) plants++;
+                        }
+                    }
+                }
+            }
+        }
+        check("dust_conversions_10", converted == 10, "converted=" + converted + "/10");
+        check("dust_grows_gold_plants", plants > 0, "plantsNearGrass=" + plants);
+    }
+
+    private static void testLeavesDrops() {
+        BlockPos pos = BASE.offset(-6, 0, -2);
+        level.setBlockAndUpdate(pos, AllBlocks.GOLD_SILK_LEAVES.get().defaultBlockState());
+        BlockState state = level.getBlockState(pos);
+        ItemStack fortune = new ItemStack(Items.DIAMOND_PICKAXE);
+        var ench = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        fortune.enchant(ench.getHolderOrThrow(Enchantments.FORTUNE), 3);
+
+        int sticks0 = 0, sticks3 = 0, apples0 = 0, apples3 = 0, ench0 = 0, ench3 = 0;
+        int samples = 6000;
+        for (int i = 0; i < samples; i++) {
+            sticks0 += count(Block.getDrops(state, level, pos, null, man, ItemStack.EMPTY),
+                    AllItems.GOLD_SILK_STICK.get());
+            sticks3 += count(Block.getDrops(state, level, pos, null, man, fortune),
+                    AllItems.GOLD_SILK_STICK.get());
+            apples0 += count(Block.getDrops(state, level, pos, null, man, ItemStack.EMPTY),
+                    Items.GOLDEN_APPLE);
+            apples3 += count(Block.getDrops(state, level, pos, null, man, fortune),
+                    Items.GOLDEN_APPLE);
+            ench0 += count(Block.getDrops(state, level, pos, null, man, ItemStack.EMPTY),
+                    Items.ENCHANTED_GOLDEN_APPLE);
+            ench3 += count(Block.getDrops(state, level, pos, null, man, fortune),
+                    Items.ENCHANTED_GOLDEN_APPLE);
+        }
+        check("leaves_stick_drop", sticks0 > 0, "stick/6000=" + sticks0);
+        check("leaves_apple_drop", apples0 > 0, "apple/6000=" + apples0);
+        check("leaves_enchanted_apple_drop", ench3 > 0, "enchanted/6000=" + ench3);
+        check("leaves_fortune_boosts_stick", sticks3 > sticks0, sticks0 + " -> " + sticks3);
+        check("leaves_fortune_boosts_apple", apples3 > apples0, apples0 + " -> " + apples3);
+        check("leaves_fortune_boosts_enchanted", ench3 > ench0, ench0 + " -> " + ench3);
+        // 剪刀掉自身
+        int self = 0;
+        for (ItemStack s : Block.getDrops(state, level, pos, null, man, new ItemStack(Items.SHEARS))) {
+            if (s.is(AllBlocks.GOLD_SILK_LEAVES_ITEM.get())) self += s.getCount();
+        }
+        check("leaves_shears_self", self == 1, "self=" + self);
+        // 不掉闪耀藤条
+        boolean vine = false;
+        for (ItemStack s : Block.getDrops(state, level, pos, null, man, fortune)) {
+            if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(s.getItem())
+                    .getPath().contains("glittering_vine")) vine = true;
+        }
+        check("leaves_no_glittering_vine", !vine, "vine=" + vine);
+    }
+
+    private static void testGrassDrops() {
+        BlockPos pos = BASE.offset(-6, 0, 0);
+        level.setBlockAndUpdate(pos, AllBlocks.GOLD_SHORT_GRASS.get().defaultBlockState());
+        BlockState state = level.getBlockState(pos);
+        ItemStack fortune = new ItemStack(Items.DIAMOND_PICKAXE);
+        var ench = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        fortune.enchant(ench.getHolderOrThrow(Enchantments.FORTUNE), 3);
+        int wheat0 = 0, wheat3 = 0, egg0 = 0, egg3 = 0;
+        int samples = 4000;
+        for (int i = 0; i < samples; i++) {
+            wheat0 += count(Block.getDrops(state, level, pos, null, man, ItemStack.EMPTY),
+                    AllItems.GOLDEN_WHEAT_SEEDS.get());
+            wheat3 += count(Block.getDrops(state, level, pos, null, man, fortune),
+                    AllItems.GOLDEN_WHEAT_SEEDS.get());
+            egg0 += count(Block.getDrops(state, level, pos, null, man, ItemStack.EMPTY),
+                    AllItems.GOLDEN_EGGPLANT_SEEDS.get());
+            egg3 += count(Block.getDrops(state, level, pos, null, man, fortune),
+                    AllItems.GOLDEN_EGGPLANT_SEEDS.get());
+        }
+        check("grass_wheat_seed_drop", wheat0 > 0, "wheat/4000=" + wheat0);
+        check("grass_eggplant_seed_drop", egg0 > 0, "eggplant/4000=" + egg0);
+        check("grass_fortune_wheat", wheat3 > wheat0, wheat0 + " -> " + wheat3);
+        check("grass_fortune_eggplant", egg3 > egg0, egg0 + " -> " + egg3);
+        int self = 0;
+        for (ItemStack s : Block.getDrops(state, level, pos, null, man, new ItemStack(Items.SHEARS))) {
+            if (s.is(AllBlocks.GOLD_SHORT_GRASS_ITEM.get())) self += s.getCount();
+        }
+        check("grass_shears_self", self == 1, "self=" + self);
+    }
+
+    private static void testFlowerEffects() {
+        BlockPos pos = BASE.offset(-6, 0, 2);
+        level.setBlockAndUpdate(pos, AllBlocks.GOLD_MARIGOLD.get().defaultBlockState());
+        BlockState marigold = level.getBlockState(pos);
+        man.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
+        AllBlocks.GOLD_MARIGOLD.get().stepOn(level, pos, marigold, man);
+        check("marigold_step_removes_nausea", man.getEffect(MobEffects.CONFUSION) == null,
+                "confusion=" + man.getEffect(MobEffects.CONFUSION));
+        man.removeAllEffects();
+
+        // 迷之炖菜：金盏花 = 10 秒生命恢复 I
+        SuspiciousStewEffects marigoldEffects =
+                com.hjmmd_8.bettergold.block.GoldMarigoldBlock.class.cast(
+                        AllBlocks.GOLD_MARIGOLD.get()).getSuspiciousEffects();
+        ItemStack stew = new ItemStack(Items.SUSPICIOUS_STEW);
+        stew.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, marigoldEffects);
+        stew.finishUsingItem(level, man);
+        MobEffectInstance regen = man.getEffect(MobEffects.REGENERATION);
+        check("marigold_stew_regeneration_10s",
+                regen != null && regen.getDuration() >= 190 && regen.getDuration() <= 210
+                        && regen.getAmplifier() == 0,
+                "regen=" + regen);
+
+        // 金郁金香 = 10 秒饥饿
+        man.removeAllEffects();
+        SuspiciousStewEffects tulipEffects =
+                com.hjmmd_8.bettergold.block.GoldTulipBlock.class.cast(
+                        AllBlocks.GOLD_TULIP.get()).getSuspiciousEffects();
+        ItemStack stew2 = new ItemStack(Items.SUSPICIOUS_STEW);
+        stew2.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, tulipEffects);
+        stew2.finishUsingItem(level, man);
+        MobEffectInstance hunger = man.getEffect(MobEffects.HUNGER);
+        check("tulip_stew_hunger_10s",
+                hunger != null && hunger.getDuration() >= 190 && hunger.getDuration() <= 210,
+                "hunger=" + hunger);
+        man.removeAllEffects();
+    }
+
+    private static void testGoldPlantsOnGoldGrass() {
+        BlockPos pos = BASE.offset(4, 0, 2);
+        level.setBlockAndUpdate(pos, AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get().defaultBlockState());
+        BlockPos above = pos.above();
+        level.setBlockAndUpdate(above, Blocks.AIR.defaultBlockState());
+        boolean marigold = AllBlocks.GOLD_MARIGOLD.get().defaultBlockState().canSurvive(level, above);
+        boolean tulip = AllBlocks.GOLD_TULIP.get().defaultBlockState().canSurvive(level, above);
+        boolean sapling = AllBlocks.GOLD_SILK_SAPLING.get().defaultBlockState().canSurvive(level, above);
+        check("gold_grass_supports_marigold", marigold, "canSurvive=" + marigold);
+        check("gold_grass_supports_tulip", tulip, "canSurvive=" + tulip);
+        check("gold_grass_supports_sapling", sapling, "canSurvive=" + sapling);
+        // 金染土也要能放金盏花（1.6 白名单扩到全部金植物）
+        BlockPos dirt = BASE.offset(6, 0, 2);
+        level.setBlockAndUpdate(dirt, AllBlocks.GOLD_INFUSED_DIRT.get().defaultBlockState());
+        level.setBlockAndUpdate(dirt.above(), Blocks.AIR.defaultBlockState());
+        check("gold_dirt_supports_marigold",
+                AllBlocks.GOLD_MARIGOLD.get().defaultBlockState().canSurvive(level, dirt.above()),
+                "canSurvive=true");
+    }
+
+    private static void testGlassConnections() {
+        BlockPos p1 = BASE.offset(2, 0, 6);
+        BlockPos p2 = p1.east();
+        level.setBlockAndUpdate(p1, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(p2, Blocks.AIR.defaultBlockState());
+        man.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(AllBlocks.GOLD_SAND_GLASS_ITEM.get()));
+        man.getMainHandItem().useOn(context(p2, Direction.UP));
+        man.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(AllBlocks.GOLD_SAND_GLASS_ITEM.get()));
+        man.getMainHandItem().useOn(context(p1, Direction.UP));
+        BlockState s1 = level.getBlockState(p1);
+        BlockState s2 = level.getBlockState(p2);
+        check("glass_p1_right_connected",
+                s1.is(AllBlocks.GOLD_SAND_GLASS.get()) && s1.getValue(GoldSandGlassBlock.RIGHT),
+                "s1=" + s1);
+        check("glass_p2_left_connected",
+                s2.is(AllBlocks.GOLD_SAND_GLASS.get()) && s2.getValue(GoldSandGlassBlock.LEFT),
+                "s2=" + s2);
+        // 断开：拆掉 p2，p1 应当不再右连（updateShape 触发）
+        level.removeBlock(p2, false);
+        level.setBlockAndUpdate(p1, level.getBlockState(p1));
+        BlockState s1b = level.getBlockState(p1);
+        check("glass_p1_right_disconnected", !s1b.getValue(GoldSandGlassBlock.RIGHT),
+                "s1=" + s1b);
+    }
+
+    // ==================== 工具 ====================
+
+    private static UseOnContext context(BlockPos pos, Direction face) {
+        return new UseOnContext(man, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(pos), face, pos, false));
+    }
+
+    private static int count(List<ItemStack> stacks, net.minecraft.world.item.Item item) {
+        int n = 0;
+        for (ItemStack s : stacks) {
+            if (s.is(item)) n += s.getCount();
+        }
+        return n;
+    }
+
+    private static void finish(MinecraftServer server) {
+        if (done) {
+            return;
+        }
+        done = true;
+        try {
+            level.setChunkForced(FORCED_X, FORCED_Z, false);
+        } catch (Throwable t) {
+            LOG.warn("{} unforce threw {}", TAG, String.valueOf(t));
+        }
+        int forced = level == null ? -1 : level.getForcedChunks().size();
+        check("forceload_zero", forced == 0, "forcedNow=" + forced);
+        LINES.add("SUMMARY pass=" + passes + " fail=" + fails + " forcedNow=" + forced);
+        LOG.info("{} SUMMARY pass={} fail={} forcedNow={}", TAG, passes, fails, forced);
+        try {
+            Files.createDirectories(OUT.getParent());
+            Files.writeString(OUT, String.join("\n", LINES) + "\n", StandardCharsets.UTF_8);
+        } catch (Throwable t) {
+            LOG.error("{} cannot write {}: {}", TAG, OUT, String.valueOf(t));
+        }
+        server.halt(false);
+    }
+}

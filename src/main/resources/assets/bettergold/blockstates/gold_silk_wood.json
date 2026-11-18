@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "bettergold:block/gold_silk_wood"
+    },
+    "axis=x": {
+      "model": "bettergold:block/gold_silk_wood",
+      "x": 90,
+      "y": 90
+    },
+    "axis=z": {
+      "model": "bettergold:block/gold_silk_wood",
+      "x": 90
+    }
+  }
+}

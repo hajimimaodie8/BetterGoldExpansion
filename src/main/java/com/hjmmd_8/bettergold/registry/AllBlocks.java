@@ -3,7 +3,16 @@ package com.hjmmd_8.bettergold.registry;
 import com.hjmmd_8.bettergold.bettergold;
 import com.hjmmd_8.bettergold.block.FigurineBlock;
 import com.hjmmd_8.bettergold.block.GoldCropBlock;
+import com.hjmmd_8.bettergold.block.GoldInfusedDirtPathBlock;
 import com.hjmmd_8.bettergold.block.GoldInfusedFarmlandBlock;
+import com.hjmmd_8.bettergold.block.GoldInfusedGrassBlock;
+import com.hjmmd_8.bettergold.block.GoldMarigoldBlock;
+import com.hjmmd_8.bettergold.block.GoldSandGlassBlock;
+import com.hjmmd_8.bettergold.block.GoldShortGrassBlock;
+import com.hjmmd_8.bettergold.block.GoldSilkLeavesBlock;
+import com.hjmmd_8.bettergold.block.GoldSilkSaplingBlock;
+import com.hjmmd_8.bettergold.block.GoldTallGrassBlock;
+import com.hjmmd_8.bettergold.block.GoldTulipBlock;
 import com.hjmmd_8.bettergold.material.MetalAliases;
 
 import net.minecraft.world.item.DyeColor;
@@ -13,9 +22,13 @@ import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.ChainBlock;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LanternBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -184,6 +197,153 @@ public class AllBlocks {
     /** 万坚金链：继承 ChainBlock，钻石镐 */
     public static final DeferredBlock<ChainBlock> STURDYGOLD_CHAIN = MetalAliases.block("sturdygold_chain");
 
+    // ==================== 1.8（bg25 §A–§D）：金染草 / 土径 / 金沙 / 金丝树 / 金花草 ====================
+
+    /** 金染草方块（§A-1）：硬度 1.2、木质；随机刻把金染土转成自己（扩散规律同原版草方块） */
+    public static final DeferredBlock<GoldInfusedGrassBlock> GOLD_INFUSED_GRASS_BLOCK =
+            BLOCKS.register("gold_infused_grass_block",
+                    () -> new GoldInfusedGrassBlock(BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.GRASS)
+                            .requiresCorrectToolForDrops()
+                            .strength(1.2F)
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .randomTicks()));
+
+    /** 金染土径（§A-3）：草方块 / 金染土用锹铲出；15/16 高，压住后回金染土 */
+    public static final DeferredBlock<GoldInfusedDirtPathBlock> GOLD_INFUSED_DIRT_PATH =
+            BLOCKS.register("gold_infused_dirt_path",
+                    () -> new GoldInfusedDirtPathBlock(BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.DIRT)
+                            .requiresCorrectToolForDrops()
+                            .strength(1.2F)
+                            .sound(net.minecraft.world.level.block.SoundType.GRAVEL)));
+
+    /** 金沙（§A-4）：中心沙子 + 4 金锭；硬度 1.0、木质；会像沙子一样下落 */
+    public static final DeferredBlock<net.minecraft.world.level.block.ColoredFallingBlock> GOLD_SAND =
+            BLOCKS.register("gold_sand",
+                    () -> new net.minecraft.world.level.block.ColoredFallingBlock(
+                            new net.minecraft.util.ColorRGBA(0xE7C56B),
+                            BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.SAND)
+                                    .requiresCorrectToolForDrops()
+                                    .strength(1.0F)
+                                    .sound(net.minecraft.world.level.block.SoundType.SAND)));
+
+    /** 金沙玻璃（§A-5）：16 连接态（1 无连接 + 15 连接态），硬度 1.0、徒手可破 */
+    public static final DeferredBlock<GoldSandGlassBlock> GOLD_SAND_GLASS =
+            BLOCKS.register("gold_sand_glass",
+                    () -> new GoldSandGlassBlock(BlockBehaviour.Properties
+                            .ofFullCopy(net.minecraft.world.level.block.Blocks.GLASS)
+                            .strength(1.0F)));
+
+    /** 金沙玻璃板（§A-5）：贴图 = {@code 金玻璃板边框.png}，硬度 1.0、徒手可破 */
+    public static final DeferredBlock<IronBarsBlock> GOLD_SAND_GLASS_PANE =
+            BLOCKS.register("gold_sand_glass_pane",
+                    () -> new IronBarsBlock(BlockBehaviour.Properties
+                            .ofFullCopy(net.minecraft.world.level.block.Blocks.GLASS_PANE)
+                            .strength(1.0F)));
+
+    /** 金丝木统一属性：硬度 4、木质、需要木质挖掘等级（§B-7 的 13 件全部用它） */
+    private static BlockBehaviour.Properties goldSilkWoodProps() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.WOOD)
+                .requiresCorrectToolForDrops()
+                .strength(4.0F)
+                .sound(net.minecraft.world.level.block.SoundType.WOOD);
+    }
+
+    public static final DeferredBlock<RotatedPillarBlock> GOLD_SILK_LOG =
+            BLOCKS.register("gold_silk_log", () -> new RotatedPillarBlock(goldSilkWoodProps()));
+    public static final DeferredBlock<RotatedPillarBlock> GOLD_SILK_WOOD =
+            BLOCKS.register("gold_silk_wood", () -> new RotatedPillarBlock(goldSilkWoodProps()));
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_GOLD_SILK_LOG =
+            BLOCKS.register("stripped_gold_silk_log", () -> new RotatedPillarBlock(goldSilkWoodProps()));
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_GOLD_SILK_WOOD =
+            BLOCKS.register("stripped_gold_silk_wood", () -> new RotatedPillarBlock(goldSilkWoodProps()));
+    public static final DeferredBlock<Block> GOLD_SILK_PLANKS =
+            BLOCKS.register("gold_silk_planks", () -> new Block(goldSilkWoodProps()));
+    public static final DeferredBlock<StairBlock> GOLD_SILK_STAIRS =
+            BLOCKS.register("gold_silk_stairs", () -> new StairBlock(
+                    GOLD_SILK_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(GOLD_SILK_PLANKS.get())));
+    public static final DeferredBlock<SlabBlock> GOLD_SILK_SLAB =
+            BLOCKS.register("gold_silk_slab", () -> new SlabBlock(
+                    BlockBehaviour.Properties.ofFullCopy(GOLD_SILK_PLANKS.get())));
+    public static final DeferredBlock<FenceBlock> GOLD_SILK_FENCE =
+            BLOCKS.register("gold_silk_fence", () -> new FenceBlock(goldSilkWoodProps()));
+    public static final DeferredBlock<FenceGateBlock> GOLD_SILK_FENCE_GATE =
+            BLOCKS.register("gold_silk_fence_gate", () -> new FenceGateBlock(
+                    net.minecraft.world.level.block.state.properties.WoodType.OAK,
+                    goldSilkWoodProps().noOcclusion()));
+    public static final DeferredBlock<DoorBlock> GOLD_SILK_DOOR =
+            BLOCKS.register("gold_silk_door", () -> new DoorBlock(BlockSetType.OAK,
+                    goldSilkWoodProps().noOcclusion()));
+    public static final DeferredBlock<TrapDoorBlock> GOLD_SILK_TRAPDOOR =
+            BLOCKS.register("gold_silk_trapdoor", () -> new TrapDoorBlock(BlockSetType.OAK,
+                    goldSilkWoodProps().noOcclusion()));
+    public static final DeferredBlock<ButtonBlock> GOLD_SILK_BUTTON =
+            BLOCKS.register("gold_silk_button", () -> new ButtonBlock(BlockSetType.OAK, 30,
+                    goldSilkWoodProps()));
+    public static final DeferredBlock<PressurePlateBlock> GOLD_SILK_PRESSURE_PLATE =
+            BLOCKS.register("gold_silk_pressure_plate",
+                    () -> new PressurePlateBlock(BlockSetType.OAK, goldSilkWoodProps()));
+
+    /** 金丝树叶（§B-8/9）：硬度 0.4、徒手；樱花同款落叶粒子 */
+    public static final DeferredBlock<GoldSilkLeavesBlock> GOLD_SILK_LEAVES =
+            BLOCKS.register("gold_silk_leaves", () -> new GoldSilkLeavesBlock(
+                    BlockBehaviour.Properties.ofFullCopy(
+                            net.minecraft.world.level.block.Blocks.OAK_LEAVES).strength(0.4F)));
+
+    /** 金丝树苗（§B-6）：任意树苗 + 8 金锭；一次长成大型橡树形状的金丝树 */
+    public static final DeferredBlock<GoldSilkSaplingBlock> GOLD_SILK_SAPLING =
+            BLOCKS.register("gold_silk_sapling", () -> new GoldSilkSaplingBlock(
+                    BlockBehaviour.Properties.of()
+                            .instabreak()
+                            .noCollission()
+                            .randomTicks()
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)));
+
+    /** 金草丛（§D-13）：无硬度、非剪刀 12% 金麦种子 / 1% 金钱茄种子（时运） */
+    public static final DeferredBlock<GoldShortGrassBlock> GOLD_SHORT_GRASS =
+            BLOCKS.register("gold_short_grass", () -> new GoldShortGrassBlock(
+                    BlockBehaviour.Properties.of()
+                            .instabreak()
+                            .noCollission()
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .offsetType(BlockBehaviour.OffsetType.XZ)
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)));
+
+    /** 金高草丛（§D-13）：双层，掉落同金草丛 */
+    public static final DeferredBlock<GoldTallGrassBlock> GOLD_TALL_GRASS =
+            BLOCKS.register("gold_tall_grass", () -> new GoldTallGrassBlock(
+                    BlockBehaviour.Properties.of()
+                            .instabreak()
+                            .noCollission()
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .offsetType(BlockBehaviour.OffsetType.XZ)
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)));
+
+    /** 金盏花（§D-14）：站上去去反胃；炖菜 10 秒生命恢复 I；黄色染料 */
+    public static final DeferredBlock<GoldMarigoldBlock> GOLD_MARIGOLD =
+            BLOCKS.register("gold_marigold", () -> new GoldMarigoldBlock(
+                    BlockBehaviour.Properties.of()
+                            .instabreak()
+                            .noCollission()
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .offsetType(BlockBehaviour.OffsetType.XZ)
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)));
+
+    /** 金郁金香（§D-15）：任意郁金香 + 4 金粒；炖菜 10 秒饥饿；黄色染料 */
+    public static final DeferredBlock<GoldTulipBlock> GOLD_TULIP =
+            BLOCKS.register("gold_tulip", () -> new GoldTulipBlock(
+                    BlockBehaviour.Properties.of()
+                            .instabreak()
+                            .noCollission()
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .offsetType(BlockBehaviour.OffsetType.XZ)
+                            .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)));
+
     // ==================== 金作物相关方块 ====================
 
     /** 金染土：用锄头点一下变成金染耕地（需要铁质以上锹采集，否则不掉落）
@@ -203,7 +363,7 @@ public class AllBlocks {
             () -> new com.hjmmd_8.bettergold.block.GoldInfusedDirtBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.DIRT)
                     .requiresCorrectToolForDrops()
-                    .strength(0.5F)
+                    .strength(1.2F)
                     .sound(net.minecraft.world.level.block.SoundType.GRAVEL)));
 
     /** 金染耕地：金作物专用耕地，无需放水湿润（同样需要铁质以上锹采集） */
@@ -211,7 +371,7 @@ public class AllBlocks {
             () -> new GoldInfusedFarmlandBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.DIRT)
                     .requiresCorrectToolForDrops()
-                    .strength(0.6F)
+                    .strength(1.2F)
                     .sound(net.minecraft.world.level.block.SoundType.GRAVEL)
                     .randomTicks()));
 
@@ -340,7 +500,59 @@ public class AllBlocks {
     public static final DeferredItem<BlockItem> STURDYGOLD_CHAIN_ITEM = MetalAliases.item("sturdygold_chain");
 
     public static final DeferredItem<BlockItem> GOLD_INFUSED_DIRT_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_infused_dirt", GOLD_INFUSED_DIRT);
-    // 金染耕地：无物品形态（像原版耕地一样只能由锄头转化生成，不能从物品栏获取）
+    // 1.8 §A-2：金染耕地现在**有物品形态**（作者要求「要能在创造页正常拿取」）
+    public static final DeferredItem<BlockItem> GOLD_INFUSED_FARMLAND_ITEM = AllItems.ITEMS.registerSimpleBlockItem("gold_infused_farmland", GOLD_INFUSED_FARMLAND);
+
+    // ---------- 1.8（bg25）BlockItems ----------
+    public static final DeferredItem<BlockItem> GOLD_INFUSED_GRASS_BLOCK_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_infused_grass_block", GOLD_INFUSED_GRASS_BLOCK);
+    public static final DeferredItem<BlockItem> GOLD_INFUSED_DIRT_PATH_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_infused_dirt_path", GOLD_INFUSED_DIRT_PATH);
+    public static final DeferredItem<BlockItem> GOLD_SAND_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_sand", GOLD_SAND);
+    public static final DeferredItem<BlockItem> GOLD_SAND_GLASS_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_sand_glass", GOLD_SAND_GLASS);
+    public static final DeferredItem<BlockItem> GOLD_SAND_GLASS_PANE_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_sand_glass_pane", GOLD_SAND_GLASS_PANE);
+
+    public static final DeferredItem<BlockItem> GOLD_SILK_LOG_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_log", GOLD_SILK_LOG);
+    public static final DeferredItem<BlockItem> GOLD_SILK_WOOD_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_wood", GOLD_SILK_WOOD);
+    public static final DeferredItem<BlockItem> STRIPPED_GOLD_SILK_LOG_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("stripped_gold_silk_log", STRIPPED_GOLD_SILK_LOG);
+    public static final DeferredItem<BlockItem> STRIPPED_GOLD_SILK_WOOD_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("stripped_gold_silk_wood", STRIPPED_GOLD_SILK_WOOD);
+    public static final DeferredItem<BlockItem> GOLD_SILK_PLANKS_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_planks", GOLD_SILK_PLANKS);
+    public static final DeferredItem<BlockItem> GOLD_SILK_STAIRS_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_stairs", GOLD_SILK_STAIRS);
+    public static final DeferredItem<BlockItem> GOLD_SILK_SLAB_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_slab", GOLD_SILK_SLAB);
+    public static final DeferredItem<BlockItem> GOLD_SILK_FENCE_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_fence", GOLD_SILK_FENCE);
+    public static final DeferredItem<BlockItem> GOLD_SILK_FENCE_GATE_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_fence_gate", GOLD_SILK_FENCE_GATE);
+    public static final DeferredItem<BlockItem> GOLD_SILK_DOOR_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_door", GOLD_SILK_DOOR);
+    public static final DeferredItem<BlockItem> GOLD_SILK_TRAPDOOR_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_trapdoor", GOLD_SILK_TRAPDOOR);
+    public static final DeferredItem<BlockItem> GOLD_SILK_BUTTON_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_button", GOLD_SILK_BUTTON);
+    public static final DeferredItem<BlockItem> GOLD_SILK_PRESSURE_PLATE_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_pressure_plate", GOLD_SILK_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> GOLD_SILK_LEAVES_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_leaves", GOLD_SILK_LEAVES);
+    public static final DeferredItem<BlockItem> GOLD_SILK_SAPLING_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_silk_sapling", GOLD_SILK_SAPLING);
+    public static final DeferredItem<BlockItem> GOLD_SHORT_GRASS_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_short_grass", GOLD_SHORT_GRASS);
+    public static final DeferredItem<BlockItem> GOLD_TALL_GRASS_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_tall_grass", GOLD_TALL_GRASS);
+    public static final DeferredItem<BlockItem> GOLD_MARIGOLD_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_marigold", GOLD_MARIGOLD);
+    public static final DeferredItem<BlockItem> GOLD_TULIP_ITEM =
+            AllItems.ITEMS.registerSimpleBlockItem("gold_tulip", GOLD_TULIP);
 
     // ==================== 新约 1.2 BlockItems ====================
 

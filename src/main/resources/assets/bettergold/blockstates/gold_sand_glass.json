@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "up=false,down=false,left=false,right=false": {
+      "model": "bettergold:block/gold_sand_glass"
+    },
+    "up=false,down=false,left=false,right=true": {
+      "model": "bettergold:block/gold_sand_glass_r"
+    },
+    "up=false,down=false,left=true,right=false": {
+      "model": "bettergold:block/gold_sand_glass_l"
+    },
+    "up=false,down=false,left=true,right=true": {
+      "model": "bettergold:block/gold_sand_glass_lr"
+    },
+    "up=false,down=true,left=false,right=false": {
+      "model": "bettergold:block/gold_sand_glass_d"
+    },
+    "up=false,down=true,left=false,right=true": {
+      "model": "bettergold:block/gold_sand_glass_dr"
+    },
+    "up=false,down=true,left=true,right=false": {
+      "model": "bettergold:block/gold_sand_glass_dl"
+    },
+    "up=false,down=true,left=true,right=true": {
+      "model": "bettergold:block/gold_sand_glass_dlr"
+    },
+    "up=true,down=false,left=false,right=false": {
+      "model": "bettergold:block/gold_sand_glass_u"
+    },
+    "up=true,down=false,left=false,right=true": {
+      "model": "bettergold:block/gold_sand_glass_ur"
+    },
+    "up=true,down=false,left=true,right=false": {
+      "model": "bettergold:block/gold_sand_glass_ul"
+    },
+    "up=true,down=false,left=true,right=true": {
+      "model": "bettergold:block/gold_sand_glass_ulr"
+    },
+    "up=true,down=true,left=false,right=false": {
+      "model": "bettergold:block/gold_sand_glass_ud"
+    },
+    "up=true,down=true,left=false,right=true": {
+      "model": "bettergold:block/gold_sand_glass_udr"
+    },
+    "up=true,down=true,left=true,right=false": {
+      "model": "bettergold:block/gold_sand_glass_udl"
+    },
+    "up=true,down=true,left=true,right=true": {
+      "model": "bettergold:block/gold_sand_glass_udlr"
+    }
+  }
+}

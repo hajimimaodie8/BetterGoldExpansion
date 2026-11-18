@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "bettergold:block/gold_silk_planks",
+    "top": "bettergold:block/gold_silk_planks",
+    "side": "bettergold:block/gold_silk_planks",
+    "particle": "bettergold:block/gold_silk_planks"
+  }
+}

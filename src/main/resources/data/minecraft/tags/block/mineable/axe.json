@@ -1,6 +1,19 @@
 {
   "replace": false,
   "values": [
-    "bettergold:gold_exchange_counter"
+    "bettergold:gold_exchange_counter",
+    "bettergold:gold_silk_log",
+    "bettergold:gold_silk_wood",
+    "bettergold:stripped_gold_silk_log",
+    "bettergold:stripped_gold_silk_wood",
+    "bettergold:gold_silk_planks",
+    "bettergold:gold_silk_stairs",
+    "bettergold:gold_silk_slab",
+    "bettergold:gold_silk_fence",
+    "bettergold:gold_silk_fence_gate",
+    "bettergold:gold_silk_door",
+    "bettergold:gold_silk_trapdoor",
+    "bettergold:gold_silk_button",
+    "bettergold:gold_silk_pressure_plate"
   ]
 }

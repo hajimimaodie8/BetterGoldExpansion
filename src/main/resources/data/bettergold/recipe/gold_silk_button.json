@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "bettergold:gold_silk_planks"
+    }
+  ],
+  "result": {
+    "id": "bettergold:gold_silk_button",
+    "count": 1
+  }
+}

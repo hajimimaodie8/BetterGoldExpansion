@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "GSG",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "tag": "minecraft:saplings"
+    }
+  },
+  "result": {
+    "id": "bettergold:gold_silk_sapling",
+    "count": 1
+  }
+}

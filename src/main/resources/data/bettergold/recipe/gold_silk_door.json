@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PP",
+    "PP",
+    "PP"
+  ],
+  "key": {
+    "P": {
+      "item": "bettergold:gold_silk_planks"
+    }
+  },
+  "result": {
+    "id": "bettergold:gold_silk_door",
+    "count": 3
+  }
+}

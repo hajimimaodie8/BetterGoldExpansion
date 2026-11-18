@@ -1,0 +1,46 @@
+SETUP level=world base=2000, 120, 2000 forced=1 player=bg25_probe
+PASS place_gold_grass :: state=Block{bettergold:gold_infused_grass_block}
+PASS dirt_to_grass :: adjacent=Block{bettergold:gold_infused_grass_block}
+PASS grass_to_dirt_when_covered :: state=Block{bettergold:gold_infused_dirt}
+PASS shovel_grass_to_path :: state=Block{bettergold:gold_infused_dirt_path}
+PASS shovel_dirt_to_path :: state=Block{bettergold:gold_infused_dirt_path}
+PASS bone_meal_large_oak_logs :: logs=11
+PASS bone_meal_large_oak_leaves :: leaves=160
+PASS bone_meal_tree_is_gold_silk :: vanillaOak=0
+PASS dust_convert_0_grass_block :: got=Block{bettergold:gold_infused_grass_block} want=Block{bettergold:gold_infused_grass_block}
+PASS dust_convert_1_dirt :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+PASS dust_convert_2_podzol :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+PASS dust_convert_3_mycelium :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+PASS dust_convert_4_coarse_dirt :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+PASS dust_convert_5_rooted_dirt :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+PASS dust_convert_6_mud :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+PASS dust_convert_7_dirt_path :: got=Block{bettergold:gold_infused_dirt_path} want=Block{bettergold:gold_infused_dirt_path}
+PASS dust_convert_8_farmland :: got=Block{bettergold:gold_infused_farmland} want=Block{bettergold:gold_infused_farmland}
+PASS dust_convert_9_sand :: got=Block{bettergold:gold_sand} want=Block{bettergold:gold_sand}
+PASS dust_conversions_10 :: converted=10/10
+PASS dust_grows_gold_plants :: plantsNearGrass=1
+PASS leaves_stick_drop :: stick/6000=196
+PASS leaves_apple_drop :: apple/6000=53
+PASS leaves_enchanted_apple_drop :: enchanted/6000=15
+PASS leaves_fortune_boosts_stick :: 196 -> 258
+PASS leaves_fortune_boosts_apple :: 53 -> 120
+PASS leaves_fortune_boosts_enchanted :: 7 -> 15
+PASS leaves_shears_self :: self=1
+PASS leaves_no_glittering_vine :: vine=false
+PASS grass_wheat_seed_drop :: wheat/4000=461
+PASS grass_eggplant_seed_drop :: eggplant/4000=36
+PASS grass_fortune_wheat :: 461 -> 1870
+PASS grass_fortune_eggplant :: 36 -> 137
+PASS grass_shears_self :: self=1
+PASS marigold_step_removes_nausea :: confusion=null
+PASS marigold_stew_regeneration_10s :: regen=effect.minecraft.regeneration, Duration: 200
+PASS tulip_stew_hunger_10s :: hunger=effect.minecraft.hunger, Duration: 200
+PASS gold_grass_supports_marigold :: canSurvive=true
+PASS gold_grass_supports_tulip :: canSurvive=true
+PASS gold_grass_supports_sapling :: canSurvive=true
+PASS gold_dirt_supports_marigold :: canSurvive=true
+PASS glass_p1_right_connected :: s1=Block{bettergold:gold_sand_glass}[down=false,left=false,right=true,up=false]
+PASS glass_p2_left_connected :: s2=Block{bettergold:gold_sand_glass}[down=false,left=true,right=false,up=false]
+PASS glass_p1_right_disconnected :: s1=Block{bettergold:gold_sand_glass}[down=false,left=false,right=false,up=false]
+PASS forceload_zero :: forcedNow=0
+SUMMARY pass=44 fail=0 forcedNow=0

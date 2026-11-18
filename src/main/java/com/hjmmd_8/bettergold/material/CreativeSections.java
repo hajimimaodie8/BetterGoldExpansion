@@ -212,13 +212,44 @@ public final class CreativeSections {
      * 排到全部套件前面 —— 作者要的是它在杂项段、就在金染土之后。</p>
      */
     private static final List<String> OTHER_BLOCK_ORDER = List.of(
-            "gold_infused_dirt",        // 金染土
+            // ---------- 1.8（bg25）§B-7：金丝木建材（金建材之后的第一组） ----------
+            "gold_silk_log",
+            "gold_silk_wood",
+            "stripped_gold_silk_log",
+            "stripped_gold_silk_wood",
+            "gold_silk_planks",
+            "gold_silk_stairs",
+            "gold_silk_slab",
+            "gold_silk_fence",
+            "gold_silk_fence_gate",
+            "gold_silk_door",
+            "gold_silk_trapdoor",
+            "gold_silk_button",
+            "gold_silk_pressure_plate",
+            // §B-8/6：树叶在木与苗之间
+            "gold_silk_leaves",
+            "gold_silk_sapling",
+            // ---------- §A：金染草（在金染土前）→ 土 → 耕地 → 土径 → 金沙 → 玻璃 → 玻璃板 ----------
+            "gold_infused_grass_block",
+            "gold_infused_dirt",
+            "gold_infused_farmland",
+            "gold_infused_dirt_path",
+            "gold_sand",
+            "gold_sand_glass",
+            "gold_sand_glass_pane",
+            // ---------- 既有杂项（1.2/1.3 的定稿序，一个字节没动） ----------
             "golden_wheat_block",       // 金麦块
             "_crate",                   // 筐装方块：一整组（组内按物品 id）
             "gold_exchange_counter",    // 易金柜台
             "golden_creeper_figurine",  // 金雕：苦力怕
             "golden_enderman_figurine", // 金雕：末影人
-            "golden_toad_figurine");    // 金雕：青蛙
+            "golden_toad_figurine",     // 金雕：青蛙
+            // ---------- §D-13~16：草丛 → 高草丛 → 金盏花 → 金郁金香 → 金玫瑰丛 ----------
+            "gold_short_grass",
+            "gold_tall_grass",
+            "gold_marigold",
+            "gold_tulip",
+            "golden_rose_bush");
 
     /**
      * 杂项分区（建筑分区的「其他建筑方块」）里，套件物品用的通用排序。

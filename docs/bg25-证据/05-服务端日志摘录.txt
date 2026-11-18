@@ -1,0 +1,48 @@
+bg25 A 级服务端日志摘录（Parsing error = 0；只摘 Bg25Probe 与解析错误）
+
+[1811月2026 23:46:21.320] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] setup level=world base=2000, 120, 2000 forced=1
+[1811月2026 23:46:21.605] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS place_gold_grass :: state=Block{bettergold:gold_infused_grass_block}
+[1811月2026 23:46:21.606] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dirt_to_grass :: adjacent=Block{bettergold:gold_infused_grass_block}
+[1811月2026 23:46:21.606] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS grass_to_dirt_when_covered :: state=Block{bettergold:gold_infused_dirt}
+[1811月2026 23:46:21.611] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS shovel_grass_to_path :: state=Block{bettergold:gold_infused_dirt_path}
+[1811月2026 23:46:21.613] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS shovel_dirt_to_path :: state=Block{bettergold:gold_infused_dirt_path}
+[1811月2026 23:46:21.658] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS bone_meal_large_oak_logs :: logs=11
+[1811月2026 23:46:21.658] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS bone_meal_large_oak_leaves :: leaves=160
+[1811月2026 23:46:21.658] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS bone_meal_tree_is_gold_silk :: vanillaOak=0
+[1811月2026 23:46:21.659] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_0_grass_block :: got=Block{bettergold:gold_infused_grass_block} want=Block{bettergold:gold_infused_grass_block}
+[1811月2026 23:46:21.659] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_1_dirt :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+[1811月2026 23:46:21.660] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_2_podzol :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+[1811月2026 23:46:21.660] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_3_mycelium :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+[1811月2026 23:46:21.660] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_4_coarse_dirt :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+[1811月2026 23:46:21.660] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_5_rooted_dirt :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+[1811月2026 23:46:21.661] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_6_mud :: got=Block{bettergold:gold_infused_dirt} want=Block{bettergold:gold_infused_dirt}
+[1811月2026 23:46:21.661] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_7_dirt_path :: got=Block{bettergold:gold_infused_dirt_path} want=Block{bettergold:gold_infused_dirt_path}
+[1811月2026 23:46:21.661] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_8_farmland :: got=Block{bettergold:gold_infused_farmland} want=Block{bettergold:gold_infused_farmland}
+[1811月2026 23:46:21.661] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_convert_9_sand :: got=Block{bettergold:gold_sand} want=Block{bettergold:gold_sand}
+[1811月2026 23:46:21.662] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_conversions_10 :: converted=10/10
+[1811月2026 23:46:21.662] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS dust_grows_gold_plants :: plantsNearGrass=1
+[1811月2026 23:46:21.939] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_stick_drop :: stick/6000=196
+[1811月2026 23:46:21.939] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_apple_drop :: apple/6000=53
+[1811月2026 23:46:21.939] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_enchanted_apple_drop :: enchanted/6000=15
+[1811月2026 23:46:21.939] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_fortune_boosts_stick :: 196 -> 258
+[1811月2026 23:46:21.939] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_fortune_boosts_apple :: 53 -> 120
+[1811月2026 23:46:21.939] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_fortune_boosts_enchanted :: 7 -> 15
+[1811月2026 23:46:21.940] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_shears_self :: self=1
+[1811月2026 23:46:21.940] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS leaves_no_glittering_vine :: vine=false
+[1811月2026 23:46:21.995] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS grass_wheat_seed_drop :: wheat/4000=461
+[1811月2026 23:46:21.995] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS grass_eggplant_seed_drop :: eggplant/4000=36
+[1811月2026 23:46:21.995] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS grass_fortune_wheat :: 461 -> 1870
+[1811月2026 23:46:21.995] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS grass_fortune_eggplant :: 36 -> 137
+[1811月2026 23:46:21.996] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS grass_shears_self :: self=1
+[1811月2026 23:46:22.006] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS marigold_step_removes_nausea :: confusion=null
+[1811月2026 23:46:22.010] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS marigold_stew_regeneration_10s :: regen=effect.minecraft.regeneration, Duration: 200
+[1811月2026 23:46:22.010] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS tulip_stew_hunger_10s :: hunger=effect.minecraft.hunger, Duration: 200
+[1811月2026 23:46:22.010] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS gold_grass_supports_marigold :: canSurvive=true
+[1811月2026 23:46:22.010] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS gold_grass_supports_tulip :: canSurvive=true
+[1811月2026 23:46:22.010] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS gold_grass_supports_sapling :: canSurvive=true
+[1811月2026 23:46:22.010] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS gold_dirt_supports_marigold :: canSurvive=true
+[1811月2026 23:46:22.017] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS glass_p1_right_connected :: s1=Block{bettergold:gold_sand_glass}[down=false,left=false,right=true,up=false]
+[1811月2026 23:46:22.018] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS glass_p2_left_connected :: s2=Block{bettergold:gold_sand_glass}[down=false,left=true,right=false,up=false]
+[1811月2026 23:46:22.018] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS glass_p1_right_disconnected :: s1=Block{bettergold:gold_sand_glass}[down=false,left=false,right=false,up=false]
+[1811月2026 23:46:22.020] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] PASS forceload_zero :: forcedNow=0
+[1811月2026 23:46:22.021] [Server thread/INFO] [Bg25Probe/]: [bg25-probe] SUMMARY pass=44 fail=0 forcedNow=0

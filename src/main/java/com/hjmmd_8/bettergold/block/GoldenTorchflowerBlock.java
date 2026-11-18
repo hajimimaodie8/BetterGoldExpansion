@@ -91,7 +91,9 @@ public class GoldenTorchflowerBlock extends FlowerBlock {
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
         // 1.7 第 ① 条：金染土（gold_infused_dirt）也允许
+        // 1.8（bg25）：金染草方块加入同一判据（金植物整体可在金染草方块上摆放）
         return state.is(AllBlocks.GOLD_INFUSED_DIRT.get())
+                || state.is(AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get())
                 || state.getBlock() instanceof GoldInfusedFarmlandBlock
                 || super.mayPlaceOn(state, level, pos);
     }

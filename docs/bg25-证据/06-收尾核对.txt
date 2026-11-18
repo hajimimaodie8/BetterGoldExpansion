@@ -1,0 +1,9 @@
+bg25 收尾核对（最终树）
+
+1. 探针：src 下无 probe 目录 = True；run/bg25-probe.enabled 不存在 = True；jar 内 Probe 条目 = 0
+2. server.properties：改前 SHA256 = a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4；改后 SHA256 = a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4；逐字节相等 = True
+3. 作者存档：run/saves/新的世界 存在 = True；mtime_ns = 1793853095354765000；日志出现 '新的世界' = 0；日志出现 'ServerLevel[world]' = 3
+4. jar：bettergold-1.7.0.jar；条目 3161；*Probe* 0；'BG-PROBE' 0
+5. 认亲表：docs/1.8-素材认亲/认亲表.tsv 行数（含表头）= 55；黑边处理报告条目 = 6
+6. 原始 zip（只读）：E:\mc\mc资料\新的新约\更有用的金 新约10 (1).zip；bytes=673488；sha256=21413ca1b33addc13edf4d767b1e694fbff6ea60eab8b8168cb8ede0f923d94b
+7. git：HEAD = de57470；本轮不 commit / 不 push

@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "bettergold:gold_infused_dirt",
-    "bettergold:gold_infused_farmland"
+    "bettergold:gold_infused_farmland",
+    "bettergold:gold_infused_grass_block",
+    "bettergold:gold_infused_dirt_path",
+    "bettergold:gold_sand"
   ]
 }

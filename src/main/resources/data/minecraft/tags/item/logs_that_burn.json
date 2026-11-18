@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "bettergold:gold_silk_log",
+    "bettergold:gold_silk_wood",
+    "bettergold:stripped_gold_silk_log",
+    "bettergold:stripped_gold_silk_wood"
+  ]
+}

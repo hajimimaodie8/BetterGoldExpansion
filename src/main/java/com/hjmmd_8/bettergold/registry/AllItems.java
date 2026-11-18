@@ -237,8 +237,9 @@ public class AllItems {
                                 new ItemStack(AllBlocks.GOLDEN_ROSE_BUSH_ITEM.get(), GOLDEN_ROSE_PRODUCE));
                         drops.setDefaultPickUpDelay();
                         serverLevel.addFreshEntity(drops);
-                        // 骨粉粒子（照原版 bonemeal 的 HAPPY_VILLAGER；显式 sendParticles，不依赖 levelEvent 的分支）
-                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER,
+                        // 1.8 §C-12：改用专属催熟粒子（旧口径 HAPPY_VILLAGER 被作者本轮要求替换）
+                        serverLevel.sendParticles(
+                                com.hjmmd_8.bettergold.registry.AllParticles.GOLDEN_GROWTH.get(),
                                 pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
                                 15, 0.5D, 0.5D, 0.5D, 0.0D);
                         // 音效（作者点名 BONE_MEAL_USE）
@@ -250,6 +251,24 @@ public class AllItems {
                         }
                         return net.minecraft.world.InteractionResult.SUCCESS;
                     }
+                    // ---------- 1.8（bg25 §B-6）：金丝树苗 ⇒ 一次长成大型金丝橡树 ----------
+                    if (state.getBlock() instanceof com.hjmmd_8.bettergold.block.GoldSilkSaplingBlock sapling
+                            && level instanceof ServerLevel serverLevel) {
+                        boolean grown = sapling.growTreeNow(serverLevel, pos, state, serverLevel.getRandom());
+                        if (grown) {
+                            serverLevel.sendParticles(
+                                    com.hjmmd_8.bettergold.registry.AllParticles.GOLDEN_GROWTH.get(),
+                                    pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
+                                    20, 0.5D, 0.5D, 0.5D, 0.02D);
+                            serverLevel.playSound(null, pos, net.minecraft.sounds.SoundEvents.BONE_MEAL_USE,
+                                    net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+                            var player = context.getPlayer();
+                            if (player == null || !player.getAbilities().instabuild) {
+                                context.getItemInHand().shrink(1);
+                            }
+                            return net.minecraft.world.InteractionResult.SUCCESS;
+                        }
+                    }
                     // 只作用于金作物（金胡萝卜 / 金钱茄）
                     if (state.getBlock() instanceof GoldCropBlock crop) {
                         if (crop.isValidBonemealTarget(level, pos, state)) {
@@ -257,8 +276,11 @@ public class AllItems {
                                 // 一点就熟：直接把作物催熟到最大阶段
                                 int maxAge = crop.getMaxAge();
                                 level.setBlock(pos, crop.getStateForAge(maxAge), 2);
-                                // 骨粉粒子 + 音效
-                                level.levelEvent(2005, pos, 0);
+                                // 1.8 §C-12：专属催熟粒子（替掉原版 2005 事件里的 HAPPY_VILLAGER）
+                                serverLevel.sendParticles(
+                                        com.hjmmd_8.bettergold.registry.AllParticles.GOLDEN_GROWTH.get(),
+                                        pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
+                                        15, 0.5D, 0.5D, 0.5D, 0.0D);
                                 level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BONE_MEAL_USE,
                                         net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
                                 if (!context.getPlayer().getAbilities().instabuild) {
@@ -271,6 +293,28 @@ public class AllItems {
                     return net.minecraft.world.InteractionResult.PASS;
                 }
             });
+
+    /**
+     * 1.8（bg25 §C-11）黄金国浮现之尘：1 万坚金粒 + 8 金骨粉 → 8（形状见
+     * {@code recipe/el_dorado_dust.json}）。功能在 {@link com.hjmmd_8.bettergold.item.ElDoradoDustItem}。
+     *
+     * <p>落点：材料分区，排在金骨粉后面（{@code CreativeTabSections.ADJACENCY_PINS} 有一条
+     * {@code gold_silk_stick → el_dorado_dust} 的紧邻关系，本物品自身由注册顺序/段规则接住）。</p>
+     */
+    public static final DeferredItem<Item> EL_DORADO_DUST =
+            ITEMS.register("el_dorado_dust", () -> new com.hjmmd_8.bettergold.item.ElDoradoDustItem(
+                    new Item.Properties()));
+
+    /**
+     * 1.8（bg25 §B-10）金丝木棍：「当正常木棍用」。
+     *
+     * <p>1.21.1 的原版配方是直接写 {@code minecraft:stick} 物品、不读标签，所以「替换原版所有
+     * 木棍用途」在数据层做不到；本模组自己那套金丝木配方（栅栏 / 栅栏门 / 木棍等）全部用
+     * {@code bettergold:gold_silk_stick}，并把它加进 NeoForge 通用标签 {@code #c:rods/wooden}
+     * （其它模组按通用标签找木棍时能认）。见 {@code docs/1.8-规格-新的新约.md} §Z 的偏差说明。</p>
+     */
+    public static final DeferredItem<Item> GOLD_SILK_STICK =
+            ITEMS.registerSimpleItem("gold_silk_stick");
 
     /** 金钥匙：用于打开铁门/铁活板门/万坚金门/万坚金活板门（手持像工具），64 耐久 */
     public static final DeferredItem<Item> GOLDEN_KEY = ITEMS.registerSimpleItem("golden_key",

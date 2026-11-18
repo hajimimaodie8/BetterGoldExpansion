@@ -2686,9 +2686,10 @@ if "setRenderLayer(AllBlocks.GOLDEN_ROSE_BUSH.get(), cutout)" not in _BGAPPEND_C
 #   负向对照：其余方块**不许**被这轮顺手改动（白名单行数不变 = 只有新增那 1 行）
 #   计数口径：13 条显式注册（GOLD_* 5 + 金雕摆件 3 + 作物 3 + 门/活板门/栏杆/链里 GOLD_ 的那几条…
 #   以**实测 17** 为准）+ 家族循环体里 4 条（lantern/door/trapdoor/bars）——本轮之前是 16。
-if _BGAPPEND_CLIENT.count("ItemBlockRenderTypes.setRenderLayer(") != 17:
+if _BGAPPEND_CLIENT.count("ItemBlockRenderTypes.setRenderLayer(") != 27:
     _bgappend_bad("bgappend-rose-render-layer-scope",
-                  "setRenderLayer 的调用点数不是 17（本轮新增 1 行后应为 17；改动越界了）"
+                  "setRenderLayer 的调用点数不是 27（1.8 bg25 追加 10 行：金沙玻璃/玻璃板/树叶/"
+                  "树苗/金草丛/金高草丛/金盏花/金郁金香/金丝门/金丝活板门；旧口径 17 已作废）"
                   "：实际 %d" % _BGAPPEND_CLIENT.count("ItemBlockRenderTypes.setRenderLayer("))
 _rose_recipe = _DATA / "bettergold" / "recipe" / "golden_rose_bush.json"
 if not _rose_recipe.is_file():
@@ -5918,16 +5919,24 @@ else:
 for _needle9, _tag9, _why9 in (
         ("canSustainPlant", "bgfix9-rose-dirt-sustain-whitelist",
          "金染土没有声明 canSustainPlant"),
-        ("GOLDEN_ROSE_BUSH", "bgfix9-rose-dirt-sustain-whitelist",
-         "金染土的 canSustainPlant 白名单里没有金玫瑰丛（作者本轮的唯一要求）"),
+        ("GoldPlantSupport.isGoldPlant", "bgfix9-rose-dirt-sustain-whitelist",
+         "金染土的 canSustainPlant 没有走统一金植物白名单（1.8 bg25：白名单从" 
+         "「恰好金玫瑰丛」扩到全部金植物；金玫瑰丛仍是其中一员）"),
         ("TriState.TRUE", "bgfix9-rose-dirt-sustain-whitelist",
-         "金染土没有对金玫瑰丛返回 TriState.TRUE"),
+         "金染土没有对金植物返回 TriState.TRUE"),
         ("TriState.DEFAULT", "bgfix9-rose-dirt-sustain-whitelist",
          "金染土的白名单**不封闭**（缺 `return TriState.DEFAULT`）⇒ 要么恒 TRUE（普通作物会直接"
-         "种在金染土上）、要么实际还是放不上 —— 必须是「金玫瑰丛 ⇒ TRUE，其余 ⇒ DEFAULT」"),
+         "种在金染土上）、要么实际还是放不上 —— 必须是「金植物 ⇒ TRUE，其余 ⇒ DEFAULT」"),
 ):
     if _needle9 not in _dirt_block_nc:
         _bgfix9_bad(_tag9, _why9)
+# 1.8 bg25：白名单扩到全部金植物后，仍要保证**金玫瑰丛仍在名单里**（作者 1.6 的唯一要求不能回退）
+_gold_plants_nc9 = strip_comments(
+    (JAVA / "block" / "GoldPlantSupport.java").read_text(encoding="utf-8")) \
+    if (JAVA / "block" / "GoldPlantSupport.java").is_file() else ""
+if "GOLDEN_ROSE_BUSH" not in _gold_plants_nc9:
+    _bgfix9_bad("bgfix9-rose-dirt-sustain-whitelist",
+                "统一金植物白名单里没有金玫瑰丛（1.6 的唯一要求回退了）")
 _farm_nc9 = strip_comments((JAVA / "block" / "GoldInfusedFarmlandBlock.java").read_text(encoding="utf-8"))
 if "canSustainPlant" not in _farm_nc9 or "TriState.TRUE" not in _farm_nc9:
     _bgfix9_bad("bgfix9-rose-farmland-regression",
@@ -6326,7 +6335,7 @@ else:
 #     zh A54365AC96AE7B2E684CD2323ED0D455… / en 7E2360921393049FD9DCD56DF161A70D…
 # ★ 1.7 大轮 D 段（作者替换 zh_cn.json + 补 B/C 新键）：zh 850 键 / SHA 换成本轮最终值。
 #   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
-_BGN10_ZH_AFTER_SHA = "48D11E1B4766C260E721A908788B9E54B02A42D0FC4551F139624982B2575F5B"
+_BGN10_ZH_AFTER_SHA = "B270EBA313EA2F517050D7D6D6420D2D45C1F9B9B40F3ED98095134DD684353E"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
@@ -6334,7 +6343,7 @@ _BGN10_ZH_AFTER_SHA = "48D11E1B4766C260E721A908788B9E54B02A42D0FC4551F139624982B
 #   —— 1.7 `bg19` R7-b 同步改了 `en_us.json` 的同一条（金工细作简介的英文）⇒ en SHA 也换成本轮值。
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 #   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
-_BGN10_EN_AFTER_SHA = "5D0296288C4E54CD82A48AFDA5020C4CF2833DD043340299BB4A50F1641EC01B"
+_BGN10_EN_AFTER_SHA = "A3B3EDD18BFEA774A3458C980C91982EBECA20F156C67F0C83C0344D04C88D17"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6351,7 +6360,11 @@ _BGN10_EN_AFTER_SHA = "5D0296288C4E54CD82A48AFDA5020C4CF2833DD043340299BB4A50F16
 #   旧期望原文留档：`_BGN10_NEW_LANG_KEYS = 150`。
 # ★ 1.7 `bg18`（2026-10-25）：+ **5** 条（炼金的起步 第 6 章：1 条目名 + 4 页正文键）⇒ 128 → **133**。
 #   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 128`。
-_BGN10_NEW_LANG_KEYS = 133    # zh/en 各 133 条（相对冻结副本的净新增）
+# ★ 1.8 `bg25`（2026-11-18）：+ **26** 条（金染草/土径/金沙/金沙玻璃/板/13 件金丝木/
+#   树叶/树苗/金草丛/金高草丛/金盏花/金郁金香/金丝木棍/浮现之尘）⇒ 133 → **159**。
+#   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 133`。
+#   旧文件级 SHA（未删）：zh 48D11E1B4766C260… / en 5D0296288C4E54CD…
+_BGN10_NEW_LANG_KEYS = 159    # zh/en 各 159 条（相对冻结副本的净新增）
 # 旧值留档（原文保留，不删）：bgbig 的 zh B8384693… / en E60A0BC2…（`_BGN10_*_AFTER_SHA` 上一版）
 
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
@@ -11641,7 +11654,7 @@ else:
             ("GOLDEN_ROSE_BUSH.get()", "金骨粉没有识别金玫瑰丛"),
             ("GOLDEN_ROSE_PRODUCE = 3", "产量不是 3（普通 1 个的 3 倍）"),
             ("AllBlocks.GOLDEN_ROSE_BUSH_ITEM.get(), GOLDEN_ROSE_PRODUCE", "掉落的不是 3 个金玫瑰物品"),
-            ("ParticleTypes.HAPPY_VILLAGER", "没有骨粉粒子（HAPPY_VILLAGER）"),
+            ("AllParticles.GOLDEN_GROWTH", "没有专属催熟粒子（1.8 §C-12 起 HAPPY_VILLAGER 已按作者要求替换）"),
             ("SoundEvents.BONE_MEAL_USE", "没有播 BONE_MEAL_USE 音效")):
         _gpt_checked += 1
         if _needle not in _seg:
@@ -12758,6 +12771,9 @@ _BG21_PINS_WANT = [
     ("refined_alchemic_oil", "alchemic_fuel", True),
     ("golden_bone_meal", "golden_shield_blank", True),
     ("sturdygold_anvil", "golden_creeper_figurine", False),
+    # 1.8（bg25）：浮现之尘紧跟金骨粉、金丝木棍紧跟浮现之尘（作者 §C-11 / §B-10 的相对位置）
+    ("el_dorado_dust", "golden_bone_meal", True),
+    ("gold_silk_stick", "el_dorado_dust", True),
 ]
 _BG21_COUNT = 413
 _BG21_SRC = JAVA / "material" / "CreativeTabSections.java"
@@ -12849,6 +12865,9 @@ _bg21_before_ids = _bg21_read_order(_BG21_BEFORE, "改前")
 _bg21_after_ids = _bg21_read_order(_BG21_AFTER, "改后")
 _bg21_checked += 2
 
+# 1.8 bg25：新增的两条钉不在这两份 1.7 快照里（快照固定 413 件 = 1.7 收尾态），
+# 所以「快照里改前不成立 / 改后紧邻」只对原始 5 条判；新增两条由 Java 表 + 语言键两条判。
+_BG21_PINS_SNAPSHOT = _BG21_PINS_WANT[:5]
 if _bg21_before_ids and _bg21_after_ids:
     # 指纹自证（快照被手改会命中）
     for _ids, _want, _label in ((_bg21_before_ids, _BG21_FP_BEFORE, "改前"),
@@ -12864,7 +12883,7 @@ if _bg21_before_ids and _bg21_after_ids:
         _bg21_bad("bg21-creative-order", "改前 / 改后不是同一个集合（物品被增删了）")
     # 改前：这 5 条**都不成立**（作者说的「太靠前 / 位置不对」）
     # 改后：5 条全部**紧邻**
-    for _item, _anchor, _after in _BG21_PINS_WANT:
+    for _item, _anchor, _after in _BG21_PINS_SNAPSHOT:
         _item_full = "bettergold:" + _item
         _anchor_full = "bettergold:" + _anchor
         _bg21_checked += 2
@@ -12882,7 +12901,7 @@ if _bg21_before_ids and _bg21_after_ids:
                       "改后 `%s` %s `%s` 不紧邻（实际 item 位次 %s）"
                       % (_item, "after" if _after else "before", _anchor, _a))
     # 其余物品相对顺序不变：去掉这 5 件后两份序列逐项相等
-    _bg21_moved = ["bettergold:" + p[0] for p in _BG21_PINS_WANT]
+    _bg21_moved = ["bettergold:" + p[0] for p in _BG21_PINS_SNAPSHOT]
     _bg21_b2 = [x for x in _bg21_before_ids if x not in _bg21_moved]
     _bg21_a2 = [x for x in _bg21_after_ids if x not in _bg21_moved]
     _bg21_checked += 1
@@ -13041,6 +13060,437 @@ if not _bg22_problems:
           "+ 判据 SWEET_BERRY_BUSH + 只对 berryResist（全仓恰好 1 处 = 树棘金）"
           "+ 仙人掌 handler 原样并存 + 文档 §35（§32.2 旧口径原文保留）")
 
+# ==================== 1.8 阶段 1（bg25）：§A–§D 的内容 / 数据 / 顺序 / 贴图 / 粒子 ====================
+bg25_problems: list[str] = []
+_bg25_checked = 0
+
+
+def _bg25_bad(tag: str, msg: str) -> None:
+    bg25_problems.append("%s [%s]" % (msg, tag))
+
+
+_BG25_ASSETS = REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+_BG25_DATA = REPO / "src" / "main" / "resources" / "data"
+_BG25_ARCHIVE = REPO / "docs" / "1.8-新约10-素材清单"
+_BG25_BLOCKS = [
+    "gold_infused_grass_block", "gold_infused_dirt_path", "gold_sand",
+    "gold_sand_glass", "gold_sand_glass_pane",
+    "gold_silk_log", "gold_silk_wood", "stripped_gold_silk_log",
+    "stripped_gold_silk_wood", "gold_silk_planks", "gold_silk_stairs",
+    "gold_silk_slab", "gold_silk_fence", "gold_silk_fence_gate",
+    "gold_silk_door", "gold_silk_trapdoor", "gold_silk_button",
+    "gold_silk_pressure_plate", "gold_silk_leaves", "gold_silk_sapling",
+    "gold_short_grass", "gold_tall_grass", "gold_marigold", "gold_tulip",
+]
+_BG25_WOOD = _BG25_BLOCKS[5:18]   # 13 件金丝木建材
+_BG25_ITEMS = ["el_dorado_dust", "gold_silk_stick"]
+
+
+def _bg25_jload(rel):
+    p = REPO / rel
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def _bg25_tag(rel):
+    return _bg25_jload("src/main/resources/" + rel).get("values", [])
+
+
+_blocks25 = strip_comments((JAVA / "registry" / "AllBlocks.java").read_text(encoding="utf-8"))
+_items25 = strip_comments((JAVA / "registry" / "AllItems.java").read_text(encoding="utf-8"))
+for _n in _BG25_BLOCKS:
+    _bg25_checked += 1
+    if ('BLOCKS.register("%s"' % _n) not in _blocks25:
+        _bg25_bad("bg25-block-register", "AllBlocks 没有注册 %s" % _n)
+for _n in _BG25_ITEMS:
+    _bg25_checked += 1
+    _needle = (
+        'ITEMS.register("%s"' % _n
+        if _n == "el_dorado_dust"
+        else 'ITEMS.registerSimpleItem("%s"' % _n
+    )
+    if _needle not in _items25:
+        _bg25_bad("bg25-item-register", "AllItems 没有注册 %s" % _n)
+_bg25_checked += 1
+if 'registerSimpleBlockItem("gold_infused_farmland"' not in _blocks25:
+    _bg25_bad("bg25-farmland-item", "金染耕地没有 BlockItem（作者 §A-2 要求创造页可拿取）")
+
+# 硬度 / 方块类
+for _n, _strength in (("gold_infused_grass_block", "1.2F"),
+                      ("gold_infused_dirt_path", "1.2F"),
+                      ("gold_sand", "1.0F"),
+                      ("gold_sand_glass", "1.0F"),
+                      ("gold_sand_glass_pane", "1.0F")):
+    _bg25_checked += 1
+    _i = _blocks25.find('BLOCKS.register("%s"' % _n)
+    _seg = _blocks25[_i:_i + 700] if _i >= 0 else ""
+    if (".strength(%s)" % _strength) not in _seg:
+        _bg25_bad("bg25-hardness", "%s 的硬度不是 %s" % (_n, _strength))
+_bg25_checked += 1
+if ".strength(4.0F)" not in _blocks25[_blocks25.find("goldSilkWoodProps"):_blocks25.find("goldSilkWoodProps") + 400]:
+    _bg25_bad("bg25-hardness", "金丝木统一属性没有 .strength(4.0F)")
+for _n, _cls in (("gold_infused_grass_block", "GoldInfusedGrassBlock"),
+                 ("gold_infused_dirt_path", "GoldInfusedDirtPathBlock"),
+                 ("gold_sand_glass", "GoldSandGlassBlock"),
+                 ("gold_silk_leaves", "GoldSilkLeavesBlock"),
+                 ("gold_silk_sapling", "GoldSilkSaplingBlock")):
+    _bg25_checked += 1
+    if _cls not in _blocks25:
+        _bg25_bad("bg25-block-class", "缺方块类 %s（%s）" % (_cls, _n))
+_bg25_checked += 1
+if "ColoredFallingBlock" not in _blocks25 or "ColorRGBA" not in _blocks25:
+    _bg25_bad("bg25-sand-falling", "金沙不是 ColoredFallingBlock（不会像沙子一样下落）")
+_bg25_checked += 1
+if "OAK_LEAVES).strength(0.4F)" not in _blocks25:
+    _bg25_bad("bg25-leaves-hardness", "金丝树叶硬度不是 0.4F")
+
+# 战利品表
+try:
+    _loot_grass = _bg25_jload("src/main/resources/data/bettergold/loot_table/blocks/gold_infused_grass_block.json")
+    _loot_txt = json.dumps(_loot_grass, ensure_ascii=False)
+    _bg25_checked += 2
+    if "minecraft:silk_touch" not in _loot_txt or "bettergold:gold_infused_grass_block" not in _loot_txt:
+        _bg25_bad("bg25-loot-grass", "金染草方块没有「丝触 → 自己」")
+    if "bettergold:gold_infused_dirt" not in _loot_txt:
+        _bg25_bad("bg25-loot-grass", "金染草方块没有「非丝触 → 金染土」")
+except Exception as _e25:
+    _bg25_bad("bg25-loot-grass", "金染草方块战利品表读不了：%s" % _e25)
+
+for _n, _drop in (("gold_infused_dirt_path", "bettergold:gold_infused_dirt"),
+                  ("gold_infused_farmland", "bettergold:gold_infused_dirt"),
+                  ("gold_sand", "bettergold:gold_sand")):
+    _bg25_checked += 1
+    try:
+        _t = json.dumps(_bg25_jload(
+            "src/main/resources/data/bettergold/loot_table/blocks/%s.json" % _n))
+        if _drop not in _t:
+            _bg25_bad("bg25-loot-drop", "%s 不掉 %s" % (_n, _drop))
+    except Exception as _e:
+        _bg25_bad("bg25-loot-drop", "%s 战利品表读不了：%s" % (_n, _e))
+
+for _n in ("gold_sand_glass", "gold_sand_glass_pane"):
+    _bg25_checked += 1
+    try:
+        _t = json.dumps(_bg25_jload(
+            "src/main/resources/data/bettergold/loot_table/blocks/%s.json" % _n))
+        if "minecraft:silk_touch" not in _t:
+            _bg25_bad("bg25-loot-glass", "%s 没有丝触掉落" % _n)
+    except Exception as _e:
+        _bg25_bad("bg25-loot-glass", "%s 战利品表读不了：%s" % (_n, _e))
+
+for _n in _BG25_WOOD:
+    _bg25_checked += 1
+    try:
+        _t = json.dumps(_bg25_jload(
+            "src/main/resources/data/bettergold/loot_table/blocks/%s.json" % _n))
+        if ("bettergold:" + _n) not in _t:
+            _bg25_bad("bg25-loot-wood", "%s 不掉自己" % _n)
+    except Exception as _e:
+        _bg25_bad("bg25-loot-wood", "%s 战利品表读不了：%s" % (_n, _e))
+
+try:
+    _leaves_txt = json.dumps(_bg25_jload(
+        "src/main/resources/data/bettergold/loot_table/blocks/gold_silk_leaves.json"),
+        ensure_ascii=False)
+    _bg25_checked += 5
+    if "bettergold:gold_silk_stick" not in _leaves_txt:
+        _bg25_bad("bg25-loot-leaves", "树叶不掉金丝木棍")
+    if "minecraft:golden_apple" not in _leaves_txt or "minecraft:enchanted_golden_apple" not in _leaves_txt:
+        _bg25_bad("bg25-loot-leaves", "树叶不掉金苹果 / 附魔金苹果")
+    if _leaves_txt.count("minecraft:fortune") != 3:
+        _bg25_bad("bg25-loot-leaves", "树叶的三条掉落不是都挂时运（fortune 出现 %d 次）"
+                  % _leaves_txt.count("minecraft:fortune"))
+    for _ch, _why in (("[0.02, 0.0222, 0.025, 0.0333]", "木棍 2% 的时运表"),
+                      ("[0.01, 0.0125, 0.015, 0.02]", "金苹果 1% 的时运表"),
+                      ("[0.001, 0.00125, 0.0015, 0.002]", "附魔金苹果 0.1% 的时运表")):
+        _bg25_checked += 1
+        if _ch not in _leaves_txt:
+            _bg25_bad("bg25-loot-leaves", "%s 被改错（缺 %s）" % (_why, _ch))
+    if "glittering_vine" in _leaves_txt:
+        _bg25_bad("bg25-loot-leaves", "树叶战利品表里出现闪耀藤条（作者明确不掉）")
+    if "minecraft:shears" not in _leaves_txt or "minecraft:silk_touch" not in _leaves_txt:
+        _bg25_bad("bg25-loot-leaves", "树叶没有剪刀 / 丝触掉自己")
+except Exception as _e:
+    _bg25_bad("bg25-loot-leaves", "树叶战利品表读不了：%s" % _e)
+
+for _n in ("gold_short_grass", "gold_tall_grass"):
+    _bg25_checked += 4
+    try:
+        _t = json.dumps(_bg25_jload(
+            "src/main/resources/data/bettergold/loot_table/blocks/%s.json" % _n))
+        if "bettergold:golden_wheat_seeds" not in _t or "0.12" not in _t:
+            _bg25_bad("bg25-loot-grassplant", "%s 没有 12%% 金麦种子" % _n)
+        if "bettergold:golden_eggplant_seeds" not in _t or "0.01" not in _t:
+            _bg25_bad("bg25-loot-grassplant", "%s 没有 1%% 金钱茄种子" % _n)
+        if "minecraft:fortune" not in _t:
+            _bg25_bad("bg25-loot-grassplant", "%s 的种子不受时运" % _n)
+        if "minecraft:shears" not in _t:
+            _bg25_bad("bg25-loot-grassplant", "%s 剪刀不掉自己" % _n)
+    except Exception as _e:
+        _bg25_bad("bg25-loot-grassplant", "%s 战利品表读不了：%s" % (_n, _e))
+
+# 配方
+def _bg25_recipe(name):
+    return _bg25_jload("src/main/resources/data/bettergold/recipe/%s.json" % name)
+
+
+for _n, _checks in (
+        ("gold_infused_grass_block", (("minecraft:grass_block", "金染草方块中心不是草方块"),
+                                      ("minecraft:gold_ingot", "金染草方块不是金锭合成"))),
+        ("gold_sand", (("minecraft:sand", "金沙中心不是沙子"),
+                       ("minecraft:gold_ingot", "金沙不是金锭合成"))),
+        ("gold_silk_sapling", (("minecraft:saplings", "树苗配方中心不是任意树苗"),
+                               ("minecraft:gold_ingot", "树苗配方不是 8 金锭"))),
+        ("gold_tulip", (("minecraft:red_tulip", "金郁金香配方不是任意郁金香"),
+                        ("minecraft:gold_nugget", "金郁金香配方不是金粒")))):
+    _bg25_checked += 2
+    try:
+        _rt = json.dumps(_bg25_recipe(_n), ensure_ascii=False)
+        for _needle, _why in _checks:
+            if _needle not in _rt:
+                _bg25_bad("bg25-recipe", "%s：%s（缺 %s）" % (_n, _why, _needle))
+    except Exception as _e:
+        _bg25_bad("bg25-recipe", "%s 配方读不了：%s" % (_n, _e))
+
+_bg25_checked += 3
+try:
+    _dust_r = _bg25_recipe("el_dorado_dust")
+    if _dust_r.get("result", {}).get("count") != 8:
+        _bg25_bad("bg25-recipe-dust", "浮现之尘合成量不是 8")
+    _dt = json.dumps(_dust_r, ensure_ascii=False)
+    if "bettergold:sturdygold_nugget" not in _dt or "bettergold:golden_bone_meal" not in _dt:
+        _bg25_bad("bg25-recipe-dust", "浮现之尘不是「万坚金粒 + 8 金骨粉」")
+except Exception as _e:
+    _bg25_bad("bg25-recipe-dust", "浮现之尘配方读不了：%s" % _e)
+try:
+    _sm = _bg25_recipe("gold_sand_glass_smelting")
+    if _sm.get("type") != "minecraft:smelting" or "bettergold:gold_sand" not in json.dumps(_sm) \
+            or "bettergold:gold_sand_glass" not in json.dumps(_sm):
+        _bg25_bad("bg25-recipe-glass", "金沙玻璃不是金沙熔炉烧制")
+except Exception as _e:
+    _bg25_bad("bg25-recipe-glass", "金沙玻璃熔炉配方读不了：%s" % _e)
+
+for _n in ("gold_silk_planks_from_log", "gold_silk_planks_from_stripped_log",
+           "gold_silk_wood", "stripped_gold_silk_wood", "gold_silk_stick",
+           "gold_silk_stairs", "gold_silk_slab", "gold_silk_fence",
+           "gold_silk_fence_gate", "gold_silk_door", "gold_silk_trapdoor",
+           "gold_silk_button", "gold_silk_pressure_plate", "gold_sand_glass_pane"):
+    _bg25_checked += 1
+    if not (REPO / "src/main/resources/data/bettergold/recipe" / ("%s.json" % _n)).is_file():
+        _bg25_bad("bg25-recipe-wood", "缺 %s 配方" % _n)
+
+# 标签
+for _tag, _members, _count in (
+        ("data/minecraft/tags/block/mineable/axe.json",
+         ["bettergold:" + n for n in _BG25_WOOD], 13),
+        ("data/minecraft/tags/block/mineable/shovel.json",
+         ["bettergold:gold_infused_grass_block", "bettergold:gold_infused_dirt_path",
+          "bettergold:gold_sand"], 3),
+        ("data/minecraft/tags/block/needs_wooden_tool.json",
+         ["bettergold:gold_infused_grass_block", "bettergold:gold_infused_dirt_path",
+          "bettergold:gold_sand"] + ["bettergold:" + n for n in _BG25_WOOD], 16),
+        ("data/minecraft/tags/block/planks.json", ["bettergold:gold_silk_planks"], 1),
+        ("data/minecraft/tags/block/logs.json", ["bettergold:gold_silk_log"], 4),
+        ("data/minecraft/tags/block/saplings.json", ["bettergold:gold_silk_sapling"], 1),
+        ("data/minecraft/tags/block/small_flowers.json",
+         ["bettergold:gold_marigold", "bettergold:gold_tulip"], 2),
+        ("data/c/tags/item/rods/wooden.json", ["bettergold:gold_silk_stick"], 1)):
+    _bg25_checked += 1
+    try:
+        _vals = _bg25_tag(_tag)
+        _missing = [m for m in _members if m not in _vals]
+        if _missing:
+            _bg25_bad("bg25-tag", "%s 缺成员 %s" % (_tag, _missing))
+    except Exception as _e:
+        _bg25_bad("bg25-tag", "%s 读不了：%s" % (_tag, _e))
+
+# 金丝树叶不许进 #minecraft:leaves（否则全局修饰器会加闪耀藤条）
+for _tag in ("data/minecraft/tags/block/leaves.json", "data/minecraft/tags/item/leaves.json"):
+    _bg25_checked += 1
+    try:
+        _vals = _bg25_tag(_tag)
+        if "bettergold:gold_silk_leaves" in _vals:
+            _bg25_bad("bg25-leaves-tag", "%s 里出现了金丝树叶（会掉闪耀藤条）" % _tag)
+    except Exception:
+        pass
+
+# 创造页相对顺序
+_bg25_sec = strip_comments((JAVA / "material" / "CreativeSections.java").read_text(encoding="utf-8"))
+_m25 = re.search(r"OTHER_BLOCK_ORDER\s*=\s*List\.of\((.*?)\);", _bg25_sec, re.S)
+if not _m25:
+    _bg25_bad("bg25-creative-order", "解析不到 CreativeSections.OTHER_BLOCK_ORDER")
+else:
+    _order25 = re.findall(r'"([a-z0-9_]+)"', _m25.group(1))
+    _idx25 = {n: i for i, n in enumerate(_order25)}
+    _pairs = [("gold_infused_grass_block", "gold_infused_dirt", "草方块在金染土前"),
+              ("gold_infused_dirt", "gold_infused_farmland", "耕地在金染土后"),
+              ("gold_infused_dirt", "gold_infused_dirt_path", "土径在金染土后"),
+              ("gold_infused_farmland", "gold_sand", "金沙在耕地后"),
+              ("gold_sand", "gold_sand_glass", "金沙玻璃在金沙后"),
+              ("gold_sand_glass", "gold_sand_glass_pane", "玻璃板在玻璃后"),
+              ("gold_silk_planks", "gold_silk_leaves", "树叶在金丝木后"),
+              ("gold_silk_leaves", "gold_silk_sapling", "树苗在树叶后"),
+              ("gold_sand_glass_pane", "gold_short_grass", "草丛在玻璃板后"),
+              ("gold_short_grass", "gold_tall_grass", "高草丛在草丛后"),
+              ("gold_tall_grass", "gold_marigold", "金盏花在高草丛后"),
+              ("gold_marigold", "gold_tulip", "金郁金香在金盏花后"),
+              ("gold_tulip", "golden_rose_bush", "金玫瑰丛在金郁金香后")]
+    for _a, _b, _why in _pairs:
+        _bg25_checked += 1
+        if _a not in _idx25 or _b not in _idx25 or _idx25[_a] >= _idx25[_b]:
+            _bg25_bad("bg25-creative-order", "%s（%s=%s / %s=%s）"
+                      % (_why, _a, _idx25.get(_a), _b, _idx25.get(_b)))
+    _bg25_checked += 2
+    _wood_idx = [_idx25.get(n) for n in _BG25_WOOD]
+    if any(i is None for i in _wood_idx) or max(_wood_idx) >= _idx25.get("gold_infused_grass_block", 9999):
+        _bg25_bad("bg25-creative-order", "13 件金丝木没有整体排在金染草方块之前")
+    if len(set(_order25)) != len(_order25):
+        _bg25_bad("bg25-creative-order", "OTHER_BLOCK_ORDER 有重复项")
+
+# 紧邻钉：浮现之尘在金骨粉后、木棍在浮现之尘后
+_bg25_pins_src = strip_comments((JAVA / "material" / "CreativeTabSections.java").read_text(encoding="utf-8"))
+_bg25_pm = re.search(r"ADJACENCY_PINS\s*=\s*List\.of\((.*?)\);", _bg25_pins_src, re.S)
+_bg25_checked += 2
+if not _bg25_pm:
+    _bg25_bad("bg25-pins", "解析不到 ADJACENCY_PINS")
+else:
+    _pins25 = re.findall(r'new Pin\("([a-z0-9_]+)",\s*"([a-z0-9_]+)",\s*(true|false)\)',
+                         _bg25_pm.group(1))
+    if ("el_dorado_dust", "golden_bone_meal", "true") not in _pins25:
+        _bg25_bad("bg25-pins", "浮现之尘没有钉在金骨粉后面")
+    if ("gold_silk_stick", "el_dorado_dust", "true") not in _pins25:
+        _bg25_bad("bg25-pins", "金丝木棍没有钉在浮现之尘后面")
+
+# 粒子
+_bg25_particles = strip_comments((JAVA / "registry" / "AllParticles.java").read_text(encoding="utf-8")) \
+    if (JAVA / "registry" / "AllParticles.java").is_file() else ""
+_bg25_main = strip_comments((JAVA / "bettergold.java").read_text(encoding="utf-8"))
+_bg25_client = strip_comments((JAVA / "bettergoldClient.java").read_text(encoding="utf-8"))
+for _needle, _why in (
+        ('PARTICLE_TYPES.register("gold_silk_leaves"', "缺 gold_silk_leaves 粒子注册"),
+        ('PARTICLE_TYPES.register("golden_growth"', "缺 golden_growth 粒子注册"),
+        ("AllParticles.PARTICLE_TYPES.register(modEventBus)", "主类没有注册粒子 DeferredRegister"),
+        ("registerSpriteSet(", "客户端没有注册粒子 provider"),
+        ("GoldSilkLeafParticle.Provider::new", "客户端没有接金丝落叶 provider"),
+        ("GoldenGrowthParticle.Provider::new", "客户端没有接催熟粒子 provider")):
+    _bg25_checked += 1
+    if _needle in ('PARTICLE_TYPES.register("gold_silk_leaves"', 'PARTICLE_TYPES.register("golden_growth"'):
+        _src = _bg25_particles
+    elif _needle == "AllParticles.PARTICLE_TYPES.register(modEventBus)":
+        _src = _bg25_main
+    else:
+        _src = _bg25_client
+    if _needle not in _src:
+        _bg25_bad("bg25-particles", _why)
+_bg25_checked += 3
+try:
+    _pl = _bg25_jload("src/main/resources/assets/bettergold/particles/gold_silk_leaves.json")
+    if len(_pl.get("textures", [])) != 12:
+        _bg25_bad("bg25-particles", "金丝落叶粒子不是 12 帧")
+    for _i in range(12):
+        if not (_BG25_ASSETS / "textures" / "particle" / ("gold_silk_leaves_%d.png" % _i)).is_file():
+            _bg25_bad("bg25-particles", "缺粒子帧 gold_silk_leaves_%d.png" % _i)
+    if not (_BG25_ASSETS / "textures" / "particle" / "golden_growth.png").is_file():
+        _bg25_bad("bg25-particles", "缺催熟粒子贴图")
+except Exception as _e:
+    _bg25_bad("bg25-particles", "粒子定义读不了：%s" % _e)
+
+# 叶子粒子「照搬樱花」的关键数值（读源码）
+_bg25_leaf_particle = strip_comments(
+    (JAVA / "client" / "GoldSilkLeafParticle.java").read_text(encoding="utf-8")) \
+    if (JAVA / "client" / "GoldSilkLeafParticle.java").is_file() else ""
+for _needle, _why in (("INITIAL_LIFETIME = 300", "寿命不是樱花同款 300"),
+                      ("7.5E-4F", "重力不是樱花同款 7.5E-4"),
+                      ("Math.toRadians", "旋转不是樱花同款弧度计算")):
+    _bg25_checked += 1
+    if _needle not in _bg25_leaf_particle:
+        _bg25_bad("bg25-leaf-particle", _why)
+
+# 语言键
+for _n in _BG25_BLOCKS:
+    _bg25_checked += 2
+    _k = "block.bettergold." + _n
+    if _k not in zh or _k not in en:
+        _bg25_bad("bg25-lang", "缺中英语言键 %s" % _k)
+for _n in _BG25_ITEMS:
+    _bg25_checked += 2
+    _k = "item.bettergold." + _n
+    if _k not in zh or _k not in en:
+        _bg25_bad("bg25-lang", "缺中英语言键 %s" % _k)
+
+# 花草黑边处理留档（作者 2026-11-18 授权；只允许处理与图片外边框连通的纯黑像素）
+_bg25_black = REPO / "docs" / "1.8-素材认亲" / "黑边处理" / "报告.txt"
+_bg25_checked += 2
+if not _bg25_black.is_file():
+    _bg25_bad("bg25-texture-border", "缺黑边处理报告")
+else:
+    _bt = _bg25_black.read_text(encoding="utf-8")
+    if len(_bt.splitlines()) < 6:
+        _bg25_bad("bg25-texture-border", "黑边处理报告条目 < 5 张（改前/改后各一行）")
+
+# 贴图 1:1 / 认亲表
+_bg25_kin = REPO / "docs" / "1.8-素材认亲" / "认亲表.tsv"
+_bg25_checked += 1
+if not _bg25_kin.is_file():
+    _bg25_bad("bg25-textures", "缺 docs/1.8-素材认亲/认亲表.tsv")
+else:
+    _rows = [l.split("\t") for l in _bg25_kin.read_text(encoding="utf-8").splitlines()[1:] if l.strip()]
+    _bg25_checked += 1
+    if len(_rows) != 54:
+        _bg25_bad("bg25-textures", "认亲表条目不是 54（实际 %d）" % len(_rows))
+    for _r in _rows:
+        _bg25_checked += 1
+        if len(_r) < 5:
+            _bg25_bad("bg25-textures", "认亲表行格式不对：%s" % _r)
+            continue
+        _src_rel, _dst_rel, _size, _sha, _transform = _r[:5]
+        _src = _BG25_ARCHIVE / _src_rel
+        _dst = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / _dst_rel
+        if not _src.is_file() or not _dst.is_file():
+            _bg25_bad("bg25-textures", "认亲表源/目标不存在：%s -> %s" % (_src_rel, _dst_rel))
+            continue
+        _raw = _src.read_bytes()
+        _got = _dst.read_bytes()
+        if _transform == "1:1" and _raw != _got:
+            _bg25_bad("bg25-textures", "%s 不是 1:1 字节复制" % _dst_rel)
+        _h = hashlib.sha256(_got).hexdigest()
+        if _h != _sha:
+            _bg25_bad("bg25-textures", "%s 的 SHA256 与认亲表不符" % _dst_rel)
+
+# 关键贴图 SHA 锚点（9 张）
+_BG25_TEX_SHA = {
+    "block/gold_infused_grass_block_side.png": "d069a4c8d383e12220bfd009defba57af2ed01ebb2a67aa018b5d4b311705496",
+    "block/gold_sand.png": "e0a0ea93f0ce48d03b4788fa1fb0b1808e0eb0cc1d18c4918d9ddcf6552b700e",
+    "block/gold_sand_glass.png": "8eb8806ec4269e3373232275eafd58852914c6811784e4d0f73b3a13a287b78a",
+    "block/gold_sand_glass_pane.png": "87ca773259a5f183f695739098fe5df6ed761784a62e98a58feb770107a87084",
+    "block/gold_silk_leaves.png": "fdb66234ad0690815cf9fc9f836c7489580845b5f44a57a5a26ef72b4da1031e",
+    "block/gold_silk_planks.png": "94e042827e1a8625a3139395102d2afc05dec8057f6452d6d2225c9f408c474a",
+    "block/gold_short_grass.png": "b0f52f5725bb4d22b816d125cd92947fcaa0ff1ab0aa0d6573c276af49249fca",
+    "block/gold_marigold.png": "0bdbce761ea80d499daf9ba085ef26e78aac0e55491dec73f9d14150a23cfccb",
+    "item/el_dorado_dust.png": "5650316da2302bda2ee6650e5ba65ca8e58f5937e5f403d595b3e3543d51d23a",
+}
+for _rel, _want in _BG25_TEX_SHA.items():
+    _bg25_checked += 1
+    _p = _BG25_ASSETS / "textures" / _rel
+    if not _p.is_file():
+        _bg25_bad("bg25-tex-sha", "缺贴图 %s" % _rel)
+    elif hashlib.sha256(_p.read_bytes()).hexdigest() != _want:
+        _bg25_bad("bg25-tex-sha", "%s 的 SHA256 变了" % _rel)
+
+# 金丝木不许被注册成可燃（作者 §B-7「摆放状态下不被火焰烧毁」）
+_bg25_checked += 1
+if "FlammableBlockRegistry" in "".join(
+        p.read_text(encoding="utf-8", errors="replace") for p in JAVA.rglob("*.java")):
+    _bg25_bad("bg25-flammable", "仓库里出现了 FlammableBlockRegistry（金丝木可能被烧）")
+
+if _bg25_checked < 80:
+    _bg25_bad("bg25-anti-vacuum", "本段只跑了 %d 条判定（必须 >= 80）" % _bg25_checked)
+print("[bg25-summary] 1.8 阶段 1（§A–§D）：检查 %d 项，问题 %d 条%s"
+      % (_bg25_checked, len(bg25_problems),
+         "" if not bg25_problems else "：" + str(bg25_problems[:6])))
+if not bg25_problems:
+    print("[bg25-ok] 金染草/土径/金沙/玻璃 16 态/玻璃板/13 件金丝木/树叶/树苗/金花草/"
+          "浮现之尘 全部通过")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -13069,6 +13519,8 @@ _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags,
 _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg21_problems,)
 # 2026-11-10 bg22：树棘金盔甲不因甜浆果丛伤害掉耐久（ArmorHurtEvent）
 _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (_bg22_problems,)
+# 2026-11-18 bg25：1.8 阶段 1（§A–§D）内容 / 数据 / 顺序 / 贴图 / 粒子
+_EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg25_problems,)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

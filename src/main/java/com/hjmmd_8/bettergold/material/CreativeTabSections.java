@@ -162,7 +162,10 @@ public final class CreativeTabSections {
             new Pin("money_gremlin_spawn_egg", "chaos_coin_string", false),
             new Pin("refined_alchemic_oil", "alchemic_fuel", true),
             new Pin("golden_bone_meal", "golden_shield_blank", true),
-            new Pin("sturdygold_anvil", "golden_creeper_figurine", false));
+            new Pin("sturdygold_anvil", "golden_creeper_figurine", false),
+            // 1.8（bg25）：浮现之尘紧跟在金骨粉后面；金丝木棍紧跟在浮现之尘后面
+            new Pin("el_dorado_dust", "golden_bone_meal", true),
+            new Pin("gold_silk_stick", "el_dorado_dust", true));
 
     /** 按 {@link #ADJACENCY_PINS} 的顺序把物品逐个「取出 → 插到锚点旁」；锚点不在本分区就原样放回（绝不丢物品） */
     private static List<ItemStack> applyPins(List<ItemStack> base) {

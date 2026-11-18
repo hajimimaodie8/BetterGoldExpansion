@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "bettergold:block/gold_tall_grass_bottom"
+  }
+}

@@ -638,13 +638,49 @@ public class ModEvents {
         if (event.isSimulated()) {
             return;
         }
+        BlockState state = event.getState();
+        // 1.8（bg25 §A-3）：草方块 / 金染土 用锹 ⇒ 金染土径（原版 SHOVEL_FLATTEN 事件）
+        if (ItemAbilities.SHOVEL_FLATTEN.equals(event.getItemAbility())) {
+            if (state.is(AllBlocks.GOLD_INFUSED_GRASS_BLOCK.get())
+                    || state.is(AllBlocks.GOLD_INFUSED_DIRT.get())) {
+                event.setFinalState(AllBlocks.GOLD_INFUSED_DIRT_PATH.get().defaultBlockState());
+            }
+            return;
+        }
+        // 1.8（bg25 §B-7）：金丝原木 / 金丝木 用斧头去皮。
+        // 1.21.1 的 AxeItem 先走 NeoForge 的 AXE_STRIP 事件（getToolModifiedState），
+        // 事件没给结果才回落到 protected 的 STRIPPABLES 表 —— 所以这里给结果即可，
+        // 不需要（也无法）直接改那张 protected 静态表。
+        if (ItemAbilities.AXE_STRIP.equals(event.getItemAbility())) {
+            if (state.is(AllBlocks.GOLD_SILK_LOG.get())) {
+                event.setFinalState(AllBlocks.STRIPPED_GOLD_SILK_LOG.get()
+                        .defaultBlockState().setValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS,
+                                state.getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS)));
+            } else if (state.is(AllBlocks.GOLD_SILK_WOOD.get())) {
+                event.setFinalState(AllBlocks.STRIPPED_GOLD_SILK_WOOD.get()
+                        .defaultBlockState().setValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS,
+                                state.getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS)));
+            }
+            return;
+        }
         if (!ItemAbilities.HOE_TILL.equals(event.getItemAbility())) {
             return;
         }
-        BlockState state = event.getState();
         if (state.is(AllBlocks.GOLD_INFUSED_DIRT.get())) {
             event.setFinalState(AllBlocks.GOLD_INFUSED_FARMLAND.get().defaultBlockState());
         }
+    }
+
+    /**
+     * 1.8（bg25 §B-7）：金丝原木 / 金丝木 可被斧头去皮。
+     *
+     * <p>1.21.1 的 {@code AxeItem#useOn} 先调 {@code state.getToolModifiedState(..., AXE_STRIP, false)}
+     * ⇒ 派发 {@link BlockEvent.BlockToolModificationEvent}；事件没给结果才回落到
+     * {@code protected static final STRIPPABLES}。所以去皮在
+     * {@link #onBlockToolModification} 的 {@code AXE_STRIP} 分支里落，<b>不碰任何 protected 表</b>。</p>
+     */
+    public static void registerStrippables() {
+        // 保留方法名给旧调用点/文档引用；实际逻辑已合并进 onBlockToolModification 的 AXE_STRIP 分支。
     }
 
     // ==================== 食用金食物特殊效果 ====================

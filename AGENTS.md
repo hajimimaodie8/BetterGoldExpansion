@@ -162,6 +162,16 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
 原版 `assets/minecraft/atlases/mob_effects.json` 是 `directory: mob_effect` +
 原版 39 张效果贴图**全部 18×18**（详见 `docs\1.7-裁定落实-4-5-12-13-14.md` §C）。）
 
+（**第七次 = 1.8 阶段 1「新增」不是「改」（`bg25`，作者 2026-11-18）**：
+来源 = `E:\mc\mc资料\新的新约\更有用的金 新约10 (1).zip`（673,488 B / 唯一 SHA256
+`21413ca1b33addc13edf4d767b1e694fbff6ea60eab8b8168cb8ede0f923d94b`，**只读，一字节没动**）
++ `金然土径补充.zip`。新增贴图 **54 张**（`??`，**不是改既有**）⇒ 白名单的「文件」数不变；
+认亲表 `docs/1.8-素材认亲/认亲表.tsv` 54 行、全部 1:1 字节复制。
+作者同日确认「花花草草不要大黑格」⇒ 对 5 张花草按「只去与图片外边框 4 连通的纯黑像素」逐张扫描，
+**命中 0 像素**、0 张被改（改前/改后 SHA 相同，留档 `docs/1.8-素材认亲/黑边处理/`）；
+黑格真实成因是透明方块没注册 `cutout`（solid 层把 alpha=0 画成黑），本轮给全部新花草/树叶/树苗/
+门/活板门补了 cutout、玻璃/玻璃板补了 translucent。**除 54 张新增之外，既有贴图 0 张被改。**）
+
 **7）mixin 基础设施（`bg-15w` 续工轮起才有）**
 - 配置：`src/main/resources/bettergold.mixins.json`（`client: ["ItemRendererTridentMixin"]`）+
   `META-INF/neoforge.mods.toml` 里**已启用**的 `[[mixins]] config="${mod_id}.mixins.json"`（原先是注释态）。

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB",
+    "BNB",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "item": "bettergold:golden_bone_meal"
+    },
+    "N": {
+      "item": "bettergold:sturdygold_nugget"
+    }
+  },
+  "result": {
+    "id": "bettergold:el_dorado_dust",
+    "count": 8
+  }
+}

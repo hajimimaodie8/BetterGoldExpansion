@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/fence_post",
+  "textures": {
+    "texture": "bettergold:block/gold_silk_planks",
+    "particle": "bettergold:block/gold_silk_planks"
+  }
+}
