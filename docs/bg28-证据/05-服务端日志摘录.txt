@@ -1,0 +1,20 @@
+﻿[1911月2026 10:16:49.741] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_armor_applies_kb :: 马身上实际击退抗性=0.10000000149011612
+[1911月2026 10:16:49.741] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_aura_flame_zombie :: zombie high_burn=effect.bettergold.high_burn x 2, Duration: 312
+[1911月2026 10:16:49.742] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_aura_flame_cow :: cow high_burn=null
+[1911月2026 10:16:49.742] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_aura_wind_slash_minus_tick :: 带风斩时新挂的高燃时长=319（16 秒 −1 tick）
+[1911月2026 10:16:49.742] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_armor_immune_fire :: Pre 伤害=0.0
+[1911月2026 10:16:49.742] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_armor_sturdy_not_immune :: Pre 伤害=1.0
+[1911月2026 10:16:49.748] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_aura_illusion_player :: player regen=effect.minecraft.regeneration, Duration: 120
+[1911月2026 10:16:49.748] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_aura_illusion_friendly :: cow regen=effect.minecraft.regeneration, Duration: 120
+[1911月2026 10:16:49.748] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_aura_illusion_self :: horse regen=effect.minecraft.regeneration, Duration: 120
+[1911月2026 10:16:49.748] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_aura_illusion_enemy_none :: zombie regen=null
+[1911月2026 10:16:49.750] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_chaos_reduction :: 16%=8.400001 0%=10.0
+[1911月2026 10:16:49.751] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_alloy_reduction :: 40%=6.0 16%=8.400001
+[1911月2026 10:16:49.755] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_alloy_dual_imbalance :: power=effect.bettergold.power_imbalance, Duration: 320 resistance=effect.bettergold.resistance_imbalance, Duration: 320
+[1911月2026 10:17:06.265] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_sturdy_heart_grant :: 16 秒后吸收=2.0
+[1911月2026 10:17:22.816] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_sturdy_heart_cap :: 上限处吸收=20.0
+[1911月2026 10:17:23.112] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] PASS horse_frost_walker_spec :: FROSTED_ICE=49（4 级半径 6）
+[1911月2026 10:17:23.113] [Server thread/INFO] [Bg28Probe/]: [bg28-probe] SUMMARY passes=44 fails=0 -> E:\mc\mcmod\bettergold-template-1.21.1\run\probe\bg28\readings.txt
+[1911月2026 10:17:23.370] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[1911月2026 10:17:23.683] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[1911月2026 10:17:23.690] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether

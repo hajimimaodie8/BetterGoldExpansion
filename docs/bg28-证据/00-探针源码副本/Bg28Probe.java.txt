@@ -1,0 +1,483 @@
+package com.hjmmd_8.bettergold.probe.bg28;
+
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.material.AllMetals;
+import com.hjmmd_8.bettergold.material.ChaosRange;
+import com.hjmmd_8.bettergold.material.HorseArmorEvents;
+import com.hjmmd_8.bettergold.material.ImbalanceEffects;
+import com.hjmmd_8.bettergold.material.MetalEvents;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.material.MetalHorseArmor;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 1.8 阶段 3 · 段 0（14 条矛配方）+ 段 B（12 套马铠）A 级探针 —— <b>收尾整块删除</b>。
+ *
+ * <p>真 {@link ServerPlayer} / 真 {@link Horse} / 真 {@link Zombie} / 真 {@link Cow} /
+ * 真 {@code ServerLevel#getRecipeManager()}（配方逐格匹配 + assemble）。</p>
+ *
+ * <p>开关 {@code run/bg28-probe.enabled}；读数 {@code run/probe/bg28/readings.txt}；
+ * {@code halt(false)} 只调一次。</p>
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class Bg28Probe {
+
+    private static final String TAG = "[bg28-probe]";
+    private static final Path SWITCH = Path.of("bg28-probe.enabled");
+    private static final Path OUT = Path.of("probe", "bg28", "readings.txt");
+    private static final Logger LOG = LoggerFactory.getLogger("Bg28Probe");
+
+    private static final BlockPos BASE = new BlockPos(2000, 120, 2000);
+    private static final int FORCED_X = BASE.getX() >> 4;
+    private static final int FORCED_Z = BASE.getZ() >> 4;
+
+    private static final List<String> LINES = new ArrayList<>();
+    private static int passes;
+    private static int fails;
+    private static int phase;
+    private static int wait;
+    private static boolean done;
+    private static ServerLevel level;
+    private static ServerPlayer man;
+    private static Horse horse;
+    private static Zombie zombie;
+    private static Cow cow;
+
+    /** 读伤害事件用 */
+    private static LivingEntity damageTarget;
+    private static BlockPos frostCenter;
+    private static float lastPreDamage = -1.0F;
+
+    private static final String[][] RECIPES = {
+        {"sturdygold_spear", "sturdygold_ingot"},
+        {"flamegold_spear", "flamegold_ingot"},
+        {"windgold_spear", "windgold_ingot"},
+        {"thornsgold_spear", "thornsgold_ingot"},
+        {"echogold_spear", "echogold_ingot"},
+        {"frostgold_spear", "frostgold_ingot"},
+        {"indigoseagold_spear", "indigoseagold_ingot"},
+        {"voodoogold_spear", "voodoogold_ingot"},
+        {"thundergold_spear", "thundergold_ingot"},
+        {"illusiongold_spear", "illusiongold_ingot"},
+        {"chaosgold_spear", "chaosgold_ingot"},
+        {"chaosalloy_spear", "chaosalloy_ingot"},
+        {"antique_spear", "unwanted_antique"},
+        {"yaksha_spear", "NETHERITE_INGOT"},
+    };
+
+    private Bg28Probe() {
+    }
+
+    private static void check(String id, boolean ok, String detail) {
+        if (ok) {
+            passes++;
+            LINES.add("PASS " + id + " :: " + detail);
+            LOG.info("{} PASS {} :: {}", TAG, id, detail);
+        } else {
+            fails++;
+            LINES.add("FAIL " + id + " :: " + detail);
+            LOG.error("{} FAIL {} :: {}", TAG, id, detail);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDamagePre(LivingDamageEvent.Pre event) {
+        if (damageTarget != null && event.getEntity() == damageTarget) {
+            lastPreDamage = event.getNewDamage();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (done) {
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        if (phase == 0) {
+            if (!Files.isRegularFile(SWITCH)) {
+                return;
+            }
+            try {
+                setup(server);
+                phase = 1;
+            } catch (Throwable t) {
+                LOG.error("{} setup threw", TAG, t);
+                check("probe_setup", false, String.valueOf(t));
+                finish(server);
+            }
+            return;
+        }
+        if (wait > 0) {
+            wait--;
+            return;
+        }
+        try {
+            switch (phase) {
+                case 1 -> step1RecipesAndSpawn();
+                case 2 -> step2StatusesAndSpecial();
+                case 3 -> step3SturdyHeart();
+                case 4 -> step4FrostWalker();
+                case 5 -> step5Finish(server);
+                default -> finish(server);
+            }
+        } catch (Throwable t) {
+            LOG.error("{} phase {} threw", TAG, phase, t);
+            check("probe_phase_" + phase, false, String.valueOf(t));
+            finish(server);
+        }
+    }
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        level.setChunkForced(FORCED_X, FORCED_Z, true);
+        level.getChunk(FORCED_X, FORCED_Z);
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -8; dz <= 8; dz++) {
+                level.setBlockAndUpdate(BASE.offset(dx, -1, dz), Blocks.STONE.defaultBlockState());
+                for (int dy = 0; dy <= 5; dy++) {
+                    level.setBlockAndUpdate(BASE.offset(dx, dy, dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        man = player(server);
+        man.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        man.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+        level.addNewPlayer(man);
+        man.getAbilities().invulnerable = false;
+        man.onUpdateAbilities();
+
+        horse = EntityType.HORSE.create(level);
+        if (horse != null) {
+            horse.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+            horse.setTamed(true);
+            horse.setNoAi(true);
+            level.addFreshEntity(horse);
+        }
+        zombie = EntityType.ZOMBIE.create(level);
+        if (zombie != null) {
+            zombie.moveTo(BASE.getX() + 1.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+            zombie.setNoAi(true);
+            level.addFreshEntity(zombie);
+        }
+        cow = EntityType.COW.create(level);
+        if (cow != null) {
+            cow.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 1.5D, 0.0F, 0.0F);
+            cow.setNoAi(true);
+            level.addFreshEntity(cow);
+        }
+        LINES.add("SETUP level=" + levelName(server) + " forced=" + level.getForcedChunks().size()
+                + " horse=" + (horse != null) + " zombie=" + (zombie != null));
+        // 等 30 tick：区块到 ENTITY_TICKING、实体真正可见
+        wait = 30;
+    }
+
+    private static String levelName(MinecraftServer server) {
+        try {
+            Object data = server.overworld().getLevelData();
+            var m = data.getClass().getMethod("getLevelName");
+            return String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            return "<unreadable>";
+        }
+    }
+
+    private static ServerPlayer player(MinecraftServer server) {
+        GameProfile profile = new GameProfile(
+                UUID.nameUUIDFromBytes("bg28_probe".getBytes(StandardCharsets.UTF_8)), "bg28_probe");
+        ServerPlayer p = new ServerPlayer(server, server.overworld(), profile,
+                ClientInformation.createDefault());
+        try {
+            p.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                    server,
+                    new net.minecraft.network.Connection(
+                            net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                    p,
+                    net.minecraft.server.network.CommonListenerCookie.createInitial(profile, false));
+        } catch (Throwable ignored) {
+        }
+        return p;
+    }
+
+    // ==================== ① 14 条矛配方（真配方管理器 + assemble） ====================
+    private static void step1RecipesAndSpawn() {
+        LINES.add("READ horse_alive=" + horse.isAlive() + " horse_armor_value=" + horse.getArmorValue()
+                + " zombie_alive=" + zombie.isAlive());
+        for (String[] row : RECIPES) {
+            String spear = row[0];
+            String material = row[1];
+            ItemStack a = material.equals("NETHERITE_INGOT")
+                    ? new ItemStack(Items.NETHERITE_INGOT)
+                    : new ItemStack(BuiltInRegistries.ITEM.get(
+                            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("bettergold", material)));
+            List<ItemStack> grid = new ArrayList<>();
+            for (int i = 0; i < 9; i++) {
+                grid.add(ItemStack.EMPTY);
+            }
+            grid.set(2, a);                                  // row0 col2
+            grid.set(4, new ItemStack(Items.STICK));          // row1 col1
+            grid.set(6, new ItemStack(Items.STICK));          // row2 col0
+            CraftingInput input = CraftingInput.of(3, 3, grid);
+            var found = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
+            if (found.isEmpty()) {
+                check("spear_recipe_" + spear, false, "配方管理器没有匹配到");
+                continue;
+            }
+            ItemStack result = found.get().value().assemble(input, level.registryAccess());
+            boolean ok = result.getItem() == BuiltInRegistries.ITEM.get(
+                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("bettergold", spear))
+                    && result.getCount() == 1;
+            check("spear_recipe_" + spear, ok,
+                    "recipe=" + found.get().id() + " result=" + BuiltInRegistries.ITEM.getKey(result.getItem())
+                            + " x" + result.getCount());
+        }
+        // 负向：把材料换成泥土 ⇒ 不匹配
+        List<ItemStack> wrong = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            wrong.add(ItemStack.EMPTY);
+        }
+        wrong.set(2, new ItemStack(Items.DIRT));
+        wrong.set(4, new ItemStack(Items.STICK));
+        wrong.set(6, new ItemStack(Items.STICK));
+        check("spear_recipe_negative", level.getRecipeManager()
+                .getRecipeFor(RecipeType.CRAFTING, CraftingInput.of(3, 3, wrong), level).isEmpty(),
+                "换掉材料后仍能匹配（配方过宽）");
+
+        // ---------- 马铠数值：ArmorMaterial ----------
+        for (MetalFamily f : MetalFamily.all()) {
+            var mat = MetalHorseArmor.materialOf(f).value();
+            int def = mat.getDefense(net.minecraft.world.item.ArmorItem.Type.BODY);
+            float tough = mat.toughness();
+            float kb = mat.knockbackResistance();
+            boolean precious = MetalHorseArmor.isPrecious(f);
+            boolean ok;
+            if (f == AllMetals.CHAOSGOLD) {
+                ok = def == 7 && tough == 2.0F && kb == 0.0F;
+            } else if (f == AllMetals.CHAOSALLOY) {
+                ok = def == 20 && tough == 8.0F && kb == 0.10F;
+            } else {
+                ok = precious && def == 24 && tough == 6.0F && kb == 0.10F;
+            }
+            check("horse_armor_values_" + f.id, ok, "def=" + def + " tough=" + tough + " kb=" + kb);
+        }
+
+        equip(AllMetals.FLAMEGOLD);
+        wait = 30;
+        phase = 2;
+    }
+
+    // ==================== ② 状态 / 免疫 / 风斩 / 幻惑 / 混沌减伤 ====================
+    private static void step2StatusesAndSpecial() {
+        LINES.add("READ horse_armor_value_after_equip=" + horse.getArmorValue()
+                + " horse_kb=" + horse.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE));
+        check("horse_armor_applies_armor", horse.getArmorValue() == 24,
+                "马身上实际护甲值=" + horse.getArmorValue());
+        check("horse_armor_applies_kb",
+                Math.abs(horse.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE) - 0.10D) < 1.0E-6D,
+                "马身上实际击退抗性=" + horse.getAttributeValue(
+                        net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE));
+
+        // 3×3×3：烈燃金 ⇒ 僵尸高燃、牛不受影响
+        MobEffectInstance burn = zombie.getEffect(AllEffects.HIGH_BURN);
+        check("horse_aura_flame_zombie", burn != null, "zombie high_burn=" + burn);
+        check("horse_aura_flame_cow", cow.getEffect(AllEffects.HIGH_BURN) == null,
+                "cow high_burn=" + cow.getEffect(AllEffects.HIGH_BURN));
+
+        // 风斩 −1 tick：目标已有风斩 ⇒ 本次 16 秒 −1 tick = 319
+        zombie.addEffect(new MobEffectInstance(AllEffects.WIND_SLASH, 100, 0));
+        HorseArmorEvents.tickStatusForProbe(horse, AllMetals.FLAMEGOLD);
+        MobEffectInstance burnAfter = zombie.getEffect(AllEffects.HIGH_BURN);
+        check("horse_aura_wind_slash_minus_tick", burnAfter != null && burnAfter.getDuration() == 319,
+                "带风斩时新挂的高燃时长=" + (burnAfter == null ? "null" : burnAfter.getDuration()) + "（16 秒 −1 tick）");
+
+        // 免疫：烈燃金马铠吃火焰伤害 = 0
+        lastPreDamage = -1.0F;
+        damageTarget = horse;
+        horse.invulnerableTime = 0;
+        horse.setHealth(horse.getMaxHealth());
+        horse.hurt(level.damageSources().inFire(), 5.0F);
+        check("horse_armor_immune_fire", lastPreDamage == 0.0F, "Pre 伤害=" + lastPreDamage);
+        // 负向：万坚金马铠（不免疫）同样受火焰伤害 > 0
+        equip(AllMetals.STURDYGOLD);
+        lastPreDamage = -1.0F;
+        horse.invulnerableTime = 0;
+        horse.setHealth(horse.getMaxHealth());
+        horse.hurt(level.damageSources().inFire(), 5.0F);
+        check("horse_armor_sturdy_not_immune", lastPreDamage > 0.0F, "Pre 伤害=" + lastPreDamage);
+
+        // 幻惑金：3×3×3 内玩家 / 友善 / 马自己回 6 秒恢复 I（等级 0）；敌对不挂
+        equip(AllMetals.ILLUSIONGOLD);
+        zombie.removeEffect(AllEffects.HIGH_BURN);
+        zombie.removeEffect(AllEffects.WIND_SLASH);
+        man.removeEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+        cow.removeEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+        horse.removeEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+        HorseArmorEvents.tickStatusForProbe(horse, AllMetals.ILLUSIONGOLD);
+        MobEffectInstance pRegen = man.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+        MobEffectInstance cRegen = cow.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+        MobEffectInstance hRegen = horse.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+        check("horse_aura_illusion_player", pRegen != null && pRegen.getDuration() == 120
+                && pRegen.getAmplifier() == 0, "player regen=" + pRegen);
+        check("horse_aura_illusion_friendly", cRegen != null && cRegen.getAmplifier() == 0, "cow regen=" + cRegen);
+        check("horse_aura_illusion_self", hRegen != null && hRegen.getAmplifier() == 0, "horse regen=" + hRegen);
+        check("horse_aura_illusion_enemy_none",
+                zombie.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION) == null,
+                "zombie regen=" + zombie.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION));
+
+        // 混沌金：0–16% 减伤（上端 16% / 下端 0%）
+        equip(AllMetals.CHAOSGOLD);
+        ItemStack chaos = horse.getBodyArmorItem();
+        ChaosRange.setFraction(chaos, ChaosRange.Channel.ARMOR, 1000);
+        lastPreDamage = -1.0F;
+        horse.invulnerableTime = 0;
+        horse.setHealth(horse.getMaxHealth());
+        horse.hurt(level.damageSources().magic(), 10.0F);
+        float chaosHigh = lastPreDamage;
+        ChaosRange.setFraction(chaos, ChaosRange.Channel.ARMOR, 0);
+        lastPreDamage = -1.0F;
+        horse.invulnerableTime = 0;
+        horse.setHealth(horse.getMaxHealth());
+        horse.hurt(level.damageSources().magic(), 10.0F);
+        float chaosLow = lastPreDamage;
+        check("horse_chaos_reduction", Math.abs(chaosHigh - 8.4F) < 0.05F && Math.abs(chaosLow - 10.0F) < 0.05F,
+                "16%=" + chaosHigh + " 0%=" + chaosLow);
+
+        // 崩乱合金：16–40% 减伤 + 双失衡
+        equip(AllMetals.CHAOSALLOY);
+        ItemStack alloy = horse.getBodyArmorItem();
+        ChaosRange.setFraction(alloy, ChaosRange.Channel.ARMOR, 1000);
+        lastPreDamage = -1.0F;
+        horse.invulnerableTime = 0;
+        horse.setHealth(horse.getMaxHealth());
+        horse.hurt(level.damageSources().magic(), 10.0F);
+        float alloyHigh = lastPreDamage;
+        ChaosRange.setFraction(alloy, ChaosRange.Channel.ARMOR, 0);
+        lastPreDamage = -1.0F;
+        horse.invulnerableTime = 0;
+        horse.setHealth(horse.getMaxHealth());
+        horse.hurt(level.damageSources().magic(), 10.0F);
+        float alloyLow = lastPreDamage;
+        check("horse_alloy_reduction", Math.abs(alloyHigh - 6.0F) < 0.05F && Math.abs(alloyLow - 8.4F) < 0.05F,
+                "40%=" + alloyHigh + " 16%=" + alloyLow);
+
+        zombie.removeEffect(AllEffects.POWER_IMBALANCE);
+        zombie.removeEffect(AllEffects.RESISTANCE_IMBALANCE);
+        for (int i = 0; i < 40; i++) {
+            horse.invulnerableTime = 0;
+            horse.setHealth(horse.getMaxHealth());
+            horse.hurt(level.damageSources().mobAttack(zombie), 1.0F);
+            if (zombie.hasEffect(AllEffects.POWER_IMBALANCE) && zombie.hasEffect(AllEffects.RESISTANCE_IMBALANCE)) {
+                break;
+            }
+        }
+        check("horse_alloy_dual_imbalance",
+                zombie.hasEffect(AllEffects.POWER_IMBALANCE) && zombie.hasEffect(AllEffects.RESISTANCE_IMBALANCE),
+                "power=" + zombie.getEffect(AllEffects.POWER_IMBALANCE)
+                        + " resistance=" + zombie.getEffect(AllEffects.RESISTANCE_IMBALANCE));
+
+        // 万坚金：吸收黄心（先清零，等 320 tick 看 +2；上限 20）
+        equip(AllMetals.STURDYGOLD);
+        horse.setAbsorptionAmount(0.0F);
+        wait = 330;
+        phase = 3;
+    }
+
+    // ==================== ③ 万坚金：16 秒 +1 颗黄心 / 上限 10 颗 ====================
+    private static void step3SturdyHeart() {
+        float first = horse.getAbsorptionAmount();
+        check("horse_sturdy_heart_grant", Math.abs(first - 2.0F) < 0.01F, "16 秒后吸收=" + first);
+        horse.setAbsorptionAmount(19.0F);
+        wait = 330;
+        phase = 4;
+    }
+
+    // ==================== ④ 凛冰金：4 级冰霜行者规格 ====================
+    private static void step4FrostWalker() {
+        check("horse_sturdy_heart_cap", Math.abs(horse.getAbsorptionAmount() - 20.0F) < 0.01F,
+                "上限处吸收=" + horse.getAbsorptionAmount());
+        equip(AllMetals.FROSTGOLD);
+        // 在马**脚下那一层**铺一片水源（freezeAround 的语义与 bg26 探针一致：
+        // 它冻结的是 {blockPosition} 的 -1 层）
+        BlockPos feet = horse.blockPosition();
+        frostCenter = feet;
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -6; dz <= 6; dz++) {
+                level.setBlockAndUpdate(feet.offset(dx, -1, dz), Blocks.WATER.defaultBlockState());
+            }
+        }
+        MetalEvents.freezeAround(horse, HorseArmorEvents.FROST_WALKER_SPEC_LEVEL);
+        wait = 5;
+        phase = 5;
+    }
+
+    private static void step5Finish(MinecraftServer server) {
+        int frosted = 0;
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                if (level.getBlockState(frostCenter.offset(dx, -1, dz)).is(Blocks.FROSTED_ICE)) {
+                    frosted++;
+                }
+            }
+        }
+        check("horse_frost_walker_spec", frosted > 0, "FROSTED_ICE=" + frosted + "（4 级半径 6）");
+        finish(server);
+    }
+
+    private static void equip(MetalFamily family) {
+        ItemStack stack = new ItemStack(MetalHorseArmor.of(family).get());
+        horse.setItemSlot(EquipmentSlot.BODY, stack);
+    }
+
+    private static void finish(MinecraftServer server) {
+        if (done) {
+            return;
+        }
+        done = true;
+        try {
+            Files.createDirectories(OUT.getParent());
+            List<String> out = new ArrayList<>(LINES);
+            out.add("SUMMARY passes=" + passes + " fails=" + fails);
+            Files.write(OUT, out, StandardCharsets.UTF_8);
+            LOG.info("{} SUMMARY passes={} fails={} -> {}", TAG, passes, fails, OUT.toAbsolutePath());
+        } catch (Throwable t) {
+            LOG.error("{} write readings failed", TAG, t);
+        }
+        try {
+            level.setChunkForced(FORCED_X, FORCED_Z, false);
+        } catch (Throwable ignored) {
+        }
+        server.halt(false);
+    }
+}

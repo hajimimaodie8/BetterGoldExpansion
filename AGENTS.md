@@ -281,6 +281,20 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
   `git checkout` 还原并把 13 处改动重做一遍。**用 Python `read_bytes`/`write_bytes`/`shutil.copyfile`，
   或用编辑器工具**；扰动/复原脚本见 `docs/bgn10-证据/脚本副本/bgn10_perturb.py`（5 用例全过 + SHA256 自证）。
 
+**12）1.8 阶段 3 · 段 0 + 段 B 落点（`bg28`，2026-11-19）**
+- **长矛配方 14 条**：形状 = spearcore 官方矛（`"  a"`/`" b "`/`"b  "`，`b = stick`，成品 1），
+  生成器 `tools/asset-generator/generate_bg28_spear_recipes.py`；14 件 = 10 贵金属 + 混沌 + 崩乱 + 古董 + 夜叉
+  （交接单的"13"是笔误，已确认按 14 做）。
+- **马铠 12 套**：`material/MetalHorseArmor.java`（**`ArmorMaterial` 必须真注册进 `Registries.ARMOR_MATERIAL`**，
+  `AnimalArmorItem` 构造器要 `unwrapKey()`，`Holder.direct` 会抛）+ `material/HorseArmorEvents.java`
+  （3×3×3/20 tick、风斩 −1 tick、万坚 16s 上限 10 颗、凛冰 4 级规格、幻惑 6 秒恢复 I、混沌/崩乱区间减伤）。
+  ⚠ **给马挂吸收必须先挂 `MAX_ABSORPTION` 修饰符**（否则 `setAbsorptionAmount` 被 0 夹住）。
+  ⚠ 创造页后缀 `ring=15` / `horse_armor=16` 已排在靴子之后（`GEAR_SLOT` 只重排、不删项）。
+- 记录：`docs/1.8-规格-新的新约.md` §Z-4（逐条读数）/ §Z-5（**段 C 转化之戒交接**）；证据 `docs/bg28-证据\`；
+  认亲表 `docs/1.8-素材认亲/阶段3B/认亲表.tsv`；关卡 `[bg28-spear-recipe-*]` / `[bg28-horse-*]`。
+- 本轮**未做**段 C（§I 1–40 的戒指）；段 C 的前置事实（Curios jar 在 Gradle 缓存、`ring` 位次已留、
+  `LivingIncomingDamageEvent` 是转化落点）见 §Z-5。
+
 ## 🔧 构建与跑测
 
 ```powershell

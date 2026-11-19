@@ -873,11 +873,11 @@ public final class MetalEvents {
         }
     }
 
-    private static boolean isCactus(net.minecraft.world.damagesource.DamageSource source) {
+    static boolean isCactus(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.world.damagesource.DamageTypes.CACTUS);
     }
 
-    private static boolean isSonicBoom(net.minecraft.world.damagesource.DamageSource source) {
+    static boolean isSonicBoom(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.world.damagesource.DamageTypes.SONIC_BOOM);
     }
 
@@ -889,7 +889,7 @@ public final class MetalEvents {
      * 它<b>不是</b> {@code cactus}（那是 {@code SweetBerryBushBlock} 里没有的类型），所以必须单独认一个类型，
      * 把 {@code cactusResist} 那条分支当成"已经覆盖甜浆果"是错的。</p>
      */
-    private static boolean isSweetBerryBush(net.minecraft.world.damagesource.DamageSource source) {
+    static boolean isSweetBerryBush(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.world.damagesource.DamageTypes.SWEET_BERRY_BUSH);
     }
 
@@ -1213,7 +1213,7 @@ public final class MetalEvents {
      * <b>不会</b>触发 {@code MobEffectEvent.Remove} / {@code Expired}，
      * 所以累积值在等级上升时被正确地保留下来，窗口是连续的。</p>
      */
-    private static void stackVoodoo(net.minecraft.world.entity.LivingEntity target) {
+    static void stackVoodoo(net.minecraft.world.entity.LivingEntity target) {
         stackVoodoo(target, null);
     }
 
@@ -1223,7 +1223,7 @@ public final class MetalEvents {
      * <p>记录位置与寄生同构（{@link #markParasiteSource}）：放在<b>目标</b>的持久数据里，
      * 每次命中覆盖为最新施加者；窗口结算时按 UUID 找回（已死 / 已卸载 ⇒ 当没有）。</p>
      */
-    private static void stackVoodoo(net.minecraft.world.entity.LivingEntity target,
+    static void stackVoodoo(net.minecraft.world.entity.LivingEntity target,
             net.minecraft.world.entity.LivingEntity owner) {
         var effect = com.hjmmd_8.bettergold.registry.AllEffects.VOODOO;
         var current = target.getEffect(effect);
@@ -1248,7 +1248,7 @@ public final class MetalEvents {
     }
 
     /** 叠加 1 级效果（已有则等级 +1，无上限，上限只受效果等级上限 255 限制） */
-    private static void stackEffect(net.minecraft.world.entity.LivingEntity target,
+    static void stackEffect(net.minecraft.world.entity.LivingEntity target,
             net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect, int ticks) {
         var current = target.getEffect(effect);
         int amplifier = current == null ? 0 : Math.min(current.getAmplifier() + 1, 254);
@@ -2065,17 +2065,17 @@ public final class MetalEvents {
         return count;
     }
 
-    private static boolean isFire(net.minecraft.world.damagesource.DamageSource source) {
+    static boolean isFire(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE);
     }
 
     /** 风弹伤害（1.8 bg26）：{@code minecraft:wind_charge}（风弹爆炸 / 瞬爆风弹同源） */
-    private static boolean isWindCharge(net.minecraft.world.damagesource.DamageSource source) {
+    static boolean isWindCharge(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.world.damagesource.DamageTypes.WIND_CHARGE);
     }
 
     /** 冰冻伤害（1.8 bg26）：{@code minecraft:freeze}（渗寒 / 凛冰金建材 / 细雪） */
-    private static boolean isFreeze(net.minecraft.world.damagesource.DamageSource source) {
+    static boolean isFreeze(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.world.damagesource.DamageTypes.FREEZE);
     }
 
@@ -2098,7 +2098,7 @@ public final class MetalEvents {
                 || source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE);
     }
 
-    private static boolean isMagic(net.minecraft.world.damagesource.DamageSource source) {        return source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
+    static boolean isMagic(net.minecraft.world.damagesource.DamageSource source) {        return source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
                 || source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC)
                 // ★ 1.7 大轮第 A3 条：巫毒爆发改用自带类型 bettergold:voodoo_burst，
                 //   它必须仍然算「魔法伤害」—— 否则巫毒金盔甲的「每件 25% 魔法伤害减免」会在
@@ -2115,7 +2115,7 @@ public final class MetalEvents {
      * <p>沉淀的持续伤害用的是 {@code in_wall}，所以靛海金盔甲的抗性<b>天然覆盖沉淀造成的伤害</b>
      * （规格第七节第 7 条的「覆盖」），「全套完全免疫」也才没有缺口。</p>
      */
-    private static boolean isSuffocation(net.minecraft.world.damagesource.DamageSource source) {
+    static boolean isSuffocation(net.minecraft.world.damagesource.DamageSource source) {
         return source.is(net.minecraft.world.damagesource.DamageTypes.IN_WALL)
                 || source.is(net.minecraft.tags.DamageTypeTags.IS_DROWNING);
     }
@@ -2616,8 +2616,14 @@ public final class MetalEvents {
         freezeAround(player, level);
     }
 
-    /** 照原版 {@code replace_disk}（frost_walker）的语义冻结脚下的水源。 */
-    private static void freezeAround(net.minecraft.world.entity.player.Player player, int level) {
+    /**
+     * 照原版 {@code replace_disk}（frost_walker）的语义冻结脚下的水源。
+     *
+     * <p>1.8 阶段 3（§H-34）：凛冰金<b>马铠</b>也要「自带 4 级冰霜行者规格」⇒ 参数从
+     * {@code Player} 放宽到 {@link net.minecraft.world.entity.LivingEntity}（方法体一个字没改，
+     * 玩家那条调用点的行为不变）。</p>
+     */
+    public static void freezeAround(net.minecraft.world.entity.LivingEntity player, int level) {
         var levelObj = player.level();
         int radius = Math.min(16, 2 + level);
         var center = player.blockPosition();

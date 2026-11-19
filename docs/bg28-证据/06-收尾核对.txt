@@ -1,0 +1,27 @@
+bg28 收尾核对（2026-11-19，1.8 阶段 3 · 段 0 + 段 B）
+========================================================
+
+① 探针
+  - 源码已留档：docs\bg28-证据\00-探针源码副本\Bg28Probe.java.txt（32,xxx B，删前复制）
+  - 源码树：src 下 *Probe* = 0；probe 包目录已整个删除
+  - 开关文件 run\bg28-probe.enabled：已删除
+  - 产物 jar：*Probe* 0 / 'halt' 字节 0（check_jar_clean.py exit=0，条目 3657）
+
+② server.properties
+  - 改前备份：build\bg28-server.properties.bak（SHA256 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4）
+  - 收尾复原后实测：SHA256 A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4（逐字节相同）
+
+③ 作者存档
+  - run\logs\latest.log 里 '新的世界' 出现 0 次；'Saving chunks' 3 次，全部是 ServerLevel[world]（专用服务端自己的世界）
+  - run\saves\ 下只有作者那份「新的世界」，本轮没有读写它
+
+④ 原始素材 / 存档 / xlsx
+  - 原始 zip：E:\mc\mc资料\新的新约\更有用的金 新约10 (1).zip —— 只读打开，未写、未改名、未移动（脚本只用 zipfile.ZipFile(...,'r')）
+  - 贴图：24 张 1:1 字节复制（源 SHA == 目标 SHA，见 docs\1.8-素材认亲\阶段3B\认亲表.tsv）
+
+⑤ git
+  - 不 commit、不 push；HEAD 仍 1f0f802
+  - 工作树只有本轮改动（M 6 个 + 新增）
+
+⑥ 残留
+  - check_forced_chunks.py exit=0：data.Forced 为空（探针的 forceload 已撤销）

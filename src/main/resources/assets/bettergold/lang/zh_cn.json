@@ -977,5 +977,17 @@
   "item.bettergold.chaosgold_spear": "混沌金矛",
   "item.bettergold.chaosalloy_spear": "崩乱合金矛",
   "item.bettergold.antique_spear": "古董长矛",
-  "item.bettergold.yaksha_spear": "夜叉贯骸矛"
+  "item.bettergold.yaksha_spear": "夜叉贯骸矛",
+  "item.bettergold.flamegold_horse_armor": "烈燃金马铠",
+  "item.bettergold.voodoogold_horse_armor": "巫毒金马铠",
+  "item.bettergold.thundergold_horse_armor": "结雷金马铠",
+  "item.bettergold.indigoseagold_horse_armor": "靛海金马铠",
+  "item.bettergold.illusiongold_horse_armor": "幻惑金马铠",
+  "item.bettergold.thornsgold_horse_armor": "树棘金马铠",
+  "item.bettergold.echogold_horse_armor": "幽咆金马铠",
+  "item.bettergold.sturdygold_horse_armor": "万坚金马铠",
+  "item.bettergold.chaosgold_horse_armor": "混沌金马铠",
+  "item.bettergold.chaosalloy_horse_armor": "崩乱合金马铠",
+  "item.bettergold.windgold_horse_armor": "翠风金马铠",
+  "item.bettergold.frostgold_horse_armor": "凛冰金马铠"
 }

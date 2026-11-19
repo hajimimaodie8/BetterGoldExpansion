@@ -323,7 +323,11 @@ GEAR_SLOT_EXPECTED = ["sword", "spear", "mace", "trident", "bow", "crossbow",
 #   1.7 轮4 在末尾**追加**两件混沌金专属物品（禁果 / 附魔书，位次 14/15）——
 #   它们也要进"装备"分区（连同 `chaosgold_helmet` 等一起出现在金属那一段）。
 #   旧口径原文留档：`if len(gear_pairs) != len(GEAR_SLOT_EXPECTED)` + `by_rank != GEAR_SLOT_EXPECTED`（恰好 14 件）。
-GEAR_SLOT_APPENDED = ["forbidden_fruit", "enchanting_book"]
+# ⚠ **1.8 阶段 3（§I-36 / §H-33，2026-11-19）就地标注**：靴子之后插入「转化之戒 → 马铠」，
+#   禁果 / 附魔书继续留在末尾（只重排、不删项）。
+#   旧口径原文留档（当时末尾只有禁果 / 附魔书）：
+#       GEAR_SLOT_APPENDED = ["forbidden_fruit", "enchanting_book"]
+GEAR_SLOT_APPENDED = ["ring", "horse_armor", "forbidden_fruit", "enchanting_book"]
 GEAR_SLOT_WANT = GEAR_SLOT_EXPECTED + GEAR_SLOT_APPENDED
 # §9.1 里被作者"补回来"的那四件：它们必须**在表里**（一表两用，删了会静默掉出装备分区），
 # 而且位次必须落在 弩(crossbow 4) 与 盾(shield 9) 之间 ⇒ 5..8。
@@ -6354,7 +6358,7 @@ else:
 #   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
 # ★ 1.8 阶段 3 · 段 A（§G 长矛，2026-11-19）：中英各 +14 个物品键 ⇒ 两个文件级 SHA 换成本轮值。
 #   旧值（1.8 阶段 2 之后）原文留档、不删：EA68F3FD45C41D6517ABCF770D5A0203842885EAD5223BA308DECFC025C78CC1
-_BGN10_ZH_AFTER_SHA = "6F9113B740C1BC9925D763D6783D404677752B402B2F7281574440B3F7BDD4BB"
+_BGN10_ZH_AFTER_SHA = "27290A9A7BFA3C075163C057C4ACD9C4A53BB41BDC0436C8E87893FF5E2C5BAF"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
@@ -6363,7 +6367,7 @@ _BGN10_ZH_AFTER_SHA = "6F9113B740C1BC9925D763D6783D404677752B402B2F7281574440B3F
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 #   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
 # ★ 1.8 阶段 3 · 段 A（§G 长矛）：+14 键 ⇒ 新 SHA（旧值原文留档、不删：50E175CD302A5ED4DB5520178BD85C09F9D36C9E4BA91555DE71AE180C378586）
-_BGN10_EN_AFTER_SHA = "E5E4767288803105F458F2F12E804DFA4CFB484C14A3667F81AD778F8C8A136B"
+_BGN10_EN_AFTER_SHA = "54156B470D94D60889AB14CEDB0B44350BF5F69EABE2809E4E350A15E3B9D9DD"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6384,7 +6388,9 @@ _BGN10_EN_AFTER_SHA = "E5E4767288803105F458F2F12E804DFA4CFB484C14A3667F81AD778F8
 #   树叶/树苗/金草丛/金高草丛/金盏花/金郁金香/金丝木棍/浮现之尘）⇒ 133 → **159**。
 #   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 133`。
 #   旧文件级 SHA（未删）：zh 48D11E1B4766C260… / en 5D0296288C4E54CD…
-_BGN10_NEW_LANG_KEYS = 257    # zh/en 各 257 条（1.8 阶段 1 + 阶段 2 + 阶段 3 段 A 后的净新增；159 → 243 → 257）
+# ★ 1.8 阶段 3 · 段 B（§H 马铠）：+ **12** 条（12 套马铠的名）⇒ 257 → **269**。
+#   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 257`；旧 SHA（未删）：zh 6F9113B7… / en E5E47672…
+_BGN10_NEW_LANG_KEYS = 269    # zh/en 各 269 条（1.8 阶段 1 + 阶段 2 + 阶段 3 段 A/B 后的净新增；159 → 243 → 257 → 269）
 # 旧值留档（原文保留，不删）：bgbig 的 zh B8384693… / en E60A0BC2…（`_BGN10_*_AFTER_SHA` 上一版）
 
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
@@ -11653,7 +11659,7 @@ else:
     _gpt_checked += 2
     if "VOODOO_ID.equals(family.id) && isMagic(event.getSource())" not in (_dm_pre or ""):
         _gpt_bad("gpt6-voodoo-poison", "onDamagePre 里的巫毒金减伤分支不在位")
-    _magic_body = method_body(_mev, "private static boolean isMagic(")
+    _magic_body = method_body(_mev, "static boolean isMagic(")
     _gpt_checked += 1
     if "NeoForgeMod.POISON_DAMAGE" not in (_magic_body or ""):
         _gpt_bad("gpt6-voodoo-poison", "isMagic 没有覆盖 neoforge:poison（中毒伤害就减不到）")
@@ -12433,7 +12439,7 @@ else:
         _bg19_bad("bg19-berry", "树棘金没有并列 cactusResist + berryResist")
     # 伤害类型判定 + 分支：必须用 SWEET_BERRY_BUSH（用 CACTUS 是错的）
     _bg19_checked += 4
-    if "private static boolean isSweetBerryBush(" not in _ev19b:
+    if "static boolean isSweetBerryBush(" not in _ev19b:
         _bg19_bad("bg19-berry", "MetalEvents 没有 isSweetBerryBush 判定")
     if "source.is(net.minecraft.world.damagesource.DamageTypes.SWEET_BERRY_BUSH)" not in _ev19b:
         _bg19_bad("bg19-berry", "isSweetBerryBush 没有认 minecraft:sweet_berry_bush 类型")
@@ -13018,7 +13024,7 @@ else:
         _bg22_bad("bg22-not-cancel", "用了 setCanceled（整次取消 = 别的族盔甲也被免掉）")
 
 # ---------- ② 伤害源判据本体：DamageTypes.SWEET_BERRY_BUSH ----------
-_bg22_pred = method_body(_bg22_events, "private static boolean isSweetBerryBush(")
+_bg22_pred = method_body(_bg22_events, "static boolean isSweetBerryBush(")
 _bg22_checked += 1
 if not _bg22_pred or "DamageTypes.SWEET_BERRY_BUSH" not in _bg22_pred:
     _bg22_bad("bg22-source", "isSweetBerryBush 没认 DamageTypes.SWEET_BERRY_BUSH")
@@ -13932,6 +13938,8 @@ else:
         _slots[_name] = int(_num)
     _order = ["sword", "spear", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
               "shovel", "hoe", "shield", "helmet", "chestplate", "leggings", "boots",
+              # 1.8 阶段 3：靴子 → 转化之戒 → 马铠（作者 §I-36 / §H-33）
+              "ring", "horse_armor",
               "forbidden_fruit", "enchanting_book"]
     if list(_slots.keys()) != _order:
         _bg27_bad("bg27-creative", "GEAR_SLOT 的顺序/成员不对：%s" % list(_slots.keys()))
@@ -14054,6 +14062,281 @@ if not bg27_problems:
     print("[bg27-ok] 14 件矛数值 / 四段窗口 / 区间 / 夜叉 6% 受抢夺 / 家族双触发 / "
           "创造页剑与重锤之间 / 28 张 1:1 / 模型 / 语言 / 附魔标签 / spearcore optional 双向 全部通过")
 
+# =====================================================================================
+# 1.8 阶段 3 · 段 0（§G 长矛配方）—— [bg28-spear-recipe-*]
+#   形状唯一真源 = spearcore 官方矛（libs 里真 jar 的 data/spearcore/recipe/iron_spear.json）：
+#   "  a" / " b " / "b  "，a = 材料、b = minecraft:stick、成品 1。
+#   14 件（10 贵金属 + 混沌金 + 崩乱合金 + 古董 + 夜叉）；父代理 2026-11-19 确认「13 是笔误」。
+# =====================================================================================
+bg28_problems = []
+_bg28_checked = 0
+
+
+def _bg28_bad(code, why):
+    bg28_problems.append("[%s] %s" % (code, why))
+
+
+_BG28_SPEAR_RECIPES = [
+    ("sturdygold_spear", "bettergold:sturdygold_ingot"),
+    ("flamegold_spear", "bettergold:flamegold_ingot"),
+    ("windgold_spear", "bettergold:windgold_ingot"),
+    ("thornsgold_spear", "bettergold:thornsgold_ingot"),
+    ("echogold_spear", "bettergold:echogold_ingot"),
+    ("frostgold_spear", "bettergold:frostgold_ingot"),
+    ("indigoseagold_spear", "bettergold:indigoseagold_ingot"),
+    ("voodoogold_spear", "bettergold:voodoogold_ingot"),
+    ("thundergold_spear", "bettergold:thundergold_ingot"),
+    ("illusiongold_spear", "bettergold:illusiongold_ingot"),
+    ("chaosgold_spear", "bettergold:chaosgold_ingot"),
+    ("chaosalloy_spear", "bettergold:chaosalloy_ingot"),
+    ("antique_spear", "bettergold:unwanted_antique"),
+    ("yaksha_spear", "minecraft:netherite_ingot"),
+]
+
+# ---------- ① 官方形（从 libs 的真 jar 里读，不写死一份"我以为的形状"） ----------
+_BG28_LIB = REPO / "libs" / "spearcore-1.21.1-neo-3.2.1.jar"
+_bg28_checked += 1
+_BG28_OFFICIAL_PATTERN = None
+_BG28_OFFICIAL_KEY = None
+if not _BG28_LIB.is_file():
+    _bg28_bad("bg28-spear-recipe-official", "缺 libs/spearcore-1.21.1-neo-3.2.1.jar（形状真源读不到）")
+else:
+    import zipfile
+    try:
+        with zipfile.ZipFile(_BG28_LIB) as _z:
+            _off = json.loads(_z.read("data/spearcore/recipe/iron_spear.json").decode("utf-8"))
+        _BG28_OFFICIAL_PATTERN = _off.get("pattern")
+        _BG28_OFFICIAL_KEY = _off.get("key")
+        if _BG28_OFFICIAL_PATTERN != ["  a", " b ", "b  "]:
+            _bg28_bad("bg28-spear-recipe-official",
+                      "官方铁矛的 pattern 不是预期的三行斜排：%s" % _BG28_OFFICIAL_PATTERN)
+        if (_BG28_OFFICIAL_KEY or {}).get("b") != {"item": "minecraft:stick"}:
+            _bg28_bad("bg28-spear-recipe-official", "官方铁矛的 b 不是 minecraft:stick")
+    except (KeyError, ValueError, OSError) as _e:
+        _bg28_bad("bg28-spear-recipe-official", "读官方配方失败：%s" % _e)
+
+# ---------- ② 14 条逐条逐格 ----------
+for _spear, _material in _BG28_SPEAR_RECIPES:
+    _path = RECIPE_DIR / (_spear + ".json")
+    _bg28_checked += 1
+    if not _path.is_file():
+        _bg28_bad("bg28-spear-recipe-file", "缺配方 %s.json" % _spear)
+        continue
+    try:
+        _obj = json.loads(_path.read_text(encoding="utf-8"))
+    except ValueError as _e:
+        _bg28_bad("bg28-spear-recipe-json", "%s.json 不是合法 JSON：%s" % (_spear, _e))
+        continue
+    if _obj.get("type") != "minecraft:crafting_shaped":
+        _bg28_bad("bg28-spear-recipe-type", "%s 不是 crafting_shaped（%s）" % (_spear, _obj.get("type")))
+    if _obj.get("category") != "equipment":
+        _bg28_bad("bg28-spear-recipe-category", "%s 的 category 不是 equipment" % _spear)
+    if _obj.get("pattern") != ["  a", " b ", "b  "]:
+        _bg28_bad("bg28-spear-recipe-pattern", "%s 的三行形状不是「斜排 1 材料 + 2 棍」：%s"
+                  % (_spear, _obj.get("pattern")))
+    _key = _obj.get("key") or {}
+    if set(_key.keys()) != {"a", "b"}:
+        _bg28_bad("bg28-spear-recipe-key", "%s 的 key 不是恰好 a/b：%s" % (_spear, sorted(_key)))
+    if _key.get("a") != {"item": _material}:
+        _bg28_bad("bg28-spear-recipe-material", "%s 的材料不是 %s：%s"
+                  % (_spear, _material, _key.get("a")))
+    if _key.get("b") != {"item": "minecraft:stick"}:
+        _bg28_bad("bg28-spear-recipe-stick", "%s 的 b 不是 minecraft:stick：%s" % (_spear, _key.get("b")))
+    _res = _obj.get("result") or {}
+    if _res.get("id") != "bettergold:" + _spear:
+        _bg28_bad("bg28-spear-recipe-result", "%s 的产物 id 不对：%s" % (_spear, _res.get("id")))
+    if _res.get("count") != 1:
+        _bg28_bad("bg28-spear-recipe-count", "%s 的产物不是 1 件：%s" % (_spear, _res.get("count")))
+
+# ---------- ③ 材料必须真的存在（锭 / 老古董 / 下界合金锭） ----------
+_bg28_checked += 1
+_BG28_ZH = json.loads((REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+                       / "lang" / "zh_cn.json").read_text(encoding="utf-8"))
+for _mat in sorted({_m for _, _m in _BG28_SPEAR_RECIPES}):
+    if _mat.startswith("bettergold:"):
+        _short = _mat.split(":", 1)[1]
+        if "item.bettergold." + _short not in _BG28_ZH:
+            _bg28_bad("bg28-spear-recipe-material-exists",
+                      "材料 %s 没有对应的物品语言键（疑似拼写错误）" % _mat)
+
+# ---------- ④ 反空转 ----------
+if len(_BG28_SPEAR_RECIPES) != 14:
+    _bg28_bad("bg28-spear-recipe-anti-vacuum", "配方清单不是 14 条（%d）" % len(_BG28_SPEAR_RECIPES))
+if _bg28_checked < 14:
+    _bg28_bad("bg28-spear-recipe-anti-vacuum", "本段只跑了 %d 条判定（必须 >= 14）" % _bg28_checked)
+
+print("[bg28-spear-recipe-summary] 检查 %d 项，问题 %d 条%s"
+      % (_bg28_checked, len(bg28_problems), "" if not bg28_problems else "：" + str(bg28_problems[:6])))
+if not bg28_problems:
+    print("[bg28-spear-recipe-ok] 14 条矛配方逐格（官方 3 行斜排 / a 材料 / b 木棍 / 产物 1）全部通过")
+
+# =====================================================================================
+# 1.8 阶段 3 · 段 B（§H 马铠 33–35）—— [bg28-horse-*]
+# =====================================================================================
+_BG28_HORSE = [
+    ("flamegold", "烈燃金", "Flamegold"),
+    ("voodoogold", "巫毒金", "Voodoogold"),
+    ("thundergold", "结雷金", "Thundergold"),
+    ("indigoseagold", "靛海金", "Indigoseagold"),
+    ("illusiongold", "幻惑金", "Illusiongold"),
+    ("thornsgold", "树棘金", "Thornsgold"),
+    ("echogold", "幽咆金", "Echogold"),
+    ("sturdygold", "万坚金", "Sturdygold"),
+    ("chaosgold", "混沌金", "Chaosgold"),
+    ("chaosalloy", "崩乱合金", "Chaosalloy"),
+    ("windgold", "翠风金", "Windgold"),
+    ("frostgold", "凛冰金", "Frostgold"),
+]
+_BG28_JAVA = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "material"
+_BG28_HORSE_SRC = (_BG28_JAVA / "MetalHorseArmor.java").read_text(encoding="utf-8")
+_BG28_HORSE_EVT = (_BG28_JAVA / "HorseArmorEvents.java").read_text(encoding="utf-8")
+_BG28_MAIN = (REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold"
+              / "bettergold.java").read_text(encoding="utf-8")
+
+# ---------- ① 注册：12 套 + ARMOR_MATERIAL 真注册 + 主类接线 ----------
+_bg28_checked += 1
+if "for (MetalFamily family : MetalFamily.all())" not in _BG28_HORSE_SRC:
+    _bg28_bad("bg28-horse-register", "没有遍历全部 12 族")
+if "MATERIALS.register(family.id" not in _BG28_HORSE_SRC:
+    _bg28_bad("bg28-horse-register", "ArmorMaterial 没有按 <族> 注册")
+if "DeferredRegister.create(Registries.ARMOR_MATERIAL" not in _BG28_HORSE_SRC:
+    _bg28_bad("bg28-horse-register",
+              "没有把 ArmorMaterial 注册进 Registries.ARMOR_MATERIAL（AnimalArmorItem 会 unwrapKey 失败）")
+if "AnimalArmorItem.BodyType.EQUESTRIAN" not in _BG28_HORSE_SRC:
+    _bg28_bad("bg28-horse-register", "没有用 BodyType.EQUESTRIAN（马穿不上）")
+if 'family.id + "_horse_armor"' not in _BG28_HORSE_SRC:
+    _bg28_bad("bg28-horse-register", "物品 id 不是 <族>_horse_armor")
+if "MetalHorseArmor.bootstrap(modEventBus)" not in _BG28_MAIN:
+    _bg28_bad("bg28-horse-register", "主类构造器没有调用 MetalHorseArmor.bootstrap")
+
+# ---------- ② 数值：24/6/10%、7/2/0、20/8/10%、减伤 0–16 / 16–40 ----------
+_bg28_checked += 1
+for _needle, _why in {
+    "PRECIOUS_DEFENSE = 24": "贵金属 24 甲",
+    "PRECIOUS_TOUGHNESS = 6.0F": "贵金属 6 韧性",
+    "PRECIOUS_KNOCKBACK = 0.10F": "贵金属 10% 击退抗性",
+    "CHAOSGOLD_DEFENSE = 7": "混沌金 7 甲",
+    "CHAOSGOLD_TOUGHNESS = 2.0F": "混沌金 2 韧性",
+    "CHAOSALLOY_DEFENSE = 20": "崩乱合金 20 甲",
+    "CHAOSALLOY_TOUGHNESS = 8.0F": "崩乱合金 8 韧性",
+    "CHAOSALLOY_KNOCKBACK = 0.10F": "崩乱合金 10% 击退抗性",
+    "CHAOSGOLD_REDUCTION = new ChaosRange.Range(0.0F, 16.0F)": "混沌金 0–16% 减伤",
+    "CHAOSALLOY_REDUCTION = new ChaosRange.Range(16.0F, 40.0F)": "崩乱合金 16–40% 减伤",
+    "defenseMap.put(ArmorItem.Type.BODY, defense)": "护甲值挂在 BODY 槽",
+}.items():
+    if _needle not in _BG28_HORSE_SRC:
+        _bg28_bad("bg28-horse-values", "缺 %s（%s）" % (_needle, _why))
+
+# ---------- ③ 机制：3×3×3 / 20 tick / 风斩 −1 tick / 万坚 16s 上限 10 / 凛冰 4 级 / 幻惑 6s I ----------
+_bg28_checked += 1
+for _needle, _why in {
+    "STATUS_INTERVAL = 20": "3×3×3 每 20 tick",
+    "ticks = Math.max(1, ticks - 1)": "对带风斩的目标 −1 tick",
+    "STURDY_HEART_INTERVAL = 16 * 20": "万坚金每 16 秒",
+    "STURDY_HEART_CAP = 10.0F * 2.0F": "万坚金上限 10 颗黄心",
+    "FROST_WALKER_SPEC_LEVEL = 4": "凛冰金 4 级冰霜行者规格",
+    "ILLUSION_REGEN_TICKS = 6 * 20": "幻惑金 6 秒生命恢复",
+    "new MobEffectInstance(MobEffects.REGENERATION, ILLUSION_REGEN_TICKS, 0": "幻惑金不可叠加（等级恒 0）",
+    "ILLUSION_SOOTHE_CHANCE = 0.16F": "幻惑金仍 16% 安抚",
+    "ImbalanceEffects.apply(attacker, AllEffects.POWER_IMBALANCE.getDelegate())": "崩乱金马铠挂力量失衡",
+    "ImbalanceEffects.apply(attacker, AllEffects.RESISTANCE_IMBALANCE.getDelegate())": "崩乱金马铠挂抗性失衡",
+    "getEntitiesOfClass(LivingEntity.class, cube(horse)": "以马为中心取 3×3×3 内的实体",
+    "entity instanceof Enemy": "3×3×3 只对敌对生物挂状态",
+    "!(entity instanceof Enemy)": "幻惑金对玩家/友善/马自己",
+}.items():
+    if _needle not in _BG28_HORSE_EVT:
+        _bg28_bad("bg28-horse-mechanics", "缺 %s（%s）" % (_needle, _why))
+
+# ---------- ④ 免疫映射逐族（工作值，父代理 2026-11-19 批准） ----------
+_bg28_checked += 1
+for _needle, _why in {
+    "family == AllMetals.FLAMEGOLD": "烈燃→火焰",
+    "family == AllMetals.VOODOOGOLD": "巫毒→魔法/中毒",
+    "family == AllMetals.THUNDERGOLD": "结雷→闪电束",
+    "family == AllMetals.INDIGOSEAGOLD": "靛海→窒息/溺水",
+    "family == AllMetals.THORNSGOLD": "树棘→仙人掌/甜浆果丛",
+    "family == AllMetals.ECHOGOLD": "幽咆→监守者音波",
+    "family == AllMetals.WINDGOLD": "翠风→风弹",
+    "family == AllMetals.FROSTGOLD": "凛冰→冰冻",
+}.items():
+    if _needle not in _BG28_HORSE_EVT:
+        _bg28_bad("bg28-horse-immunity", "免疫映射缺 %s（%s）" % (_needle, _why))
+if "family == AllMetals.STURDYGOLD" in _BG28_HORSE_EVT.split("immune(MetalFamily family")[1].split("}")[0]:
+    _bg28_bad("bg28-horse-immunity", "万坚金不应有免疫分支")
+if "family == AllMetals.ILLUSIONGOLD" in _BG28_HORSE_EVT.split("immune(MetalFamily family")[1].split("}")[0]:
+    _bg28_bad("bg28-horse-immunity", "幻惑金不应有免疫分支")
+
+# ---------- ⑤ 创造页：GEAR_SLOT 里 ring / horse_armor 在 boots 之后 ----------
+_bg28_checked += 1
+_BG28_CREATIVE = (_BG28_JAVA / "CreativeSections.java").read_text(encoding="utf-8")
+_m = re.search(r"GEAR_SLOT = Map\.ofEntries\((.*?)\);", _BG28_CREATIVE, re.S)
+if not _m:
+    _bg28_bad("bg28-horse-creative", "找不到 GEAR_SLOT 表")
+else:
+    _slots = {name: int(num) for name, num in
+              re.findall(r'Map\.entry\("([a-z_]+)",\s*(\d+)\)', _m.group(1))}
+    if _slots.get("ring") != _slots.get("boots", -99) + 1:
+        _bg28_bad("bg28-horse-creative", "转化之戒没有紧跟靴子：%s" % _slots)
+    if _slots.get("horse_armor") != _slots.get("ring", -99) + 1:
+        _bg28_bad("bg28-horse-creative", "马铠没有紧跟转化之戒：%s" % _slots)
+    if _slots.get("forbidden_fruit") != _slots.get("horse_armor", -99) + 1:
+        _bg28_bad("bg28-horse-creative", "1.7 的禁果/附魔书次序被破坏：%s" % _slots)
+
+# ---------- ⑥ 贴图 24 张 1:1 + 认亲表 ----------
+_bg28_checked += 1
+_BG28_TSV = REPO / "docs" / "1.8-素材认亲" / "阶段3B" / "认亲表.tsv"
+_BG28_ENTITY_TEX = (REPO / "src" / "main" / "resources" / "assets" / "bettergold"
+                    / "textures" / "entity" / "horse" / "armor")
+if not _BG28_TSV.is_file():
+    _bg28_bad("bg28-horse-textures", "缺认亲表 %s" % _BG28_TSV)
+else:
+    _rows = [line.split("\t") for line in _BG28_TSV.read_text(encoding="utf-8").splitlines()
+             if line and not line.startswith("#")]
+    if len(_rows) != 25:
+        _bg28_bad("bg28-horse-textures", "认亲表不是 1 表头 + 24 行（实际 %d）" % len(_rows))
+    for _row in _rows[1:]:
+        _bg28_checked += 1
+        _rel = REPO / _row[1]
+        if not _rel.is_file():
+            _bg28_bad("bg28-horse-textures", "认亲表指向的文件不存在：%s" % _row[1])
+            continue
+        if hashlib.sha256(_rel.read_bytes()).hexdigest() != _row[3]:
+            _bg28_bad("bg28-horse-textures", "%s 与认亲表 SHA256 不符（贴图被改过）" % _row[1])
+for _fid, _cn, _en in _BG28_HORSE:
+    if not (_BG28_ENTITY_TEX / ("horse_armor_%s.png" % _fid)).is_file():
+        _bg28_bad("bg28-horse-textures", "缺坐骑贴图 horse_armor_%s.png" % _fid)
+
+# ---------- ⑦ 模型 / 语言 ----------
+_bg28_checked += 1
+for _fid, _cn, _en in _BG28_HORSE:
+    _mp = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "models" / "item" \
+        / ("%s_horse_armor.json" % _fid)
+    if not _mp.is_file():
+        _bg28_bad("bg28-horse-models", "缺模型 %s_horse_armor.json" % _fid)
+    else:
+        _mobj = json.loads(_mp.read_text(encoding="utf-8"))
+        if _mobj.get("textures", {}).get("layer0") != "bettergold:item/%s_horse_armor" % _fid:
+            _bg28_bad("bg28-horse-models", "%s 的 layer0 不对" % _fid)
+for _lang, _suffix in (("zh_cn", "马铠"), ("en_us", " Horse Armor")):
+    _obj = json.loads((REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
+                       / ("%s.json" % _lang)).read_text(encoding="utf-8"))
+    for _fid, _cn, _en in _BG28_HORSE:
+        _key = "item.bettergold.%s_horse_armor" % _fid
+        if _key not in _obj:
+            _bg28_bad("bg28-horse-lang", "%s 缺 %s" % (_lang, _key))
+        elif not _obj[_key].endswith(_suffix):
+            _bg28_bad("bg28-horse-lang", "%s 的 %s 文案不对：%s" % (_lang, _key, _obj[_key]))
+
+if _bg28_checked < 40:
+    _bg28_bad("bg28-anti-vacuum", "段 B 只跑了 %d 条判定（必须 >= 40）" % _bg28_checked)
+print("[bg28-horse-summary] 检查 %d 项，问题 %d 条%s"
+      % (_bg28_checked, len(bg28_problems), "" if not bg28_problems else "：" + str(bg28_problems[:6])))
+if not bg28_problems:
+    print("[bg28-horse-ok] 12 套马铠：24/6/10% · 7/2/0–16% · 20/8/10%/16–40% / 3×3×3 每 20 tick / "
+          "风斩 −1 tick / 万坚 16 秒上限 10 / 凛冰 4 级规格 / 幻惑 6 秒 I / 24 张 1:1 / 模型 / 语言 / 创造页次序 全部通过")
+
+# <<BG28-B/C 追加点>>
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -14098,6 +14381,8 @@ _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg26_problems,)
 #   ⚠ `swim_problems` 不在这份清单里，但它在 L391 被 `bg8_problems.extend(...)` 吸收 ⇒ 已覆盖。
 # 2026-11-19 bg27：1.8 阶段 3 · 段 A（§G 长矛）
 _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg27_problems,)
+# 2026-11-19 bg28：1.8 阶段 3 · 段 0/B/C（矛配方 + 马铠 + 转化之戒）
+_EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg28_problems,)
 _problem_total = sum(len(_x) for _x in _EXIT_PROBLEM_LISTS)
 print(f"[bg-data-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
       f"（契约：0 绿 / 1 有问题 / 2 前置坏）")

@@ -87,6 +87,9 @@ public class bettergold {
         // 新约 1.5：5 件「胚底」（纯合成中间物，作者澄清：没有金制系列工具！
         // 它们只在合成链里：5 条工作台配方产出胚底 → 30 条锻造升级把胚底升级成六套金属武器）
         com.hjmmd_8.bettergold.material.MetalBlanks.bootstrap();
+        // 1.8 阶段 3（§H）：12 套马铠 —— ArmorMaterial 必须真的注册进
+        // `Registries.ARMOR_MATERIAL`（AnimalArmorItem 的构造器要 unwrapKey），见 MetalHorseArmor 类注释。
+        com.hjmmd_8.bettergold.material.MetalHorseArmor.bootstrap(modEventBus);
         // 新约 1.4：金属相关的全局事件（巫毒结束结算等）
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.MetalEvents.class);
         // 1.7（bg-n10 轮6）：金钱妖两条伤害规则 —— 免仙人掌（EntityInvulnerabilityCheckEvent）

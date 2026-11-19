@@ -1,0 +1,48 @@
+SETUP level=world forced=1 horse=true zombie=true
+READ horse_alive=true horse_armor_value=0 zombie_alive=true
+PASS spear_recipe_sturdygold_spear :: recipe=bettergold:sturdygold_spear result=bettergold:sturdygold_spear x1
+PASS spear_recipe_flamegold_spear :: recipe=bettergold:flamegold_spear result=bettergold:flamegold_spear x1
+PASS spear_recipe_windgold_spear :: recipe=bettergold:windgold_spear result=bettergold:windgold_spear x1
+PASS spear_recipe_thornsgold_spear :: recipe=bettergold:thornsgold_spear result=bettergold:thornsgold_spear x1
+PASS spear_recipe_echogold_spear :: recipe=bettergold:echogold_spear result=bettergold:echogold_spear x1
+PASS spear_recipe_frostgold_spear :: recipe=bettergold:frostgold_spear result=bettergold:frostgold_spear x1
+PASS spear_recipe_indigoseagold_spear :: recipe=bettergold:indigoseagold_spear result=bettergold:indigoseagold_spear x1
+PASS spear_recipe_voodoogold_spear :: recipe=bettergold:voodoogold_spear result=bettergold:voodoogold_spear x1
+PASS spear_recipe_thundergold_spear :: recipe=bettergold:thundergold_spear result=bettergold:thundergold_spear x1
+PASS spear_recipe_illusiongold_spear :: recipe=bettergold:illusiongold_spear result=bettergold:illusiongold_spear x1
+PASS spear_recipe_chaosgold_spear :: recipe=bettergold:chaosgold_spear result=bettergold:chaosgold_spear x1
+PASS spear_recipe_chaosalloy_spear :: recipe=bettergold:chaosalloy_spear result=bettergold:chaosalloy_spear x1
+PASS spear_recipe_antique_spear :: recipe=bettergold:antique_spear result=bettergold:antique_spear x1
+PASS spear_recipe_yaksha_spear :: recipe=bettergold:yaksha_spear result=bettergold:yaksha_spear x1
+PASS spear_recipe_negative :: 换掉材料后仍能匹配（配方过宽）
+PASS horse_armor_values_flamegold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_voodoogold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_thundergold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_indigoseagold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_illusiongold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_thornsgold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_echogold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_sturdygold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_chaosgold :: def=7 tough=2.0 kb=0.0
+PASS horse_armor_values_chaosalloy :: def=20 tough=8.0 kb=0.1
+PASS horse_armor_values_windgold :: def=24 tough=6.0 kb=0.1
+PASS horse_armor_values_frostgold :: def=24 tough=6.0 kb=0.1
+READ horse_armor_value_after_equip=24 horse_kb=0.10000000149011612
+PASS horse_armor_applies_armor :: 马身上实际护甲值=24
+PASS horse_armor_applies_kb :: 马身上实际击退抗性=0.10000000149011612
+PASS horse_aura_flame_zombie :: zombie high_burn=effect.bettergold.high_burn x 2, Duration: 312
+PASS horse_aura_flame_cow :: cow high_burn=null
+PASS horse_aura_wind_slash_minus_tick :: 带风斩时新挂的高燃时长=319（16 秒 −1 tick）
+PASS horse_armor_immune_fire :: Pre 伤害=0.0
+PASS horse_armor_sturdy_not_immune :: Pre 伤害=1.0
+PASS horse_aura_illusion_player :: player regen=effect.minecraft.regeneration, Duration: 120
+PASS horse_aura_illusion_friendly :: cow regen=effect.minecraft.regeneration, Duration: 120
+PASS horse_aura_illusion_self :: horse regen=effect.minecraft.regeneration, Duration: 120
+PASS horse_aura_illusion_enemy_none :: zombie regen=null
+PASS horse_chaos_reduction :: 16%=8.400001 0%=10.0
+PASS horse_alloy_reduction :: 40%=6.0 16%=8.400001
+PASS horse_alloy_dual_imbalance :: power=effect.bettergold.power_imbalance, Duration: 320 resistance=effect.bettergold.resistance_imbalance, Duration: 320
+PASS horse_sturdy_heart_grant :: 16 秒后吸收=2.0
+PASS horse_sturdy_heart_cap :: 上限处吸收=20.0
+PASS horse_frost_walker_spec :: FROSTED_ICE=49（4 级半径 6）
+SUMMARY passes=44 fails=0

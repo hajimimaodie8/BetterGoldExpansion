@@ -167,10 +167,15 @@ public final class CreativeSections {
             Map.entry("chestplate", 12),
             Map.entry("leggings", 13),
             Map.entry("boots", 14),
+            // 1.8 阶段 3（§I-36 / §H-33）：同系列的转化之戒 → 马铠。
+            // 作者指定的相对次序 =「靴子 → 转化之戒 → 马铠」⇒ 两条插在 boots 之后，
+            // 1.7 的两条（禁果 / 附魔书）继续留在末尾（只重排、不删项）。
+            Map.entry("ring", 15),
+            Map.entry("horse_armor", 16),
             // 1.7（bg-n10 轮4）：混沌金专属物品 —— 禁果与附魔书。
-            // 同样只重排：这两条仍在末尾（15 / 16），相对次序不变。
-            Map.entry("forbidden_fruit", 15),
-            Map.entry("enchanting_book", 16));
+            // 同样只重排：这两条仍在末尾（17 / 18），相对次序不变。
+            Map.entry("forbidden_fruit", 17),
+            Map.entry("enchanting_book", 18));
 
     /**
      * 物品是不是「某套建材」的一员：是则返回它的类型位次（{@link #BUILDING_SLOT}），否则返回 {@code -1}。
