@@ -1,0 +1,12 @@
+# 收尾核对（1.8 阶段 3 · 段 A）
+
+| 项 | 读数 |
+|---|---|
+| 探针 | `src/main/java/com/hjmmd_8/bettergold/probe/` **已整块删除**；jar 里 `*Probe*` = 0、`halt` 字节 = 0（check_jar_clean） |
+| ⚠ 探针源码副本 | **未留档**（删除前忘了复制到本目录）—— 本轮为一次性读数，A 级读数本身在 01/01b 两个文件里。下一轮若还用探针，先复制再删。 |
+| 开关 | `run/bg27-probe.enabled` 已由探针 `finish()` 删除，复核不存在 |
+| server.properties | 逐字节复原：SHA256 `A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4`（本轮的 runServer 只改写了首行 `#Thu ...` 时间戳；已从同一基线的备份 `build/bgn10up-backup/server.properties.bgn10d.bak` 字节还原） |
+| 作者存档 | `run/saves/新的世界` **未触碰**（LastWriteTime 仍是 2026/11/5 12:31:35；本轮 run 只出现 `ServerLevel[world]`） |
+| 原始 zip | `E:\mc\mc资料\新的新约\更有用的金 新约10 (1).zip` 只读（zipfile 读取）；`zip.zip`（4 张 armor layer）同样只读 |
+| 既有贴图 | 改动 = **4 张**（`windgold/frostgold_layer_1|2.png`，作者当日补图、点名替换，见 §Z-2 补记）；新增 = 28 张长矛贴图（`??`）；其余既有贴图 0 张改动 |
+| commit / push | **没有**（`git log` 停在 `bdd682e`） |

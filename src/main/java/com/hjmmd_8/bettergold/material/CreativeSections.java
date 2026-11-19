@@ -149,24 +149,28 @@ public final class CreativeSections {
      */
     private static final Map<String, Integer> GEAR_SLOT = Map.ofEntries(
             Map.entry("sword", 0),
-            Map.entry("mace", 1),
-            Map.entry("trident", 2),
-            Map.entry("bow", 3),
-            Map.entry("crossbow", 4),
-            Map.entry("axe", 5),
-            Map.entry("pickaxe", 6),
-            Map.entry("shovel", 7),
-            Map.entry("hoe", 8),
-            Map.entry("shield", 9),
-            Map.entry("helmet", 10),
-            Map.entry("chestplate", 11),
-            Map.entry("leggings", 12),
-            Map.entry("boots", 13),
+            // 1.8 阶段 3（§G-28..32）：长矛 —— 作者指定「排在剑与重锤之间」。
+            // ⚠ 这是一次**纯重排**：原有 14 件的相对次序一个都没动（剑 0 / 重锤 1 …… 靴子 13），
+            //   只是从 1 起整体后移一位、把 spear 插在 1。`GEAR_SLOT` 一表两用（既定装备顺序、
+            //   又判"是不是金属装备"）⇒ 只许重排、不许删项（红线 4）。
+            Map.entry("spear", 1),
+            Map.entry("mace", 2),
+            Map.entry("trident", 3),
+            Map.entry("bow", 4),
+            Map.entry("crossbow", 5),
+            Map.entry("axe", 6),
+            Map.entry("pickaxe", 7),
+            Map.entry("shovel", 8),
+            Map.entry("hoe", 9),
+            Map.entry("shield", 10),
+            Map.entry("helmet", 11),
+            Map.entry("chestplate", 12),
+            Map.entry("leggings", 13),
+            Map.entry("boots", 14),
             // 1.7（bg-n10 轮4）：混沌金专属物品 —— 禁果与附魔书。
-            // ⚠ `GEAR_SLOT` 一表两用（既定装备顺序、又判"是不是金属装备"）⇒ **只许重排、不许删项**（红线 4）。
-            //   这两条**追加在末尾**：既有 14 项的位次 0..13 一个都没动（作者给过的顺序保持逐字不变）。
-            Map.entry("forbidden_fruit", 14),
-            Map.entry("enchanting_book", 15));
+            // 同样只重排：这两条仍在末尾（15 / 16），相对次序不变。
+            Map.entry("forbidden_fruit", 15),
+            Map.entry("enchanting_book", 16));
 
     /**
      * 物品是不是「某套建材」的一员：是则返回它的类型位次（{@link #BUILDING_SLOT}），否则返回 {@code -1}。

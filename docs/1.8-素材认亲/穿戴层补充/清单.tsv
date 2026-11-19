@@ -1,0 +1,7 @@
+# 1.8 阶段 2 补图：翠风金 / 凛冰金 的 4 张 worn armor layer（64×32）
+# 来源 zip（只读）：C:\Users\Lenovo\Downloads\zip.zip
+# 源文件名	目标	字节数	改后SHA256	改前SHA256（= 旧占位借用来源）
+1795051367265.png	assets/bettergold/textures/models/armor/windgold_layer_1.png	1696	bcbfd5233f76b2cc8d7eea94be5c1240c109b3fdf850169c5652279fdf9d91cc	a878965980899ad158195ce13c3de712c88dfec704e74e7728d45dc01726f467
+1795051372552.png	assets/bettergold/textures/models/armor/windgold_layer_2.png	691	76fbe5e20b43bdd70be3ca13cc8fffa6ffd5fc4f9e004caef9ea824baf43e133	f502de153a56883ee7e9add7e08c6c2f32db16bcc96012655a77dfa3418c6fc8
+1795051377549.png	assets/bettergold/textures/models/armor/frostgold_layer_1.png	1707	2e137f0556d2bd5e474908c0b0cc785a77d92b928f90af5532b8bcf63554a951	7032f998a969cd787b6fd59f95839228b7668064a7f4a7377430ffb3aab5b06f
+1795051383153.png	assets/bettergold/textures/models/armor/frostgold_layer_2.png	674	748d10b670f3780d125c4965cf61f21b3f71dd5802acc83b814c29e7ba8e4bad	3a3bf7130d5f3e37848ea4495dc429e7d358bedcdd3a55fa2e05202bac575099

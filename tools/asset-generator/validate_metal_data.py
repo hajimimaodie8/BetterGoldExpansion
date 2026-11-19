@@ -310,9 +310,15 @@ bg8_problems = []
 # ⚠ 2026-10-03（bg-15w §九 9.1）：**作者更正了 §8.1** —— 斧镐锹锄在「弩之后、盾之前」。
 #   所以下面这张期望表是 §9.1 的 14 件全序，`OMITTED_BUT_KEPT` 那一套"漏项排最后"的口径
 #   **已被推翻**（§8.1 的旧表只作历史留档，见 CreativeSections 的注释）。
-GEAR_SLOT_EXPECTED = ["sword", "mace", "trident", "bow", "crossbow",
+GEAR_SLOT_EXPECTED = ["sword", "spear", "mace", "trident", "bow", "crossbow",
                       "axe", "pickaxe", "shovel", "hoe",
                       "shield", "helmet", "chestplate", "leggings", "boots"]
+# ⚠ **1.8 阶段 3（§G-28..32，2026-11-19）就地标注**：作者要求「长矛排在**剑与重锤之间**」⇒
+#   `spear` 插在位次 1，原有 14 件的相对次序**一件都没动**（剑 0 / 重锤 1→2 …… 靴子 13→14）。
+#   旧口径原文留档（当时是 14 件、没有长矛）：
+#       GEAR_SLOT_EXPECTED = ["sword", "mace", "trident", "bow", "crossbow",
+#                             "axe", "pickaxe", "shovel", "hoe",
+#                             "shield", "helmet", "chestplate", "leggings", "boots"]
 # ⚠ **1.7 bg-n10r4（2026-10-16）就地标注**：作者给过的这 14 件是**前缀**不变量；
 #   1.7 轮4 在末尾**追加**两件混沌金专属物品（禁果 / 附魔书，位次 14/15）——
 #   它们也要进"装备"分区（连同 `chaosgold_helmet` 等一起出现在金属那一段）。
@@ -6346,7 +6352,9 @@ else:
 #     zh A54365AC96AE7B2E684CD2323ED0D455… / en 7E2360921393049FD9DCD56DF161A70D…
 # ★ 1.7 大轮 D 段（作者替换 zh_cn.json + 补 B/C 新键）：zh 850 键 / SHA 换成本轮最终值。
 #   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
-_BGN10_ZH_AFTER_SHA = "EA68F3FD45C41D6517ABCF770D5A0203842885EAD5223BA308DECFC025C78CC1"
+# ★ 1.8 阶段 3 · 段 A（§G 长矛，2026-11-19）：中英各 +14 个物品键 ⇒ 两个文件级 SHA 换成本轮值。
+#   旧值（1.8 阶段 2 之后）原文留档、不删：EA68F3FD45C41D6517ABCF770D5A0203842885EAD5223BA308DECFC025C78CC1
+_BGN10_ZH_AFTER_SHA = "6F9113B740C1BC9925D763D6783D404677752B402B2F7281574440B3F7BDD4BB"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
@@ -6354,7 +6362,8 @@ _BGN10_ZH_AFTER_SHA = "EA68F3FD45C41D6517ABCF770D5A0203842885EAD5223BA308DECFC02
 #   —— 1.7 `bg19` R7-b 同步改了 `en_us.json` 的同一条（金工细作简介的英文）⇒ en SHA 也换成本轮值。
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 #   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
-_BGN10_EN_AFTER_SHA = "50E175CD302A5ED4DB5520178BD85C09F9D36C9E4BA91555DE71AE180C378586"
+# ★ 1.8 阶段 3 · 段 A（§G 长矛）：+14 键 ⇒ 新 SHA（旧值原文留档、不删：50E175CD302A5ED4DB5520178BD85C09F9D36C9E4BA91555DE71AE180C378586）
+_BGN10_EN_AFTER_SHA = "E5E4767288803105F458F2F12E804DFA4CFB484C14A3667F81AD778F8C8A136B"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6375,7 +6384,7 @@ _BGN10_EN_AFTER_SHA = "50E175CD302A5ED4DB5520178BD85C09F9D36C9E4BA91555DE71AE180
 #   树叶/树苗/金草丛/金高草丛/金盏花/金郁金香/金丝木棍/浮现之尘）⇒ 133 → **159**。
 #   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 133`。
 #   旧文件级 SHA（未删）：zh 48D11E1B4766C260… / en 5D0296288C4E54CD…
-_BGN10_NEW_LANG_KEYS = 243    # zh/en 各 243 条（1.8 阶段 1 + 阶段 2 后的净新增；159 → 243）
+_BGN10_NEW_LANG_KEYS = 257    # zh/en 各 257 条（1.8 阶段 1 + 阶段 2 + 阶段 3 段 A 后的净新增；159 → 243 → 257）
 # 旧值留档（原文保留，不删）：bgbig 的 zh B8384693… / en E60A0BC2…（`_BGN10_*_AFTER_SHA` 上一版）
 
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
@@ -13713,16 +13722,47 @@ for _rel, _want in _BG26_TEX_SHA.items():
     elif hashlib.sha256(_tp.read_bytes()).hexdigest() != _want:
         _bg26_bad("bg26-tex-sha", "%s 的 SHA256 变了" % _rel)
 # 盔甲 layer 占位：windgold == thornsgold、frostgold == echogold（作者「先欠着」）
+#   ⛔ **已退役（2026-11-19，作者补图）**：上面这句是旧口径的原文留档，**不要照它推理**。
+#   旧断言（原文留档，未删）：
+#       if not _pa.is_file() or not _pb.is_file() or _pa.read_bytes() != _pb.read_bytes():
+#           _bg26_bad("bg26-armor-layer-placeholder", "%s 不是 %s 的 1:1 占位（作者已确认「先欠着」）")
+#   现行 = **真实锚点**：4 张 == 作者补图（work zip `zip.zip`，64×32，1:1 字节复制）的 SHA256，
+#   并且**反回退**：既不许等于原来借用的 thornsgold/echogold 那张，也不许与借用来源逐字节相同。
+#   认亲表/清单：docs/1.8-素材认亲/穿戴层补充/清单.tsv
+_BG26_ARMOR_LAYER_SHA = {
+    ("windgold_layer_1.png", "bcbfd5233f76b2cc8d7eea94be5c1240c109b3fdf850169c5652279fdf9d91cc",
+     "thornsgold_layer_1.png"),
+    ("windgold_layer_2.png", "76fbe5e20b43bdd70be3ca13cc8fffa6ffd5fc4f9e004caef9ea824baf43e133",
+     "thornsgold_layer_2.png"),
+    ("frostgold_layer_1.png", "2e137f0556d2bd5e474908c0b0cc785a77d92b928f90af5532b8bcf63554a951",
+     "echogold_layer_1.png"),
+    ("frostgold_layer_2.png", "748d10b670f3780d125c4965cf61f21b3f71dd5802acc83b814c29e7ba8e4bad",
+     "echogold_layer_2.png"),
+}
+# 旧占位 = 借用来源那 4 张的 SHA（改前实测，见 docs/1.8-素材认亲/穿戴层补充/清单.tsv 第 5 列）
+_BG26_ARMOR_LAYER_OLD_SHA = {
+    "windgold_layer_1.png": "a878965980899ad158195ce13c3de712c88dfec704e74e7728d45dc01726f467",
+    "windgold_layer_2.png": "f502de153a56883ee7e9add7e08c6c2f32db16bcc96012655a77dfa3418c6fc8",
+    "frostgold_layer_1.png": "7032f998a969cd787b6fd59f95839228b7668064a7f4a7377430ffb3aab5b06f",
+    "frostgold_layer_2.png": "3a3bf7130d5f3e37848ea4495dc429e7d358bedcdd3a55fa2e05202bac575099",
+}
 _bg26_checked += 1
-for _a, _b in (("windgold_layer_1.png", "thornsgold_layer_1.png"),
-               ("windgold_layer_2.png", "thornsgold_layer_2.png"),
-               ("frostgold_layer_1.png", "echogold_layer_1.png"),
-               ("frostgold_layer_2.png", "echogold_layer_2.png")):
+for _a, _want, _lend in _BG26_ARMOR_LAYER_SHA:
     _pa = _bg26_tex_root / "models" / "armor" / _a
-    _pb = _bg26_tex_root / "models" / "armor" / _b
-    if not _pa.is_file() or not _pb.is_file() or _pa.read_bytes() != _pb.read_bytes():
-        _bg26_bad("bg26-armor-layer-placeholder",
-                  "%s 不是 %s 的 1:1 占位（作者已确认「先欠着」）" % (_a, _b))
+    if not _pa.is_file():
+        _bg26_bad("bg26-armor-layer-real", "缺 %s" % _a)
+        continue
+    _got = hashlib.sha256(_pa.read_bytes()).hexdigest()
+    if _got != _want:
+        _bg26_bad("bg26-armor-layer-real",
+                  "%s 不是作者补图那张（SHA256 变了）" % _a)
+    if _got == _BG26_ARMOR_LAYER_OLD_SHA[_a]:
+        _bg26_bad("bg26-armor-layer-revert",
+                  "%s 回退成了旧占位（== 借用来源）" % _a)
+    _pl = _bg26_tex_root / "models" / "armor" / _lend
+    if _pl.is_file() and _pa.read_bytes() == _pl.read_bytes():
+        _bg26_bad("bg26-armor-layer-revert",
+                  "%s 仍与借用来源 %s 逐字节相同（占位没退役）" % (_a, _lend))
 
 _bg26_checked += 1
 for _needle, _why in (("WIND_CHARGE_NO_SLOW_ID", "蓄力/举盾不受减速的修饰符 id"),
@@ -13738,6 +13778,281 @@ print("[bg26-summary] 1.8 阶段 2（§E/§F + §N-61）：检查 %d 项，问�
 if not bg26_problems:
     print("[bg26-ok] 两族 12 族 / 14 件数值 / 两 buff / 冰霜行者规格非附魔 / 创造页位次 / "
           "手册各 10 页 / 贴图 SHA / 盔甲 layer 占位 全部通过")
+
+# =====================================================================================
+# 1.8 阶段 3 · 段 A（§G 长矛）—— [bg27-*]
+#
+# 这一段守的是「唯一真源 = 两处代码」：
+#   * spear/SpearRegistration.java（14 件矛的数值 / 四段窗口 / 区间）
+#   * spear/MetalSpearItem.java（夜叉尘埃 / 区间伤害 / 家族登记）
+# 外加：素材 1:1、创造页位次、附魔标签、语言键、**spearcore 的 optional 双向断言**。
+# =====================================================================================
+bg27_problems = []
+_bg27_checked = 0
+
+
+def _bg27_bad(code, why):
+    bg27_problems.append("[%s] %s" % (code, why))
+
+
+_SPEAR_DIR = REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "spear"
+_BG27_REG = (_SPEAR_DIR / "SpearRegistration.java").read_text(encoding="utf-8")
+_BG27_ITEM = (_SPEAR_DIR / "MetalSpearItem.java").read_text(encoding="utf-8")
+_BG27_MOD = (_SPEAR_DIR / "SpearModule.java").read_text(encoding="utf-8")
+
+
+def _bg27_code(text):
+    """去掉 // 与 /* */ 注释后的**代码**（判据只看代码，别被注释里的类名骗到）。"""
+    out = []
+    i = 0
+    n = len(text)
+    while i < n:
+        if text.startswith("//", i):
+            j = text.find("\n", i)
+            i = n if j < 0 else j
+        elif text.startswith("/*", i):
+            j = text.find("*/", i + 2)
+            i = n if j < 0 else j + 2
+        else:
+            out.append(text[i])
+            i += 1
+    return "".join(out)
+
+
+_BG27_MOD_CODE = _bg27_code(_BG27_MOD)
+
+# ---------- ① 结构：门面 / 注册器必须分开（没装库时只许加载门面） ----------
+_bg27_checked += 1
+if ("SpearStats" in _BG27_MOD_CODE or "ConfiguredSpearItem" in _BG27_MOD_CODE
+        or "MetalSpearItem" in _BG27_MOD_CODE):
+    _bg27_bad("bg27-optional-isolation",
+              "SpearModule（门面）里出现了 spearcore / MetalSpearItem 的引用 —— 没装库会 NoClassDefFoundError")
+if "if (!isLoaded())" not in _BG27_MOD:
+    _bg27_bad("bg27-optional-isolation", "SpearModule.init 没有 isLoaded 早退")
+if "SpearRegistration.register(modEventBus)" not in _BG27_MOD:
+    _bg27_bad("bg27-optional-isolation", "SpearModule.init 没有派发到注册器")
+if "SpearModule.isLoaded()" not in (_SPEAR_DIR / "SpearRegistration.java").read_text(encoding="utf-8"):
+    pass  # 注册器自己被门面守门即可，不强制
+
+# ---------- ② 14 件：2 件特殊 + 12 族 ----------
+_bg27_checked += 1
+for _needle in ('ANTIQUE_ID = "antique_spear"', 'YAKSHA_ID = "yaksha_spear"',
+                'CHAOSGOLD_ID = "chaosgold_spear"', 'CHAOSALLOY_ID = "chaosalloy_spear"'):
+    if _needle not in _BG27_REG:
+        _bg27_bad("bg27-spear-ids", "缺 id 声明 %s" % _needle)
+if 'reg(family.id + "_" + SpearModule.SUFFIX' not in _BG27_REG:
+    _bg27_bad("bg27-spear-ids", "贵金属矛没有按 <族>_spear 注册")
+if "for (MetalFamily family : MetalFamily.all())" not in _BG27_REG:
+    _bg27_bad("bg27-spear-ids", "没有遍历全部金属族")
+
+# ---------- ③ §G-28..32 的数值逐条 ----------
+_BG27_NUMBERS = {
+    "ANTIQUE_DAMAGE = 4.0F": "古董长矛伤害 4",
+    "ANTIQUE_DURATION = 1.05F": "古董长矛 attackDuration 1.05",
+    "ANTIQUE_MULTIPLIER = 1.05F": "古董长矛突刺倍率 1.05",
+    "YAKSHA_DAMAGE = 6.0F": "夜叉贯骸矛伤害 6",
+    "YAKSHA_DURATION = 0.87F": "夜叉贯骸矛 attackDuration 0.87",
+    "YAKSHA_MULTIPLIER = 1.3F": "夜叉贯骸矛突刺倍率 1.3",
+    "FAMILY_DAMAGE = 7.0F": "贵金属矛伤害 7",
+    "FAMILY_DURATION = 1.1F": "贵金属矛 attackDuration 1.1",
+    "FAMILY_MULTIPLIER = 1.4F": "贵金属矛突刺倍率 1.4",
+    "CHAOSGOLD_MIN = 3.0F": "混沌金矛区间下端 3",
+    "CHAOSGOLD_MAX = 7.0F": "混沌金矛区间上端 7",
+    "CHAOSGOLD_DURATION = 1.05F": "混沌金矛 attackDuration 1.05",
+    "CHAOSGOLD_MULTIPLIER = 1.075F": "混沌金矛固定突刺倍率 1.075",
+    "CHAOSALLOY_MIN = 7.0F": "崩乱合金矛区间下端 7",
+    "CHAOSALLOY_MAX = 13.0F": "崩乱合金矛区间上端 13",
+    "CHAOSALLOY_DURATION = 0.8F": "崩乱合金矛 attackDuration 0.8",
+    "CHAOSALLOY_MULTIPLIER = 1.6F": "崩乱合金矛突刺倍率 1.6",
+    "CHAOSALLOY_DISMOUNT_SPEED = 5.0F": "崩乱合金矛击落阈值 5",
+    "CHAOSALLOY_DELAY_TICKS = 6": "准备阶段 0.3 秒 = 6 tick",
+    "CHAOSALLOY_DISMOUNT_TICK = 40": "发动阶段 2 秒 = 40 tick",
+    "CHAOSALLOY_KNOCKBACK_TICK = 50": "疲劳阶段 2.5 秒 = 50 tick",
+    "CHAOSALLOY_DAMAGE_TICK = 60": "脱离阶段 3 秒 = 60 tick",
+}
+for _needle, _why in _BG27_NUMBERS.items():
+    _bg27_checked += 1
+    if _needle not in _BG27_REG:
+        _bg27_bad("bg27-spear-values", "缺 %s（%s）" % (_needle, _why))
+
+# ---------- ④ 四段窗口照抄哪把原版矛（§G 的「同铁矛 / 同下界合金矛 / 同钻石矛」） ----------
+_bg27_checked += 1
+for _needle, _why in (("SpearStats.IRON", "古董长矛的窗口必须取自铁矛"),
+                      ("SpearStats.NETHERITE", "夜叉贯骸矛 / 贵金属矛的窗口取自下界合金矛"),
+                      ("SpearStats.DIAMOND", "混沌金矛的窗口取自钻石矛")):
+    if _needle not in _BG27_REG:
+        _bg27_bad("bg27-spear-windows", "缺 %s（%s）" % (_needle, _why))
+if "windows.delayTicks()" not in _BG27_REG or "windows.dismountConditions()" not in _BG27_REG:
+    _bg27_bad("bg27-spear-windows", "copy() 没有整组照抄四段窗口")
+if "SpearCondition.ofAttackerSpeed(CHAOSALLOY_DISMOUNT_TICK, CHAOSALLOY_DISMOUNT_SPEED)" not in _BG27_REG:
+    _bg27_bad("bg27-spear-windows", "崩乱合金矛没有用 5 作为击落阈值")
+if "b.mobFactor(), true, true)" not in _BG27_REG:
+    _bg27_bad("bg27-spear-windows", "崩乱合金矛没有打开 dismounts（击落骑手）")
+
+# ---------- ⑤ 夜叉贯骸矛的 6% 尘埃（受抢夺） ----------
+_bg27_checked += 1
+for _needle, _why in (("0.06F * (1 + looting)", "6% 受抢夺（每级 +6%）"),
+                      ("Enchantments.LOOTING", "读抢夺等级"),
+                      ("AllItems.NETHERITE_DUST", "掉的是下界合金尘埃"),
+                      ("Containers.dropItemStack", "真的掉在地上")):
+    if _needle not in _BG27_ITEM:
+        _bg27_bad("bg27-yaksha-dust", "缺 %s（%s）" % (_needle, _why))
+
+# ---------- ⑥ 混沌两族的区间伤害 ----------
+_bg27_checked += 1
+for _needle, _why in (("getDefaultAttributeModifiers", "区间矛必须现读当前值"),
+                      ("ChaosRange.current(stack, ChaosRange.Channel.ATTACK", "读区间当前值"),
+                      ("ChaosRange.reroll(stack, ChaosRange.Channel.ATTACK", "命中后重掷")):
+    if _needle not in _BG27_ITEM:
+        _bg27_bad("bg27-chaos-range", "缺 %s（%s）" % (_needle, _why))
+
+# ---------- ⑦ 贵金属矛的「戳击 + 突刺击都触发器具功能」 ----------
+_bg27_checked += 1
+_BG27_FAMILY = (REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "material"
+                / "MetalFamily.java").read_text(encoding="utf-8")
+if "public void addExtraWeapon(Item item)" not in _BG27_FAMILY:
+    _bg27_bad("bg27-metal-weapon", "MetalFamily 没有 addExtraWeapon")
+if "EXTRA_ITEMS.get(item)" not in _BG27_FAMILY:
+    _bg27_bad("bg27-metal-weapon", "MetalFamily.of 不查 EXTRA_ITEMS")
+if "|| this.extraWeapons.contains(item)" not in _BG27_FAMILY:
+    _bg27_bad("bg27-metal-weapon", "MetalFamily.isWeapon 不认识长矛")
+if "addExtraWeapon(entry.getValue().get())" not in _BG27_REG:
+    _bg27_bad("bg27-metal-weapon", "注册完成后没有把矛登记进各族")
+
+# ---------- ⑧ 创造页：剑 → 长矛 → 重锤 ----------
+_bg27_checked += 1
+_BG27_CREATIVE = (REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "material"
+                  / "CreativeSections.java").read_text(encoding="utf-8")
+_slots = {}
+_m = re.search(r"GEAR_SLOT = Map\.ofEntries\((.*?)\);", _BG27_CREATIVE, re.S)
+if not _m:
+    _bg27_bad("bg27-creative", "找不到 GEAR_SLOT 表")
+else:
+    for _name, _num in re.findall(r'Map\.entry\("([a-z_]+)",\s*(\d+)\)', _m.group(1)):
+        _slots[_name] = int(_num)
+    _order = ["sword", "spear", "mace", "trident", "bow", "crossbow", "axe", "pickaxe",
+              "shovel", "hoe", "shield", "helmet", "chestplate", "leggings", "boots",
+              "forbidden_fruit", "enchanting_book"]
+    if list(_slots.keys()) != _order:
+        _bg27_bad("bg27-creative", "GEAR_SLOT 的顺序/成员不对：%s" % list(_slots.keys()))
+    elif [_slots[k] for k in _order] != list(range(len(_order))):
+        _bg27_bad("bg27-creative", "GEAR_SLOT 的位次不是 0..N 连续：%s" % _slots)
+    # 只许重排不许删项：14 件老成员 + 两条 1.7 专属必须还在
+    for _need in ("forbidden_fruit", "enchanting_book"):
+        if _need not in _slots:
+            _bg27_bad("bg27-creative", "GEAR_SLOT 丢了 1.7 的 %s（红线：只许重排、不许删项）" % _need)
+
+# ---------- ⑨ 古董盒开得出古董长矛 ----------
+_bg27_checked += 1
+_BG27_GIFT = (REPO / "src" / "main" / "java" / "com" / "hjmmd_8" / "bettergold" / "item"
+              / "GiftBoxItem.java").read_text(encoding="utf-8")
+if "SpearModule.isLoaded()" not in _BG27_GIFT or "SpearModule.antiqueSpear()" not in _BG27_GIFT:
+    _bg27_bad("bg27-antique-box", "珍品古董盒没有把古董长矛放进 antiqueTools()")
+
+# ---------- ⑩ 素材 28 张 1:1 + 认亲表 ----------
+_bg27_checked += 1
+_BG27_TSV = REPO / "docs" / "1.8-素材认亲" / "阶段3" / "认亲表.tsv"
+_BG27_TEX = (REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures" / "item")
+_BG27_KEYS = ["sturdygold", "flamegold", "windgold", "thornsgold", "echogold", "frostgold",
+              "indigoseagold", "voodoogold", "thundergold", "illusiongold",
+              "chaosgold", "chaosalloy", "antique", "yaksha"]
+if not _BG27_TSV.is_file():
+    _bg27_bad("bg27-textures", "缺认亲表 %s" % _BG27_TSV)
+else:
+    _rows = [line.split("\t") for line in _BG27_TSV.read_text(encoding="utf-8").splitlines()
+             if line and not line.startswith("#")]
+    if len(_rows) != 28:
+        _bg27_bad("bg27-textures", "认亲表不是 28 行（实际 %d）" % len(_rows))
+    for _row in _rows:
+        _bg27_checked += 1
+        _rel = REPO / _row[1]
+        if not _rel.is_file():
+            _bg27_bad("bg27-textures", "认亲表指向的文件不存在：%s" % _row[1])
+            continue
+        if hashlib.sha256(_rel.read_bytes()).hexdigest() != _row[3]:
+            _bg27_bad("bg27-textures", "%s 与认亲表 SHA256 不符（贴图被改过）" % _row[1])
+for _key in _BG27_KEYS:
+    for _suffix in ("_spear.png", "_spear_in_hand.png"):
+        if not (_BG27_TEX / (_key + _suffix)).is_file():
+            _bg27_bad("bg27-textures", "缺贴图 %s%s" % (_key, _suffix))
+
+# ---------- ⑪ 模型：每件两份（主模型 + in_hand 子模型） ----------
+_bg27_checked += 1
+_BG27_MODELS = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "models" / "item"
+for _key in _BG27_KEYS:
+    for _suffix in ("_spear.json", "_spear_in_hand.json"):
+        if not (_BG27_MODELS / (_key + _suffix)).is_file():
+            _bg27_bad("bg27-models", "缺模型 %s%s" % (_key, _suffix))
+_main = json.loads((_BG27_MODELS / "sturdygold_spear.json").read_text(encoding="utf-8"))
+if _main.get("loader") != "neoforge:separate_transforms":
+    _bg27_bad("bg27-models", "主模型不是 separate_transforms（手持帧不会生效）")
+if _main.get("base", {}).get("parent") != "bettergold:item/sturdygold_spear_in_hand":
+    _bg27_bad("bg27-models", "主模型的 base 没指向 in_hand 子模型")
+_inhand = json.loads((_BG27_MODELS / "sturdygold_spear_in_hand.json").read_text(encoding="utf-8"))
+if _inhand.get("parent") != "spearcore:item/spear_in_hand_base":
+    _bg27_bad("bg27-models", "in_hand 子模型没有继承库的基模型（动作会丢）")
+
+# ---------- ⑫ 语言键（中英各 14） ----------
+_bg27_checked += 1
+for _lang in ("zh_cn", "en_us"):
+    _obj = json.loads((REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
+                       / ("%s.json" % _lang)).read_text(encoding="utf-8"))
+    for _key in _BG27_KEYS:
+        if "item.bettergold.%s_spear" % _key not in _obj:
+            _bg27_bad("bg27-lang", "%s 缺 item.bettergold.%s_spear" % (_lang, _key))
+
+# ---------- ⑬ 附魔标签：14 件都进 5 张 enchantable ----------
+_bg27_checked += 1
+for _tag in ("durability", "sharp_weapon", "weapon", "fire_aspect", "sword"):
+    _tp = (REPO / "src" / "main" / "resources" / "data" / "minecraft" / "tags" / "item"
+           / "enchantable" / ("%s.json" % _tag))
+    if not _tp.is_file():
+        _bg27_bad("bg27-tags", "缺 #minecraft:enchantable/%s" % _tag)
+        continue
+    _values = json.loads(_tp.read_text(encoding="utf-8")).get("values", [])
+    for _key in _BG27_KEYS:
+        if "bettergold:%s_spear" % _key not in _values:
+            _bg27_bad("bg27-tags", "#enchantable/%s 缺 %s_spear" % (_tag, _key))
+
+# ---------- ⑭ spearcore 的 optional 双向断言 ----------
+_bg27_checked += 1
+_BG27_BUILD = (REPO / "build.gradle").read_text(encoding="utf-8")
+_BG27_PROPS = (REPO / "gradle.properties").read_text(encoding="utf-8")
+if "compileOnly files('libs/spearcore-1.21.1-neo-3.2.1.jar')" not in _BG27_BUILD:
+    _bg27_bad("bg27-optional-build", "build.gradle 没把 libs 里的真 jar 设为 compileOnly")
+if re.search(r"^\s*localRuntime.*spear", _BG27_BUILD, re.M):
+    _bg27_bad("bg27-optional-build", "spearcore 被加进了 localRuntime（「没装」那档就造不出来了）")
+if re.search(r'^\s*\w*[Ii]mplementation\s+"maven\.modrinth:spear-core', _BG27_BUILD, re.M):
+    _bg27_bad("bg27-optional-build",
+              "又走回了 Modrinth Maven（它会解析出同号的 1.20.1 Forge 构建，运行期 NoSuchMethodError）")
+if "spearcore_version=3.2.1" not in _BG27_PROPS:
+    _bg27_bad("bg27-optional-build", "gradle.properties 没记录 spearcore_version=3.2.1")
+if "32DD5EAF2BAC8CEAA89EC5622FF0C7016249D96F929A99AE6F3976034611BA97" not in _BG27_PROPS:
+    _bg27_bad("bg27-optional-build", "gradle.properties 没记录真 jar 的 SHA256")
+_BG27_LIB = REPO / "libs" / "spearcore-1.21.1-neo-3.2.1.jar"
+if not _BG27_LIB.is_file():
+    _bg27_bad("bg27-optional-build", "缺 libs/spearcore-1.21.1-neo-3.2.1.jar（编译期必须可见）")
+else:
+    _bg27_checked += 1
+    if hashlib.sha256(_BG27_LIB.read_bytes()).hexdigest().upper() != \
+            "32DD5EAF2BAC8CEAA89EC5622FF0C7016249D96F929A99AE6F3976034611BA97":
+        _bg27_bad("bg27-optional-build", "libs 里的 spearcore jar SHA256 变了（不是作者发布的那份）")
+# 正向：装了 ⇒ 注册器会被调用；反向：没装 ⇒ 门面早退、注册器类名只出现在 init 的方法体里
+_bg27_checked += 1
+if _BG27_MOD.count("SpearRegistration") < 2:
+    _bg27_bad("bg27-optional-bidirectional", "门面里没有调用注册器（装了也不会注册）")
+if "MetalSpears" in _BG27_MOD:
+    _bg27_bad("bg27-optional-bidirectional", "还残留旧类名 MetalSpears")
+if (_SPEAR_DIR / "MetalSpears.java").exists():
+    _bg27_bad("bg27-optional-bidirectional", "旧类 MetalSpears.java 还在（会重复注册）")
+
+if _bg27_checked < 60:
+    _bg27_bad("bg27-anti-vacuum", "本段只跑了 %d 条判定（必须 >= 60）" % _bg27_checked)
+print("[bg27-summary] 1.8 阶段 3 · 段 A（§G 长矛）：检查 %d 项，问题 %d 条%s"
+      % (_bg27_checked, len(bg27_problems), "" if not bg27_problems else "：" + str(bg27_problems[:6])))
+if not bg27_problems:
+    print("[bg27-ok] 14 件矛数值 / 四段窗口 / 区间 / 夜叉 6% 受抢夺 / 家族双触发 / "
+          "创造页剑与重锤之间 / 28 张 1:1 / 模型 / 语言 / 附魔标签 / spearcore optional 双向 全部通过")
 
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
@@ -13781,6 +14096,8 @@ _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg26_problems,)
 #                  or symmetric_problems or beacon_problems) else 0)
 #   改成引用同一份元组，只为**消除"两处清单漂移"**这个已知脆弱形状（原判定一字未改）。
 #   ⚠ `swim_problems` 不在这份清单里，但它在 L391 被 `bg8_problems.extend(...)` 吸收 ⇒ 已覆盖。
+# 2026-11-19 bg27：1.8 阶段 3 · 段 A（§G 长矛）
+_EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg27_problems,)
 _problem_total = sum(len(_x) for _x in _EXIT_PROBLEM_LISTS)
 print(f"[bg-data-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
       f"（契约：0 绿 / 1 有问题 / 2 前置坏）")

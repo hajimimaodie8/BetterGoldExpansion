@@ -1,0 +1,6 @@
+{
+  "parent": "spearcore:item/spear_in_hand_base",
+  "textures": {
+    "layer0": "bettergold:item/echogold_spear_in_hand"
+  }
+}

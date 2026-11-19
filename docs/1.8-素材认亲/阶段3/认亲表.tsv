@@ -1,0 +1,31 @@
+# 1.8 阶段 3 · 段 A（§G 长矛）素材认亲表 —— 1:1 字节复制，0 像素改动
+# 来源 zip（**只读**）：E:\mc\mc资料\新的新约\更有用的金 新约10 (1).zip
+# 源	目标	字节数	SHA256	用途
+长矛/万坚金矛1.png	src/main/resources/assets/bettergold/textures/item/sturdygold_spear_in_hand.png	503	034081d16e48d097a1ad4f7b0cc73fd72ba5c291476126310ae650ead876de43	万坚金矛手持帧
+长矛/万坚金矛2.png	src/main/resources/assets/bettergold/textures/item/sturdygold_spear.png	698	94f10d6ec71407aaaa079c0d82cc4238bc36e3ea7e5c446a65512eb65e2852d3	万坚金矛物品图标
+长矛/烈燃金矛1.png	src/main/resources/assets/bettergold/textures/item/flamegold_spear_in_hand.png	481	db017b628665d01ad20586eb6adb2ee09b7c607caf4e4ee8803d2a1fd973874e	烈燃金矛手持帧
+长矛/烈燃金矛2.png	src/main/resources/assets/bettergold/textures/item/flamegold_spear.png	665	3f4c0e3a094faeaebe1fb51a49c6d1cb0d81a9c2655a56cc5a9115abc00a5a3a	烈燃金矛物品图标
+长矛/翠风金矛1.png	src/main/resources/assets/bettergold/textures/item/windgold_spear_in_hand.png	539	87f1e92776e776d509e5dd00d09c482507c4aeeb2153d75a788d8eb159524e53	翠风金矛手持帧
+长矛/翠风金矛2.png	src/main/resources/assets/bettergold/textures/item/windgold_spear.png	736	7309406675b9f48205a56fba3cb45bec50c8af21bf9b650f3646e4bb3fac0918	翠风金矛物品图标
+长矛/树棘金矛1.png	src/main/resources/assets/bettergold/textures/item/thornsgold_spear_in_hand.png	506	0ee8304a0c039a9e6c5d8eaac25ae6712e66a948de9d53b9dc3b920bece79d0f	树棘金矛手持帧
+长矛/树棘金矛2.png	src/main/resources/assets/bettergold/textures/item/thornsgold_spear.png	729	a81285e0c154bb739042fa20094a7f70796bc9f91c1c411cb35f7c451abf5403	树棘金矛物品图标
+长矛/幽咆金矛1.png	src/main/resources/assets/bettergold/textures/item/echogold_spear_in_hand.png	501	f15188baf58bef30ac36335898c50486dfe2473ae6fdd669653ebad10b5c85c4	幽咆金矛手持帧
+长矛/幽咆金矛2.png	src/main/resources/assets/bettergold/textures/item/echogold_spear.png	693	21749601ef17b5f2c4f76776d76ee541e3f8e03f5b64a2617dfe676dce342dd4	幽咆金矛物品图标
+长矛/凛冰金矛1.png	src/main/resources/assets/bettergold/textures/item/frostgold_spear_in_hand.png	531	ada29ba458939d26b635f555e338b07316dc8799d659a3ec02b7d5d459f73029	凛冰金矛手持帧
+长矛/凛冰金矛2.png	src/main/resources/assets/bettergold/textures/item/frostgold_spear.png	728	6a13c92cd8c57f39e98ceadade0daa8e7e7e780a5648f45bccafd9ded6cca54d	凛冰金矛物品图标
+长矛/靛海金矛1.png	src/main/resources/assets/bettergold/textures/item/indigoseagold_spear_in_hand.png	527	8510bfd28c423bdb3aee3077e6fdaf02f1e5bff5312d8bf71d4fa0adc980345a	靛海金矛手持帧
+长矛/靛海金矛2.png	src/main/resources/assets/bettergold/textures/item/indigoseagold_spear.png	729	5e742b9106c332c1a8012fb5d71b30b163451f5175300472c0358e5a9d06a841	靛海金矛物品图标
+长矛/巫毒金矛1.png	src/main/resources/assets/bettergold/textures/item/voodoogold_spear_in_hand.png	529	bb58ad1f14b1f9f569a2d1d3bb577a5fca75cdfc95c9aff2968bf2e2da29bd8b	巫毒金矛手持帧
+长矛/巫毒金矛2.png	src/main/resources/assets/bettergold/textures/item/voodoogold_spear.png	732	000c168102b2d3c0b3e3760a97d0fc76cb3c8c5d25cbf33dd55a2f949eae74c8	巫毒金矛物品图标
+长矛/结雷金矛1.png	src/main/resources/assets/bettergold/textures/item/thundergold_spear_in_hand.png	550	0c530a543d9cebe9506fadacf83e837e4dacf8d770897786b07d5ace96ccf9d0	结雷金矛手持帧
+长矛/结雷金矛2.png	src/main/resources/assets/bettergold/textures/item/thundergold_spear.png	704	f313dfed288716f4adf9238a54ba73412cb7e9eb4ca5db24cebc18992902ff0e	结雷金矛物品图标
+长矛/幻惑金矛1.png	src/main/resources/assets/bettergold/textures/item/illusiongold_spear_in_hand.png	521	fcbf188547ef0dc6c1f9b01bd6515679283fd01c2bcd3840971b045aa7ae7d52	幻惑金矛手持帧
+长矛/幻惑金矛2.png	src/main/resources/assets/bettergold/textures/item/illusiongold_spear.png	756	c28c1929c9987d1cf35ad6d0f7d9d825d47e99d825821da8b97efaf9457f6ef0	幻惑金矛物品图标
+长矛/混沌金矛1.png	src/main/resources/assets/bettergold/textures/item/chaosgold_spear_in_hand.png	444	46b62848e9f59461f6a2f02a26f7150edf47cfc566a9e1cb4bdbd1243b984893	混沌金矛手持帧
+长矛/混沌金矛2.png	src/main/resources/assets/bettergold/textures/item/chaosgold_spear.png	606	8d9452e720079763e532b607399bf57a7652458ddc11813306f10e826a045131	混沌金矛物品图标
+长矛/崩乱合金矛1.png	src/main/resources/assets/bettergold/textures/item/chaosalloy_spear_in_hand.png	499	5ec68ebcb939be1396a9fa11c9438b1ec36222e39d1ae21d92a2f01b71605905	崩乱合金矛手持帧
+长矛/崩乱合金矛2.png	src/main/resources/assets/bettergold/textures/item/chaosalloy_spear.png	709	45c525f6025c1a45ff28ce119bb7feb36aeed9e13d7b7856d8080a83f199c014	崩乱合金矛物品图标
+长矛/古董长矛1.png	src/main/resources/assets/bettergold/textures/item/antique_spear_in_hand.png	320	29a3f14e30c8c48e7004ecb1ab095dc8ec6385f945bc83d651e7c05e21a79b1c	古董长矛手持帧
+长矛/古董长矛2.png	src/main/resources/assets/bettergold/textures/item/antique_spear.png	405	18c38b630b241b3c285d104931fc0e2fa552e52beadfe74fa5a3404d933efb3d	古董长矛物品图标
+长矛/夜叉贯骸矛1.png	src/main/resources/assets/bettergold/textures/item/yaksha_spear_in_hand.png	409	747473df545ae34e033c994ab4c186dcdc3f0606510cbb1ead7b970452c0c0fd	夜叉贯骸矛手持帧
+长矛/夜叉贯骸矛2.png	src/main/resources/assets/bettergold/textures/item/yaksha_spear.png	563	297f512ca493fcca44355f7a641954390b4bd6d2a200166d44e24e6cfe0da0c6	夜叉贯骸矛物品图标

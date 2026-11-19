@@ -165,6 +165,18 @@ dependencies {
     // would make the "Patchouli not installed" dev environment impossible to reproduce.
     compileOnly "maven.modrinth:patchouli:${patchouli_version}"
 
+    // Optional integration with Spear Core（长矛核心，1.8 §G）—— 与 Patchouli 同一套范式：
+    // compileOnly ONLY，故意**不加** localRuntime，这样「装了 / 没装」两档 dev 环境都造得出来
+    // （装了 = run/mods 里放真 jar；没装 = 直接 runServer）。
+    //
+    // ⚠ **不写 `maven.modrinth:spear-core:<ver>`**：Modrinth Maven 在 3.2.1 这个版本号下解析出来的
+    //   是项目里**同号的 1.20.1 Forge 构建**（195 条目 / `META-INF/mods.toml` /
+    //   `Stats.useSound()` 返回 `Supplier`），与 1.21.1 NeoForge 真 jar 的签名不同 ⇒
+    //   编译能过、**运行时 `NoSuchMethodError`**（本轮实测踩到，见 docs 1.8 §Z-3）。
+    //   改为 `libs/` 里的**真 jar**（sha256 32DD5EAF…BA97，与 run/mods 里那份逐字节相同）：
+    //   编译期可见的字节码 == 运行期的字节码，两档都可复现。
+    compileOnly files('libs/spearcore-1.21.1-neo-3.2.1.jar')
+
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html

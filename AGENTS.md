@@ -172,6 +172,14 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
 黑格真实成因是透明方块没注册 `cutout`（solid 层把 alpha=0 画成黑），本轮给全部新花草/树叶/树苗/
 门/活板门补了 cutout、玻璃/玻璃板补了 translucent。**除 54 张新增之外，既有贴图 0 张被改。**）
 
+（**第七次续 · `bg26/bg27` 补 4 张 worn armor layer（作者 2026-11-19 交 `C:\Users\Lenovo\Downloads\zip.zip`，
+5,250 B / 4 条目 / 全是 64×32）**：把 `windgold_layer_1|2` 与 `frostgold_layer_1|2` 落进
+`textures/models/armor/`（**新增** ✓ 此前是 1:1 借用 thornsgold / echogold 的占位 ✓）。
+判色依据：820 px 与 296 px 两组，均值 RGB 偏绿 → 翠风金、偏蓝 → 凛冰金 ✓。
+认亲表 `docs\1.8-素材认亲\穿戴层补充\清单.tsv`；关卡 `[bg26-armor-layer-placeholder]` 已从
+"== 借用来源 SHA" 改成**真 SHA 锚点 + 反回退**（不等于 thornsgold/echogold 那两张 ✓）。
+⇒ 白名单从「73 张文件 + 六个来源」扩成「**77 张文件 + 七个来源**」；**原始 zip 只读，一字节没动** ✓）
+
 **7）mixin 基础设施（`bg-15w` 续工轮起才有）**
 - 配置：`src/main/resources/bettergold.mixins.json`（`client: ["ItemRendererTridentMixin"]`）+
   `META-INF/neoforge.mods.toml` 里**已启用**的 `[[mixins]] config="${mod_id}.mixins.json"`（原先是注释态）。

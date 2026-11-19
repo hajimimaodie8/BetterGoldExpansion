@@ -1,0 +1,13 @@
+R1-family-damage PASS :: exit=1（期望 1） hit=yes 复原=OK
+    贵金属矛伤害 7 → 7.5（某族矛数值改错）
+R2-chaosalloy-phase PASS :: exit=1（期望 1） hit=yes 复原=OK
+    崩乱合金矛「发动 2 秒」40 → 35 tick
+R3-creative-order PASS :: exit=1（期望 1） hit=yes 复原=OK
+    长矛从剑与重锤之间挪到弩后面
+R4-metal-weapon PASS :: exit=1（期望 1） hit=yes 复原=OK
+    isWeapon 不再认识长矛（贵金属矛双触发失效）
+R5-texture-byte PASS :: exit=1（期望 1） hit=yes 复原=OK
+    改一个贴图字节（1:1 复制的锚点）
+R6-comment-only PASS :: exit=0（期望 0） hit=yes 复原=OK
+    只改注释（必须仍然绿）
+SUMMARY pass=6/6

@@ -160,6 +160,11 @@ public class bettergold {
             com.hjmmd_8.bettergold.fd.FdModule.register(modEventBus);
         }
 
+        // 1.8 阶段 3（§G）：长矛 —— 外部库 SpearCore，**optional**（没装就不注册，paradigm B）。
+        // ⚠ 判据（ModList）与全部 spearcore 类型引用都在 spear/MetalSpears 的方法体内，
+        //   本文件只碰「我们自己的类」，所以没装库时这一整块一个类都不加载。
+        com.hjmmd_8.bettergold.spear.SpearModule.init(modEventBus);
+
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         // 启动自证：配置加载时把「版本 + thunderSoundMode + 配置文件里有没有这个键」打进日志

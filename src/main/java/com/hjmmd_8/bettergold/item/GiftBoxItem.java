@@ -195,6 +195,15 @@ public class GiftBoxItem extends Item {
         if (FdModule.isLoaded()) {
             tools.add(com.hjmmd_8.bettergold.fd.FdItems.ANTIQUE_KNIFE.get());
         }
+        // 1.8 阶段 3（§G-28）：古董长矛「从古董盒开出，概率同古董器具」⇒ 直接进同一张池子
+        // （池子是等概率抽一件、外面那层 36% 不变，所以「概率同古董器具」逐字成立）。
+        // ⚠ 没装 SpearCore 时长矛不存在，这时池子保持原来的 6 件。
+        if (com.hjmmd_8.bettergold.spear.SpearModule.isLoaded()) {
+            var spear = com.hjmmd_8.bettergold.spear.SpearModule.antiqueSpear();
+            if (spear != null) {
+                tools.add(spear.get());
+            }
+        }
         return tools;
     }
 

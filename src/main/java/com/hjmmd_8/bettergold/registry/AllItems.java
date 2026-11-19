@@ -74,6 +74,12 @@ public class AllItems {
         if (isMetalWeapon(stack)) {
             return true;
         }
+        // 1.8 阶段 3（§G）：长矛同理（它们既不是 TieredItem 也不是 ArmorItem）。
+        // ⚠ 这里判的是**标记接口** SpearGear，不是 MetalSpearItem 本身 ——
+        //   后者的父类是外部库的类，没装 SpearCore 时连类都加载不了（见 SpearGear 的注释）。
+        if (stack.getItem() instanceof com.hjmmd_8.bettergold.spear.SpearGear) {
+            return true;
+        }
         Item item = stack.getItem();
         return item instanceof net.minecraft.world.item.TieredItem
                 || item instanceof ArmorItem;

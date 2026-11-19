@@ -1,0 +1,39 @@
+SETUP level=minecraft:overworld base=2000, 120, 2000 spearcore=true
+PASS spear_count :: 注册 14 件（期望 14）
+READ antique_spear damage=4.0 duration=1.05 mult=1.05 durability=200 ench=12 windows=12/50/135/225 dismounts=false
+READ yaksha_spear damage=6.0 duration=0.87 mult=1.3 durability=2031 ench=15 windows=8/50/110/175 dismounts=false
+READ flamegold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ voodoogold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ thundergold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ indigoseagold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ illusiongold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ thornsgold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ echogold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ sturdygold_spear damage=7.0 duration=1.1 mult=1.4 durability=6144 ench=30 windows=8/50/110/175 dismounts=false
+READ chaosgold_spear damage=3.0 duration=1.05 mult=1.075 durability=426 ench=24 windows=10/60/130/200 dismounts=false
+READ chaosalloy_spear damage=7.0 duration=0.8 mult=1.6 durability=8192 ench=32 windows=6/40/50/60 dismounts=true
+READ windgold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+READ frostgold_spear damage=7.0 duration=1.1 mult=1.4 durability=4096 ench=24 windows=8/50/110/175 dismounts=false
+PASS antique_values :: 古董长矛 damage/duration/mult = 4.0/1.05/1.05
+PASS antique_phases_iron :: 四段窗口 = [12, 50, 135, 225]（铁矛 [12, 50, 135, 225]）
+PASS yaksha_values :: 夜叉贯骸矛 = 6.0/0.87/1.3
+PASS yaksha_phases_netherite :: 四段窗口同下界合金矛
+PASS family_spear_values :: 贵金属矛 10/10 族 = 7/1.1/1.4 且四段窗口同下界合金矛
+PASS chaosgold_values :: 混沌金矛 注册伤害(区间下端)/duration/mult = 3.0/1.05/1.075
+PASS chaosgold_phases_diamond :: 四段窗口同钻石矛
+PASS chaosalloy_values :: 崩乱合金矛 = 7.0/0.8/1.6
+PASS chaosalloy_phases :: 0.3/2/2.5/3 秒 ⇒ 6/40/50/60，实际 [6, 40, 50, 60]
+PASS chaosalloy_dismount_5 :: 击落阈值 = 5.0
+PASS other_spears_no_dismount :: 只有崩乱合金矛 dismounts=true（其余矛 false）
+PASS creative_slot_between_sword_mace :: sword=0 spear=1 mace=2
+PASS antique_box_drops_spear :: 开 300 个珍品古董盒 ⇒ 古董长矛 4 件（背包 4 + 地上 0）
+DEBUG hurtEnemy_decl=com.hjmmd_8.bettergold.spear.MetalSpearItem
+DEBUG yaksha_flags nightshadeDust=true
+PASS yaksha_dust_6pct :: 2000 次命中 ⇒ 尘埃 110 个（期望 120 = 6%）
+PASS yaksha_dust_looting :: 抢夺 III 1000 次 ⇒ 尘埃 216 个（期望 240 = 24%）
+PASS chaosgold_range_3_7 :: 400 次读数 min=3.0 max=7.0（必须落在 3..7 且铺开）
+PASS chaosalloy_range_7_13 :: 400 次读数 min=7.0 max=13.0（必须落在 7..13 且铺开）
+PASS metal_spear_known_by_family :: 12 族里 12 族认识自己的矛（of() + isWeapon()）
+PASS damage_with_spear_triggers_ability :: 持矛真伤害 ⇒ 目标状态数=1 [effect.bettergold.high_burn, Duration: 320]
+PASS charge_dispatch_entry :: dispatchWeaponHit 对长矛生效，目标状态数=1 [effect.bettergold.high_burn, Duration: 320]
+SUMMARY pass=21 fail=0

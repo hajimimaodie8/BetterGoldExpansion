@@ -1,0 +1,15 @@
+# 服务端日志摘录（两档 A 级）
+
+## 已装 SpearCore（run/mods 有 spearcore-1.21.1-neo-3.2.1.jar）
+- 模组列表确认：`spearcore-1.21.1-neo-3.2.1.jar | Spear Core | spearcore | 3.2.1`
+- 探针读数：SETUP ... spearcore=true；21 PASS / 0 FAIL
+- 只出现 `ServerLevel[world]`（探针世界），**没有** `新的世界` 的存盘日志。
+
+## 没装 SpearCore（把 jar 移出 run/mods）
+- 探针读数：SETUP ... spearcore=false；`spearcore_absent_no_items` PASS（长矛 0 件）
+- **启动不崩**（重构前这里是 NoClassDefFoundError: ConfiguredSpearItem，见 §Z-3.2 第二个坑）。
+
+## 本轮早期的一次真实失败（已修，留档）
+`java.lang.NoSuchMethodError: 'java.util.function.Supplier net.minecraft.spearcore.init.SpearStats$Stats.useSound()'`
+= 编译期用的是 Modrinth Maven 解析出来的 1.20.1 Forge 构建，运行期是 1.21.1 NeoForge 真 jar。
+对策见 §Z-3.2（改用 libs/ 真 jar）。

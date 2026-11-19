@@ -1,0 +1,7 @@
+# 1.8 阶段 3 · 段 A（§G 长矛）构建
+
+命令：`.\gradlew.bat build --console=plain`
+结果：BUILD SUCCESSFUL（build=0）
+产物：build/libs/bettergold-1.7.0.jar（2,242,003 B）
+
+注：本轮删除探针之后重新构建，因此 jar 内 *Probe* 条目 = 0（见 02-八关卡.txt 的 check_jar_clean 读数）。

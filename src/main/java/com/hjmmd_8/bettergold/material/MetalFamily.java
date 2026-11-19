@@ -247,6 +247,17 @@ public final class MetalFamily {
     private static final Map<Item, MetalFamily> BY_ITEM = new HashMap<>();
     private static final Map<Block, MetalFamily> BY_BLOCK = new HashMap<>();
 
+    /**
+     * <b>1.8 阶段 3（§G）：另册注册的武器（长矛）→ 家族</b>。
+     *
+     * <p>长矛由 {@link com.hjmmd_8.bettergold.spear.SpearRegistration} 单独注册（它依赖外部库
+     * SpearCore ⇒ 没装就不注册），因此不可能出现在本类那些「每族固定 14 件」的字段里。
+     * 这张表让 {@link #of(Item)} 仍然只有<b>一个入口</b>：先查它、再查 {@link #BY_ITEM}。</p>
+     *
+     * <p>它只被 {@link #addExtraWeapon(Item)} 写入（注册期、单线程），读是纯查表 ⇒ 无锁。</p>
+     */
+    private static final Map<Item, MetalFamily> EXTRA_ITEMS = new HashMap<>();
+
     /** 按 id 取家族 */
     public static @Nullable MetalFamily byId(String id) {
         return BY_ID.get(id);
@@ -254,6 +265,10 @@ public final class MetalFamily {
 
     /** 这个物品属于哪个金属族（锭/粒/原料/器具/盔甲/模板/建材都有），无关物品返回 null */
     public static @Nullable MetalFamily of(Item item) {
+        MetalFamily extra = EXTRA_ITEMS.get(item);
+        if (extra != null) {
+            return extra;
+        }
         ensureIndex();
         return BY_ITEM.get(item);
     }
@@ -331,6 +346,14 @@ public final class MetalFamily {
     public final String id;
     public final String cnName;
     public final Tier tier;
+    /**
+     * 本族器具的<b>附魔能力</b>（= {@code Spec.enchantmentValue} 的只读快照）。
+     *
+     * <p>{@link Tier} 上<b>没有</b>附魔能力这一项（原版 Tier 只管耐久 / 速度 / 伤害 / 挖掘等级），
+     * 而 1.8 §G-30 要求「贵金属矛的附魔能力同对应器具」⇒ 与其在长矛那侧另抄一份数字，
+     * 不如在这里留一个快照。全仓仍然只有 {@code AllMetals} 里的 {@code spec.enchantmentValue} 是真源。</p>
+     */
+    public final int gearEnchantmentValue;
     public final Holder<ArmorMaterial> armorMaterial;
 
     /** 是否防火防爆（新约金属默认是） */
@@ -932,6 +955,15 @@ public final class MetalFamily {
     private volatile List<Item> weaponsCache;
 
     /**
+     * <b>1.8 阶段 3（§G）：另册注册的武器（长矛）</b>。
+     *
+     * <p>这些物品不在这族的固定 14 件字段里（它们由 {@code MetalSpears} 在 SpearCore 存在时
+     * 才注册），所以不能进 {@link #weapons()} 那个「一次性烤好的缓存」，否则缓存会在
+     * 长矛注册之前就被读走。这里单独一张小表，由 {@link #addExtraWeapon(Item)} 追加；</p>
+     */
+    private final java.util.Set<Item> extraWeapons = new java.util.LinkedHashSet<>();
+
+    /**
      * 本族<b>所有能打出命中的武器</b>：既有 6 件器具（{@link #tools()}，含乐事联动小刀）
      * 加上 1.5 的 4 类攻击武器（重锤 / 弓 / 弩 / 三叉戟）。
      *
@@ -950,15 +982,34 @@ public final class MetalFamily {
             all.add(this.bow.get());
             all.add(this.crossbow.get());
             all.add(this.trident.get());
+            all.addAll(this.extraWeapons);
             cache = List.copyOf(all);
             this.weaponsCache = cache;
         }
         return cache;
     }
 
-    /** 这个物品是不是本族能触发攻击特性的武器（器具 + 重锤 / 弓 / 弩 / 三叉戟；盾牌不算） */
+    /**
+     * <b>1.8 阶段 3（§G）：把另册注册的长矛登记进本族</b>（{@link #isWeapon(Item)} 与
+     * {@link #of(Item)} 立刻认识它）。
+     *
+     * <p>作者要求「贵金属矛的<b>戳击与突刺击</b>都触发贵金属器具功能」—— 那条功能的派发
+     * （{@code MetalEvents#dispatchWeaponHit}）的唯一判据就是 {@link #isWeapon(Item)}，
+     * 所以长矛只要被它认识，两条命中路径（STAB / CHARGE）都会自动走到同一个
+     * {@code applyFamilyWeaponEffect}，不需要在长矛侧重写任何 buff 逻辑。</p>
+     *
+     * <p>⚠ 必须在 {@code MetalSpears.register()} 里、每件矛注册之后立刻调用一次
+     * （此时 {@code weaponsCache} 还没被人读走；本方法会把它置空以便重建）。</p>
+     */
+    public void addExtraWeapon(Item item) {
+        this.extraWeapons.add(item);
+        EXTRA_ITEMS.put(item, this);
+        this.weaponsCache = null;
+    }
+
+    /** 这个物品是不是本族能触发攻击特性的武器（器具 + 重锤 / 弓 / 弩 / 三叉戟 + 长矛；盾牌不算） */
     public boolean isWeapon(Item item) {
-        return weapons().contains(item);
+        return weapons().contains(item) || this.extraWeapons.contains(item);
     }
 
     /**
@@ -1125,6 +1176,9 @@ public final class MetalFamily {
         this.tier = new SimpleTier(spec.durability, spec.miningSpeed, spec.attackDamageBonus,
                 spec.enchantmentValue, spec.incorrectForDrops,
                 () -> Ingredient.of(this.ingot.get()));
+        // 1.8 阶段 3（§G）：长矛在 MetalSpears 里另册注册，需要「附魔能力同对应器具」的那个数。
+        // 它只能来自 Spec（tier 不带附魔能力），所以这里留一个只读快照 —— 不引入第二份清单。
+        this.gearEnchantmentValue = spec.enchantmentValue;
 
         // ---------- 器具 ----------
         Tier t = this.tier;

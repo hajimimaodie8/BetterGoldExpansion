@@ -1,0 +1,30 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "bettergold:item/frostgold_spear_in_hand",
+    "textures": {
+      "layer0": "bettergold:item/frostgold_spear_in_hand"
+    }
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "bettergold:item/frostgold_spear"
+      }
+    },
+    "fixed": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "bettergold:item/frostgold_spear"
+      }
+    },
+    "ground": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "bettergold:item/frostgold_spear"
+      }
+    }
+  }
+}
