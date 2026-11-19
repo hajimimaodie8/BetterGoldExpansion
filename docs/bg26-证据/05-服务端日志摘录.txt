@@ -1,0 +1,32 @@
+[1911月2026 08:57:52.977] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_pearl_66pct :: 非物理 300 杀 = 199 个（期望约 198，66%）
+[1911月2026 08:57:53.005] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_pearl_physical_zero :: 物理 100 杀 = 0 个（必须 0）
+[1911月2026 08:57:53.017] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS block_jump_38 :: amp=38 dur=20
+[1911月2026 08:57:53.017] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS block_levitation_3 :: amp=3 dur=20
+[1911月2026 08:57:53.020] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS block_bubble_column :: direction=UPWARD above=Block{minecraft:bubble_column}[drag=false]
+[1911月2026 08:57:53.023] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_iframe_L0 :: invulnerableTime=20 期望 20
+[1911月2026 08:57:53.024] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_iframe_L1 :: invulnerableTime=18 期望 18
+[1911月2026 08:57:53.025] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_iframe_L2 :: invulnerableTime=16 期望 16
+[1911月2026 08:57:53.025] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_iframe_L3 :: invulnerableTime=14 期望 14
+[1911月2026 08:57:53.026] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_attack_interval_L0 :: attackSpeed=4.0000 期望 4.0000
+[1911月2026 08:57:53.026] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_attack_interval_L1 :: attackSpeed=2.8571 期望 2.8571
+[1911月2026 08:57:53.026] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_attack_interval_L2 :: attackSpeed=2.2222 期望 2.2222
+[1911月2026 08:57:53.026] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_slash_attack_interval_L3 :: attackSpeed=1.8182 期望 1.8182
+[1911月2026 08:57:53.034] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS wind_burst_sprint :: wind_charge 命中次数=1 伤害=[1.0]
+[1911月2026 08:57:53.042] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS n61_target_wind_plus_1 :: L=1 总 wind_charge 伤害=2.0（基线 1.0 + 1）
+[1911月2026 08:57:53.045] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS n61_target_wind_plus_2 :: L=2 总 wind_charge 伤害=3.0（基线 1.0 + 2）
+[1911月2026 08:57:53.047] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS n61_target_wind_plus_3 :: L=3 总 wind_charge 伤害=4.0（基线 1.0 + 3）
+[1911月2026 08:57:53.047] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS armor_piglin_neutral :: makesPiglinsNeutral(boots)=true
+[1911月2026 08:57:53.050] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS armor_move_speed_25 :: 物品属性表 4 件 ADD_MULTIPLIED_TOTAL 合计=1.0（每件 0.25）
+[1911月2026 08:57:53.050] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS armor_jump_half :: 物品属性表 4 件 JUMP_STRENGTH 合计=0.3454382121562958（每件 +0.5 格折算）
+[1911月2026 08:57:53.050] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS armor_kb_15pct :: 4件 KNOCKBACK_RESISTANCE=0.6000
+[1911月2026 08:57:53.053] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS armor_wind_full_immune :: 4件 newDamage=0.0
+[1911月2026 08:57:53.054] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS armor_wind_25pct :: 1/2/3/4 件伤害单调递减（读数见 READ 行）
+[1911月2026 08:57:53.099] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_crystal_6pct :: 无时运 300 次 = 13 个（期望约 18，6%）
+[1911月2026 08:57:53.132] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_crystal_fortune :: 时运 III 300 次 = 65 个（应显著高于无时运 13）
+[1911月2026 08:57:53.133] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_seep_damage_L1 :: L=1 冰冻伤害=1.0
+[1911月2026 08:57:53.133] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_seep_damage_L2 :: L=2 冰冻伤害=2.0
+[1911月2026 08:57:53.133] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_seep_damage_L3 :: L=3 冰冻伤害=3.0
+[1911月2026 08:57:53.133] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_seep_amplified_6pct :: 1 级渗寒 + 1 级中毒 = 1.0599995（期望 1.06）
+[1911月2026 08:57:53.143] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_walker_pieces_1to4 :: 1..4 件结冰量单调递增（READ 行）
+[1911月2026 08:57:53.144] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_walker_shield_5 :: 4件+盾=145 > 4件=109
+[1911月2026 08:57:53.148] [Server thread/INFO] [Bg26Probe/]: [bg26-probe] PASS frost_walker_max_not_stack :: 1件+附魔II=45 / 2件=45 / 1件=25

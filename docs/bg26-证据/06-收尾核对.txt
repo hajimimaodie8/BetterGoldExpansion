@@ -1,0 +1,7 @@
+server.properties SHA256 = a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4（基准 a2229937ba8ab7428bc959e87a784890500d6d7061b10fa8302758e46a01d3c4）
+probe 目录存在 = False
+bg26 开关文件存在 = False
+probe/bg26 读数目录存在 = False
+run/saves/新的世界 存在 = True（未触碰）
+原始 zip: size=673488 mtime=1795014672.0420823
+git status 条目数 = 440（不 commit / 不 push）

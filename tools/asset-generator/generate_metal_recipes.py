@@ -48,6 +48,9 @@ METALS = {
     #              作者截图给的是另一条，属轮7）。
     "chaosgold": "chaos_coin",
     "chaosalloy": "chaos_coin",
+    # 1.8（bg26）：两族的原料主材料 = 各自的核心材料（掉落物，配方里当 exchange）
+    "windgold": "clear_wind_pearl",
+    "frostgold": "frost_shimmer_crystal",
 }
 
 # 每条模板 → (配方类别, 该配方依赖的形态)；类别与形态都由 metal_forms.py 判定，
@@ -167,8 +170,8 @@ def chaos_raw_targets() -> list[tuple[str, dict, dict]]:
 def check_chaos(targets: list[tuple[str, dict, dict]]) -> list[str]:
     """新形状的四个不变量（每条都能单独变红）"""
     bad: list[str] = []
-    if len(targets) != 8:
-        bad.append("新 9 格形状的配方不是 8 条（每个有 raw 的族一条）：%d" % len(targets))
+    if len(targets) != 10:
+        bad.append("新 9 格形状的配方不是 10 条（每个有 raw 的族一条；1.8 起 10 族）：%d" % len(targets))
     rows = set()
     for name, obj, base_obj in targets:
         if obj.get(CHAOS_BLOCK_FIELD) is not True:

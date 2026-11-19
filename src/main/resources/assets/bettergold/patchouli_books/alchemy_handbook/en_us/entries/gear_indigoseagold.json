@@ -2,7 +2,7 @@
   "name": "bettergold.handbook.entry.gear_indigoseagold",
   "category": "bettergold:gear_upgrade",
   "icon": "bettergold:indigoseagold_sword",
-  "sortnum": 5,
+  "sortnum": 7,
   "read_by_default": true,
   "pages": [
     {

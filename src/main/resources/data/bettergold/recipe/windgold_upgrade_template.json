@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GIG",
+    "GTG",
+    "GCG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_block" },
+    "I": { "item": "bettergold:windgold_ingot" },
+    "T": { "item": "minecraft:netherite_upgrade_smithing_template" },
+    "C": { "item": "bettergold:clear_wind_pearl" }
+  },
+  "result": { "id": "bettergold:windgold_upgrade_template" }
+}

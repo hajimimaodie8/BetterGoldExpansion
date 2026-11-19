@@ -52,7 +52,9 @@ METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongo
           "thornsgold", "echogold",
           # 1.7（bg-n10 轮1 后半）：两套新族。⚠ 它们的**形态子集不同**（崩乱合金只有锭/块/模板）
           # ⇒ 本段末尾那条 `[bgn10-forms-*]` 断言按 `metal_forms.py` 的声明逐个形态核对资产。
-          "chaosgold", "chaosalloy"]
+          "chaosgold", "chaosalloy",
+          # 1.8（bg26）：翠风金 / 凛冰金
+          "windgold", "frostgold"]
 ALL_METALS = ["sturdygold", *METALS]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import metal_forms as MF   # noqa: E402  「形态子集」的 Python 唯一真源（1.7 bg-n10）

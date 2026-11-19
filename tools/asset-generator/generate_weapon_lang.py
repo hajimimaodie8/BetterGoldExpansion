@@ -42,6 +42,9 @@ METALS = [
     # （缺了就是裸键名；`validate_metal_data.py` 按 ALL_METALS × WEAPONS 检查）。
     ("chaosgold", "混沌金", "Chaosgold"),
     ("chaosalloy", "崩乱合金", "Chaosalloy"),
+    # 1.8（bg26）：翠风金 / 凛冰金（五类武器的语言键）
+    ("windgold", "翠风金", "Windgold"),
+    ("frostgold", "凛冰金", "Frostgold"),
 ]
 
 # 武器后缀 -> (中文名, 英文名)

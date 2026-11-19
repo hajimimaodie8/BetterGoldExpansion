@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bettergold:frostgold_upgrade_template" },
+  "base": { "item": "minecraft:golden_pickaxe" },
+  "addition": { "item": "bettergold:frostgold_ingot" },
+  "result": { "id": "bettergold:frostgold_pickaxe", "count": 1 }
+}

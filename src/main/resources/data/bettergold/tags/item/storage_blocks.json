@@ -10,6 +10,8 @@
     "bettergold:thornsgold_block",
     "bettergold:echogold_block",
     "bettergold:chaosgold_block",
-    "bettergold:chaosalloy_block"
+    "bettergold:chaosalloy_block",
+    "bettergold:windgold_block",
+    "bettergold:frostgold_block"
   ]
 }

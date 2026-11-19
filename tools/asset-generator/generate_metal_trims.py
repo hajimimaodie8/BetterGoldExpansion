@@ -52,7 +52,9 @@ METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongo
           "thornsgold", "echogold",
           # 1.7（bg-n10 轮1 后半）：两族都有纹饰色卡（zip 里各一张 8×1）⇒ 纹饰四样照补。
           # 形态子集不影响纹饰（它只依赖"锭"这个必备形态 + 色卡贴图）。
-          "chaosgold", "chaosalloy"]
+          "chaosgold", "chaosalloy",
+          # 1.8（bg26）：翠风金 / 凛冰金（各 1 张 8×1 色卡；纹饰四样照补）
+          "windgold", "frostgold"]
 
 # item_model_index：必须互不相同、且避开原版 0.1~1.0（见文件头说明）
 ITEM_MODEL_INDEX = {
@@ -71,6 +73,9 @@ ITEM_MODEL_INDEX = {
     # 0.01~0.09 已用满一位小数 ⇒ 往两位小数取，仍然严格小于 0.1。
     "chaosgold": 0.011,
     "chaosalloy": 0.012,
+    # 1.8（bg26）：继续用两位小数、严格小于 0.1
+    "windgold": 0.013,
+    "frostgold": 0.014,
 }
 
 

@@ -655,8 +655,27 @@ FORGE_ORDER = ["sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe", 
 # 9 章：(章节 id, 封面图标)。章1 = 联动与金制胚底；章2~9 = 八族装备，
 # 顺序 = METALS = 作者给的章节顺序（烈燃金 → 万坚金 → 树棘金 → 幽咆金 →
 #          靛海金 → 巫毒金 → 结雷金 → 幻惑金）。
+# 1.8（bg26）：**只有「装备的强化」章节**新增两族（作者 §E/§F 要求各 10 页）；
+#   章 2「核心材料」/ 章 3「贵金的知识」仍是原 8 族（那两处属阶段 5 的收口，本轮不动）。
+GEAR_EXTRA_METALS = [
+    ("windgold", "clear_wind_pearl"),
+    ("frostgold", "frost_shimmer_crystal"),
+]
+# 顺序 = CreativeSections.METAL_ORDER（作者 2026-11-18 指定两族的插入位次）
+GEAR_METALS = [
+    ("flamegold", "blazing_rod"),
+    ("sturdygold", "golden_cowrie"),
+    ("windgold", "clear_wind_pearl"),
+    ("thornsgold", "glittering_vine"),
+    ("echogold", "bundled_echo_shard"),
+    ("frostgold", "frost_shimmer_crystal"),
+    ("indigoseagold", "indigo_ocean_heart"),
+    ("voodoogold", "voodoo_feather"),
+    ("thundergold", "amethyst_energy_dust"),
+    ("illusiongold", "chorus_cherry_branch"),
+]
 GEAR_CHAPTERS = [("linkage", "golden_mace_blank")] + \
-                [("%s" % metal, "%s_sword" % metal) for metal, _core in METALS]
+                [("%s" % metal, "%s_sword" % metal) for metal, _core in GEAR_METALS]
 
 # 三个文案页的语言键后缀（顺序 = 文档的「1 左 / 1 右 / 2 左」）
 GEAR_TEXT_LABELS = ("1_left", "1_right", "2_left")
@@ -690,7 +709,7 @@ def _make_gear_metal_builder(metal, sortnum):
 
 GEAR_ENTRIES = [entry_gear_linkage] + [
     _make_gear_metal_builder(metal, index)
-    for index, (metal, _core) in enumerate(METALS, start=1)
+    for index, (metal, _core) in enumerate(GEAR_METALS, start=1)
 ]
 
 # --------------------------------------------------------------------------------------

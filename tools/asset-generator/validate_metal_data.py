@@ -1116,11 +1116,11 @@ _core_items = re.findall(r"\.coreItem\(\(\)\s*->\s*([A-Za-z0-9_.]+)\.get\(\)\)",
 #   崩乱合金**没有**（它没有 raw 链，锭是"下界合金锭 + 混沌金块 + 高精炼金油"合出来的）
 #   ⇒ 现在是 9 个（既有 8 族 + chaosgold）。
 #   old: if len(_core_items) != 8:
-_CORE_ITEM_MIN = 9
+_CORE_ITEM_MIN = 11
 if len(_core_items) != _CORE_ITEM_MIN:
     _bg16_bad("bg16-cactus-coreitem-anti-vacuum",
               f"AllMetals.java 里现算出 {len(_core_items)} 个 `.coreItem(() -> X.get())`"
-              f"（应为 {_CORE_ITEM_MIN} 个 = 既有 8 族 + chaosgold）")
+              f"（应为 {_CORE_ITEM_MIN} 个 = 既有 8 族 + chaosgold + 1.8 两族）")
 elif len(set(_core_items)) != len(_core_items):
     # 旧口径原文：`elif len(set(_core_items)) != 8:`（当时"8 个且互不相同"是一回事）
     _bg16_bad("bg16-cactus-coreitem-distinct",
@@ -1602,8 +1602,8 @@ _BGFIX3_RETIRED_PAGES = {"metal_tour": 9, "upgrade_templates": 5}
 _BG2_ENTRY_NAMES = ("auxiliary_materials", "core_materials", "golden_knowledge")
 # bg-book §八 追加轮（2026-10-06）：「装备的强化」9 章（1 章联动/胚底 + 8 章金属）
 _BG8_ENTRY_NAMES = ("gear_linkage",) + tuple("gear_%s" % _c for _c in
-    ("flamegold", "sturdygold", "thornsgold", "echogold",
-     "indigoseagold", "voodoogold", "thundergold", "illusiongold"))
+    ("flamegold", "sturdygold", "windgold", "thornsgold", "echogold",
+     "frostgold", "indigoseagold", "voodoogold", "thundergold", "illusiongold"))
 # bg-book §九 追加轮（2026-10-06 20:02）：「商人与古董」3 章（替掉该类别旧占位两节）
 _BG9_ENTRY_NAMES = ("merchant_intro", "merchant_gift_box", "merchant_antique_gear")
 # bg-book §十 追加轮（2026-10-07 21:05）：「金灿的盛宴」5 章（替掉该类别旧占位条目 golden_feast）
@@ -2146,9 +2146,9 @@ _n_specs = _bgfix_am.count("new MetalFamily.Spec(")
 #   数量必须**正好**等于 10（写死是为了拦住"注册表被清空"这类空转），
 #   加族时**必须**同步改这一行（与 metal_forms.py / AllMetals.java 三边一起长）。
 #   old: if _n_specs != 8:
-if _n_specs != 10:
+if _n_specs != 12:
     _bgfix_bad("bgfix-special-metal-predicate",
-               "AllMetals 里的 MetalFamily.Spec 不是 10 个（实际 %d；反空转守护）" % _n_specs)
+               "AllMetals 里的 MetalFamily.Spec 不是 12 个（实际 %d；反空转守护；1.8 起 12 族）" % _n_specs)
 
 # ---------- 第 4 条 · 紫颂樱花枝配方：1 个樱花树苗 → 恶魂之泪 ----------
 _ccb_path = _DATA / "bettergold" / "recipe" / "chorus_cherry_branch.json"
@@ -2223,9 +2223,9 @@ if _bgfix_fx.count("shiftedDamage(amplifier)") != 2:
                % _bgfix_fx.count("shiftedDamage(amplifier)"))
 if "amplifier + 2" in _bgfix_fx:
     _bgfix_bad("bgfix-shifted-damage-used", "AllEffects 里还留着旧口径 `amplifier + 2`")
-if _bgfix_fx.count("duration % 20 == 0") != 5:
+if _bgfix_fx.count("duration % 20 == 0") != 6:
     _bgfix_bad("bgfix-shifted-damage-frequency",
-               "每秒结算判据的条数不是 5（频率被改动了；反空转守护）")
+               "每秒结算判据的条数不是 6（频率被改动了；反空转守护；1.8 渗寒 +1）")
 if "float level = (amplifier + 1) * MetalFamily.ECHO_ROAR_DAMAGE_PER_LEVEL;" not in _bgfix_mev:
     _bgfix_bad("bgfix-parasite-echo-unchanged",
                "音咆的「伤害 = 等级」公式被动了（本条只许改高燃 / 沉淀）")
@@ -2248,9 +2248,9 @@ _EXISTING_CONFIG_KEYS = ["logDirtBlock", "magicNumber", "magicNumberIntroduction
                          "goldLootMode", "goldLootItems", "voodooExtractRatio",
                          "voodooFlatPerLevel", "thunderSoundMode"]
 _cfg_keys = re.findall(r'\.define(?:InRange|ListAllowEmpty)?\(\s*"([^"]+)"', _bgfix_cfg)
-if len(_cfg_keys) != 29:
+if len(_cfg_keys) != 33:
     _bgfix_bad("bgfix-config-16-keys",
-               "Config.java 的键总数不是 29（既有 9 + bg-fix 16 + bg-n10r4 4 = 29；实际 %d: %s）"
+               "Config.java 的键总数不是 33（既有 9 + bg-fix 16 + bg-n10r4 4 + 1.8 两族 4 = 33；实际 %d: %s）"
                % (len(_cfg_keys), _cfg_keys))
 # ---------- ★ `[bgn10r4-config-every-family]`：每个**已注册族**都必须有对应配置项 ----------
 # 判据：`AllMetals.java` 里 `new MetalFamily.Spec("id", ...)` 的 id 集合
@@ -2260,9 +2260,9 @@ if len(_cfg_keys) != 29:
 #   它**看不见**"某个族缺 case"（把 chaosgold 的 case 删掉、总数仍然是 29）⇒ 必须逐个族对穿。
 _r4_am_src = strip_comments((JAVA / "material" / "AllMetals.java").read_text(encoding="utf-8"))
 _am_spec_ids = sorted(set(re.findall(r'new MetalFamily\.Spec\("([a-z_]+)"', _r4_am_src)))
-if len(_am_spec_ids) != 10:
+if len(_am_spec_ids) != 12:
     _bgfix_bad("bgn10r4-config-every-family",
-               "AllMetals.java 里反解到的族 id 不是 10 个（实际 %d: %s）—— 反空转守护"
+               "AllMetals.java 里反解到的族 id 不是 12 个（实际 %d: %s）—— 反空转守护；1.8 起 12 族"
                % (len(_am_spec_ids), _am_spec_ids))
 _cfg_w_body = method_body(_bgfix_cfg, "public static float weaponBuffChance(")
 _cfg_a_body = method_body(_bgfix_cfg, "public static float armorBuffChance(")
@@ -2344,9 +2344,9 @@ for _fn, _tag in (("public static float weaponBuffChance(String familyId)", "wea
     _b = method_body(_bgfix_cfg, _fn)
     # ⚠ 1.7 bg-n10r4：旧期望是 8（= bg-fix 当时的 8 族）；两族进配置系统后是 **10**（camelCase 的 case）。
     #   旧口径原文留档：`if _b.count('case "') != 8:`
-    if _b.count('case "') != 10:
+    if _b.count('case "') != 12:
         _bgfix_bad("bgfix-config-case-count",
-                   "%s 的 case 数不是 10（= 10 族 × 1；实际 %d）" % (_tag, _b.count('case "')))
+                   "%s 的 case 数不是 12（= 12 族 × 1；实际 %d）" % (_tag, _b.count('case "')))
 for _k in list(_BGFIX_WEAPON_KEYS.values()) + list(_BGFIX_ARMOR_KEYS.values()) + [_BGFIX_MULT_KEY]:
     if not re.fullmatch(r"[a-z][A-Za-z0-9]*", _k):
         _bgfix_bad("bgfix-config-key-ascii", "配置键不是英文 camelCase：%s" % _k)
@@ -3177,9 +3177,9 @@ _spec_count = _bgfix_am.count("new MetalFamily.Spec(")
 # ⚠ 1.7（bg-n10 轮1 后半）：**旧期望原文保留** —— `old: if _spec_count != 8:`
 #   现在是 10 族（既有 8 + 混沌金 + 崩乱合金）。下限语义不变：数量必须**正好**等于声明表，
 #   否则就是"注册表被清空 / AllMetals 被改坏"这类空转。
-if _spec_count != 10:
+if _spec_count != 12:
     _bgfix4_bad("bgfix4-vine-all-metals",
-                "AllMetals 里的 MetalFamily.Spec 不是 10 个（实际 %d；反空转守护）" % _spec_count)
+                "AllMetals 里的 MetalFamily.Spec 不是 12 个（实际 %d；反空转守护；1.8 起 12 族）" % _spec_count)
 for _n, _why in (("BASE_CHANCE = 0.06F", "6% 基础概率被改"),
                  ("CHANCE_PER_FORTUNE = 0.06F", "时运系数被改")):
     if _n not in _bgfix_glm:
@@ -3250,9 +3250,9 @@ _trim_jsons = sorted(_TRIM_MATERIAL.glob("*.json"))
 #   + 万坚金 + 表外那一张），当时写死 9 是"反空转"。本轮新增 chaosgold / chaosalloy 两族
 #   （两族都有 8×1 纹饰色卡）⇒ 11。加族时这里必须同步长。
 #   old: if len(_trim_jsons) != 9:
-if len(_trim_jsons) != 11:
+if len(_trim_jsons) != 13:
     _bgfix2_bad("bgfix2-trim-nine-materials",
-                "trim_material JSON 数 = %d，期望 11（既有 9 + 1.7 的 chaosgold/chaosalloy；反空转守护）"
+                "trim_material JSON 数 = %d，期望 13（既有 9 + 1.7 两族 + 1.8 两族；反空转守护）"
                 % len(_trim_jsons))
 _indexes, _missing_palette = [], []
 for _j in _trim_jsons:
@@ -3341,8 +3341,8 @@ def _bgbook8_bad(tag: str, msg: str) -> None:
 
 _BG8_SNAPSHOT = _BG2_SNAPSHOT_DIR / "bg-book-8.md"
 # 八族的**排版顺序**（= 作者给的章节顺序 = 生成器 `generate_handbook_data.py` 的 METALS 顺序）
-_BG8_METAL_ORDER = ["flamegold", "sturdygold", "thornsgold", "echogold",
-                    "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+_BG8_METAL_ORDER = ["flamegold", "sturdygold", "windgold", "thornsgold", "echogold",
+                    "frostgold", "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
 _BG8_TEXT_LABELS = ("1_left", "1_right", "2_left")
 # 「后页」的 14 件**固定顺序**（§8.3 正文逐字给出；§8.12 第 2 条列为推断值）
 _BG8_FORGE_ORDER = ["sword", "mace", "trident", "bow", "crossbow", "axe", "pickaxe", "shovel",
@@ -3354,7 +3354,9 @@ if not _BG8_GEN.is_file():
     _bgbook8_bad("bgbook8-generator", "读不到手册生成器：%s" % _BG8_GEN)
 else:
     _bg8_gen_src = _BG8_GEN.read_text(encoding="utf-8")
-    _bg8_m = re.search(r"^METALS = \[(.*?)^\]", _bg8_gen_src, re.S | re.M)
+    # ★ 1.8（bg26）：手册生成器的 `METALS` 仍只有 8 族（核心材料 / 知识章不变），
+    #   装备章用 `GEAR_METALS`（10 族）⇒ 本检查读后者。
+    _bg8_m = re.search(r"^GEAR_METALS = \[(.*?)^\]", _bg8_gen_src, re.S | re.M)
     if not _bg8_m:
         _bgbook8_bad("bgbook8-generator", "读不到生成器的 METALS 清单（反空转守护）")
     else:
@@ -3363,9 +3365,9 @@ else:
             _bgbook8_bad("bgbook8-generator",
                          "生成器的 METALS 顺序 %s 与本关卡的排版顺序 %s 不一致（加/改族时只长一边）"
                          % (_bg8_gen_order, _BG8_METAL_ORDER))
-        if len(_bg8_gen_order) != 8:
+        if len(_bg8_gen_order) != 10:
             _bgbook8_bad("bgbook8-generator",
-                         "生成器的族数不是 8（实际 %d）—— 反空转守护" % len(_bg8_gen_order))
+                         "生成器的族数不是 10（实际 %d）—— 反空转守护；1.8 起 10 族" % len(_bg8_gen_order))
     for _needle, _why in (("FORGE_ORDER = [", "生成器里没有 FORGE_ORDER（14 件固定顺序的真源）"),
                           ("GEAR_BLANK_ROWS = [", "生成器里没有章1 的胚底配方表"),
                           ("GEAR_CATEGORY = ", "生成器里没有 GEAR_CATEGORY"),
@@ -3478,12 +3480,12 @@ for _idx, (_chap, _icon) in enumerate(_BG8_CHAPTERS):
             for _rk in ("recipe", "recipe2"):     # 同上：收集**实际**引用（死链检查用）
                 if isinstance(_pg.get(_rk), str):
                     _BG8_FORGE_REFS.add(_pg[_rk])
-if _BG8_PAGES_TOTAL != 86:
+if _BG8_PAGES_TOTAL != 106:
     _bgbook8_bad("bgbook8-chapters",
-                 "9 章合计页数不是 86（章1 6 + 八族 8×10）：%d —— 反空转守护" % _BG8_PAGES_TOTAL)
-if len(_BG8_FORGE_REFS) != 112:
+                 "11 章合计页数不是 106（章1 6 + 十族 10×10）：%d —— 反空转守护" % _BG8_PAGES_TOTAL)
+if len(_BG8_FORGE_REFS) != 140:
     _bgbook8_bad("bgbook8-forge-order",
-                 "锻造页的配方引用不是 8×14 = 112 条：%d —— 反空转守护" % len(_BG8_FORGE_REFS))
+                 "锻造页的配方引用不是 10×14 = 140 条：%d —— 反空转守护（1.8 起 10 族）" % len(_BG8_FORGE_REFS))
 if len(_BG8_BLANK_REFS) != 5:
     _bgbook8_bad("bgbook8-blank-recipes",
                  "章1 的胚底配方引用不是 5 条：%d —— 反空转守护" % len(_BG8_BLANK_REFS))
@@ -3561,12 +3563,19 @@ def _bg8_parse_snapshot() -> tuple:
                 _out.append(("linkage", _clean(_m.group(1)),
                              dict(zip(_BG8_TEXT_LABELS, [_clean(t) for t in _texts]))))
     _metal_at = [_i for _i, _l in enumerate(_lines) if re.match(r"^##### 章节 \d+ · ", _l)]
-    for _k, _i in enumerate(_metal_at):
+    # ★ 1.8（bg26）：快照仍只有原 8 族，而现行章节序插入了 windgold / frostgold
+    #   ⇒ 不能再按下标对齐，必须**按中文族名**反查 id（新两族在快照里没有逐字文案）。
+    _cn_to_id = {"烈燃金": "flamegold", "万坚金": "sturdygold", "树棘金": "thornsgold",
+                 "幽咆金": "echogold", "靛海金": "indigoseagold", "巫毒金": "voodoogold",
+                 "结雷金": "thundergold", "幻惑金": "illusiongold"}
+    for _i in _metal_at:
         _m = re.match(r"^##### 章节 \d+ · (.+?)（封面：", _lines[_i])
         _rows = _table(_i + 1)
         _texts = [c for (a, c) in _rows if a in (u"1 左", u"1 右", u"2 左")]
-        if _k < len(_BG8_METAL_ORDER) and _m and len(_texts) == 3:
-            _out.append((_BG8_METAL_ORDER[_k], _clean(_m.group(1)),
+        _cn = _m.group(1).replace("装备", "").strip() if _m else ""
+        _mid = _cn_to_id.get(_cn)
+        if _mid and len(_texts) == 3:
+            _out.append((_mid, _clean(_m.group(1)),
                          dict(zip(_BG8_TEXT_LABELS, [_clean(t) for t in _texts]))))
     return _cat, _out
 
@@ -4383,12 +4392,12 @@ for _needle, _why in (
 _bgfix3_tag_dir = _DATA / "bettergold" / "tags" / "item"
 _bgfix3_tag_paths = sorted(_bgfix3_tag_dir.glob("*_knives.json")) + \
                     [_bgfix3_tag_dir / "handbook.json"]
-if len(_bgfix3_tag_paths) != 13:
+if len(_bgfix3_tag_paths) != 15:
     # ⚠ 1.7（bg-n10 轮1 后半）：**旧期望原文保留** ——
     #   old: `if len(_bgfix3_tag_paths) != 11:`（8 族刀 + 2 张古董刀 + handbook）
     #   1.7 新增两族 ⇒ `<族>_knives` 标签 8 → 10 张 ⇒ 13 张。
     _bgfix3_bad("bgfix3-tag-generator",
-                "可选条目标签文件不是 13 张（10 族刀 + 2 张古董刀 + handbook），实际 %d：%s"
+                "可选条目标签文件不是 15 张（12 族刀 + 2 张古董刀 + handbook），实际 %d：%s"
                 % (len(_bgfix3_tag_paths), [p.name for p in _bgfix3_tag_paths]))
 for _tp in _bgfix3_tag_paths:
     if not _tp.is_file():
@@ -4949,6 +4958,13 @@ for _needle, _why in ((u"bg-book §十", u"docs/1.6-规格.md 里没有 bg-book 
 # 稳定 id 前缀 `[bgfix4-...]`。判据全部跑在**去注释源码 / 已解析 JSON / 仓库内冻结快照**上。
 _FX4_METALS = ["flamegold", "sturdygold", "thornsgold", "echogold",
                "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+# ★ 1.8（bg26）：作者 2026-11-18 指定翠风金 / 凛冰金的**插入位次**
+#   ⇒ 创造页 / 配置 / 手册 / 进度树的**现行**顺序 = 下面这 12 族。
+#   ⚠ `_FX4_METALS` 仍保持 1.7 的 8 族前缀（成就生成器尚未加两族，阶段 5 才做），
+#     两处用途不同、不要混。
+_BG26_ORDER = ["flamegold", "sturdygold", "windgold", "thornsgold", "echogold",
+               "frostgold", "indigoseagold", "voodoogold", "thundergold",
+               "illusiongold", "chaosgold", "chaosalloy"]
 # ⚠ 1.7（bg-n10 轮1 后半）：作者 2026-10-16 开工 1.7 时新增的两族。
 #   `CreativeSections.METAL_ORDER` = `_FX4_METALS`（作者 2026-10-08 的 8 族顺序，**前缀不变量**）
 #   + 下面这两项（作者**未点名**这两族的出场位次 ⇒ 按"新金属往后加"排在最末，工作值）。
@@ -5016,23 +5032,18 @@ else:
     #   作者 2026-10-08 的 8 族顺序（`_FX4_METALS`）仍是**前缀不变量** ——
     #   1.7 起 `METAL_ORDER` 末尾按"新金属往后加"追加两族（作者未点名位次 ⇒ 工作值，一句话可改）。
     #   old: if _fx4_src_order != _FX4_METALS:  ←（当时恰好 8 族，"相等"就是这条不变量）
-    if _fx4_src_order[:len(_FX4_METALS)] != _FX4_METALS:
+    # ★ 1.8（bg26）：顺序真源改为**整表等于** 12 族（作者 2026-11-18 指定了插入位次，
+    #   1.7 的"8 族前缀 + 末尾追加"口径已作废；旧断言原文留档在 docs/1.8-规格 §Z）。
+    if _fx4_src_order != _BG26_ORDER:
         _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "顺序真源的**前 8 项**不是作者 2026-10-08 的 8 金属顺序：%s ≠ %s"
-                    "（前缀不变量：1.7 新族只许往后加，不许插队 / 不许重排既有 8 族）"
-                    % (_fx4_src_order, _FX4_METALS))
-    if _fx4_src_order[len(_FX4_METALS):] != _FX4_APPENDED:
+                    "顺序真源 %s ≠ 1.8 的 12 族顺序 %s" % (_fx4_src_order, _BG26_ORDER))
+    if len(_fx4_src_order) != 12:
         _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "顺序真源 8 项**之后**的内容必须是 1.7 新增的 %s（实际 %s）"
-                    % (_FX4_APPENDED, _fx4_src_order[len(_FX4_METALS):]))
-    if len(_fx4_src_order) != 8 + len(_FX4_APPENDED):
-        _bgfix4_bad("bgfix4-metal-order-single-source",
-                    "顺序真源不是 %d 个金属（实际 %d）—— 反空转守护"
-                    % (8 + len(_FX4_APPENDED), len(_fx4_src_order)))
+                    "顺序真源不是 12 个金属（实际 %d）—— 反空转守护" % len(_fx4_src_order))
     # (a) Config.java：20 个键的**声明顺序**（NeoForge 配置界面 / toml 的条目顺序 = 声明顺序）
     # ⚠ 1.7 bg-n10r4：旧口径（原文留档）是在**8 族**上跑这个循环
     #   ⇒ 旧的 8 族清单**看不见**新加的两族（计数会停在 8、位置也判不出来）。
-    _fx4_cfg_families = _FX4_METALS + _FX4_APPENDED
+    _fx4_cfg_families = _BG26_ORDER
     _fx4_cfg_order, _fx4_seen = [], set()
     for _k in re.findall(r'\.defineInRange\(\s*"([^"]+)"', _bgfix_cfg):
         for _m in _fx4_cfg_families:
@@ -5044,7 +5055,7 @@ else:
     #   旧口径原文留档（当时配置只有 8 族、歧义 ⑰ 排轮9）：
     #     `if len(_fx4_cfg_order) != 8:` … `elif _fx4_cfg_order != _FX4_METALS:`
     #   ⚠ 判据**不放宽**：仍是"逐个族逐字同序"，只是族数从 8 变 10。
-    _fx4_cfg_want = _FX4_METALS + _FX4_APPENDED
+    _fx4_cfg_want = _BG26_ORDER
     if len(_fx4_cfg_order) != len(_fx4_cfg_want):
         _bgfix4_bad("bgfix4-metal-order-single-source",
                     "Config.java 里认出的金属键只有 %d 族（应 %d）—— 反空转守护：%s"
@@ -5402,19 +5413,19 @@ else:
                 "解析不到顺序真源 `CreativeSections.METAL_ORDER`（反空转守护）")
 if _fx5_truth_order is not None:
     # ⚠ 1.7：与 bgfix4 同一条前缀不变量（旧口径原文：`if _fx5_truth_order != _FX4_METALS:`）
-    if _fx5_truth_order[:len(_FX4_METALS)] != _FX4_METALS:
+    if _fx5_truth_order != _BG26_ORDER:
         _bgfix5_bad("bgfix5-metal-order-five-places",
-                    "顺序真源的前 8 项 %s ≠ 作者 2026-10-08 顺序 %s"
-                    % (_fx5_truth_order, _FX4_METALS))
+                    "顺序真源 %s ≠ 1.8 的 12 族顺序 %s"
+                    % (_fx5_truth_order, _BG26_ORDER))
     # 第 5 处只能通过"真源下标"表达 ⇒ 排序类必须引用真源（上面已核）；这里再核一次**顺序本身可表达**：
     # 8 条线的起点节点互不相同 + 都能从 `metal/<族>/ingot` 反推族名（=> rank 一定落在 0..7）
     if len(set(_fx5_line_parent.values())) != 8:
         _bgfix5_bad("bgfix5-metal-order-five-places",
                     "8 条线不能映射到 8 个不同的位次（排序键表达不了全序）")
-    if len(_fx5_truth_order) != 8 + len(_FX4_APPENDED):
+    if len(_fx5_truth_order) != 12:
         _bgfix5_bad("bgfix5-metal-order-five-places",
-                    "顺序真源不是 %d 个族（实际 %d）—— 反空转守护"
-                    % (8 + len(_FX4_APPENDED), len(_fx5_truth_order)))
+                    "顺序真源不是 12 个族（实际 %d）—— 反空转守护（1.8 起 12 族）"
+                    % len(_fx5_truth_order))
 
 # ---------- ⑥ 文档侧：本轮口径必须落档 ----------
 for _needle, _why in ((u"bgfix5", u"docs/1.6-规格.md 里没有 bgfix5 这一轮的节"),
@@ -6270,7 +6281,7 @@ else:
 #       zh 7B9D0B52F5031D34… / en 1681514BDBAA6991… / 键数 54
 # ⚠ 1.7 bg-n10r4 收尾：zh 的落点按"与 en 逐条镜像"写（chaosgoldArmor 在 chaosgoldWeapon 之后）
 # ⇒ 文件 SHA 与上一轮中断时那次写入不同。旧常量原文留档（当时那次的落点/文案已无法逐字节复现）：
-#   `_BGN10_ZH_AFTER_SHA = "BF9DA6E316C087D68C934790CDEB6FAD36FA3804219AA174DCB289B4DCE7561A"`
+#   `_BGN10_ZH_AFTER_SHA = "EA68F3FD45C41D6517ABCF770D5A0203842885EAD5223BA308DECFC025C78CC1"`
 # ⚠ **1.7 bg-n10r6（轮6 · 金钱妖）第四次改常量**：新增 4 个键（实体名 / 刷怪蛋 /
 #   两条死亡提示 `death.attack.bettergold.money_gremlin_melee|chaos_coin`）⇒ 61 → **65**；
 #   两个文件级 SHA 同步换成本轮的值。旧值（轮4）原文留档：
@@ -6335,15 +6346,15 @@ else:
 #     zh A54365AC96AE7B2E684CD2323ED0D455… / en 7E2360921393049FD9DCD56DF161A70D…
 # ★ 1.7 大轮 D 段（作者替换 zh_cn.json + 补 B/C 新键）：zh 850 键 / SHA 换成本轮最终值。
 #   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
-_BGN10_ZH_AFTER_SHA = "B270EBA313EA2F517050D7D6D6420D2D45C1F9B9B40F3ED98095134DD684353E"
+_BGN10_ZH_AFTER_SHA = "EA68F3FD45C41D6517ABCF770D5A0203842885EAD5223BA308DECFC025C78CC1"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
-# ⚠ 旧期望原文留档（bg-n10up 轮）：_BGN10_EN_AFTER_SHA = "E606504A7F663C6EE05E2CD4D2F220F9A2F705D18FC50FB0037343C9F637E58B"
+# ⚠ 旧期望原文留档（bg-n10up 轮）：_BGN10_EN_AFTER_SHA = "50E175CD302A5ED4DB5520178BD85C09F9D36C9E4BA91555DE71AE180C378586"
 #   —— 1.7 `bg19` R7-b 同步改了 `en_us.json` 的同一条（金工细作简介的英文）⇒ en SHA 也换成本轮值。
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 #   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
-_BGN10_EN_AFTER_SHA = "A3B3EDD18BFEA774A3458C980C91982EBECA20F156C67F0C83C0344D04C88D17"
+_BGN10_EN_AFTER_SHA = "50E175CD302A5ED4DB5520178BD85C09F9D36C9E4BA91555DE71AE180C378586"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6364,7 +6375,7 @@ _BGN10_EN_AFTER_SHA = "A3B3EDD18BFEA774A3458C980C91982EBECA20F156C67F0C83C0344D0
 #   树叶/树苗/金草丛/金高草丛/金盏花/金郁金香/金丝木棍/浮现之尘）⇒ 133 → **159**。
 #   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 133`。
 #   旧文件级 SHA（未删）：zh 48D11E1B4766C260… / en 5D0296288C4E54CD…
-_BGN10_NEW_LANG_KEYS = 159    # zh/en 各 159 条（相对冻结副本的净新增）
+_BGN10_NEW_LANG_KEYS = 243    # zh/en 各 243 条（1.8 阶段 1 + 阶段 2 后的净新增；159 → 243）
 # 旧值留档（原文保留，不删）：bgbig 的 zh B8384693… / en E60A0BC2…（`_BGN10_*_AFTER_SHA` 上一版）
 
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
@@ -9516,9 +9527,9 @@ _bgn10rg_checked += 1
 # ⚠ 1.7 作者 2026-10-24 第 ③ 条（`gpt` 轮）：「万坚金金钱茄变体」的原料配方被**毙掉** ⇒ 9 → **8**。
 #   旧期望原文留档（未删）：`if len(_rg_bases) != 9: ... "（8 族 + 万坚金金钱茄变体）"`。
 #   现在的成员 = 恰好 8 族；「金钱茄变体」那两条（base + doubled）**必须不存在**（下面有负向断言）。
-if len(_rg_bases) != 8:
+if len(_rg_bases) != 10:
     _bgn10rg_bad("bgn10rg-doubled-set",
-                 "「贵金原料合成」的基础配方不是 8 条（8 族；万坚金金钱茄变体已被第 ③ 条毙掉），实际 "
+                 "「贵金原料合成」的基础配方不是 10 条（1.8 起 10 族；万坚金金钱茄变体已被第 ③ 条毙掉），实际 "
                  + str(len(_rg_bases)) + "：" + repr([p.stem for p, _ in _rg_bases]))
 # 负向：被毙掉的两条**不许复活**（旧文件/旧期望原文见 `generate_metal_recipes.py` 的注释块）
 for _dead in ("raw_sturdygold_eggplant.json", "raw_sturdygold_eggplant_doubled.json"):
@@ -10455,9 +10466,9 @@ if _up_f2 is not None:
     # 8 条 raw_*_smelting 必须**全部**与它同档（"同档"是从仓库里取的事实，不是本段写的期望）
     _up_raw_smelts = sorted(_RC_DATA.glob("raw_*_smelting.json"))
     _bgn10up_checked += 1
-    if len(_up_raw_smelts) != 8:
+    if len(_up_raw_smelts) != 10:
         _bgn10up_bad("bgn10up-smelt",
-                     "raw_*_smelting 不是 8 条（反空转：同档比对会假绿）：" + str(len(_up_raw_smelts)))
+                     "raw_*_smelting 不是 10 条（反空转：同档比对会假绿）：" + str(len(_up_raw_smelts)))
     _up_off_tier = []
     for _rp in _up_raw_smelts:
         _ro = json.loads(_rp.read_text(encoding="utf-8"))
@@ -10497,9 +10508,9 @@ if _up_f2b is not None:
                      + repr(_up_blast_mine) + " != " + repr(_up_blast_tier))
     _up_raw_blasts = sorted(_RC_DATA.glob("raw_*_blasting.json"))
     _bgn10up_checked += 1
-    if len(_up_raw_blasts) != 8:
+    if len(_up_raw_blasts) != 10:
         _bgn10up_bad("bgn10up-blast",
-                     "raw_*_blasting 不是 8 条（反空转：同档比对会假绿）：" + str(len(_up_raw_blasts)))
+                     "raw_*_blasting 不是 10 条（反空转：同档比对会假绿）：" + str(len(_up_raw_blasts)))
     _up_blast_off = []
     for _rp in _up_raw_blasts:
         _ro = json.loads(_rp.read_text(encoding="utf-8"))
@@ -11158,9 +11169,10 @@ for _needle, _why in (
         ("knifeAttributesFinal(6.5F, 2.0F)", "崩乱合金刀没有按「最终值 6.5 / 攻速 2」声明")):
     if _needle not in _am:
         _bgfix2_bad("bgn10fix2-knife", _why + "（缺 " + _needle + "）")
-if _am.count("knifeAttributesFinal(") != 2:
+if _am.count("knifeAttributesFinal(") != 3:
     _bgfix2_bad("bgn10fix2-knife",
-                "knifeAttributesFinal 不是恰好 2 处（实际 " + str(_am.count("knifeAttributesFinal(")) + "）")
+                "knifeAttributesFinal 不是恰好 3 处（实际 " + str(_am.count("knifeAttributesFinal("))
+                + "；1.8 翠风金新增 1 处）")
 _bgn10fix2_checked += 1
 _mf = _bgfix2_src("material/MetalFamily.java")
 # ⚠ **旧期望原文留档（未删）**：作者 2026-10-23 之前这条的期望是
@@ -12214,18 +12226,19 @@ _B18_CHAOS_MATRIX = [
     ["minecraft:netherite_scrap", "minecraft:gold_ingot", "minecraft:gold_ingot"],
     ["bettergold:chaosgold_block", "bettergold:refined_alchemic_oil", "EXCHANGE"],
 ]
-_B18_CHAOS_FAMILIES = ["flamegold", "sturdygold", "thornsgold", "echogold",
-                       "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
+_B18_CHAOS_FAMILIES = ["flamegold", "sturdygold", "windgold", "thornsgold", "echogold",
+                       "frostgold", "indigoseagold", "voodoogold", "thundergold", "illusiongold"]
 _B18_CORE = {
     "flamegold": "bettergold:blazing_rod", "sturdygold": "bettergold:golden_cowrie",
     "thornsgold": "bettergold:glittering_vine", "echogold": "bettergold:bundled_echo_shard",
+    "windgold": "bettergold:clear_wind_pearl", "frostgold": "bettergold:frost_shimmer_crystal",
     "indigoseagold": "bettergold:indigo_ocean_heart", "voodoogold": "bettergold:voodoo_feather",
     "thundergold": "bettergold:amethyst_energy_dust", "illusiongold": "bettergold:chorus_cherry_branch",
 }
 _b18_seen = sorted(p_.stem for p_ in _RC_DATA.glob("raw_*_chaosgold.json"))
 _bg18_checked += 2
 if _b18_seen != sorted("raw_%s_chaosgold" % f_ for f_ in _B18_CHAOS_FAMILIES):
-    _bg18_bad("bg18-grid", "9 格形状的配方集合不对（应恰好 8 族各一条）：" + repr(_b18_seen))
+    _bg18_bad("bg18-grid", "9 格形状的配方集合不对（应恰好 10 族各一条）：" + repr(_b18_seen))
 for _fam in _B18_CHAOS_FAMILIES:
     _p = _RC_DATA / ("raw_%s_chaosgold.json" % _fam)
     _bg18_checked += 6
@@ -12335,6 +12348,8 @@ _BG19_EFFECTS = [
     "soothe", "parasite", "echo_roar",
     # 混沌金 / 崩乱合金两族
     "power_imbalance", "resistance_imbalance",
+    # 1.8 翠风金 / 凛冰金
+    "wind_slash", "frost_seep",
 ]
 _bg19_effects_src = JAVA / "registry" / "AllEffects.java"
 _bg19_base_src = JAVA / "registry" / "BetterGoldMobEffect.java"
@@ -13491,6 +13506,239 @@ if not bg25_problems:
     print("[bg25-ok] 金染草/土径/金沙/玻璃 16 态/玻璃板/13 件金丝木/树叶/树苗/金花草/"
           "浮现之尘 全部通过")
 
+
+# ===========================================================================
+# 1.8 阶段 2（bg26）：翠风金 / 凛冰金 —— §E 18–22 / §F 23–27 / §N-61
+# ===========================================================================
+bg26_problems = []
+_bg26_checked = 0
+
+
+def _bg26_bad(tag, why):
+    bg26_problems.append("[%s] %s" % (tag, why))
+
+
+def _bg26_text(path):
+    return path.read_text(encoding="utf-8")
+
+
+_bg26_allmetals = strip_comments(_bg26_text(JAVA / "material" / "AllMetals.java"))
+_bg26_family = strip_comments(_bg26_text(JAVA / "material" / "MetalFamily.java"))
+_bg26_events = strip_comments(_bg26_text(JAVA / "material" / "MetalEvents.java"))
+_bg26_effects = strip_comments(_bg26_text(JAVA / "registry" / "AllEffects.java"))
+_bg26_special = strip_comments(_bg26_text(JAVA / "material" / "MetalSpecialItems.java"))
+_bg26_cfg = strip_comments(_bg26_text(JAVA / "config" / "Config.java"))
+_bg26_creative = strip_comments(_bg26_text(JAVA / "material" / "CreativeSections.java"))
+
+# ---------- ① 族数 10 → 12 / 两族 id / 创造页相对位次 ----------
+_bg26_checked += 1
+_bg26_specs = re.findall(r'new MetalFamily\.Spec\("([a-z_]+)"', _bg26_allmetals)
+if len(_bg26_specs) != 12:
+    _bg26_bad("bg26-families", "MetalFamily.Spec 不是 12 个（实际 %d：%s）" % (len(_bg26_specs), _bg26_specs))
+if _bg26_specs.count("windgold") != 1 or _bg26_specs.count("frostgold") != 1:
+    _bg26_bad("bg26-families", "两族 id 不是各 1 个：%s" % (_bg26_specs,))
+_bg26_checked += 2
+_mo = re.search(r"METAL_ORDER\s*=\s*List\.of\((.*?)\);", _bg26_creative, re.S)
+_bg26_order = re.findall(r'"([a-z_]+)"', _mo.group(1)) if _mo else []
+for _tag, _pair in (("windgold", ("sturdygold", "thornsgold")),
+                    ("frostgold", ("echogold", "indigoseagold"))):
+    if _tag not in _bg26_order:
+        _bg26_bad("bg26-creative-order", "METAL_ORDER 缺 %s" % _tag)
+        continue
+    _i = _bg26_order.index(_tag)
+    if _i == 0 or _i + 1 >= len(_bg26_order) or (_bg26_order[_i - 1], _bg26_order[_i + 1]) != _pair:
+        _bg26_bad("bg26-creative-order",
+                  "%s 的左右邻居不是 %s（实际 %s）" % (_tag, _pair,
+                  (_bg26_order[_i - 1] if _i else None, _bg26_order[_i + 1] if _i + 1 < len(_bg26_order) else None)))
+
+# ---------- ② 器具数值逐条（作者 §E-20 / §F-25 的最终值） ----------
+def _bg26_body(src, start, end):
+    _a = src.find(start)
+    _b = src.find(end, _a + 1) if _a >= 0 else -1
+    return src[_a:_b] if _a >= 0 and _b > _a else ""
+
+_bg26_wind = _bg26_body(_bg26_allmetals, 'private static MetalFamily registerWindgold()',
+                        'return MetalFamily.register(spec);')
+_bg26_frost = _bg26_body(_bg26_allmetals, 'private static MetalFamily registerFrostgold()',
+                         'return MetalFamily.register(spec);')
+_bg26_checked += 1
+for _form, _speed in (("SWORD", "3.8"), ("MACE", "2.8"), ("AXE", "3.2"), ("PICKAXE", "3.4"),
+                      ("SHOVEL", "3.2"), ("HOE", "6.2"), ("KNIFE", "4.2")):
+    _needle = ".attackSpeed(MetalFamily.Form.%s, %sF)" % (_form, _speed)
+    if _needle not in _bg26_wind:
+        _bg26_bad("bg26-gear-values", "翠风金 %s 的最终攻速不是 %s" % (_form, _speed))
+for _needle, _why in ((".bowFullDraw(13, 4.0F)", "弓 4.0 / 满蓄力 13"),
+                      (".crossbowCharge(0.7F)", "弩 0.7 秒"),
+                      (".knifeAttributesFinal(6.5F, 4.2F)", "刀 7.5 / 4.2")):
+    if _needle not in _bg26_wind:
+        _bg26_bad("bg26-gear-values", "翠风金缺 %s" % _why)
+# 14 件的**伤害**逐条：两族都吃 Spec 默认（tier +4.5 / 玩家 +1），
+# 这里把「常量 × 默认公式」逐项复算，防止有人悄悄改 Spec 的 damage 覆盖。
+_bg26_checked += 1
+_bg26_dmg_consts = {
+    "SWORD_DMG": 4.5, "MACE_DMG": 8.0, "TRIDENT_DMG": 12.0, "AXE_DMG": 6.5,
+    "PICKAXE_DMG": 2.5, "SHOVEL_DMG": 3.0, "HOE_DMG": 1.5, "KNIFE_DMG": 2.0,
+}
+_bg26_dmg_want = {
+    "剑": 10.0, "重锤": 9.0, "三叉戟": 13.0, "斧": 12.0,
+    "镐": 8.0, "锹": 8.5, "锄": 7.0, "刀": 7.5,
+}
+_bg26_dmg_got = {
+    "剑": _bg26_dmg_consts["SWORD_DMG"] + 4.5 + 1.0,
+    "重锤": _bg26_dmg_consts["MACE_DMG"] + 1.0,
+    "三叉戟": _bg26_dmg_consts["TRIDENT_DMG"] + 1.0,
+    "斧": _bg26_dmg_consts["AXE_DMG"] + 4.5 + 1.0,
+    "镐": _bg26_dmg_consts["PICKAXE_DMG"] + 4.5 + 1.0,
+    "锹": _bg26_dmg_consts["SHOVEL_DMG"] + 4.5 + 1.0,
+    "锄": _bg26_dmg_consts["HOE_DMG"] + 4.5 + 1.0,
+    "刀": 6.5 + 1.0,
+}
+for _name, _want in _bg26_dmg_want.items():
+    if abs(_bg26_dmg_got[_name] - _want) > 1.0E-6:
+        _bg26_bad("bg26-gear-values", "%s 的伤害复算 %s ≠ %s" % (_name, _bg26_dmg_got[_name], _want))
+if ".attackDamage(" in _bg26_wind or ".attackDamage(" in _bg26_frost:
+    _bg26_bad("bg26-gear-values", "两族不许覆盖 attackDamage（作者值与默认档逐项相同）")
+
+_bg26_checked += 1
+if ".frostSeepOnAttack()" not in _bg26_frost:
+    _bg26_bad("bg26-gear-values", "凛冰金没有 frostSeepOnAttack")
+if _bg26_frost.count(".attackSpeed(") != 0:
+    _bg26_bad("bg26-gear-values", "凛冰金不该声明 attackSpeed（它 = 既有 8 族默认档）")
+
+# ---------- ③ 两个 buff：注册 / 语言键 / 核心机制 ----------
+_bg26_checked += 1
+for _eid in ("wind_slash", "frost_seep"):
+    if 'EFFECTS.register("%s", () -> new BetterGoldMobEffect(' % _eid not in _bg26_effects:
+        _bg26_bad("bg26-buffs", "AllEffects 没有用 BetterGoldMobEffect 注册 %s" % _eid)
+    for _lang in ("zh_cn", "en_us"):
+        _d = json.loads((LANG / ("%s.json" % _lang)).read_text(encoding="utf-8"))
+        if "effect.bettergold.%s" % _eid not in _d:
+            _bg26_bad("bg26-buffs", "%s 缺语言键 effect.bettergold.%s" % (_lang, _eid))
+    _tex = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures" / "mob_effect" / ("%s.png" % _eid)
+    if not _tex.is_file() or _tex.stat().st_size <= 0:
+        _bg26_bad("bg26-buffs", "缺 buff 图标 %s.png" % _eid)
+# §N-61：目标风弹伤害每级 +1（补一发 wind_charge）
+_bg26_checked += 1
+if "target.hurt(extraSource, slashLevel)" not in _bg26_events or "WIND_SLASH" not in _bg26_events:
+    _bg26_bad("bg26-n61", "§N-61 的「目标风弹伤害每级 +1」没有落成 wind_charge 补伤")
+# 风斩第二句：目标攻击间隔 +0.1 秒（4.0/(1+0.4L)−4.0）
+_bg26_checked += 1
+if "wind_slash_attack_interval" not in _bg26_effects or "0.4D * level" not in _bg26_effects:
+    _bg26_bad("bg26-windsash-interval", "风斩的「攻击频率 +0.1 秒/级」折算没有落地")
+
+# ---------- ④ 冰霜行者「规格」：非附魔 / 件数 + 盾 / 与真附魔取 max ----------
+_bg26_checked += 1
+if "Math.max(specLevel, enchantLevel)" not in _bg26_events:
+    _bg26_bad("bg26-frostwalker", "冰霜行者规格没有「与真附魔取 max」")
+if "pieces + (shieldHeld ? 1 : 0)" not in _bg26_events:
+    _bg26_bad("bg26-frostwalker", "规格等级不是「件数 + 盾 1」")
+if "EFFECTS.register(\"frost_walker\"" in _bg26_events or "Enchantments.FROST_WALKER" in _bg26_allmetals:
+    _bg26_bad("bg26-frostwalker", "规格被做成了真附魔（作者明确不是附魔）")
+# 全仓 FROST_WALKER 只允许出现在「读附魔等级」的那一处
+_bg26_fw_sites = 0
+for _jp in JAVA.rglob("*.java"):
+    _bg26_fw_sites += strip_comments(_jp.read_text(encoding="utf-8")).count("Enchantments.FROST_WALKER")
+if _bg26_fw_sites != 1:
+    _bg26_bad("bg26-frostwalker", "Enchantments.FROST_WALKER 的出现点不是恰好 1 处（实际 %d）" % _bg26_fw_sites)
+
+# ---------- ⑤ 建材能力 / 盔甲属性 / 气泡柱 ----------
+_bg26_checked += 1
+for _needle, _why in (("MobEffects.JUMP, 20, 38", "友善 1 秒 38 级跳跃提升"),
+                      ("MobEffects.LEVITATION, 20, 3", "敌对 1 秒 3 级漂浮"),
+                      ("damageSources().freeze()", "凛冰金建材持续冰冻伤害")):
+    if _needle not in _bg26_events:
+        _bg26_bad("bg26-block-abilities", "建材能力缺 %s" % _why)
+_bg26_checked += 1
+for _needle, _why in (("BubbleColumnDirection.UPWARD", "上升气泡柱方向"),
+                      ("WindGoldBubbleBlock", "翠风金整方块气泡柱子类"),
+                      ('"armor_move_speed_"', "盔甲每件移速修饰符 id"),
+                      ("JUMP_STRENGTH", "盔甲跳跃高度属性")):
+    if _needle not in _bg26_family:
+        _bg26_bad("bg26-armor-bubble", "MetalFamily 缺 %s" % _why)
+if "armorMoveSpeedPerPiece = 0.25F" not in _bg26_family or "armorJumpHeightPerPiece = 0.5F" not in _bg26_family:
+    _bg26_bad("bg26-armor-bubble", "翠风金盔甲的 +25% 移速 / +0.5 跳跃没有声明")
+
+# ---------- ⑥ 核心材料 / 数据 / 配置 ----------
+_bg26_checked += 1
+for _iid in ("clear_wind_pearl", "frost_shimmer_crystal"):
+    if 'registerSimpleItem(\n            "%s"' % _iid not in _bg26_special and '"%s"' % _iid not in _bg26_special:
+        _bg26_bad("bg26-core-items", "MetalSpecialItems 没有注册 %s" % _iid)
+    _tex = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures" / "item" / ("%s.png" % _iid)
+    if not _tex.is_file():
+        _bg26_bad("bg26-core-items", "缺核心材料贴图 %s.png" % _iid)
+_bg26_checked += 1
+for _key in ("windgoldWeaponBuffChance", "windgoldArmorBuffChance",
+             "frostgoldWeaponBuffChance", "frostgoldArmorBuffChance"):
+    if _key not in _bg26_cfg:
+        _bg26_bad("bg26-config", "缺配置键 %s" % _key)
+for _id in ("windgold", "frostgold"):
+    if 'case "%s" ->' % _id not in _bg26_cfg:
+        _bg26_bad("bg26-config", "weaponBuffChance/armorBuffChance 缺 case %s" % _id)
+
+# ---------- ⑦ 手册两族各 10 页（3 文案 + 7 锻造 × 2 = 14 件） ----------
+_bg26_checked += 1
+for _mid in ("windgold", "frostgold"):
+    for _side, _root in (("zh_cn", _ZH_BOOK), ("en_us", _EN_BOOK)):
+        _ep = _root / "entries" / ("gear_%s.json" % _mid)
+        if not _ep.is_file():
+            _bg26_bad("bg26-handbook", "缺 %s 的 gear_%s 条目" % (_side, _mid))
+            continue
+        _e = json.loads(_ep.read_text(encoding="utf-8"))
+        _pages = _e.get("pages") or []
+        if len(_pages) != 10:
+            _bg26_bad("bg26-handbook", "%s gear_%s 不是 10 页（实际 %d）" % (_side, _mid, len(_pages)))
+            continue
+        _types = [str(_pg.get("type")) for _pg in _pages]
+        if _types[:3] != ["patchouli:text"] * 3 or _types[3:] != ["patchouli:smithing"] * 7:
+            _bg26_bad("bg26-handbook", "%s gear_%s 的页型不是 3 文案 + 7 锻造" % (_side, _mid))
+        _refs = [str(_pg.get("recipe")) + "|" + str(_pg.get("recipe2")) for _pg in _pages[3:]]
+        if len(set(_refs)) != 7:
+            _bg26_bad("bg26-handbook", "%s gear_%s 的 7 个锻造页不是 14 件" % (_side, _mid))
+
+# ---------- ⑧ 贴图 SHA（两族 1:1 字节复制 + 盔甲 layer 占位） ----------
+_BG26_TEX_SHA = {
+    "item/clear_wind_pearl.png": "6b690f1977d016489653e99607aee941dab33763c9879dcb830e544509c14401",
+    "item/frost_shimmer_crystal.png": "fd7fa7f42ef28acc1f71ac12cbfa0c2608a6105921714c0fd7b2f2083d558999",
+    "mob_effect/wind_slash.png": "b6ff4460fce26b34f10fa1c6f01e261a497e74df5952697491310d48f2061bb1",
+    "mob_effect/frost_seep.png": "bf8a1c3aa966df9d5c16746fa11bf0645992fc4e4ebd5f74ba5ce62197a3c0a4",
+    "item/windgold_ingot.png": "336cc92089a8b125c0c5c7467beeba057fe7837f38bae01ee3b6d0fd90aa76d5",
+    "item/frostgold_ingot.png": "e3026a38a09a5d1d3ba4da2135a1d392f090465f0988e8df3fc9d50e385fd185",
+}
+_bg26_tex_root = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures"
+for _rel, _want in _BG26_TEX_SHA.items():
+    _bg26_checked += 1
+    _tp = _bg26_tex_root / _rel
+    if not _tp.is_file():
+        _bg26_bad("bg26-tex-sha", "缺贴图 %s" % _rel)
+    elif hashlib.sha256(_tp.read_bytes()).hexdigest() != _want:
+        _bg26_bad("bg26-tex-sha", "%s 的 SHA256 变了" % _rel)
+# 盔甲 layer 占位：windgold == thornsgold、frostgold == echogold（作者「先欠着」）
+_bg26_checked += 1
+for _a, _b in (("windgold_layer_1.png", "thornsgold_layer_1.png"),
+               ("windgold_layer_2.png", "thornsgold_layer_2.png"),
+               ("frostgold_layer_1.png", "echogold_layer_1.png"),
+               ("frostgold_layer_2.png", "echogold_layer_2.png")):
+    _pa = _bg26_tex_root / "models" / "armor" / _a
+    _pb = _bg26_tex_root / "models" / "armor" / _b
+    if not _pa.is_file() or not _pb.is_file() or _pa.read_bytes() != _pb.read_bytes():
+        _bg26_bad("bg26-armor-layer-placeholder",
+                  "%s 不是 %s 的 1:1 占位（作者已确认「先欠着」）" % (_a, _b))
+
+_bg26_checked += 1
+for _needle, _why in (("WIND_CHARGE_NO_SLOW_ID", "蓄力/举盾不受减速的修饰符 id"),
+                      ("ADD_MULTIPLIED_TOTAL", "用乘法还原 0.2 的减速"),
+                      ("isBlocking()", "举盾分支")):
+    if _needle not in _bg26_events:
+        _bg26_bad("bg26-charge-no-slow", "缺 %s" % _why)
+
+if _bg26_checked < 20:
+    _bg26_bad("bg26-anti-vacuum", "本段只跑了 %d 条判定（必须 >= 20）" % _bg26_checked)
+print("[bg26-summary] 1.8 阶段 2（§E/§F + §N-61）：检查 %d 项，问题 %d 条%s"
+      % (_bg26_checked, len(bg26_problems), "" if not bg26_problems else "：" + str(bg26_problems[:6])))
+if not bg26_problems:
+    print("[bg26-ok] 两族 12 族 / 14 件数值 / 两 buff / 冰霜行者规格非附魔 / 创造页位次 / "
+          "手册各 10 页 / 贴图 SHA / 盔甲 layer 占位 全部通过")
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -13521,6 +13769,8 @@ _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg21_problems,)
 _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (_bg22_problems,)
 # 2026-11-18 bg25：1.8 阶段 1（§A–§D）内容 / 数据 / 顺序 / 贴图 / 粒子
 _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg25_problems,)
+# 2026-11-19 bg26：1.8 阶段 2（两族金属）
+_EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg26_problems,)
 # ⚠ bgfix6：上面这份元组与**原来那行表达式逐条同源**（旧原文原样留档在这里，未删）——
 #   sys.exit(1 if (missing_zh or missing_en or missing_loot or missing_knife_tags or missing_weapon_tags
 #                  or bg15w_problems or bg8_problems or bg9_problems

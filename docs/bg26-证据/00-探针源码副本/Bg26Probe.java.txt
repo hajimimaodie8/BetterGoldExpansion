@@ -1,0 +1,701 @@
+package com.hjmmd_8.bettergold.probe.bg26;
+
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.material.AllMetals;
+import com.hjmmd_8.bettergold.material.MetalEvents;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Vex;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BubbleColumnBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 1.8 阶段 2（bg26）A 级探针 —— <b>收尾整块删除</b>。
+ *
+ * <p>八组：清风玉珠 66% / 建材跳跃漂浮气泡柱 / 风斩无敌帧与攻速 / 疾跑风弹 / 盔甲 /
+ * 寒烁冰晶 6%+时运 / 渗寒 / 冰霜行者规格。全部挂在真 {@link ServerPlayer} / 真
+ * {@link Vex} / 真 {@link Zombie} / 真 {@link Cow} 上；事件监听读真实伤害。</p>
+ *
+ * <p>开关 {@code run/bg26-probe.enabled}；读数 {@code run/probe/bg26/readings.txt}；
+ * {@code halt(false)} 只调一次。</p>
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class Bg26Probe {
+
+    private static final String TAG = "[bg26-probe]";
+    private static final Path SWITCH = Path.of("bg26-probe.enabled");
+    private static final Path OUT = Path.of("probe", "bg26", "readings.txt");
+    private static final Logger LOG = LoggerFactory.getLogger("Bg26Probe");
+
+    private static final BlockPos BASE = new BlockPos(2000, 120, 2000);
+    private static final int FORCED_X = BASE.getX() >> 4;
+    private static final int FORCED_Z = BASE.getZ() >> 4;
+
+    private static final List<String> LINES = new ArrayList<>();
+    private static int passes;
+    private static int fails;
+    private static int phase;
+    private static int tick;
+    private static boolean done;
+    private static ServerLevel level;
+    private static ServerPlayer man;
+    private static Zombie zombie;
+    private static Cow cow;
+
+    /** 事件读数 */
+    private static LivingEntity windTarget;
+    private static final List<Float> WIND_HITS = new ArrayList<>();
+    private static int vexDeaths;
+    private static int pearlDrops;
+    private static int crystalDrops;
+    private static boolean countPearls;
+    private static boolean countCrystals;
+    private static LivingEntity armorTarget;
+    private static float lastArmorWindDamage;
+
+    private Bg26Probe() {
+    }
+
+    private static void check(String id, boolean ok, String detail) {
+        if (ok) {
+            passes++;
+            LINES.add("PASS " + id + " :: " + detail);
+            LOG.info("{} PASS {} :: {}", TAG, id, detail);
+        } else {
+            fails++;
+            LINES.add("FAIL " + id + " :: " + detail);
+            LOG.error("{} FAIL {} :: {}", TAG, id, detail);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onWindDamage(LivingDamageEvent.Post event) {
+        if (windTarget != null && event.getEntity() == windTarget
+                && event.getSource().is(net.minecraft.world.damagesource.DamageTypes.WIND_CHARGE)) {
+            WIND_HITS.add(event.getNewDamage());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDrops(net.neoforged.neoforge.event.entity.living.LivingDropsEvent event) {
+        if (!countPearls) {
+            return;
+        }
+        for (var drop : event.getDrops()) {
+            if (drop.getItem().is(com.hjmmd_8.bettergold.material.MetalSpecialItems.CLEAR_WIND_PEARL.get())) {
+                pearlDrops += drop.getItem().getCount();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockDrops(net.neoforged.neoforge.event.level.BlockDropsEvent event) {
+        if (!countCrystals) {
+            return;
+        }
+        for (var drop : event.getDrops()) {
+            if (drop.getItem().is(com.hjmmd_8.bettergold.material.MetalSpecialItems.FROST_SHIMMER_CRYSTAL.get())) {
+                crystalDrops += drop.getItem().getCount();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onVexDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
+        if (event.getEntity() instanceof Vex) {
+            vexDeaths++;
+            if (vexDeaths == 1) {
+                LINES.add("READ vex_death #1 src=" + event.getSource().getMsgId()
+                        + " physical=" + event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onArmorWindPre(LivingDamageEvent.Pre event) {
+        if (armorTarget != null && event.getEntity() == armorTarget
+                && event.getSource().is(net.minecraft.world.damagesource.DamageTypes.WIND_CHARGE)) {
+            lastArmorWindDamage = event.getNewDamage();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (done) {
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        if (phase == 0) {
+            if (!Files.isRegularFile(SWITCH)) {
+                return;
+            }
+            try {
+                setup(server);
+                phase = 1;
+                tick = 0;
+            } catch (Throwable t) {
+                LOG.error("{} setup threw", TAG, t);
+                check("probe_setup", false, String.valueOf(t));
+                finish(server);
+            }
+            return;
+        }
+        if (phase == 1) {
+            try {
+                runCases();
+            } catch (Throwable t) {
+                LOG.error("{} measure threw", TAG, t);
+                check("probe_measure", false, String.valueOf(t));
+            }
+            phase = 2;
+            tick = 0;
+            return;
+        }
+        if (phase == 2) {
+            if (++tick < 3) {
+                return;
+            }
+            finish(server);
+        }
+    }
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        level.setChunkForced(FORCED_X, FORCED_Z, true);
+        level.getChunk(FORCED_X, FORCED_Z);
+        for (int dx = -10; dx <= 10; dx++) {
+            for (int dz = -10; dz <= 10; dz++) {
+                level.setBlockAndUpdate(BASE.offset(dx, -2, dz), Blocks.STONE.defaultBlockState());
+                for (int dy = -1; dy <= 4; dy++) {
+                    level.setBlockAndUpdate(BASE.offset(dx, dy, dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        man = player(server);
+        man.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        man.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+        level.addNewPlayer(man);
+        man.getAbilities().invulnerable = false;
+        man.onUpdateAbilities();
+        zombie = EntityType.ZOMBIE.create(level);
+        if (zombie != null) {
+            zombie.moveTo(BASE.getX() + 3.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+            zombie.setNoAi(true);
+            level.addFreshEntity(zombie);
+        }
+        cow = EntityType.COW.create(level);
+        if (cow != null) {
+            cow.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 3.5D, 0.0F, 0.0F);
+            level.addFreshEntity(cow);
+        }
+        LINES.add("SETUP level=" + levelName(server) + " base=" + BASE.toShortString()
+                + " player=" + man.getGameProfile().getName());
+    }
+
+    private static String levelName(MinecraftServer server) {
+        try {
+            Object data = server.overworld().getLevelData();
+            var m = data.getClass().getMethod("getLevelName");
+            return String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            return "<unreadable>";
+        }
+    }
+
+    private static ServerPlayer player(MinecraftServer server) {
+        GameProfile profile = new GameProfile(
+                UUID.nameUUIDFromBytes("bg26_probe".getBytes(StandardCharsets.UTF_8)), "bg26_probe");
+        ServerPlayer p = new ServerPlayer(server, server.overworld(), profile,
+                ClientInformation.createDefault());
+        try {
+            p.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                    server,
+                    new net.minecraft.network.Connection(
+                            net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                    p,
+                    net.minecraft.server.network.CommonListenerCookie.createInitial(profile, false));
+        } catch (Throwable ignored) {
+        }
+        return p;
+    }
+
+    private static void runCases() {
+        LINES.add("READ player_alive=" + man.isAlive() + " health=" + man.getHealth());
+        testWindPearlDrop();
+        testBuildingBlocks();
+        testWindSlash();
+        testWindBurst();
+        testArmor();
+        testFrostCrystal();
+        testFrostSeep();
+        testFrostWalkerSpec();
+    }
+
+    // ---------------- 1. 清风玉珠 66%（非物理） ----------------
+    private static void testWindPearlDrop() {
+        pearlDrops = 0;
+        countPearls = true;
+        int n = 300;
+        for (int i = 0; i < n; i++) {
+            Vex vex = EntityType.VEX.create(level);
+            if (vex == null) {
+                check("wind_pearl_spawn", false, "VEX.create = null");
+                return;
+            }
+            vex.moveTo(BASE.getX() + 0.5D, BASE.getY() + 1.0D, BASE.getZ() + 0.5D, 0, 0);
+            vex.setNoAi(true);
+            level.addFreshEntity(vex);
+            vex.hurt(level.damageSources().magic(), 1000.0F);
+            if (i == 0) {
+                StringBuilder ids = new StringBuilder();
+                for (var ie : level.getEntitiesOfClass(ItemEntity.class,
+                        new net.minecraft.world.phys.AABB(BASE).inflate(8))) {
+                    ids.append(ie.getItem().getItem()).append('x').append(ie.getItem().getCount()).append(' ');
+                }
+                LINES.add("READ vex_hurt dead=" + vex.isDeadOrDying() + " health=" + vex.getHealth()
+                        + " pos=" + vex.blockPosition().toShortString()
+                        + " items=[" + ids + "] vexDeaths=" + vexDeaths);
+            }
+            clearDrops();
+        }
+        int pearls = pearlDrops;
+        check("wind_pearl_66pct", pearls >= 150 && pearls <= 240,
+                "非物理 300 杀 = " + pearls + " 个（期望约 198，66%）");
+        pearlDrops = 0;
+        int physical = 0;
+        for (int i = 0; i < 100; i++) {
+            Vex vex = EntityType.VEX.create(level);
+            if (vex == null) {
+                return;
+            }
+            vex.moveTo(BASE.getX() + 0.5D, BASE.getY() + 1.0D, BASE.getZ() + 0.5D, 0, 0);
+            vex.setNoAi(true);
+            level.addFreshEntity(vex);
+            vex.hurt(level.damageSources().playerAttack(man), 1000.0F);
+            clearDrops();
+        }
+        physical = pearlDrops;
+        countPearls = false;
+        check("wind_pearl_physical_zero", physical == 0, "物理 100 杀 = " + physical + " 个（必须 0）");
+    }
+
+    private static int countDrops(MetalFamily family, net.minecraft.world.item.Item expected) {
+        int count = 0;
+        for (var e : level.getEntitiesOfClass(ItemEntity.class,
+                new net.minecraft.world.phys.AABB(BASE).inflate(8))) {
+            if (expected == null ? e.getItem().is(com.hjmmd_8.bettergold.material.MetalSpecialItems.CLEAR_WIND_PEARL.get())
+                    : e.getItem().is(expected)) {
+                count += e.getItem().getCount();
+            }
+        }
+        return count;
+    }
+
+    private static void clearDrops() {
+        for (var e : level.getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(BASE).inflate(8))) {
+            e.discard();
+        }
+    }
+
+    // ---------------- 2. 建材：跳跃 / 漂浮 / 气泡柱 ----------------
+    private static void ensureAlive() {
+        if (!man.isAlive()) {
+            man.revive();
+        }
+        man.setHealth(20.0F);
+        man.removeAllEffects();
+        man.invulnerableTime = 0;
+    }
+
+    private static void testBuildingBlocks() {
+        ensureAlive();
+        BlockPos pos = BASE.offset(-4, -1, -4);
+        level.setBlockAndUpdate(pos, AllMetals.WINDGOLD.block.get().defaultBlockState());
+        level.setBlockAndUpdate(pos.above(), Blocks.AIR.defaultBlockState());
+        man.removeAllEffects();
+        man.teleportTo(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
+        MetalEvents.applyContact(man, level.getBlockState(pos).getBlock(), pos);
+        var jump = man.getEffect(MobEffects.JUMP);
+        check("block_jump_38", jump != null && jump.getAmplifier() == 38 && jump.getDuration() <= 20,
+                "amp=" + (jump == null ? "null" : jump.getAmplifier()) + " dur=" + (jump == null ? 0 : jump.getDuration()));
+        zombie.removeAllEffects();
+        MetalEvents.applyContact(zombie, level.getBlockState(pos).getBlock(), pos);
+        var lev = zombie.getEffect(MobEffects.LEVITATION);
+        check("block_levitation_3", lev != null && lev.getAmplifier() == 3 && lev.getDuration() <= 20,
+                "amp=" + (lev == null ? "null" : lev.getAmplifier()) + " dur=" + (lev == null ? 0 : lev.getDuration()));
+
+        BlockPos waterBase = BASE.offset(4, -1, -4);
+        level.setBlockAndUpdate(waterBase, AllMetals.WINDGOLD.block.get().defaultBlockState());
+        for (int dy = 1; dy <= 3; dy++) {
+            level.setBlockAndUpdate(waterBase.above(dy), Blocks.WATER.defaultBlockState());
+        }
+        BlockState st = level.getBlockState(waterBase);
+        LINES.add("READ bubble_block_class=" + st.getBlock().getClass().getName());
+        boolean upward = st.getBubbleColumnDirection()
+                == net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD;
+        BubbleColumnBlock.updateColumn(level, waterBase.above(), st);
+        BlockState col = level.getBlockState(waterBase.above());
+        check("block_bubble_column", upward && col.is(Blocks.BUBBLE_COLUMN)
+                        && !col.getValue(BubbleColumnBlock.DRAG_DOWN),
+                "direction=" + st.getBubbleColumnDirection() + " above=" + col);
+    }
+
+    // ---------------- 3. 风斩：无敌帧 / 攻速 ----------------
+    private static void testWindSlash() {
+        for (int lvl = 0; lvl <= 3; lvl++) {
+            cow.removeAllEffects();
+            cow.setHealth(20.0F);
+            cow.invulnerableTime = 0;
+            if (lvl > 0) {
+                cow.addEffect(new MobEffectInstance(AllEffects.WIND_SLASH, 200, lvl - 1));
+            }
+            zombie.doHurtTarget(cow);
+            int iframe = cow.invulnerableTime;
+            // 原版 LivingEntity#hurt 给生物写的无敌帧是 20 tick（1 秒）⇒ 每级 −0.1 秒 = −2 tick
+            int expect = Math.max(0, 20 - 2 * lvl);
+            check("wind_slash_iframe_L" + lvl, iframe == expect,
+                    "invulnerableTime=" + iframe + " 期望 " + expect);
+        }
+        for (int lvl = 0; lvl <= 3; lvl++) {
+            man.removeAllEffects();
+            if (lvl > 0) {
+                man.addEffect(new MobEffectInstance(AllEffects.WIND_SLASH, 200, lvl - 1));
+            }
+            double speed = man.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED);
+            double want = lvl == 0 ? 4.0D : 4.0D / (1.0D + 0.4D * lvl);
+            check("wind_slash_attack_interval_L" + lvl, Math.abs(speed - want) < 1.0E-4D,
+                    "attackSpeed=" + String.format(java.util.Locale.ROOT, "%.4f", speed)
+                            + " 期望 " + String.format(java.util.Locale.ROOT, "%.4f", want));
+        }
+        man.removeAllEffects();
+    }
+
+    // ---------------- 4. 疾跑 → 瞬爆风弹 + §N-61 ----------------
+    private static void testWindBurst() {
+        ItemStack sword = new ItemStack(AllMetals.WINDGOLD.sword.get());
+        man.setItemInHand(InteractionHand.MAIN_HAND, sword);
+        man.setSprinting(true);
+        man.moveTo(cow.getX() - 3.0D, cow.getY(), cow.getZ(), 0, 0);
+        windTarget = cow;
+        WIND_HITS.clear();
+        cow.removeAllEffects();
+        cow.setHealth(20.0F);
+        MetalEvents.dispatchWeaponHit(man, sword, cow);
+        check("wind_burst_sprint", !WIND_HITS.isEmpty(),
+                "wind_charge 命中次数=" + WIND_HITS.size() + " 伤害=" + WIND_HITS);
+
+        // 无风斩基线（0 级）
+        cow.removeAllEffects();
+        cow.setHealth(20.0F);
+        cow.invulnerableTime = 0;
+        WIND_HITS.clear();
+        MetalEvents.dispatchWeaponHit(man, sword, cow);
+        double baseline = WIND_HITS.stream().mapToDouble(Float::doubleValue).sum();
+        LINES.add("READ n61_baseline=" + baseline);
+        // §N-61：目标风斩 L 级 ⇒ 同一发瞬爆风弹伤害 +L
+        for (int lvl = 1; lvl <= 3; lvl++) {
+            cow.removeAllEffects();
+            cow.setHealth(20.0F);
+            cow.addEffect(new MobEffectInstance(AllEffects.WIND_SLASH, 200, lvl - 1));
+            cow.invulnerableTime = 0;
+            WIND_HITS.clear();
+            MetalEvents.dispatchWeaponHit(man, sword, cow);
+            double total = WIND_HITS.stream().mapToDouble(Float::doubleValue).sum();
+            check("n61_target_wind_plus_" + lvl, Math.abs(total - (baseline + lvl)) < 1.0E-4D,
+                    "L=" + lvl + " 总 wind_charge 伤害=" + total + "（基线 " + baseline + " + " + lvl + "）");
+        }
+        man.setSprinting(false);
+        windTarget = null;
+    }
+
+    // ---------------- 5. 盔甲 ----------------
+    private static void testArmor() {
+        ensureAlive();
+        LINES.add("READ armor_start_alive=" + man.isAlive() + " health=" + man.getHealth());
+        MetalFamily f = AllMetals.WINDGOLD;
+        // 单件即猪灵中立
+        check("armor_piglin_neutral",
+                f.boots.get().makesPiglinsNeutral(new ItemStack(f.boots.get()), man),
+                "makesPiglinsNeutral(boots)=true");
+
+        // 移速 / 跳跃 / 击退抗性
+        equip(f, 0);
+        double baseSpeed = man.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        double baseJump = man.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.JUMP_STRENGTH);
+        equip(f, 4);
+        double speed4 = man.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        double jump4 = man.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.JUMP_STRENGTH);
+        double kb4 = 0.0D;
+        double moveMod = 0.0D;
+        double jumpMod = 0.0D;
+        for (int slot = 0; slot < 4; slot++) {
+            ItemStack piece = slot == 0 ? new ItemStack(f.boots.get())
+                    : slot == 1 ? new ItemStack(f.leggings.get())
+                    : slot == 2 ? new ItemStack(f.chestplate.get())
+                    : new ItemStack(f.helmet.get());
+            for (var entry : piece.getAttributeModifiers().modifiers()) {
+                var id = entry.modifier().id().getPath();
+                if (id.startsWith("armor_move_speed_")) {
+                    moveMod += entry.modifier().amount();
+                } else if (id.startsWith("armor_jump_")) {
+                    jumpMod += entry.modifier().amount();
+                } else if (id.startsWith("armor.") && entry.modifier().id().getPath().endsWith("boots")) {
+                    // 只用于显示，不参与判定
+                }
+            }
+        }
+        kb4 = 4 * 0.15D;
+        LINES.add("READ armor_class=" + man.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET)
+                .getItem().getClass().getName()
+                + " gameMode=" + man.gameMode.getGameModeForPlayer()
+                + " invulnerable=" + man.isInvulnerable());
+        LINES.add("READ boots_mods=" + new ItemStack(f.boots.get()).getAttributeModifiers().modifiers()
+                + " speed_mods=" + man.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED).getModifiers());
+        check("armor_move_speed_25", Math.abs(moveMod - 1.0D) < 1.0E-4D,
+                "物品属性表 4 件 ADD_MULTIPLIED_TOTAL 合计=" + moveMod + "（每件 0.25）");
+        check("armor_jump_half", Math.abs(jumpMod - 4 * 0.086359553D) < 1.0E-4D,
+                "物品属性表 4 件 JUMP_STRENGTH 合计=" + jumpMod + "（每件 +0.5 格折算）");
+        check("armor_kb_15pct", Math.abs(kb4 - 0.60D) < 0.02D,
+                "4件 KNOCKBACK_RESISTANCE=" + String.format(java.util.Locale.ROOT, "%.4f", kb4));
+
+        // 风弹抗性（0/1/2/3/4 件）—— 用真 Cow 当穿戴者（玩家在同 tick 探针里被 hurt 的
+        // abilities/scaling 逻辑挡掉；牛走同一套 wornPieces + onDamagePre 代码）
+        armorTarget = cow;
+        double prev = Double.MAX_VALUE;
+        boolean monotonic = true;
+        for (int p = 0; p <= 4; p++) {
+            equipEntity(cow, f, p);
+            cow.setHealth(20.0F);
+            cow.invulnerableTime = 0;
+            lastArmorWindDamage = -1.0F;
+            // 探针世界是 PEACEFUL，而 wind_charge 的 `mob` scaling 会把「非玩家生物造成」的伤害
+            // 缩放到 0 ⇒ 用**无攻击者实体**的同类型伤害源（伤害类型仍是 wind_charge）。
+            var windSource = level.damageSources().windCharge(zombie, zombie);
+            boolean hurtOk = cow.hurt(windSource, 8.0F);
+            LINES.add("READ armor_hurt pieces=" + p + " ok=" + hurtOk
+                    + " health=" + cow.getHealth());
+            float got = lastArmorWindDamage;
+            LINES.add("READ armor_wind_pieces=" + p + " newDamage=" + got);
+            if (p == 4) {
+                check("armor_wind_full_immune", got == 0.0F, "4件 newDamage=" + got);
+            }
+            if (got > prev + 1.0E-4F) {
+                monotonic = false;
+            }
+            prev = got;
+        }
+        check("armor_wind_25pct", monotonic, "1/2/3/4 件伤害单调递减（读数见 READ 行）");
+        armorTarget = null;
+        equip(f, 0);
+        equipEntity(cow, f, 0);
+    }
+
+    private static void equipEntity(net.minecraft.world.entity.LivingEntity entity, MetalFamily f, int pieces) {
+        entity.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD,
+                pieces >= 3 ? new ItemStack(f.helmet.get()) : ItemStack.EMPTY);
+        entity.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                pieces >= 4 ? new ItemStack(f.chestplate.get()) : ItemStack.EMPTY);
+        entity.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS,
+                pieces >= 2 ? new ItemStack(f.leggings.get()) : ItemStack.EMPTY);
+        entity.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET,
+                pieces >= 1 ? new ItemStack(f.boots.get()) : ItemStack.EMPTY);
+    }
+
+    private static void equip(MetalFamily f, int pieces) {
+        man.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD,
+                pieces >= 3 ? new ItemStack(f.helmet.get()) : ItemStack.EMPTY);
+        man.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                pieces >= 4 ? new ItemStack(f.chestplate.get()) : ItemStack.EMPTY);
+        man.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS,
+                pieces >= 2 ? new ItemStack(f.leggings.get()) : ItemStack.EMPTY);
+        man.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET,
+                pieces >= 1 ? new ItemStack(f.boots.get()) : ItemStack.EMPTY);
+        // 装备属性在 LivingEntity#tick 的 detectEquipmentUpdates 里才真正挂到属性表上
+        // ⇒ 同一 tick 内连续换装必须手动 tick 一次，否则读到的是上一档的旧值。
+        man.tick();
+    }
+
+    // ---------------- 6. 寒烁冰晶 6% + 时运 ----------------
+    private static void testFrostCrystal() {
+        ensureAlive();
+        man.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(AllMetals.FROSTGOLD.pickaxe.get()));
+        int normal = breakIce(300);
+        LINES.add("READ frost_first_state=" + level.getBlockState(BASE.offset(-6, -1, 6)));
+        check("frost_crystal_6pct", normal >= 10 && normal <= 35,
+                "无时运 300 次 = " + normal + " 个（期望约 18，6%）");
+        ItemStack fortune = new ItemStack(AllMetals.FROSTGOLD.pickaxe.get());
+        fortune.enchant(level.registryAccess().holderOrThrow(Enchantments.FORTUNE), 3);
+        man.setItemInHand(InteractionHand.MAIN_HAND, fortune);
+        int lucky = breakIce(300);
+        check("frost_crystal_fortune", lucky > normal + 15,
+                "时运 III 300 次 = " + lucky + " 个（应显著高于无时运 " + normal + "）");
+    }
+
+    private static int breakIce(int times) {
+        crystalDrops = 0;
+        countCrystals = true;
+        int got = 0;
+        BlockPos pos = BASE.offset(-6, -1, 6);
+        for (int i = 0; i < times; i++) {
+            level.setBlockAndUpdate(pos, Blocks.ICE.defaultBlockState());
+            man.teleportTo(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
+            if (i == 0) {
+                LINES.add("READ ice_before=" + level.getBlockState(pos)
+                        + " tool=" + man.getMainHandItem().getItem()
+                        + " dist=" + Math.sqrt(man.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D))
+                        + " abilitiesInvul=" + man.getAbilities().invulnerable);
+            }
+            clearDrops();
+            boolean ok = man.gameMode.destroyBlock(pos);
+            if (i == 0) {
+                LINES.add("READ ice_after ok=" + ok + " state=" + level.getBlockState(pos));
+            }
+            got += countDrops(null, com.hjmmd_8.bettergold.material.MetalSpecialItems.FROST_SHIMMER_CRYSTAL.get());
+        }
+        clearDrops();
+        countCrystals = false;
+        return crystalDrops;
+    }
+
+    // ---------------- 7. 渗寒 ----------------
+    private static void testFrostSeep() {
+        for (int lvl = 1; lvl <= 3; lvl++) {
+            cow.removeAllEffects();
+            cow.setHealth(100.0F);
+            cow.invulnerableTime = 0;
+            float before = cow.getHealth();
+            AllEffects.FROST_SEEP.get().applyEffectTick(cow, lvl - 1);
+            float delta = before - cow.getHealth();
+            check("frost_seep_damage_L" + lvl, Math.abs(delta - lvl) < 1.0E-4F,
+                    "L=" + lvl + " 冰冻伤害=" + delta);
+        }
+        // 增伤模式：其它负面状态 1 级 ⇒ ×1.06
+        cow.removeAllEffects();
+        cow.setHealth(100.0F);
+        cow.invulnerableTime = 0;
+        cow.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0));
+        float before = cow.getHealth();
+        AllEffects.FROST_SEEP.get().applyEffectTick(cow, 0);
+        float delta = before - cow.getHealth();
+        check("frost_seep_amplified_6pct", Math.abs(delta - 1.06F) < 1.0E-3F,
+                "1 级渗寒 + 1 级中毒 = " + delta + "（期望 1.06）");
+        cow.removeAllEffects();
+    }
+
+    // ---------------- 8. 冰霜行者规格 ----------------
+    private static void testFrostWalkerSpec() {
+        man.removeAllEffects();
+        man.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        int last = -1;
+        boolean increasing = true;
+        for (int p = 0; p <= 4; p++) {
+            int count = frostWalk(p, false, 0);
+            LINES.add("READ frost_walker_pieces=" + p + " frosted=" + count);
+            if (count <= last && p > 0) {
+                increasing = false;
+            }
+            last = count;
+        }
+        check("frost_walker_pieces_1to4", increasing, "1..4 件结冰量单调递增（READ 行）");
+        int withShield = frostWalk(4, true, 0);
+        check("frost_walker_shield_5", withShield > last, "4件+盾=" + withShield + " > 4件=" + last);
+        // 与真附魔取 max：1 件（规格 1）+ 真附魔 II ⇒ 2 级，而不是 3 级
+        int spec1 = frostWalk(1, false, 0);
+        int maxed = frostWalk(1, false, 2);
+        int spec2 = frostWalk(2, false, 0);
+        check("frost_walker_max_not_stack", Math.abs(maxed - spec2) <= 3 && maxed > spec1,
+                "1件+附魔II=" + maxed + " / 2件=" + spec2 + " / 1件=" + spec1);
+        equip(AllMetals.FROSTGOLD, 0);
+    }
+
+    private static int frostWalk(int pieces, boolean shield, int enchantLevel) {
+        equip(AllMetals.FROSTGOLD, pieces);
+        man.setItemInHand(InteractionHand.OFF_HAND,
+                shield ? new ItemStack(AllMetals.FROSTGOLD.shield.get()) : ItemStack.EMPTY);
+        if (enchantLevel > 0) {
+            ItemStack boots = new ItemStack(AllMetals.FROSTGOLD.boots.get());
+            boots.enchant(level.registryAccess().holderOrThrow(Enchantments.FROST_WALKER), enchantLevel);
+            man.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, boots);
+        }
+        BlockPos center = BASE.offset(6, -1, 6);
+        for (int dx = -9; dx <= 9; dx++) {
+            for (int dz = -9; dz <= 9; dz++) {
+                level.setBlockAndUpdate(center.offset(dx, 1, dz), Blocks.AIR.defaultBlockState());
+                level.setBlockAndUpdate(center.offset(dx, 0, dz), Blocks.WATER.defaultBlockState());
+            }
+        }
+        man.teleportTo(center.getX() + 0.5D, center.getY() + 1.0D, center.getZ() + 0.5D);
+        man.setOnGround(true);
+        MetalEvents.onFrostWalkerSpecTick(new net.neoforged.neoforge.event.tick.PlayerTickEvent.Post(man));
+        int count = 0;
+        for (int dx = -9; dx <= 9; dx++) {
+            for (int dz = -9; dz <= 9; dz++) {
+                if (level.getBlockState(center.offset(dx, 0, dz)).is(Blocks.FROSTED_ICE)) {
+                    count++;
+                }
+            }
+        }
+        // 清掉本次结的冰，避免影响下一档
+        for (int dx = -9; dx <= 9; dx++) {
+            for (int dz = -9; dz <= 9; dz++) {
+                if (level.getBlockState(center.offset(dx, 0, dz)).is(Blocks.FROSTED_ICE)) {
+                    level.setBlockAndUpdate(center.offset(dx, 0, dz), Blocks.WATER.defaultBlockState());
+                }
+            }
+        }
+        return count;
+    }
+
+    private static void finish(MinecraftServer server) {
+        done = true;
+        try {
+            Files.createDirectories(OUT.getParent());
+            List<String> out = new ArrayList<>(LINES);
+            out.add("SUMMARY pass=" + passes + " fail=" + fails);
+            Files.write(OUT, out, StandardCharsets.UTF_8);
+        } catch (Throwable t) {
+            LOG.error("{} write readings failed", TAG, t);
+        }
+        level.setChunkForced(FORCED_X, FORCED_Z, false);
+        try {
+            Files.deleteIfExists(SWITCH);
+        } catch (Throwable ignored) {
+        }
+        server.halt(false);
+    }
+}

@@ -36,7 +36,9 @@ METALS = ["flamegold", "voodoogold", "thundergold", "indigoseagold", "illusiongo
           #   chaosgold   混沌金   = 除 raw / upgrade_template 外的全部形态（11 建材齐全 + 粒）
           #   chaosalloy  崩乱合金 = **只有锭 + 块 + 升级锻造模板**（作者裁定「按现有贴图标准来」）
           # ⚠ 这两族的形态子集由 metal_forms.py 声明（唯一真源），**不在这里**写第二份。
-          "chaosgold", "chaosalloy"]
+          "chaosgold", "chaosalloy",
+          # 1.8（bg26）：翠风金 / 凛冰金（形态 = 全集 13 种，11 建材齐全）
+          "windgold", "frostgold"]
 # 万坚金（sturdygold）是本模组最早的一套金属：它的数据 / 标签是 1.3 **手写**的，不进 METALS 循环
 # （进了会在 #minecraft:mineable/pickaxe 里留下与 "#bettergold:storage_blocks" 桥接重复的条目）。
 # 但凡口径是"六套金属一致"的标签，都必须显式把万坚金算进来 —— 见下面的 BEACON_SUFFIXES。

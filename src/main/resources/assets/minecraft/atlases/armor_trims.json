@@ -52,7 +52,9 @@
         "thornsgold": "bettergold:trims/color_palettes/thornsgold",
         "echogold": "bettergold:trims/color_palettes/echogold",
         "chaosgold": "bettergold:trims/color_palettes/chaosgold",
-        "chaosalloy": "bettergold:trims/color_palettes/chaosalloy"
+        "chaosalloy": "bettergold:trims/color_palettes/chaosalloy",
+        "windgold": "bettergold:trims/color_palettes/windgold",
+        "frostgold": "bettergold:trims/color_palettes/frostgold"
       }
     }
   ]

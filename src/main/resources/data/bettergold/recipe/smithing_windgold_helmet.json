@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "bettergold:windgold_upgrade_template" },
+  "base": { "item": "minecraft:golden_helmet" },
+  "addition": { "item": "bettergold:windgold_ingot" },
+  "result": { "id": "bettergold:windgold_helmet", "count": 1 }
+}

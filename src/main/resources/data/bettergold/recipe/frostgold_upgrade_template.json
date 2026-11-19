@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GIG",
+    "GTG",
+    "GCG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_block" },
+    "I": { "item": "bettergold:frostgold_ingot" },
+    "T": { "item": "minecraft:netherite_upgrade_smithing_template" },
+    "C": { "item": "bettergold:frost_shimmer_crystal" }
+  },
+  "result": { "id": "bettergold:frostgold_upgrade_template" }
+}

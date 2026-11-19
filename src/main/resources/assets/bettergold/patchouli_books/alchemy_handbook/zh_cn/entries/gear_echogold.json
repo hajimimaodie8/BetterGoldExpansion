@@ -2,7 +2,7 @@
   "name": "bettergold.handbook.entry.gear_echogold",
   "category": "bettergold:gear_upgrade",
   "icon": "bettergold:echogold_sword",
-  "sortnum": 4,
+  "sortnum": 5,
   "read_by_default": true,
   "pages": [
     {

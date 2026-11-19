@@ -88,7 +88,9 @@ METALS = ["sturdygold", "flamegold", "voodoogold", "thundergold", "indigoseagold
           #   ⚠ **锻造升级配方本轮不给它们做**（见 SMITHING_METALS 的过滤）：
           #     chaosgold 没有 `chaosgold_upgrade_template`（zip 无该贴图，歧义 ㉑ 未裁）；
           #     chaosalloy 的器具/甲胄属轮7。
-          "chaosgold", "chaosalloy"]
+          "chaosgold", "chaosalloy",
+          # 1.8（bg26）：翠风金 / 凛冰金（五类武器的锻造配方 + 附魔类别标签）
+          "windgold", "frostgold"]
 WEAPONS = ["mace", "bow", "crossbow", "trident", "shield"]
 
 # 本轮要产「锻造升级配方（自产胚底 / MUT 两份）」的族：
@@ -339,10 +341,10 @@ def main() -> None:
     # ⚠ bg-16：这条不变量**必须由列表现算**，不许写死 30 —— 1.6 加了两套金属（6 → 8 套），
     #   写死 30 会让生成器自己在"新增一套金属"时报错（正是 AGENTS 红线 2「生成器不等于全覆盖」的形态）。
     expected_smithing = len(SMITHING_METALS) * len(WEAPONS)
-    if expected_smithing != 40:
+    if expected_smithing != 50:
         problems.append(f"锻造升级配方不是 {len(WEAPONS)} 类 × {len(SMITHING_METALS)} 金属 = "
-                        f"{len(WEAPONS) * len(SMITHING_METALS)} 条（bg-16 起应为 8 套 × 5 类 = 40 条；"
-                        f"1.7 两族按形态/轮次过滤后仍是 8 套）")
+                        f"{len(WEAPONS) * len(SMITHING_METALS)} 条（bg-16 起应为 8 套 × 5 类 = 40 条；1.8 两族加入后 = 10 套 × 5 = 50 条；"
+                        f"1.7 两族按形态/轮次过滤后仍是 8 套；1.8 两族新加 = 10 套）")
     for metal in SMITHING_METALS:
         for weapon in WEAPONS:
             pairs = [

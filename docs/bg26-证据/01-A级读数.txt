@@ -1,0 +1,62 @@
+SETUP level=world base=2000, 120, 2000 player=bg26_probe
+READ player_alive=true health=20.0
+READ vex_death #1 src=magic physical=false
+READ vex_hurt dead=true health=0.0 pos=2000, 121, 2000 items=[] vexDeaths=1
+PASS wind_pearl_66pct :: 非物理 300 杀 = 199 个（期望约 198，66%）
+PASS wind_pearl_physical_zero :: 物理 100 杀 = 0 个（必须 0）
+PASS block_jump_38 :: amp=38 dur=20
+PASS block_levitation_3 :: amp=3 dur=20
+READ bubble_block_class=com.hjmmd_8.bettergold.material.MetalFamily$WindGoldBubbleBlock
+PASS block_bubble_column :: direction=UPWARD above=Block{minecraft:bubble_column}[drag=false]
+PASS wind_slash_iframe_L0 :: invulnerableTime=20 期望 20
+PASS wind_slash_iframe_L1 :: invulnerableTime=18 期望 18
+PASS wind_slash_iframe_L2 :: invulnerableTime=16 期望 16
+PASS wind_slash_iframe_L3 :: invulnerableTime=14 期望 14
+PASS wind_slash_attack_interval_L0 :: attackSpeed=4.0000 期望 4.0000
+PASS wind_slash_attack_interval_L1 :: attackSpeed=2.8571 期望 2.8571
+PASS wind_slash_attack_interval_L2 :: attackSpeed=2.2222 期望 2.2222
+PASS wind_slash_attack_interval_L3 :: attackSpeed=1.8182 期望 1.8182
+PASS wind_burst_sprint :: wind_charge 命中次数=1 伤害=[1.0]
+READ n61_baseline=1.0
+PASS n61_target_wind_plus_1 :: L=1 总 wind_charge 伤害=2.0（基线 1.0 + 1）
+PASS n61_target_wind_plus_2 :: L=2 总 wind_charge 伤害=3.0（基线 1.0 + 2）
+PASS n61_target_wind_plus_3 :: L=3 总 wind_charge 伤害=4.0（基线 1.0 + 3）
+READ armor_start_alive=true health=20.0
+PASS armor_piglin_neutral :: makesPiglinsNeutral(boots)=true
+READ armor_class=com.hjmmd_8.bettergold.material.MetalFamily$WindGoldArmorItem gameMode=SURVIVAL invulnerable=false
+READ boots_mods=[Entry[attribute=Reference{ResourceKey[minecraft:attribute / minecraft:generic.armor]=net.minecraft.world.entity.ai.attributes.RangedAttribute@16e907b6}, modifier=AttributeModifier[id=minecraft:armor.boots, amount=5.0, operation=ADD_VALUE], slot=FEET], Entry[attribute=Reference{ResourceKey[minecraft:attribute / minecraft:generic.armor_toughness]=net.minecraft.world.entity.ai.attributes.RangedAttribute@23ec2bdc}, modifier=AttributeModifier[id=minecraft:armor.boots, amount=6.0, operation=ADD_VALUE], slot=FEET], Entry[attribute=Reference{ResourceKey[minecraft:attribute / minecraft:generic.knockback_resistance]=net.neoforged.neoforge.common.PercentageAttribute@fd87c22}, modifier=AttributeModifier[id=minecraft:armor.boots, amount=0.15000000596046448, operation=ADD_VALUE], slot=FEET], Entry[attribute=Reference{ResourceKey[minecraft:attribute / minecraft:generic.movement_speed]=net.neoforged.neoforge.common.PercentageAttribute@1be77a76}, modifier=AttributeModifier[id=bettergold:armor_move_speed_boots, amount=0.25, operation=ADD_MULTIPLIED_TOTAL], slot=FEET], Entry[attribute=Reference{ResourceKey[minecraft:attribute / minecraft:generic.jump_strength]=net.minecraft.world.entity.ai.attributes.RangedAttribute@7bce9ce4}, modifier=AttributeModifier[id=bettergold:armor_jump_boots, amount=0.08635955303907394, operation=ADD_VALUE], slot=FEET]] speed_mods=[]
+PASS armor_move_speed_25 :: 物品属性表 4 件 ADD_MULTIPLIED_TOTAL 合计=1.0（每件 0.25）
+PASS armor_jump_half :: 物品属性表 4 件 JUMP_STRENGTH 合计=0.3454382121562958（每件 +0.5 格折算）
+PASS armor_kb_15pct :: 4件 KNOCKBACK_RESISTANCE=0.6000
+READ armor_hurt pieces=0 ok=true health=2.0
+READ armor_wind_pieces=0 newDamage=8.0
+READ armor_hurt pieces=1 ok=true health=4.0
+READ armor_wind_pieces=1 newDamage=6.0
+READ armor_hurt pieces=2 ok=true health=6.0
+READ armor_wind_pieces=2 newDamage=4.0
+READ armor_hurt pieces=3 ok=true health=8.0
+READ armor_wind_pieces=3 newDamage=2.0
+READ armor_hurt pieces=4 ok=true health=10.0
+READ armor_wind_pieces=4 newDamage=0.0
+PASS armor_wind_full_immune :: 4件 newDamage=0.0
+PASS armor_wind_25pct :: 1/2/3/4 件伤害单调递减（读数见 READ 行）
+READ ice_before=Block{minecraft:ice} tool=bettergold:frostgold_pickaxe dist=0.5 abilitiesInvul=false
+READ ice_after ok=true state=Block{minecraft:water}[level=0]
+READ frost_first_state=Block{minecraft:water}[level=0]
+PASS frost_crystal_6pct :: 无时运 300 次 = 13 个（期望约 18，6%）
+READ ice_before=Block{minecraft:ice} tool=bettergold:frostgold_pickaxe dist=0.5 abilitiesInvul=false
+READ ice_after ok=true state=Block{minecraft:water}[level=0]
+PASS frost_crystal_fortune :: 时运 III 300 次 = 65 个（应显著高于无时运 13）
+PASS frost_seep_damage_L1 :: L=1 冰冻伤害=1.0
+PASS frost_seep_damage_L2 :: L=2 冰冻伤害=2.0
+PASS frost_seep_damage_L3 :: L=3 冰冻伤害=3.0
+PASS frost_seep_amplified_6pct :: 1 级渗寒 + 1 级中毒 = 1.0599995（期望 1.06）
+READ frost_walker_pieces=0 frosted=0
+READ frost_walker_pieces=1 frosted=25
+READ frost_walker_pieces=2 frosted=45
+READ frost_walker_pieces=3 frosted=69
+READ frost_walker_pieces=4 frosted=109
+PASS frost_walker_pieces_1to4 :: 1..4 件结冰量单调递增（READ 行）
+PASS frost_walker_shield_5 :: 4件+盾=145 > 4件=109
+PASS frost_walker_max_not_stack :: 1件+附魔II=45 / 2件=45 / 1件=25
+SUMMARY pass=32 fail=0

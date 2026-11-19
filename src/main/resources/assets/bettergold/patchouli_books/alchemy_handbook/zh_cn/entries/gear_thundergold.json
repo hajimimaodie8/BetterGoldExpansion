@@ -2,7 +2,7 @@
   "name": "bettergold.handbook.entry.gear_thundergold",
   "category": "bettergold:gear_upgrade",
   "icon": "bettergold:thundergold_sword",
-  "sortnum": 7,
+  "sortnum": 9,
   "read_by_default": true,
   "pages": [
     {

@@ -47,6 +47,10 @@ METALS = {
     #   形态子集见 metal_forms.py：chaosgold 缺 raw/模板；chaosalloy 只有锭/块/模板。
     "chaosgold":    {"cn": "混沌金", "folder": "混沌金"},
     "chaosalloy":   {"cn": "崩乱合金", "folder": "崩乱合金"},
+    # 1.8（bg26）：翠风金 / 凛冰金。素材 = `新的新约/更有用的金 新约10 (1).zip`
+    # （⚠ 与 1.7 的 `更有用的金 新约10.zip` 不是同一个包；原始 zip 只读，用 --zip 直接读）。
+    "windgold":     {"cn": "翠风金", "folder": "翠风金"},
+    "frostgold":    {"cn": "凛冰金", "folder": "凛冰金"},
 }
 
 # 新约9 起，五类武器的贴图与「三叉戟实体 32×32 / 盾牌实体 64×64」放在**各自的金属文件夹**里
@@ -61,6 +65,8 @@ WEAPON_SUFFIXES = {
     # 与 `三叉戟`（32×32 实体贴图）不是同一张 ⇒ 必须也列进"由 generate_weapon_assets 负责"的
     # 跳过清单，否则会被报成"未识别的文件"（旧两批素材没有这种写法，故 1.4/1.6 都没列）。
     "三叉戟 物品",
+    # 1.8（bg26）：新包的物品图标**没有空格**（`翠风金三叉戟物品.png`）
+    "三叉戟物品",
 }
 
 # 中文名后缀 -> 目标路径(相对 assets/bettergold)。{id} 会替换成英文 id
@@ -77,16 +83,25 @@ SUFFIX_MAP = {
     "块":            "textures/block/{id}_block.png",
     "砖块":          "textures/block/{id}_bricks.png",
     "柱":            "textures/block/{id}_pillar.png",
+    # 1.8（bg26）：凛冰金把「柱」写成「柱子」、「链物品」写成「链子物品」
+    "柱子":          "textures/block/{id}_pillar.png",
     "门 上":         "textures/block/{id}_door_top.png",
     "门 下":         "textures/block/{id}_door_bottom.png",
+    # 1.8（bg26）：新包这两张**没有空格**（`翠风金门上.png`）
+    "门上":          "textures/block/{id}_door_top.png",
+    "门下":          "textures/block/{id}_door_bottom.png",
     "门 物品":       "textures/item/{id}_door.png",
     "门物品":        "textures/item/{id}_door.png",
     "活板门":        "textures/block/{id}_trapdoor.png",
     "栏杆":          "textures/block/{id}_bars.png",
     "链":            "textures/block/{id}_chain.png",
     "链 物品":       "textures/item/{id}_chain.png",
+    # 1.8（bg26）：凛冰金的链物品叫「链子物品」（翠风金仍是「链物品」）
+    "链子物品":      "textures/item/{id}_chain.png",
+    "链物品":        "textures/item/{id}_chain.png",
     "灯笼":          "textures/block/{id}_lantern.png",
     "灯笼 物品":     "textures/item/{id}_lantern.png",
+    "灯笼物品":      "textures/item/{id}_lantern.png",
     "剑":            "textures/item/{id}_sword.png",
     "斧":            "textures/item/{id}_axe.png",
     "镐":            "textures/item/{id}_pickaxe.png",
@@ -100,6 +115,8 @@ SUFFIX_MAP = {
     "盔甲1":         "textures/models/armor/{id}_layer_1.png",
     "盔甲2":         "textures/models/armor/{id}_layer_2.png",
     "升级锻造模板":  "textures/item/{id}_upgrade_template.png",
+    # 1.8（bg26）：两族都写成「锻造模板」（没有「升级」前缀）
+    "锻造模板":      "textures/item/{id}_upgrade_template.png",
     "纹饰色卡":      "textures/trims/color_palettes/{id}.png",
 }
 
@@ -131,6 +148,11 @@ SPECIAL_TEXTURES = {
     "chaosalloy":   {"崩乱禁果": "textures/item/chaosalloy_forbidden_fruit.png",
                      "力量失衡": "textures/mob_effect/power_imbalance.png",
                      "抗性失衡": "textures/mob_effect/resistance_imbalance.png"},
+    # 1.8（bg26）：两族的专属材料 + buff 图标（buff 图标 18×18，与原版 mob_effect 一致）
+    "windgold":     {"清风玉珠": "textures/item/clear_wind_pearl.png",
+                     "风斩": "textures/mob_effect/wind_slash.png"},
+    "frostgold":    {"寒烁冰晶": "textures/item/frost_shimmer_crystal.png",
+                     "渗寒": "textures/mob_effect/frost_seep.png"},
 }
 
 # 纹饰色卡目录
@@ -294,7 +316,9 @@ def main() -> None:
         # 1) 贴图：按中文名后缀映射
         for name, data in sorted(entries.items()):
             stem = name[:-4]  # 去掉 .png
-            suffix = stem[len(cn):] if stem.startswith(cn) else None
+            # 1.8（bg26）：新包的金属目录里**文件名不再带金属名**（`翠风金/剑.png`）
+            #   ⇒ 没有前缀时把整个 stem 当后缀；带前缀的老包（`树棘金/树棘金剑.png`）仍按老路剥前缀。
+            suffix = stem[len(cn):] if stem.startswith(cn) else stem
             special = SPECIAL_TEXTURES.get(metal_id, {})
             if stem in special:
                 rel = Path(special[stem])
@@ -362,11 +386,13 @@ def main() -> None:
     #    新约7 起色卡在各金属文件夹里（<中文名>纹饰色卡.png）→ 上面 SUFFIX_MAP 的「纹饰色卡」已经搬走；
     #    老压缩包把它放在顶级目录「盔甲纹饰材料色卡/<中文名>.png」→ 这里兼容。
     for metal_id, meta in METALS.items():
-        if f"{meta['folder']}/{meta['cn']}纹饰色卡.png" in textures:
+        if (f"{meta['folder']}/{meta['cn']}纹饰色卡.png" in textures
+                or f"{meta['folder']}/纹饰色卡.png" in textures):
             continue                      # 新约7 起：色卡在金属文件夹里，SUFFIX_MAP 已经搬走
         if (ASSETS / f"textures/trims/color_palettes/{metal_id}.png").is_file():
             continue                      # 仓库里已经有这张色卡（1.4 生成的），不必再从包里取
         entry = f"{PALETTE_DIR}/{meta['cn']}.png"
+        # 1.8 新包：色卡就在金属目录里且不带前缀 ⇒ 上面 SUFFIX_MAP 已经搬走，这里只是兜底
         if entry in textures:
             rel = Path(f"textures/trims/color_palettes/{metal_id}.png")
             write(ASSETS / rel, textures[entry], args.apply, written, rel)

@@ -11,6 +11,8 @@
     "bettergold:echogold_mace",
     "bettergold:chaosgold_mace",
     "bettergold:chaosalloy_mace",
+    "bettergold:windgold_mace",
+    "bettergold:frostgold_mace",
     "bettergold:sturdygold_bow",
     "bettergold:flamegold_bow",
     "bettergold:voodoogold_bow",
@@ -21,6 +23,8 @@
     "bettergold:echogold_bow",
     "bettergold:chaosgold_bow",
     "bettergold:chaosalloy_bow",
+    "bettergold:windgold_bow",
+    "bettergold:frostgold_bow",
     "bettergold:sturdygold_crossbow",
     "bettergold:flamegold_crossbow",
     "bettergold:voodoogold_crossbow",
@@ -31,6 +35,8 @@
     "bettergold:echogold_crossbow",
     "bettergold:chaosgold_crossbow",
     "bettergold:chaosalloy_crossbow",
+    "bettergold:windgold_crossbow",
+    "bettergold:frostgold_crossbow",
     "bettergold:sturdygold_trident",
     "bettergold:flamegold_trident",
     "bettergold:voodoogold_trident",
@@ -41,6 +47,8 @@
     "bettergold:echogold_trident",
     "bettergold:chaosgold_trident",
     "bettergold:chaosalloy_trident",
+    "bettergold:windgold_trident",
+    "bettergold:frostgold_trident",
     "bettergold:sturdygold_shield",
     "bettergold:flamegold_shield",
     "bettergold:voodoogold_shield",
@@ -50,6 +58,8 @@
     "bettergold:thornsgold_shield",
     "bettergold:echogold_shield",
     "bettergold:chaosgold_shield",
-    "bettergold:chaosalloy_shield"
+    "bettergold:chaosalloy_shield",
+    "bettergold:windgold_shield",
+    "bettergold:frostgold_shield"
   ]
 }

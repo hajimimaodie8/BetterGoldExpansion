@@ -74,6 +74,11 @@ METALS = {
     # `tex_any` 的"仓库里已有就保留"那条路，不会误报缺失（见下方 tex_any 的注释）。
     "混沌金": "chaosgold",
     "崩乱合金": "chaosalloy",
+    # 1.8（bg26）：翠风金 / 凛冰金。素材布局 = 每套一个目录（`翠风金/翠风金弓1.png` …），
+    # 但**帧编号又回到 1 起**（弓1 = 本体、弓2..4 = 拉弓；弩1 = 本体、弩2..4 = 蓄力、
+    # 弩5 = 箭、弩6 = 烟花），且三叉戟物品图标叫 `三叉戟物品`（无空格）、实体叫 `三叉戟`。
+    "翠风金": "windgold",
+    "凛冰金": "frostgold",
 }
 
 # 胚底 id 后缀（物品 id = golden_<武器>_blank）
@@ -403,24 +408,30 @@ def main() -> None:
 
     # ---------- 六套金属（1.6 起是八套；每一条都给出两种布局的候选路径） ----------
     for cn, wid in METALS.items():
-        tex_any([f"重锤/{cn}重锤.png", f"{cn}/{cn}重锤.png"], f"{TEX_ITEM}/{wid}_mace.png", (16, 16))
+        tex_any([f"重锤/{cn}重锤.png", f"{cn}/{cn}重锤.png", f"{cn}/重锤.png"],
+                f"{TEX_ITEM}/{wid}_mace.png", (16, 16))
 
-        tex_any([f"弓/{cn}弓.png", f"{cn}/{cn}弓.png"], f"{TEX_ITEM}/{wid}_bow.png", (16, 16))
+        tex_any([f"弓/{cn}弓.png", f"{cn}/{cn}弓.png", f"{cn}/{cn}弓1.png", f"{cn}/弓1.png"],
+                f"{TEX_ITEM}/{wid}_bow.png", (16, 16))
         for i in range(3):
             # ⚠ 两种布局的**帧编号差一位**（本轮实测）：
             #   新约8 `弓/<cn>弓{1,2,3}.png`；新约9 `<cn>/<cn>弓{2,3,4}.png`（`弓.png` 是本体那一张）。
             #   旧写法 `弓/巫毒金3.png`（少一个「弓」字）也要兜住。
-            tex_any([f"弓/{cn}弓{i + 1}.png", f"弓/{cn}{i + 1}.png", f"{cn}/{cn}弓{i + 2}.png"],
+            tex_any([f"弓/{cn}弓{i + 1}.png", f"弓/{cn}{i + 1}.png", f"{cn}/{cn}弓{i + 2}.png",
+                     f"{cn}/弓{i + 2}.png"],
                     f"{TEX_ITEM}/{wid}_bow_pulling_{i}.png", (16, 16))
 
-        tex_any([f"弩/{cn}弩.png", f"{cn}/{cn}弩.png"], f"{TEX_ITEM}/{wid}_crossbow.png", (16, 16))
+        tex_any([f"弩/{cn}弩.png", f"{cn}/{cn}弩.png", f"{cn}/{cn}弩1.png", f"{cn}/弩1.png"],
+                f"{TEX_ITEM}/{wid}_crossbow.png", (16, 16))
         for i in range(3):
             # 同上：新约8 `弩1..3` → pulling_0..2；新约9 `弩2..4` → pulling_0..2
-            tex_any([f"弩/{cn}弩{i + 1}.png", f"{cn}/{cn}弩{i + 2}.png"],
+            tex_any([f"弩/{cn}弩{i + 1}.png", f"{cn}/{cn}弩{i + 2}.png", f"{cn}/弩{i + 2}.png"],
                     f"{TEX_ITEM}/{wid}_crossbow_pulling_{i}.png", (16, 16))
         # 新约8：弩4 = arrow、弩5 = firework；新约9：弩5 = arrow、弩6 = firework
-        tex_any([f"弩/{cn}弩4.png", f"{cn}/{cn}弩5.png"], f"{TEX_ITEM}/{wid}_crossbow_arrow.png", (16, 16))
-        tex_any([f"弩/{cn}弩5.png", f"{cn}/{cn}弩6.png"], f"{TEX_ITEM}/{wid}_crossbow_firework.png", (16, 16))
+        tex_any([f"弩/{cn}弩4.png", f"{cn}/{cn}弩5.png", f"{cn}/弩5.png"],
+                f"{TEX_ITEM}/{wid}_crossbow_arrow.png", (16, 16))
+        tex_any([f"弩/{cn}弩5.png", f"{cn}/{cn}弩6.png", f"{cn}/弩6.png"],
+                f"{TEX_ITEM}/{wid}_crossbow_firework.png", (16, 16))
 
         # ⚠ 候选顺序有讲究（1.7 bg-n10 轮1 后半）：新约10 的三叉戟**物品图标**叫
         #   `混沌金三叉戟 物品.png`，而**同目录下**还有一张同名的 `混沌金三叉戟.png`（32×32 实体）。
@@ -428,12 +439,16 @@ def main() -> None:
         #   （`return None`）⇒ 物品图标只能靠"仓库里已有就保留"兜住。
         #   把**带「物品」的那个候选放最前**，新包就能正面命中；老包（新约8/9 没有这种写法）
         #   照旧落到后面两条候选上 ⇒ 三只包都能从零重建。
-        tex_any([f"{cn}/{cn}三叉戟 物品.png", f"三叉戟/{cn}三叉戟 物品.png",
-                 f"三叉戟/{cn}三叉戟.png", f"{cn}/{cn}三叉戟.png"],
+        tex_any([f"{cn}/{cn}三叉戟物品.png", f"{cn}/{cn}三叉戟 物品.png",
+                 f"三叉戟/{cn}三叉戟 物品.png",
+                 f"三叉戟/{cn}三叉戟.png", f"{cn}/{cn}三叉戟.png", f"{cn}/三叉戟物品.png"],
                 f"{TEX_ITEM}/{wid}_trident.png", (16, 16))
-        tex_any([f"三叉戟/{cn}三叉戟2.png", f"{cn}/{cn}三叉戟2.png"], f"{TEX_ENTITY}/trident_{wid}.png", (32, 32))
+        tex_any([f"三叉戟/{cn}三叉戟2.png", f"{cn}/{cn}三叉戟2.png", f"{cn}/{cn}三叉戟.png",
+                 f"{cn}/三叉戟.png"],
+                f"{TEX_ENTITY}/trident_{wid}.png", (32, 32))
 
-        tex_any([f"盾牌/{cn}盾牌.png", f"{cn}/{cn}盾牌.png"], f"{TEX_ENTITY}/shield_{wid}.png", (64, 64))
+        tex_any([f"盾牌/{cn}盾牌.png", f"{cn}/{cn}盾牌.png", f"{cn}/盾牌.png"],
+                f"{TEX_ENTITY}/shield_{wid}.png", (64, 64))
 
         for name, text in weapon_models(wid).items():
             write(f"{MODELS_ITEM}/{name}", text)

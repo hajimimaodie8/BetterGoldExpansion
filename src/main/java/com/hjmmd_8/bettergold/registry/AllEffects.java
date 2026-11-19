@@ -330,6 +330,60 @@ public class AllEffects {
             });
 
     /**
+     * <b>风斩（{@code wind_slash}，1.8 {@code bg26}，翠风金）</b> —— 无上限叠加。
+     *
+     * <ul>
+     *   <li>§E-21：每级使<b>目标受伤无敌帧 −0.1 秒</b>（在 {@code MetalEvents#onDamagePost} 里
+     *       直接改写 {@code invulnerableTime}；见 {@code MetalEvents#WIND_SLASH_IFRAME_STEP}）。</li>
+     *   <li>§E-21 第二句：每级让<b>被施加者</b>的「攻击频率 +0.1 秒」——
+     *       落在本效果自带的 {@code ATTACK_SPEED} 修饰符：
+     *       目标攻速 {@code 4.0 → 4.0 / (1 + 0.4L)}（基础 4.0 时攻击间隔恰好 +0.1 秒/级），
+     *       增量 = {@code 4.0/(1+0.4L) − 4.0}，钳到总攻速 ≥ 0.1。</li>
+     *   <li>§N-61：每级还让<b>目标受到的瞬爆风弹伤害 +1</b>（结算在 {@code MetalEvents#windBurst}，
+     *       <b>不是</b>提升施法者）。</li>
+     * </ul>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> WIND_SLASH =
+            EFFECTS.register("wind_slash", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x8FE3C7) {
+                {
+                    this.addAttributeModifier(Attributes.ATTACK_SPEED,
+                            ResourceLocation.fromNamespaceAndPath(bettergold.MODID, "wind_slash_attack_interval"),
+                            AttributeModifier.Operation.ADD_VALUE,
+                            amplifier -> {
+                                double level = amplifier + 1;
+                                double wanted = 4.0D / (1.0D + 0.4D * level);
+                                return Math.max(0.1D, wanted) - 4.0D;
+                            });
+                }
+            });
+
+    /**
+     * <b>渗寒（{@code frost_seep}，1.8 {@code bg26}，凛冰金）</b> —— 无上限叠加。
+     *
+     * <ul>
+     *   <li>每秒（{@code duration % 20 == 0}）造成 {@code 等级} 点 {@code minecraft:freeze} 伤害
+     *       （§F-26「每级 +1 点」）。</li>
+     *   <li>若目标身上还有<b>其它负面状态</b>（哪怕一种）⇒ 进入增伤模式：
+     *       <b>每条、每级的负面状态 +6% 增伤</b> ⇒ 倍率 = {@code 1 + 0.06 × S × L}
+     *       （S = 其它负面状态的等级和、L = 渗寒等级）。实现只在
+     *       {@code MetalEvents#frostSeepTick} 一处。</li>
+     * </ul>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> FROST_SEEP =
+            EFFECTS.register("frost_seep", () -> new BetterGoldMobEffect(MobEffectCategory.HARMFUL, 0x7FD8F7) {
+                @Override
+                public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+                    com.hjmmd_8.bettergold.material.MetalEvents.frostSeepTick(entity, amplifier);
+                    return true;
+                }
+
+                @Override
+                public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+                    return duration % 20 == 0;
+                }
+            });
+
+    /**
      * <b>高燃 / 沉淀的每秒伤害公式（唯一实现）</b>（bg-fix 第 6 条，作者 2026-10-05 裁定「曲线整体后移一级」）。
      *
      * <pre>伤害 = max(0, 等级 − 1)   ，其中 等级 = amplifier + 1

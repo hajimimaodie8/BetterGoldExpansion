@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [ { "item": "bettergold:frostgold_ingot" } ],
+  "result": { "id": "bettergold:frostgold_nugget", "count": 9 }
+}

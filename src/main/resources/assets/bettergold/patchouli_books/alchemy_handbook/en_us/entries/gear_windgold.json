@@ -1,0 +1,56 @@
+{
+  "name": "bettergold.handbook.entry.gear_windgold",
+  "category": "bettergold:gear_upgrade",
+  "icon": "bettergold:windgold_sword",
+  "sortnum": 3,
+  "read_by_default": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_windgold_1_left"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_windgold_1_right"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "bettergold.handbook.page.gear_windgold_2_left"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_windgold_sword",
+      "recipe2": "bettergold:smithing_windgold_mace"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_windgold_trident",
+      "recipe2": "bettergold:smithing_windgold_bow"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_windgold_crossbow",
+      "recipe2": "bettergold:smithing_windgold_axe"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_windgold_pickaxe",
+      "recipe2": "bettergold:smithing_windgold_shovel"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_windgold_hoe",
+      "recipe2": "bettergold:smithing_windgold_shield"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_windgold_helmet",
+      "recipe2": "bettergold:smithing_windgold_chestplate"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "bettergold:smithing_windgold_leggings",
+      "recipe2": "bettergold:smithing_windgold_boots"
+    }
+  ]
+}

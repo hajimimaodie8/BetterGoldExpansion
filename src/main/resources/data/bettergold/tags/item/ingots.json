@@ -10,6 +10,8 @@
     "bettergold:thornsgold_ingot",
     "bettergold:echogold_ingot",
     "bettergold:chaosgold_ingot",
-    "bettergold:chaosalloy_ingot"
+    "bettergold:chaosalloy_ingot",
+    "bettergold:windgold_ingot",
+    "bettergold:frostgold_ingot"
   ]
 }

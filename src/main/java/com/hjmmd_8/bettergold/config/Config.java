@@ -243,6 +243,21 @@ public class Config {
                     "0 会被钳到最小 1 tick（每 tick 一份，慎用）。每次给的量与吸收上限不受本键影响。")
             .defineInRange("sturdygoldArmorAbilityIntervalMultiplier", 1.0D, 0.0D, 100.0D);
 
+    /** 翠风金 · 武器工具触发风斩的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue WINDGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("翠风金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是 Buff：风斩（每级无敌帧 −0.1 秒、目标风弹伤害 +1）。0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("windgoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 翠风金 · 盔甲盾牌反制风斩的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue WINDGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("翠风金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "触发的是 Buff：风斩。0 = 永不触发。")
+            .defineInRange("windgoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
     /** 树棘金 · 武器工具触发寄生的概率（默认 1.0） */
     public static final ModConfigSpec.DoubleValue THORNSGOLD_WEAPON_BUFF_CHANCE = BUILDER
             .comment("树棘金·武器工具盾牌触发Buff概率",
@@ -272,6 +287,21 @@ public class Config {
                     "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
                     "触发的是 Buff：音咆。0 = 永不触发。")
             .defineInRange("echogoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
+
+    /** 凛冰金 · 武器工具触发渗寒的概率（默认 1.0） */
+    public static final ModConfigSpec.DoubleValue FROSTGOLD_WEAPON_BUFF_CHANCE = BUILDER
+            .comment("凛冰金·武器工具盾牌触发Buff概率",
+                    "武器 / 工具 / 盾牌（含举盾反制）都走本条 —— 盾牌的反制赋予 Buff 因此默认为 100%。",
+                    "触发的是 Buff：渗寒（每秒等级点冰冻伤害；有其它负面状态时每条每级 +6%）。0 = 永不触发；1 = 必定触发（默认）。")
+            .defineInRange("frostgoldWeaponBuffChance", 1.0D, 0.0D, 1.0D);
+
+    /** 凛冰金 · 盔甲盾牌反制渗寒的每件概率（默认 0.25） */
+    public static final ModConfigSpec.DoubleValue FROSTGOLD_ARMOR_BUFF_CHANCE = BUILDER
+            .comment("凛冰金·盔甲触发buff概率",
+                    "只算 4 件盔甲（头 / 胸 / 腿 / 靴），盾牌不算在内；因为依赖全套系，所以按【每件】计。",
+                    "有效概率 = min(1, 穿戴件数 × 本条)；默认 0.25 ⇒ 1 件 25%、4 件 100%。",
+                    "触发的是 Buff：渗寒。0 = 永不触发。")
+            .defineInRange("frostgoldArmorBuffChance", 0.25D, 0.0D, 1.0D);
 
     /** 靛海金 · 武器工具触发沉淀的概率（默认 1.0） */
     public static final ModConfigSpec.DoubleValue INDIGOSEAGOLD_WEAPON_BUFF_CHANCE = BUILDER
@@ -410,7 +440,9 @@ public class Config {
             case "illusiongold" -> read(ILLUSIONGOLD_WEAPON_BUFF_CHANCE, 0.16F);
             case "thornsgold" -> read(THORNSGOLD_WEAPON_BUFF_CHANCE, 1.0F);
             case "echogold" -> read(ECHOGOLD_WEAPON_BUFF_CHANCE, 1.0F);
+            case "frostgold" -> read(FROSTGOLD_WEAPON_BUFF_CHANCE, 1.0F);
             case "sturdygold" -> read(STURDYGOLD_WEAPON_ABILITY_CHANCE, 1.0F);
+            case "windgold" -> read(WINDGOLD_WEAPON_BUFF_CHANCE, 1.0F);
             // 1.7 bg-n10r4：两族进入配置系统（16 → 20 条）；默认值依据见上面那一段注释
             case "chaosgold" -> read(CHAOSGOLD_WEAPON_BUFF_CHANCE, 1.0F);
             case "chaosalloy" -> read(CHAOSALLOY_WEAPON_BUFF_CHANCE, 0.5F);
@@ -442,7 +474,9 @@ public class Config {
             case "illusiongold" -> read(ILLUSIONGOLD_ARMOR_BUFF_CHANCE, 0.04F);
             case "thornsgold" -> read(THORNSGOLD_ARMOR_BUFF_CHANCE, 0.25F);
             case "echogold" -> read(ECHOGOLD_ARMOR_BUFF_CHANCE, 0.25F);
+            case "frostgold" -> read(FROSTGOLD_ARMOR_BUFF_CHANCE, 0.25F);
             case "sturdygold" -> 0.0F;
+            case "windgold" -> read(WINDGOLD_ARMOR_BUFF_CHANCE, 0.25F);
             // 1.7 bg-n10r4：两族进入配置系统（16 → 20 条）；默认值依据见上面那一段注释
             case "chaosgold" -> read(CHAOSGOLD_ARMOR_BUFF_CHANCE, 1.0F);
             case "chaosalloy" -> read(CHAOSALLOY_ARMOR_BUFF_CHANCE, 0.1F);
@@ -481,8 +515,8 @@ public class Config {
         StringBuilder sb = new StringBuilder("bgfix16");
         // ⚠ 1.7 bg-n10r4：这里的族清单 = 10 族（与 `CreativeSections.METAL_ORDER` 同序）——
         //   少了任何一族，"启动自证那行读数"就会静默漏掉它（与本轮那个阻塞同一类病）。
-        for (String id : new String[] {"flamegold", "voodoogold", "thundergold", "indigoseagold",
-                "illusiongold", "thornsgold", "echogold", "sturdygold",
+        for (String id : new String[] {"flamegold", "sturdygold", "windgold", "thornsgold", "echogold", "frostgold", "indigoseagold",
+                "voodoogold", "thundergold", "illusiongold",
                 "chaosgold", "chaosalloy"}) {
             sb.append(' ').append(id)
                     .append("[w=").append(String.format(java.util.Locale.ROOT, "%.3f", weaponBuffChance(id)))

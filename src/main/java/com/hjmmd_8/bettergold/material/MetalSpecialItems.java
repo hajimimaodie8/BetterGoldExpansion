@@ -70,6 +70,24 @@ public final class MetalSpecialItems {
     public static final DeferredItem<Item> BUNDLED_ECHO_SHARD = AllItems.ITEMS.registerSimpleItem(
             "bundled_echo_shard", new Item.Properties());
 
+    /**
+     * 清风玉珠：翠风金的核心材料（1.8，{@code bg26}）。
+     *
+     * <p>获取：<b>旋风人（Vex）在非物理伤害下死亡 66% 掉落</b>（作者原话 §E-18）。
+     * 落点在 {@code MetalEvents#onLivingDrops} 的非物理分支。</p>
+     */
+    public static final DeferredItem<Item> CLEAR_WIND_PEARL = AllItems.ITEMS.registerSimpleItem(
+            "clear_wind_pearl", new Item.Properties());
+
+    /**
+     * 寒烁冰晶：凛冰金的核心材料（1.8，{@code bg26}）。
+     *
+     * <p>获取：<b>贵金属器具挖冰 / 浮冰 / 蓝冰 6%，受时运</b>（作者原话 §F-23）。
+     * 落点在 {@code MetalEvents#onBlockDrops}。</p>
+     */
+    public static final DeferredItem<Item> FROST_SHIMMER_CRYSTAL = AllItems.ITEMS.registerSimpleItem(
+            "frost_shimmer_crystal", new Item.Properties());
+
     /** 触发静态初始化 */
     public static void bootstrap() {
     }

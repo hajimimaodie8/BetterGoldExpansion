@@ -1,0 +1,12 @@
+P1 翠风金剑攻速 3.8→3.9 | file=AllMetals.java | exit=1 | 期望红 | 命中=是 | SHA(改前)=031CDBB0092203AF
+  证据行：[bg26-summary] 1.8 阶段 2（§E/§F + §N-61）：检查 21 项，问题 1 条：['[bg26-gear-values] 翠风金 SWORD 的最终攻速不是 3.8']
+  复原：AllMetals.java | SHA(改后)=031CDBB0092203AF | 逐字节一致=是
+P2 风斩系数 0.4→0.5 | file=AllEffects.java | exit=1 | 期望红 | 命中=是 | SHA(改前)=06D97C17DCEE2DE1
+  证据行：[bg26-summary] 1.8 阶段 2（§E/§F + §N-61）：检查 21 项，问题 1 条：['[bg26-windsash-interval] 风斩的「攻击频率 +0.1 秒/级」折算没有落地']
+  复原：AllEffects.java | SHA(改后)=06D97C17DCEE2DE1 | 逐字节一致=是
+P3 冰霜行者做成真附魔（第二处 FROST_WALKER） | file=MetalFamily.java | exit=1 | 期望红 | 命中=是 | SHA(改前)=2412B51BAD8AC4B1
+  证据行：[bg26-summary] 1.8 阶段 2（§E/§F + §N-61）：检查 21 项，问题 1 条：['[bg26-frostwalker] Enchantments.FROST_WALKER 的出现点不是恰好 1 处（实际 2）']
+  复原：MetalFamily.java | SHA(改后)=2412B51BAD8AC4B1 | 逐字节一致=是
+P4 只改注释（应绿） | file=AllMetals.java | exit=0 | 期望绿 | 命中=是 | SHA(改前)=031CDBB0092203AF
+  证据行：[bg-data-ok] 问题合计 0 条（契约：0 绿 / 1 有问题 / 2 前置坏）
+  复原：AllMetals.java | SHA(改后)=031CDBB0092203AF | 逐字节一致=是

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "bettergold:block/windgold_bricks",
+    "top": "bettergold:block/windgold_bricks",
+    "side": "bettergold:block/windgold_bricks"
+  }
+}

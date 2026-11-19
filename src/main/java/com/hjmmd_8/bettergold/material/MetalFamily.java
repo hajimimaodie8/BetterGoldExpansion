@@ -47,6 +47,7 @@ import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
@@ -433,6 +434,36 @@ public final class MetalFamily {
     public final boolean imbalanceReflect;
     /** 本族物品免疫仙人掌（掉落物不被摧毁 + 装备不因仙人掌伤害掉耐久；树棘金） */
     public final boolean cactusImmune;
+
+    // ==================== 1.8（bg26）：翠风金 / 凛冰金 ====================
+
+    /** 器具：近战 / 远程命中叠 1 级 16 秒「风斩」（翠风金，无上限） */
+    public final boolean windSlashOnAttack;
+    /** 器具：近战 / 远程命中叠 1 级 16 秒「渗寒」（凛冰金，无上限） */
+    public final boolean frostSeepOnAttack;
+    /** 建材：非敌对 / 玩家 1 秒 38 级跳跃提升、敌对 1 秒 3 级漂浮（翠风金） */
+    public final boolean contactWind;
+    /** 建材：持续冰冻伤害 + 细雪屏幕效果（凛冰金） */
+    public final boolean contactFreeze;
+    /** 建材：水中生成灵魂沙式**上升**气泡柱（翠风金） */
+    public final boolean windBubbleColumn;
+    /** 盔甲：+25%/件 移速、+0.5 格/件 跳跃、25%/件 风弹抗性、+10%/件 无敌帧（翠风金） */
+    public final boolean windArmor;
+    /** 盔甲：25%/件 冰冻抗性、自带冰霜行者规格（凛冰金） */
+    public final boolean frostArmor;
+    /** 盾牌 / 盔甲：冰霜行者「规格」（非附魔；等级 = 件数 + 盾 1，与真附魔取 max） */
+    public final boolean frostWalkerSpec;
+    /** 盔甲：25%/件 几率给攻击者叠 1 级风斩（翠风金） */
+    public final boolean windSlashReflect;
+    /** 盔甲：25%/件 几率给攻击者叠 1 级渗寒（凛冰金） */
+    public final boolean frostSeepReflect;
+
+    /** 每件盔甲提供的移速（{@code ADD_MULTIPLIED_TOTAL}；翠风金 = 0.25） */
+    public final float armorMoveSpeedPerPiece;
+    /** 每件盔甲提供的跳跃高度（格；翠风金 = 0.5；已折算成 {@code JUMP_STRENGTH} 增量） */
+    public final float armorJumpHeightPerPiece;
+    /** 每件盔甲提供的受伤无敌帧加成（比例；翠风金 = 0.10） */
+    public final float armorIframeBonusPerPiece;
 
     /**
      * 建材：<b>踩踏 / 贴近</b>时让「对玩家发起敌意的中立生物」<b>瞬间变为被动形态</b>
@@ -1057,6 +1088,20 @@ public final class MetalFamily {
         this.imbalanceOnAttack = spec.imbalanceOnAttack;
         this.imbalanceReflect = spec.imbalanceReflect;
         this.cactusImmune = spec.cactusImmune;
+        // 1.8（bg26）：翠风金 / 凛冰金
+        this.windSlashOnAttack = spec.windSlashOnAttack;
+        this.frostSeepOnAttack = spec.frostSeepOnAttack;
+        this.contactWind = spec.contactWind;
+        this.contactFreeze = spec.contactFreeze;
+        this.windBubbleColumn = spec.windBubbleColumn;
+        this.windArmor = spec.windArmor;
+        this.frostArmor = spec.frostArmor;
+        this.frostWalkerSpec = spec.frostWalkerSpec;
+        this.windSlashReflect = spec.windSlashReflect;
+        this.frostSeepReflect = spec.frostSeepReflect;
+        this.armorMoveSpeedPerPiece = spec.armorMoveSpeedPerPiece;
+        this.armorJumpHeightPerPiece = spec.armorJumpHeightPerPiece;
+        this.armorIframeBonusPerPiece = spec.armorIframeBonusPerPiece;
         this.specialWeaponMetal = spec.specialWeaponMetal;
         this.shieldDurability = spec.shieldDurability;
         // ⚠ 口径变更（bg-15w 续工轮，作者 2026-10-02）：
@@ -1094,30 +1139,31 @@ public final class MetalFamily {
                 || hasFormRange(Form.MACE, ChaosRange.Channel.ATTACK);
         Supplier<SwordItem> swordFactory = chaosGear
                 ? () -> new MetalWeapons.ChaosSwordItem(t, props().attributes(chaosAttributes(t, Form.SWORD)))
-                : () -> new SwordItem(t, props().attributes(SwordItem.createAttributes(t, SWORD_DMG, SWORD_SPD)));
+                : () -> new SwordItem(t, props().attributes(SwordItem.createAttributes(t, SWORD_DMG,
+                        gearSpeed(Form.SWORD, SWORD_SPD))));
         this.sword = AllItems.ITEMS.register(this.id + "_sword", swordFactory);
         // 斧 / 镐 / 锹 / 锄：混沌金走"命中即翻转 + 区间下端当注册值"的子类（既有 8 族逐字不变）
         Supplier<AxeItem> axeFactory = chaosGear
                 ? () -> new MetalWeapons.ChaosAxeItem(t,
                         props().attributes(chaosAttributes(t, Form.AXE)))
-                : () -> new AxeItem(t, props().attributes(AxeItem.createAttributes(t, AXE_DMG, AXE_SPD)));
+                : () -> new AxeItem(t, props().attributes(AxeItem.createAttributes(t, AXE_DMG, gearSpeed(Form.AXE, AXE_SPD))));
         this.axe = AllItems.ITEMS.register(this.id + "_axe", axeFactory);
         Supplier<PickaxeItem> pickaxeFactory = chaosGear
                 ? () -> new MetalWeapons.ChaosPickaxeItem(t,
                         props().attributes(chaosAttributes(t, Form.PICKAXE)))
                 : () -> new PickaxeItem(t,
-                        props().attributes(PickaxeItem.createAttributes(t, PICKAXE_DMG, PICKAXE_SPD)));
+                        props().attributes(PickaxeItem.createAttributes(t, PICKAXE_DMG, gearSpeed(Form.PICKAXE, PICKAXE_SPD))));
         this.pickaxe = AllItems.ITEMS.register(this.id + "_pickaxe", pickaxeFactory);
         Supplier<ShovelItem> shovelFactory = chaosGear
                 ? () -> new MetalWeapons.ChaosShovelItem(t,
                         props().attributes(chaosAttributes(t, Form.SHOVEL)))
                 : () -> new ShovelItem(t,
-                        props().attributes(ShovelItem.createAttributes(t, SHOVEL_DMG, SHOVEL_SPD)));
+                        props().attributes(ShovelItem.createAttributes(t, SHOVEL_DMG, gearSpeed(Form.SHOVEL, SHOVEL_SPD))));
         this.shovel = AllItems.ITEMS.register(this.id + "_shovel", shovelFactory);
         Supplier<HoeItem> hoeFactory = chaosGear
                 ? () -> new MetalWeapons.ChaosHoeItem(t,
                         props().attributes(chaosAttributes(t, Form.HOE)))
-                : () -> new HoeItem(t, props().attributes(HoeItem.createAttributes(t, HOE_DMG, HOE_SPD)));
+                : () -> new HoeItem(t, props().attributes(HoeItem.createAttributes(t, HOE_DMG, gearSpeed(Form.HOE, HOE_SPD))));
         this.hoe = AllItems.ITEMS.register(this.id + "_hoe", hoeFactory);
 
         // ---------- 盔甲材质 ----------
@@ -1160,7 +1206,7 @@ public final class MetalFamily {
                                                         AttributeModifier.Operation.ADD_VALUE),
                                                 EquipmentSlotGroup.MAINHAND)
                                         .add(Attributes.ATTACK_SPEED,
-                                                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, MACE_SPD,
+                                                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, gearSpeed(Form.MACE, MACE_SPD),
                                                         AttributeModifier.Operation.ADD_VALUE),
                                                 EquipmentSlotGroup.MAINHAND)
                                         .build()),
@@ -1183,7 +1229,7 @@ public final class MetalFamily {
                                                         AttributeModifier.Operation.ADD_VALUE),
                                                 EquipmentSlotGroup.MAINHAND)
                                         .add(Attributes.ATTACK_SPEED,
-                                                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, TRIDENT_SPD,
+                                                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, gearSpeed(Form.TRIDENT, TRIDENT_SPD),
                                                         AttributeModifier.Operation.ADD_VALUE),
                                                 EquipmentSlotGroup.MAINHAND)
                                         .build()),
@@ -1206,21 +1252,9 @@ public final class MetalFamily {
         // ⚠ 全部按形态子集注册：{@link Form#BUILDING_FORMS} 里的 10 种细节件 + 必备的块。
         //   没声明的（例如崩乱合金只声明块）= null 且不注册。旧口径（无条件注册 11 种）原文留档：
         //   `this.bricks = AllBlocks.BLOCKS.register(this.id + "_bricks", ...)`（下面每一段的分支写法同此）
-        this.block = AllBlocks.BLOCKS.register(this.id + "_block", () -> new AllBlocks.BeaconBaseBlock(
-                BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.COLOR_BLACK)
-                        .requiresCorrectToolForDrops()
-                        .strength(spec.blockStrength, spec.blockResistance)
-                        .sound(SoundType.NETHERITE_BLOCK),
-                DyeColor.YELLOW));
+        this.block = AllBlocks.BLOCKS.register(this.id + "_block", () -> fullBlock(spec));
         this.bricks = !has(Form.BRICKS) ? null : AllBlocks.BLOCKS.register(this.id + "_bricks",
-                () -> new AllBlocks.BeaconBaseBlock(
-                BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.COLOR_BLACK)
-                        .requiresCorrectToolForDrops()
-                        .strength(spec.blockStrength, spec.blockResistance)
-                        .sound(SoundType.NETHERITE_BLOCK),
-                DyeColor.YELLOW));
+                () -> fullBlock(spec));
         this.bricksStairs = !has(Form.BRICKS_STAIRS) ? null : AllBlocks.BLOCKS.register(this.id + "_bricks_stairs",
                 () -> new StairBlock(this.bricks.get().defaultBlockState(),
                         BlockBehaviour.Properties.ofFullCopy(this.bricks.get())));
@@ -1229,12 +1263,16 @@ public final class MetalFamily {
         this.bricksWall = !has(Form.BRICKS_WALL) ? null : AllBlocks.BLOCKS.register(this.id + "_bricks_wall",
                 () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(this.bricks.get())));
         this.pillar = !has(Form.PILLAR) ? null : AllBlocks.BLOCKS.register(this.id + "_pillar",
-                () -> new RotatedPillarBlock(
-                BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.COLOR_BLACK)
-                        .requiresCorrectToolForDrops()
-                        .strength(spec.blockStrength, spec.blockResistance)
-                        .sound(SoundType.NETHERITE_BLOCK)));
+                () -> {
+                    BlockBehaviour.Properties p = BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_BLACK)
+                            .requiresCorrectToolForDrops()
+                            .strength(spec.blockStrength, spec.blockResistance)
+                            .sound(SoundType.NETHERITE_BLOCK);
+                    return spec.windBubbleColumn
+                            ? new WindGoldPillarBlock(p)
+                            : new RotatedPillarBlock(p);
+                });
         this.bars = !has(Form.BARS) ? null : AllBlocks.BLOCKS.register(this.id + "_bars",
                 () -> new IronBarsBlock(
                 BlockBehaviour.Properties.of()
@@ -1351,6 +1389,19 @@ public final class MetalFamily {
         return this.fireResistant ? p.fireResistant() : p;
     }
 
+    /**
+     * 整方块建材的注册工厂（1.8 bg26）：翠风金的块 / 砖块换成会生成**上升气泡柱**的子类，
+     * 其余族仍是原来的 {@link AllBlocks.BeaconBaseBlock}（逐字节不变）。
+     */
+    private static Block fullBlock(MetalFamily.Spec spec) {
+        BlockBehaviour.Properties p = BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_BLACK)
+                .requiresCorrectToolForDrops()
+                .strength(spec.blockStrength, spec.blockResistance)
+                .sound(SoundType.NETHERITE_BLOCK);
+        return spec.windBubbleColumn ? new WindGoldBubbleBlock(p) : new AllBlocks.BeaconBaseBlock(p, DyeColor.YELLOW);
+    }
+
     private DeferredItem<ArmorItem> registerArmor(ArmorItem.Type type, int durability) {
         String name = this.id + "_" + switch (type) {
             case HELMET -> "helmet";
@@ -1360,8 +1411,100 @@ public final class MetalFamily {
             default -> type.getName();
         };
         Item.Properties properties = props().durability(durability);
+        if (this.armorMoveSpeedPerPiece > 0.0F) {
+            return AllItems.ITEMS.register(name,
+                    () -> new WindGoldArmorItem(this.armorMaterial, type, properties,
+                            this.armorMoveSpeedPerPiece, this.armorJumpHeightPerPiece));
+        }
         return AllItems.ITEMS.register(name,
                 () -> new MetalArmorItem(this.armorMaterial, type, properties, this.swimSpeedPerPiece));
+    }
+
+    // ==================== 1.8（bg26）：翠风金的上升气泡柱方块 ====================
+
+    /**
+     * 翠风金整方块（块 / 砖块）：<b>上方是水时自动生成灵魂沙式的上升气泡柱</b>。
+     *
+     * <p>实现方式（1.21.1 的正式扩展点，不需要 mixin）：NeoForge 给方块加了
+     * {@code IBlockExtension#getBubbleColumnDirection(BlockState)}（PR #931）；
+     * {@code BubbleColumnBlock#updateColumn} 会读它决定向上 / 向下 / 不生成 ——
+     * 原版灵魂沙就是 {@code SoulSandBlock#tick} 里调 {@code updateColumn(level, pos.above(), state)}。
+     * 我们照抄灵魂沙的三个钩子（{@code onPlace} / {@code updateShape} / {@code tick}），
+     * 只把方向声明成 {@code UPWARD}。</p>
+     *
+     * <p>⚠ 与风斩 / 摔落无关：这只影响水的表现，方块本身的碰撞 / 硬度 / 信标基座属性全部沿用父类。</p>
+     */
+    public static class WindGoldBubbleBlock extends AllBlocks.BeaconBaseBlock {
+
+        private static final int BUBBLE_COLUMN_CHECK_DELAY = 20;
+
+        public WindGoldBubbleBlock(BlockBehaviour.Properties properties) {
+            super(properties, DyeColor.YELLOW);
+        }
+
+        @Override
+        public net.neoforged.neoforge.common.enums.BubbleColumnDirection getBubbleColumnDirection(BlockState state) {
+            return net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD;
+        }
+
+        @Override
+        protected void tick(BlockState state, net.minecraft.server.level.ServerLevel level,
+                net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random) {
+            net.minecraft.world.level.block.BubbleColumnBlock.updateColumn(level, pos.above(), state);
+        }
+
+        @Override
+        protected BlockState updateShape(BlockState state, net.minecraft.core.Direction facing,
+                BlockState facingState, net.minecraft.world.level.LevelAccessor level,
+                net.minecraft.core.BlockPos currentPos, net.minecraft.core.BlockPos facingPos) {
+            if (facing == net.minecraft.core.Direction.UP && facingState.is(net.minecraft.world.level.block.Blocks.WATER)) {
+                level.scheduleTick(currentPos, this, BUBBLE_COLUMN_CHECK_DELAY);
+            }
+            return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+        }
+
+        @Override
+        protected void onPlace(BlockState state, net.minecraft.world.level.Level level,
+                net.minecraft.core.BlockPos pos, BlockState oldState, boolean isMoving) {
+            level.scheduleTick(pos, this, BUBBLE_COLUMN_CHECK_DELAY);
+        }
+    }
+
+    /** 翠风金柱：同 {@link WindGoldBubbleBlock}，但保留 {@code RotatedPillarBlock} 的轴向行为。 */
+    public static class WindGoldPillarBlock extends RotatedPillarBlock {
+
+        private static final int BUBBLE_COLUMN_CHECK_DELAY = 20;
+
+        public WindGoldPillarBlock(BlockBehaviour.Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public net.neoforged.neoforge.common.enums.BubbleColumnDirection getBubbleColumnDirection(BlockState state) {
+            return net.neoforged.neoforge.common.enums.BubbleColumnDirection.UPWARD;
+        }
+
+        @Override
+        protected void tick(BlockState state, net.minecraft.server.level.ServerLevel level,
+                net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random) {
+            net.minecraft.world.level.block.BubbleColumnBlock.updateColumn(level, pos.above(), state);
+        }
+
+        @Override
+        protected BlockState updateShape(BlockState state, net.minecraft.core.Direction facing,
+                BlockState facingState, net.minecraft.world.level.LevelAccessor level,
+                net.minecraft.core.BlockPos currentPos, net.minecraft.core.BlockPos facingPos) {
+            if (facing == net.minecraft.core.Direction.UP && facingState.is(net.minecraft.world.level.block.Blocks.WATER)) {
+                level.scheduleTick(currentPos, this, BUBBLE_COLUMN_CHECK_DELAY);
+            }
+            return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+        }
+
+        @Override
+        protected void onPlace(BlockState state, net.minecraft.world.level.Level level,
+                net.minecraft.core.BlockPos pos, BlockState oldState, boolean isMoving) {
+            level.scheduleTick(pos, this, BUBBLE_COLUMN_CHECK_DELAY);
+        }
     }
 
     /**
@@ -1593,6 +1736,34 @@ public final class MetalFamily {
          * 落点见 {@code MetalEvents#onCactusItemImmunity} / {@link MetalEvents#onArmorHurt}。
          */
         public boolean cactusImmune = false;
+
+        // ---------- 1.8（bg26）：翠风金 / 凛冰金 ----------
+        /** 器具：命中叠 1 级 16 秒「风斩」（翠风金，无上限；远程也算） */
+        public boolean windSlashOnAttack = false;
+        /** 器具：命中叠 1 级 16 秒「渗寒」（凛冰金，无上限；远程也算） */
+        public boolean frostSeepOnAttack = false;
+        /** 建材：非敌对 / 玩家 1 秒 38 级跳跃提升、敌对 1 秒 3 级漂浮（翠风金） */
+        public boolean contactWind = false;
+        /** 建材：持续冰冻伤害 + 细雪屏幕效果（凛冰金） */
+        public boolean contactFreeze = false;
+        /** 建材：水中生成灵魂沙式**上升**气泡柱（翠风金） */
+        public boolean windBubbleColumn = false;
+        /** 盔甲：+25%/件 移速、+0.5 格/件 跳跃、25%/件 风弹抗性、+10%/件 无敌帧（翠风金） */
+        public boolean windArmor = false;
+        /** 盔甲：25%/件 冰冻抗性、自带冰霜行者规格（凛冰金） */
+        public boolean frostArmor = false;
+        /** 盾牌 / 盔甲：冰霜行者「规格」（非附魔） */
+        public boolean frostWalkerSpec = false;
+        /** 盔甲：25%/件 几率给攻击者叠 1 级风斩（翠风金） */
+        public boolean windSlashReflect = false;
+        /** 盔甲：25%/件 几率给攻击者叠 1 级渗寒（凛冰金） */
+        public boolean frostSeepReflect = false;
+        /** 每件盔甲的移速加成（{@code ADD_MULTIPLIED_TOTAL}；翠风金 = 0.25） */
+        public float armorMoveSpeedPerPiece = 0.0F;
+        /** 每件盔甲的跳跃高度（格；翠风金 = 0.5，注册时折算成 {@code JUMP_STRENGTH} 增量） */
+        public float armorJumpHeightPerPiece = 0.0F;
+        /** 每件盔甲的受伤无敌帧加成（比例；翠风金 = 0.10） */
+        public float armorIframeBonusPerPiece = 0.0F;
 
         // ---------- 1.5 武器扩展 ----------
         /**
@@ -2126,6 +2297,74 @@ public final class MetalFamily {
             return this;
         }
 
+        // ---------- 1.8（bg26）：翠风金 / 凛冰金 ----------
+
+        /** 器具：命中（近战 + 远程）叠 1 级 16 秒风斩（翠风金；无上限） */
+        public Spec windSlashOnAttack() {
+            this.windSlashOnAttack = true;
+            return this;
+        }
+
+        /** 器具：命中（近战 + 远程）叠 1 级 16 秒渗寒（凛冰金；无上限） */
+        public Spec frostSeepOnAttack() {
+            this.frostSeepOnAttack = true;
+            return this;
+        }
+
+        /** 建材：非敌对 / 玩家 1 秒 38 级跳跃提升、敌对 1 秒 3 级漂浮（翠风金） */
+        public Spec contactWind() {
+            this.contactWind = true;
+            return this;
+        }
+
+        /** 建材：持续冰冻伤害 + 细雪同款屏幕效果（凛冰金） */
+        public Spec contactFreeze() {
+            this.contactFreeze = true;
+            return this;
+        }
+
+        /** 建材：水中生成灵魂沙式**上升**气泡柱（翠风金；只对整方块形态生效） */
+        public Spec windBubbleColumn() {
+            this.windBubbleColumn = true;
+            return this;
+        }
+
+        /**
+         * 盔甲：每件 +25% 移速、+0.5 格跳跃、25% 风弹抗性、+10% 受伤无敌帧，
+         * 四件全套 100% 风弹免疫 + 40% 无敌帧（翠风金）。
+         */
+        public Spec windArmor() {
+            this.windArmor = true;
+            this.armorMoveSpeedPerPiece = 0.25F;
+            this.armorJumpHeightPerPiece = 0.5F;
+            this.armorIframeBonusPerPiece = 0.10F;
+            return this;
+        }
+
+        /** 盔甲：每件 25% 冰冻抗性、自带 1 级冰霜行者规格（凛冰金） */
+        public Spec frostArmor() {
+            this.frostArmor = true;
+            return this;
+        }
+
+        /** 盾牌 / 盔甲：冰霜行者「规格」（非附魔；等级 = 件数 + 盾 1） */
+        public Spec frostWalkerSpec() {
+            this.frostWalkerSpec = true;
+            return this;
+        }
+
+        /** 盔甲：每件 25% 几率给攻击者叠 1 级风斩（翠风金） */
+        public Spec windSlashReflect() {
+            this.windSlashReflect = true;
+            return this;
+        }
+
+        /** 盔甲：每件 25% 几率给攻击者叠 1 级渗寒（凛冰金） */
+        public Spec frostSeepReflect() {
+            this.frostSeepReflect = true;
+            return this;
+        }
+
         /**
          * 标记本族为「特殊金属」并给出盾牌耐久（规格 12.3）：
          * 特殊金属盾牌<b>免疫破盾</b>，且举盾挡下攻击后给攻击者<b>本族对应的 buff</b>。
@@ -2269,6 +2508,63 @@ public final class MetalFamily {
                             this.swimSpeedPerPiece,
                             net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
                     net.minecraft.world.entity.EquipmentSlotGroup.bySlot(this.getType().getSlot()));
+        }
+    }
+
+    /**
+     * 翠风金盔甲（1.8 bg26）：在 {@link MetalArmorItem} 的游泳属性之外，再挂
+     * <b>每件 +25% 移速</b>（{@code ADD_MULTIPLIED_TOTAL}）与 <b>每件 +0.5 格跳跃</b>
+     * （{@code JUMP_STRENGTH} 的等价增量，见 {@link #jumpStrengthDelta}）。
+     *
+     * <p>⚠ 单独成子类（而不是塞进父类方法）：父类那段是 1.5 游泳口径的**冻结区**，
+     * 关卡 {@code [bg15w-swim-speed]} 明确断言那里不许出现 {@code MOVEMENT_SPEED} /
+     * {@code ADD_MULTIPLIED_TOTAL}（用错会让陆地也加速）。</p>
+     */
+    public static class WindGoldArmorItem extends MetalArmorItem {
+
+        private final float moveSpeedPerPiece;
+        private final float jumpHeightPerPiece;
+
+        public WindGoldArmorItem(Holder<ArmorMaterial> material, Type type, Item.Properties properties,
+                float moveSpeedPerPiece, float jumpHeightPerPiece) {
+            super(material, type, properties, 0.0F);
+            this.moveSpeedPerPiece = moveSpeedPerPiece;
+            this.jumpHeightPerPiece = jumpHeightPerPiece;
+        }
+
+        /** 「+0.5 格跳跃高度」→ {@code JUMP_STRENGTH} 增量（h = v²/2g；g = 0.08、基值 v = 0.42） */
+        private static float jumpStrengthDelta(float heightInBlocks) {
+            double gravity = 0.08D;
+            double baseV = 0.42D;
+            double baseH = baseV * baseV / (2.0D * gravity);
+            return (float) (Math.sqrt(2.0D * gravity * (baseH + heightInBlocks)) - baseV);
+        }
+
+        @Override
+        public ItemAttributeModifiers getDefaultAttributeModifiers() {
+            ItemAttributeModifiers result = super.getDefaultAttributeModifiers();
+            var group = net.minecraft.world.entity.EquipmentSlotGroup.bySlot(this.getType().getSlot());
+            if (this.moveSpeedPerPiece > 0.0F) {
+                result = result.withModifierAdded(
+                        net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED,
+                        new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                                ResourceLocation.fromNamespaceAndPath(bettergold.MODID,
+                                        "armor_move_speed_" + this.getType().getName()),
+                                this.moveSpeedPerPiece,
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL),
+                        group);
+            }
+            if (this.jumpHeightPerPiece > 0.0F) {
+                result = result.withModifierAdded(
+                        net.minecraft.world.entity.ai.attributes.Attributes.JUMP_STRENGTH,
+                        new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                                ResourceLocation.fromNamespaceAndPath(bettergold.MODID,
+                                        "armor_jump_" + this.getType().getName()),
+                                jumpStrengthDelta(this.jumpHeightPerPiece),
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
+                        group);
+            }
+            return result;
         }
     }
 

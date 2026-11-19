@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "III"
+  ],
+  "key": {
+    "I": { "item": "bettergold:frostgold_ingot" }
+  },
+  "result": {
+    "id": "bettergold:frostgold_bars",
+    "count": 16
+  }
+}

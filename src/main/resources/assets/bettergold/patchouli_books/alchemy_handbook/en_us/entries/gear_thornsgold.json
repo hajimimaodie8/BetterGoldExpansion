@@ -2,7 +2,7 @@
   "name": "bettergold.handbook.entry.gear_thornsgold",
   "category": "bettergold:gear_upgrade",
   "icon": "bettergold:thornsgold_sword",
-  "sortnum": 3,
+  "sortnum": 4,
   "read_by_default": true,
   "pages": [
     {

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "hanging=false": { "model": "bettergold:block/frostgold_lantern" },
+    "hanging=true": { "model": "bettergold:block/frostgold_lantern_hanging" }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BB",
+    "BB"
+  ],
+  "key": {
+    "B": { "item": "bettergold:windgold_block" }
+  },
+  "result": {
+    "id": "bettergold:windgold_bricks",
+    "count": 4
+  }
+}

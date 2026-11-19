@@ -2,7 +2,7 @@
   "name": "bettergold.handbook.entry.gear_illusiongold",
   "category": "bettergold:gear_upgrade",
   "icon": "bettergold:illusiongold_sword",
-  "sortnum": 8,
+  "sortnum": 10,
   "read_by_default": true,
   "pages": [
     {

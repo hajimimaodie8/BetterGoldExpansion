@@ -215,6 +215,90 @@ public final class AllMetals {
      */
     public static final MetalFamily CHAOSALLOY = registerChaosalloy();
 
+    /**
+     * <b>翠风金（{@code windgold}，1.8 §E，作者 2026-11-19 追加 §N-61）</b> —— 主题「风 / 风斩 / 风弹」。
+     *
+     * <p>创造页 / 手册位次 = <b>万坚金与树棘金之间</b>（{@code CreativeSections.METAL_ORDER}）。</p>
+     *
+     * <ul>
+     *   <li>核心材料：<b>清风玉珠</b>（旋風人非物理伤害死亡 66% 掉落，{@code MetalSpecialItems}）。</li>
+     *   <li>器具：4096 / 24 / 14 / 下界合金；近战远程叠 1 级 16 秒风斩（无上限）；
+     *       疾跑 / 暴击追加一发瞬爆风弹。</li>
+     *   <li>盔甲：默认 5·8·10·5 / 814·1184·1110·962 / 24 / 6 / 15%；
+     *       每件 +25% 移速、+0.5 格跳跃、25% 风弹抗性、+10% 受伤无敌帧；
+     *       四件 100% 风弹免疫 + 40% 无敌帧；单件即猪灵中立由 {@code MetalArmorItem} 继承。</li>
+     *   <li>建材：非敌对 / 玩家 1 秒 38 级跳跃提升，敌对 1 秒 3 级漂浮；
+     *       整方块 / 柱在水下生成灵魂沙式上升气泡柱。</li>
+     * </ul>
+     */
+    public static final MetalFamily WINDGOLD = registerWindgold();
+
+    /**
+     * <b>凛冰金（{@code frostgold}，1.8 §F）</b> —— 主题「冰 / 渗寒 / 冰霜行者」。
+     *
+     * <p>创造页 / 手册位次 = <b>幽咆金与靛海金之间</b>。</p>
+     *
+     * <ul>
+     *   <li>核心材料：<b>寒烁冰晶</b>（贵金属器具挖冰 / 浮冰 / 蓝冰 6%，受时运）。</li>
+     *   <li>器具：4096 / 24 / 14 / 下界合金；近战远程叠 1 级 16 秒渗寒（无上限）；
+     *       数值 = 既有 8 族的默认档（剑 10/1.8、重锤 9/0.8、弓 4/16、弩 1 秒、三叉戟 13/1.3 …）。</li>
+     *   <li>盾牌：自带 1 级冰霜行者「规格」（非附魔），与四件盔甲叠到 5 级。</li>
+     *   <li>盔甲：每件 25% 冰冻抗性 + 1 级冰霜行者规格；全套 100% 免疫 + 4 级规格。</li>
+     *   <li>建材：持续冰冻伤害 + 细雪同款屏幕效果。</li>
+     * </ul>
+     */
+    public static final MetalFamily FROSTGOLD = registerFrostgold();
+
+    /**
+     * 翠风金的规格：4096 / 24 / 14 / 下界合金；逐件攻速按作者 §E-20 的**最终值**声明。
+     *
+     * <p>⚠ 伤害不在这里写：作者给的 10 / 9 / 12 / 8 / 8.5 / 7 / 7.5 与既有 8 族的默认档
+     * <b>逐项相同</b>（默认档 = tier 的 +4.5 与玩家 +1 之后的显示值），只有攻速不同 ⇒
+     * 本方法只声明 {@code attackSpeed(...)}（换算成属性修正的减法只在 {@code gearSpeed} 一处做）。</p>
+     */
+    private static MetalFamily registerWindgold() {
+        MetalFamily.Spec spec = new MetalFamily.Spec("windgold", "翠风金")
+                // ---- 器具：作者 §E-20 逐件给的最终攻速 ----
+                .attackSpeed(MetalFamily.Form.SWORD, 3.8F)
+                .attackSpeed(MetalFamily.Form.MACE, 2.8F)
+                .attackSpeed(MetalFamily.Form.AXE, 3.2F)
+                .attackSpeed(MetalFamily.Form.PICKAXE, 3.4F)
+                .attackSpeed(MetalFamily.Form.SHOVEL, 3.2F)
+                .attackSpeed(MetalFamily.Form.HOE, 6.2F)
+                .attackSpeed(MetalFamily.Form.KNIFE, 4.2F)
+                // ---- 远程：弓 4.0 / 满蓄力 13；弩 0.7 秒 / 弹速 4.5（默认）----
+                .bowFullDraw(13, 4.0F)
+                .crossbowCharge(0.7F)
+                // 乐事刀：最终值 7.5（= 物品 6.5 + 玩家 1）/ 攻速 4.2
+                .knifeAttributesFinal(6.5F, 4.2F)
+                // ---- 1.8 机制 ----
+                .windSlashOnAttack()      // 命中叠 1 级 16 秒风斩（近战 + 远程，无上限）
+                .contactWind()            // 建材：友善 38 级跳跃 / 敌对 3 级漂浮
+                .windBubbleColumn()       // 建材：水下上升气泡柱
+                .windArmor()              // 盔甲：+25% 移速 / +0.5 格跳跃 / 风弹抗性 / 无敌帧
+                .windSlashReflect()       // 盔甲：25%/件 给攻击者风斩
+                // 盾牌：免疫破盾 + 10% 击退抗性 + 举盾不受减速 + 攻击者 16 秒风斩
+                .specialWeaponMetal(true, 2048)
+                .coreItem(() -> MetalSpecialItems.CLEAR_WIND_PEARL.get());
+        // 盔甲数值 = Spec 默认（5/8/10/5、962/1110/1184/814、24、6、0.15）—— 作者 §E-22 逐项相同
+        return MetalFamily.register(spec);
+    }
+
+    /**
+     * 凛冰金的规格：4096 / 24 / 14 / 下界合金；数值 = 既有 8 族的默认档（作者 §F-25 逐项相同）。
+     */
+    private static MetalFamily registerFrostgold() {
+        MetalFamily.Spec spec = new MetalFamily.Spec("frostgold", "凛冰金")
+                .frostSeepOnAttack()      // 命中叠 1 级 16 秒渗寒（近战 + 远程，无上限）
+                .contactFreeze()          // 建材：持续冰冻伤害 + 细雪屏幕效果
+                .frostArmor()             // 盔甲：25%/件 冰冻抗性 + 1 级冰霜行者规格
+                .frostWalkerSpec()        // 盾牌：手持 1 级冰霜行者规格
+                .frostSeepReflect()       // 盔甲：25%/件 给攻击者渗寒
+                .specialWeaponMetal(true, 2048)
+                .coreItem(() -> MetalSpecialItems.FROST_SHIMMER_CRYSTAL.get());
+        return MetalFamily.register(spec);
+    }
+
     /** 混沌金的规格：作者 2026-10-16 给的数逐项照抄（铁级挖掘 / 426 / 24 / 区间 2..12） */
     private static MetalFamily registerChaosgold() {
         MetalFamily.Spec spec = new MetalFamily.Spec("chaosgold", "混沌金")

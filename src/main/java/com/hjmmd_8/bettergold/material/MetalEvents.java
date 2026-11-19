@@ -16,6 +16,7 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
  */
 public final class MetalEvents {
 
+
     // ==================== 巫毒：累积伤害模型（Delayed Execution / 秋后问斩） ====================
 
     /**
@@ -500,6 +501,37 @@ public final class MetalEvents {
             // 而是"刷新让它烧得更久、而且频率翻倍"（这是另一个话题，本次刻意不动）。
             entity.setRemainingFireTicks(MetalFamily.CONTACT_EFFECT_TICKS);
         }
+        // ---------- 1.8（bg26）翠风金建材：友善 / 玩家 38 级跳跃提升，敌对 3 级漂浮 ----------
+        // 作者 §E-19：「非敌对生物与玩家 → 1 秒 38 级跳跃提升；敌对生物 → 1 秒 3 级漂浮」。
+        // 判据 = 既有的 isFriendly（!(entity instanceof Enemy)）：玩家 / 被动 / 中立 = 友善。
+        // 每次接触扫描（10 tick）刷新 20 tick，站在块上就一直有；离开后 1 秒内自然结束。
+        if (family.contactWind) {
+            if (isFriendly(entity)) {
+                entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                        net.minecraft.world.effect.MobEffects.JUMP, 20, 38, false, false));
+            } else {
+                entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                        net.minecraft.world.effect.MobEffects.LEVITATION, 20, 3, false, false));
+            }
+        }
+        // ---------- 1.8（bg26）凛冰金建材：持续冰冻伤害 + 细雪同款屏幕效果 ----------
+        // 作者 §F-24：「对目标持续冰冻伤害，并给玩家细雪同款屏幕效果」。
+        // 伤害：每 20 tick 1 点 `minecraft:freeze`（用本族自己的冷却键，不与其它族互吃）。
+        // 屏幕效果：把 `ticksFrozen` 顶到「差 1 tick 就满冻」——`getPercentFrozen()` 是
+        // `min(ticksFrozen, required)/required` ⇒ 视觉上是细雪同款白霜；
+        // 停在 required−1 是为了**不触发原版** `LivingEntity#aiStep` 的每 40 tick 1 点冻结伤害，
+        // 否则会与上面这 1 点/秒叠成 1.5 点/秒（口径记在 §Z）。
+        if (family.contactFreeze) {
+            if (!contactThrottled(entity, FROST_CONTACT_KEY, 20)) {
+                entity.hurt(entity.damageSources().freeze(), 1.0F);
+            }
+            if (entity instanceof net.minecraft.world.entity.player.Player player) {
+                int required = player.getTicksRequiredToFreeze();
+                if (player.getTicksFrozen() < required - 1) {
+                    player.setTicksFrozen(required - 1);
+                }
+            }
+        }
         if (family.contactEffect != null) {
             net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect = family.contactEffect.get();
             if (entity.hasEffect(effect)) {
@@ -531,6 +563,33 @@ public final class MetalEvents {
      * 施加者只要站在目标的 3×3×3 里就会挨自己这一发。修法 = 只排除「本次 buff 的施加者」。</p>
      */
     public static final String ECHO_ROAR_SOURCE_KEY = "bettergold_echo_roar_source";
+
+    // ==================== 1.8（bg26）：翠风金 / 凛冰金 ====================
+
+    /** 风斩时长：16 秒（作者 §E-20「攻击者挂并叠 1 级 16 秒风斩」） */
+    public static final int WIND_SLASH_TICKS = 16 * 20;
+    /** 渗寒时长：16 秒（作者 §F-25 与风斩同口径） */
+    public static final int FROST_SEEP_TICKS = 16 * 20;
+    /**
+     * 风斩每级把目标受伤无敌帧缩短的 tick 数：−0.1 秒 = <b>2 tick</b>（§E-21）。
+     * 结算点 = {@link #onDamagePost}：先让原版按默认 10 tick 写一次，再按等级扣。
+     */
+    public static final int WIND_SLASH_IFRAME_STEP = 2;
+    /** 凛冰金建材的持续冰冻伤害冷却键（每 20 tick 一次 = 1 点/秒） */
+    private static final String FROST_CONTACT_KEY = "bettergold_contact_frost_tick";
+    /** 翠风金建材的跳跃 / 漂浮不设冷却（每次 3×3×3 扫描刷新 20 tick 即可） */
+    private static final String WIND_CONTACT_KEY = "bettergold_contact_wind_tick";
+    /**
+     * 「§N-61：风斩每级提升目标 1 点风弹伤害」的额外伤害来源标记。
+     * ⚠ 只用于 A 级读数区分"爆炸本体"与"每级 +1"那一段，不改变伤害类型。
+     */
+    public static final String WIND_BURST_EXTRA_KEY = "bettergold_wind_burst_extra";
+    /** 「蓄力 / 举盾不受减速」的 MOVEMENT_SPEED 条件修饰符 id（运行期单值 ⇒ 同一个 id） */
+    public static final net.minecraft.resources.ResourceLocation WIND_CHARGE_NO_SLOW_ID =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    com.hjmmd_8.bettergold.bettergold.MODID, "wind_charge_no_slow");
+    /** 原版「使用物品」把输入 ×0.2 ⇒ 用 ADD_MULTIPLIED_TOTAL +4.0 还原成 ×1（+4 + 1 = 5）。 */
+    public static final double WIND_CHARGE_NO_SLOW_BONUS = 4.0D;
 
     /**
      * 通用的「同一实体每 {@code cooldown} tick 最多一次」节流（放实体持久数据里，跟着实体生灭）。
@@ -1415,6 +1474,14 @@ public final class MetalEvents {
                     MetalFamily.ECHO_ROAR_TICKS);
             // ★ 1.7 `bg18`（P3）：记下施加者 ⇒ 每秒的 3×3×3 声波结算里排除他（不许噬主）
             markEchoRoarSource(target, attacker);
+        } else if (family.windSlashOnAttack) {
+            // 1.8（bg26）翠风金：近战 / 远程命中都叠 1 级 16 秒风斩（无上限）
+            stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.WIND_SLASH,
+                    WIND_SLASH_TICKS);
+        } else if (family.frostSeepOnAttack) {
+            // 1.8（bg26）凛冰金：近战 / 远程命中都叠 1 级 16 秒渗寒（无上限）
+            stackEffect(target, com.hjmmd_8.bettergold.registry.AllEffects.FROST_SEEP,
+                    FROST_SEEP_TICKS);
         } else if (family.imbalanceOnAttack) {
             // ---------- 1.7 bg-n10r7（轮7）崩乱合金：50% 概率随机挂 16 秒「力量失衡」或「抗性失衡」 ----------
             // 作者原话（立档 §2.10）：「攻击时 50% 概率随机挂 16 秒力量失衡或抗性失衡（近战与远程都可）」。
@@ -1423,6 +1490,91 @@ public final class MetalEvents {
             // 近战 / 弓 / 弩 / 投掷三叉戟 / 盾牌格挡**全部**走这一条派发链（本方法是唯一派发点）。
             com.hjmmd_8.bettergold.material.ImbalanceEffects.applyRandom(target);
         }
+        // ---------- 1.8（bg26）翠风金：疾跑攻击与暴击 ⇒ 对目标释放瞬爆风弹 ----------
+        // 作者 §E-20 最后一句。放在 buff 派发的**末尾**（不是 else-if 分支）：风斩照挂、
+        // 风弹是额外那一下；判据 = 攻击者正在疾跑，或这一下满足原版近战暴击条件。
+        if (family.windSlashOnAttack && (attacker.isSprinting() || isCriticalHit(attacker))) {
+            windBurst(attacker, target);
+        }
+    }
+
+    /**
+     * 原版近战暴击的判定条件（{@code Player#attack} 里那一串的镜像）：
+     * 下落中、不在梯子 / 水里、没有失明、不在骑乘、不在疾跑（疾跑单独判）。
+     */
+    private static boolean isCriticalHit(net.minecraft.world.entity.LivingEntity attacker) {
+        return attacker.fallDistance > 0.0F
+                && !attacker.onGround()
+                && !attacker.onClimbable()
+                && !attacker.isInWater()
+                && !attacker.hasEffect(net.minecraft.world.effect.MobEffects.BLINDNESS)
+                && !attacker.isPassenger();
+    }
+
+    /**
+     * <b>瞬爆风弹</b>（1.8 bg26，翠风金）：在目标位置立刻引爆一发原版风弹。
+     *
+     * <p>为什么不用 {@code WindCharge} 实体：它的 {@code explode(Vec3)} 是 {@code protected}，
+     * 外部无法"立刻引爆"；而 {@code Level#explode} 有公开重载，参数与
+     * {@code WindCharge#explode} 逐字相同（1.2 半径、{@code AbstractWindCharge.EXPLOSION_DAMAGE_CALCULATOR}、
+     * {@code TRIGGER} 交互、大小 GUST 粒子、{@code WIND_CHARGE_BURST} 音效）⇒ 直接用同一个爆炸。
+     * 伤害类型仍是 {@code minecraft:wind_charge}，所以凛冰 / 翠风盔甲的「风弹抗性」都吃得到。</p>
+     *
+     * <p><b>§N-61</b>：爆炸之后，若目标身上有风斩 L 级，再补一发 {@code L} 点
+     * {@code wind_charge} 伤害（0/1/2/3 级 = +0/+1/+2/+3）。补之前把 {@code invulnerableTime} 清零，
+     * 否则会被爆炸本体刚写下的无敌帧吃掉（A 级读数会变成恒 +0）。</p>
+     */
+    private static void windBurst(net.minecraft.world.entity.LivingEntity attacker,
+            net.minecraft.world.entity.LivingEntity target) {
+        if (!(target.level() instanceof net.minecraft.server.level.ServerLevel level)) {
+            return;
+        }
+        var source = level.damageSources().windCharge(attacker, attacker);
+        level.explode(null, source, net.minecraft.world.entity.projectile.windcharge.AbstractWindCharge.EXPLOSION_DAMAGE_CALCULATOR,
+                target.getX(), target.getY() + 0.5D, target.getZ(), 1.2F, false,
+                net.minecraft.world.level.Level.ExplosionInteraction.TRIGGER,
+                net.minecraft.core.particles.ParticleTypes.GUST_EMITTER_SMALL,
+                net.minecraft.core.particles.ParticleTypes.GUST_EMITTER_LARGE,
+                net.minecraft.sounds.SoundEvents.WIND_CHARGE_BURST);
+        int slashLevel = effectLevel(target, com.hjmmd_8.bettergold.registry.AllEffects.WIND_SLASH);
+        if (slashLevel > 0 && target.isAlive()) {
+            // ⚠ 这一发必须**没有攻击者实体**：否则 LivingDamageEvent.Post 会再次走
+            //   dispatchWeaponHit → windBurst，形成递归（A 级实测过：一次攻击打出 4 层风弹）。
+            var extraSource = new net.minecraft.world.damagesource.DamageSource(
+                    level.registryAccess().holderOrThrow(net.minecraft.world.damagesource.DamageTypes.WIND_CHARGE));
+            target.invulnerableTime = 0;
+            target.hurt(extraSource, slashLevel);
+        }
+    }
+
+    /** 目标身上某个效果的等级（1 起；没有 = 0） */
+    private static int effectLevel(net.minecraft.world.entity.LivingEntity entity,
+            net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect) {
+        var instance = entity.getEffect(effect);
+        return instance == null ? 0 : instance.getAmplifier() + 1;
+    }
+
+    /**
+     * 渗寒每秒结算（1.8 bg26，凛冰金）：
+     * {@code 伤害 = 等级 × (1 + 0.06 × S × 等级)}，S = 其它负面状态的等级和。
+     * 唯一实现，{@code AllEffects.FROST_SEEP} 只负责每秒调一次。
+     */
+    public static void frostSeepTick(net.minecraft.world.entity.LivingEntity entity, int amplifier) {
+        if (entity.level().isClientSide() || !entity.isAlive()) {
+            return;
+        }
+        int level = amplifier + 1;
+        int otherLevels = 0;
+        for (var instance : entity.getActiveEffects()) {
+            if (instance.getEffect().value() == com.hjmmd_8.bettergold.registry.AllEffects.FROST_SEEP.get()) {
+                continue;
+            }
+            if (instance.getEffect().value().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL) {
+                otherLevels += instance.getAmplifier() + 1;
+            }
+        }
+        float multiplier = 1.0F + 0.06F * otherLevels * level;
+        entity.hurt(entity.damageSources().freeze(), level * multiplier);
     }
 
     /** 反查「这个物品属于哪一族、且它是该族的武器」；不是则返回 {@code null} */
@@ -1917,8 +2069,36 @@ public final class MetalEvents {
         return source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE);
     }
 
-    private static boolean isMagic(net.minecraft.world.damagesource.DamageSource source) {
-        return source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
+    /** 风弹伤害（1.8 bg26）：{@code minecraft:wind_charge}（风弹爆炸 / 瞬爆风弹同源） */
+    private static boolean isWindCharge(net.minecraft.world.damagesource.DamageSource source) {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.WIND_CHARGE);
+    }
+
+    /** 冰冻伤害（1.8 bg26）：{@code minecraft:freeze}（渗寒 / 凛冰金建材 / 细雪） */
+    private static boolean isFreeze(net.minecraft.world.damagesource.DamageSource source) {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.FREEZE);
+    }
+
+    /** 冰 / 浮冰 / 蓝冰（1.8 bg26 寒烁冰晶的三种来源方块） */
+    private static boolean isIceBlock(net.minecraft.world.level.block.state.BlockState state) {
+        return state.is(net.minecraft.world.level.block.Blocks.ICE)
+                || state.is(net.minecraft.world.level.block.Blocks.PACKED_ICE)
+                || state.is(net.minecraft.world.level.block.Blocks.BLUE_ICE);
+    }
+
+    /**
+     * 「物理伤害」判据（1.8 bg26 清风玉珠：<b>非</b>物理才掉）。
+     * 物理 = 玩家 / 生物近战 + 任何投射物（箭 / 三叉戟 / 火球 …）；其余（魔法 / 火 / 爆炸 /
+     * 冰冻 / 声波 / 摔落 …）都算非物理。口径写在 §Z，作者一句话可改。
+     */
+    private static boolean isPhysicalDamage(net.minecraft.world.damagesource.DamageSource source) {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.PLAYER_ATTACK)
+                || source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK)
+                || source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK_NO_AGGRO)
+                || source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE);
+    }
+
+    private static boolean isMagic(net.minecraft.world.damagesource.DamageSource source) {        return source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
                 || source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC)
                 // ★ 1.7 大轮第 A3 条：巫毒爆发改用自带类型 bettergold:voodoo_burst，
                 //   它必须仍然算「魔法伤害」—— 否则巫毒金盔甲的「每件 25% 魔法伤害减免」会在
@@ -1969,7 +2149,10 @@ public final class MetalEvents {
                     // 1.7 bg19 R2：树棘金盔甲**每件 25% 甜浆果丛伤害减免**（全套 100%）。
                     // ⚠ 与上面 cactusResist **并列**：`sweet_berry_bush` 与 `cactus` 是两个伤害类型，
                     //   两个分支各自判类型 ⇒ 同一次伤害只会命中其中一个，不会叠成 50%/件。
-                    || (family.berryResist && isSweetBerryBush(event.getSource()));
+                    || (family.berryResist && isSweetBerryBush(event.getSource()))
+                    // 1.8（bg26）：翠风金盔甲 25%/件 风弹抗性（四件 100%）；凛冰金盔甲 25%/件 冰冻抗性
+                    || (family.windArmor && isWindCharge(event.getSource()))
+                    || (family.frostArmor && isFreeze(event.getSource()));
             if (applies) {
                 event.setNewDamage(event.getNewDamage() * (1.0F - Math.min(pieces, 4) * 0.25F));
             }
@@ -2204,7 +2387,9 @@ public final class MetalEvents {
                 // 1.6（bg-16）：树棘金 / 幽咆金盔甲也是「每件 25%、四件 100%」那一档
                 || family.parasiteReflect || family.echoRoarReflect
                 // 1.7（bg-n10r7）：崩乱合金盔甲 —— 每件 10%（配置项 chaosalloyArmorBuffChance）、四件 40%
-                || family.imbalanceReflect;
+                || family.imbalanceReflect
+                // 1.8（bg26）：翠风金 / 凛冰金盔甲 —— 每件 25%（配置项默认 0.25）、四件 100%
+                || family.windSlashReflect || family.frostSeepReflect;
     }
 
     /**
@@ -2262,7 +2447,28 @@ public final class MetalEvents {
                 // 1.7（bg-n10r7）崩乱合金盔甲：每件 10%（配置项）、四件 40% ⇒ 给攻击者随机挂一个失衡
                 //（50/50 选「力量失衡 / 抗性失衡」，与器具命中同一个入口 ImbalanceEffects#applyRandom）
                 com.hjmmd_8.bettergold.material.ImbalanceEffects.applyRandom(attacker);
+            } else if (family.windSlashReflect) {
+                // 1.8（bg26）翠风金盔甲：每件 25%（配置项）、四件 100% ⇒ 给攻击者叠 1 级 16 秒风斩
+                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.WIND_SLASH,
+                        WIND_SLASH_TICKS);
+            } else if (family.frostSeepReflect) {
+                // 1.8（bg26）凛冰金盔甲：每件 25%、四件 100% ⇒ 给攻击者叠 1 级 16 秒渗寒
+                stackEffect(attacker, com.hjmmd_8.bettergold.registry.AllEffects.FROST_SEEP,
+                        FROST_SEEP_TICKS);
             }
+        }
+        // ---------- 1.8（bg26）：翠风金盔甲的「+10%/件 受伤无敌帧」----------
+        // 作者 §E-22：每件 +10%、全套 +40%。原版刚在 hurt 里把 invulnerableTime 写成 10，
+        // 这里按件数等比放大（四件 10 → 14）。⛔ 只对**穿戴者**、只在真受到伤害后。
+        int windPieces = wornPieces(wearer, AllMetals.WINDGOLD);
+        if (windPieces > 0) {
+            wearer.invulnerableTime = Math.round(wearer.invulnerableTime * (1.0F + 0.10F * Math.min(windPieces, 4)));
+        }
+        // ---------- 1.8（bg26）：风斩每级「目标受伤无敌帧 −0.1 秒」----------
+        // 放在盔甲加成之后（两者都作用在同一个 invulnerableTime 上，互不覆盖）。
+        int slashLevel = effectLevel(wearer, com.hjmmd_8.bettergold.registry.AllEffects.WIND_SLASH);
+        if (slashLevel > 0) {
+            wearer.invulnerableTime = Math.max(0, wearer.invulnerableTime - WIND_SLASH_IFRAME_STEP * slashLevel);
         }
         // 结雷金：每件 25% 几率清除自身一次虚弱与颤栗
         int thunderPieces = wornPieces(wearer, MetalFamily.byId(THUNDER_ID));
@@ -2329,6 +2535,113 @@ public final class MetalEvents {
         //      而不是"把效果本身删掉"（那样 1~3 件时一点减伤都看不见）。
     }
 
+    // ==================== 1.8（bg26）：翠风金「蓄力 / 举盾不受减速」 ====================
+
+    /**
+     * 作者 §E-20：弓 / 弩 / 三叉戟<b>蓄力时不受减速</b>；盾牌<b>举盾不受减速</b>。
+     *
+     * <p>原版减速点在 {@code LivingEntity#aiStep}：{@code isUsingItem()} 时
+     * {@code xxa *= 0.2F; zza *= 0.2F}。它不是属性、没有事件 ⇒ 用属性反补：
+     * 蓄力 / 举盾期间给 {@code MOVEMENT_SPEED} 挂 {@code ADD_MULTIPLIED_TOTAL +4.0}
+     * （总值 ×5），0.2 × 5 = 1，端到端正好抵消；松手立刻摘掉。
+     * 只有**翠风金**的弓 / 弩 / 三叉戟 / 盾牌会命中，其余族与原版物品一个字节不动。</p>
+     */
+    @SubscribeEvent
+    public static void onWindChargeNoSlow(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
+        var player = event.getEntity();
+        if (player.level().isClientSide()) {
+            return;
+        }
+        boolean holdingWindCharge = player.isUsingItem()
+                && MetalFamily.of(player.getUseItem()) == AllMetals.WINDGOLD
+                && (player.getUseItem().getItem() instanceof net.minecraft.world.item.BowItem
+                        || player.getUseItem().getItem() instanceof net.minecraft.world.item.CrossbowItem
+                        || player.getUseItem().getItem() instanceof net.minecraft.world.item.TridentItem);
+        boolean blockingWindShield = player.isBlocking()
+                && !heldShield(player).isEmpty()
+                && MetalFamily.of(heldShield(player)) == AllMetals.WINDGOLD;
+        var attribute = player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        if (attribute == null) {
+            return;
+        }
+        boolean wanted = holdingWindCharge || blockingWindShield;
+        boolean present = attribute.getModifier(WIND_CHARGE_NO_SLOW_ID) != null;
+        if (wanted && !present) {
+            attribute.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                    WIND_CHARGE_NO_SLOW_ID, WIND_CHARGE_NO_SLOW_BONUS,
+                    net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        } else if (!wanted && present) {
+            attribute.removeModifier(WIND_CHARGE_NO_SLOW_ID);
+        }
+    }
+
+    // ==================== 1.8（bg26）：冰霜行者「规格」（非附魔） ====================
+
+    /**
+     * <b>凛冰金的「冰霜行者规格」</b>（作者 §F-25 / §F-27：<b>不是自带附魔</b>）。
+     *
+     * <p>等级 = <b>穿戴的凛冰金盔甲件数 + 手持凛冰金盾牌 1 级</b>（最多 5），与<b>真附魔取 max</b>
+     * （不叠加）。1.21.1 原版没有 {@code FrostWalkerEnchantment#onEntityMoved} —— 原版走的是
+     * 数据驱动的 {@code replace_disk} 效果；这里按同一语义自己实现：</p>
+     * <ol>
+     *   <li>只在 {@code onGround()} 时生效；</li>
+     *   <li>半径 = {@code min(16, 2 + 等级)}，只处理**水源方块**（{@code WATER} 且 {@code isSource()}）；</li>
+     *   <li>上方必须是空气；</li>
+     *   <li>替换成 {@code FROSTED_ICE} 并按原版排 60..120 tick 的融化 tick。</li>
+     * </ol>
+     *
+     * <p>⚠ 与真附魔取 max 的读数在 A 级探针里；本方法<b>不注册任何附魔</b>，
+     * 也不进 {@code #minecraft:enchantable/*} 之外任何附魔路径（关卡负向断言）。</p>
+     */
+    @SubscribeEvent
+    public static void onFrostWalkerSpecTick(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
+        var player = event.getEntity();
+        if (player.level().isClientSide() || !player.onGround()) {
+            return;
+        }
+        int pieces = wornPieces(player, AllMetals.FROSTGOLD);
+        var shield = heldShield(player);
+        boolean shieldHeld = !shield.isEmpty() && MetalFamily.of(shield) == AllMetals.FROSTGOLD;
+        int specLevel = Math.min(5, pieces + (shieldHeld ? 1 : 0));
+        if (specLevel <= 0) {
+            return;
+        }
+        int enchantLevel = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET)
+                .getEnchantmentLevel(player.level().registryAccess().holderOrThrow(
+                        net.minecraft.world.item.enchantment.Enchantments.FROST_WALKER));
+        int level = Math.max(specLevel, enchantLevel);
+        if (level <= 0) {
+            return;
+        }
+        freezeAround(player, level);
+    }
+
+    /** 照原版 {@code replace_disk}（frost_walker）的语义冻结脚下的水源。 */
+    private static void freezeAround(net.minecraft.world.entity.player.Player player, int level) {
+        var levelObj = player.level();
+        int radius = Math.min(16, 2 + level);
+        var center = player.blockPosition();
+        var frozen = net.minecraft.world.level.block.Blocks.FROSTED_ICE.defaultBlockState();
+        for (var pos : net.minecraft.core.BlockPos.betweenClosed(
+                center.offset(-radius, -1, -radius), center.offset(radius, -1, radius))) {
+            if (pos.distToCenterSqr(player.getX(), pos.getY() + 0.5D, player.getZ()) >= (double) (radius * radius)) {
+                continue;
+            }
+            var below = levelObj.getBlockState(pos);
+            if (!below.is(net.minecraft.world.level.block.Blocks.WATER) || !below.getFluidState().isSource()) {
+                continue;
+            }
+            if (!levelObj.getBlockState(pos.above()).isAir()) {
+                continue;
+            }
+            levelObj.setBlockAndUpdate(pos, frozen);
+            levelObj.scheduleTick(pos, net.minecraft.world.level.block.Blocks.FROSTED_ICE,
+                    net.minecraft.util.Mth.nextInt(levelObj.getRandom(), 60, 120));
+        }
+    }
+
+
+
     // ==================== 烈燃金器具：挖掘自动熔炼 ====================
 
     /**
@@ -2364,6 +2677,27 @@ public final class MetalEvents {
      */
     @SubscribeEvent
     public static void onBlockDrops(net.neoforged.neoforge.event.level.BlockDropsEvent event) {
+        // ---------- 1.8（bg26）凛冰金核心材料：贵金属器具挖冰 6%，受时运 ----------
+        // 作者 §F-23：「贵金属器具挖掘 冰 / 浮冰 / 蓝冰 有 6%，受时运提升」。
+        // 「贵金属器具」= MetalFamily#isTool（剑斧镐锹锄 + 刀；不含五类武器 / 盔甲）。
+        if (event.getLevel() instanceof net.minecraft.server.level.ServerLevel iceLevel) {
+            var tool = event.getTool();
+            MetalFamily toolFamily = MetalFamily.of(tool);
+            if (toolFamily != null && toolFamily.isTool(tool.getItem()) && isIceBlock(event.getState())) {
+                int fortune = tool.getEnchantmentLevel(iceLevel.registryAccess()
+                        .holderOrThrow(net.minecraft.world.item.enchantment.Enchantments.FORTUNE));
+                float chance = Math.min(1.0F, 0.06F * (1 + fortune));
+                if (iceLevel.getRandom().nextFloat() < chance) {
+                    var drop = new net.minecraft.world.entity.item.ItemEntity(iceLevel,
+                            event.getPos().getX() + 0.5D, event.getPos().getY() + 0.5D,
+                            event.getPos().getZ() + 0.5D,
+                            new net.minecraft.world.item.ItemStack(
+                                    com.hjmmd_8.bettergold.material.MetalSpecialItems.FROST_SHIMMER_CRYSTAL.get()));
+                    drop.setDefaultPickUpDelay();
+                    event.getDrops().add(drop);
+                }
+            }
+        }
         var family = MetalFamily.of(event.getTool());
         if (family == null || !family.autoSmelt || !(event.getLevel() instanceof net.minecraft.server.level.ServerLevel level)) {
             return;
@@ -2436,6 +2770,22 @@ public final class MetalEvents {
         var entity = event.getEntity();
         if (entity.level().isClientSide()) {
             return;
+        }
+
+        // ---------- 1.8（bg26）翠风金核心材料：旋风人**非物理伤害**死亡 66% 掉清风玉珠 ----------
+        // 作者 §E-18：「旋风人在非物理伤害下死亡有 66% 掉落」。
+        // ⚠ 物理伤害（近战 / 投射物）**不掉** —— A 级有负向用例。
+        // 加进 event.getDrops()（而不是 addFreshEntity）：这份列表由原版在同一次
+        // dropAllDeathLoot 里同步生成 ItemEntity，A 级可以在事件里直接数到。
+        if (entity instanceof net.minecraft.world.entity.monster.Vex
+                && entity.level() instanceof net.minecraft.server.level.ServerLevel vexLevel
+                && !isPhysicalDamage(event.getSource())
+                && entity.getRandom().nextFloat() < 0.66F) {
+            var pearl = new net.minecraft.world.entity.item.ItemEntity(vexLevel,
+                    entity.getX(), entity.getY() + 0.5D, entity.getZ(),
+                    new net.minecraft.world.item.ItemStack(MetalSpecialItems.CLEAR_WIND_PEARL.get()));
+            pearl.setDefaultPickUpDelay();
+            event.getDrops().add(pearl);
         }
 
         // ---------- bg-fix 第 5 条（2026-10-05）：万坚金武器工具**击杀**「骷髅类」⇒ 80% 掉一份金骨粉 ----------

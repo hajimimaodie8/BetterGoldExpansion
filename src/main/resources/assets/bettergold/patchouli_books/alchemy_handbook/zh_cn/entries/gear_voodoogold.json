@@ -2,7 +2,7 @@
   "name": "bettergold.handbook.entry.gear_voodoogold",
   "category": "bettergold:gear_upgrade",
   "icon": "bettergold:voodoogold_sword",
-  "sortnum": 6,
+  "sortnum": 8,
   "read_by_default": true,
   "pages": [
     {

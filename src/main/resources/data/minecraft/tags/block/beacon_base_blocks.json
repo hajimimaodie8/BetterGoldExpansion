@@ -30,6 +30,12 @@
     "bettergold:chaosgold_block",
     "bettergold:chaosgold_bricks",
     "bettergold:chaosgold_pillar",
-    "bettergold:chaosalloy_block"
+    "bettergold:chaosalloy_block",
+    "bettergold:windgold_block",
+    "bettergold:windgold_bricks",
+    "bettergold:windgold_pillar",
+    "bettergold:frostgold_block",
+    "bettergold:frostgold_bricks",
+    "bettergold:frostgold_pillar"
   ]
 }

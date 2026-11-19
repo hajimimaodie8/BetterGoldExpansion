@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "bettergold:block/frostgold_bricks",
+    "top": "bettergold:block/frostgold_bricks",
+    "side": "bettergold:block/frostgold_bricks"
+  }
+}

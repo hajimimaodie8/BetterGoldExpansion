@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "bettergold:windgold_knife",
+      "required": false
+    }
+  ]
+}

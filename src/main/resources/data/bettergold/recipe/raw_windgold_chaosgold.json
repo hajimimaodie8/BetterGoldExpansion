@@ -1,0 +1,8 @@
+{
+  "type": "bettergold:raw_sturdygold",
+  "exchange": "bettergold:clear_wind_pearl",
+  "result": "bettergold:raw_windgold",
+  "catalyst": "bettergold:refined_alchemic_oil",
+  "count": 2,
+  "chaos_block": true
+}

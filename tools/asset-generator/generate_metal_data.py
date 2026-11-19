@@ -48,6 +48,9 @@ METALS = {
     #      实测由 `validate_metal_data.py` 的"全部物品都要有语言键 / 不许有死键"两段抓出来）。
     "chaosgold":     {"cn": "混沌金", "en": "Chaosgold",   "special_cn": "混沌金币",     "special_en": "Chaos Coin",          "special_id": "chaos_coin"},
     "chaosalloy":    {"cn": "崩乱合金", "en": "Chaosalloy", "forbidden_fruit": True},
+    # 1.8（bg26）：翠风金 / 凛冰金。核心材料 = 清风玉珠 / 寒烁冰晶（均为掉落物）。
+    "windgold":      {"cn": "翠风金", "en": "Windgold",  "special_cn": "清风玉珠", "special_en": "Clear Wind Pearl", "special_id": "clear_wind_pearl"},
+    "frostgold":     {"cn": "凛冰金", "en": "Frostgold", "special_cn": "寒烁冰晶", "special_en": "Frost Shimmer Crystal", "special_id": "frost_shimmer_crystal"},
 }
 
 # 物品 id 后缀 -> (中文模板, 英文模板)
@@ -95,6 +98,9 @@ EFFECT_NAMES = {
     # 1.7（bg-n10r7 轮7）：崩乱合金的两个新状态（无等级 ⇒ 名字里不许出现 %s）
     "power_imbalance": ("力量失衡", "Power Imbalance"),
     "resistance_imbalance": ("抗性失衡", "Resistance Imbalance"),
+    # 1.8（bg26）：翠风金 / 凛冰金的专属 buff
+    "wind_slash": ("风斩", "Wind Slash"),
+    "frost_seep": ("渗寒", "Frost Seep"),
 }
 
 

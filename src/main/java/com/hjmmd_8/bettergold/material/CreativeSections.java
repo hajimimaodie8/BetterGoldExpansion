@@ -35,8 +35,10 @@ public final class CreativeSections {
     public static final List<String> METAL_ORDER = List.of(
             "flamegold",      // 烈燃金
             "sturdygold",     // 万坚金
+            "windgold",       // 翠风金（1.8 §E：作者指定在万坚金与树棘金之间）
             "thornsgold",     // 树棘金（1.6 新增，作者裁定：在万坚金与靛海金之间、树棘金在前）
             "echogold",       // 幽咆金（1.6 新增）
+            "frostgold",      // 凛冰金（1.8 §F：作者指定在幽咆金与靛海金之间）
             "indigoseagold",  // 靛海金（1.5，作者指定：在万坚金与巫毒金之间）
             "voodoogold",     // 巫毒金
             "thundergold",    // 结雷金
