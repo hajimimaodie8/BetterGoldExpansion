@@ -1,0 +1,17 @@
+源(zip内)	目标(仓内)	字节数	SHA256
+转化之戒/烈火转化之戒.png	src/main/resources/assets/bettergold/textures/item/flamegold_ring.png	514	aa4972b19f3304529f06c838a5347c1176d8b1d5d5a9aa962394b50c38495a21
+转化之戒/点金转化之戒.png	src/main/resources/assets/bettergold/textures/item/sturdygold_ring.png	535	bfc0ae2392a115777f61091df01842c8f5df403c4b6806150f0f1154c9567368
+转化之戒/风起转化之戒.png	src/main/resources/assets/bettergold/textures/item/windgold_ring.png	570	8ecd670cdc8cd2c26157c8cfa588dfe2018df0c9f942867655254f8e91118120
+转化之戒/木棘转化之戒.png	src/main/resources/assets/bettergold/textures/item/thornsgold_ring.png	529	e054de3d26e7d9ae3104ce9419573ffeac41c4d9e69151bbdce4bc4e792db958
+转化之戒/幽爆转化之戒.png	src/main/resources/assets/bettergold/textures/item/echogold_ring.png	539	0e696c005af97f5972af91f38e30210bea8a7a265fb126669ac564c71d3f5e71
+转化之戒/冰霜转化之戒.png	src/main/resources/assets/bettergold/textures/item/frostgold_ring.png	547	a44c4d53970a249eaa30993c83d20c09b25682ef261bb1099a7d1a732b6319c1
+转化之戒/水压转化之戒.png	src/main/resources/assets/bettergold/textures/item/indigoseagold_ring.png	541	ff4b2997eced85cad7d8b9c29e0d00519eaebbc96de5ef1253e07b5890efc933
+转化之戒/毒腺转化之戒.png	src/main/resources/assets/bettergold/textures/item/voodoogold_ring.png	537	7ff067436870e3dc76b20dd9cd22854766e466817ad6cdd6ae8007c46c7a41e7
+转化之戒/雷波转化之戒.png	src/main/resources/assets/bettergold/textures/item/thundergold_ring.png	554	caae1fd5c33e5e5d7ae915ad153d58e5657b7c22f699cc0814b5a082b919e89f
+转化之戒/幻奏转化之戒.png	src/main/resources/assets/bettergold/textures/item/illusiongold_ring.png	536	c2326f39a25171c5cf33b9baaf1aab53d17cd4e0cd14560d295fdebfbc5031b6
+转化之戒/混源稳定之戒.png	src/main/resources/assets/bettergold/textures/item/chaosgold_ring.png	510	1c247add476f5f09e343eff5e3d7578620040dbe15f786eb007af6b7df30e96b
+转化之戒/分崩离析之戒.png	src/main/resources/assets/bettergold/textures/item/chaosalloy_ring.png	512	3c37725a1ce9e24c6b774042b10c70d2b5bd76b6da8f767c753c1fd83bbabee0
+转化之戒/转化之戒胚底.png	src/main/resources/assets/bettergold/textures/item/ring_blank.png	561	3646eaaccb8e0dc231e35e0fdc11431565ac129b08b9e7325ee4348548fc1b4c
+转化之戒/安抚二式.png	src/main/resources/assets/bettergold/textures/mob_effect/soothe_ii.png	561	021f6fd6aa93ad1b07f43c03aebc349ae44c4bec5170c2fbe17abd8cf5e3c349
+转化之戒/安抚二式(冷却中).png	src/main/resources/assets/bettergold/textures/mob_effect/soothe_ii_cooldown.png	490	a0280034c99773890ded3465caf95aa494552a0937801ddbc869283bcf723eac
+转化之戒/雷波转化之戒和新版结雷金建筑方块音效.mp3	src/main/resources/assets/bettergold/sounds/thunder_ring.ogg	476861 -> 10597	66f72b7dc00f131a5da40a42ccfb83d030019f43d141acba8974dc13edc9bf25

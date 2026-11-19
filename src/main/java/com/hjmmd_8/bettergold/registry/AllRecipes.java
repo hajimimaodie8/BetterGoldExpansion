@@ -77,6 +77,17 @@ public class AllRecipes {
             RECIPE_SERIALIZERS.register("golden_honey_cookie",
                     () -> new SimpleCraftingRecipeSerializer<>(GoldenHoneyCookieRecipe::new));
 
+    /**
+     * 1.8 阶段 3 段 C：<b>转化之戒的「合成表内转化」</b>（点金 / 冰霜 / 水压，见
+     * {@link com.hjmmd_8.bettergold.recipe.RingConversionRecipe}）。
+     *
+     * <p>⚠ 它<b>不是</b> {@code SimpleCraftingRecipeSerializer}：那套只序列化 category，
+     * 6 条数据驱动的配方会在客户端被重建成"第一条" ⇒ 自带完整 codec（见那个类的注释）。</p>
+     */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<com.hjmmd_8.bettergold.recipe.RingConversionRecipe>> RING_CONVERSION =
+            RECIPE_SERIALIZERS.register("ring_conversion",
+                    com.hjmmd_8.bettergold.recipe.RingConversionRecipe.Serializer::new);
+
     private AllRecipes() {
     }
 }

@@ -1,0 +1,80 @@
+﻿SETUP level=world forced=1 curios=false zombie=true
+READ zombie_alive=true offhand=0 minecraft:air
+PASS ring_registered_flamegold :: id=bettergold:flamegold_ring maxDamage=0（期望 0）
+PASS ring_registered_sturdygold :: id=bettergold:sturdygold_ring maxDamage=0（期望 0）
+PASS ring_registered_windgold :: id=bettergold:windgold_ring maxDamage=0（期望 0）
+PASS ring_registered_thornsgold :: id=bettergold:thornsgold_ring maxDamage=0（期望 0）
+PASS ring_registered_echogold :: id=bettergold:echogold_ring maxDamage=0（期望 0）
+PASS ring_registered_frostgold :: id=bettergold:frostgold_ring maxDamage=0（期望 0）
+PASS ring_registered_indigoseagold :: id=bettergold:indigoseagold_ring maxDamage=0（期望 0）
+PASS ring_registered_voodoogold :: id=bettergold:voodoogold_ring maxDamage=0（期望 0）
+PASS ring_registered_thundergold :: id=bettergold:thundergold_ring maxDamage=0（期望 0）
+PASS ring_registered_illusiongold :: id=bettergold:illusiongold_ring maxDamage=0（期望 0）
+PASS ring_registered_chaosgold :: id=bettergold:chaosgold_ring maxDamage=64（期望 64）
+PASS ring_registered_chaosalloy :: id=bettergold:chaosalloy_ring maxDamage=0（期望 0）
+PASS ring_blank_registered :: ring_blank 已注册且 maxDamage=0（纯合成材料）
+PASS mode_toggle_flamegold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_sturdygold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_windgold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_thornsgold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_echogold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_frostgold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_indigoseagold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_voodoogold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_toggle_thundergold :: 切一次 ⇒ 组件=true 全伤害=true
+PASS mode_none_illusiongold :: 幻奏/混源/分崩 不参与模式：组件存在=false
+PASS mode_none_chaosgold :: 幻奏/混源/分崩 不参与模式：组件存在=false
+PASS mode_none_chaosalloy :: 幻奏/混源/分崩 不参与模式：组件存在=false
+PASS convert_flamegold :: 真打僵尸 ⇒ 落地类型=minecraft:on_fire（期望 minecraft:on_fire）
+PASS convert_sturdygold :: 真打僵尸 ⇒ 落地类型=minecraft:generic（期望 minecraft:generic）
+PASS convert_windgold :: 真打僵尸 ⇒ 落地类型=minecraft:wind_charge（期望 minecraft:wind_charge）
+PASS convert_thornsgold :: 真打僵尸 ⇒ 落地类型=minecraft:cactus（期望 minecraft:cactus）
+PASS convert_echogold :: 真打僵尸 ⇒ 落地类型=minecraft:sonic_boom（期望 minecraft:sonic_boom）
+PASS convert_frostgold :: 真打僵尸 ⇒ 落地类型=minecraft:freeze（期望 minecraft:freeze）
+PASS convert_indigoseagold :: 真打僵尸 ⇒ 落地类型=minecraft:in_wall（期望 minecraft:in_wall）
+PASS convert_voodoogold :: 真打僵尸 ⇒ 落地类型=minecraft:magic（期望 minecraft:magic）
+PASS convert_thundergold :: 真打僵尸 ⇒ 落地类型=minecraft:lightning_bolt（期望 minecraft:lightning_bolt）
+PASS convert_none_illusiongold :: 不转化 ⇒ 落地类型=minecraft:player_attack
+PASS convert_none_chaosgold :: 不转化 ⇒ 落地类型=minecraft:player_attack
+PASS convert_none_chaosalloy :: 不转化 ⇒ 落地类型=minecraft:player_attack
+PASS recursion_same_type :: 源类型 == 目标类型 ⇒ Pre 次数=1 类型=minecraft:on_fire
+PASS recursion_no_stack_overflow :: 5 次攻击每次 Pre 次数最大=1 全为火焰=true
+PASS special_flame_campfire :: 熄灭的篝火被点燃=true
+PASS special_flame_candle :: 熄灭的蜡烛被点燃=true
+PASS special_flame_fire :: 木板上方生出火=true
+PASS special_flame_tnt :: TNT 被引爆并消失=true
+PASS special_flame_creeper :: 苦力怕被点燃（isIgnited=true）
+PASS special_wind :: 瞬爆风弹返回 true=true
+PASS special_pressure_cauldron :: 空炼药锅被灌满=true
+PASS special_pressure_mud :: 泥土 → 泥巴=true
+PASS special_pressure_farmland :: 耕地被润湿=true
+PASS special_pressure_extinguish :: 篝火被熄灭=true
+PASS special_pressure_water_placed :: 放下水源=true
+PASS special_echo_shrieker :: 尖啸体 SHRIEKING=true（落地类型 minecraft:sonic_boom）
+PASS special_thunder_redstone :: 3×3×3 红石块 = 26（期望 26）
+PASS special_thunder_restore :: 摘下后残留红石块 = 0
+PASS special_pressure_water_dried :: 20 tick 后水源已撤（干竭）
+PASS special_frost_ring_level1 :: 戴冰霜之戒（无甲无盾）冻结块数 = 25
+PASS special_frost_ring_negative :: 不戴戒指冻结块数 = 0
+PASS special_phantom_soothe_ii :: 安抚二式=effect.bettergold.soothe_ii, Duration: 3600（期望 3600 tick）
+PASS special_phantom_no_ai :: 安抚二式生效时目标 NoAI=true
+PASS soothe_ii_swap_cooldown :: 受伤后 安抚二式=null / 冷却中=effect.bettergold.soothe_ii_cooldown, Duration: 3600（原剩余 3600）
+PASS soothe_ii_blocked :: 冷却中存在时再挂安抚二式被挡=true
+PASS special_gild_ore_drop :: 挖铜矿 ⇒ 粗铜=0 粗金=5 其它(万坚金掉金)=1
+PASS special_gild_sturdy_bonus :: 万坚金镐每挖一次额外掉金 = 1 件
+PASS recipe_ring_gild_raw_copper :: result=1 minecraft:raw_gold 戒指退回=true 输入退回=0 minecraft:air
+PASS recipe_ring_gild_raw_iron :: result=1 minecraft:raw_gold 戒指退回=true 输入退回=0 minecraft:air
+PASS recipe_ring_gild_gold_nugget :: result=1 minecraft:raw_gold 戒指退回=true 输入退回=0 minecraft:air
+PASS recipe_ring_frost_water_bucket :: result=1 minecraft:ice 戒指退回=true 输入退回=1 minecraft:bucket
+PASS recipe_ring_pressure_bucket :: result=1 minecraft:water_bucket 戒指退回=true 输入退回=0 minecraft:air
+PASS recipe_ring_pressure_glass_bottle :: result=1 minecraft:potion 戒指退回=true 输入退回=0 minecraft:air
+PASS chaos_stable_durability :: 耐久 0 → 1（期望 +1）/ 上限 64
+PASS chaosalloy_dual_imbalance :: 力量失衡=effect.bettergold.power_imbalance, Duration: 320 抗性失衡=effect.bettergold.resistance_imbalance, Duration: 320
+PASS chaosalloy_no_durability :: 分崩离析之戒 maxDamage=0
+PASS bonus_per_hit :: 层数 0 → 1 → 2
+PASS bonus_attribute :: ATTACK_DAMAGE 修饰符 0.0 → 1.0 → 2.0
+READ curios_loaded=false
+PASS curios_absent_rings_registered :: 没装 Curios：12 枚戒指仍全部注册=true
+PASS curios_absent_empty :: 没装 Curios：戒指栏恒空=[]
+PASS curios_absent_offhand_works :: 副手路径不依赖 Curios（见 ③ 的 12 条转化）
+SUMMARY passes=76 fails=0

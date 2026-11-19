@@ -232,6 +232,39 @@ public class AllEffects {
             });
 
     /**
+     * 安抚二式（1.8 阶段 3 段 C，§I-40）：<b>功能同安抚</b>（目标暂时失去 AI，原状态由
+     * {@link com.hjmmd_8.bettergold.material.SootheState} 保存 / 还原），区别只有两条：
+     * <ul>
+     *   <li>带着它受到<b>任何伤害</b> ⇒ 换成<b>同剩余时长的「安抚二式（冷却中）」</b>；</li>
+     *   <li>「冷却中」存在时<b>无法再挂安抚二式</b>（{@code RingEvents#applySootheII} 早退）。</li>
+     * </ul>
+     *
+     * <p>⚠ 分类取 <b>BENEFICIAL</b>：作者原话把「安抚二式（冷却中）」称作<b>正面状态</b>
+     * （§I-40「该正面状态存在时无法再挂安抚二式」）⇒ 两枚同色系按正面登记；
+     * <b>功能</b>（setNoAi + 还原）与 HARMFUL 的 {@link #SOOTHE} 完全同源（同一个 {@code SootheState}）。</p>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> SOOTHE_II =
+            EFFECTS.register("soothe_ii", () -> new BetterGoldMobEffect(MobEffectCategory.BENEFICIAL, 0xD9B8F0) {
+                @Override
+                public void onEffectStarted(LivingEntity entity, int amplifier) {
+                    com.hjmmd_8.bettergold.material.SootheState.begin(entity);
+                }
+            });
+
+    /**
+     * 安抚二式（冷却中）：安抚二式被伤害打断后的<b>剩余时长</b>占位状态。
+     *
+     * <p>它本身不做任何事（没有 tick、没有属性），唯一作用是**挡住再挂安抚二式** —— 判据只有一处：
+     * {@code RingEvents#applySootheII} 的 {@code hasEffect(SOOTHE_II_COOLDOWN)} 早退。</p>
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> SOOTHE_II_COOLDOWN =
+            EFFECTS.register("soothe_ii_cooldown", () -> new BetterGoldMobEffect(MobEffectCategory.BENEFICIAL, 0x8A8A9A) {
+                // ⚠ BetterGoldMobEffect 是 abstract（牛奶免疫的唯一落点）
+                // ⇒ 每个注册点都必须给出一个**具体子类**（匿名类即可，继承父类已实现的
+                // fillEffectCures；本效果不需要额外行为，所以方法体是空的）。
+            });
+
+    /**
      * 寄生（parasite，1.6 树棘金）：目标持续受到「仙人掌同款」伤害。
      *
      * <ul>

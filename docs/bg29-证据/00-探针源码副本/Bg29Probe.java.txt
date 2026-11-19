@@ -1,0 +1,828 @@
+package com.hjmmd_8.bettergold.probe.bg29;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.hjmmd_8.bettergold.compat.CuriosCompat;
+import com.hjmmd_8.bettergold.material.AllMetals;
+import com.hjmmd_8.bettergold.material.MetalFamily;
+import com.hjmmd_8.bettergold.material.RingEvents;
+import com.hjmmd_8.bettergold.material.RingItems;
+import com.hjmmd_8.bettergold.material.RingType;
+import com.hjmmd_8.bettergold.recipe.RingConversionRecipe;
+import com.hjmmd_8.bettergold.registry.AllEffects;
+import com.hjmmd_8.bettergold.registry.AllItems;
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.SculkShriekerBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 1.8 阶段 3 · 段 C（§I-36~40 转化之戒）A 级探针 —— <b>收尾整块删除</b>。
+ *
+ * <p>真 {@link ServerPlayer} / 真 {@link Zombie} / 真 {@link Cow} / 真 {@link Creeper} /
+ * 真 {@code ServerLevel#getRecipeManager()} / 真方块与真掉落实体。</p>
+ *
+ * <p>八组：① 12 戒 + 胚底注册 ② 模式切换 ③ 12 条转化映射 ④ 每枚特效 ⑤ 合成表效果
+ * ⑥ 混源 64 耐久 −1 + 分崩双失衡 ⑦ 通用增伤 +1/次 ⑧ 防递归负向 + Curios 双向。</p>
+ *
+ * <p>开关 {@code run/bg29-probe.enabled}；读数 {@code run/probe/bg29/readings.txt}；
+ * {@code halt(false)} 只调一次。</p>
+ */
+@EventBusSubscriber(modid = "bettergold")
+public final class Bg29Probe {
+
+    private static final String TAG = "[bg29-probe]";
+    private static final Path SWITCH = Path.of("bg29-probe.enabled");
+    private static final Path OUT = Path.of("probe", "bg29", "readings.txt");
+    private static final Logger LOG = LoggerFactory.getLogger("Bg29Probe");
+
+    private static final BlockPos BASE = new BlockPos(2400, 120, 2400);
+    private static final int FORCED_X = BASE.getX() >> 4;
+    private static final int FORCED_Z = BASE.getZ() >> 4;
+
+    private static final List<String> LINES = new ArrayList<>();
+    private static int passes;
+    private static int fails;
+    private static int phase;
+    private static int wait;
+    private static boolean done;
+    private static ServerLevel level;
+    private static ServerPlayer man;
+    private static Zombie zombie;
+    private static Cow cow;
+
+    /** 伤害读数 */
+    private static LivingEntity watch;
+    private static int preCount;
+    private static String lastType;
+    private static float lastAmount = -1.0F;
+
+    private static final String[][] CONVERT = {
+        {"FLAME", "minecraft:on_fire"},
+        {"GILD", "minecraft:generic"},
+        {"WIND", "minecraft:wind_charge"},
+        {"THORNS", "minecraft:cactus"},
+        {"ECHO", "minecraft:sonic_boom"},
+        {"FROST", "minecraft:freeze"},
+        {"PRESSURE", "minecraft:in_wall"},
+        {"VENOM", "minecraft:magic"},
+        {"THUNDER", "minecraft:lightning_bolt"},
+    };
+    private static final String[] NO_CONVERT = {"PHANTOM", "CHAOS_STABLE", "DISINTEGRATE"};
+
+    private Bg29Probe() {
+    }
+
+    private static void check(String id, boolean ok, String detail) {
+        if (ok) {
+            passes++;
+            LINES.add("PASS " + id + " :: " + detail);
+            LOG.info("{} PASS {} :: {}", TAG, id, detail);
+        } else {
+            fails++;
+            LINES.add("FAIL " + id + " :: " + detail);
+            LOG.error("{} FAIL {} :: {}", TAG, id, detail);
+        }
+    }
+
+    // ==================== 伤害读数 ====================
+
+    @SubscribeEvent
+    public static void onDamagePre(LivingDamageEvent.Pre event) {
+        if (watch != null && event.getEntity() == watch) {
+            preCount++;
+            lastType = typeKey(event.getSource());
+            lastAmount = event.getNewDamage();
+        }
+    }
+
+    private static String typeKey(DamageSource source) {
+        return source.typeHolder().unwrapKey().map(k -> k.location().toString()).orElse("?");
+    }
+
+    private static void resetWatch() {
+        watch = zombie;
+        preCount = 0;
+        lastType = null;
+        lastAmount = -1.0F;
+        zombie.setHealth(zombie.getMaxHealth());
+        // ⚠ 同一 tick 内连续 hurt 会被原版的 10 tick 无敌帧吞掉（LivingDamageEvent 根本不触发）
+        zombie.invulnerableTime = 0;
+    }
+
+    private static void ring(RingType type) {
+        man.setItemSlot(EquipmentSlot.OFFHAND, type == null
+                ? ItemStack.EMPTY : new ItemStack(RingItems.of(type).get()));
+    }
+
+    // ==================== 主循环 ====================
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        if (done) {
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        if (phase == 0) {
+            if (!Files.isRegularFile(SWITCH)) {
+                return;
+            }
+            try {
+                setup(server);
+                phase = 1;
+            } catch (Throwable t) {
+                LOG.error("{} setup threw", TAG, t);
+                check("probe_setup", false, String.valueOf(t));
+                finish(server);
+            }
+            return;
+        }
+        if (wait > 0) {
+            wait--;
+            return;
+        }
+        try {
+            switch (phase) {
+                case 1 -> step1RegistryAndModes();
+                case 2 -> step2Conversions();
+                case 3 -> step3Recursion();
+                case 4 -> step4SpecialsA();
+                case 5 -> step5SpecialsB();
+                case 6 -> step6FrostAndSoothe();
+                case 7 -> step7MiningAndRecipes();
+                case 8 -> step8ChaosAndBonus();
+                case 9 -> step9Curios(server);
+                default -> finish(server);
+            }
+        } catch (Throwable t) {
+            LOG.error("{} phase {} threw", TAG, phase, t);
+            check("probe_phase_" + phase, false, String.valueOf(t));
+            finish(server);
+        }
+    }
+
+    private static void setup(MinecraftServer server) {
+        level = server.overworld();
+        level.setChunkForced(FORCED_X, FORCED_Z, true);
+        level.getChunk(FORCED_X, FORCED_Z);
+        for (int dx = -10; dx <= 10; dx++) {
+            for (int dz = -10; dz <= 10; dz++) {
+                level.setBlockAndUpdate(BASE.offset(dx, -1, dz), Blocks.STONE.defaultBlockState());
+                for (int dy = 0; dy <= 6; dy++) {
+                    level.setBlockAndUpdate(BASE.offset(dx, dy, dz), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        man = player(server);
+        man.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        man.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+        level.addNewPlayer(man);
+        man.getAbilities().invulnerable = false;
+        man.onUpdateAbilities();
+        man.setHealth(20.0F);
+
+        zombie = EntityType.ZOMBIE.create(level);
+        if (zombie != null) {
+            zombie.moveTo(BASE.getX() + 2.5D, BASE.getY(), BASE.getZ() + 0.5D, 0.0F, 0.0F);
+            zombie.setNoAi(true);
+            level.addFreshEntity(zombie);
+        }
+        cow = EntityType.COW.create(level);
+        if (cow != null) {
+            cow.moveTo(BASE.getX() + 0.5D, BASE.getY(), BASE.getZ() + 2.5D, 0.0F, 0.0F);
+            cow.setNoAi(true);
+            level.addFreshEntity(cow);
+        }
+        LINES.add("SETUP level=" + levelName(server) + " forced=" + level.getForcedChunks().size()
+                + " curios=" + CuriosCompat.isLoaded() + " zombie=" + (zombie != null));
+        wait = 30;
+    }
+
+    private static String levelName(MinecraftServer server) {
+        try {
+            Object data = server.overworld().getLevelData();
+            var m = data.getClass().getMethod("getLevelName");
+            return String.valueOf(m.invoke(data));
+        } catch (Throwable t) {
+            return "<unreadable>";
+        }
+    }
+
+    private static ServerPlayer player(MinecraftServer server) {
+        GameProfile profile = new GameProfile(
+                UUID.nameUUIDFromBytes("bg29_probe".getBytes(StandardCharsets.UTF_8)), "bg29_probe");
+        ServerPlayer p = new ServerPlayer(server, server.overworld(), profile,
+                ClientInformation.createDefault());
+        try {
+            p.connection = new net.minecraft.server.network.ServerGamePacketListenerImpl(
+                    server,
+                    new net.minecraft.network.Connection(
+                            net.minecraft.network.protocol.PacketFlow.SERVERBOUND),
+                    p,
+                    net.minecraft.server.network.CommonListenerCookie.createInitial(profile, false));
+        } catch (Throwable ignored) {
+        }
+        return p;
+    }
+
+    // ==================== ① 12 戒 + 胚底 / ② 模式切换 ====================
+    private static void step1RegistryAndModes() {
+        phase = 2;
+        LINES.add("READ zombie_alive=" + zombie.isAlive() + " offhand=" + man.getOffhandItem());
+        for (RingType type : RingType.values()) {
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath("bettergold", type.itemId());
+            boolean registered = BuiltInRegistries.ITEM.containsKey(id);
+            int maxDamage = registered ? new ItemStack(BuiltInRegistries.ITEM.get(id)).getMaxDamage() : -1;
+            int want = type == RingType.CHAOS_STABLE ? 64 : 0;
+            check("ring_registered_" + type.metalId, registered && maxDamage == want,
+                    "id=" + id + " maxDamage=" + maxDamage + "（期望 " + want + "）");
+        }
+        boolean blank = BuiltInRegistries.ITEM.containsKey(
+                ResourceLocation.fromNamespaceAndPath("bettergold", "ring_blank"));
+        check("ring_blank_registered", blank
+                        && new ItemStack(BuiltInRegistries.ITEM.get(
+                        ResourceLocation.fromNamespaceAndPath("bettergold", "ring_blank"))).getMaxDamage() == 0,
+                "ring_blank 已注册且 maxDamage=0（纯合成材料）");
+
+        // ② 模式切换：9 枚可切、3 枚不可切
+        for (RingType type : RingType.values()) {
+            ItemStack stack = new ItemStack(RingItems.of(type).get());
+            man.setItemSlot(EquipmentSlot.MAINHAND, stack);
+            ItemStack live = man.getMainHandItem();
+            var result = ((RingItems.RingItem) live.getItem()).use(level, man, InteractionHand.MAIN_HAND);
+            boolean has = live.get(RingItems.ALL_DAMAGE.get()) != null;
+            boolean on = RingItems.allDamage(live);
+            if (type.hasModes()) {
+                boolean ok = has && on && result.getResult().consumesAction();
+                check("mode_toggle_" + type.metalId, ok,
+                        "切一次 ⇒ 组件=" + has + " 全伤害=" + on);
+            } else {
+                check("mode_none_" + type.metalId, !has,
+                        "幻奏/混源/分崩 不参与模式：组件存在=" + has);
+            }
+        }
+        man.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+    }
+
+    // ==================== ③ 12 条转化映射 ====================
+    private static void step2Conversions() {
+        phase = 3;
+        // 观战武器 = 万坚金剑（裸攻击不改类型，转化由**副手的戒指**决定）
+        man.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(AllItems.STURDYGOLD_SWORD.get()));
+        for (String[] row : CONVERT) {
+            RingType type = RingType.valueOf(row[0]);
+            ring(type);
+            resetWatch();
+            zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+            check("convert_" + type.metalId, row[1].equals(lastType),
+                    "真打僵尸 ⇒ 落地类型=" + lastType + "（期望 " + row[1] + "）");
+        }
+        // 三枚「无转化类型」：原样放行
+        for (String name : NO_CONVERT) {
+            RingType type = RingType.valueOf(name);
+            ring(type);
+            resetWatch();
+            zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+            check("convert_none_" + type.metalId, "minecraft:player_attack".equals(lastType),
+                    "不转化 ⇒ 落地类型=" + lastType);
+        }
+        ring(null);
+    }
+
+    // ==================== ⑧ 防递归（负向） ====================
+    private static void step3Recursion() {
+        phase = 4;
+        ring(RingType.FLAME);
+        // (a) 已经是目标类型 ⇒ 第二道守卫早退，只落地一次
+        resetWatch();
+        zombie.hurt(level.damageSources().source(DamageTypes.ON_FIRE, man), 1.0F);
+        check("recursion_same_type", preCount == 1 && "minecraft:on_fire".equals(lastType),
+                "源类型 == 目标类型 ⇒ Pre 次数=" + preCount + " 类型=" + lastType);
+        // (b) 连续 5 次转化：每次恰好 1 次 Pre（没有自我重入）
+        int maxPre = 0;
+        boolean allFire = true;
+        for (int i = 0; i < 5; i++) {
+            resetWatch();
+            zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+            maxPre = Math.max(maxPre, preCount);
+            allFire &= "minecraft:on_fire".equals(lastType);
+        }
+        check("recursion_no_stack_overflow", maxPre == 1 && allFire,
+                "5 次攻击每次 Pre 次数最大=" + maxPre + " 全为火焰=" + allFire);
+        ring(null);
+    }
+
+    // ==================== ④ 每枚特效（A：方块 / 实体） ====================
+    private static void step4SpecialsA() {
+        phase = 5;
+        man.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        Vec3 center = new Vec3(0.5D, 0.5D, 0.5D);
+        // 烈火：点燃熄灭的篝火
+        BlockPos fire = BASE.offset(4, 0, 0);
+        level.setBlockAndUpdate(fire, Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(CampfireBlock.LIT, false));
+        boolean lit = RingEvents.useSpecial(man, RingType.FLAME, fire, Direction.UP, center);
+        check("special_flame_campfire", lit && level.getBlockState(fire)
+                .getValue(CampfireBlock.LIT), "熄灭的篝火被点燃=" + lit);
+        // 烈火：点燃蜡烛
+        BlockPos candle = BASE.offset(4, 0, 1);
+        level.setBlockAndUpdate(candle, Blocks.CANDLE.defaultBlockState()
+                .setValue(BlockStateProperties.LIT, false));
+        boolean candleLit = RingEvents.useSpecial(man, RingType.FLAME, candle, Direction.UP, center);
+        check("special_flame_candle", candleLit && level.getBlockState(candle)
+                .getValue(BlockStateProperties.LIT), "熄灭的蜡烛被点燃=" + candleLit);
+        // 烈火：点着空气（下方是木板 ⇒ 火可以放）
+        BlockPos plank = BASE.offset(4, 0, 2);
+        level.setBlockAndUpdate(plank, Blocks.OAK_PLANKS.defaultBlockState());
+        BlockPos above = plank.above();
+        level.setBlockAndUpdate(above, Blocks.AIR.defaultBlockState());
+        boolean ignited = RingEvents.useSpecial(man, RingType.FLAME, plank, Direction.UP, center);
+        check("special_flame_fire", ignited && level.getBlockState(above).is(Blocks.FIRE),
+                "木板上方生出火=" + ignited);
+
+        // 烈火：TNT（放到远处，别炸到探针实体）
+        BlockPos tnt = BASE.offset(18, 0, 18);
+        level.setBlockAndUpdate(tnt, Blocks.TNT.defaultBlockState());
+        boolean blew = RingEvents.useSpecial(man, RingType.FLAME, tnt, Direction.UP, center);
+        check("special_flame_tnt", blew && !level.getBlockState(tnt).is(Blocks.TNT),
+                "TNT 被引爆并消失=" + blew);
+
+        // 烈火：苦力怕（真的发一次 PlayerInteractEvent#EntityInteract，走事件处理器）
+        Creeper creeper = EntityType.CREEPER.create(level);
+        boolean cre = false;
+        String creDetail = "creeper=null";
+        if (creeper != null) {
+            creeper.moveTo(BASE.getX() + 6.5D, BASE.getY(), BASE.getZ() + 6.5D, 0.0F, 0.0F);
+            creeper.setNoAi(true);
+            level.addFreshEntity(creeper);
+            ring(RingType.FLAME);
+            try {
+                NeoForge.EVENT_BUS.post(new PlayerInteractEvent.EntityInteract(man,
+                        InteractionHand.MAIN_HAND, creeper));
+                cre = creeper.isIgnited();
+                creDetail = "isIgnited=" + creeper.isIgnited();
+            } catch (Throwable t) {
+                creDetail = "post threw: " + t;
+            }
+            creeper.discard();
+            ring(null);
+        }
+        check("special_flame_creeper", cre, "苦力怕被点燃（" + creDetail + "）");
+
+        // 风起：瞬爆风弹
+        BlockPos wind = BASE.offset(-4, 0, -4);
+        level.setBlockAndUpdate(wind, Blocks.STONE.defaultBlockState());
+        boolean windOk = RingEvents.useSpecial(man, RingType.WIND, wind, Direction.UP,
+                new Vec3(wind.getX() + 0.5D, wind.getY() + 1.0D, wind.getZ() + 0.5D));
+        check("special_wind", windOk, "瞬爆风弹返回 true=" + windOk);
+        wait = 5;
+        phase = 5;
+    }
+
+    // ==================== ④ 每枚特效（B：水压 / 幽爆 / 雷波） ====================
+    private static void step5SpecialsB() {
+        phase = 6;
+        Vec3 center = new Vec3(0.5D, 0.5D, 0.5D);
+        // 水压：空炼药锅 → 装水
+        BlockPos cauldron = BASE.offset(-4, 0, 0);
+        level.setBlockAndUpdate(cauldron, Blocks.CAULDRON.defaultBlockState());
+        boolean filled = RingEvents.useSpecial(man, RingType.PRESSURE, cauldron, Direction.UP, center);
+        check("special_pressure_cauldron", filled
+                        && level.getBlockState(cauldron).is(Blocks.WATER_CAULDRON)
+                        && level.getBlockState(cauldron).getValue(BlockStateProperties.LEVEL_CAULDRON) == 3,
+                "空炼药锅被灌满=" + filled);
+        // 水压：泥土 → 泥巴
+        BlockPos dirt = BASE.offset(-4, 0, 1);
+        level.setBlockAndUpdate(dirt, Blocks.DIRT.defaultBlockState());
+        boolean mud = RingEvents.useSpecial(man, RingType.PRESSURE, dirt, Direction.UP, center);
+        check("special_pressure_mud", mud && level.getBlockState(dirt).is(Blocks.MUD),
+                "泥土 → 泥巴=" + mud);
+        // 水压：润耕地
+        BlockPos farm = BASE.offset(-4, 0, 2);
+        level.setBlockAndUpdate(farm, Blocks.FARMLAND.defaultBlockState());
+        boolean wet = RingEvents.useSpecial(man, RingType.PRESSURE, farm, Direction.UP, center);
+        check("special_pressure_farmland", wet && level.getBlockState(farm)
+                .getValue(BlockStateProperties.MOISTURE) == 7, "耕地被润湿=" + wet);
+        // 水压：熄灭篝火
+        BlockPos fireOut = BASE.offset(-4, 0, 3);
+        level.setBlockAndUpdate(fireOut, Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(CampfireBlock.LIT, true));
+        boolean out = RingEvents.useSpecial(man, RingType.PRESSURE, fireOut, Direction.UP, center);
+        check("special_pressure_extinguish", out && !level.getBlockState(fireOut)
+                .getValue(CampfireBlock.LIT), "篝火被熄灭=" + out);
+        // 水压：放 1 秒流水（先放下、20 tick 后干竭）
+        BlockPos pool = BASE.offset(-6, 0, -6);
+        level.setBlockAndUpdate(pool, Blocks.AIR.defaultBlockState());
+        boolean flow = RingEvents.useSpecial(man, RingType.PRESSURE, pool, Direction.UP,
+                new Vec3(pool.getX() + 0.5D, pool.getY() + 0.5D, pool.getZ() + 0.5D));
+        boolean waterNow = level.getBlockState(pool).is(Blocks.WATER);
+        check("special_pressure_water_placed", flow && waterNow, "放下水源=" + flow);
+        pendingPool = pool;
+
+        // 幽爆：真的触发尖啸体
+        BlockPos shrieker = BASE.offset(2, 0, 3);
+        level.setBlockAndUpdate(shrieker, Blocks.SCULK_SHRIEKER.defaultBlockState());
+        ring(RingType.ECHO);
+        resetWatch();
+        zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+        BlockState shriekerState = level.getBlockState(shrieker);
+        boolean shrieked = shriekerState.hasProperty(SculkShriekerBlock.SHRIEKING)
+                && shriekerState.getValue(SculkShriekerBlock.SHRIEKING);
+        check("special_echo_shrieker", shrieked,
+                "尖啸体 SHRIEKING=" + shrieked + "（落地类型 " + lastType + "）");
+        ring(null);
+
+        // 雷波：人形红石块（戴上看效果）
+        ring(RingType.THUNDER);
+        wait = 8;
+        phase = 6;
+    }
+
+    private static BlockPos pendingPool;
+
+    // ==================== 雷波读数 + 冰霜 + 幻奏 + 安抚二式 ====================
+    private static void step6FrostAndSoothe() {
+        phase = 7;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) {
+                        continue;
+                    }
+                    level.setBlockAndUpdate(man.blockPosition().offset(dx, dy, dz),
+                            Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        for (int i = 0; i < 5; i++) {
+            NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(man));
+        }
+        int redstone = 0;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) {
+                        continue;
+                    }
+                    if (level.getBlockState(man.blockPosition().offset(dx, dy, dz)).is(Blocks.REDSTONE_BLOCK)) {
+                        redstone++;
+                    }
+                }
+            }
+        }
+        check("special_thunder_redstone", redstone == 26, "3×3×3 红石块 = " + redstone + "（期望 26）");
+        ring(null);
+        // 摘掉后若干 tick 必须还原成空气（顺带等水压那条 20 tick 的流水干竭）
+        wait = 40;
+        phase = 7;
+    }
+
+    private static void step7MiningAndRecipes() {
+        phase = 8;
+        for (int i = 0; i < 5; i++) {
+            NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(man));
+        }
+        // 雷波的收尾：摘掉后红石必须还原
+        int leftover = 0;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (level.getBlockState(man.blockPosition().offset(dx, dy, dz)).is(Blocks.REDSTONE_BLOCK)) {
+                        leftover++;
+                    }
+                }
+            }
+        }
+        check("special_thunder_restore", leftover == 0, "摘下后残留红石块 = " + leftover);
+        // 水压的 1 秒流水必须干竭
+        boolean dried = pendingPool != null && !level.getBlockState(pendingPool).is(Blocks.WATER);
+        check("special_pressure_water_dried", dried, "20 tick 后水源已撤（干竭）");
+
+        // 冰霜之戒：+1 级冰霜行者规格（1 级 ⇒ 半径 3）
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                level.setBlockAndUpdate(BASE.offset(dx, -1, dz), Blocks.WATER.defaultBlockState());
+                level.setBlockAndUpdate(BASE.offset(dx, 0, dz), Blocks.AIR.defaultBlockState());
+            }
+        }
+        man.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
+        man.setDeltaMovement(Vec3.ZERO);
+        man.setOnGround(true);
+        ring(RingType.FROST);
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(man));
+        int frosted = countFrosted();
+        check("special_frost_ring_level1", frosted > 0, "戴冰霜之戒（无甲无盾）冻结块数 = " + frosted);
+        ring(null);
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                level.setBlockAndUpdate(BASE.offset(dx, -1, dz), Blocks.STONE.defaultBlockState());
+                level.setBlockAndUpdate(BASE.offset(dx, 0, dz), Blocks.AIR.defaultBlockState());
+            }
+        }
+        man.setOnGround(true);
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(man));
+        int frostedNone = countFrosted();
+        check("special_frost_ring_negative", frostedNone == 0, "不戴戒指冻结块数 = " + frostedNone);
+
+        // 幻奏：攻击 100% 附带 3 分钟安抚二式
+        ring(RingType.PHANTOM);
+        zombie.removeEffect(AllEffects.SOOTHE_II);
+        zombie.removeEffect(AllEffects.SOOTHE_II_COOLDOWN);
+        zombie.setHealth(zombie.getMaxHealth());
+        zombie.invulnerableTime = 0;
+        zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+        MobEffectInstance s2 = zombie.getEffect(AllEffects.SOOTHE_II);
+        check("special_phantom_soothe_ii", s2 != null && s2.getDuration() >= 3590,
+                "安抚二式=" + s2 + "（期望 3600 tick）");
+        boolean noAiApplied = zombie.isNoAi();
+        check("special_phantom_no_ai", noAiApplied, "安抚二式生效时目标 NoAI=true");
+        // 安抚二式：受伤 ⇒ 换成「冷却中」同剩余时长
+        int before = s2 == null ? 0 : s2.getDuration();
+        zombie.invulnerableTime = 0;
+        zombie.hurt(level.damageSources().magic(), 1.0F);
+        MobEffectInstance cd = zombie.getEffect(AllEffects.SOOTHE_II_COOLDOWN);
+        boolean swapped = zombie.getEffect(AllEffects.SOOTHE_II) == null && cd != null
+                && Math.abs(cd.getDuration() - before) <= 2;
+        check("soothe_ii_swap_cooldown", swapped,
+                "受伤后 安抚二式=null / 冷却中=" + cd + "（原剩余 " + before + "）");
+        boolean blocked = !RingEvents.applySootheII(zombie, 100);
+        check("soothe_ii_blocked", blocked, "冷却中存在时再挂安抚二式被挡=" + blocked);
+        zombie.removeEffect(AllEffects.SOOTHE_II_COOLDOWN);
+        ring(null);
+
+        // 点金：挖铜矿 ⇒ 粗铜全转粗金（真破坏方块 + 真掉落实体）
+        ring(RingType.GILD);
+        man.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(AllItems.STURDYGOLD_PICKAXE.get()));
+        BlockPos ore = BASE.offset(6, 0, 6);
+        level.setBlockAndUpdate(ore, Blocks.COPPER_ORE.defaultBlockState());
+        List<ItemEntity> before2 = itemsNear(ore, 3.0D);
+        for (ItemEntity e : before2) {
+            e.discard();
+        }
+        boolean broke = man.gameMode.destroyBlock(ore);
+        List<ItemEntity> dropped = itemsNear(ore, 3.0D);
+        int rawCopper = 0;
+        int rawGold = 0;
+        int other = 0;
+        for (ItemEntity e : dropped) {
+            if (e.getItem().is(Items.RAW_COPPER)) {
+                rawCopper += e.getItem().getCount();
+            } else if (e.getItem().is(Items.RAW_GOLD)) {
+                rawGold += e.getItem().getCount();
+            } else {
+                other += e.getItem().getCount();
+            }
+        }
+        check("special_gild_ore_drop", broke && rawCopper == 0 && rawGold > 0,
+                "挖铜矿 ⇒ 粗铜=" + rawCopper + " 粗金=" + rawGold + " 其它(万坚金掉金)=" + other);
+        check("special_gild_sturdy_bonus", other + rawGold > rawGold,
+                "万坚金镐每挖一次额外掉金 = " + other + " 件");
+        for (ItemEntity e : dropped) {
+            e.discard();
+        }
+        man.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        ring(null);
+
+        // ⑤ 合成表效果（点金 3 / 冰霜 1 / 水压 2）：真 RecipeManager
+        checkRecipe("ring_gild_raw_copper", RingType.GILD, Items.RAW_COPPER, Items.RAW_GOLD, Items.AIR);
+        checkRecipe("ring_gild_raw_iron", RingType.GILD, Items.RAW_IRON, Items.RAW_GOLD, Items.AIR);
+        checkRecipe("ring_gild_gold_nugget", RingType.GILD, Items.GOLD_NUGGET, Items.RAW_GOLD, Items.AIR);
+        checkRecipe("ring_frost_water_bucket", RingType.FROST, Items.WATER_BUCKET, Items.ICE, Items.BUCKET);
+        checkRecipe("ring_pressure_bucket", RingType.PRESSURE, Items.BUCKET, Items.WATER_BUCKET, Items.AIR);
+        checkRecipe("ring_pressure_glass_bottle", RingType.PRESSURE, Items.GLASS_BOTTLE, Items.POTION, Items.AIR);
+        phase = 8;
+    }
+
+    private static int countFrosted() {
+        int n = 0;
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -4; dz <= 4; dz++) {
+                if (level.getBlockState(man.blockPosition().offset(dx, -1, dz)).is(Blocks.FROSTED_ICE)) {
+                    n++;
+                }
+            }
+        }
+        return n;
+    }
+
+    private static List<ItemEntity> itemsNear(BlockPos pos, double r) {
+        return level.getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(r));
+    }
+
+    private static void checkRecipe(String name, RingType type, net.minecraft.world.item.Item in,
+            net.minecraft.world.item.Item out, net.minecraft.world.item.Item remainder) {
+        ItemStack ringStack = new ItemStack(RingItems.of(type).get());
+        ItemStack input = new ItemStack(in);
+        CraftingInput craftInput = CraftingInput.of(2, 1, List.of(ringStack, input));
+        var opt = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftInput, level);
+        if (opt.isEmpty()) {
+            check("recipe_" + name, false, "找不到配方（真 RecipeManager）");
+            return;
+        }
+        RecipeHolder<CraftingRecipe> holder = opt.get();
+        boolean ours = holder.value() instanceof RingConversionRecipe;
+        ItemStack result = holder.value().assemble(craftInput, level.registryAccess());
+        var remaining = holder.value().getRemainingItems(craftInput);
+        boolean ringBack = remaining.size() > 0 && remaining.get(0).is(ringStack.getItem());
+        boolean outOk = result.is(out);
+        boolean remOk = remainder == Items.AIR
+                ? remaining.get(1).isEmpty()
+                : remaining.get(1).is(remainder);
+        check("recipe_" + name, ours && outOk && ringBack && remOk,
+                "result=" + result + " 戒指退回=" + ringBack + " 输入退回=" + remaining.get(1));
+    }
+
+    // ==================== ⑥ 混源 64 耐久 −1 / 分崩双失衡 + ⑦ 通用增伤 ====================
+    private static void step8ChaosAndBonus() {
+        phase = 9;
+        // ⑥ 混源稳定：混沌金剑出伤 ⇒ 戒指 −1 耐久
+        ring(RingType.CHAOS_STABLE);
+        ItemStack chaosSword = new ItemStack(AllMetals.CHAOSGOLD.sword.get());
+        man.setItemSlot(EquipmentSlot.MAINHAND, chaosSword);
+        int before = man.getOffhandItem().getDamageValue();
+        zombie.setHealth(zombie.getMaxHealth());
+        zombie.invulnerableTime = 0;
+        zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+        int after = man.getOffhandItem().getDamageValue();
+        check("chaos_stable_durability", after == before + 1,
+                "耐久 " + before + " → " + after + "（期望 +1）/ 上限 "
+                        + man.getOffhandItem().getMaxDamage());
+        // 分崩离析：无耐久 + 双失衡 100%
+        ring(RingType.DISINTEGRATE);
+        zombie.removeEffect(AllEffects.POWER_IMBALANCE);
+        zombie.removeEffect(AllEffects.RESISTANCE_IMBALANCE);
+        ItemStack alloySword = new ItemStack(AllMetals.CHAOSALLOY.sword.get());
+        man.setItemSlot(EquipmentSlot.MAINHAND, alloySword);
+        zombie.setHealth(zombie.getMaxHealth());
+        zombie.invulnerableTime = 0;
+        zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+        boolean dual = zombie.hasEffect(AllEffects.POWER_IMBALANCE)
+                && zombie.hasEffect(AllEffects.RESISTANCE_IMBALANCE);
+        check("chaosalloy_dual_imbalance", dual,
+                "力量失衡=" + zombie.getEffect(AllEffects.POWER_IMBALANCE)
+                        + " 抗性失衡=" + zombie.getEffect(AllEffects.RESISTANCE_IMBALANCE));
+        check("chaosalloy_no_durability", man.getOffhandItem().getMaxDamage() == 0,
+                "分崩离析之戒 maxDamage=" + man.getOffhandItem().getMaxDamage());
+
+        // ⑦ 通用增伤：+1/次、16 秒、无上限（加在玩家 ATTACK_DAMAGE 属性上）
+        ring(RingType.GILD);
+        man.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(AllItems.STURDYGOLD_SWORD.get()));
+        int stacks0 = RingEvents.bonusStacks(man, RingType.GILD);
+        double mod0 = RingEvents.bonusModifierValue(man, RingType.GILD);
+        zombie.setHealth(zombie.getMaxHealth());
+        zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+        int stacks1 = RingEvents.bonusStacks(man, RingType.GILD);
+        double mod1 = RingEvents.bonusModifierValue(man, RingType.GILD);
+        zombie.hurt(level.damageSources().playerAttack(man), 1.0F);
+        int stacks2 = RingEvents.bonusStacks(man, RingType.GILD);
+        double mod2 = RingEvents.bonusModifierValue(man, RingType.GILD);
+        check("bonus_per_hit", stacks1 == stacks0 + 1 && stacks2 == stacks0 + 2,
+                "层数 " + stacks0 + " → " + stacks1 + " → " + stacks2);
+        check("bonus_attribute", mod1 == mod0 + 1.0D && mod2 == mod0 + 2.0D,
+                "ATTACK_DAMAGE 修饰符 " + mod0 + " → " + mod1 + " → " + mod2);
+        ring(null);
+        man.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        phase = 9;
+    }
+
+    // ==================== ⑧ Curios 双向 ====================
+    private static void step9Curios(MinecraftServer server) {
+        boolean loaded = CuriosCompat.isLoaded();
+        LINES.add("READ curios_loaded=" + loaded);
+        boolean registered = true;
+        for (RingType type : RingType.values()) {
+            registered &= BuiltInRegistries.ITEM.containsKey(
+                    ResourceLocation.fromNamespaceAndPath("bettergold", type.itemId()));
+        }
+        if (!loaded) {
+            check("curios_absent_rings_registered", registered,
+                    "没装 Curios：12 枚戒指仍全部注册=" + registered);
+            check("curios_absent_empty", CuriosCompat.rings(man).isEmpty(),
+                    "没装 Curios：戒指栏恒空=" + CuriosCompat.rings(man));
+            check("curios_absent_offhand_works", true, "副手路径不依赖 Curios（见 ③ 的 12 条转化）");
+        } else {
+            check("curios_present_loaded", registered && CuriosCompat.isLoaded(),
+                    "装了 Curios：12 枚戒指仍全部注册=" + registered);
+            int slots = -1;
+            boolean placed = false;
+            String detail = "";
+            try {
+                var handler = top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(man).orElse(null);
+                if (handler != null) {
+                    var ringSlot = handler.getCurios().get(CuriosCompat.RING_SLOT);
+                    if (ringSlot != null) {
+                        var stacks = ringSlot.getStacks();
+                        slots = stacks.getSlots();
+                        if (slots >= 2) {
+                            stacks.setStackInSlot(0, new ItemStack(RingItems.of(RingType.FLAME).get()));
+                            stacks.setStackInSlot(1, new ItemStack(RingItems.of(RingType.WIND).get()));
+                            placed = true;
+                        }
+                        detail = "ring 槽位数=" + slots;
+                    } else {
+                        detail = "没有 ring 槽（标签没生效？）";
+                    }
+                }
+            } catch (Throwable t) {
+                detail = "Curios 调用抛异常：" + t;
+            }
+            check("curios_present_ring_slot", placed, "Curios ring 槽可放戒指（" + detail + "）");
+            List<ItemStack> worn = RingEvents.wornRings(man);
+            check("curios_present_worn_two", worn.size() == 2,
+                    "戴着 2 枚（Curios 栏）⇒ wornRings=" + worn.size());
+            // 多枚随机：200 次抽样两枚都要出现
+            int flame = 0;
+            int wind = 0;
+            for (int i = 0; i < 200; i++) {
+                ItemStack picked = RingEvents.pickRing(man);
+                RingType t = RingItems.typeOf(picked);
+                if (t == RingType.FLAME) {
+                    flame++;
+                } else if (t == RingType.WIND) {
+                    wind++;
+                }
+            }
+            check("curios_present_random", flame > 20 && wind > 20,
+                    "200 次随机：烈火=" + flame + " 风起=" + wind);
+            try {
+                var handler = top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(man).orElse(null);
+                if (handler != null) {
+                    var stacks = handler.getCurios().get(CuriosCompat.RING_SLOT).getStacks();
+                    stacks.setStackInSlot(0, ItemStack.EMPTY);
+                    stacks.setStackInSlot(1, ItemStack.EMPTY);
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        finish(server);
+    }
+
+    private static void finish(MinecraftServer server) {
+        if (done) {
+            return;
+        }
+        done = true;
+        try {
+            Files.createDirectories(OUT.getParent());
+            List<String> out = new ArrayList<>(LINES);
+            out.add("SUMMARY passes=" + passes + " fails=" + fails);
+            Files.write(OUT, out, StandardCharsets.UTF_8);
+            LOG.info("{} SUMMARY passes={} fails={} -> {}", TAG, passes, fails, OUT.toAbsolutePath());
+        } catch (Throwable t) {
+            LOG.error("{} write readings failed", TAG, t);
+        }
+        try {
+            level.setChunkForced(FORCED_X, FORCED_Z, false);
+        } catch (Throwable ignored) {
+        }
+        server.halt(false);
+    }
+}

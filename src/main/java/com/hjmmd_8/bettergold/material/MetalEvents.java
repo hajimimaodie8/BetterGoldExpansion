@@ -2602,7 +2602,11 @@ public final class MetalEvents {
         int pieces = wornPieces(player, AllMetals.FROSTGOLD);
         var shield = heldShield(player);
         boolean shieldHeld = !shield.isEmpty() && MetalFamily.of(shield) == AllMetals.FROSTGOLD;
-        int specLevel = Math.min(5, pieces + (shieldHeld ? 1 : 0));
+        // 1.8 阶段 3 · 段 C（§I-38 冰霜之戒）：「1 级冰霜行者（+全套凛冰金 = 5 级，+凛冰金盾 = 6 级）」
+        // ⇒ 戴冰霜之戒**再 +1 级**，上限随之上抬到 6（4 件甲 + 盾 + 戒指）。
+        // ⚠ 只用 `wears` 这一个公开探针，戒指的"戴着"判定（副手 / Curios）不在本类复制第二份。
+        int ringBonus = RingEvents.wears(player, RingType.FROST) ? 1 : 0;
+        int specLevel = Math.min(6, pieces + (shieldHeld ? 1 : 0) + ringBonus);
         if (specLevel <= 0) {
             return;
         }

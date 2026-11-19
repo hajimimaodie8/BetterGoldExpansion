@@ -90,6 +90,13 @@ public class bettergold {
         // 1.8 阶段 3（§H）：12 套马铠 —— ArmorMaterial 必须真的注册进
         // `Registries.ARMOR_MATERIAL`（AnimalArmorItem 的构造器要 unwrapKey），见 MetalHorseArmor 类注释。
         com.hjmmd_8.bettergold.material.MetalHorseArmor.bootstrap(modEventBus);
+        // 1.8 阶段 3 段 C（§I-36~40）：12 枚转化之戒 + 胚底（A 类口径：**始终注册**，
+        // 没装 Curios 只是没有戒指栏；Curios 的类只在 compat/CuriosCompat 的方法体内出现）。
+        com.hjmmd_8.bettergold.material.RingItems.bootstrap();
+        com.hjmmd_8.bettergold.material.RingItems.COMPONENT_TYPES.register(modEventBus);
+        // 转化之戒的全部运行期行为：伤害转化 / 模式 / 通用增伤 / 混源稳定耐久 / 雷波红石场 /
+        // 水压流水 / 空手右键特效 / 安抚二式（规则本体全部在 material/RingEvents）。
+        NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.RingEvents.class);
         // 新约 1.4：金属相关的全局事件（巫毒结束结算等）
         NeoForge.EVENT_BUS.register(com.hjmmd_8.bettergold.material.MetalEvents.class);
         // 1.7（bg-n10 轮6）：金钱妖两条伤害规则 —— 免仙人掌（EntityInvulnerabilityCheckEvent）

@@ -177,6 +177,13 @@ dependencies {
     //   编译期可见的字节码 == 运行期的字节码，两档都可复现。
     compileOnly files('libs/spearcore-1.21.1-neo-3.2.1.jar')
 
+    // 1.8 阶段 3 段 C（§I-36）：Curios（"某个 C 开头的模组"的戒指栏）—— **A 类口径**：
+    // 12 枚戒指**始终注册**，没装 Curios 只是没有戒指栏（副手照样触发）。
+    // 所以这里只加 compileOnly、**不加 localRuntime**（加了 dev 就永远装着它，"没装"那一档再也造不出来，
+    // 与 Patchouli 同一条坑；运行期两档 = 把真 jar 放进 / 拿出 run/mods）。
+    // compileOnly 用的是 Gradle 缓存里那个**真 mod jar**（410,690 B），不是 -api / -sources。
+    compileOnly files('libs/curios-neoforge-9.5.1+1.21.1.jar')
+
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html

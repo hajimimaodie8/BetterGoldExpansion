@@ -158,7 +158,7 @@ public final class SootheState {
             LivingEntity living = findLiving(server, id);
             if (living == null) {
                 ORIGINALS.remove(id);
-            } else if (!living.hasEffect(AllEffects.SOOTHE)) {
+            } else if (!living.hasEffect(AllEffects.SOOTHE) && !living.hasEffect(AllEffects.SOOTHE_II)) {
                 restore(living);
             }
         }
@@ -172,8 +172,8 @@ public final class SootheState {
         if (entity.level().isClientSide() || !(entity instanceof Mob mob)) {
             return;
         }
-        if (mob.hasEffect(AllEffects.SOOTHE)) {
-            return;   // 还在安抚中，等它自己到期/移除
+        if (mob.hasEffect(AllEffects.SOOTHE) || mob.hasEffect(AllEffects.SOOTHE_II)) {
+            return;   // 还在安抚 / 安抚二式中，等它自己到期/移除
         }
         Original original = readFromEntity(mob);
         if (original == null) {

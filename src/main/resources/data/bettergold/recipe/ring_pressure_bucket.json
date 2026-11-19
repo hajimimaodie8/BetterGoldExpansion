@@ -1,0 +1,13 @@
+{
+  "type": "bettergold:ring_conversion",
+  "ring": "bettergold:indigoseagold_ring",
+  "ingredient": [
+    {
+      "item": "minecraft:bucket"
+    }
+  ],
+  "result": {
+    "id": "minecraft:water_bucket",
+    "count": 1
+  }
+}

@@ -1,0 +1,20 @@
+﻿# bg29 服务端日志摘录（2026-11-19，专用服务端 + 探针，runServer）
+
+## 世界与强制加载（作者存档 0 次触碰）
+[11:10:57] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "world"
+[11:11:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[11:11:04] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[11:11:04] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+
+## 探针读数（PASS/FAIL/SUMMARY 全文见 01-A级读数.txt）
+[11:11:03] [Server thread/INFO] [Bg29Probe/]: [bg29-probe] SUMMARY passes=74 fails=3 -> E:\mc\mcmod\bettergold-template-1.21.1\run\probe\bg29\readings.txt
+
+## 配方加载（改前：6 条静默丢弃；改后：0 条 ERROR）
+
+（上面为空 = 本轮 6 条 ring_conversion 全部加载成功）
+
+## Curios / SpearCore / Patchouli 加载
+[11:10:55] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file E:\mc\mcmod\bettergold-template-1.21.1\run\config\curios-common.toml
+[11:10:55] [modloading-worker-0/DEBUG] [mixin/]: Mixing MixinCuriosApi from curios.neoforge.mixins.json into top.theillusivec4.curios.api.CuriosApi
+[11:10:57] [main/INFO] [Curios API/]: Loaded 10 curio slots
+[11:10:57] [main/INFO] [Curios API/]: Loaded 1 curio entities

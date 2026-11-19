@@ -1,0 +1,8 @@
+﻿validate_metal_assets exit=0 | [bg-assets-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_metal_data exit=0 | [bg-data-ok] ����ϼ� 0 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_trim_assets exit=0 | [bgfinal3-ok] 问题 0 条 / 检查 84 项（契约：0 绿 / 1 有问题 / 2 前置坏）
+validate_advancements exit=0 | [bgach-ok] ���� 0 �� / �ɾ� 63 �� / criteria 157 �� / ���Լ� 126 ������Լ��0 �� / 1 ������ / 2 ǰ�û���
+validate_bg17_textures exit=0 | [bg17tex-ok] all invariants hold
+validate_golden_prison exit=0 | [bgp-ok] problems=0 checked=16635 templates=26
+check_jar_clean exit=0 | [jar-clean-ok] 产物 jar 干净（条目 3708；*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0）
+check_forced_chunks exit=0 | [chunks-forced-ok] data.Forced 为空（收尾态无残留 forceload）

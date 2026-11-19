@@ -25,5 +25,14 @@
         "stream": false
       }
     ]
+  },
+  "thunder_ring": {
+    "subtitle": "subtitles.bettergold.thunder_ring",
+    "sounds": [
+      {
+        "name": "bettergold:thunder_ring",
+        "stream": false
+      }
+    ]
   }
 }

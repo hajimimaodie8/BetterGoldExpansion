@@ -6358,7 +6358,9 @@ else:
 #   旧值（C 段）原文留档、不删：A2FE7077D4202AEDA749AD4082E7BFED…
 # ★ 1.8 阶段 3 · 段 A（§G 长矛，2026-11-19）：中英各 +14 个物品键 ⇒ 两个文件级 SHA 换成本轮值。
 #   旧值（1.8 阶段 2 之后）原文留档、不删：EA68F3FD45C41D6517ABCF770D5A0203842885EAD5223BA308DECFC025C78CC1
-_BGN10_ZH_AFTER_SHA = "27290A9A7BFA3C075163C057C4ACD9C4A53BB41BDC0436C8E87893FF5E2C5BAF"
+# ★ 1.8 阶段 3 · 段 C（§I 转化之戒）：13 物品名 + 2 效果名 + 2 模式提示 + 1 字幕 ⇒ 两个文件级 SHA 换成本轮值。
+#   旧值（段 A）原文留档、不删：zh 27290A9A7BFA3C075163C057C4ACD9C4A53BB41BDC0436C8E87893FF5E2C5BAF
+_BGN10_ZH_AFTER_SHA = "232B949FDD0F096933F1E4EA7C6D6B5EFD1207AB5881338ADE437B18B280A900"
 # 旧值（bg-n10rg 第一次改完正文之后的值，原文留档、不删）：en 9312FB31C7D4BD39FFBC4C9C30BD77C7…
 # 旧值（bg-n10rg 定稿的值，原文留档、不删）：en 51F3FD6F0686D0CDB2CBFE553ED0C314…
 # 旧值（bg-n10rc2 的值，原文留档、不删）：en 2EFA1997FF53366C9FD811836DC295545…
@@ -6367,7 +6369,8 @@ _BGN10_ZH_AFTER_SHA = "27290A9A7BFA3C075163C057C4ACD9C4A53BB41BDC0436C8E87893FF5
 # ★★ 第八轮（2026-10-22）：+3 条金钱妖字幕键 ⇒ 新 SHA（下面这行）
 #   旧值（C 段）原文留档、不删：424E9A74B9DA6108CB59DDF15E9C8FE6…
 # ★ 1.8 阶段 3 · 段 A（§G 长矛）：+14 键 ⇒ 新 SHA（旧值原文留档、不删：50E175CD302A5ED4DB5520178BD85C09F9D36C9E4BA91555DE71AE180C378586）
-_BGN10_EN_AFTER_SHA = "54156B470D94D60889AB14CEDB0B44350BF5F69EABE2809E4E350A15E3B9D9DD"
+# ★ 1.8 阶段 3 · 段 C（§I 转化之戒）：en 同步 +17 条 ⇒ 新 SHA（旧值原文留档、不删：54156B470D94D60889AB14CEDB0B44350BF5F69EABE2809E4E350A15E3B9D9DD）
+_BGN10_EN_AFTER_SHA = "914EA91AB210DF3AA04EE838ED362D1EEF2B64CCC0E1D36871A18AE31089603B"
 # ⚠ **旧值原文保留（未删）**：`_BGN10_NEW_LANG_KEYS = 75`（轮3 54 + 轮4 7 + 轮6 4 + 轮5 5 + 轮7 3 + 轮8 2）。
 # ★ 1.7 bg-n10r9（轮9 · 收口）：+ **36** 条（手册 20 = 4 条目 + 16 页键；成就 16 = 8 条 × 2）
 #   ⇒ 75 → **111**；两个文件级 SHA 同步换成本轮的值。旧值（轮8）原文留档：
@@ -6390,7 +6393,11 @@ _BGN10_EN_AFTER_SHA = "54156B470D94D60889AB14CEDB0B44350BF5F69EABE2809E4E350A15E
 #   旧文件级 SHA（未删）：zh 48D11E1B4766C260… / en 5D0296288C4E54CD…
 # ★ 1.8 阶段 3 · 段 B（§H 马铠）：+ **12** 条（12 套马铠的名）⇒ 257 → **269**。
 #   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 257`；旧 SHA（未删）：zh 6F9113B7… / en E5E47672…
-_BGN10_NEW_LANG_KEYS = 269    # zh/en 各 269 条（1.8 阶段 1 + 阶段 2 + 阶段 3 段 A/B 后的净新增；159 → 243 → 257 → 269）
+# ★ 1.8 阶段 3 · 段 C（§I 转化之戒）：+ **18** 条（13 个物品名 = 12 戒 + 胚底 / 2 个效果名 = 安抚二式
+#   + 冷却中 / 2 条模式提示 / 1 条雷波字幕）⇒ 269 → **287**；两个文件级 SHA 同步换成本轮值。
+#   旧期望原文留档（未删）：`_BGN10_NEW_LANG_KEYS = 269`；
+#   旧 SHA（未删）：zh 27290A9A7BFA3C075163C057C4ACD9C4… / en 54156B470D94D60889AB14CEDB0B4435…
+_BGN10_NEW_LANG_KEYS = 287    # zh/en 各 287 条（1.8 阶段 1 + 阶段 2 + 阶段 3 段 A/B/C 后的净新增；159 → 243 → 257 → 269 → 287）
 # 旧值留档（原文保留，不删）：bgbig 的 zh B8384693… / en E60A0BC2…（`_BGN10_*_AFTER_SHA` 上一版）
 
 # 旧值留档（原文保留，不删）：2026-10-17 轮7 的 73
@@ -11296,7 +11303,9 @@ def _bgsnd_src(rel: str) -> str:
 
 _SND_ASSETS = _SND_ROOT / "src" / "main" / "resources" / "assets" / "bettergold"
 _SND_JSON = _SND_ASSETS / "sounds.json"
-_SND_EVENTS = ("money_gremlin_ambient", "money_gremlin_hurt", "money_gremlin_death")
+_SND_EVENTS = ("money_gremlin_ambient", "money_gremlin_hurt", "money_gremlin_death",
+               # 1.8 阶段 3 · 段 C（§I-38 雷波）：作者 zip 里那个 mp3 → ogg 的唯一音效事件
+               "thunder_ring")
 _bgsnd_checked += 1
 if not _SND_JSON.exists():
     _bgsnd_bad("bgsnd-json", "缺 assets/bettergold/sounds.json")
@@ -12365,6 +12374,9 @@ _BG19_EFFECTS = [
     "power_imbalance", "resistance_imbalance",
     # 1.8 翠风金 / 凛冰金
     "wind_slash", "frost_seep",
+    # 1.8 阶段 3 · 段 C（§I-40）：安抚二式 + 安抚二式（冷却中）
+    #   ⚠ 这两个也是本模组自己挂的状态 ⇒ 必须同样走 BetterGoldMobEffect（牛奶不清）
+    "soothe_ii", "soothe_ii_cooldown",
 ]
 _bg19_effects_src = JAVA / "registry" / "AllEffects.java"
 _bg19_base_src = JAVA / "registry" / "BetterGoldMobEffect.java"
@@ -14337,6 +14349,413 @@ if not bg28_problems:
 
 # <<BG28-B/C 追加点>>
 
+# =====================================================================================
+# 1.8 阶段 3 · 段 C（§I-36~40 转化之戒）—— [bg29-*]
+#   12 枚戒指 + 1 件胚底 / 模式组件 / 12 条转化映射 / 混源 64 耐久 / 幻奏三枚无模式 /
+#   音效（mp3→ogg + sounds.json + 中英字幕）/ Curios 双向（A 类口径）/ 六条合成表配方。
+#   口径：所有断言都读**真文件**（源码 / JSON / 贴图字节 / libs 里的 jar），不猜。
+# =====================================================================================
+bg29_problems = []
+_bg29_checked = 0
+
+
+def _bg29_bad(code, why):
+    bg29_problems.append("[%s] %s" % (code, why))
+
+
+def _bg29_text(rel):
+    p = REPO / rel
+    if not p.is_file():
+        _bg29_bad("bg29-missing", "缺文件 %s" % rel)
+        return ""
+    return p.read_text(encoding="utf-8", errors="replace")
+
+
+# 12 枚的唯一真源表（与 §I-38 表逐行对应；顺序 = RingType 的枚举序）
+#   (族 id, 枚举名, 转化类型（None = 不改类型）, 中英物品名)
+_BG29_RINGS = [
+    ("flamegold", "FLAME", "ON_FIRE", "烈火转化之戒", "Flame Ring"),
+    ("sturdygold", "GILD", "GENERIC", "点金转化之戒", "Gilding Ring"),
+    ("windgold", "WIND", "WIND_CHARGE", "风起转化之戒", "Windrise Ring"),
+    ("thornsgold", "THORNS", "CACTUS", "木棘转化之戒", "Thorn Ring"),
+    ("echogold", "ECHO", "SONIC_BOOM", "幽爆转化之戒", "Echo Burst Ring"),
+    ("frostgold", "FROST", "FREEZE", "冰霜转化之戒", "Frost Ring"),
+    ("indigoseagold", "PRESSURE", "IN_WALL", "水压转化之戒", "Hydro Pressure Ring"),
+    ("voodoogold", "VENOM", "MAGIC", "毒腺转化之戒", "Venom Gland Ring"),
+    ("thundergold", "THUNDER", "LIGHTNING_BOLT", "雷波转化之戒", "Thunder Wave Ring"),
+    ("illusiongold", "PHANTOM", None, "幻奏转化之戒", "Phantom Melody Ring"),
+    ("chaosgold", "CHAOS_STABLE", None, "混源稳定转化之戒", "Chaos Stabilizer Ring"),
+    ("chaosalloy", "DISINTEGRATE", None, "分崩离析转化之戒", "Disintegration Ring"),
+]
+_BG29_NO_MODE = ("PHANTOM", "CHAOS_STABLE", "DISINTEGRATE")
+
+# ---------- ① RingType：12 行、9 个转化类型、3 个 none、模式开关 ----------
+_bg29_checked += 1
+_ring_type_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/material/RingType.java")
+_bg29_rows = re.findall(
+    r"^\s{4}([A-Z_]+)\(\"([a-z]+)\",\s*(null|DamageTypes\.[A-Z_]+),\s*([^,]+),\s*(true|false)\)",
+    _ring_type_src, re.MULTILINE)
+if len(_bg29_rows) != 12:
+    _bg29_bad("bg29-ringtype-12", "RingType 的枚举常量不是 12 条（实测 %d 条）" % len(_bg29_rows))
+for _row_no, ((_enum, _metal, _dmg, _sound, _modes), _want) in enumerate(
+        zip(_bg29_rows, _BG29_RINGS), start=1):
+    # 正则捕获序 = (枚举名, 族 id, 转化类型, 音效, modes)；_BG29_RINGS 的列是 (族 id, 枚举名, 类型, 中, 英)
+    _w_metal, _w_enum, _w_dmg = _want[0], _want[1], _want[2]
+    if _enum != _w_enum or _metal != _w_metal:
+        _bg29_bad("bg29-ringtype-order",
+                  "第 %d 行是 %s/%s，期望 %s/%s" % (_row_no, _enum, _metal, _w_enum, _w_metal))
+    _want_dmg = "null" if _w_dmg is None else ("DamageTypes." + _w_dmg)
+    if _dmg != _want_dmg:
+        _bg29_bad("bg29-ringtype-mapping", "%s 的转化类型是 %s，期望 %s" % (_metal, _dmg, _want_dmg))
+    _want_modes = "false" if _w_enum in _BG29_NO_MODE else "true"
+    if _modes != _want_modes:
+        _bg29_bad("bg29-ringtype-modes", "%s 的 modes=%s，期望 %s（§I-38 那三枚无两种模式）"
+                  % (_metal, _modes, _want_modes))
+if _ring_type_src.count("byMetalId") < 1 or "itemId()" not in _ring_type_src:
+    _bg29_bad("bg29-ringtype-api", "RingType 缺 itemId()/byMetalId()")
+# 点金那一栏是「原攻击音效」⇒ sound 必须 null；雷波必须是自定义音效
+_bg29_ring_map = {r[1]: r for r in _bg29_rows}
+if "GILD" in {r[0] for r in _bg29_rows}:
+    _gild = [r for r in _bg29_rows if r[0] == "GILD"][0]
+    if _gild[3] != "null":
+        _bg29_bad("bg29-ringtype-sound", "点金那一行是「原攻击音效」⇒ sound 应为 null，实测 %s" % _gild[3])
+_thunder = [r for r in _bg29_rows if r[0] == "THUNDER"]
+if _thunder and "AllSounds.THUNDER_RING" not in _thunder[0][3]:
+    _bg29_bad("bg29-ringtype-sound", "雷波的音效不是 AllSounds.THUNDER_RING：%s" % _thunder[0][3])
+
+# ---------- ② RingItems：12 枚 + 胚底、混源稳定 64 耐久（唯一）、模式组件 ----------
+_bg29_checked += 1
+_ring_items_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/material/RingItems.java")
+for _needle, _why in (
+        ("RINGS.put(type, AllItems.ITEMS.register(type.itemId(), () -> new RingItem(type, props)))",
+         "12 枚的注册循环"),
+        ("registerSimpleItem(\"ring_blank\")", "胚底 ring_blank"),
+        ("type == RingType.CHAOS_STABLE", "混源稳定那一个分支"),
+        ("new Item.Properties().durability(64)", "混源稳定 64 耐久"),
+        ("durable", "x"),  # 占位，下面立刻剔除
+):
+    if _needle == "durable":
+        continue
+    if _needle not in _ring_items_src:
+        _bg29_bad("bg29-ringitems", "RingItems 缺%s：%s" % (_why, _needle))
+# 「唯一有耐久」= durability( 全仓只出现在 CHAOS_STABLE 那一行
+_bg29_durability_lines = [ln.strip() for ln in _ring_items_src.splitlines()
+                          if "durability(" in ln and not ln.strip().startswith("*")]
+if len([ln for ln in _bg29_durability_lines if "durability(64)" in ln]) != 1 \
+        or len(_bg29_durability_lines) != 1:
+    _bg29_bad("bg29-ringitems-durability",
+              "durability( 必须恰好 1 处（混源稳定 64），实测 %s" % _bg29_durability_lines)
+if "DataComponentType.<Boolean>builder()" not in _ring_items_src \
+        or ".persistent(Codec.BOOL)" not in _ring_items_src:
+    _bg29_bad("bg29-ringitems-component", "模式组件不是 persistent(Codec.BOOL) 的布尔组件")
+if "ring_all_damage" not in _ring_items_src:
+    _bg29_bad("bg29-ringitems-component", "模式组件的 id 不是 ring_all_damage")
+if "if (!this.type.hasModes())" not in _ring_items_src:
+    _bg29_bad("bg29-ringitems-modes",
+              "RingItem#use 没有 hasModes() 早退 ⇒ 幻奏/混源/分崩 会被切模式")
+
+# 组件真的挂到了 mod 总线
+_bg29_main_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/bettergold.java")
+if "RingItems.COMPONENT_TYPES.register(modEventBus)" not in _bg29_main_src:
+    _bg29_bad("bg29-ringitems-component", "RingItems.COMPONENT_TYPES 没注册到 modEventBus")
+if "RingItems.bootstrap()" not in _bg29_main_src:
+    _bg29_bad("bg29-ringitems", "RingItems.bootstrap() 没被调用（12 枚不会登记）")
+if "RingEvents.class" not in _bg29_main_src:
+    _bg29_bad("bg29-ringevents", "RingEvents 没挂到 NeoForge.EVENT_BUS")
+
+# ---------- ③ 运行期口径：防递归 / 模式 / 点金挖矿 / 冰霜 +1 ----------
+_bg29_checked += 1
+_ring_events_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/material/RingEvents.java")
+for _needle, _why in (
+        ("ThreadLocal.withInitial", "防递归的 ThreadLocal 守卫"),
+        ("source.is(type.convertedType)", "第二道防递归（目标类型判等）"),
+        ("public static boolean isPhysical(DamageSource source)", "「仅物理」模式判据"),
+        ("if (!RingItems.allDamage(ring) && !isPhysical(source))", "「仅物理 / 全部」两条模式的分叉"),
+        ("pickRing(", "多枚随机取一枚"),
+        ("BONUS_TICKS = 16 * 20", "通用增伤 16 秒"),
+        ("BONUS_PER_HIT = 1.0D", "通用增伤每次 +1"),
+        ("AttributeModifier.Operation.ADD_VALUE", "通用增伤加在玩家属性上"),
+        ("AllEffects.SOOTHE_II_COOLDOWN", "安抚二式（冷却中）的判据"),
+        ("RingType.PHANTOM", "幻奏 100% 挂安抚二式"),
+        ("GILD_ORES", "点金：挖矿掉落转化的矿石表"),
+        ("new ItemStack(Items.RAW_GOLD, stack.getCount())", "点金：粗矿/金粒 → 同数量粗金"),
+        ("rollGildLootFromMining", "点金：配万坚金器具每挖一次的掉金"),
+):
+    if _needle not in _ring_events_src:
+        _bg29_bad("bg29-ringevents", "RingEvents 缺%s：%s" % (_why, _needle))
+# 编译期的两个旧 API（`getTypeHolder()` / `getType()`）不许回来 —— 注释里提到它们是允许的
+for _bad_api in ("getTypeHolder()", "converted.getType()", "source.getType()"):
+    if _bad_api in strip_comments(_ring_events_src):
+        _bg29_bad("bg29-ringevents-api",
+                  "RingEvents 里出现了 1.21.1 不存在的 DamageSource API：%s" % _bad_api)
+# 点金那三种矿石必须齐（铜/铁 各含深层 + 下界金矿石）
+for _ore in ("Blocks.COPPER_ORE", "Blocks.DEEPSLATE_COPPER_ORE", "Blocks.IRON_ORE",
+             "Blocks.DEEPSLATE_IRON_ORE", "Blocks.NETHER_GOLD_ORE"):
+    if _ore not in _ring_events_src:
+        _bg29_bad("bg29-ringevents-gild", "点金的矿石表缺 %s" % _ore)
+# 雷波：3×3×3 红石信号
+if "REDSTONE_RADIUS = 1" not in _ring_events_src or "Blocks.REDSTONE_BLOCK" not in _ring_events_src:
+    _bg29_bad("bg29-ringevents-thunder", "雷波不是 3×3×3 红石块（REDSTONE_RADIUS / REDSTONE_BLOCK）")
+
+# 冰霜之戒：+1 级、上限 6（写在同一处，别变成第二份规格）
+_metal_events_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/material/MetalEvents.java")
+if "RingEvents.wears(player, RingType.FROST) ? 1 : 0" not in _metal_events_src:
+    _bg29_bad("bg29-frost-walker", "MetalEvents 里没有「冰霜之戒 +1 级冰霜行者」")
+if "Math.min(6, pieces + (shieldHeld ? 1 : 0) + ringBonus)" not in _metal_events_src:
+    _bg29_bad("bg29-frost-walker",
+              "冰霜行者规格上限不是 6（4 甲 + 盾 + 戒）—— 实测那行不是预期形状")
+
+# ---------- ④ 六条合成表配方（点金 3 / 冰霜 1 / 水压 2） ----------
+_bg29_checked += 1
+_bg29_recipes = {
+    "ring_gild_raw_copper": ("bettergold:sturdygold_ring", "minecraft:raw_copper", "minecraft:raw_gold"),
+    "ring_gild_raw_iron": ("bettergold:sturdygold_ring", "minecraft:raw_iron", "minecraft:raw_gold"),
+    "ring_gild_gold_nugget": ("bettergold:sturdygold_ring", "minecraft:gold_nugget", "minecraft:raw_gold"),
+    "ring_frost_water_bucket": ("bettergold:frostgold_ring", "minecraft:water_bucket", "minecraft:ice"),
+    "ring_pressure_bucket": ("bettergold:indigoseagold_ring", "minecraft:bucket", "minecraft:water_bucket"),
+    "ring_pressure_glass_bottle": ("bettergold:indigoseagold_ring", "minecraft:glass_bottle", "minecraft:potion"),
+}
+_recipe_dir = REPO / "src" / "main" / "resources" / "data" / "bettergold" / "recipe"
+for _name, (_ring, _ing, _out) in _bg29_recipes.items():
+    _p = _recipe_dir / ("%s.json" % _name)
+    if not _p.is_file():
+        _bg29_bad("bg29-recipe", "缺配方 %s.json" % _name)
+        continue
+    try:
+        _obj = json.loads(_p.read_text(encoding="utf-8"))
+    except ValueError as _e:
+        _bg29_bad("bg29-recipe", "%s.json 解析失败：%s" % (_name, _e))
+        continue
+    if _obj.get("type") != "bettergold:ring_conversion":
+        _bg29_bad("bg29-recipe", "%s 的 type 不是 bettergold:ring_conversion" % _name)
+    if _obj.get("ring") != _ring:
+        _bg29_bad("bg29-recipe", "%s 的戒指是 %s，期望 %s" % (_name, _obj.get("ring"), _ring))
+    # ⚠ Ingredient.CODEC_NONEMPTY **不接受裸字符串**（1.21.1：要么数组、要么对象）——
+    #   2026-11-19 A 级实测：写成 `"ingredient": "minecraft:raw_copper"` 会让
+    #   `RecipeManager` 报 "Failed to parse either. First: Not a json array" 并**整条配方静默丢弃**。
+    _ing_raw = _obj.get("ingredient")
+    if isinstance(_ing_raw, str):
+        _bg29_bad("bg29-recipe",
+                  "%s 的 ingredient 是裸字符串（1.21.1 会解析失败、配方整条丢失）：%s" % (_name, _ing_raw))
+    elif isinstance(_ing_raw, list):
+        _ing_items = [_x.get("item") for _x in _ing_raw if isinstance(_x, dict)]
+        if _ing_items != [_ing]:
+            _bg29_bad("bg29-recipe", "%s 的输入是 %s，期望 [%s]" % (_name, _ing_items, _ing))
+    elif isinstance(_ing_raw, dict):
+        if _ing_raw.get("item") != _ing:
+            _bg29_bad("bg29-recipe", "%s 的输入是 %s，期望 %s"
+                      % (_name, _ing_raw.get("item"), _ing))
+    else:
+        _bg29_bad("bg29-recipe", "%s 的 ingredient 形状不认识：%r" % (_name, _ing_raw))
+    if (_obj.get("result") or {}).get("id") != _out:
+        _bg29_bad("bg29-recipe", "%s 的产物是 %s，期望 %s"
+                  % (_name, (_obj.get("result") or {}).get("id"), _out))
+# 序列化器：1.21.1 要 MapCodec（`.create(` 会让「Codec 无法转换为 MapCodec」重演）
+_bg29_checked += 1
+_ring_recipe_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/recipe/RingConversionRecipe.java")
+if "RecordCodecBuilder.mapCodec(" not in _ring_recipe_src:
+    _bg29_bad("bg29-recipe-codec", "RingConversionRecipe 没用 RecordCodecBuilder.mapCodec（1.21.1 要 MapCodec）")
+if "RecordCodecBuilder.create(" in _ring_recipe_src:
+    _bg29_bad("bg29-recipe-codec", "RingConversionRecipe 仍用 RecordCodecBuilder.create（会得到 Codec，编不过）")
+if "public MapCodec<RingConversionRecipe> codec()" not in _ring_recipe_src:
+    _bg29_bad("bg29-recipe-codec", "Serializer#codec() 的返回类型不是 MapCodec<RingConversionRecipe>")
+if "if (stack.is(this.ring))" not in _ring_recipe_src or "stack.copy()" not in _ring_recipe_src:
+    _bg29_bad("bg29-recipe-remainder", "配方没把戒指原样退回（§I-38「不消耗戒指」）")
+if "AllRecipes.RING_CONVERSION.get()" not in _ring_recipe_src:
+    _bg29_bad("bg29-recipe", "配方没接 AllRecipes.RING_CONVERSION")
+_recipes_reg_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/registry/AllRecipes.java")
+if 'RECIPE_SERIALIZERS.register("ring_conversion"' not in _recipes_reg_src:
+    _bg29_bad("bg29-recipe", "AllRecipes 里没有注册 ring_conversion")
+
+# ---------- ⑤ 安抚二式两个状态：必须是 BetterGoldMobEffect 的具体子类 ----------
+_bg29_checked += 1
+_effects_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/registry/AllEffects.java")
+for _needle, _why in (
+        ('EFFECTS.register("soothe_ii"', "soothe_ii 注册"),
+        ('EFFECTS.register("soothe_ii_cooldown"', "soothe_ii_cooldown 注册"),
+        ("SootheState.begin(entity)", "安抚二式也要走 SootheState（AI 还原）"),
+):
+    if _needle not in _effects_src:
+        _bg29_bad("bg29-effects", "AllEffects 缺%s：%s" % (_why, _needle))
+# 每一个 new BetterGoldMobEffect( 后面都必须跟着 `{`（抽象类 ⇒ 必须给具体子类）
+_bg29_anon = len(re.findall(r"new BetterGoldMobEffect\([^;]*?\)\s*\{", _effects_src, re.DOTALL))
+_bg29_all = len(re.findall(r"new BetterGoldMobEffect\(", _effects_src))
+if _bg29_all != _bg29_anon:
+    _bg29_bad("bg29-effects-abstract",
+              "有 %d/%d 个 BetterGoldMobEffect 被直接实例化（抽象类 ⇒ 必须写成匿名子类）"
+              % (_bg29_all - _bg29_anon, _bg29_all))
+if "public abstract class BetterGoldMobEffect" not in _bg29_text(
+        "src/main/java/com/hjmmd_8/bettergold/registry/BetterGoldMobEffect.java"):
+    _bg29_bad("bg29-effects-abstract", "BetterGoldMobEffect 的 abstract 标记被拿掉了（口径变了要记账）")
+
+# ---------- ⑥ 音效：mp3 → ogg + sounds.json + 中英字幕 ----------
+_bg29_checked += 1
+_ogg = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "sounds" / "thunder_ring.ogg"
+if not _ogg.is_file():
+    _bg29_bad("bg29-sound", "缺 assets/bettergold/sounds/thunder_ring.ogg")
+else:
+    _head = _ogg.read_bytes()[:4]
+    if _head != b"OggS":
+        _bg29_bad("bg29-sound", "thunder_ring.ogg 的文件头不是 OggS（不是真 ogg）")
+    if _ogg.stat().st_size != 10597:
+        _bg29_bad("bg29-sound", "thunder_ring.ogg 大小 %d，认亲表记的是 10597" % _ogg.stat().st_size)
+    # ⚠ 只判「大小 + 头」抓不到"改了一个字节"（bg29 扰动 P4 实测：改 1 字节仍是 10597 且头还是 OggS）
+    # ⇒ 把 ogg 的 SHA256 钉成锚点（这张是作者 mp3 一次性转出来的，之后不该再变）。
+    _bg29_ogg_sha = hashlib.sha256(_ogg.read_bytes()).hexdigest()
+    if _bg29_ogg_sha != "66f72b7dc00f131a5da40a42ccfb83d030019f43d141acba8974dc13edc9bf25":
+        _bg29_bad("bg29-sound", "thunder_ring.ogg 的 SHA256 = %s，与锚点不符（音效被改过）"
+                  % _bg29_ogg_sha)
+_sounds = json.loads((REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "sounds.json")
+                     .read_text(encoding="utf-8"))
+_thunder_json = _sounds.get("thunder_ring") or {}
+if _thunder_json.get("subtitle") != "subtitles.bettergold.thunder_ring":
+    _bg29_bad("bg29-sound", "sounds.json 的 thunder_ring.subtitle 不对：%s" % _thunder_json.get("subtitle"))
+if [s.get("name") for s in _thunder_json.get("sounds", [])] != ["bettergold:thunder_ring"]:
+    _bg29_bad("bg29-sound", "sounds.json 的 thunder_ring.sounds 不对：%s" % _thunder_json.get("sounds"))
+_sounds_reg_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/registry/AllSounds.java")
+if 'register("thunder_ring")' not in _sounds_reg_src:
+    _bg29_bad("bg29-sound", "AllSounds 里没有 register(\"thunder_ring\")")
+for _lang in ("zh_cn", "en_us"):
+    _obj = json.loads((REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
+                       / ("%s.json" % _lang)).read_text(encoding="utf-8"))
+    if "subtitles.bettergold.thunder_ring" not in _obj:
+        _bg29_bad("bg29-sound-subtitle", "%s 缺字幕键 subtitles.bettergold.thunder_ring" % _lang)
+
+# ---------- ⑦ Curios：A 类口径双向（装 / 没装）+ 类型隔离 ----------
+_bg29_checked += 1
+_bg29_curios_lib = REPO / "libs" / "curios-neoforge-9.5.1+1.21.1.jar"
+if not _bg29_curios_lib.is_file():
+    _bg29_bad("bg29-curios-lib", "缺 libs/curios-neoforge-9.5.1+1.21.1.jar（编译期真 jar）")
+else:
+    if _bg29_curios_lib.stat().st_size != 410690:
+        _bg29_bad("bg29-curios-lib", "Curios jar 大小 %d，应为 410690 B"
+                  % _bg29_curios_lib.stat().st_size)
+_bg29_gradle = _bg29_text("build.gradle")
+if "compileOnly files('libs/curios-neoforge-9.5.1+1.21.1.jar')" not in _bg29_gradle:
+    _bg29_bad("bg29-curios-gradle", "build.gradle 里没有 compileOnly 的 Curios 依赖")
+if "localRuntime files('libs/curios-neoforge-9.5.1+1.21.1.jar')" in _bg29_gradle \
+        or "localRuntime 'top.theillusivec4.curios" in _bg29_gradle:
+    _bg29_bad("bg29-curios-gradle",
+              "Curios 被写成 localRuntime ⇒ dev 永远装着它，「没装」那一档再也造不出来")
+# 反向：戒指始终注册（CuriosCompat 里不许出现"没装就不注册"）
+_curios_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/compat/CuriosCompat.java")
+if "public static boolean isLoaded()" not in _curios_src or 'MODID = "curios"' not in _curios_src:
+    _bg29_bad("bg29-curios", "CuriosCompat 缺 isLoaded()/MODID")
+# Curios 的类型只许出现在这一个文件里
+_bg29_curios_leaks = []
+for _p in (REPO / "src" / "main" / "java").rglob("*.java"):
+    if _p.name == "CuriosCompat.java":
+        continue
+    if "top.theillusivec4.curios" in _p.read_text(encoding="utf-8", errors="replace"):
+        _bg29_curios_leaks.append(str(_p.relative_to(REPO)))
+if _bg29_curios_leaks:
+    _bg29_bad("bg29-curios-isolation",
+              "Curios 类型跑到了其它文件（只许 compat/CuriosCompat）：%s" % _bg29_curios_leaks[:3])
+# 数据文件：12 枚进 ring 槽（没装 Curios 时被忽略，不是"缺 tag"）
+_curios_tag = REPO / "src" / "main" / "resources" / "data" / "curios" / "tags" / "item" / "ring.json"
+if not _curios_tag.is_file():
+    _bg29_bad("bg29-curios-tag", "缺 data/curios/tags/item/ring.json")
+else:
+    _ctag = json.loads(_curios_tag.read_text(encoding="utf-8"))
+    _want = ["bettergold:%s_ring" % r[0] for r in _BG29_RINGS]
+    if sorted(_ctag.get("values", [])) != sorted(_want):
+        _bg29_bad("bg29-curios-tag", "ring tag 的成员不是那 12 枚：%s" % _ctag.get("values"))
+    if _ctag.get("replace") is not False:
+        _bg29_bad("bg29-curios-tag", "ring tag 的 replace 不是 false")
+
+# ---------- ⑧ 贴图 / 模型 / 语言 / 认亲表 ----------
+_bg29_checked += 1
+_bg29_tex_dir = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures" / "item"
+for _metal, _enum, _dmg, _zh, _en in _BG29_RINGS:
+    _png = _bg29_tex_dir / ("%s_ring.png" % _metal)
+    if not _png.is_file():
+        _bg29_bad("bg29-texture", "缺贴图 %s_ring.png" % _metal)
+if not (_bg29_tex_dir / "ring_blank.png").is_file():
+    _bg29_bad("bg29-texture", "缺胚底贴图 ring_blank.png")
+for _eff in ("soothe_ii", "soothe_ii_cooldown"):
+    _p = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "textures" / "mob_effect" / ("%s.png" % _eff)
+    if not _p.is_file():
+        _bg29_bad("bg29-texture", "缺效果贴图 %s.png" % _eff)
+
+# 认亲表：逐行「源 → 目标 → 字节 → SHA256」；目标必须真存在且 SHA 相同
+_bg29_checked += 1
+_bg29_tsv = REPO / "docs" / "1.8-素材认亲" / "阶段3C" / "认亲表.tsv"
+if not _bg29_tsv.is_file():
+    _bg29_bad("bg29-provenance", "缺 docs/1.8-素材认亲/阶段3C/认亲表.tsv")
+else:
+    _rows = [ln.split("\t") for ln in _bg29_tsv.read_text(encoding="utf-8").splitlines() if "\t" in ln]
+    _data_rows = [r for r in _rows if len(r) >= 4 and r[1].startswith("src/")]
+    if len(_data_rows) != 16:
+        _bg29_bad("bg29-provenance", "认亲表的数据行不是 16 行（15 张图 + 1 个音效），实测 %d" % len(_data_rows))
+    for _r in _data_rows:
+        _dst = REPO / _r[1]
+        if not _dst.is_file():
+            _bg29_bad("bg29-provenance", "认亲表指向的文件不存在：%s" % _r[1])
+            continue
+        if "->" in _r[2]:
+            if _dst.stat().st_size != int(_r[2].split("->")[1].strip()):
+                _bg29_bad("bg29-provenance", "%s 大小与认亲表的转换后字节数不符" % _r[1])
+            continue
+        if hashlib.sha256(_dst.read_bytes()).hexdigest() != _r[3].strip().lower():
+            _bg29_bad("bg29-provenance", "%s 与认亲表 SHA256 不符（贴图被改过）" % _r[1])
+
+# 模型：13 个 item/generated 单层
+_bg29_checked += 1
+_bg29_models = REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "models" / "item"
+for _name in ["%s_ring" % r[0] for r in _BG29_RINGS] + ["ring_blank"]:
+    _mp = _bg29_models / ("%s.json" % _name)
+    if not _mp.is_file():
+        _bg29_bad("bg29-model", "缺模型 %s.json" % _name)
+        continue
+    _mobj = json.loads(_mp.read_text(encoding="utf-8"))
+    if _mobj.get("parent") != "minecraft:item/generated":
+        _bg29_bad("bg29-model", "%s 的 parent 不是 item/generated" % _name)
+    _layer = (_mobj.get("textures") or {}).get("layer0")
+    if _layer != "bettergold:item/%s" % _name:
+        _bg29_bad("bg29-model", "%s 的 layer0 不对：%s" % (_name, _layer))
+
+# 语言：13 个物品名 + 2 个效果名 + 2 个模式提示 + 1 条字幕
+_bg29_checked += 1
+for _lang in ("zh_cn", "en_us"):
+    _obj = json.loads((REPO / "src" / "main" / "resources" / "assets" / "bettergold" / "lang"
+                       / ("%s.json" % _lang)).read_text(encoding="utf-8"))
+    _idx = 3 if _lang == "zh_cn" else 4
+    for _metal, _enum, _dmg, _zh, _en in _BG29_RINGS:
+        _key = "item.bettergold.%s_ring" % _metal
+        _want = _zh if _lang == "zh_cn" else _en
+        if _obj.get(_key) != _want:
+            _bg29_bad("bg29-lang", "%s 的 %s 是 %s，期望 %s" % (_lang, _key, _obj.get(_key), _want))
+    for _key, _vals in (
+            ("item.bettergold.ring_blank", ("转化之戒胚底", "Ring Blank")),
+            ("effect.bettergold.soothe_ii", ("安抚二式", "Soothe II")),
+            ("effect.bettergold.soothe_ii_cooldown", ("安抚二式（冷却中）", "Soothe II (Cooldown)")),
+            ("message.bettergold.ring_mode_physical", ("模式：仅物理伤害转化", "Mode: physical damage only")),
+            ("message.bettergold.ring_mode_all", ("模式：全部伤害转化", "Mode: all damage")),
+    ):
+        _want = _vals[0] if _lang == "zh_cn" else _vals[1]
+        if _obj.get(_key) != _want:
+            _bg29_bad("bg29-lang", "%s 的 %s 是 %s，期望 %s" % (_lang, _key, _obj.get(_key), _want))
+
+# 创造页：ring 位次排在靴子之后、马铠之前（§I 排在同系列靴子与马铠之间）
+_bg29_checked += 1
+_creative_src = _bg29_text("src/main/java/com/hjmmd_8/bettergold/material/CreativeSections.java")
+if 'Map.entry("ring", 15)' not in _creative_src:
+    _bg29_bad("bg29-creative", "GEAR_SLOT 里没有 ring=15")
+if 'Map.entry("horse_armor", 16)' not in _creative_src:
+    _bg29_bad("bg29-creative", "GEAR_SLOT 里没有 horse_armor=16（戒指必须排在它前面）")
+
+# ---------- ⑨ 反空转 ----------
+if _bg29_checked < 12:
+    _bg29_bad("bg29-anti-vacuum", "段 C 只跑了 %d 条判定（必须 >= 12）" % _bg29_checked)
+print("[bg29-ring-summary] 检查 %d 项，问题 %d 条%s"
+      % (_bg29_checked, len(bg29_problems),
+         "" if not bg29_problems else "：" + str(bg29_problems[:6])))
+if not bg29_problems:
+    print("[bg29-ring-ok] 12 戒 + 胚底 / 模式组件 / 12 条转化映射 / 混源 64 耐久 / 三枚无模式 / "
+          "点金挖矿 / 冰霜行者 +1 / 六条合成表 / 安抚二式两状态 / ogg + 字幕 / Curios 双向 / "
+          "15 张 1:1 / 模型 / 语言 / 创造页位次 全部通过")
+
+
 _EXIT_PROBLEM_LISTS = (missing_zh, missing_en, missing_loot, missing_knife_tags, missing_weapon_tags,
                        bg15w_problems, bg8_problems, bg9_problems,
                        bg16_problems, bgbook_problems, bgbook2_problems, bgfix_problems,
@@ -14383,6 +14802,8 @@ _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg26_problems,)
 _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg27_problems,)
 # 2026-11-19 bg28：1.8 阶段 3 · 段 0/B/C（矛配方 + 马铠 + 转化之戒）
 _EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg28_problems,)
+# 2026-11-19 bg29：1.8 阶段 3 · 段 C（§I 转化之戒）
+_EXIT_PROBLEM_LISTS = _EXIT_PROBLEM_LISTS + (bg29_problems,)
 _problem_total = sum(len(_x) for _x in _EXIT_PROBLEM_LISTS)
 print(f"[bg-data-{'fail' if _problem_total else 'ok'}] 问题合计 {_problem_total} 条"
       f"（契约：0 绿 / 1 有问题 / 2 前置坏）")

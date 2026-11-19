@@ -53,6 +53,17 @@ public class AllSounds {
             register("money_gremlin_death");
 
     /**
+     * 1.8 阶段 3 段 C（§I-38 雷波之戒）：<b>专属音效</b> = 作者 zip 里那个
+     * {@code 雷波转化之戒和新版结雷金建筑方块音效.mp3}（476,861 B）。
+     *
+     * <p>转码口径与金钱妖那三个逐字相同：{@code -vn -map 0:a:0 -ac 1 -ar 44100 -c:a libvorbis}
+     * （3D 定位音必须<b>单声道</b>）；落点 {@code assets/bettergold/sounds/thunder_ring.ogg}，
+     * {@code sounds.json} 里登记 {@code subtitle} 键 ⇒ 开"声音字幕"时显示中英文案
+     * （{@code subtitles.bettergold.thunder_ring}）。</p>
+     */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THUNDER_RING = register("thunder_ring");
+
+    /**
      * 注册一个 sound event。位置可变范围（{@code createVariableRangeEvent} = 16 格衰减）——
      * 生物音效就该是可变范围的；固定范围（{@code createFixedRangeEvent}）只用于玩家自己的界面音。
      */

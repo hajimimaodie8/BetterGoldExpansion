@@ -1,0 +1,10 @@
+﻿name	exit	verdict	sha_before16	sha_restore16	byte_identical	expected_hit
+P1 �һ�ת������ on_fire��magic	1	PASS	23f51d75be13c801	23f51d75be13c801	True	True
+P2 ��Դ�;� 64��65	1	PASS	d0e6802445488b49	d0e6802445488b49	True	True
+P3 ��˪�䷽��ָ�����һ�	1	PASS	7e5ad34aec863942	7e5ad34aec863942	True	True
+P4 ��Ч ogg �� 1 �ֽ�	1	PASS	66f72b7dc00f131a	66f72b7dc00f131a	True	True
+P5 Curios ��ǩ��һö	1	PASS	5985ee3de1500813	5985ee3de1500813	True	True
+P6 ֻ��ע�ͣ�Ӧ�����̣�	0	PASS	23f51d75be13c801	23f51d75be13c801	True	True
+CASES=6 HITS=6
+RESTORE_ALL_IDENTICAL=True
+FINAL_VALIDATOR_EXIT=0������ 0��

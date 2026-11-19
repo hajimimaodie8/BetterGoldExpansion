@@ -1,0 +1,33 @@
+bg29 收尾核对（2026-11-19，1.8 阶段 3 · 段 C 转化之戒）
+========================================================
+
+① 探针
+  - 源码已留档：docs\bg29-证据\00-探针源码副本\Bg29Probe.java.txt（删前复制）
+  - 源码树：src 下 *Probe* = 0（probe 包目录已整个删除）
+  - 开关文件 run\bg29-probe.enabled：已删除
+  - 产物 jar：*Probe* 0 / 'halt' 字节 0 / 'BG-PROBE' 0（check_jar_clean.py exit=0，条目 3708）
+
+② server.properties
+  - 改前备份：build\bg29-server.properties.bak
+  - SHA256（改前 = 收尾复原后，逐字节相同）：A2229937BA8AB7428BC959E87A784890500D6D7061B10FA8302758E46A01D3C4
+  - ⚠ 专用服务端启动时会自己重写这个文件（实测 SHA 变成 3EA8821A…）⇒ 收尾用 WriteAllBytes 逐字节写回备份
+
+③ 作者存档
+  - run\logs / 两份本轮日志里「新的世界」出现 0 次；Saving chunks 3 次全部是 ServerLevel[world]
+  - run\saves\ 下只有作者那份「新的世界」，本轮没有读写它
+
+④ 原始素材
+  - 原始 zip：只读打开，未写、未改名、未移动
+  - 贴图：12 戒 + 胚底 + 2 张安抚二式图标 = 15 张 1:1 字节复制（源 SHA == 目标 SHA，见 认亲表.tsv）
+  - 既有贴图：M 计数 = 0（本轮全部是新增 ??）
+
+⑤ Curios jar（交付物，不是临时文件）
+  - 测「没装」那一档时把 run\mods\curios-neoforge-9.5.1+1.21.1.jar 移到 build\curios-hold\
+  - 测完已移回 run\mods\，与 libs\ 里那份同名同源
+
+⑥ git
+  - 不 commit、不 push；HEAD 仍 ba2fdae
+  - 工作树 = 上一会话的 WIP（M 9 + 新增） + 本轮改动
+
+⑦ 残留
+  - check_forced_chunks.py exit=0：data.Forced 为空（探针的 forceload 已撤销）

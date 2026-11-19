@@ -1,0 +1,18 @@
+{
+  "type": "bettergold:ring_conversion",
+  "ring": "bettergold:indigoseagold_ring",
+  "ingredient": [
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "id": "minecraft:potion",
+    "count": 1,
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "minecraft:water"
+      }
+    }
+  }
+}

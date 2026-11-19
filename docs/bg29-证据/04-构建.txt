@@ -1,0 +1,8 @@
+﻿# bg29 构建（2026-11-19，1.8 阶段 3 段 C）
+
+compileJava：EXIT 0 / BUILD SUCCESSFUL（修完 5 个编译错误之后的第一件事）
+build      ：EXIT 0 / BUILD SUCCESSFUL
+
+产物：build/libs/bettergold-1.7.0.jar（check_jar_clean.py 条目 3708 / *Probe* 0 / 'halt' 字节 0）
+
+⚠ 探针删除后又跑了一次 build，确保 jar 里没有探针残留。

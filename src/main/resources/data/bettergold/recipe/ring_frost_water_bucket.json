@@ -1,0 +1,13 @@
+{
+  "type": "bettergold:ring_conversion",
+  "ring": "bettergold:frostgold_ring",
+  "ingredient": [
+    {
+      "item": "minecraft:water_bucket"
+    }
+  ],
+  "result": {
+    "id": "minecraft:ice",
+    "count": 1
+  }
+}

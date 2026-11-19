@@ -493,6 +493,20 @@ public class ModEvents {
         return pool.get(random.nextInt(pool.size()));
     }
 
+    /**
+     * 点金之戒（1.8 阶段 3 段 C，§I-38）「配万坚金镐触发万坚金掉金物品（<b>每挖一次</b>）」的唯一入口。
+     *
+     * <p>实现 = <b>直接复用</b> {@link #rollGoldLoot}（同一份「基础池 + 取其金食加食物池 + 配置过滤」），
+     * 所以「<b>支持取其金食</b>」这一半<b>不需要第二份实现</b>：判据就是工具上的附魔，
+     * 而挖掘时手里的工具正是那个 {@code held}。</p>
+     *
+     * <p>⚠ 与武器命中那条（{@code onLivingIncomingDamage}）的差别只有"触发点"：
+     * 那一条受 {@code sturdygoldWeaponAbilityChance} 闸门控制，本入口按规格「<b>每挖一次</b>」<b>不掷骰</b>。</p>
+     */
+    public static Item rollGildLootFromMining(Player player, ItemStack held) {
+        return rollGoldLoot(player, held);
+    }
+
     /** 按配置过滤后的金系掉落池（bg-fix2 第 4 条抽出来，供"挤掉 80% 条目"复用同一份清单） */
     private static List<Item> buildGoldLootPool(ItemStack held, boolean hasFoodEnchant) {
         List<Item> pool = new java.util.ArrayList<>(BASE_GOLD_LOOT_POOL.stream()

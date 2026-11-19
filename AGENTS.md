@@ -294,6 +294,18 @@ SHA256 `9c966b7f80c2e2550064a822730a704e8a68aeac9047fa9f1aabfda7eb9e6b6d`）—�
   认亲表 `docs/1.8-素材认亲/阶段3B/认亲表.tsv`；关卡 `[bg28-spear-recipe-*]` / `[bg28-horse-*]`。
 - 本轮**未做**段 C（§I 1–40 的戒指）；段 C 的前置事实（Curios jar 在 Gradle 缓存、`ring` 位次已留、
   `LivingIncomingDamageEvent` 是转化落点）见 §Z-5。
+- **段 C 已完成（`bg29`，2026-11-19）**：12 戒 + 胚底 = `material/RingItems.java` / `RingType.java`（模式组件
+  `bettergold:ring_all_damage`）/ `RingEvents.java`（转化 + 特效 + 通用增伤 + 安抚二式）/
+  `recipe/RingConversionRecipe.java`（**`RecipeSerializer#codec()` 在 1.21.1 要 `MapCodec`** ⇒ `RecordCodecBuilder.mapCodec`）。
+  Curios = **A 类**（戒指始终注册；类型只许在 `compat/CuriosCompat.java` 引用）；**转化必须防递归**（`CONVERTING` 标记）。
+  ⚠ **三个真 bug（都在 A 级抓到）**：① 通用增伤记账点原在 `LivingDamageEvent.Pre`，而转化会 cancel
+  `LivingIncomingDamageEvent` ⇒ **9 枚可转化戒指永远拿不到 +1**，已前移到 `LivingIncomingDamageEvent`；
+  ② `tryShriek(level, player)` 在 `player==null` 时是空操作 ⇒ **尖啸体永远不响**，改传攻击者；
+  ③ **6 条转化配方整条静默丢弃**（`Ingredient.CODEC_NONEMPTY` 不接受裸字符串，`RecipeManager` 只打一行 ERROR）
+  ⇒ 必须写成 `[{"item": …}]`。
+  ⚠ **未验证（C 级）**：Curios 栏位装载本身 —— 合成出来的 `ServerPlayer` 拿不到 `INVENTORY` capability，
+  只能真客户端验；「装 Curios」档 3 条红是环境问题、不是代码。
+- 记录：`docs/1.8-规格-新的新约.md` §Z-4 / §Z-5 / **§Z-6**；证据 `docs/bg28-证据\` / `docs/bg29-证据\`。
 
 ## 🔧 构建与跑测
 
